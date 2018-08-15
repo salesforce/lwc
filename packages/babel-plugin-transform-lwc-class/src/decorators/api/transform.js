@@ -80,7 +80,8 @@ function transformPublicProps(t, klassBody, apiDecorators) {
     }
 
     return publicProps.filter(({ path }) => (
-        path.parentPath.node.kind !== 'get'
+        path.parentPath.node.kind !== 'get' ||
+        path.parentPath.node.kind !== 'set'
     )).map(({ path }) => ({
         type: 'property',
         name: path.parentPath.get('key.name').node

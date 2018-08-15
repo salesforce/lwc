@@ -45,12 +45,15 @@ describe('Javascript transform', () => {
             /** Foo doc */
             export default class Foo extends LightningElement {
                 _privateTodo;
-                @api get todo () {
+
+                @api
+                get todo () {
                     return this._privateTodo;
                 }
-                @api set todo (val) {
+                set todo (val) {
                     return this._privateTodo = val;
                 }
+
                 @api
                 index;
             }
@@ -75,7 +78,7 @@ describe('Javascript transform', () => {
         expect(metadata.doc).toBe('* Foo doc');
         expect(metadata.declarationLoc).toEqual({
             start: { line: 4, column: 12 },
-            end: { line: 14, column: 13 },
+            end: { line: 17, column: 13 },
         });
     });
 

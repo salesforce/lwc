@@ -290,8 +290,9 @@ describe('metadata', () => {
             privateProp;
             privateMethod() {}
             _privateTodo;
-            @api get todo () {return this._privateTodo;}
-            @api set todo (val) {return this._privateTodo = val;}
+            @api
+            get todo () {return this._privateTodo;}
+            set todo (val) {return this._privateTodo = val;}
         }
     `,
         {
@@ -364,14 +365,14 @@ describe('metadata', () => {
                             name: "todo",
                             loc: {
                                 start: { line: 10, column: 0 },
-                                end: { line: 10, column: 44 }
+                                end: { line: 11, column: 39 }
                             },
                             decorator: "api"
                         }
                     ],
                     declarationLoc: {
                         start: { line: 3, column: 0 },
-                        end: { line: 12, column: 1 }
+                        end: { line: 13, column: 1 }
                     }
                 }
             }

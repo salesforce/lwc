@@ -1,7 +1,7 @@
 const { isComponentClass, isDefaultExport } = require('./utils');
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('./constants');
 
-module.exports = function ({ types: t }) {
+module.exports = function () {
     return {
         Class(path, state) {
             if (isComponentClass(path, state.componentBaseClassImports) && isDefaultExport(path)) {
@@ -46,7 +46,6 @@ module.exports = function ({ types: t }) {
                 }
             }
         }
-        return undefined;
     }
 
     function isLWCDecorator(name) {
@@ -58,21 +57,20 @@ module.exports = function ({ types: t }) {
             const lastComment = node.leadingComments[node.leadingComments.length - 1].value;
             return sanitizeComment(lastComment);
         }
-        return undefined;
     }
 
     function extractLoc(loc) {
-        return { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
+        return {
+            start: { line: loc.start.line, column: loc.start.column },
+            end: { line: loc.end.line, column: loc.end.column }
+        };
     }
 
     function isProperty(path) {
-        if (path.isClassProperty()) {
-            return true;
-        }
-        if (path.isClassMethod() && path.node.kind === 'get') {
-            return true;
-        }
-        return false;
+        return (
+            path.isClassProperty() ||
+            (path.isClassMethod() && path.node.kind === 'get')
+        );
     }
 
     function isMethod(path) {
