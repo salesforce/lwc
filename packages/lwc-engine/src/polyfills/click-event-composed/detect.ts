@@ -16,5 +16,5 @@ export default function detect(): boolean {
     button.addEventListener('click', event => clickEvent = event);
     button.click();
 
-    return composedDescriptor.get!.call(clickEvent);
+    return !composedDescriptor.get!.call(clickEvent);
 }
