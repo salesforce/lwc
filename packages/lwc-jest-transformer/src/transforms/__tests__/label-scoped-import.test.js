@@ -9,9 +9,9 @@ describe('@salesforce/label import', () => {
         let myLabel;
 
         try {
-          myLabel = require("@salesforce/label/c.foo").default;
+          myLabel = require('@salesforce/label/c.foo').default;
         } catch (e) {
-          myLabel = "c.foo";
+          myLabel = 'c.foo';
         }
     `);
 
@@ -23,9 +23,9 @@ describe('@salesforce/label import', () => {
         let myLabel;
 
         try {
-          myLabel = require("@salesforce/label/c.foo").default;
+          myLabel = require('@salesforce/label/c.foo').default;
         } catch (e) {
-          myLabel = "c.foo";
+          myLabel = 'c.foo';
         }
     `);
 
@@ -40,33 +40,4 @@ describe('@salesforce/label import', () => {
     test('throws error if renamed multipel default imports', `
         import { default as label, foo } from '@salesforce/label/c.foo';
     `, undefined, 'Invalid import from @salesforce/label/c.foo');
-});
-
-// W-5140078 - remove these when all usages of @label are converted to @salesforce/label
-describe('legacy @label import', () => {
-    test('does default transformation', `
-        import myLabel from '@label/c.foo';
-    `, `
-        let myLabel;
-
-        try {
-          myLabel = require("@label/c.foo").default;
-        } catch (e) {
-          myLabel = "c.foo";
-        }
-    `);
-
-    test('allows non-@label named imports', `
-        import { otherNamed } from './something-valid';
-        import myLabel from '@label/c.foo';
-    `, `
-        import { otherNamed } from './something-valid';
-        let myLabel;
-
-        try {
-          myLabel = require("@label/c.foo").default;
-        } catch (e) {
-          myLabel = "c.foo";
-        }
-    `);
 });
