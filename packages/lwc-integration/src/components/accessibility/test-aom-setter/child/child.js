@@ -7,7 +7,7 @@ export default class Child extends LightningElement {
         return this.internalLabel;
     }
 
-    @api set ariaLabel(value) {
+    set ariaLabel(value) {
         this.internalLabel = value;
     }
 }

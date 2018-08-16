@@ -93,22 +93,12 @@ describe('Transform property', () => {
             }
         }
     `, {
-        output: {
-            code: `export default class Test {
-                    get something() {
-                        return this.s;
-                    }
-
-                    set something(value) {
-                        this.s = value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    something: {
-                        config: 3
-                    }
-                };`
+        error: {
+            message: '@api get something and @api set something',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
@@ -118,12 +108,9 @@ describe('Transform property', () => {
             _a = true;
             _b = false;
 
-            @api
-            get a () { return this._a; }
+            @api get a () { return this._a; }
             set a (value) { this._a = value; }
-
-            @api
-            get b () { return this._b; }
+            @api get b () { return this._b; }
             set b (value) { this._b = value; }
         }
     `, {
@@ -167,13 +154,10 @@ describe('Transform property', () => {
         export default class Text {
             @api publicProp;
             privateProp;
-            @api
-            get aloneGet(){}
 
-            @api
-            get myget(){}
+            @api get aloneGet(){}
+            @api get myget(){}
             set myget(x){ return 1; }
-
             @api m1(){}
             m2(){}
             static ctor = "ctor";
@@ -495,10 +479,10 @@ describe('Metadata', () => {
         export default class Foo extends LightningElement {
             _privateTodo;
 
-            @api
             get todo () {
                 return this._privateTodo;
             }
+            @api
             set todo (val) {
                 return this._privateTodo = val;
             }
@@ -527,8 +511,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "todo",
                             loc: {
-                                start: { line: 4, column: 0 },
-                                end: { line: 7, column: 1 }
+                                start: { line: 7, column: 0 },
+                                end: { line: 10, column: 1 }
                             },
                             decorator: "api"
                         },
