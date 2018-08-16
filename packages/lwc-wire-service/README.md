@@ -16,47 +16,67 @@ The `@wire` decorator provides LWC components with a declarative mechanism to ex
 * It is assumed all data mutates over time yet a given snapshot of data is immutable.
 * A component receiving data does not own that data. It is comparable to a component receiving props does not own the props.
 
-## Example
+## Example Use Of `@wire`
 
-Consider a component that wants to display the details of a todo item.
+Consider a component that wants to display the details of a todo item. It uses `@wire` to declare its data requirements.
 
 ```js
 import { LightningElement, api, wire } from 'lwc';
+
+// the wire adapter identifier
 import { getTodo } from 'todo-api';
+
 export default class TodoViewer extends LightningElement {
     @api id;
+
+    // declare the need for data. $id creates a reactive property tied to this.id.
+    // data is provisioned into this.todo.
     @wire(getTodo, { id: '$id' })
     todo
 }
 ```
 
+```html
+<template>
+    <template if:true={todo}>
+        <input type="checkbox" checked={todo.completed}> {todo.title}
+    </template>
+</template>
+```
+
 ## Wire Adapter Specification
+
+The following is a summary of the [wire adapter RFC](/docs/proposals/0103-wire-adapters.md).
 
 A `wire adapter` provisions data to a wired property or method using an [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget). A factory function is registered for declarative `@wire` use by a component.
 
-```js
-// Events the wire adapter can dispatch to provision a value to the wired property or method
+```ts
+// The identifier for the wire adapter
+type WireAdapterId = Function|Symbol;
+
+// The factory function invoked for each @wire in a component. The WireEventTarget
+// allows the wire adapter instance to receive configuration data and provision
+// new values.
+type WireAdapterFactory = (eventTarget: WireEventTarget) => void;
+
+// Event the wire adapter dispatches to provision values to the wired property or method
 interface ValueChangedEvent {
     value: any;
     new(value: any) : ValueChangedEvent;
 }
 
 // Event types the wire adapter may listen for
-type eventType = 'config' | 'connect' | 'disconnect';
+type EventType = 'config' | 'connect' | 'disconnect';
 
-interface ConfigListenerArgument {
-    [key: string]: any;
-}
-type Listener = (config?: ConfigListenerArgument) => void;
+// Event listener callback
+type Listener = (config?: { [key: string]: any ) => void;
 
+// Target of the @wire
 interface WireEventTarget extends EventTarget {
     dispatchEvent(event: ValueChangedEvent): boolean;
-    addEventListener(type: eventType, listener: Listener): void;
-    removeEventListener(type: eventType, listener: Listener): void;
+    addEventListener(type: EventType, listener: Listener): void;
+    removeEventListener(type: EventType, listener: Listener): void;
 }
-
-// Registers a wire adapter factory for an imperative accessor
-register(adapterId: Function|Symbol, wireAdapterFactory: (eventTarget: WireEventTarget) => void): undefined;
 ```
 
 In the component's `wiring` lifecycle, the wire service invokes the `wireAdapterFactory` function to configure an instance of the wire adapter for each `@wire` instance (which is per component instance).
@@ -70,12 +90,65 @@ The wire service remains responsible for resolving the configuration object. `ev
 
 The wire adapter is responsible for provisioning values by dispatching a `ValueChangedEvent` to the event target. `ValueChangedEvent`'s constructor accepts a single argument: the value to provision. There is no limitation to the shape or contents of the value to provision. The event target handles property assignment or method invocation based on the target of the `@wire`.
 
-The wire adapter is responsible for maintaining any context it requires. For example, tracking the values it provisions and the originating resolved configuration is shown in the basic example.
+The wire adapter is responsible for maintaining any context it requires. For example, tracking the values it provisions and the originating resolved configuration is shown in the basic example below.
 
+### Registering A Wire Adapter
+
+A wire adapter must be registered with the wire service. The `wire-service` module provides a registration function.
+
+
+
+```ts
+register(adapterId: WireAdapterId, wireAdapterFactory: WireAdapterFactory);
+```
+
+## Example Wire Adapter Implementation
+
+```js
+import { register, ValueChangedEvent } from 'wire-service';
+
+// Imperative access.
+export function getTodo(config) {
+    return getObservable(config)
+        .map(makeReadOnlyMembrane)
+        .toPromise();
+}
+
+// Declarative access: register a wire adapter factory for  @wire(getTodo).
+register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
+    let subscription;
+    let config;
+
+    // Invoked when config is updated.
+    eventTarget.addListener('config', (newConfig) => {
+        // Capture config for use during subscription.
+        config = newConfig;
+    });
+
+    // Invoked when component connected.
+    eventTarget.addListener('connected', () => {
+        // Subscribe to stream.
+        subscription = getObservable(config)
+            .map(makeReadOnlyMembrane)
+            .subscribe({
+                next: (data) => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+                error: (error) => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+            });
+    })
+
+        // Invoked when component disconnected.
+    eventTarget.addListener('disconnected', () => {
+        // Release all resources.
+        subscription.unsubscribe();
+    });
+});
+```
+
+# Contributing To The Wire Service
 
 ## Build & run the playground
 
-For your development convenience, you can build the playground files and launch a Node server:
+A _playground_ of LWC components using @wire is included. They're served from a basic node server and accessible in your browser.
 
 ```bash
 yarn start
