@@ -524,8 +524,8 @@ Test.publicMethods = ["foo"];`
     });
 });
 
-describe.only('Metadata', () => {
-    pluginTest.only(
+describe('Metadata', () => {
+    pluginTest(
         'gather metadata',
         `
         import { LightningElement, api } from 'lwc';
