@@ -9,9 +9,9 @@ describe('@salesforce/resource-url import', () => {
         let myResource;
 
         try {
-          myResource = require("@salesforce/resource-url/c.foo").default;
+          myResource = require('@salesforce/resource-url/c.foo').default;
         } catch (e) {
-          myResource = "c.foo";
+          myResource = 'c.foo';
         }
     `);
 
@@ -23,9 +23,9 @@ describe('@salesforce/resource-url import', () => {
         let myResource;
 
         try {
-          myResource = require("@salesforce/resource-url/c.foo").default;
+          myResource = require('@salesforce/resource-url/c.foo').default;
         } catch (e) {
-          myResource = "c.foo";
+          myResource = 'c.foo';
         }
     `);
 
