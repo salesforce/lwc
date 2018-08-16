@@ -5,7 +5,7 @@ export default class RecordLayoutItem extends LightningElement {
     @api fieldLabel;
     @api fieldApiName;
     @api isInlineEditable = false;
-    @api set role(value) {
+    set role(value) {
         this.setAttribute('role', value);
     }
     @api get role() {
