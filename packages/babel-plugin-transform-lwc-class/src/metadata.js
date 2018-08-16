@@ -11,8 +11,8 @@ module.exports = function ({ types: t }) {
                     state.file.metadata.doc = comment;
                 }
                 state.file.metadata.declarationLoc = extractLoc(declaration.loc);
+                const visitedProperties = new Map();
 
-                state.file.metadata.classMembers = [];
                 path.get('body').get('body').forEach(path => {
                     if (!isSynthetic(path) && (isProperty(path) || isMethod(path))) {
                         const name = path.node.key.name;
@@ -27,14 +27,19 @@ module.exports = function ({ types: t }) {
                                 metadata.doc = comment;
                             }
                             const decorator = extractLWCDecorator(path.node);
-                            console.log('extracted decorators', decorator + ' for ', name);
                             if (decorator) {
                                 metadata.decorator = decorator;
                             }
-                            state.file.metadata.classMembers.push(metadata);
+
+                            if (!visitedProperties.has(name)) {
+                                visitedProperties.set(name, metadata);
+                            } else if (decorator && visitedProperties.has(name) && !visitedProperties.get(name).decorator) {
+                                visitedProperties.set(name, metadata);
+                            }
                         }
                     }
                 });
+                state.file.metadata.classMembers = Array.from(visitedProperties.values());
             }
         }
     };
@@ -70,7 +75,7 @@ module.exports = function ({ types: t }) {
         if (path.isClassProperty()) {
             return true;
         }
-        if (path.isClassMethod() && path.node.kind === 'get') {
+        if (path.isClassMethod() && (path.node.kind === 'get' || path.node.kind === 'set')) {
             return true;
         }
         return false;

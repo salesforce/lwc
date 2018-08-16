@@ -142,7 +142,6 @@ module.exports = function decoratorVisitor({ types: t }) {
                 // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
                 // last class will be returned
                 const metadata = transform(t, klass, decorators);
-                console.log('decorator visitor metadata: ', metadata);
                 state.file.metadata.decorators.push(...metadata);
             }
             state.decorators = decorators;

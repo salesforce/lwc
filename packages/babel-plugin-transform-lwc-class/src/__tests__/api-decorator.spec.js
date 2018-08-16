@@ -564,8 +564,8 @@ describe.only('Metadata', () => {
                             type: "property",
                             name: "todo",
                             loc: {
-                                start: { line: 4, column: 0 },
-                                end: { line: 6, column: 1 }
+                                start: { line: 7, column: 0 },
+                                end: { line: 10, column: 1 }
                             },
                             decorator: "api"
                         },

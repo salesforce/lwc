@@ -48,7 +48,7 @@ describe('Javascript transform', () => {
                 @api get todo () {
                     return this._privateTodo;
                 }
-                @api set todo (val) {
+                set todo (val) {
                     return this._privateTodo = val;
                 }
                 @api
