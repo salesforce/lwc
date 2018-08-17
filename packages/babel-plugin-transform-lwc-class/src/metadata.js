@@ -1,7 +1,7 @@
 const { isComponentClass, isDefaultExport } = require('./utils');
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('./constants');
 
-module.exports = function ({ types: t }) {
+module.exports = function () {
     return {
         Class(path, state) {
             if (isComponentClass(path, state.componentBaseClassImports) && isDefaultExport(path)) {
@@ -11,8 +11,8 @@ module.exports = function ({ types: t }) {
                     state.file.metadata.doc = comment;
                 }
                 state.file.metadata.declarationLoc = extractLoc(declaration.loc);
+                const visitedProperties = new Map();
 
-                state.file.metadata.classMembers = [];
                 path.get('body').get('body').forEach(path => {
                     if (!isSynthetic(path) && (isProperty(path) || isMethod(path))) {
                         const name = path.node.key.name;
@@ -30,10 +30,16 @@ module.exports = function ({ types: t }) {
                             if (decorator) {
                                 metadata.decorator = decorator;
                             }
-                            state.file.metadata.classMembers.push(metadata);
+
+                            if (!visitedProperties.has(name)) {
+                                visitedProperties.set(name, metadata);
+                            } else if (decorator && visitedProperties.has(name) && !visitedProperties.get(name).decorator) {
+                                visitedProperties.set(name, metadata);
+                            }
                         }
                     }
                 });
+                state.file.metadata.classMembers = Array.from(visitedProperties.values());
             }
         }
     };
@@ -46,7 +52,6 @@ module.exports = function ({ types: t }) {
                 }
             }
         }
-        return undefined;
     }
 
     function isLWCDecorator(name) {
@@ -58,18 +63,20 @@ module.exports = function ({ types: t }) {
             const lastComment = node.leadingComments[node.leadingComments.length - 1].value;
             return sanitizeComment(lastComment);
         }
-        return undefined;
     }
 
     function extractLoc(loc) {
-        return { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
+        return {
+            start: { line: loc.start.line, column: loc.start.column },
+            end: { line: loc.end.line, column: loc.end.column }
+        };
     }
 
     function isProperty(path) {
         if (path.isClassProperty()) {
             return true;
         }
-        if (path.isClassMethod() && path.node.kind === 'get') {
+        if (path.isClassMethod() && (path.node.kind === 'get' || path.node.kind === 'set')) {
             return true;
         }
         return false;

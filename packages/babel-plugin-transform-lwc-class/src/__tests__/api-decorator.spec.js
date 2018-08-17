@@ -81,103 +81,38 @@ describe('Transform property', () => {
         }
     });
 
-    pluginTest('transforms public getter/setter', `
+    pluginTest('detecting @api on both getter and a setter should produce an error', `
         import { api } from 'lwc';
         export default class Test {
-            @api get something() {
+            @api
+            get something() {
                 return this.s;
             }
-            @api set something (value) {
+            @api
+            set something (value) {
                 this.s = value;
             }
         }
     `, {
-        output: {
-            code: `export default class Test {
-                    get something() {
-                        return this.s;
-                    }
-
-                    set something(value) {
-                        this.s = value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    something: {
-                        config: 3
-                    }
-                };`
+        error: {
+            message: '@api get something and @api set something',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
-
-    pluginTest('@api decorator for public getter should not require a matching setter decorator', `
-        import { api } from 'lwc';
-        export default class Test {
-            set publicAccessor(value) {
-                this.thing = value;
-            }
-            @api get publicAccessor() {
-                return this.thing;
-            }
-        }
-    `, {
-        output: {
-            code: `export default class Test {
-                    set publicAccessor(value) {
-                        this.thing = value;
-                    }
-
-                    get publicAccessor() {
-                        return this.thing;
-                    }
-
-                    }
-                    Test.publicProps = {
-                        publicAccessor: {
-                        config: 3
-                    }
-                };`
-    }});
-
-    pluginTest('@api decorator for public setter should not require a matching getter decorator', `
-        import { api } from 'lwc';
-        export default class Test {
-            @api set publicAccessor(value) {
-                this.thing = value;
-            }
-            get publicAccessor() {
-                return this.value;
-            }
-        }
-    `, {
-        output: {
-            code: `export default class Test {
-                    set publicAccessor(value) {
-                        this.thing = value;
-                    }
-
-                    get publicAccessor() {
-                        return this.value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    publicAccessor: {
-                        config: 3
-                    }
-                };`
-    }});
 
     pluginTest('transform pairs of setter and getter', `
         import { api } from 'lwc';
         export default class Test {
             _a = true;
             _b = false;
+
             @api get a () { return this._a; }
-            @api set a (value) { this._a = value; }
+            set a (value) { this._a = value; }
             @api get b () { return this._b; }
-            @api set b (value) { this._b = value; }
+            set b (value) { this._b = value; }
         }
     `, {
         output: {
@@ -220,9 +155,10 @@ describe('Transform property', () => {
         export default class Text {
             @api publicProp;
             privateProp;
+
             @api get aloneGet(){}
             @api get myget(){}
-            @api set myget(x){ return 1; }
+            set myget(x){ return 1; }
             @api m1(){}
             m2(){}
             static ctor = "ctor";
@@ -470,8 +406,10 @@ describe('Transform property', () => {
             @api foo = 1;
 
             _internal = 1;
-            @api get foo() { return 'foo' };
-            @api set foo(val) { this._internal = val };
+
+            @api
+            get foo() { return 'foo' };
+            set foo(val) { this._internal = val };
         }
     `, {
         error: {
@@ -519,8 +457,9 @@ Test.publicMethods = ["foo"];`
     pluginTest('Does not allow computed api getters and setters', `
         import { LightningElement, api } from 'lwc';
         export default class ComputedAPIProp extends LightningElement {
-            @api set [x](value) {}
-            @api get [x]() {}
+            @api
+            set [x](value) {}
+            get [x]() {}
         }
     `, {
         error: {
@@ -540,10 +479,12 @@ describe('Metadata', () => {
         import { LightningElement, api } from 'lwc';
         export default class Foo extends LightningElement {
             _privateTodo;
-            @api get todo () {
+
+            get todo () {
                 return this._privateTodo;
             }
-            @api set todo (val) {
+            @api
+            set todo (val) {
                 return this._privateTodo = val;
             }
 
@@ -571,8 +512,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "todo",
                             loc: {
-                                start: { line: 4, column: 0 },
-                                end: { line: 6, column: 1 }
+                                start: { line: 7, column: 0 },
+                                end: { line: 10, column: 1 }
                             },
                             decorator: "api"
                         },
@@ -580,8 +521,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "index",
                             loc: {
-                                start: { line: 10, column: 0 },
-                                end: { line: 11, column: 6 }
+                                start: { line: 11, column: 0 },
+                                end: { line: 12, column: 6 }
                             },
                             decorator: "api"
                         },
@@ -589,85 +530,15 @@ describe('Metadata', () => {
                             type: "method",
                             name: "publicMethod",
                             loc: {
-                                start: { line: 12, column: 0 },
-                                end: { line: 12, column: 22 }
+                                start: { line: 13, column: 0 },
+                                end: { line: 13, column: 22 }
                             },
                             decorator: "api"
                         }
                     ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 13 }
-                    }
-                }
-            }
-        }
-    );
-
-    pluginTest(
-        'gather metadata deprecated',
-        `
-        import { LightningElement, api } from 'lwc';
-        export default class Foo extends LightningElement {
-            _privateTodo;
-            @api get todo () {
-                return this._privateTodo;
-            }
-            @api set todo (val) {
-                return this._privateTodo = val;
-            }
-
-            @api
-            index;
-
-            @api publicMethod() {}
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [
-                        {
-                            type: "api",
-                            targets: [
-                                { name: "todo", type: "property" },
-                                { name: "index", type: "property" },
-                                { name: "publicMethod", type: "method" }
-                            ]
-                        }
-                    ],
-                    classMembers: [
-                        {
-                            type: "property",
-                            name: "todo",
-                            loc: {
-                                start: { line: 4, column: 0 },
-                                end: { line: 6, column: 1 }
-                            },
-                            decorator: "api"
-                        },
-                        {
-                            type: "property",
-                            name: "index",
-                            loc: {
-                                start: { line: 10, column: 0 },
-                                end: { line: 11, column: 6 }
-                            },
-                            decorator: "api"
-                        },
-                        {
-                            type: "method",
-                            name: "publicMethod",
-                            loc: {
-                                start: { line: 12, column: 0 },
-                                end: { line: 12, column: 22 }
-                            },
-                            decorator: "api"
-                        }
-                    ],
-                    declarationLoc: {
-                        start: { column: 0, line: 2 },
-                        end: { column: 1, line: 13 }
+                        end: { column: 1, line: 14 }
                     }
                 }
             }

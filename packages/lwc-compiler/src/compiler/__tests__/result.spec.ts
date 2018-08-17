@@ -345,6 +345,7 @@ describe("compiler metadata", () => {
                     type: "api",
                     targets: [
                         { type: "property", name: "prop1" },
+                        { type: "property", name: "prop2" },
                         { type: "method", name: "method1" }
                     ]
                 }

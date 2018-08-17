@@ -21,7 +21,7 @@ export default class SimpleList extends LightningElement {
         return this.normalizedMin;
     }
 
-    @api set min(value) {
+    set min(value) {
         this.normalizedMin = Math.max(parseInt(value, 10), 0);
         this.data = produceNewData(this.normalizedMin, this.normalizedMax);
     }
@@ -30,7 +30,7 @@ export default class SimpleList extends LightningElement {
         return this.normalizedMax;
     }
 
-    @api set max(value) {
+    set max(value) {
         this.normalizedMax = Math.min(parseInt(value, 10), 100);
         this.data = produceNewData(this.normalizedMin, this.normalizedMax);
     }
