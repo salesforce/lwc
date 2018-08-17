@@ -20,7 +20,8 @@ const VALID_CONFIG = {
     },
 };
 
-describe('shape of compiled bundle in production', () => {
+describe('test shape of the bundle in different modes and environments', () => {
+
     test('test bundle with NODE_ENV set to dev', async () => {
         const customConfig = {
             outputConfig: {
@@ -61,7 +62,7 @@ describe('shape of compiled bundle in production', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-prod_compat-mode.js')));
     });
 
-    test('bundle in dev mode', async () => {
+    test('test bundle in dev mode', async () => {
         const customConfig = {
             name: "class_and_template",
             files: {
@@ -78,7 +79,7 @@ describe('shape of compiled bundle in production', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-dev-mode.js')));
     });
 
-    test('bundle in prod mode', async () => {
+    test('test bundle in prod mode', async () => {
         const customConfig = {
             name: "class_and_template",
             files: {
@@ -98,7 +99,7 @@ describe('shape of compiled bundle in production', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-prod-mode.js')));
     });
 
-    test('minified bundles do not contain comments', async () => {
+    test('test minified bundles to remove comments', async () => {
         const minifiedConfig = {
             name: "comments",
             files: {
