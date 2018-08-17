@@ -81,13 +81,14 @@ describe('Transform property', () => {
         }
     });
 
-    pluginTest('transforms public getter/setter', `
+    pluginTest('detecting @api on both getter and a setter should produce an error', `
         import { api } from 'lwc';
         export default class Test {
             @api
             get something() {
                 return this.s;
             }
+            @api
             set something (value) {
                 this.s = value;
             }
