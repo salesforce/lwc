@@ -395,7 +395,7 @@ function destroyChildren(children: VNodes) {
 }
 
 // This is a super optimized mechanism to remove the content of the shadowRoot
-// without having to go into snabbdom. Specially useful when the reset is a consequence
+// without having to go into snabbdom. Especially useful when the reset is a consequence
 // of an error, in which case the children VNodes might not be representing the current
 // state of the DOM
 export function resetShadowRoot(vm: VM) {
@@ -406,7 +406,7 @@ export function resetShadowRoot(vm: VM) {
     vm.children = EmptyArray;
     destroyChildren(oldCh);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(hasChildNodes.call(elm), `Internal Error: shadowRoot could not be clean up for ${vm}.`);
+        assert.isFalse(hasChildNodes.call(elm), `Internal Error: shadowRoot could not be cleaned up for ${vm}.`);
     }
 }
 
