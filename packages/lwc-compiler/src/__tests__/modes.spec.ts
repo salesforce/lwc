@@ -1,7 +1,7 @@
 import { compile } from "../index";
 import { pretify, readFixture } from "./utils";
 
-const VALID_CONFIG = {
+const BASE_CONFIG = {
     outputConfig: {
         env: {},
         minify: false,
@@ -31,7 +31,7 @@ describe('test shape of the bundle in different modes and environments', () => {
                 },
             },
         };
-        const config = Object.assign({}, VALID_CONFIG, customConfig);
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
         const { result: { code }} = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-node-env-dev.js')));
     });
@@ -45,7 +45,7 @@ describe('test shape of the bundle in different modes and environments', () => {
                 },
             },
         };
-        const config = Object.assign({}, VALID_CONFIG, customConfig);
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
         const { result: { code }} = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-node-env-prod.js')));
     });
@@ -57,26 +57,9 @@ describe('test shape of the bundle in different modes and environments', () => {
                 minify: true,
             }
         };
-        const config = Object.assign({}, VALID_CONFIG, customConfig);
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
         const { result: { code }} = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-prod_compat-mode.js')));
-    });
-
-    test('test bundle in dev mode', async () => {
-        const customConfig = {
-            name: "class_and_template",
-            files: {
-                "class_and_template.js": readFixture(
-                    "./class_and_template/class_and_template.js"
-                ),
-                "class_and_template.html": readFixture(
-                    "./class_and_template/class_and_template.html"
-                ),
-            },
-        };
-        const config = Object.assign({}, VALID_CONFIG, customConfig);
-        const { result: {code} } = await compile(config);
-        expect(pretify(code)).toBe(pretify(readFixture('expected-dev-mode.js')));
     });
 
     test('test bundle in prod mode', async () => {
@@ -94,7 +77,7 @@ describe('test shape of the bundle in different modes and environments', () => {
                 minify: true,
             }
         };
-        const config = Object.assign({}, VALID_CONFIG, customConfig);
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
         const { result: {code} } = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-prod-mode.js')));
     });
@@ -117,7 +100,7 @@ describe('test shape of the bundle in different modes and environments', () => {
                 minify: true
             },
         };
-        const config = Object.assign({}, VALID_CONFIG, minifiedConfig);
+        const config = Object.assign({}, BASE_CONFIG, minifiedConfig);
         const { result: {code} } = await compile(config);
         expect(pretify(code)).toBe(pretify(readFixture('expected-minify-no-comments.js')));
     });
