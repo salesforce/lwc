@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.22...v) (2018-08-15)
+# [](https://github.com/salesforce/lwc/compare/v0.24.23...v) (2018-08-18)
+
+
+### Bug Fixes
+
+* update package version when releasing ([#595](https://github.com/salesforce/lwc/issues/595)) ([7ec0a37](https://github.com/salesforce/lwc/commit/7ec0a37))
+* **compiler:** 216/patch cherrypick @W-5320429 ([#600](https://github.com/salesforce/lwc/issues/600)) ([c66961d](https://github.com/salesforce/lwc/commit/c66961d))
+
+
+
+<a name="0.24.23"></a>
+## [0.24.23](https://github.com/salesforce/lwc/compare/v0.24.22...v0.24.23) (2018-08-15)
 
 
 ### Bug Fixes
