@@ -5,7 +5,7 @@ import {
 } from "./context";
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "../shared/language";
-import { getComponentStack, VM } from "./vm";
+import { getErrorComponentStack, VM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
@@ -34,7 +34,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     } finally {
         establishContext(ctx);
         if (error) {
-            error.wcStack = getComponentStack(vm);
+            error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
             throw error; // tslint:disable-line
         }
@@ -66,7 +66,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
         establishContext(ctx);
         vmBeingConstructed = vmBeingConstructedInception;
         if (error) {
-            error.wcStack = getComponentStack(vm);
+            error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
             throw error; // tslint:disable-line
         }
@@ -111,7 +111,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         isRendering = isRenderingInception;
         vmBeingRendered = vmBeingRenderedInception;
         if (error) {
-            error.wcStack = getComponentStack(vm);
+            error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
             throw error; // tslint:disable-line
         }
@@ -131,7 +131,7 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
     } finally {
         establishContext(ctx);
         if (error) {
-            error.wcStack = getComponentStack(vm);
+            error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
             throw error; // tslint:disable-line
         }

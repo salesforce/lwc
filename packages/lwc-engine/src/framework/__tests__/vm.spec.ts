@@ -1,5 +1,7 @@
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
+import { getErrorComponentStack } from "../vm";
+import { compileTemplate } from 'test-utils';
 
 describe('vm', () => {
     describe('insertion index', () => {
@@ -90,6 +92,35 @@ describe('vm', () => {
             expect(counter).toBe(2);
         });
 
+    });
+
+    describe('getComponentStack', () => {
+        it('should return stack with hierarchy bottom up.', () => {
+            let vm: VM;
+            class ChildComponentCs extends LightningElement {
+                constructor() {
+                    super();
+                    vm = this[ViewModelReflection];
+                }
+            }
+            const html  = compileTemplate(
+                `<template><x-child></x-child></template>`,
+                { modules: { 'x-child': ChildComponentCs }
+            });
+            class ParentComponentCs extends LightningElement {
+                constructor() {
+                    super();
+                }
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-parent', { is: ParentComponentCs });
+            document.body.appendChild(elm);
+
+            expect(getErrorComponentStack(vm.elm)).toBe('<x-parent>\n\t<x-child>');
+        });
     });
 
 });

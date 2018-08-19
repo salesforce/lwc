@@ -220,7 +220,10 @@ export function getFilteredChildNodes(node: Node): Element[] {
 
 function lightDomChildNodesGetter(this: HTMLElement): Node[] {
     if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`childNodes on ${toString(this)} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+        assert.logWarning(
+            `childNodes on ${toString(this)} returns a live NodeList which is not stable. Use querySelectorAll instead.`,
+            this
+        );
     }
     const owner = getNodeOwner(this);
     if (isNull(owner)) {

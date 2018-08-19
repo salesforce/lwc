@@ -192,6 +192,24 @@ describe('track.ts', () => {
                 document.body.appendChild(elm);
             }).toThrow();
         });
+
+        it('should log warning when assigning non-observable object to track prop', function() {
+            const o = Object.create({});
+            class MyComponent extends LightningElement {
+                injectFoo(v) {
+                    this.foo = v;
+                }
+            }
+            MyComponent.track = { foo: {  } };
+            MyComponent.publicMethods = ['injectFoo'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+
+            expect(() => {
+                elm.injectFoo(o);
+            }).toLogWarning(`is set to a non-trackable object, which means changes into that object cannot be observed.`);
+        });
     });
 
     describe('@track regression', () => {

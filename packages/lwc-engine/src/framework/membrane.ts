@@ -24,7 +24,7 @@ export const reactiveMembrane = new ObservableMembrane({
 // TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/129
 export function dangerousObjectMutation(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`Dangerously Mutating Object ${toString(obj)}. This object was passed to you from a parent component, and should not be mutated here. This will be removed in the near future.`);
+        assert.logWarning(`Dangerously Mutating Object ${toString(obj)}. This object was passed to you from a parent component, and should not be mutated here. This will be removed in the near future.`, null);
     }
     return reactiveMembrane.getProxy(unwrap(obj));
 }

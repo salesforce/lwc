@@ -48,7 +48,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
                     // Then newValue if newValue is observable (plain object or array)
                     const isObservable = reactiveOrAnyValue !== newValue;
                     if (!isObservable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
-                        assert.logWarning(`Property "${toString(key)}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                        assert.logWarning(`Property "${toString(key)}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`, vm.elm);
                     }
                 }
                 vm.cmpTrack[key] = reactiveOrAnyValue;

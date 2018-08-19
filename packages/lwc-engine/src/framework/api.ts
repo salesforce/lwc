@@ -179,7 +179,10 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
         assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
         assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
         if (data.style && !isString(data.style)) {
-            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
+            assert.logWarning(
+                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+                vmBeingRendered!.elm
+            );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
@@ -235,7 +238,10 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
         assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
         if (data.style && !isString(data.style)) {
-            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
+            assert.logWarning(
+                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+                vmBeingRendered!.elm
+            );
         }
         if (arguments.length === 4) {
             forEach.call(children, (childVnode: VNode | null | undefined) => {
@@ -286,7 +292,10 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     const list: VNodes = [];
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logWarning(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
+            assert.logWarning(
+                `Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
+                vmBeingRendered!.elm
+            );
         }
         return list;
     }
@@ -345,7 +354,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     }
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(iterationError)) {
-            assert.logError(iterationError);
+            assert.logError(iterationError, vmBeingRendered!.elm);
         }
     }
     return list;
