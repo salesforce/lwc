@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter } from "./dom-api";
+import { parentElementGetter, innerHTMLSetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -16,7 +16,6 @@ import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "../faux-shadow/faux";
-import { parentNodeGetter, removeChild, hasChildNodes } from "./dom-api";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -373,10 +372,6 @@ function destroyChildren(children: VNodes) {
         if (isUndefined(elm)) {
             continue;
         }
-        const parentNode = parentNodeGetter.call(elm);
-        if (!isNull(parentNode)) {
-            removeChild.call(parentNode, elm);
-        }
         const { data: { hook }, children: grandChildren } = vnode;
         if (isObject(hook) && isFunction(hook.destroy)) {
             try {
@@ -404,10 +399,10 @@ export function resetShadowRoot(vm: VM) {
     }
     const { children: oldCh, elm } = vm;
     vm.children = EmptyArray;
+    // automatically removing all children in one go
+    innerHTMLSetter.call(elm, '');
+    // proper destroying mechanism for those vnodes that requires it
     destroyChildren(oldCh);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(hasChildNodes.call(elm), `Internal Error: shadowRoot could not be cleaned up for ${vm}.`);
-    }
 }
 
 export function scheduleRehydration(vm: VM) {
