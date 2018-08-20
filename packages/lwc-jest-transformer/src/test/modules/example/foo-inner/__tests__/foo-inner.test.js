@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import FooInner from 'example-foo-inner';
 
 jest.mock('globalLib', () => {

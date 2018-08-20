@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import Labels from 'example-labels';
 
 jest.mock('@salesforce/label/c.mocked', () => {
