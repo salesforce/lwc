@@ -18,7 +18,7 @@ const {
     hasChildNodes,
 } = Node.prototype;
 
-const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const nodeValueSetter: (this: Node, value: string) => void = getOwnPropertyDescriptor(Node.prototype, 'nodeValue')!.set!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
@@ -48,7 +48,7 @@ export {
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
-    parentNodeGetter,
+    nodeValueSetter,
     parentElementGetter,
     elementTagNameGetter,
     addEventListener,

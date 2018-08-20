@@ -25,11 +25,13 @@ describe('module/events', () => {
         expect(result).toHaveLength(1);
     });
 
-    it('does not attach new listener', function() {
+    it.skip('does not attach new listener', function() {
         let result: Number[] = [], component, second = false;
         function html($api, $cmp) {
             const c = $cmp.counter;
             // using the same key
+
+            // TODO: this is impossible to represent in a template tag
             if (c === 0) {
                 return [
                     $api.h('div', {key: 1, on: {click: $api.b($cmp.clickOne)}}, [
@@ -76,16 +78,18 @@ describe('module/events', () => {
             // using different keys
             if (c === 0) {
                 return [
+                    null,
                     $api.h('p', { key: 1, on: {click: $api.b($cmp.clicked)}}, [
                         $api.h('a', { key: 0 }, [$api.t('Click my parent')]),
-                    ])
+                    ]),
                 ];
             } else if (c === 1) {
                 second = true;
                 return [
                     $api.h('div', { key: 2, on:  {click: $api.b($cmp.clicked)}}, [
                         $api.h('a', { key: 3 }, [$api.t('Click my parent')]),
-                    ])
+                    ]),
+                    null,
                 ];
             }
         }

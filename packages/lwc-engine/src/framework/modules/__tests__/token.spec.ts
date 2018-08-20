@@ -1,7 +1,7 @@
 import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
-describe('modules/token', () => {
+describe('vnode token', () => {
     it('adds token to all the children elements', () => {
         const tmpl = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),

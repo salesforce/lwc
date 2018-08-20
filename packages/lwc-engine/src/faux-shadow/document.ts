@@ -7,7 +7,6 @@ const {
     createElementNS,
     createTextNode,
     createComment,
-    createDocumentFragment,
 } = document;
 
 export {
@@ -15,6 +14,5 @@ export {
     createElementNS,
     createTextNode,
     createComment,
-    createDocumentFragment,
     DocumentPrototypeActiveElement,
 };

@@ -2,14 +2,13 @@ import { createElement, LightningElement } from '../main';
 import { querySelector, querySelectorAll } from "../../faux-shadow/element";
 
 function createBoundaryComponent(elementsToRender) {
-    function html($api, $cmp) {
-        if ($cmp.getError()) {
-            return [];
-        } else {
-            return elementsToRender.map((config) => {
-                return $api.c(config.name, config.ctor, config.props || {});
-            });
-        }
+    function htmlError($api, $cmp) {
+        return [];
+    }
+    function htmlElements($api, $cmp) {
+        return elementsToRender.map((config) => {
+            return $api.c(config.name, config.ctor, config.props || {});
+        });
     }
     class Boundary extends LightningElement {
         getError() {
@@ -21,7 +20,11 @@ function createBoundaryComponent(elementsToRender) {
         }
 
         render() {
-            return html;
+            if (this.getError()) {
+                return htmlError;
+            } else {
+                return htmlElements;
+            }
         }
     }
     Boundary.publicMethods = ['getError'];
@@ -579,9 +582,9 @@ describe('error boundary component', () => {
                 }
                 function html($api, $cmp) {
                     if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
+                        return [ null, $api.c('post-error-child-content', PostErrorChildOffender, {})];
                     } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {}), null ];
                     }
                 }
                 class AltViewErrorBoundary extends LightningElement {
@@ -618,9 +621,9 @@ describe('error boundary component', () => {
                 }
                 function html($api, $cmp) {
                     if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
+                        return [ null, $api.c('post-error-child-content', PostErrorChildOffender, {})];
                     } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {}), null ];
                     }
                 }
                 class AltViewErrorBoundary extends LightningElement {
