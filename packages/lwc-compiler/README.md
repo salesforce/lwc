@@ -1,22 +1,112 @@
 # LWC Compiler
 
-LWC Compiler is an open source project that can be used to compile a single Lightning Web Component bundle. There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
+# lwc-compiler 
 
-*Replace* - replace code (ex: process.env.NODE === ‘production’ will be replaced with true or false depending on the mode).
+lwc-compiler is an open source project that enables developers to take full control of processing a single Lightning Web Component either by indidivually transforming files or compiling an entire bundle.
 
-*Module Resolution* - ensure that each local import in the component can be resolved. 
+## Installation 
 
-*Transformation* - apply LWC specific transformation to js, html, and css files.
+```sh
+yarn install
+```
 
-*Compat* - apply the compatibility transformation (ex: polyfills for older browsers).
+## APIs
 
-*Minify* - apply minification for ‘production’ mode  code.
+### `compile`
 
-These transformation may or may not be applied depending on the mode values specified in the compiler configuration object.
-The compiler supports 4 modes of invocation: 'dev', 'prod', 'compat', 'prod_compat'.
+```js
+import { compile } from 'lwc-compiler';
 
-The final phase of the compilation pipeline is bundling. During bundling, Rollup will ‘statically analyze and optimize the code you are importing, and will exclude anything that isn't actually used. This allows you to build on top of existing tools and modules without adding extra dependencies or bloating the size of your project’. 
-The end result of the bundler is a single javascript file in a specified format - ‘amd’ by default.
+const options = {
+    name: "foo",
+    namespace: "x",
+    files: {
+        "foo": `
+          import { LightningElement } from 'lwc';
+          export default class Foo extends from LightningElement {}
+        `,
+        "foo.html": `<template><h1>Foo</h1></template>`
+    }
+}
+
+const { success, diagnostics, result: { code } } = await compile(options);
+
+if (success) {
+    for ( diagnostic : diagnostics ) {
+        console.log(diagnostic.level + ':' + diagnostic.message);
+    }
+    return code;
+} else {
+    const errors = diagnostics.map((diagnostic) => {
+        return diagnostic.level + ': ' + diagnostic.message;
+    });
+    throw new Error(errors.join('\n'));
+}
+
+```
+
+**Parameters:**
+
+* options (object) - the object which specifies compilation source and output shape
+    * `name` (string, required) - component name.
+    * `namespace` (string, required) - component namespace.
+    * `files` (BundleFiles, required) - key value pairs where each key is one of the bundle files and its value is a string value of the file content.
+    * `baseDir` (string, optional) - An optional directory prefix that contains the specified components. Only used when the component that is the compiler's entry point.
+    * `stylesheetConfig` (StylesheetConfig, optional) - css configuration.
+    * `outputConfig` (OutputConfig, optional) - compiler output configuratoin. Dictates the shape of the bunlde output (ex: bundle compiled for production mode, minified).
+
+**Return**
+
+* ouptput (object) - the object with the following fields:
+    * `success` (boolean) - compilation results (true only if all compilation steps were successful).
+    * `diagnostics` (Diagnostic[]) - an array of compilation `Diagnostic` objects (ex: warnings, errors)
+    * `result` (BundleResult) - an object containing compiled code, metadata, and configuration used during compilation;
+    * `version` (string) - the version of compiler used for current compilation.
+
+### `transform`
+
+Transform the content of individual file for manual bundling. 
+
+```js
+import { transform } from 'lwc-compiler';
+
+const source = `
+    import { LightningElement } from 'lwc';
+    export default class App extends LightningElement {}
+`
+
+const filename = 'app.js';
+
+const options =  {
+    namespace: 'c',
+    name: 'app',
+}
+
+const { code } = await transform(source, filename, options);
+```
+
+**Parameters:**
+
+* `source` (string, required) - the source to be transformed can be the content of javascript, HTML, CSS.
+* `filename` (string, required) - the source filename with extension.
+* `options` (object, required) - the transformation options. The `name` and the `namespace` of the component is a minimum required for transformation.
+
+**Return**
+
+* `code` (string)- the compiled source code.
+* `metadata` (object) - the metadata collected during transformation. Includes: `decorators`, `doc`, `declarationLoc`.
+* `map` (null) - not currenlty supported. 
+
+### `version`
+
+```js
+import { version } from 'lwc-compiler';
+
+console.log('version');
+```
+
+**Return**
+* `version` (string) - the current version of the compiler ex: `0.25.1`.
 
 
 ## Compiler Interface
@@ -85,7 +175,7 @@ const config = {
 }
 ```
 
-The compiler configuration object is always normalized to apply necessary defaults. However, the bundle configuration is a required input, which specifies a module name, namespace, type of the platform (used to determine linting rules), and a map of files to be compiled. Please note that the file value should be a string. If no outputConfig specified, compiler will produce a single result item with the following default output configuration:
+The compiler configuration object is always normalized to apply necessary defaults. However, the bundle configuration is always a required parameter, which specifies a module name, namespace, type of the platform (used to determine linting rules), and a map of files to be compiled. Please note that the file value should be a string. If no outputConfig specified, compiler will produce a single result item with the following default output configuration:
 
 ```ts
 {
@@ -103,12 +193,6 @@ The compiler configuration object is always normalized to apply necessary defaul
         }
     }
 }
-```
-
-### Compiler Invocation
-
-```js
-const { success, diagnostics, result: { code, metadata }, version } = await compile(config);
 ```
 
 ### Compiler Output Interface
@@ -166,3 +250,26 @@ export interface NormalizedOutputConfig extends OutputConfig {
 }
 ```
 
+## Comipler Transformation and Bundling:
+
+### Transformations
+
+There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
+
+*Replace* - replace code (ex: process.env.NODE === ‘production’ will be replaced with true or false depending on the mode).
+
+*Module Resolution* - ensure that each local import in the component can be resolved. 
+
+*Transformation* - apply LWC specific transformation to js, html, and css files.
+
+*Compat* - apply the compatibility transformation (ex: polyfills for older browsers).
+
+*Minify* - apply minification for ‘production’ mode  code.
+
+These transformation may or may not be applied depending on the mode values specified in the compiler configuration object.
+
+
+### Bundling
+
+The final phase of the compilation pipeline is bundling. During bundling, Rollup will ‘statically analyze and optimize the code you are importing, and will exclude anything that isn't actually used. This allows you to build on top of existing tools and modules without adding extra dependencies or bloating the size of your project’. 
+The end result of the bundler is a single javascript file in a specified format - ‘amd’ by default.
