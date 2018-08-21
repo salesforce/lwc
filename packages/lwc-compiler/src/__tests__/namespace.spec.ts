@@ -1,0 +1,83 @@
+import { compile } from "../index";
+import { pretify, readFixture } from "./utils";
+
+const BASE_CONFIG = {
+    outputConfig: {
+        env: {},
+        minify: false,
+        compat: false,
+        format: "amd"
+    },
+    name: "js-local-import",
+    namespace: "namespace",
+    files: {
+        "js-local-import.js": readFixture(
+            "./namespaced-compilation/js-local-import.js"
+        ),
+        "js-local-import.html": readFixture(
+            "./namespaced-compilation/js-local-import.html"
+        ),
+        "utils.js": readFixture(
+            "./namespaced-compilation/utils.js"
+        ),
+
+    },
+};
+
+describe('test namespaced component compilation', () => {
+    test('javascript with local import does not have c- prefixes in the compiled class', async () => {
+        const { result: { code }} = await compile(BASE_CONFIG);
+        expect(pretify(code)).toBe(pretify(readFixture('expected-ns-js-local-import.js')));
+    });
+
+    test('local html import', async () => {
+        const customConfig = {
+            name: "html-local-import",
+            files: {
+                "html-local-import.js": readFixture(
+                    "./namespaced-compilation/html-local-import.js"
+                ),
+                "html-local-import.html": readFixture(
+                    "./namespaced-compilation/html-local-import.html"
+                ),
+            }
+        };
+        const config = {...BASE_CONFIG, ...customConfig};
+        const { result: { code }} = await compile(config);
+        expect(pretify(code)).toBe(pretify(readFixture('expected-ns-html-local-import.js')));
+    });
+
+    test('query selector reference to local template contains namespace value', async () => {
+        const customConfig = {
+            name: "query-selector",
+            files: {
+                "query-selector.js": readFixture(
+                    "./namespaced-compilation/query-selector.js"
+                ),
+                "query-selector.html": readFixture(
+                    "./namespaced-compilation/query-selector.html"
+                ),
+            }
+        };
+        const config = {...BASE_CONFIG, ...customConfig};
+        const { result: { code }} = await compile(config);
+        expect(pretify(code)).toBe(pretify(readFixture('expected-ns-query-selector.js')));
+    });
+
+    test('css class reference is replaced with namespace value', async () => {
+        const customConfig = {
+            name: "css-local",
+            files: {
+                "css-local.js": readFixture(
+                    "./namespaced-compilation/css-local.js"
+                ),
+                "css-local.html": readFixture(
+                    "./namespaced-compilation/css-local.html"
+                ),
+            }
+        };
+        const config = {...BASE_CONFIG, ...customConfig};
+        const { result: { code }} = await compile(config);
+        expect(pretify(code)).toBe(pretify(readFixture('expected-ns-css.js')));
+    });
+});
