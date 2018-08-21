@@ -1,4 +1,5 @@
-define('namespace-query-selector', ['namespace-local-template', 'lwc'], function (_cLocalTemplate, lwc) {
+import _cLocalTemplate from 'namespace-local-template';
+import { LightningElement } from 'lwc';
 
     const style = undefined;
 
@@ -27,7 +28,7 @@ define('namespace-query-selector', ['namespace-local-template', 'lwc'], function
         document.head.appendChild(style$$1);
     }
 
-    class App extends lwc.LightningElement {
+    class App extends LightningElement {
       renderedCallback() {
         const bar = this.root.querySelector('namespace-local-template');
       }
@@ -38,6 +39,4 @@ define('namespace-query-selector', ['namespace-local-template', 'lwc'], function
 
     }
 
-    return App;
-
-});
+    export default App;

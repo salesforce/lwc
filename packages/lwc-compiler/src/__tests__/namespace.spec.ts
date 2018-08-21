@@ -64,6 +64,27 @@ describe('test namespaced component compilation', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-ns-query-selector.js')));
     });
 
+    test('query selector reference to local template in "es" compilation format', async () => {
+        const customConfig = {
+            outputConfig: {
+                format: 'es'
+            },
+            name: "query-selector",
+            namespace: "namespace",
+            files: {
+                "query-selector.js": readFixture(
+                    "./namespaced-compilation/query-selector.js"
+                ),
+                "query-selector.html": readFixture(
+                    "./namespaced-compilation/query-selector.html"
+                ),
+            }
+        };
+        const config = {...BASE_CONFIG, ...customConfig};
+        const { result: { code }} = await compile(config);
+        expect(pretify(code)).toBe(pretify(readFixture('expected-ns-query-selector-es.js')));
+    });
+
     test('css class reference is replaced with namespace value', async () => {
         const customConfig = {
             name: "css-local",

@@ -1,4 +1,4 @@
-define('namespace-html-local-import', ['lwc', 'c/html-local-import.html'], function (lwc, html) {
+define('namespace-html-local-import', ['lwc', 'namespace/html-local-import.html'], function (lwc, html) {
 
     class App extends lwc.LightningElement {
       get myname() {
