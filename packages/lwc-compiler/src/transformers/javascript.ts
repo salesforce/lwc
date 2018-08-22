@@ -14,7 +14,7 @@ export default function(
     metadataCollector?: MetadataCollector
 ): FileTransformerResult {
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
-        plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
+        plugins: [[lwcClassTransformPlugin, { namespace: options.namespace }], ...BABEL_PLUGINS_BASE],
         filename,
     });
 
