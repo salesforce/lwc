@@ -9,3 +9,4 @@ rollup.config.es-and-cjs.js
 rollup.config.umd.dev.js
 rollup.config.umd.prod.js
 rollup.config.util.js
+tsconfig.json
