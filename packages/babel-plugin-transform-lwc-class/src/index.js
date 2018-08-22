@@ -70,7 +70,7 @@ module.exports = function LwcClassTransform(api, config) {
     ];
 
     // perform import namespace replacement
-    const { namespace } = config;
+    const namespace = config && config.namespace;
     if (namespace && namespace.length > 0 && namespace !== GENERIC_NAMESPACE_MODULE_PREFIX) {
         visitors.unshift(namespaceReplaceVisitor(namespace));
     }
