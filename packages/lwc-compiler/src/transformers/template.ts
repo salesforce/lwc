@@ -5,6 +5,8 @@ import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
 
+const DEFAULT_NAMESPACE = "c";
+
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
 export interface TemplateMetadata {
@@ -18,7 +20,10 @@ function attachStyleToTemplate(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-    const { name, namespace } = options;
+    const { name } = options;
+
+    // if namespace is not specified normalize to 'c'
+    const namespace = normalizedNamespace(options.namespace);
 
     const templateFilename = path.basename(filename, path.extname(filename));
 
@@ -55,6 +60,10 @@ function attachStyleToTemplate(
     ].join("\n");
 }
 
+function normalizedNamespace(namespace: string | undefined) {
+    return namespace && namespace.length ? namespace : DEFAULT_NAMESPACE;
+}
+
 /**
  * Transforms a HTML template into module exporting a template function.
  * The transform also add a style import for the default stylesheet associated with
@@ -65,12 +74,12 @@ const transform: FileTransformer = function(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-
     let code;
     let metadata;
 
     try {
-        const { namespace } = options;
+        // if namespace is not specified normalize to 'c'
+        const namespace = normalizedNamespace(options.namespace);
         const result = compile(src, { namespace });
         const warnings = result.warnings;
 
@@ -79,7 +88,10 @@ const transform: FileTransformer = function(
 
         const fatalError = warnings.find(warning => warning.level === "error");
         if (fatalError) {
-            throw new CompilerError(`${filename}: ${fatalError.message}`, filename);
+            throw new CompilerError(
+                `${filename}: ${fatalError.message}`,
+                filename
+            );
         }
     } catch (e) {
         throw new CompilerError(e.message, filename, e.loc);
