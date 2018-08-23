@@ -70,7 +70,8 @@ const transform: FileTransformer = function(
     let metadata;
 
     try {
-        const result = compile(src, {});
+        const { namespace } = options;
+        const result = compile(src, { namespace });
         const warnings = result.warnings;
 
         code = result.code;

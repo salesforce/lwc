@@ -8,6 +8,8 @@ import {
     HTMLText,
 } from './types';
 
+import { DASHED_TAGNAME_ELEMENT_SET } from '../parser/constants';
+
 export type VisitorFn = (element: IRNode) => void;
 
 export interface NodeVisitor {
@@ -44,6 +46,10 @@ export function isElement(node: IRNode): node is IRElement {
 
 export function isCustomElement(node: IRNode): boolean {
     return !!(node as IRElement).component;
+}
+
+export function isCustomElementTag(tag: string) {
+    return tag && tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag);
 }
 
 export function isText(node: IRNode): node is IRText {

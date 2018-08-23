@@ -53,8 +53,8 @@ export default function compiler(
     };
 }
 
-export function compileToFunction(source: string): Function {
-    const options = mergeConfig({});
+export function compileToFunction(source: string, config = {}): Function {
+    const options = mergeConfig(config);
     options.format = 'function';
 
     const state = new State(source, options);
