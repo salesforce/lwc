@@ -42,8 +42,8 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`)
 
 **Return:**
 The method returns an object with the following fields:
-* `code` (string) - the compiled template javascript source code.
-* `warnings` (array) - the list of warnings produced when compiling the template. Each warning have the following field:
+* `code` (string) - the compiled template.
+* `warnings` (array) - the list of warnings produced when compiling the template. Each warning has the following fields:
     * message (string) - the warning message.
     * level (string) - the severity of the warning: `info`, `warning`, `error`.
     * start (number) - the start index in the source code producing the warning.
