@@ -1,12 +1,12 @@
-const classProperty = require("@babel/plugin-proposal-class-properties")[
-    "default"
+const classProperty = require('@babel/plugin-proposal-class-properties')[
+    'default'
 ];
-const metadata = require("./metadata");
-const component = require("./component");
-const decorators = require("./decorators");
+const metadata = require('./metadata');
+const component = require('./component');
+const decorators = require('./decorators');
 
-const GENERIC_NAMESPACE_MODULE_PREFIX = "c/";
-const SAME_NAMESPACE_MODULE_IMPORT_DELIMITER = "/";
+const GENERIC_NAMESPACE_MODULE_PREFIX = 'c/';
+const SAME_NAMESPACE_MODULE_IMPORT_DELIMITER = '/';
 const SAME_NAMESPACE_MODULE_IMPORT_REGEX = /(c\/)?/;
 
 
@@ -77,8 +77,8 @@ module.exports = function LwcClassTransform(api, config) {
 
     return {
         manipulateOptions(opts, parserOpts) {
-            parserOpts.plugins.push("decorators");
-            parserOpts.plugins.push("classProperties");
+            parserOpts.plugins.push('decorators');
+            parserOpts.plugins.push('classProperties');
         },
         visitor: mergeVisitors(visitors)
     };
