@@ -8,6 +8,7 @@ export interface Config {
      *    </template>
      */
     computedMemberExpression?: boolean;
+    namespace?: string;
 }
 
 export interface ResolvedConfig {
@@ -21,6 +22,17 @@ export interface ResolvedConfig {
      *    as parameter.
      */
     format: Format;
+
+    /**
+     * Internal configuration for namespaced custom component. Accepts:
+     *  * string
+     *
+     * When specified, all custom components in the template with prefixes 'c-'
+     *  will be replaced by the namespace value
+     *
+     * ex: c-button -> namespacevalue-button
+     */
+    namespace?: string;
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
@@ -31,6 +43,7 @@ const DEFAULT_CONFIG: ResolvedConfig = {
 const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
     'computedMemberExpression',
+    'namespace',
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {

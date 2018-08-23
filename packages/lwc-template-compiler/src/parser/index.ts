@@ -36,6 +36,7 @@ import {
 import {
     createElement,
     isCustomElement,
+    isCustomElementTag,
     createText,
 } from '../shared/ir';
 
@@ -59,6 +60,8 @@ import {
 import State from '../state';
 
 import {
+    COMPONENT_DEFAULT_NAMESPACE,
+    COMPONENT_DEFAULT_NAMESPACE_PREFIX,
     EXPRESSION_RE,
     IF_RE,
     VALID_IF_MODIFIER,
@@ -66,9 +69,10 @@ import {
     EVENT_HANDLER_NAME_RE,
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
-    DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
+
 import { isMemberExpression, isIdentifier } from 'babel-types';
+import { ResolvedConfig } from '../config';
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
     const { value } = attribute;
@@ -119,6 +123,7 @@ export default function parse(source: string, state: State): {
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
+    const config: ResolvedConfig = state.config;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -126,6 +131,7 @@ export default function parse(source: string, state: State): {
                 const elementNode = node as parse5.AST.Default.Element;
 
                 const element = createElement(elementNode.tagName, node);
+
                 element.attrsList = elementNode.attrs;
 
                 if (!root) {
@@ -135,6 +141,7 @@ export default function parse(source: string, state: State): {
                     parent.children.push(element);
                 }
 
+                applyNamespace(element, config.namespace);
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -219,6 +226,20 @@ export default function parse(source: string, state: State): {
             warnAt(`Missing root template tag`);
         } else {
             return templateTag as parse5.AST.Default.Element;
+        }
+    }
+
+    function applyNamespace(element: IRElement, namespace: string | undefined) {
+        // do not proceed if specified namespace is 'c-'
+        if (!namespace || !namespace.length || namespace === COMPONENT_DEFAULT_NAMESPACE) {
+            return;
+        }
+
+        const { tag } = element;
+
+        if (isCustomElementTag(tag) && tag.startsWith(COMPONENT_DEFAULT_NAMESPACE_PREFIX) ) {
+            const regex = new RegExp(`(${COMPONENT_DEFAULT_NAMESPACE_PREFIX})?`);
+            element.tag = tag.replace(regex, namespace + '-');
         }
     }
 
@@ -405,7 +426,7 @@ export default function parse(source: string, state: State): {
         const { tag } = element;
         let component: string | undefined;
 
-        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+        if (isCustomElementTag(tag)) {
             component = tag;
         }
 
