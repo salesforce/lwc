@@ -252,6 +252,9 @@ export interface NormalizedOutputConfig extends OutputConfig {
 
 ## Comipler Transformation and Bundling:
 
+<img width="684" alt="screen shot 2018-08-23 at 4 14 28 pm" src="https://user-images.githubusercontent.com/7842674/44556674-b9d5ef00-a6ef-11e8-8225-6490329e10eb.png">
+
+
 ### Transformations
 
 There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
