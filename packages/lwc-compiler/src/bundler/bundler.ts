@@ -100,6 +100,7 @@ export async function bundle(
         code = result.code;
 
     } catch (e) {
+        console.log('----> BOOM')
         // populate diagnostics
         const {  message, filename } = e;
 

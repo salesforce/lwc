@@ -21,7 +21,7 @@ const VALID_CONFIG = {
     }
 };
 
-describe("compiler result", () => {
+describe.only("compiler result", () => {
     test("compiler should return bundle result default output configuration ", async () => {
         const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
         const { result: { outputConfig } } = await compile(noOutputConfig);
@@ -219,6 +219,24 @@ describe("compiler result", () => {
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
         expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
+    });
+
+    test.only('copmiler should correctly point out missing decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { api, LightningElement } from 'lwc';
+                export default class Test extends LightningElement {
+                    @track title = 'hello'
+                }
+                `,
+                "foo.html": `<template><h1>{title}</h1></template>`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        console.log('diagnostics: ', diagnostics);
+        expect(diagnostics[0].message).toBe('import missing');
     });
 });
 

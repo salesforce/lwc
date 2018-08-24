@@ -20,8 +20,9 @@ function getReferences(identifier) {
     return identifier.scope.getBinding(identifier.node.name).referencePaths;
 }
 
-/** Returns the type of decorator depdending on the property or method if get applied to */
+/** Returns the type of decorator depending on the property or method if get applied to */
 function getDecoratorType(propertyOrMethod) {
+    console.log('-----> decorator: ', propertyOrMethod)
     if (isClassMethod(propertyOrMethod)) {
         return DECORATOR_TYPES.METHOD;
     } else if (isGetterClassMethod(propertyOrMethod)) {
@@ -124,15 +125,27 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
+function getClassBodyDecorators(path) {
+    // const body = path.get('body');
+    // const decorators = body.node.body[0].decorators;
+    // return decorators.map((d) => d.expression.name);
+    return ['track'];
+}
+
 module.exports = function decoratorVisitor({ types: t }) {
     return {
         Program(path, state) {
+            console.log('----> ENTERING PROGRAM')
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
+
             const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => (
                 isLwcDecoratorName(name)
             ));
 
+
+
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
+            console.log('decorators: ', decorators);
             state.file.metadata = Object.assign({}, state.file.metadata, { decorators: [] });
             const grouped = groupDecorator(decorators);
 
@@ -150,8 +163,33 @@ module.exports = function decoratorVisitor({ types: t }) {
         },
 
         Class(path, state) {
+            console.log('----> ENTERING CLASS')
             // don't remove decorators until metadata.js had the chance to visit the Class node
+
+            // assert that decorators are imported
+            if (state.decoratorImportSpecifiers.length) {
+                const importedDecorators = new Set(state.decoratorImportSpecifiers.filter(
+                    ({name}) => { isLwcDecoratorName(name) }
+                ));
+                const decoratorsInUse = getClassBodyDecorators(path);
+
+                for (const decoratorInUse of decoratorsInUse) {
+                    if (!importedDecorators.has(decoratorInUse)) {
+
+                        // TODO: find the path
+                        throw path.parentPath.buildCodeFrameError(
+                            `Invalid decorator usage. It seems that you are not importing '@${decoratorInUse}' decorator from the 'lwc'`,
+                        )
+                    }
+                }
+            }
+
+
+            console.log('state.decorators', state.decorators);
             removeDecorators(state.decorators);
+            console.log('state.decoratorImportSpecifiers: ', state.decoratorImportSpecifiers);
+
+
             removeImportSpecifiers(state.decoratorImportSpecifiers);
             state.decorators = [];
             state.decoratorImportSpecifiers = [];
