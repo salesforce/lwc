@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v) (2018-08-15)
+# [](https://github.com/salesforce/lwc/compare/v0.25.5...v) (2018-08-24)
+
+
+### Bug Fixes
+
+* disable dual [@api](https://github.com/api) decorators support  @W-5165180 ([#598](https://github.com/salesforce/lwc/issues/598)) ([ce9308b](https://github.com/salesforce/lwc/commit/ce9308b))
+* **engine:** closes [#515](https://github.com/salesforce/lwc/issues/515) by removing lazy init ([#517](https://github.com/salesforce/lwc/issues/517)) ([38fe207](https://github.com/salesforce/lwc/commit/38fe207))
+* remove comments in minified bundle @W-5320429 ([#599](https://github.com/salesforce/lwc/issues/599)) ([46d65c0](https://github.com/salesforce/lwc/commit/46d65c0))
+* update package version when releasing ([#595](https://github.com/salesforce/lwc/issues/595)) ([ea0434d](https://github.com/salesforce/lwc/commit/ea0434d))
+* update wire pkg and playground ([#604](https://github.com/salesforce/lwc/issues/604)) ([ccc92ed](https://github.com/salesforce/lwc/commit/ccc92ed))
+* validate directive-less template tag ([#589](https://github.com/salesforce/lwc/issues/589)) ([7739e64](https://github.com/salesforce/lwc/commit/7739e64))
+* **engine:** invert condition to apply click-event-composed polyfill ([#590](https://github.com/salesforce/lwc/issues/590)) ([#591](https://github.com/salesforce/lwc/issues/591)) ([cb7c43a](https://github.com/salesforce/lwc/commit/cb7c43a))
+
+
+
+<a name="0.25.5"></a>
+## [0.25.5](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v0.25.5) (2018-08-15)
 
 
 ### Bug Fixes
