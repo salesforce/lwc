@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.5...v) (2018-08-24)
+# [](https://github.com/salesforce/lwc/compare/v0.26.0...v) (2018-08-25)
+
+
+### Bug Fixes
+
+* **engine:** undefined initial values should be respected ([#558](https://github.com/salesforce/lwc/issues/558)) ([e2f24b8](https://github.com/salesforce/lwc/commit/e2f24b8)), closes [#490](https://github.com/salesforce/lwc/issues/490)
+
+
+
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/salesforce/lwc/compare/v0.25.5...v0.26.0) (2018-08-24)
 
 
 ### Bug Fixes
