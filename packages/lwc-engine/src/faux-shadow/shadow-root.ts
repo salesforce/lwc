@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
-import { create, assign, isUndefined, getOwnPropertyDescriptor, ArrayReduce } from "../shared/language";
+import { create, assign, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, patchShadowDomTraversalMethods } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
@@ -9,6 +9,7 @@ import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node"
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { unwrap } from "./traverse-membrane";
+import { DocumentPrototypeActiveElement } from "./document";
 
 let ArtificialShadowRootPrototype;
 
@@ -105,6 +106,18 @@ function patchedShadowRootTextContentGetter(this: ShadowRoot): string {
     return textContent;
 }
 
+function activeElementGetter(this: ShadowRoot): Element | null {
+    const activeElement = DocumentPrototypeActiveElement.call(document);
+    if (isNull(activeElement)) {
+        return activeElement;
+    }
+    const host = getHost(this);
+    // activeElement must be child of the host and owned by it
+    // TODO: what happen with delegateFocus is true for a child component?
+    return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+        isNodeOwnedBy(host, activeElement) ? patchShadowDomTraversalMethods(activeElement) : null;
+}
+
 function hostGetter(this: ShadowRoot): HTMLElement {
     return getHost(this);
 }
@@ -112,6 +125,11 @@ function hostGetter(this: ShadowRoot): HTMLElement {
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     host: {
         get: hostGetter,
+        enumerable: true,
+        configurable: true,
+    },
+    activeElement: {
+        get: activeElementGetter,
         enumerable: true,
         configurable: true,
     },
