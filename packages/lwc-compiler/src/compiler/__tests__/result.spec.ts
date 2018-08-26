@@ -221,7 +221,7 @@ describe.only("compiler result", () => {
         expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
     });
 
-    test.only('copmiler should correctly point out missing decorator import error', async () => {
+    test('compiler should correctly point out missing decorator import error', async () => {
         const config = {
             name: "foo",
             namespace: "x",
@@ -231,12 +231,86 @@ describe.only("compiler result", () => {
                     @track title = 'hello'
                 }
                 `,
-                "foo.html": `<template><h1>{title}</h1></template>`,
             },
         };
         const { success, diagnostics }  = await compile(config);
-        console.log('diagnostics: ', diagnostics);
-        expect(diagnostics[0].message).toBe('import missing');
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@track' decorator from the 'lwc'");
+    });
+
+    test('compiler should correctly point out missing decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { LightningElement } from 'lwc';
+                import { getTodo } from "todo";
+                export default class Test extends LightningElement {
+                    @wire(getTodo, {})
+                    data = {};
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@wire' decorator from the 'lwc'");
+    });
+
+    test.only('compiler should correctly point out missing decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { LightningElement } from 'lwc';
+                export default class Test extends LightningElement {
+                    @api boo = 'jel';
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@api' decorator from the 'lwc'");
+    });
+
+    test('compiler does not produce an error if used class decorators have been imported', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { api, track, wire, LightningElement } from 'lwc';
+                import { getTodo } from "todo";
+                export default class Test extends LightningElement {
+                    @wire(getTodo, {})
+                    wiredProp;
+
+                    @track
+                    mytrack = "track";
+
+                    @api
+                    title = "api";
+                }
+                `,
+                "foo.html": `<template></template>`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(success).toBe(true);
+    });
+
+    test('compiler should correctly point out missing decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { LightningElement } from 'lwc';
+                export default class Test extends LightningElement {}
+                class Inner {
+                    @api name = 'name';
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@api' decorator from the 'lwc'");
     });
 });
 
