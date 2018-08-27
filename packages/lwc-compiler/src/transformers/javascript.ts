@@ -22,7 +22,6 @@ export default function(
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        console.log('boom from the JS transform ---> ', e.message);
         throw new CompilerError(e.message, filename, e.loc);
     }
 

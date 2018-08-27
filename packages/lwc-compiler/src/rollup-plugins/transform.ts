@@ -13,7 +13,6 @@ export default function({
     return {
         name: "lwc-file-transform",
         async transform(src: string, id: string): Promise<FileTransformerResult> {
-            console.log('-----> transform initiaed: id: ', id);
             const transform = getTransformer(id);
             return await transform(
                 src,
