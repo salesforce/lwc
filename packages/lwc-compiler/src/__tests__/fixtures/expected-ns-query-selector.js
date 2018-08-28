@@ -1,4 +1,4 @@
-define('namespace-query-selector', ['namespace-local-template', 'lwc'], function (_cLocalTemplate, lwc) {
+define('namespace-query-selector', ['namespace-local-template', 'lwc'], function (_namespaceLocalTemplate, lwc) {
 
     const style = undefined;
 
@@ -11,7 +11,7 @@ define('namespace-query-selector', ['namespace-local-template', 'lwc'], function
 
       return [api_element("h1", {
         key: 1
-      }, [api_text("Query Selector")]), api_custom_element("namespace-local-template", _cLocalTemplate, {
+      }, [api_text("Query Selector")]), api_custom_element("namespace-local-template", _namespaceLocalTemplate, {
         key: 2
       }, [])];
     }

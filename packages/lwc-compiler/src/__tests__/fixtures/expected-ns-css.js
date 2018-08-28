@@ -1,6 +1,11 @@
 define('namespace-css-local', ['lwc'], function (lwc) {
 
-    const style = undefined;
+    function style(token) {
+       return `namespace-css-local[${token}],[is="namespace-css-local"][${token}] {
+    background-color: red;
+}
+`;
+    }
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {

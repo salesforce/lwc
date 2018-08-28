@@ -1,4 +1,4 @@
-import _cLocalTemplate from 'namespace-local-template';
+import _namespaceLocalTemplate from 'namespace-local-template';
 import { LightningElement } from 'lwc';
 
     const style = undefined;
@@ -12,7 +12,7 @@ import { LightningElement } from 'lwc';
 
       return [api_element("h1", {
         key: 1
-      }, [api_text("Query Selector")]), api_custom_element("namespace-local-template", _cLocalTemplate, {
+      }, [api_text("Query Selector")]), api_custom_element("namespace-local-template", _namespaceLocalTemplate, {
         key: 2
       }, [])];
     }
