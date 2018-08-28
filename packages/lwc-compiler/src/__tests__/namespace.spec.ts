@@ -25,7 +25,7 @@ const BASE_CONFIG = {
 };
 
 describe('test namespaced component compilation', () => {
-    test('javascript with local import does not have c- prefixes in the compiled class', async () => {
+    test('javascript with c- prefixes is replaced with namespace value', async () => {
         const { result: { code }} = await compile(BASE_CONFIG);
         expect(pretify(code)).toBe(pretify(readFixture('expected-ns-js-local-import.js')));
     });
@@ -85,7 +85,7 @@ describe('test namespaced component compilation', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-ns-query-selector-es.js')));
     });
 
-    test('css class reference is replaced with namespace value', async () => {
+    test.only('css class reference is replaced with namespace value', async () => {
         const customConfig = {
             name: "css-local",
             files: {
@@ -94,6 +94,9 @@ describe('test namespaced component compilation', () => {
                 ),
                 "css-local.html": readFixture(
                     "./namespaced-compilation/css-local.html"
+                ),
+                "css-local.css": readFixture(
+                    "./namespaced-compilation/css-local.css"
                 ),
             }
         };
