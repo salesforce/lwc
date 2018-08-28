@@ -5,8 +5,6 @@ import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
 
-const DEFAULT_NAMESPACE = "c";
-
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
 export interface TemplateMetadata {
@@ -20,10 +18,11 @@ function attachStyleToTemplate(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-    const { name } = options;
+    const { name, namespace: authoredNamespace, namespaceMapping } = options;
 
-    // if namespace is not specified normalize to 'c'
-    const namespace = normalizedNamespace(options.namespace);
+    // TODO: in existing implementation, namespace can be undefined and therefore used as namespace/
+    // Perhaps we should throw during compiler options normalization if namespace is not defined.
+    const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
 
     const templateFilename = path.basename(filename, path.extname(filename));
 
@@ -58,10 +57,6 @@ function attachStyleToTemplate(
         `    document.head.appendChild(style);`,
         `}`
     ].join("\n");
-}
-
-function normalizedNamespace(namespace: string | undefined) {
-    return namespace && namespace.length ? namespace : DEFAULT_NAMESPACE;
 }
 
 /**
