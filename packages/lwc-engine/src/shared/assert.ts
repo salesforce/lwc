@@ -1,12 +1,14 @@
-import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, StringToLowerCase } from "./language";
+import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
 
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
-const nativeShadowRootHostGetter: (this: ShadowRoot) => Element | null = (function() {
+const nativeShadowRootHostGetter: (this: ShadowRoot) => Element = (function() {
     if (typeof (window as any).ShadowRoot !== "undefined") {
         return getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!;
     } else {
-        return () => null;
+        return () => {
+            throw new Error(`Internal Error: Invalid ShadowRoot resolution.`);
+        };
     }
 })();
 
@@ -35,13 +37,12 @@ function getFormattedComponentStack(elm: Element): string {
         }
 
         if (isShadowRoot(currentElement)) {
-            // if at some point we find a ShadowRoot, is because is the browser native shadow.
-            // this will never be the faux shadow.
+            // if at some point we find a ShadowRoot, it must be a native shadow root.
             currentElement = nativeShadowRootHostGetter.call(currentElement);
         } else {
             currentElement = parentNodeGetter.call(currentElement);
         }
-    } while (currentElement);
+    } while (!isNull(currentElement));
 
     return ArrayJoin.call(componentStack, '\n');
 }
