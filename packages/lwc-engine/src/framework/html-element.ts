@@ -1,5 +1,6 @@
 import assert from "../shared/assert";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
+
 import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse } from "../shared/language";
 import { setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
