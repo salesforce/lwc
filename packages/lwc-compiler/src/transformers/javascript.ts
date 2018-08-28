@@ -13,8 +13,9 @@ export default function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ): FileTransformerResult {
+    const namespaceMapping = options && options.namespaceMapping;
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
-        plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
+        plugins: [[lwcClassTransformPlugin, { namespaceMapping }], ...BABEL_PLUGINS_BASE],
         filename,
     });
 

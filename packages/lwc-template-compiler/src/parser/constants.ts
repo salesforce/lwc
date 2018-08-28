@@ -47,9 +47,6 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
     'missing-glyph',
 ]);
 
-export const COMPONENT_DEFAULT_NAMESPACE = 'c';
-export const COMPONENT_DEFAULT_NAMESPACE_PREFIX = 'c-';
-
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     // These have to be quoted because aria- attributes below are quoted
     // Our linting doesn't like to mix quoted and un-quoted property names
