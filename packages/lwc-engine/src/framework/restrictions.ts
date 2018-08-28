@@ -8,7 +8,7 @@ import {
     getCustomElementVM,
     VM,
     getNodeOwnerKey,
-    getComponentVM
+    getComponentVM, getShadowRootHost
 } from "./vm";
 import {
     getAttribute,
@@ -27,7 +27,10 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     return {
         childNodes: {
             get(this: Node) {
-                assert.logWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`, this as Element);
+                assert.logWarning(
+                    `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
+                    (this instanceof Element) ? this as Element : getShadowRootHost(this as ShadowRoot)
+                );
                 return originalChildNodesDescriptor!.get!.call(this);
             },
             enumerable: true,
@@ -283,7 +286,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                         msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                     }
                 }
-                console.log(msg.join('\n')); // tslint:disable-line
+                assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
                 return; // explicit undefined
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined

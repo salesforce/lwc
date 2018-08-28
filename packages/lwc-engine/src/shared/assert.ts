@@ -1,22 +1,49 @@
-import {StringToLowerCase, ArrayMap, ArrayJoin, forEach} from "./language";
-import { elementTagNameGetter } from "../framework/dom-api";
-import { getComponentStack } from "./debug";
+import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, StringToLowerCase } from "./language";
+
+const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
+const nativeShadowRootHostGetter: (this: ShadowRoot) => Element | null = (function() {
+    if (typeof (window as any).ShadowRoot !== "undefined") {
+        return getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!;
+    } else {
+        return () => null;
+    }
+})();
 
 const StringSplit = String.prototype.split;
 
-function formatComponentStack(componentStack: HTMLElement[]): string {
+function isLWC(element): element is HTMLElement {
+    return (element instanceof Element) && (elementTagNameGetter.call(element).indexOf('-') !== -1);
+}
+
+function isShadowRoot(elmOrShadow: Node | ShadowRoot): elmOrShadow is ShadowRoot {
+    return !(elmOrShadow instanceof Element) && ('host' in elmOrShadow);
+}
+
+function getFormattedComponentStack(elm: Element): string {
+    const componentStack: string[] = [];
     const indentationChar = '\t';
     let indentation = '';
 
-    const stackNames = ArrayMap.call(componentStack, (component: HTMLElement): string => {
-            const componentName = `<${StringToLowerCase.call(elementTagNameGetter.call(component))}>`;
-            const mappedComponentName = `${indentation}${componentName}`;
+    let currentElement: Node | null = elm;
+
+    do {
+        if (isLWC(currentElement)) {
+            ArrayPush.call(componentStack, `${indentation}<${StringToLowerCase.call(elementTagNameGetter.call(currentElement))}>`);
+
             indentation = indentation + indentationChar;
+        }
 
-            return mappedComponentName;
-        });
+        if (isShadowRoot(currentElement)) {
+            // if at some point we find a ShadowRoot, is because is the browser native shadow.
+            // this will never be the faux shadow.
+            currentElement = nativeShadowRootHostGetter.call(currentElement);
+        } else {
+            currentElement = parentNodeGetter.call(currentElement);
+        }
+    } while (currentElement);
 
-    return ArrayJoin.call(stackNames, '\n');
+    return ArrayJoin.call(componentStack, '\n');
 }
 
 const assert = {
@@ -42,8 +69,7 @@ const assert = {
         let msg = message;
 
         if (elm) {
-            const wcStack = getComponentStack(elm);
-            msg = `${msg}\n${formatComponentStack(wcStack)}`;
+            msg = `${msg}\n${getFormattedComponentStack(elm)}`;
         }
 
         if (process.env.NODE_ENV === 'test') {
@@ -60,8 +86,7 @@ const assert = {
         let msg = message;
 
         if (elm) {
-            const wcStack = getComponentStack(elm);
-            msg = `${msg}\n${formatComponentStack(wcStack)}`;
+            msg = `${msg}\n${getFormattedComponentStack(elm)}`;
         }
 
         if (process.env.NODE_ENV === 'test') {

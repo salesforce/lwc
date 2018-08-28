@@ -43,7 +43,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm.component} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`, vm.elm);
+                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`, vm.elm);
                 }
                 return;
             }

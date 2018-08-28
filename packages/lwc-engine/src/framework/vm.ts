@@ -2,20 +2,7 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import {
-    ArrayPush,
-    isUndefined,
-    isNull,
-    ArrayUnshift,
-    ArraySlice,
-    create,
-    isTrue,
-    isObject,
-    keys,
-    isFalse,
-    defineProperty,
-    forEach
-} from "../shared/language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
@@ -29,7 +16,6 @@ import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "../faux-shadow/faux";
-import { getComponentStack } from "../shared/debug";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -457,18 +443,18 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
  *
  * @return {string} The component stack for errors.
  */
-export function getErrorComponentStack(startingElement: Element): string {
-    const rawComponentStack: HTMLElement[] = getComponentStack(startingElement);
+export function getErrorComponentStack(startingElement: HTMLElement): string {
     const wcStack: string[] = [];
-
-    // While we support forceTagName and is attribute we should check in the VM for the component name.
-    forEach.call(rawComponentStack, (elm: HTMLElement) => {
+    let elm: HTMLElement | null = startingElement;
+    do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as ComponentInterface).toString());
         }
-    });
-
+        // TODO: bug #435 - shadowDOM will preventing this walking process, we
+        // need to find a different way to find the right boundary
+        elm = parentElementGetter.call(elm);
+    } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
 }
 
