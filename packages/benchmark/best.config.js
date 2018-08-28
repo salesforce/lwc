@@ -21,5 +21,6 @@ module.exports = {
                 "options": { path: '/best' },
                 "remoteRunner": "@best/runner-headless"
             }
-        }],
+        }
+    ],
 };
