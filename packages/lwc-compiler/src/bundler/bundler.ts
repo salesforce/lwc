@@ -52,7 +52,9 @@ export async function bundle(
 ): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
-    const { outputConfig, name, namespace } = options;
+    const { outputConfig, name, namespace: authoredNamespace, namespaceMapping } = options;
+
+    const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
