@@ -57,7 +57,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm} constructor should not read the value of property "${toString(key)}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                    assert.logError(`${vm} constructor should not read the value of property "${toString(key)}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`, vm.elm);
                 }
                 return;
             }
@@ -77,7 +77,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
                     // Then newValue if newValue is observable (plain object or array)
                     const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${toString(key)} of ${vm} is not common because mutations on that value cannot be observed.`);
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${toString(key)} of ${vm} is not common because mutations on that value cannot be observed.`, vm.elm);
                     }
                 }
             }
@@ -85,7 +85,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
                 if (vmBeingUpdated !== vm) {
                     // logic for setting new properties of the element directly from the DOM
                     // is only recommended for root elements created via createElement()
-                    assert.logWarning(`If property ${toString(key)} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`);
+                    assert.logWarning(`If property ${toString(key)} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`, vm.elm);
                 }
             }
             vmBeingUpdated = null; // releasing the lock
@@ -131,7 +131,7 @@ function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: Propert
                     // Then newValue if newValue is observable (plain object or array)
                     const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${toString(key)} of ${vm} is not common because mutations on that value cannot be observed.`);
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${toString(key)} of ${vm} is not common because mutations on that value cannot be observed.`, vm.elm);
                     }
                 }
             }
@@ -139,7 +139,7 @@ function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: Propert
                 if (vmBeingUpdated !== vm) {
                     // logic for setting new properties of the element directly from the DOM
                     // is only recommended for root elements created via createElement()
-                    assert.logWarning(`If property ${toString(key)} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`);
+                    assert.logWarning(`If property ${toString(key)} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`, vm.elm);
                 }
             }
             vmBeingUpdated = null; // releasing the lock

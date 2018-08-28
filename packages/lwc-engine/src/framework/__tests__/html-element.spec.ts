@@ -363,6 +363,42 @@ describe('html-element', () => {
             );
         });
 
+        it('should log warning when dispatching event in the custom element with bubble=true and composed=false', function() {
+            class Foo extends LightningElement {
+                connectedCallback() {
+                    this.dispatchEvent(new CustomEvent('foobar', { bubbles: true, composed: false }));
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+
+            expect(() => (
+                document.body.appendChild(elm)
+            )).toLogWarning(
+                `Invalid event "foobar" dispatched in element <x-foo>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`
+            );
+        });
+
+        it('should log warning when accessing shadowRoot as root.', function() {
+            class Foo extends LightningElement {
+                connectedCallback() {
+                    const evt = new CustomEvent(
+                        'foobar',
+                        { detail: this.root.querySelector('foo')}
+                    );
+                    this.dispatchEvent(evt);
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+
+            expect(() => (
+                document.body.appendChild(elm)
+            )).toLogWarning(
+                `"this.root" access in <x-foo> has been deprecated and will be removed. Use "this.template" instead.`
+            );
+        });
+
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
             class Foo extends LightningElement {
                 connectedCallback() {
@@ -2181,7 +2217,22 @@ describe('html-element', () => {
             childElm.removeAttribute('title');
             expect(assertLogger.logError).toBeCalled();
             assertLogger.logError.mockRestore();
-        })
+        });
+
+        it('should log console error accessing props in constructor', () => {
+            class MyComponent extends LightningElement {
+                constructor() {
+                    super();
+                    this.a = this.title;
+                }
+            }
+
+            expect(() => {
+                createElement('prop-setter-title', { is: MyComponent });
+            }).toLogError(
+                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
+            );
+        });
 
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {

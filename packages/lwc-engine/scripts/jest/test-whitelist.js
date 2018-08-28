@@ -20,8 +20,6 @@ const CONSOLE_WHITELIST = [
     '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
     '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements',
     '#shadowRootQuerySelector should return null if querySelector does not match any elements',
-    'api #c() should coerce style to string when is object',
-    'api #h() should coerce style to string when is object',
     'api #i() should support various types',
     'assignedSlot should return correct slot when text is slotted',
     'component public computed props should call setter function when used directly from DOM',

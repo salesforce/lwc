@@ -57,7 +57,20 @@ describe('api', () => {
                 color: 'red'
             };
             const factory = function() { return Foo; };
-            const vnode = api.c('x-foo', factory, { style });
+            let vnode;
+
+            // just to have a vm being rendered.
+            class VmRendering extends LightningElement {
+                render() {
+                    vnode = api.c('x-foo', factory, { style });
+                    return () => [];
+                }
+            }
+
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning(`Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`);
 
             expect(vnode.data.style).toBe('[object Object]');
         });
@@ -129,6 +142,25 @@ describe('api', () => {
             );
         });
 
+        it('should log warning if passed style is not a string', () => {
+            const style = {
+                color: 'red'
+            };
+            const factory = function() { return Foo; };
+            // just to have a vm being rendered.
+            class VmRendering extends LightningElement {
+                render() {
+                    api.c('x-foo', factory, { style });
+                    return () => [];
+                }
+            }
+
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning(`Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`);
+        });
+
     });
 
     describe('#h()', () => {
@@ -189,17 +221,53 @@ describe('api', () => {
             const style = {
                 color: 'red'
             };
-            const vnode = api.h('p', { key: 0, style }, []);
+            let vnode;
+            class VmRendering extends LightningElement {
+                render() {
+                    vnode = api.h('p', { key: 0, style }, []);
+                    return () => [];
+                }
+            }
+
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
 
             expect(vnode.data.style).toBe('[object Object]');
+        });
+
+        it('should logWarning when passing style attribute as object', () => {
+            const style = {
+                color: 'red'
+            };
+
+            class VmRendering extends LightningElement {
+                render() {
+                    api.h('p', { key: 0, style }, []);
+                    return () => [];
+                }
+            }
+
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
         });
     });
 
     describe('#i()', () => {
         it('should support various types', () => {
-            expect(api.i([], () => null)).toEqual([]);
-            expect(api.i(undefined as any, () => null)).toEqual([]);
-            expect(api.i(null as any, () => null)).toEqual([]);
+            class VmRendering extends LightningElement {
+                render() {
+                    expect(api.i([], () => null)).toEqual([]);
+                    expect(api.i(undefined as any, () => null)).toEqual([]);
+                    expect(api.i(null as any, () => null)).toEqual([]);
+                    return () => [];
+                }
+            }
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            document.body.appendChild(elm);
         });
 
         it('should support numeric keys', () => {
@@ -250,6 +318,19 @@ describe('api', () => {
             const o = new Proxy(array, {});
             const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
+        });
+
+        it('should log warning when invalid iteration value', () => {
+            class VmRendering extends LightningElement {
+                render() {
+                    api.i(undefined as any, () => null);
+                    return () => [];
+                }
+            }
+            const elm = createElement('x-vm-aux', { is: VmRendering });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (9)], it should be an Array or an iterable Object.`);
         });
     });
 
@@ -330,7 +411,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (7)]. Key must be a string or number.');
+            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (13)]. Key must be a string or number.');
         });
     });
 });

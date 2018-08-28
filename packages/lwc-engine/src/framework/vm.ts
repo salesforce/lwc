@@ -345,7 +345,7 @@ function flushRehydrationQueue() {
 
 function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
     if (isUndefined(error.wcStack)) {
-        error.wcStack = getComponentStack(failedVm);
+        error.wcStack = getErrorComponentStack(failedVm.elm);
     }
     resetShadowRoot(failedVm); // remove offenders
     const { errorCallback } = errorBoundaryVm.def;
@@ -436,9 +436,16 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     }
 }
 
-export function getComponentStack(vm: VM): string {
+/**
+ * Returns the component stack. Used for errors messages only.
+ *
+ * @param {Element} startingElement
+ *
+ * @return {string} The component stack for errors.
+ */
+export function getErrorComponentStack(startingElement: HTMLElement): string {
     const wcStack: string[] = [];
-    let elm: HTMLElement | null = vm.elm;
+    let elm: HTMLElement | null = startingElement;
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
