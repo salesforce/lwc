@@ -48,9 +48,12 @@ export interface BundleFiles {
     [filename: string]: string;
 }
 
+export type NamespaceMapping = Map<string, string>;
+
 export interface CompilerOptions {
     name: string;
     namespace: string;
+    namespaceMapping?: NamespaceMapping;
     files: BundleFiles;
     /**
      * An optional directory prefix that contains the specified components
@@ -63,6 +66,7 @@ export interface CompilerOptions {
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
+    namespaceMapping?: NamespaceMapping;
     stylesheetConfig: NormalizedStylesheetConfig;
 }
 

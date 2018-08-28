@@ -79,8 +79,8 @@ const transform: FileTransformer = function(
 
     try {
         // if namespace is not specified normalize to 'c'
-        const namespace = normalizedNamespace(options.namespace);
-        const result = compile(src, { namespace });
+        const { namespaceMapping } = options;
+        const result = compile(src, { namespaceMapping });
         const warnings = result.warnings;
 
         code = result.code;

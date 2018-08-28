@@ -39,7 +39,7 @@ describe('option validation', () => {
     it('allows available options', () => {
         expect.assertions(1);
         const res = compiler(`<template></template>`, {
-            namespace: 'namespace',
+            namespaceMapping: {'c': 'namespace'},
             computedMemberExpression: false,
         } as Config);
         expect(res).toBeDefined();

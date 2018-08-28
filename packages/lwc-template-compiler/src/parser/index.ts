@@ -60,8 +60,6 @@ import {
 import State from '../state';
 
 import {
-    COMPONENT_DEFAULT_NAMESPACE,
-    COMPONENT_DEFAULT_NAMESPACE_PREFIX,
     EXPRESSION_RE,
     IF_RE,
     VALID_IF_MODIFIER,
@@ -124,6 +122,7 @@ export default function parse(source: string, state: State): {
     let parent: IRElement;
     const stack: IRElement[] = [];
     const config: ResolvedConfig = state.config;
+    const namespaceMapping: Map<string, string> | undefined = config && config.namespaceMapping;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -141,7 +140,7 @@ export default function parse(source: string, state: State): {
                     parent.children.push(element);
                 }
 
-                applyNamespace(element, config.namespace);
+                applyNamespace(element, namespaceMapping);
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -229,18 +228,27 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function applyNamespace(element: IRElement, namespace: string | undefined) {
-        // do not proceed if specified namespace is 'c-'
-        if (!namespace || !namespace.length || namespace === COMPONENT_DEFAULT_NAMESPACE) {
+    function applyNamespace(element: IRElement, mapping: Map<string, string> | undefined) {
+        if (!mapping || !Object.keys(mapping).length) {
             return;
         }
 
         const { tag } = element;
 
-        if (isCustomElementTag(tag) && tag.startsWith(COMPONENT_DEFAULT_NAMESPACE_PREFIX) ) {
-            const regex = new RegExp(`(${COMPONENT_DEFAULT_NAMESPACE_PREFIX})?`);
-            element.tag = tag.replace(regex, namespace + '-');
+        if (!isCustomElementTag(tag)) {
+            return;
         }
+
+        Object.entries(mapping).forEach(([previousNamespace, newNamespace]) => {
+            if (!previousNamespace || !newNamespace || !newNamespace.length) {
+                return;
+            }
+
+            const replacementValue = previousNamespace + '-';
+            if (tag.startsWith(replacementValue)) {
+                element.tag = tag.replace(new RegExp(`^(${replacementValue})?`), newNamespace + '-');
+            }
+        });
     }
 
     function applyStyle(element: IRElement) {

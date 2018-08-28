@@ -31,7 +31,7 @@ describe('transform', () => {
             }
         `;
         const { code } = await transform(actual, 'foo.html', {
-            namespace: 'namespace',
+            namespaceMapping: { 'c': 'namespace' },
             name: 'foo',
         });
         expect(pretify(code)).toBe(pretify(expected));
