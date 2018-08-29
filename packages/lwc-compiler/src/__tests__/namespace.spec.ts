@@ -90,7 +90,7 @@ describe('test namespaced component compilation', () => {
         expect(pretify(code)).toBe(pretify(readFixture('expected-ns-query-selector-es.js')));
     });
 
-    test.skip('css class reference is replaced with namespace value', async () => {
+    test('css class reference is replaced with namespace value', async () => {
         const customConfig = {
             name: "css-local",
             files: {

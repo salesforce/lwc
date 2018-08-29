@@ -1,9 +1,11 @@
 import postcss from "postcss";
 import cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
+import { isTag, Root, Selector } from 'postcss-selector-parser';
+import postcssSelector from 'postcss-selector-parser';
 
 import { CompilerError } from "../common-interfaces/compiler-error";
-import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
+import { NormalizedCompilerOptions, CustomPropertiesResolution, NamespaceMapping } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
 
@@ -59,15 +61,60 @@ function replaceToken(src: string): string {
     return src.replace(placeholderRegexp, '${token}');
 }
 
+function isCustomElementSelector(tag: string) {
+    return tag.includes('-');
+}
+
+function getNameMappingPlugin(mapping: NamespaceMapping) { // TODO: add type
+    const plugin = (root: Root) => {
+        root.walkRules((rule: Selector) => {
+            const processor = postcssSelector();
+            const selectorRoot = processor.astSync(rule.selector, { lossless: true });
+            const selectorsToReplace: string[] = [];
+
+            selectorRoot.walk((node: any) => {
+                if (!isTag(node) || !isCustomElementSelector(node.value)) {
+                    return;
+                }
+
+                Object.entries(mapping).forEach(([previousNamespace, newNamespace]) => {
+                    if (node.value.startsWith(previousNamespace + '-')) {
+                        selectorsToReplace.push(node.value);
+                    }
+                });
+            });
+
+            selectorsToReplace.forEach((s) => {
+                Object.entries(mapping).forEach(([previousNamespace, newNamespace]) => {
+                    const regex = new RegExp(`(${previousNamespace}-)?`);
+                    rule.selector = rule.selector.replace(s, s.replace(
+                            regex,
+                            newNamespace + '-',
+                    ));
+                });
+            });
+
+        });
+    };
+    return plugin;
+}
+
 export default async function transformStyle(
     src: string,
     filename: string,
-    { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
+    { stylesheetConfig, outputConfig, namespaceMapping }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
 
     const postcssPlugins: postcss.AcceptedPlugin[] = [];
+
+    if (namespaceMapping) {
+        const nameMappingPlugin = getNameMappingPlugin(namespaceMapping);
+        if (nameMappingPlugin) {
+            postcssPlugins.push(nameMappingPlugin);
+        }
+    }
 
     // The LWC plugin produces invalid CSS since it transforms all the var function with actual
     // javascript function call. The mification plugin produces invalid CSS when it runs after
