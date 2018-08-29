@@ -25,16 +25,73 @@ function namespaceReplaceVisitor(oldNamespace, newNamespace) {
             const { node: { source } } = path;
             const { value } = source;
 
-            const namespaceToReplace = oldNamespace + '-';
-            if (value.startsWith(namespaceToReplace)) {
-                const regex = new RegExp(`^(${namespaceToReplace})?`);
-                source.value = value.replace(
-                    regex,
-                    newNamespace + '-'
-                );
+            if (!value || !value.length) {
+                return;
+            }
+
+            // process gvp
+            if (value.startsWith('@salesforce/')) {
+                const newValue = replaceNamespaceInGvp(value, oldNamespace, newNamespace);
+                if (newValue) {
+                    source.value = newValue;
+                }
+
+            } else {
+                const namespaceToReplace = oldNamespace + '-';
+                if (value.startsWith(namespaceToReplace)) {
+                    const regex = new RegExp(`^(${namespaceToReplace})?`);
+                    source.value = value.replace(
+                        regex,
+                        newNamespace + '-'
+                    );
+                }
             }
         }
     };
+}
+
+function replaceNamespaceInGvp(resource, oldNamespace, newNamespace) {
+    if (!resource || !oldNamespace || !newNamespace) {
+        return;
+    }
+
+    const resourceParts = resource.split('/');
+    const resourceType = resourceParts[1];
+    const resourceValue = resourceParts[2];
+
+    let replacedValue = resourceValue;
+
+    switch(resourceType) {
+        // @salesforce/label/c.label1 -> @salesforce/label/namespace.label1
+        case 'label':
+            if (resourceValue.startsWith(oldNamespace + '.')) {
+                replacedValue = newNamespace + resourceValue.substr(oldNamespace.length);
+                break;
+            }
+        // @salesforce/resource-url/resource1 -> @salesforce/resource-url/namespace__resource1
+        case 'resource-url':
+            replacedValue = newNamespace + '__' + resourceValue;
+            break;
+
+        // @salesforce/apex/MyClass.methodA -> @salesforce/apex/acme.MyClass.methodA
+        case 'apex':
+            // apex allows @salesforce/apex in which case we don't apply the namespace
+            if (resourceValue) {
+                replacedValue = newNamespace + '.' + resourceValue;
+            }
+            break;
+
+        // @salesforce/schema/CustomObject1__c -> @salesforce/schema/acme__CustomObject1__c
+        case 'schema':
+            replacedValue = newNamespace + '__' + resourceValue;
+            break;
+
+        default:
+            replacedValue = resourceValue;
+    }
+
+    resourceParts[2] = replacedValue;
+    return resourceParts.join('/');
 }
 
 /**

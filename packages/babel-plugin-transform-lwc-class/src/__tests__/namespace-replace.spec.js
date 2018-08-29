@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     [require('../index'), { namespaceMapping: { 'c': 'namespace'}}]
 );
 
-describe('decorators', () => {
+describe('component namespace', () => {
     pluginTest('should replace "c-" references with namespace ', `
         import { LightningElement as Component } from 'lwc';
         import { method } from 'c-utils';
