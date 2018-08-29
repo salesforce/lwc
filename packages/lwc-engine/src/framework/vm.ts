@@ -397,11 +397,15 @@ export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { children: oldCh } = vm;
+    const { children: oldCh, fallback } = vm;
     vm.children = EmptyArray;
-    // automatically removing all elements from the shadow in one go
-    const parentElm: ShadowRoot | Element = vm.fallback ? vm.elm : vm.cmpRoot;
-    innerHTMLSetter.call(parentElm, '');
+    if (isTrue(fallback)) {
+        // faux-shadow does not have a real cmpRoot instance, instead
+        // we need to remove the content of the host entirely
+        innerHTMLSetter.call(vm.elm, '');
+    } else {
+        innerHTMLSetter.call(vm.cmpRoot, '');
+    }
     // proper destroying mechanism for those vnodes that requires it
     destroyChildren(oldCh);
 }
