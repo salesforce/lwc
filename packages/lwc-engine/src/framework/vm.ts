@@ -380,7 +380,7 @@ function destroyChildren(children: VNodes) {
                 hook.destroy(vnode);
             } catch (e) {
                 const vm = getCustomElementVM(elm as HTMLElement);
-                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`);
+                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
             }
         }
         if (isArray(grandChildren)) {
