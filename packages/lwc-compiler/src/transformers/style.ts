@@ -1,7 +1,7 @@
-import postcss from "postcss";
+import postcss, { Root } from "postcss";
 import cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
-import { isTag, Root, Selector } from 'postcss-selector-parser';
+import { isTag, PostCSSRuleNode } from 'postcss-selector-parser';
 import postcssSelector from 'postcss-selector-parser';
 
 import { CompilerError } from "../common-interfaces/compiler-error";
@@ -67,7 +67,7 @@ function isCustomElementSelector(tag: string) {
 
 function getNameMappingPlugin(mapping: NamespaceMapping) { // TODO: add type
     const plugin = (root: Root) => {
-        root.walkRules((rule: Selector) => {
+        root.walkRules((rule: PostCSSRuleNode) => {
             const processor = postcssSelector();
             const selectorRoot = processor.astSync(rule.selector, { lossless: true });
             const selectorsToReplace: string[] = [];
