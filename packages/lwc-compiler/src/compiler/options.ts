@@ -50,7 +50,7 @@ export interface BundleFiles {
 
 export interface NamespaceMapping {
     [name: string]: string;
-};
+}
 
 export interface CompilerOptions {
     name: string;
