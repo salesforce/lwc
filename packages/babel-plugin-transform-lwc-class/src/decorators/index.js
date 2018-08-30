@@ -136,11 +136,11 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-function assertDecoratorImports(path, importedDecoratorNames = []) {
-    if (!path) {
+function assertDecoratorImports(classPath, importedDecoratorNames = []) {
+    if (!classPath) {
         return;
     }
-    const pathBody = path.get('body');
+    const pathBody = classPath.get('body');
 
     assertClassDecoratorsImported(pathBody, importedDecoratorNames);
     assertExportDefaultDeclarationDecoratorsImported(pathBody,importedDecoratorNames);

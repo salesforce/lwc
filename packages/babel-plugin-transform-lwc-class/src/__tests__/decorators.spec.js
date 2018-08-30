@@ -75,7 +75,7 @@ describe('decorators', () => {
         }
     });
 
-    pluginTest('compiler should correctly point out missing "track" decorator import error', `
+    pluginTest('compiler should correctly point out missing "api" decorator import error', `
         import { LightningElement } from 'lwc';
         export default class Test extends LightningElement {
             @api title = 'hello'

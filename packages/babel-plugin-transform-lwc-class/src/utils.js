@@ -53,13 +53,11 @@ function getEngineImportsStatements(path) {
 function getEngineImportSpecifiers(path) {
     const imports = getEngineImportsStatements(path);
 
-
-    const importSpecifiers = imports.reduce((acc, importStatement) => {
+    return imports.reduce((acc, importStatement) => {
         // Flat-map the specifier list for each import statement
         return [...acc, ...importStatement.get('specifiers')];
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
-
 
         if (specifier.isImportNamespaceSpecifier()) {
             throw specifier.buildCodeFrameError(
@@ -74,11 +72,8 @@ function getEngineImportSpecifiers(path) {
         // Get the list of specifiers with their name
         const imported = specifier.get('imported').node.name;
 
-
         return [...acc, { name: imported, path: specifier }];
     }, []);
-
-    return importSpecifiers;
 }
 
 function isComponentClass(classPath, componentBaseClassImports) {

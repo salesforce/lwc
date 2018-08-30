@@ -270,31 +270,6 @@ describe("compiler result", () => {
         const { success, diagnostics }  = await compile(config);
         expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@api' decorator from the 'lwc'");
     });
-
-    test('compiler does not produce an error if all decorators have been imported', async () => {
-        const config = {
-            name: "foo",
-            namespace: "x",
-            files: {
-                "foo.js": `import { api, track, wire, LightningElement } from 'lwc';
-                import { getTodo } from "todo";
-                export default class Test extends LightningElement {
-                    @wire(getTodo, {})
-                    wiredProp;
-
-                    @track
-                    mytrack = "track";
-
-                    @api
-                    title = "api";
-                }
-                `,
-                "foo.html": `<template></template>`,
-            },
-        };
-        const { success, diagnostics }  = await compile(config);
-        expect(success).toBe(true);
-    });
 });
 
 describe("compiler metadata", () => {
