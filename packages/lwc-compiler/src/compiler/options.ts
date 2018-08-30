@@ -48,7 +48,9 @@ export interface BundleFiles {
     [filename: string]: string;
 }
 
-export type NamespaceMapping = Map<string, string>;
+export interface NamespaceMapping {
+    [name: string]: string;
+};
 
 export interface CompilerOptions {
     name: string;

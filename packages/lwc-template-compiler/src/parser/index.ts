@@ -70,7 +70,7 @@ import {
 } from './constants';
 
 import { isMemberExpression, isIdentifier } from 'babel-types';
-import { ResolvedConfig } from '../config';
+import { NamespaceMapping } from '../config';
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
     const { value } = attribute;
@@ -121,8 +121,7 @@ export default function parse(source: string, state: State): {
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
-    const config: ResolvedConfig = state.config;
-    const namespaceMapping: Map<string, string> | undefined = config && config.namespaceMapping;
+    const namespaceMapping: NamespaceMapping | undefined = state.config && state.config.namespaceMapping;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -228,7 +227,7 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function applyNamespace(element: IRElement, mapping: Map<string, string> | undefined) {
+    function applyNamespace(element: IRElement, mapping: NamespaceMapping | undefined) {
         if (!mapping || !Object.keys(mapping).length) {
             return;
         }

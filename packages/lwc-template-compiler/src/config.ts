@@ -8,7 +8,7 @@ export interface Config {
      *    </template>
      */
     computedMemberExpression?: boolean;
-    namespaceMapping?: Map<string, string>;
+    namespaceMapping?: NamespaceMapping;
 }
 
 export interface ResolvedConfig {
@@ -32,7 +32,11 @@ export interface ResolvedConfig {
      *
      * ex: c-button -> namespace-button
      */
-    namespaceMapping?: Map<string, string>;
+    namespaceMapping?: NamespaceMapping;
+}
+
+export interface NamespaceMapping {
+    [name: string]: string;
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
