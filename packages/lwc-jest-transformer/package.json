@@ -18,6 +18,8 @@
     "deasync": "0.1.12"
   },
   "peerDependencies": {
+    "lwc-compiler": "0.27.x",
+    "lwc-engine": "0.27.x"
   },
   "devDependencies": {
     "lwc-compiler": "0.27.0",

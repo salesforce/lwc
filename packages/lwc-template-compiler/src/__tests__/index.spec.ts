@@ -1,5 +1,4 @@
 import compiler, { compileToFunction } from '../index';
-import { Config } from '../config';
 
 function prettify(str) {
     return str.toString()
@@ -19,7 +18,7 @@ function functionMatchCode(fn, code) {
 }
 
 describe('option validation', () => {
-    it('validate presence of options', () => {
+    it('validates presence of options', () => {
         expect(() => {
             // Use call to escape typescript type checking
             compiler.call(null, `<template></template>`);
@@ -37,12 +36,12 @@ describe('option validation', () => {
     });
 
     it('allows available options', () => {
-        expect.assertions(1);
-        const res = compiler(`<template></template>`, {
-            namespaceMapping: {'c': 'namespace'},
-            computedMemberExpression: false,
-        } as Config);
-        expect(res).toBeDefined();
+        expect(() => (
+            compiler(`<template></template>`, {
+                namespaceMapping: { c: 'namespace' },
+                computedMemberExpression: false,
+            })
+        )).not.toThrow();
     });
 });
 
