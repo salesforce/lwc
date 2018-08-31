@@ -54,7 +54,8 @@ export async function bundle(
 
     const { outputConfig, name, namespace: authoredNamespace, namespaceMapping } = options;
 
-    const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
+    // Compute output namespace based on the original module namespace and the namespaceMapping.
+    const namespace = namespaceMapping[authoredNamespace] || authoredNamespace;
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
