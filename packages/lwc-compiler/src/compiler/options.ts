@@ -2,6 +2,7 @@ import { isBoolean, isString, isUndefined, isObject } from "../utils";
 
 const DEFAULT_OPTIONS = {
     baseDir: "",
+    namespaceMapping: {},
 };
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
@@ -68,7 +69,7 @@ export interface CompilerOptions {
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
-    namespaceMapping?: NamespaceMapping;
+    namespaceMapping: NamespaceMapping;
     stylesheetConfig: NormalizedStylesheetConfig;
 }
 
@@ -120,6 +121,28 @@ export function validateOptions(options: CompilerOptions) {
             throw new TypeError(
                 `Unexpected file content for "${key}". Expected a string, received "${value}".`
             );
+        }
+    }
+
+    if (options.namespaceMapping) {
+        if (!isObject(options.namespaceMapping)) {
+            throw new TypeError(
+                `Expected an object for namespaceMapping, received "${options.namespaceMapping}"`,
+            );
+        }
+
+        for (const [key, value] of Object.entries(options.namespaceMapping)) {
+            if (!isString(key)) {
+                throw new TypeError(
+                    `Expected a string key in namespaceMapping, received "${key}"`,
+                );
+            }
+
+            if (!isString(value)) {
+                throw new TypeError(
+                    `Expected a string value in namespaceMapping.${key}, received "${value}"`,
+                );
+            }
         }
     }
 

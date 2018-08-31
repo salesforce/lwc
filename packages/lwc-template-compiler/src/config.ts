@@ -8,20 +8,6 @@ export interface Config {
      *    </template>
      */
     computedMemberExpression?: boolean;
-    namespaceMapping?: NamespaceMapping;
-}
-
-export interface ResolvedConfig {
-    computedMemberExpression: boolean;
-
-    /**
-     * Internal configuration for the output format of the template. Accepts:
-     *  * "module": generates a ES module, and use import statements to reference component
-     *    constructor.
-     *  * "inline": generates a function, and requires component constructor to be passed
-     *    as parameter.
-     */
-    format: Format;
 
     /**
      * Internal configuration for namespace mapping component. Accepts:
@@ -35,12 +21,27 @@ export interface ResolvedConfig {
     namespaceMapping?: NamespaceMapping;
 }
 
+export interface ResolvedConfig {
+    computedMemberExpression: boolean;
+    namespaceMapping: NamespaceMapping;
+
+    /**
+     * Internal configuration for the output format of the template. Accepts:
+     *  * "module": generates a ES module, and use import statements to reference component
+     *    constructor.
+     *  * "inline": generates a function, and requires component constructor to be passed
+     *    as parameter.
+     */
+    format: Format;
+}
+
 export interface NamespaceMapping {
     [name: string]: string;
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
     computedMemberExpression: false,
+    namespaceMapping: {},
     format: 'module',
 };
 

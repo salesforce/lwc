@@ -70,7 +70,6 @@ import {
 } from './constants';
 
 import { isMemberExpression, isIdentifier } from 'babel-types';
-import { NamespaceMapping } from '../config';
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
     const { value } = attribute;
@@ -121,7 +120,6 @@ export default function parse(source: string, state: State): {
     let root: any;
     let parent: IRElement;
     const stack: IRElement[] = [];
-    const namespaceMapping: NamespaceMapping | undefined = state.config && state.config.namespaceMapping;
 
     traverseHTML(templateRoot, {
         Element: {
@@ -139,7 +137,6 @@ export default function parse(source: string, state: State): {
                     parent.children.push(element);
                 }
 
-                applyNamespace(element, namespaceMapping);
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -225,29 +222,6 @@ export default function parse(source: string, state: State): {
         } else {
             return templateTag as parse5.AST.Default.Element;
         }
-    }
-
-    function applyNamespace(element: IRElement, mapping: NamespaceMapping | undefined) {
-        if (!mapping || !Object.keys(mapping).length) {
-            return;
-        }
-
-        const { tag } = element;
-
-        if (!isCustomElementTag(tag)) {
-            return;
-        }
-
-        Object.entries(mapping).forEach(([previousNamespace, newNamespace]) => {
-            if (!previousNamespace || !newNamespace || !newNamespace.length) {
-                return;
-            }
-
-            const replacementValue = previousNamespace + '-';
-            if (tag.startsWith(replacementValue)) {
-                element.tag = tag.replace(new RegExp(`^(${replacementValue})?`), newNamespace + '-');
-            }
-        });
     }
 
     function applyStyle(element: IRElement) {
@@ -429,12 +403,26 @@ export default function parse(source: string, state: State): {
         }
     }
 
+    function getNamespacedTagName(name: string): string {
+        for (const [original, target] of Object.entries(state.config.namespaceMapping)) {
+            if (name.startsWith(`${original}-`)) {
+                return name.replace(`${original}-`, `${target}-`);
+            }
+        }
+
+        return name;
+    }
+
     function applyComponent(element: IRElement) {
         const { tag } = element;
-        let component: string | undefined;
+        let componentName: string | undefined;
 
         if (isCustomElementTag(tag)) {
-            component = tag;
+            componentName = getNamespacedTagName(tag);
+
+            // Update the original tag name with the namespaced name to get it reflected in the generated
+            // code.
+            element.tag = componentName;
         }
 
         const isAttr = getTemplateAttribute(element, 'is');
@@ -443,15 +431,19 @@ export default function parse(source: string, state: State): {
                 return warnAt(`Is attribute value can't be an expression`, isAttr.location);
             }
 
-            // Don't remove the is, because passed as attribute
-            component = isAttr.value;
+            componentName = getNamespacedTagName(isAttr.value);
+
+            // Update the original is attribute value with the namespaced name to get it reflected in the
+            // generated code.
+            const originalIsAttribute = getAttribute(element, 'is');
+            originalIsAttribute!.value = componentName;
         }
 
-        if (component) {
-            element.component = component;
+        if (componentName) {
+            element.component = componentName;
 
-            if (!state.dependencies.includes(component)) {
-                state.dependencies.push(component);
+            if (!state.dependencies.includes(componentName)) {
+                state.dependencies.push(componentName);
             }
         }
     }

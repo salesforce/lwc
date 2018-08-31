@@ -18,10 +18,8 @@ function attachStyleToTemplate(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
+    // Derive component namespace from the authored namespace and the namespace mapping.
     const { name, namespace: authoredNamespace, namespaceMapping } = options;
-
-    // TODO: in existing implementation, namespace can be undefined and therefore used as namespace/
-    // Perhaps we should throw during compiler options normalization if namespace is not defined.
     const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
 
     const templateFilename = path.basename(filename, path.extname(filename));
@@ -73,7 +71,6 @@ const transform: FileTransformer = function(
     let metadata;
 
     try {
-        // if namespace is not specified normalize to 'c'
         const { namespaceMapping } = options;
         const result = compile(src, { namespaceMapping });
         const warnings = result.warnings;
