@@ -1,19 +1,14 @@
-/* tslint:disable:no-duplicate-imports */
-
-import parser from 'postcss-selector-parser';
 import {
     attribute,
     combinator,
     isTag,
     isPseudoElement,
     isCombinator,
-    Processor,
     Selector,
     Root,
     Node,
     Pseudo,
     Tag,
-    PostCSSRuleNode,
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
@@ -236,31 +231,23 @@ function transformHostContext(selector: Selector, config: PluginConfig) {
     }
 }
 
-/** Returns selector processor based on the passed config */
-function selectorProcessor(config: PluginConfig) {
-    return parser(root => {
-        validateSelectors(root);
-
-        root.each((selector: Selector) => {
-            scopeSelector(selector, config);
-        });
-
-        root.each((selector: Selector) => {
-            transformHost(selector, config);
-        });
-
-        root.each((selector: Selector) => {
-            transformHostContext(selector, config);
-        });
-
-        customElementSelector(root);
-    }) as Processor;
-}
-
 export default function transformSelector(
-    selector: string | PostCSSRuleNode,
+    root: Root,
     config: PluginConfig,
-): string {
-    const processor = selectorProcessor(config);
-    return processor.processSync(selector);
+) {
+    validateSelectors(root);
+
+    root.each((selector: Selector) => {
+        scopeSelector(selector, config);
+    });
+
+    root.each((selector: Selector) => {
+        transformHost(selector, config);
+    });
+
+    root.each((selector: Selector) => {
+        transformHostContext(selector, config);
+    });
+
+    customElementSelector(root);
 }

@@ -6,6 +6,9 @@ export interface PluginConfig {
         allowDefinition?: boolean;
         transformVar?: VarTransformer;
     };
+    namespaceMapping?: {
+        [namespace: string]: string;
+    };
 }
 
 export function validateConfig(options: PluginConfig) {
