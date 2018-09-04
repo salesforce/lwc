@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, innerHTMLSetter } from "./dom-api";
+import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -379,8 +379,10 @@ function destroyChildren(children: VNodes) {
                 // we should just log the issue and continue our destroying procedure
                 hook.destroy(vnode);
             } catch (e) {
-                const vm = getCustomElementVM(elm as HTMLElement);
-                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
+                if (process.env.NODE_ENV !== 'production') {
+                    const vm = getCustomElementVM(elm as HTMLElement);
+                    assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
+                }
             }
         }
         if (isArray(grandChildren)) {
@@ -402,9 +404,9 @@ export function resetShadowRoot(vm: VM) {
     if (isTrue(fallback)) {
         // faux-shadow does not have a real cmpRoot instance, instead
         // we need to remove the content of the host entirely
-        innerHTMLSetter.call(vm.elm, '');
+        ElementInnerHTMLSetter.call(vm.elm, '');
     } else {
-        innerHTMLSetter.call(vm.cmpRoot, '');
+        ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     }
     // proper destroying mechanism for those vnodes that requires it
     destroyChildren(oldCh);
