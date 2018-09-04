@@ -18,7 +18,7 @@ function functionMatchCode(fn, code) {
 }
 
 describe('option validation', () => {
-    it('validated presence of options', () => {
+    it('validates presence of options', () => {
         expect(() => {
             // Use call to escape typescript type checking
             compiler.call(null, `<template></template>`);
@@ -33,6 +33,15 @@ describe('option validation', () => {
         }).toThrow(
             /Unknown option property foo/,
         );
+    });
+
+    it('allows available options', () => {
+        expect(() => (
+            compiler(`<template></template>`, {
+                namespaceMapping: { c: 'namespace' },
+                computedMemberExpression: false,
+            })
+        )).not.toThrow();
     });
 });
 
