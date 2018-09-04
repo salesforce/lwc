@@ -151,40 +151,6 @@ describe('"@salesforce/apex" namespace mapping', () => {
     );
 });
 
-describe('"@salesforce/apex" namespace mapping', () => {
-    pluginTest(
-        'should add namespace if not present',
-        `import method from '@salesforce/apex/MyClass.methodA';`,
-        {
-            output: {
-                code: `import method from \"@salesforce/apex/nsC.MyClass.methodA\";`,
-            },
-        },
-    );
-
-    pluginTest(
-        'should add namespace if not present on all imports',
-        `import methodA from '@salesforce/apex/MyClass.methodA';
-         import methodB from '@salesforce/apex/MyClass.methodB';`,
-        {
-            output: {
-                code: `import methodA from \"@salesforce/apex/nsC.MyClass.methodA\";
-                             import methodB from \"@salesforce/apex/nsC.MyClass.methodB\";`,
-            },
-        },
-    );
-
-    pluginTest(
-        'should ignore import if namespace if already present',
-        `import method from '@salesforce/apex/anotherNamespace.MyClass.methodA';`,
-        {
-            output: {
-                code: `import method from '@salesforce/apex/anotherNamespace.MyClass.methodA';`,
-            },
-        },
-    );
-});
-
 describe('"@salesforce/schema" namespace mapping', () => {
     pluginTest(
         'should on add namespace custom object',

@@ -32,7 +32,6 @@ function getSalesforceNamespacedModule(moduleName, namespaceMapping) {
             break;
 
         // @salesforce/apex/MyClass.methodA -> @salesforce/apex/acme.MyClass.methodA
-        // TODO: Can an inner class be referenced? For example: @salesforce/apex/MyClass.MyInnerClass.myMethod
         case 'apex':
             // We detect if the apex reference already contains the namespace by checking the number of parts in it's
             // reference. If the namespace is present the value would have the following from <ns>.<class>.<method>
