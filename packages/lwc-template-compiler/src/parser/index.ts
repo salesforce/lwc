@@ -17,6 +17,7 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
+    isRestrictedStaticAttribute,
 } from './attribute';
 
 import {
@@ -153,6 +154,7 @@ export default function parse(source: string, state: State): {
                 const element = stack.pop() as IRElement;
                 applyAttributes(element);
                 validateElement(element);
+                validateAttributes(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -556,6 +558,18 @@ export default function parse(source: string, state: State): {
                 );
             }
         }
+    }
+
+    function validateAttributes(element: IRElement) {
+        const { tag, attrsList } = element;
+        attrsList.forEach(attr => {
+            if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
+                warnOnElement(
+                    `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
+                    element.__original as parse5.AST.Default.Element
+                );
+            }
+        });
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {

@@ -339,6 +339,39 @@ describe('expression', () => {
 });
 
 describe('props and attributes', () => {
+    it('invalid static attribute error', () => {
+        const { warnings } = parseTemplate(`
+            <template>
+                <div id="foo"></div>
+                <div id={foo}></div>
+                <label for="foo"></label>
+                <label for={foo}></label>
+                <div aria-activedescendant="foo"></div>
+                <div aria-activedescendant={foo}></div>
+                <div aria-controls="foo"></div>
+                <div aria-controls={foo}></div>
+                <div aria-describedby="foo"></div>
+                <div aria-describedby={foo}></div>
+                <div aria-details="foo"></div>
+                <div aria-details={foo}></div>
+                <div aria-errormessage="foo"></div>
+                <div aria-errormessage={foo}></div>
+                <div aria-flowto="foo"></div>
+                <div aria-flowto={foo}></div>
+                <div aria-labelledby="foo"></div>
+                <div aria-labelledby={foo}></div>
+                <div aria-owns="foo"></div>
+                <div aria-owns={foo}></div>
+            </template>
+        `);
+        expect(warnings.length).toBe(10);
+        expect(warnings[0].message).toBe('The attribute "id" cannot be an expression. It must be a static string value.');
+        expect(warnings[0]).toMatchObject({
+            start: 77,
+            length: 20,
+        });
+    });
+
     it('invalid html attribute error', () => {
         const { warnings } = parseTemplate(`<template><div minlength="1" maxlength="5"></div></template>`);
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
