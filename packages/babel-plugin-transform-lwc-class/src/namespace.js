@@ -11,6 +11,11 @@ function getSalesforceNamespacedModule(moduleName, namespaceMapping) {
 
     const [prefix, type, value] = moduleName.split('/');
 
+    // early exit to support a case such as @salesforce/apex, where the value is not present
+    if (value === undefined) {
+        return moduleName;
+    }
+
     let updatedValue = value;
     switch (type) {
         // @salesforce/label/c.label1 -> @salesforce/label/namespace.label1
@@ -77,9 +82,13 @@ function getStandardNamespacedModule(moduleName, namespaceMapping) {
 }
 
 module.exports = function namespaceReplaceVisitor({ types: t }, config) {
+    if (!config) {
+        return {};
+    }
+
     const { namespaceMapping = {} } = config;
 
-    // Return an empty visitor if namespace don't need to be mapped
+    // Return an empty visitor if namespace doesn't need to be mapped
     if (!Object.keys(namespaceMapping).length) {
         return {};
     }

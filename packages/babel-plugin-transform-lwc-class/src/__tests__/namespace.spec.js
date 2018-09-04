@@ -153,7 +153,7 @@ describe('"@salesforce/apex" namespace mapping', () => {
 
 describe('"@salesforce/schema" namespace mapping', () => {
     pluginTest(
-        'should on add namespace custom object',
+        'should add namespace custom object',
         `import method from '@salesforce/schema/CustomObject__c';`,
         {
             output: {
@@ -163,7 +163,7 @@ describe('"@salesforce/schema" namespace mapping', () => {
     );
 
     pluginTest(
-        'should on add namespace on custom fields on standard objects',
+        'should add namespace on custom fields on standard objects',
         `import method from '@salesforce/schema/Account.CustomField__c';`,
         {
             output: {
@@ -173,7 +173,7 @@ describe('"@salesforce/schema" namespace mapping', () => {
     );
 
     pluginTest(
-        'should on add namespace on custom relationships on standard object',
+        'should add namespace on custom relationships on standard object',
         `import method from '@salesforce/schema/Account.Relation__r.Name';`,
         {
             output: {
@@ -194,10 +194,10 @@ describe('"@salesforce/schema" namespace mapping', () => {
 
     pluginTest(
         'should handle mixed standard and custom relationships',
-        `import method from '@salesforce/schema/CustomObect__c.parentContact__r.Account.Name';`,
+        `import method from '@salesforce/schema/CustomObject__c.parentContact__r.Account.Name';`,
         {
             output: {
-                code: `import method from \"@salesforce/schema/nsC__CustomObect__c.nsC__parentContact__r.Account.Name\";`,
+                code: `import method from \"@salesforce/schema/nsC__CustomObject__c.nsC__parentContact__r.Account.Name\";`,
             },
         },
     );
