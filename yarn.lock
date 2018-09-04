@@ -9089,7 +9089,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
 
 rollup-plugin-compat@0.18.12:
   version "0.18.12"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-compat/-/ad55c7c3469400d1982ccab52d8552255604a056.tgz#ad55c7c3469400d1982ccab52d8552255604a056"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.18.12/ad55c7c3469400d1982ccab52d8552255604a056.tgz#ad55c7c3469400d1982ccab52d8552255604a056"
   dependencies:
     "@babel/core" "7.0.0-beta.49"
     rollup-pluginutils "~2.0.1"
