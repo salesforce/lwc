@@ -2,12 +2,12 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty } from "../shared/language";
+import { isArray, ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty, isFunction } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter } from "./dom-api";
+import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -153,7 +153,7 @@ export function removeVM(vm: VM) {
     // from the DOM. Once we move to use Custom Element APIs, we can remove this
     // because the disconnectedCallback will be triggered automatically when
     // removed from the DOM.
-    patchShadowRoot(vm, []);
+    resetShadowRoot(vm);
 }
 
 export interface CreateVMInit {
@@ -362,31 +362,54 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     }
 }
 
-function forceResetShadowContent(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+function destroyChildren(children: VNodes) {
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (isNull(vnode)) {
+            continue;
+        }
+        const { elm } = vnode;
+        if (isUndefined(elm)) {
+            continue;
+        }
+        const { data: { hook }, children: grandChildren } = vnode;
+        if (isObject(hook) && isFunction(hook.destroy)) {
+            try {
+                // if destroy fails, it really means that the service hook or disconnect hook failed,
+                // we should just log the issue and continue our destroying procedure
+                hook.destroy(vnode);
+            } catch (e) {
+                if (process.env.NODE_ENV !== 'production') {
+                    const vm = getCustomElementVM(elm as HTMLElement);
+                    assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
+                }
+            }
+        }
+        if (isArray(grandChildren)) {
+            destroyChildren(grandChildren);
+        }
     }
-    const parentElm: ShadowRoot | Element = vm.fallback ? vm.elm : vm.cmpRoot;
-    parentElm.innerHTML = "";
 }
 
+// This is a super optimized mechanism to remove the content of the shadowRoot
+// without having to go into snabbdom. Especially useful when the reset is a consequence
+// of an error, in which case the children VNodes might not be representing the current
+// state of the DOM
 export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { cmpRoot, children: oldCh } = vm;
+    const { children: oldCh, fallback } = vm;
     vm.children = EmptyArray;
-    if (oldCh.length === 0) {
-        return; // optimization for the common case
+    if (isTrue(fallback)) {
+        // faux-shadow does not have a real cmpRoot instance, instead
+        // we need to remove the content of the host entirely
+        ElementInnerHTMLSetter.call(vm.elm, '');
+    } else {
+        ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     }
-
-    try {
-        // patch function mutates vnodes by adding the element reference,
-        // however, if patching fails it contains partial changes.
-        patchChildren(cmpRoot, oldCh, EmptyArray);
-    } catch (e) {
-        forceResetShadowContent(vm);
-    }
+    // proper destroying mechanism for those vnodes that requires it
+    destroyChildren(oldCh);
 }
 
 export function scheduleRehydration(vm: VM) {

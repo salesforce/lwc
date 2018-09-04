@@ -7,9 +7,14 @@ import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
-import { isNull, isUndefined, isFalse, isTrue } from "../shared/language";
+import { isUndefined, isFalse, isTrue } from "../shared/language";
 import { getInternalField } from "../shared/fields";
-import { parentNodeGetter } from "./dom-api";
+import {
+    parentNodeGetter,
+    insertBefore,
+    removeChild,
+    appendChild,
+} from "./dom-api";
 import { VM, setNodeOwnerKey } from "./vm";
 import { ViewModelReflection } from "./utils";
 import { patchSlotElementWithRestrictions } from "./restrictions";
@@ -21,11 +26,7 @@ const {
     createComment,
     createDocumentFragment,
 } = document;
-const {
-    insertBefore,
-    removeChild,
-    appendChild,
-} = Node.prototype;
+
 function parentNode(node: Node): Node | null {
     return parentNodeGetter.call(node);
 }
@@ -75,11 +76,9 @@ const htmlDomApi: DOMAPI = {
         insertBefore.call(parent, newNode, referenceNode);
     },
     removeChild(node: Node, child: Node) {
-        if (!isNull(node)) {
-            const vm: VM | undefined = getInternalField(node, ViewModelReflection);
-            node = remapNodeIfFallbackIsNeeded(vm, node);
-            removeChild.call(node, child);
-        }
+        const vm: VM | undefined = getInternalField(node, ViewModelReflection);
+        node = remapNodeIfFallbackIsNeeded(vm, node);
+        removeChild.call(node, child);
     },
     appendChild(node: Node, child: Node) {
         const vm: VM | undefined = getInternalField(node, ViewModelReflection);
