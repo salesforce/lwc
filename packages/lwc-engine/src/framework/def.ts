@@ -144,7 +144,9 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
-
+        if (Ctor.forceTagName) {
+            assert.logWarning(`"forceTagName" has been deprecated and will be removed in the near future.`);
+        }
         assertValidForceTagName(Ctor);
     }
 

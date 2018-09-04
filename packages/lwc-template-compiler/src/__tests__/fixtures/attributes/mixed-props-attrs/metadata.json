@@ -2,5 +2,22 @@
   "metadata": {
     "templateUsedIds": ["p", "foo"],
     "templateDependencies": ["ns-foo", "ns-bar", "ns-buzz", "ns-table", "ns-input"]
-  }
+  },
+  "warnings": [{
+    "length": 12,
+    "level": "warning",
+    "message": "It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on \"is\" as it will be deprecated in the near future.",
+    "start": 561
+    }, {
+      "length": 13,
+      "level": "warning",
+      "message": "It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on \"is\" as it will be deprecated in the near future.",
+      "start": 670
+    }, {
+        "length": 13,
+        "level": "warning",
+        "message": "It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on \"is\" as it will be deprecated in the near future.",
+        "start": 765
+    }
+  ]
 }

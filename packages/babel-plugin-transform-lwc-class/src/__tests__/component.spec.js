@@ -76,7 +76,7 @@ describe('observedAttributes array', () => {
             }
         }
     });
-})
+});
 
 describe('render method', () => {
     pluginTest('inject render method', `

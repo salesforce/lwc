@@ -258,6 +258,9 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
     const { forceTagName } = Ctor;
     let tag = sel, text, elm; // tslint:disable-line
     if (!isUndefined(attrs) && !isUndefined(attrs.is)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.logWarning(`"is" attribute has been deprecated and will be removed in the near future.`);
+        }
         tag = sel;
         sel = attrs.is as string;
     } else if (!isUndefined(forceTagName)) {

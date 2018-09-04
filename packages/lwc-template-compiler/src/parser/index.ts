@@ -414,7 +414,7 @@ export default function parse(source: string, state: State): {
             if (isAttr.type !== IRAttributeType.String) {
                 return warnAt(`Is attribute value can't be an expression`, isAttr.location);
             }
-
+            warnAt(`It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on "is" as it will be deprecated in the near future.`, isAttr.location, 'warning');
             // Don't remove the is, because passed as attribute
             component = isAttr.value;
         }
