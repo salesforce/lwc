@@ -117,7 +117,7 @@ class Storage {
 
 // stub for AuraStorageService exposed via modules in Aura
 // https://github.com/forcedotcom/aura/blob/master/aura-impl/src/main/resources/aura/AuraExportsStorage.js
-const storageService = {
+module.exports = {
     getStorage(name) {
         return storages[name];
     },
@@ -140,5 +140,3 @@ const storageService = {
         return Promise.resolve();
     }
 };
-
-export default storageService;
