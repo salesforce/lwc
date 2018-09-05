@@ -55,6 +55,17 @@ describe('selector validation', () => {
             column: 1,
         });
     });
+
+    it.skip('should restrict usage of unsupported id selectors', () => {
+        return expect(process('.foo #bar span')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /Invalid usage of id selector "#bar". Use a class selector instead./
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 1,
+        });
+    });
 });
 
 describe('attribute validation', () => {

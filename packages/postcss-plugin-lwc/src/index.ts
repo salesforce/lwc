@@ -25,6 +25,17 @@ function selectorProcessorFactory(config: PluginConfig) {
     }) as Processor;
 }
 
+function validateIdSelectors(root) {
+    root.walkRules(rule => {
+        const result = /(#\w+)/.exec(rule.selector);
+        if (result) {
+            throw rule.error(
+                `Invalid usage of id selector "${result[1]}". Use a class selector instead.`
+            );
+        }
+    });
+}
+
 export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
     validateConfig(config);
 
@@ -45,6 +56,8 @@ export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
                 }
             });
         }
+
+        validateIdSelectors(root);
 
         root.walkRules(rule => {
             rule.selector = selectorProcessor.processSync(rule);
