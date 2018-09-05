@@ -11,27 +11,18 @@ const rollupCompatPlugin = require("rollup-plugin-compat").default;
 
 const { DEFAULT_NS, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
-function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
+function getModuleQualifiedName(file) {
     const registry = {
         entry: file,
         moduleSpecifier: null,
         moduleName: null,
         moduleNamespace: DEFAULT_NS
     };
-    const fileName = path.basename(file, path.extname(file));
-    const rootParts = path.dirname(file).split(path.sep);
-    const nameParts = fileName.split("-");
-    const validModuleName = nameParts.length > 1;
 
-    if (mapNamespaceFromPath) {
-        registry.moduleName = rootParts.pop();
-        registry.moduleNamespace = rootParts.pop();
-    } else if (validModuleName) {
-        registry.moduleNamespace = nameParts.shift();
-        registry.moduleName = nameParts.join("-");
-    } else {
-        registry.moduleName = fileName;
-    }
+    const rootParts = path.dirname(file).split(path.sep);
+
+    registry.moduleName = rootParts.pop();
+    registry.moduleNamespace = rootParts.pop();
 
     return registry;
 }
@@ -51,16 +42,9 @@ function normalizeResult(result) {
     }
  */
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
-    const { include, exclude, mapNamespaceFromPath } = pluginOptions;
+    const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
-    const mergedPluginOptions = Object.assign(
-        {},
-        DEFAULT_OPTIONS,
-        pluginOptions,
-        {
-            mapNamespaceFromPath: Boolean(mapNamespaceFromPath)
-        }
-    );
+    const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions,);
     const { mode, compat } = mergedPluginOptions;
 
     // We will compose compat plugin on top of this one
@@ -121,11 +105,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // If we don't find the moduleId, just resolve the module name/namespace
-            const moduleEntry = Object.values(modulePaths).find(
-                r => id === r.entry
-            );
-            const moduleRegistry =
-                moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
+            const moduleEntry = Object.values(modulePaths).find(r => id === r.entry);
+            const moduleRegistry = moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
 
             let result = code;
 

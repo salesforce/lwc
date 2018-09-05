@@ -2,6 +2,7 @@
 const glob = require('glob');
 const path = require('path');
 const fs = require('fs');
+const decamelize = require('decamelize');
 const nodeModulePaths = require('./node-modules-paths');
 
 const DEFAULT_NS = 'x';
@@ -24,7 +25,7 @@ function loadLwcConfig(modulePath) {
     return config;
 }
 
-function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderName, allowUnnamespaced } = {}) {
+function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
         const fileName = path.basename(file, MODULE_EXTENSION);
         const rootDir = path.dirname(file);
@@ -36,41 +37,15 @@ function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderNa
             moduleNamespace: DEFAULT_NS
         };
 
-        if (mapNamespaceFromPath) {
-            const dirModuleName = rootParts.pop();
-            if (dirModuleName === fileName || ignoreFolderName) { // If this is false is a relative file within the module
-                const dirModuleNamespace = rootParts.pop();
-                registry.moduleName = fileName;
-                registry.moduleNamespace = dirModuleNamespace;
-                registry.moduleSpecifier = `${dirModuleNamespace}-${fileName}`;
-                mappings[registry.moduleSpecifier] = registry;
-            }
-            return mappings;
+        const dirModuleName = rootParts.pop();
+        const dirModuleNamespace = rootParts.pop();
+        if (dirModuleNamespace && dirModuleName === fileName || ignoreFolderName) {
+            registry.moduleName = decamelize(fileName, '-');
+            registry.moduleNamespace = dirModuleNamespace;
+            registry.moduleSpecifier = `${dirModuleNamespace}/${fileName}`;
+            mappings[registry.moduleSpecifier] = registry;
         }
-
-        const nameParts = fileName.split('-');
-        const validModuleName = nameParts.length > 1;
-
-        if (validModuleName) {
-            if (rootParts.pop() === fileName || ignoreFolderName) {
-                registry.moduleSpecifier = fileName;
-                registry.moduleNamespace = nameParts.shift();
-                registry.moduleName = nameParts.join('-');
-                mappings[registry.moduleSpecifier] = registry;
-            }
-            return mappings;
-
-        } else if (allowUnnamespaced) {
-            if (rootParts.pop() === fileName || ignoreFolderName) {
-                registry.moduleName = fileName;
-                registry.moduleSpecifier = `${registry.moduleNamespace}-${fileName}`;
-                mappings[registry.moduleSpecifier] = registry;
-            }
-            return mappings;
-        }
-
         return mappings;
-
     }, {});
 }
 
