@@ -83,6 +83,40 @@ describe('"@salesforce/label" namespace mapping', () => {
     );
 });
 
+describe('"@salesforce/componentTagName" namespace mapping', () => {
+    pluginTest(
+        'should replace default namespace',
+        `import tag from '@salesforce/componentTagName/c-foo';`,
+        {
+            output: {
+                code: `import tag from \"@salesforce/componentTagName/nsC-foo\";`,
+            },
+        },
+    );
+
+    pluginTest(
+        'should replace default namespace on all the import statements',
+        `import tag1 from '@salesforce/componentTagName/c-foo';
+         import tag2 from '@salesforce/componentTagName/c-bar';`,
+        {
+            output: {
+                code: `import tag1 from \"@salesforce/componentTagName/nsC-foo\";
+                       import tag2 from \"@salesforce/componentTagName/nsC-bar\";`,
+            },
+        },
+    );
+
+    pluginTest(
+        'should keep original namespace untouched',
+        `import tag from '@salesforce/componentTagName/othernamespace-foo';`,
+        {
+            output: {
+                code: `import tag from '@salesforce/componentTagName/othernamespace-foo';`,
+            },
+        },
+    );
+});
+
 describe('"@salesforce/resource-url" namespace mapping', () => {
     pluginTest(
         'should add namespace if not present',
