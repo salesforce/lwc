@@ -65,6 +65,15 @@ function getSalesforceNamespacedModule(moduleName, namespaceMapping) {
                 })
                 .join('.');
             break;
+
+        case 'componentTagName':
+            if (value.startsWith(`${DEFAULT_SALESFORCE_NAMESPACE}-`)) {
+                updatedValue = value.replace(
+                    `${DEFAULT_SALESFORCE_NAMESPACE}`,
+                    `${targetSalesforceNamespace}`,
+                );
+            }
+            break;
     }
 
     return [prefix, type, updatedValue].join('/');
