@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.26.0...v) (2018-08-25)
+# [](https://github.com/salesforce/lwc/compare/v0.27.0...v) (2018-09-05)
+
+
+### Bug Fixes
+
+* **engine:** asserts logs require elm to print component stack ([#573](https://github.com/salesforce/lwc/issues/573)) ([387fd05](https://github.com/salesforce/lwc/commit/387fd05)), closes [#563](https://github.com/salesforce/lwc/issues/563)
+
+
+### Features
+
+* **babel-plugin-transform-lwc-class:** add component tag name support ([#621](https://github.com/salesforce/lwc/issues/621)) ([57cae0c](https://github.com/salesforce/lwc/commit/57cae0c))
+* **compiler:** add namespace support for js/html transform ([#611](https://github.com/salesforce/lwc/issues/611)) ([d5ced31](https://github.com/salesforce/lwc/commit/d5ced31))
+* **engine:** adding this.template.activeElement into faux-shadow ([#612](https://github.com/salesforce/lwc/issues/612)) ([90d18ef](https://github.com/salesforce/lwc/commit/90d18ef))
+
+
+### Performance Improvements
+
+* **engine:** trying to get best back on track ([#616](https://github.com/salesforce/lwc/issues/616)) ([6e78171](https://github.com/salesforce/lwc/commit/6e78171))
+
+
+
+<a name="0.27.0"></a>
+# [0.27.0](https://github.com/salesforce/lwc/compare/v0.26.0...v0.27.0) (2018-08-25)
 
 
 ### Bug Fixes
