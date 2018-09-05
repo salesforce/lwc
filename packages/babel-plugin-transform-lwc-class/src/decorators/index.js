@@ -144,6 +144,7 @@ module.exports = function decoratorVisitor({ types: t }) {
                 const metadata = transform(t, klass, decorators);
                 state.file.metadata.decorators.push(...metadata);
             }
+
             state.decorators = decorators;
             state.decoratorImportSpecifiers = decoratorImportSpecifiers;
         },

@@ -43,7 +43,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`, vm.elm);
                 }
                 return;
             }
@@ -148,14 +148,14 @@ LightningElement.prototype = {
             const { type: evtName, composed, bubbles } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && ('composed' in event && !composed)) {
-                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
+                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`, elm);
             }
             if (vm.idx === 0) {
-                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`);
+                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`, elm);
             }
 
             if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
-                assert.logWarning(`Invalid event type "${evtName}" dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
+                assert.logWarning(`Invalid event type "${evtName}" dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`, elm);
             }
         }
         return dispatchEvent.call(elm, event);
@@ -282,7 +282,7 @@ LightningElement.prototype = {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`, vm.elm);
         }
         return vm.cmpRoot;
     },

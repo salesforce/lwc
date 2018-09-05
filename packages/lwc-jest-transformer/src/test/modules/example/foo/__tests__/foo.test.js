@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import Foo from 'example-foo';
 import Bar from 'other-bar';
 

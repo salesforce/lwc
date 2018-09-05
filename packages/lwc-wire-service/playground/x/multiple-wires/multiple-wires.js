@@ -1,11 +1,16 @@
-import { Element, api, wire } from 'engine';
+import { LightningElement, api, wire } from 'lwc';
 import { getTodo } from 'x-todo-api';
 
-export default class MultipleWires extends Element {
+export default class MultipleWires extends LightningElement {
     idA;
     idB;
 
-    @api set todoId(value) {
+    @api
+    get todoId() {
+        return this.idA;
+    }
+
+    set todoId(value) {
         value = Number.parseInt(value, 10);
         if (!Number.isInteger(value)) {
             this.idA = this.idB = undefined;
@@ -13,10 +18,6 @@ export default class MultipleWires extends Element {
         }
         this.idA = value;
         this.idB = value + 1;
-    }
-
-    @api get todoId() {
-        return this.idA;
     }
 
     @wire(getTodo, { id: '$idA' })

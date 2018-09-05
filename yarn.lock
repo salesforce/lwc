@@ -1919,9 +1919,9 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.18.11/9eb9636c4d19fd026e4460fcae51672a85f0516c.tgz#9eb9636c4d19fd026e4460fcae51672a85f0516c"
+babel-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.18.12/eb57f30a9f26c72903e989e1033314e0c6a692b5.tgz#eb57f30a9f26c72903e989e1033314e0c6a692b5"
 
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
@@ -1946,10 +1946,6 @@ babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
     private "^0.1.7"
     slash "^1.0.0"
     source-map "^0.5.6"
-
-babel-core@~7.0.0-0:
-  version "7.0.0-bridge.0"
-  resolved "http://npm.lwcjs.org/babel-core/-/babel-core-7.0.0-bridge.0/95a492ddd90f9b4e9a4a1da14eb335b87b634ece.tgz#95a492ddd90f9b4e9a4a1da14eb335b87b634ece"
 
 babel-eslint@^8.0.3:
   version "8.2.2"
@@ -2427,9 +2423,9 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.5a128fd5:
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-transform-proxy-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.18.11/6c2567c41831f58de3c91cb98920b9276bcb61fc.tgz#6c2567c41831f58de3c91cb98920b9276bcb61fc"
+babel-plugin-transform-proxy-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.18.12/4ac191063b8d2ffb034aa58eb7bf3b2d1ffbf507.tgz#4ac191063b8d2ffb034aa58eb7bf3b2d1ffbf507"
 
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
@@ -2478,9 +2474,9 @@ babel-polyfill@6.26.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
-babel-preset-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.18.11/68d54e19fcd4df57ddec0762f71ca405986be080.tgz#68d54e19fcd4df57ddec0762f71ca405986be080"
+babel-preset-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.18.12/0fef5812e94e96d8f0091b0074ec010884946ba9.tgz#0fef5812e94e96d8f0091b0074ec010884946ba9"
   dependencies:
     "@babel/plugin-proposal-class-properties" "7.0.0-beta.49"
     "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.49"
@@ -2511,7 +2507,7 @@ babel-preset-compat@0.18.11:
     "@babel/plugin-transform-template-literals" "7.0.0-beta.49"
     "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.49"
     "@babel/plugin-transform-unicode-regex" "7.0.0-beta.49"
-    babel-plugin-transform-proxy-compat "0.18.11"
+    babel-plugin-transform-proxy-compat "0.18.12"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -3400,9 +3396,9 @@ compare-versions@^3.1.0:
   version "3.3.0"
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-3.3.0/af93ea705a96943f622ab309578b9b90586f39c3.tgz#af93ea705a96943f622ab309578b9b90586f39c3"
 
-compat-polyfills@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.18.11/0ec8ebfd7679a8001144785a740827f10fa17739.tgz#0ec8ebfd7679a8001144785a740827f10fa17739"
+compat-polyfills@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.18.12/9b6025c282236882a5b6209087c4ffe2ea2921cc.tgz#9b6025c282236882a5b6209087c4ffe2ea2921cc"
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -4368,15 +4364,15 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
 
-es5-proxy-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.18.11/2961f9bf8a2572b1f3f50ac05384dab74cf33f55.tgz#2961f9bf8a2572b1f3f50ac05384dab74cf33f55"
+es5-proxy-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.18.12/89721e2f66381a25cf3465d106e4e479796a7dcb.tgz#89721e2f66381a25cf3465d106e4e479796a7dcb"
   dependencies:
-    babel-compat "0.18.11"
-    babel-plugin-transform-proxy-compat "0.18.11"
-    babel-preset-compat "0.18.11"
-    compat-polyfills "0.18.11"
-    proxy-compat "0.18.11"
+    babel-compat "0.18.12"
+    babel-plugin-transform-proxy-compat "0.18.12"
+    babel-preset-compat "0.18.12"
+    compat-polyfills "0.18.12"
+    proxy-compat "0.18.12"
 
 es6-promise@^4.0.3:
   version "4.2.4"
@@ -8405,9 +8401,9 @@ proxy-addr@~2.0.2:
     forwarded "~0.1.2"
     ipaddr.js "1.6.0"
 
-proxy-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.18.11/c150afbd6648b1710f5bf5ff0a08068220293f47.tgz#c150afbd6648b1710f5bf5ff0a08068220293f47"
+proxy-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.18.12/cd209f637e6da8a89fa3f5fe20b8aea174d61686.tgz#cd209f637e6da8a89fa3f5fe20b8aea174d61686"
 
 proxy-from-env@^1.0.0:
   version "1.0.0"
@@ -9087,9 +9083,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-compat@0.18.11:
-  version "0.18.11"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.18.11/f445f20e86630833d208fc3f92d6bf5f377d8024.tgz#f445f20e86630833d208fc3f92d6bf5f377d8024"
+rollup-plugin-compat@0.18.12:
+  version "0.18.12"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.18.12/ad55c7c3469400d1982ccab52d8552255604a056.tgz#ad55c7c3469400d1982ccab52d8552255604a056"
   dependencies:
     "@babel/core" "7.0.0-beta.49"
     rollup-pluginutils "~2.0.1"
@@ -9102,14 +9098,6 @@ rollup-plugin-inject@^1.4.1:
     estree-walker "^0.2.0"
     magic-string "^0.10.0"
     rollup-pluginutils "^1.2.0"
-
-rollup-plugin-node-resolve@^3.0.0:
-  version "3.0.3"
-  resolved "http://npm.lwcjs.org/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.3/8f57b253edd00e5b0ad0aed7b7e9cf5982e98fa4.tgz#8f57b253edd00e5b0ad0aed7b7e9cf5982e98fa4"
-  dependencies:
-    builtin-modules "^1.1.0"
-    is-module "^1.0.0"
-    resolve "^1.1.6"
 
 rollup-plugin-node-resolve@^3.0.2:
   version "3.0.2"

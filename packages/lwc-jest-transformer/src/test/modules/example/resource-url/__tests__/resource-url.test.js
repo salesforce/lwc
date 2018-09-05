@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import ResourceUrl from 'example-resource-url';
 
 jest.mock('@salesforce/resource-url/c.mocked', () => {

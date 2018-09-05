@@ -1,5 +1,6 @@
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from "../../framework/html-element";
+import { compileTemplate } from 'test-utils';
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -674,6 +675,27 @@ describe('#childNodes', () => {
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(1);
         expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('p'));
+    });
+
+    it('should log a warning when accessing childNodes property', () => {
+        const html = compileTemplate(`<template><div><p></p></div></template>`);
+        class Parent extends LightningElement {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            const childNodes = getHostShadowRoot(elm).childNodes;
+        }).toLogWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
+
+        expect(() => {
+            const child = getHostShadowRoot(elm).querySelector('div');
+            const childNodes = child.childNodes;
+        }).toLogWarning(`childNodes on [object HTMLDivElement] returns a live NodeList which is not stable. Use querySelectorAll instead.`);
     });
 
     it('should return correct elements for custom elements when no children present', () => {

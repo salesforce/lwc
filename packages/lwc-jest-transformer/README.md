@@ -1,6 +1,6 @@
 # lwc-jest-transformer
 
-Compile LWC  and engine for [Jest](https://facebook.github.io/jest/) tests
+Compile LWC and engine for [Jest](https://facebook.github.io/jest/) tests
 
 ## Requirements
 

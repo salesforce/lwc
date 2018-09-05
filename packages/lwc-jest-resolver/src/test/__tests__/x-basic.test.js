@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import Basic from '../x-basic';
 
 describe('x-basic', () => {

@@ -11,6 +11,13 @@ const {
     removeEventListener,
 } = Element.prototype;
 
+const {
+    insertBefore,
+    removeChild,
+    appendChild,
+    hasChildNodes,
+} = Node.prototype;
+
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
@@ -22,6 +29,14 @@ const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor
 const dispatchEvent = 'EventTarget' in window ?
     EventTarget.prototype.dispatchEvent :
     Node.prototype.dispatchEvent; // IE11
+
+const ElementInnerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
+    getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!;  // IE11
+
+const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = typeof (window as any).ShadowRoot !== "undefined" ? getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'innerHTML')!.set! : () => {
+    throw new Error('Internal Error: Missing ShadowRoot');
+};
 
 const BaseCustomElementProto = document.createElement('x-lwc').constructor.prototype;
 
@@ -38,6 +53,13 @@ export {
     elementTagNameGetter,
     addEventListener,
     removeEventListener,
+    ElementInnerHTMLSetter,
+    ShadowRootInnerHTMLSetter,
+
+    insertBefore,
+    removeChild,
+    appendChild,
+    hasChildNodes,
 
     BaseCustomElementProto,
 };

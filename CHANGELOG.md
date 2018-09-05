@@ -1,5 +1,58 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.3...v) (2018-08-12)
+# [](https://github.com/salesforce/lwc/compare/v0.26.0...v) (2018-08-25)
+
+
+### Bug Fixes
+
+* **engine:** undefined initial values should be respected ([#558](https://github.com/salesforce/lwc/issues/558)) ([e2f24b8](https://github.com/salesforce/lwc/commit/e2f24b8)), closes [#490](https://github.com/salesforce/lwc/issues/490)
+
+
+
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/salesforce/lwc/compare/v0.25.5...v0.26.0) (2018-08-24)
+
+
+### Bug Fixes
+
+* disable dual [@api](https://github.com/api) decorators support  @W-5165180 ([#598](https://github.com/salesforce/lwc/issues/598)) ([ce9308b](https://github.com/salesforce/lwc/commit/ce9308b))
+* **engine:** closes [#515](https://github.com/salesforce/lwc/issues/515) by removing lazy init ([#517](https://github.com/salesforce/lwc/issues/517)) ([38fe207](https://github.com/salesforce/lwc/commit/38fe207))
+* remove comments in minified bundle @W-5320429 ([#599](https://github.com/salesforce/lwc/issues/599)) ([46d65c0](https://github.com/salesforce/lwc/commit/46d65c0))
+* update package version when releasing ([#595](https://github.com/salesforce/lwc/issues/595)) ([ea0434d](https://github.com/salesforce/lwc/commit/ea0434d))
+* update wire pkg and playground ([#604](https://github.com/salesforce/lwc/issues/604)) ([ccc92ed](https://github.com/salesforce/lwc/commit/ccc92ed))
+* validate directive-less template tag ([#589](https://github.com/salesforce/lwc/issues/589)) ([7739e64](https://github.com/salesforce/lwc/commit/7739e64))
+* **engine:** invert condition to apply click-event-composed polyfill ([#590](https://github.com/salesforce/lwc/issues/590)) ([#591](https://github.com/salesforce/lwc/issues/591)) ([cb7c43a](https://github.com/salesforce/lwc/commit/cb7c43a))
+
+
+
+<a name="0.25.5"></a>
+## [0.25.5](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v0.25.5) (2018-08-15)
+
+
+### Bug Fixes
+
+* **build:** update version before building dist files to publish ([#585](https://github.com/salesforce/lwc/issues/585)) ([bd5da03](https://github.com/salesforce/lwc/commit/bd5da03))
+* disable verify when using auth token ([#587](https://github.com/salesforce/lwc/issues/587)) ([2a3ec2a](https://github.com/salesforce/lwc/commit/2a3ec2a))
+* remove npm client configuration ([10ef9be](https://github.com/salesforce/lwc/commit/10ef9be))
+
+
+
+<a name="0.25.5-alpha"></a>
+## [0.25.5-alpha](https://github.com/salesforce/lwc/compare/v0.25.4...v0.25.5-alpha) (2018-08-14)
+
+
+### Bug Fixes
+
+* **engine:** support stopPropagation on the tpl ([#571](https://github.com/salesforce/lwc/issues/571)) ([7e729c8](https://github.com/salesforce/lwc/commit/7e729c8)), closes [#566](https://github.com/salesforce/lwc/issues/566)
+
+
+### Features
+
+* **engine:** polyfill for non-composed click events ([#568](https://github.com/salesforce/lwc/issues/568)) ([d15b77b](https://github.com/salesforce/lwc/commit/d15b77b))
+
+
+
+<a name="0.25.4"></a>
+## [0.25.4](https://github.com/salesforce/lwc/compare/v0.25.3...v0.25.4) (2018-08-12)
 
 
 ### Bug Fixes

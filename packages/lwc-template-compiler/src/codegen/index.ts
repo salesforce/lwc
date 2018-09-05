@@ -124,7 +124,6 @@ function transform(
         if (isCustomElement(element)) {
             // Make sure to register the component
             const componentClassName = element.component!;
-
             babelElement = codeGen.genCustomElement(
                 element.tag,
                 identifierFromComponentName(componentClassName),
@@ -346,7 +345,7 @@ function transform(
             forKey,
         } = element;
 
-        // Class attibute defined via string
+        // Class attribute defined via string
         if (className) {
             const { expression: classExpression } = bindExpression(
                 className,

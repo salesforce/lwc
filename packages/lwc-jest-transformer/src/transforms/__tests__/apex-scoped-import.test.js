@@ -2,8 +2,6 @@ const test = require('./utils/test-transform').test(
     require('../apex-scoped-import')
 );
 
-const DEFAULT_FUNCTION = function() { return Promise.resolve(); };
-
 describe('@salesforce/apex import', () => {
     test('does default transformation', `
         import myMethod from '@salesforce/apex/FooController.fooMethod';
@@ -11,7 +9,7 @@ describe('@salesforce/apex import', () => {
         let myMethod;
 
         try {
-          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
+          myMethod = require('@salesforce/apex/FooController.fooMethod').default;
         } catch (e) {
           myMethod = function () {
             return Promise.resolve();
@@ -27,7 +25,7 @@ describe('@salesforce/apex import', () => {
         let myMethod;
 
         try {
-          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
+          myMethod = require('@salesforce/apex/FooController.fooMethod').default;
         } catch (e) {
           myMethod = function () {
             return Promise.resolve();
