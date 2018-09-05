@@ -74,4 +74,52 @@ describe('decorators', () => {
             }
         }
     });
+
+    pluginTest('compiler should throw when "api" decorator was not imported from lwc', `
+        import { LightningElement } from 'lwc';
+        export default class Test extends LightningElement {
+            @api title = 'hello'
+        }
+    `, {
+        error: {
+            message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+        }
+    });
+
+    pluginTest('compiler should throw when "track" decorator was not imported from lwc', `
+        import { LightningElement } from 'lwc';
+        export default class Test extends LightningElement {
+            @track title = 'hello'
+        }
+    `, {
+        error: {
+            message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+        }
+    });
+
+    pluginTest('compiler should throw when "wire" decorator was not imported from lwc', `
+        import { LightningElement } from 'lwc';
+        import { getTodo } from "todo";
+        export default class Test extends LightningElement {
+            @wire(getTodo, {})
+            data = {};
+        }
+    `, {
+        error: {
+            message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+        }
+    });
+
+    pluginTest('compiler should throw when "track" decorator is used in the inner class but was not imported from lwc', `
+        import { LightningElement } from 'lwc';
+        export default class Test extends Inner {}
+        class Inner extends LightningElement {
+            @track
+            name = 'h';
+        }
+    `, {
+        error: {
+            message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+        }
+    });
 })
