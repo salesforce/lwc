@@ -1,16 +1,16 @@
-export const perfStart = jest.fn().mockImplementation(() => '');
+const perfStart = jest.fn().mockImplementation(() => '');
 
-export const perfEnd = jest.fn();
+const perfEnd = jest.fn();
 
-export const mark = jest.fn().mockImplementation(() => {});
+const mark = jest.fn().mockImplementation(() => {});
 
-export const markStart = jest.fn().mockImplementation(() => {});
+const markStart = jest.fn().mockImplementation(() => {});
 
-export const markEnd = jest.fn().mockImplementation(() => {});
+const markEnd = jest.fn().mockImplementation(() => {});
 
-export const time = jest.fn().mockImplementation(() => 0);
+const time = jest.fn().mockImplementation(() => 0);
 
-export const interaction = jest.fn();
+const interaction = jest.fn();
 
 module.exports = {
     perfStart,
