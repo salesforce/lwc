@@ -39,7 +39,7 @@ function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
 
         const dirModuleName = rootParts.pop();
         const dirModuleNamespace = rootParts.pop();
-        if (dirModuleNamespace && dirModuleName === fileName || ignoreFolderName) {
+        if (dirModuleNamespace && dirModuleName === fileName) {
             registry.moduleName = decamelize(fileName, '-');
             registry.moduleNamespace = dirModuleNamespace.toLowerCase();
             registry.moduleSpecifier = `${dirModuleNamespace}/${fileName}`;

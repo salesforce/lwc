@@ -1,8 +1,8 @@
 exports.app = function (cmpName) {
     return `
         import { createElement } from 'lwc';
-        import Cmp from '${cmpName}';
-        var element = createElement('${cmpName}', { is: Cmp });
+        import Cmp from 'integration/${cmpName}';
+        var element = createElement('integration-${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }

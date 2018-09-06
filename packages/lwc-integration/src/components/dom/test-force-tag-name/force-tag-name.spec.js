@@ -5,7 +5,7 @@ describe('Issue 572: [brain-dump] problems with accessibility and semantic marku
 
     before(() => {
         browser.url(URL);
-        element = browser.element('force-tag-name');
+        element = browser.element('integration-force-tag-name');
     });
 
     it('page load', () => {
