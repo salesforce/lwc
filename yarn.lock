@@ -4005,11 +4005,11 @@ decamelize-keys@^1.0.0:
     decamelize "^1.1.0"
     map-obj "^1.0.0"
 
-decamelize@^1.0.0, decamelize@^1.1.0, decamelize@^1.1.1, decamelize@^1.1.2, decamelize@^1.2.0:
+decamelize@^1.0.0, decamelize@^1.1.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "http://npm.lwcjs.org/decamelize/-/decamelize-1.2.0/f6534d15148269b20352e7bee26f501f9a191290.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-decamelize@~2.0.0:
+decamelize@^2.0.0, decamelize@~2.0.0:
   version "2.0.0"
   resolved "http://npm.lwcjs.org/decamelize/-/decamelize-2.0.0/656d7bbc8094c4c788ea53c5840908c9c7d063c7.tgz#656d7bbc8094c4c788ea53c5840908c9c7d063c7"
   dependencies:
