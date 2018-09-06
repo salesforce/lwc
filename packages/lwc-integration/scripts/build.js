@@ -44,8 +44,8 @@ function testCaseComponentResolverPlugin() {
     return {
         name: 'test-case-resolver',
         resolveId(id, importee) {
-            if (/test-case/.test(id)) {
-                return path.resolve(`./src/shared/${id}.js`);
+            if (/test\/case/.test(id)) {
+                return path.resolve(`./src/shared/test-case.js`);
             }
         }
     };

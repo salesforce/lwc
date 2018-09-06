@@ -8,7 +8,7 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function () {
-        const element = browser.element('x-grand-child');
+        const element = browser.element('integration-grand-child');
         element.click();
 
         const verifyElement = browser.element('.event-target-correct');

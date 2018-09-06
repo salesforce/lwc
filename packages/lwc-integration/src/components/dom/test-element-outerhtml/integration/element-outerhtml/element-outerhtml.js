@@ -4,6 +4,6 @@ export default class App extends LightningElement {
     @track childOuterHTML;
 
     renderedCallback() {
-        this.childOuterHTML = this.template.querySelector('x-child').outerHTML;
+        this.childOuterHTML = this.template.querySelector('integration-child').outerHTML;
     }
 }

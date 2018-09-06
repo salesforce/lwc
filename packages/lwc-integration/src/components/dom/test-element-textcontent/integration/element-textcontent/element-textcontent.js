@@ -4,6 +4,6 @@ export default class App extends LightningElement {
     @track childTextContent;
 
     renderedCallback() {
-        this.childTextContent = this.template.querySelector('x-child').textContent;
+        this.childTextContent = this.template.querySelector('integration-child').textContent;
     }
 }
