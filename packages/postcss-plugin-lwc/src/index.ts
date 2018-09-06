@@ -6,6 +6,7 @@ import selectorScopingTransform from './selector-scoping/transform';
 import namespaceMappingTransform from './namespace-mapping/transform';
 import validateCustomProperties from './custom-properties/validate';
 import transformCustomProperties from './custom-properties/transform';
+import validateIdSelectors from './no-id-selectors/validate';
 
 import { validateConfig, PluginConfig } from './config';
 
@@ -23,17 +24,6 @@ function selectorProcessorFactory(config: PluginConfig) {
 
         selectorScopingTransform(root, config);
     }) as Processor;
-}
-
-function validateIdSelectors(root) {
-    root.walkRules(rule => {
-        const result = /(#\w+)/.exec(rule.selector);
-        if (result) {
-            throw rule.error(
-                `Invalid usage of id selector "${result[1]}". Use a class selector instead.`
-            );
-        }
-    });
 }
 
 export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
@@ -57,9 +47,8 @@ export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
             });
         }
 
-        validateIdSelectors(root);
-
         root.walkRules(rule => {
+            validateIdSelectors(rule);
             rule.selector = selectorProcessor.processSync(rule);
         });
     };
