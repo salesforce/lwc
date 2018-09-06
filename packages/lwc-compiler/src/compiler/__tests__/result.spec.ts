@@ -316,28 +316,24 @@ describe("compiler metadata", () => {
         });
     });
 
-    it("doc", async () => {
-        const { result: { code, metadata } } = await compile({
+    it.only("doc", async () => {
+        const result = await compile({
             name: "foo",
             namespace: "x",
             files: {
                 "foo.js": `import { LightningElement, api } from 'lwc';
-                /** class jsdoc */
                 export default class Test extends LightningElement {
-                    /** prop1 */
                     @api prop1;
-
-                    /** prop2 */
-                    @api get prop2() {
-                    }
-
-                    /** method1 */
+                    @api get prop2() {}
                     @api method1() {}
                 }
                 `,
                 "foo.html": "<template>foo</template>",
             },
         });
+
+        const { result: { code, metadata } } = result;
+        console.log(JSON.stringify(result, null, '  '))
 
         expect(metadata).toEqual({
             decorators: [
