@@ -56,8 +56,8 @@ describe('selector validation', () => {
         });
     });
 
-    it.skip('should restrict usage of unsupported id selectors', () => {
-        return expect(process('.foo #bar span')).rejects.toMatchObject({
+    it('should restrict usage of unsupported id selectors', () => {
+        return expect(process('.foo #bar span {}')).rejects.toMatchObject({
             message: expect.stringMatching(
                 /Invalid usage of id selector "#bar". Use a class selector instead./
             ),

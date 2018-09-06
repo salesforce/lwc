@@ -56,7 +56,7 @@ const booleanAttributes = new Set<string>([
     'selected', // <option>
 ]);
 
-export function isRestrictedStaticAttribute(attrName): boolean {
+export function isRestrictedStaticAttribute(attrName: string): boolean {
     return STATIC_ATTRIBUTE_SET.has(attrName);
 }
 
