@@ -22,6 +22,7 @@ function selectorProcessorFactory(config: PluginConfig) {
             namespaceMappingTransform(root, namespaceMapping);
         }
 
+        validateIdSelectors(root);
         selectorScopingTransform(root, config);
     }) as Processor;
 }
@@ -48,7 +49,6 @@ export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
         }
 
         root.walkRules(rule => {
-            validateIdSelectors(rule);
             rule.selector = selectorProcessor.processSync(rule);
         });
     };
