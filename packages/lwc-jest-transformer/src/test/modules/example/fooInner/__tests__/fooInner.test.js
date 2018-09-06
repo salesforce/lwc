@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import FooInner from 'example-foo-inner';
+import FooInner from 'example/fooInner';
 
 jest.mock('globalLib', () => {
     return {
