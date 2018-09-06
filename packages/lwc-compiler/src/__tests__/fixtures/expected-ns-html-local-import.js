@@ -1,4 +1,4 @@
-define('namespace/htmlLocalImport', ['namespace/importedTemplate', 'lwc'], function (_namespaceImportedTemplate, lwc) {
+define('namespace/html-local-import', ['namespace/importedTemplate', 'lwc'], function (_namespaceImportedTemplate, lwc) {
 
     const style = undefined;
 

@@ -95,7 +95,7 @@ export async function bundle(
         });
 
         const result = await rollupBundler.generate({
-            amd: { id: namespace + "-" + name },
+            amd: { id: namespace + "/" + name },
             interop: false,
             strict: false,
             format
