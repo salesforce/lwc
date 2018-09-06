@@ -1,4 +1,4 @@
-import _nsRow from 'ns-row';
+import _nsRow from 'ns/row';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { k: api_key, c: api_custom_element, i: api_iterator, h: api_element } = $api;
 

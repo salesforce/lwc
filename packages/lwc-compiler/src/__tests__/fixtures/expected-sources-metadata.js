@@ -1,4 +1,4 @@
-import _xBar from 'x-bar';
+import _xBar from 'x/bar';
 import { LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';

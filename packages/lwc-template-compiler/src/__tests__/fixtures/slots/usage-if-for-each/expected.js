@@ -1,4 +1,4 @@
-import _aB from 'a-b';
+import _aB from 'a/b';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         t: api_text,
