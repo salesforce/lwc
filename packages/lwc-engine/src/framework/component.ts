@@ -38,7 +38,7 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
     if (isUndefined(vm.component)) {
-        throw new ReferenceError(`Invalid construction for ${vm}, you must extend LightningElement.`);
+        throw new ReferenceError(`Invalid construction for ${Ctor}, you must extend LightningElement.`);
     }
 }
 
