@@ -5,7 +5,7 @@ export default class Child extends LightningElement {
 
     connectedCallback() {
         this.template.addEventListener('click', (evt) => {
-            this.eventTargetIsCorrect = evt.target.tagName === 'X-GRAND-CHILD';
+            this.eventTargetIsCorrect = evt.target.tagName === 'INTEGRATION-GRAND-CHILD';
         });
     }
 }

@@ -51,12 +51,13 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const rollupCompatInstance = rollupCompatPlugin(compat);
 
     // Closure to store the resolved modules
-    const modulePaths = {};
+    let modulePaths = {};
 
     return {
         name: "rollup-plugin-lwc-compiler",
 
         options(rollupOptions) {
+            modulePaths = {};
             const entry = rollupOptions.input || rollupOptions.entry;
             const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
             const externalPaths = mergedPluginOptions.resolveFromPackages

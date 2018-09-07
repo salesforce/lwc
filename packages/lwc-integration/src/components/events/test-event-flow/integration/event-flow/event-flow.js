@@ -48,10 +48,10 @@ export default class EventFlow extends LightningElement {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW_ROOT);
             });
 
-            this.template.querySelector('x-parent').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('integration-parent').addEventListener('slottedbuttonclick', event => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
-            this.template.querySelector('x-parent').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('integration-parent').addEventListener('childbuttonclick', event => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
         }

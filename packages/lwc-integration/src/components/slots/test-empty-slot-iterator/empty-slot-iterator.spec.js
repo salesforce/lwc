@@ -8,7 +8,7 @@ describe('Slots with empty iterators should render', () => {
     });
 
     it('should have rendered element in slot correctly', function () {
-        const element = browser.element('x-child');
+        const element = browser.element('integration-child');
         assert.equal(element.getText(), 'Rendered ok');
     });
 });

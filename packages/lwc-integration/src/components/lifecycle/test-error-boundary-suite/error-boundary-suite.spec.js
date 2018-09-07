@@ -11,7 +11,7 @@ describe('error boundary integration', () => {
         assert.equal(altenativeView.getText(), "renderedCallback alternative view");
 
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-rendered-throw'), false);
+        assert.equal(browser.isExisting('integration-child-rendered-throw'), false);
     }),
 
     it('should render alternative view if child throws in render()', () => {
@@ -20,7 +20,7 @@ describe('error boundary integration', () => {
         assert.equal(altenativeView.getText(), "render alternative view");
 
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-render-throw'), false);
+        assert.equal(browser.isExisting('integration-child-render-throw'), false);
     }),
 
     it('should render alternative view if child throws in constructor()', () => {
@@ -29,8 +29,8 @@ describe('error boundary integration', () => {
 
         assert.equal(altenativeView.getText(), "constructor alternative view");
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-constructor-throw'), false);
-        assert.equal(browser.isExisting('child-constructor-wrapper'), false);
+        assert.equal(browser.isExisting('integration-child-constructor-throw'), false);
+        assert.equal(browser.isExisting('integration-child-constructor-wrapper'), false);
     }),
 
     it('should render alternative view if child throws in connectedCallback()', () => {
@@ -39,7 +39,7 @@ describe('error boundary integration', () => {
 
         assert.equal(altenativeView.getText(), "connectedCallback alternative view");
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-connected-throw'), false);
+        assert.equal(browser.isExisting('integration-child-connected-throw'), false);
     })
 
     it('should render alternative view if child slot throws in render()', () => {
@@ -47,7 +47,7 @@ describe('error boundary integration', () => {
         const altenativeView = browser.element('.slot-altenative');
 
         assert.equal(altenativeView.getText(), 'slot alternative view');
-        assert.equal(browser.isExisting('child-slot-host'), false);
+        assert.equal(browser.isExisting('integration-child-slot-host'), false);
     }),
 
     it('should render alternative view if child throws during self rehydration cycle', () => {
@@ -57,7 +57,7 @@ describe('error boundary integration', () => {
 
         assert.equal(altenativeView.getText(), 'self rehydrate alternative view');
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-self-rehydrate-throw'), false);
+        assert.equal(browser.isExisting('integration-child-self-rehydrate-throw'), false);
     }),
 
     it('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
@@ -65,12 +65,12 @@ describe('error boundary integration', () => {
 
         assert.equal(browser.isVisible('.boundary-alt-view'), true);
         // ensure offender has been unmounted
-        assert.equal(browser.isExisting('nested-post-error-child-view'), false);
+        assert.equal(browser.isExisting('integration-nested-post-error-child-view'), false);
     }),
 
     it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
         browser.element('#boundary-alternative-view-throw').click();
         // ensure offender still exists since boundary failed to recover
-        assert.equal(browser.isExisting('post-error-child-view'), true);
+        assert.equal(browser.isExisting('integration-post-error-child-view'), true);
     })
 })

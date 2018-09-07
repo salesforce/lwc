@@ -51,10 +51,10 @@ export default class Parent extends LightningElement {
             });
 
             // Child
-            this.template.querySelector('x-child').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('integration-child').addEventListener('slottedbuttonclick', event => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
             });
-            this.template.querySelector('x-child').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('integration-child').addEventListener('childbuttonclick', event => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
             });
 

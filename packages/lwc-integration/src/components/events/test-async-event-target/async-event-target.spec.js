@@ -7,7 +7,7 @@ describe('Async event target', () => {
     });
 
     it('should be root node', function () {
-        browser.click('x-child');
+        browser.click('integration-child');
         assert.deepEqual(browser.getText('.correct-sync-target'), 'Correct sync target');
         browser.waitUntil(() => {
             return browser.getText('.correct-async-target') === 'Correct async target';

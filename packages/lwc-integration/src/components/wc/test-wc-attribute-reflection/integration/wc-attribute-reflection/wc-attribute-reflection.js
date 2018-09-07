@@ -1,7 +1,5 @@
 import { LightningElement, api, buildCustomElementConstructor } from "lwc";
-
-// TODO: this does not work. @diego will fix it!
-import ComponentWithX from 'integration-wc-with-attribute-x';
+import ComponentWithX from 'integration/wcWithAttributeX';
 
 export default class WiredPropSuite extends LightningElement {
     renderedCallback() {

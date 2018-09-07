@@ -10,7 +10,7 @@ let LOGGED_GUIDS;
 function getLoggedEventGuids() {
     LOGGED_GUIDS = LOGGED_GUIDS || browser
         .execute(function () {
-            return document.querySelector('event-flow').logs;
+            return document.querySelector('integration-event-flow').logs;
         })
         .value
         .map(event => event.guid);
@@ -64,7 +64,7 @@ describe('event flow:', () => {
 
         // Load the set of event names and guids from the event-flow component
         const EVT = browser.execute(function () {
-            return document.querySelector('event-flow').EVENT;
+            return document.querySelector('integration-event-flow').EVENT;
         }).value;
 
         EVENT = EVT.EVENT;

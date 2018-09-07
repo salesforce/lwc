@@ -92,8 +92,8 @@ const baseInputConfig = {
             mode,
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
-            ignoreFolderName: true,
-            compat: { // In order to build faster we manually add compat artifacts later
+            compat: {
+                // In order to build faster we manually add compat artifacts later
                 downgrade: false,
                 polyfills: false
             }
