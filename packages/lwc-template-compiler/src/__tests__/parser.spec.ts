@@ -358,16 +358,9 @@ describe('props and attributes', () => {
             expect(warnings.length).toBe(10);
 
             const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
-            expect(warnings[0].message).toMatch(MESSAGE_RE);
-            expect(warnings[1].message).toMatch(MESSAGE_RE);
-            expect(warnings[2].message).toMatch(MESSAGE_RE);
-            expect(warnings[3].message).toMatch(MESSAGE_RE);
-            expect(warnings[4].message).toMatch(MESSAGE_RE);
-            expect(warnings[5].message).toMatch(MESSAGE_RE);
-            expect(warnings[6].message).toMatch(MESSAGE_RE);
-            expect(warnings[7].message).toMatch(MESSAGE_RE);
-            expect(warnings[8].message).toMatch(MESSAGE_RE);
-            expect(warnings[9].message).toMatch(MESSAGE_RE);
+            for (const { message } of warnings) {
+                expect(message).toMatch(MESSAGE_RE);
+            }
         });
 
         it('should not restrict usage of static values', () => {
