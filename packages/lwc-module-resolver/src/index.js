@@ -2,7 +2,6 @@
 const glob = require('glob');
 const path = require('path');
 const fs = require('fs');
-const decamelize = require('decamelize');
 const nodeModulePaths = require('./node-modules-paths');
 
 const DEFAULT_NS = 'x';
@@ -40,7 +39,7 @@ function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
         const dirModuleName = rootParts.pop();
         const dirModuleNamespace = rootParts.pop();
         if (dirModuleNamespace && dirModuleName === fileName) {
-            registry.moduleName = decamelize(fileName, '-');
+            registry.moduleName = fileName;
             registry.moduleNamespace = dirModuleNamespace.toLowerCase();
             registry.moduleSpecifier = `${dirModuleNamespace}/${fileName}`;
             mappings[registry.moduleSpecifier] = registry;
