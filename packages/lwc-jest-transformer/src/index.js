@@ -7,6 +7,7 @@ const engineVersion = require('lwc-engine/package.json').version;
 const compilerVersion = require('lwc-compiler/package.json').version;
 const { waitForPromise } = require('./utils');
 const apexScopedImport = require('./transforms/apex-scoped-import');
+const componentTagNameScopedImport = require('./transforms/component-tag-name-scoped-import');
 const labelScopedImport = require('./transforms/label-scoped-import');
 const resourceScopedImport = require('./transforms/resource-scoped-import');
 const schemaScopedImport = require('./transforms/schema-scoped-import');
@@ -17,8 +18,9 @@ const BABEL_CONFIG = {
         jestPreset,
     ],
     "plugins": [
-        babelCommonJs,
         apexScopedImport,
+        babelCommonJs,
+        componentTagNameScopedImport,
         labelScopedImport,
         resourceScopedImport,
         schemaScopedImport,

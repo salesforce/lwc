@@ -37,7 +37,7 @@ describe('@salesforce/label import', () => {
         import { default as label } from '@salesforce/label/c.foo';
     `, undefined, 'Invalid import from @salesforce/label/c.foo');
 
-    test('throws error if renamed multipel default imports', `
+    test('throws error if renamed multiple default imports', `
         import { default as label, foo } from '@salesforce/label/c.foo';
     `, undefined, 'Invalid import from @salesforce/label/c.foo');
 });
