@@ -339,36 +339,53 @@ describe('expression', () => {
 });
 
 describe('props and attributes', () => {
-    it('invalid static attribute error', () => {
-        const { warnings } = parseTemplate(`
-            <template>
-                <div id="foo"></div>
-                <div id={foo}></div>
-                <label for="foo"></label>
-                <label for={foo}></label>
-                <div aria-activedescendant="foo"></div>
-                <div aria-activedescendant={foo}></div>
-                <div aria-controls="foo"></div>
-                <div aria-controls={foo}></div>
-                <div aria-describedby="foo bar baz"></div>
-                <div aria-describedby={foo}></div>
-                <div aria-details="foo"></div>
-                <div aria-details={foo}></div>
-                <div aria-errormessage="foo"></div>
-                <div aria-errormessage={foo}></div>
-                <div aria-flowto="foo"></div>
-                <div aria-flowto={foo}></div>
-                <div aria-labelledby="foo bar baz"></div>
-                <div aria-labelledby={foo}></div>
-                <div aria-owns="foo"></div>
-                <div aria-owns={foo}></div>
-            </template>
-        `);
-        expect(warnings.length).toBe(10);
-        expect(warnings[0].message).toBe('The attribute "id" cannot be an expression. It must be a static string value.');
-        expect(warnings[0]).toMatchObject({
-            start: 77,
-            length: 20,
+    describe('attributes that must have static values', () => {
+        it('should restrict usage of dynamic attributes', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <div id={foo}></div>
+                    <label for={foo}></label>
+                    <div aria-activedescendant={foo}></div>
+                    <div aria-controls={foo}></div>
+                    <div aria-describedby={foo}></div>
+                    <div aria-details={foo}></div>
+                    <div aria-errormessage={foo}></div>
+                    <div aria-flowto={foo}></div>
+                    <div aria-labelledby={foo}></div>
+                    <div aria-owns={foo}></div>
+                </template>
+            `);
+            expect(warnings.length).toBe(10);
+
+            const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
+            expect(warnings[0].message).toMatch(MESSAGE_RE);
+            expect(warnings[1].message).toMatch(MESSAGE_RE);
+            expect(warnings[2].message).toMatch(MESSAGE_RE);
+            expect(warnings[3].message).toMatch(MESSAGE_RE);
+            expect(warnings[4].message).toMatch(MESSAGE_RE);
+            expect(warnings[5].message).toMatch(MESSAGE_RE);
+            expect(warnings[6].message).toMatch(MESSAGE_RE);
+            expect(warnings[7].message).toMatch(MESSAGE_RE);
+            expect(warnings[8].message).toMatch(MESSAGE_RE);
+            expect(warnings[9].message).toMatch(MESSAGE_RE);
+        });
+
+        it('should not restrict usage of static values', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <div id="foo"></div>
+                    <label for="foo"></label>
+                    <div aria-activedescendant="foo"></div>
+                    <div aria-controls="foo"></div>
+                    <div aria-describedby="foo bar baz"></div>
+                    <div aria-details="foo"></div>
+                    <div aria-errormessage="foo"></div>
+                    <div aria-flowto="foo"></div>
+                    <div aria-labelledby="foo bar baz"></div>
+                    <div aria-owns="foo"></div>
+                </template>
+            `);
+            expect(warnings.length).toBe(0);
         });
     });
 
