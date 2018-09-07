@@ -25,7 +25,7 @@
 
     <br>
     <button id='nested-boundary-child-alt-view-throw' onclick={handleClick} value='nested-boundary-child-alt-view-throw'>Render nested boundary. Inner boundary rethrows its failure to parent boundary recover</button>
-    <nested-boundary-child-alt-view-throw if:true={getNestedBoundaryChildAltViewThrow}></nested-boundary-child-alt-view-throw>
+    <integration-nested-boundary-child-alt-view-throw if:true={getNestedBoundaryChildAltViewThrow}></integration-nested-boundary-child-alt-view-throw>
 
     <br>
     <button id='boundary-alternative-view-throw' onclick={handleClick} value='boundary-alternative-view-throw'>Render boundary that fails to catch an error thrown while rendering its alternative view</button>

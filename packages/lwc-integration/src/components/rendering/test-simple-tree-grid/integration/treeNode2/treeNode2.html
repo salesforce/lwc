@@ -13,7 +13,7 @@
         <template if:true={hasChildrenAndIsNotCollapsed}>
             <li class="node">
                 <template for:each={treeData.children} for:item="child">
-                    <tree-node key={child.id} tree-data={child} collapsed-nodes={collapsedNodes}></tree-node>
+                    <integration-tree-node key={child.id} tree-data={child} collapsed-nodes={collapsedNodes}></integration-tree-node>
                 </template>
             </li>
         </template>
