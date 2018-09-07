@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`example-component-tag-name default snapshot 1`] = `
+<example-component-tag-name>
+  <p
+    class="mockedTag"
+  >
+    value set in test
+  </p>
+  <p
+    class="unmockedTag"
+  >
+    c-unmocked
+  </p>
+</example-component-tag-name>
+`;
