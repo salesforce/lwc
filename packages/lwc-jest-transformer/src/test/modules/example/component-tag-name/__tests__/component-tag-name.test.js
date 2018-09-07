@@ -21,14 +21,14 @@ describe('example-component-tag-name', () => {
     it('returns default component tag name as import path', () => {
         const element = createElement('example-component-tag-name', { is: ComponentTagName });
         document.body.appendChild(element);
-        const componentTagName = document.body.querySelector(".unmockedTag").textContent;
+        const componentTagName = element.querySelector(".unmockedTag").textContent;
         expect(componentTagName).toBe("c-unmocked");
     });
 
     it('returns value from mock defined in test file', () => {
         const element = createElement('example-component-tag-name', { is: ComponentTagName });
         document.body.appendChild(element);
-        const componentTagName = document.body.querySelector(".mockedTag").textContent;
+        const componentTagName = element.querySelector(".mockedTag").textContent;
         expect(componentTagName).toBe("value set in test");
     });
 });
