@@ -561,7 +561,7 @@ export default function parse(source: string, state: State): {
     }
 
     function validateAttributes(element: IRElement) {
-        const { tag, attrsList } = element;
+        const { attrsList } = element;
         attrsList.forEach(attr => {
             if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
                 warnOnElement(
