@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import ResourceUrl from 'example/resourceUrl';
 
-jest.mock('@salesforce/resourceUrl/c.mocked', () => {
+jest.mock('@salesforce/resource-url/c.mocked', () => {
     return { default: "value set in test"};
 }, { virtual: true });
 
