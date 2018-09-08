@@ -1,4 +1,4 @@
-import _nsCmp from 'ns-cmp';
+import _nsCmp from 'ns/cmp';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { t: api_text, h: api_element, c: api_custom_element } = $api;
 

@@ -1,9 +1,9 @@
-import _nsFoo from 'ns-foo';
-import _xFoo from 'x-foo';
-import _nsBar from 'ns-bar';
-import _nestedCFoo from 'nested-c-foo';
-import _nsBaz from 'ns-baz';
-import _xBaz from 'x-baz';
+import _nsFoo from 'ns/foo';
+import _xFoo from 'x/foo';
+import _nsBar from 'ns/bar';
+import _nestedCFoo from 'nested/cFoo';
+import _nsBaz from 'ns/baz';
+import _xBaz from 'x/baz';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element, h: api_element } = $api;
 

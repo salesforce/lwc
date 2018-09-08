@@ -5,7 +5,7 @@ describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.itera
 
     before(() => {
         browser.url(URL);
-        element = browser.element('rendering-array');
+        element = browser.element('integration-rendering-array');
     });
 
     it('page load', () => {
@@ -15,7 +15,7 @@ describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.itera
     });
 
     it('should render items', function () {
-        const items = browser.elements('compat-item');
+        const items = browser.elements('integration-compat-item');
         assert.equal(items.value.length, 2);
         assert.equal(items.value[0].getText(), 'Item: P1');
         assert.equal(items.value[1].getText(), 'Item: P2');

@@ -8,7 +8,7 @@ describe('Aria attributes on native elements', () => {
     });
 
     it('should correctly call setter for AOM property', function () {
-        const element = browser.element('aria-attribute-native-element div');
+        const element = browser.element('integration-aria-attribute-native-element div');
         assert.equal(element.getAttribute('aria-label'), 'nativeelement');
     });
 });

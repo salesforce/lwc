@@ -1,8 +1,8 @@
 exports.app = function (cmpName) {
     return `
         import { createElement } from 'lwc';
-        import Cmp from '${cmpName}';
-        var element = createElement('${cmpName}', { is: Cmp });
+        import Cmp from 'integration/${cmpName}';
+        var element = createElement('integration-${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }
@@ -11,7 +11,7 @@ exports.todoApp = function (cmpName) {
     return `
         import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'lwc';
-        import Cmp from '${cmpName}';
+        import Cmp from 'integration/${cmpName}';
         import { getTodo, getObservable } from 'todo';
 
         registerWireService(register);
@@ -49,7 +49,7 @@ exports.todoApp = function (cmpName) {
             });
         });
 
-        var element = createElement('${cmpName}', { is: Cmp });
+        var element = createElement('integration-${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }

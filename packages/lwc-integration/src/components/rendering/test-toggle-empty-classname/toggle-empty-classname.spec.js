@@ -8,10 +8,10 @@ describe('Toggling to empty classname', () => {
     });
 
     it('should have the right value', function () {
-        const element = browser.element('toggle-empty-classname');
+        const element = browser.element('integration-toggle-empty-classname');
         element.click();
 
-        const className = browser.getAttribute('toggle-empty-classname div', 'class');
+        const className = browser.getAttribute('integration-toggle-empty-classname div', 'class');
         assert.deepEqual(className, '');
     });
 });

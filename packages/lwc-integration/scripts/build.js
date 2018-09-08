@@ -44,8 +44,8 @@ function testCaseComponentResolverPlugin() {
     return {
         name: 'test-case-resolver',
         resolveId(id, importee) {
-            if (/test-case/.test(id)) {
-                return path.resolve(`./src/shared/${id}.js`);
+            if (/test\/case/.test(id)) {
+                return path.resolve(`./src/shared/test-case.js`);
             }
         }
     };
@@ -92,10 +92,8 @@ const baseInputConfig = {
             mode,
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
-            mapNamespaceFromPath: false,
-            ignoreFolderName: true,
-            allowUnnamespaced: true,
-            compat: { // In order to build faster we manually add compat artifacts later
+            compat: {
+                // In order to build faster we manually add compat artifacts later
                 downgrade: false,
                 polyfills: false
             }

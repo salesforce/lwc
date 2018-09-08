@@ -14,7 +14,7 @@ describe('Web Component reflection', () => {
                 props,
             },
         } = browser.execute(() => {
-            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            var element = document.querySelector('integration-wc-attribute-reflection').programmatic;
             return {
                 attrs: {
                     title: element.getAttribute('title'),
@@ -40,7 +40,7 @@ describe('Web Component reflection', () => {
                 props,
             },
         } = browser.execute(() => {
-            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            var element = document.querySelector('integration-wc-attribute-reflection').programmatic;
             element.run();
             return {
                 attrs: {
@@ -67,7 +67,7 @@ describe('Web Component reflection', () => {
                 props,
             },
         } = browser.execute(() => {
-            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            var element = document.querySelector('integration-wc-attribute-reflection').programmatic;
             element.setAttribute('x', 4);
             element.setAttribute('title', 'cubano');
             return {

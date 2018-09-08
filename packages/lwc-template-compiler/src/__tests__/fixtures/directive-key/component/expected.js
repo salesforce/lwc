@@ -1,4 +1,4 @@
-import _nsItem from 'ns-item';
+import _nsItem from 'ns/item';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         d: api_dynamic,

@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Labels from 'example-labels';
+import Labels from 'example/labels';
 
 jest.mock('@salesforce/label/c.mocked', () => {
     return { default: "value set in test" };

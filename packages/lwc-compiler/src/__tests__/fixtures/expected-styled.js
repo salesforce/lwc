@@ -1,4 +1,4 @@
-import _xFoo from 'x-foo';
+import _xFoo from 'x/foo';
 import { LightningElement } from 'lwc';
 
 function style(token) {

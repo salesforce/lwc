@@ -5,7 +5,7 @@ export interface ModuleImportLocation {
     location: Location;
 }
 
-const MODULE_IMPORT_REGEX = /(?:define\([(['|"][\w-]+['|"],?\s*)(?:\[((?:['|"][@\w-/]+['|"],?\s*)+)\])?,?\s*function/;
+const MODULE_IMPORT_REGEX = /(?:define\([(['|"][\w/]+['|"],?\s*)(?:\[((?:['|"][@\w-/]+['|"],?\s*)+)\])?,?\s*function/;
 
 export function collectImportLocations(code: string) {
     const matches = new RegExp(MODULE_IMPORT_REGEX).exec(code);

@@ -1,8 +1,8 @@
-import _nsFoo from 'ns-foo';
-import _nsBar from 'ns-bar';
-import _nsBuzz from 'ns-buzz';
-import _nsTable from 'ns-table';
-import _nsInput from "ns-input";
+import _nsFoo from 'ns/foo';
+import _nsBar from 'ns/bar';
+import _nsBuzz from 'ns/buzz';
+import _nsTable from 'ns/table';
+import _nsInput from "ns/input";
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element, h: api_element } = $api;
 

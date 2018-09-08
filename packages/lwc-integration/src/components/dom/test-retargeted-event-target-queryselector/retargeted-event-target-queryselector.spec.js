@@ -9,7 +9,7 @@ describe('event target query selector', () => {
     });
 
     it('should return correct elements', function () {
-        const hostContainer = browser.element('x-parent .shadow-div');
+        const hostContainer = browser.element('integration-parent .shadow-div');
         hostContainer.click();
         const values = browser.execute(function () {
             var shadowDiv = document.querySelector('.shadow-div');

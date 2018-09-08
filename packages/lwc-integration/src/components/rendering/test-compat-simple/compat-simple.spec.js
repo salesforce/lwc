@@ -10,24 +10,24 @@ describe('Testing component: compat-simple', () => {
 
     it('render', () => {
         browser.url(COMPAT_SIMPLE_URL);
-        const element = browser.element('compat-simple');
+        const element = browser.element('integration-compat-simple');
         assert.ok(element);
         assert.equal(element.getText(), 'default');
     });
 
     it('update text (involves method call)', () => {
         browser.url(COMPAT_SIMPLE_URL);
-        const element = browser.element('compat-simple');
+        const element = browser.element('integration-compat-simple');
         assert.ok(element);
 
         browser.execute(function() {
-            var el = document.querySelector('compat-simple');
+            var el = document.querySelector('integration-compat-simple');
             el.changeComputedText();
         });
         return Promise.resolve(() => {
             assert.equal(element.getText(), 'default#changed');
         });
-        
+
     });
 
 });

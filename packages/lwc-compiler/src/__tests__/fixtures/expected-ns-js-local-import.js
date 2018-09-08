@@ -1,4 +1,4 @@
-define('namespace-js-local-import', ['lwc', 'namespace-utils'], function (lwc, namespaceUtils) {
+define('namespace/js-local-import', ['lwc', 'namespace-utils'], function (lwc, namespaceUtils) {
 
     const style = undefined;
 

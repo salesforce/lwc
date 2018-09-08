@@ -10,7 +10,7 @@ describe('event target query selector', () => {
 
     it('should return correct elements', function () {
         browser.execute(function () {
-            document.querySelector('child-template-element-queryselector').click();
+            document.querySelector('integration-child-template-element-queryselector').click();
         });
         const shadowDiv = browser.element('.shadow-div');
         assert.equal(shadowDiv.getAttribute('data-selected'), null);
