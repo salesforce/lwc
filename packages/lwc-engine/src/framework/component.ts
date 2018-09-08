@@ -6,7 +6,7 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "../shared/language";
+import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined } from "../shared/language";
 import { invokeServiceHook, Services } from "./services";
 import { PropsDef, WireHash } from './def';
 import { VM } from "./vm";
@@ -37,9 +37,8 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     }
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isObject(vm.component), `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+    if (isUndefined(vm.component)) {
+        throw new ReferenceError(`Invalid construction for ${Ctor}, you must extend LightningElement.`);
     }
 }
 

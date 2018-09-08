@@ -94,9 +94,26 @@ import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: any): any {
-    const proto = getPrototypeOf(Ctor);
-    return isCircularModuleDependency(proto) ? resolveCircularModuleDependency(proto) : proto;
+function getCtorProto(Ctor: any): ComponentConstructor {
+    let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
+    if (isNull(proto)) {
+        throw new ReferenceError(`Invalid prototype chain for ${Ctor}, you must extend LightningElement.`);
+    }
+    // covering the cases where the ref is circular in AMD
+    if (isCircularModuleDependency(proto)) {
+        const p = resolveCircularModuleDependency(proto);
+        if (process.env.NODE_ENV !== 'production') {
+            if (isNull(p)) {
+                throw new ReferenceError(`Circular module dependency must resolve to a constructor that extends LightningElement.`);
+            }
+        }
+        // escape hatch for Locker and other abstractions to provide their own base class instead
+        // of our Base class without having to leak it to user-land. If the circular function returns
+        // itself, that's the signal that we have hit the end of the proto chain, which must always
+        // be base.
+        proto = p === proto ? BaseElement : p;
+    }
+    return proto as ComponentConstructor;
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
@@ -128,7 +145,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getCtorProto(Ctor);
-    if (proto === BaseElement) {
+    if (proto as any === BaseElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -190,7 +207,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let superElmProto = globalElmProto;
     let superElmDescriptors = globalElmDescriptors;
     const superProto = getCtorProto(Ctor);
-    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
+    const superDef: ComponentDef | null = superProto as any !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);

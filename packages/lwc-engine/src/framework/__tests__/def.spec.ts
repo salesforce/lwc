@@ -311,6 +311,23 @@ describe('def', () => {
                 attr: 'readonly',
             });
         });
+
+        it('should not allow null prototype', function() {
+            const L = null;
+            class MyComponent extends L  {}
+            expect(() => {
+                getComponentDef(MyComponent);
+            }).toThrow();
+        });
+
+        it('should not allow null in proto chain', function() {
+            const L = null;
+            class Foo extends L {}
+            class MyComponent extends Foo  {}
+            expect(() => {
+                getComponentDef(MyComponent);
+            }).toThrow();
+        });
     });
     describe('circular references', () => {
         it('should be resolved on for __proto__', () => {
@@ -330,6 +347,31 @@ describe('def', () => {
             expect(getComponentDef(B).props.a).toEqual(getComponentDef(A).props.a);
             // make sure it picks the props from LightingElement
             expect(getComponentDef(B).props.title).toBeDefined();
+        });
+
+        it('should allow escape hatch for Locker and other systems to provide their own base class to mimic LightningElement', () => {
+            // circular artifact for LightingElement
+            function CircularA() {
+                return CircularA; // because it returns itself, the engine knows what to do.
+            }
+            CircularA.__circular__ = true;
+
+            class B extends CircularA {}
+            // make sure it picks the props from LightingElement
+            expect(getComponentDef(B).props.title).toBeDefined();
+        });
+
+        it('should not allow null results', () => {
+            function CircularA() {
+                return  null;
+            }
+            CircularA.__circular__ = true;
+
+            class B extends CircularA {}
+            // make sure it picks the props from LightingElement
+            expect(() => {
+                getComponentDef(B);
+            }).toThrow();
         });
     });
 });

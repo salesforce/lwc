@@ -113,7 +113,7 @@ function activeElementGetter(this: ShadowRoot): Element | null {
     }
     const host = getHost(this);
     // activeElement must be child of the host and owned by it
-    // TODO: what happen with delegateFocus is true for a child component?
+    // TODO: what happen with delegatesFocus is true for a child component?
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
         isNodeOwnedBy(host, activeElement) ? patchShadowDomTraversalMethods(activeElement) : null;
 }
