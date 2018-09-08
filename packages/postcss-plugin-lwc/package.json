@@ -1,6 +1,6 @@
 {
   "name": "postcss-plugin-lwc",
-  "version": "0.28.0-rc1",
+  "version": "0.27.1",
   "description": "Postcss plugin for LWC components styles",
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
