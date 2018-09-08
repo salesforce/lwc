@@ -1,6 +1,6 @@
 {
   "name": "lwc-jest-transformer",
-  "version": "0.27.1",
+  "version": "0.28.0",
   "description": "Jest transformer for LWC and engine",
   "main": "src/index.js",
   "scripts": {
@@ -22,10 +22,10 @@
     "lwc-engine": "0.27.x"
   },
   "devDependencies": {
-    "lwc-compiler": "0.27.1",
-    "lwc-engine": "0.27.1",
-    "lwc-jest-resolver": "0.27.1",
-    "lwc-jest-serializer": "0.27.1"
+    "lwc-compiler": "0.28.0",
+    "lwc-engine": "0.28.0",
+    "lwc-jest-resolver": "0.28.0",
+    "lwc-jest-serializer": "0.28.0"
   },
   "engines": {
     "node": ">=8"
