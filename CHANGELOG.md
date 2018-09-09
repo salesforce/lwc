@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.27.0...v) (2018-09-05)
+# [](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v) (2018-09-09)
+
+
+### Bug Fixes
+
+* renaming for namespaces ([#627](https://github.com/salesforce/lwc/issues/627)) ([6e9b75c](https://github.com/salesforce/lwc/commit/6e9b75c))
+
+
+
+<a name="0.28.0-rc1"></a>
+# [0.28.0-rc1](https://github.com/salesforce/lwc/compare/v0.27.1...v0.28.0-rc1) (2018-09-08)
+
+
+
+<a name="0.27.1"></a>
+## [0.27.1](https://github.com/salesforce/lwc/compare/v0.27.0...v0.27.1) (2018-09-05)
 
 
 ### Bug Fixes
