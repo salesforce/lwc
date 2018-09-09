@@ -1,4 +1,4 @@
-define('namespace/js-local-import', ['lwc', 'namespace-utils'], function (lwc, namespaceUtils) {
+define('namespace/js-local-import', ['lwc', 'namespace/utils'], function (lwc, utils) {
 
     const style = undefined;
 
@@ -30,7 +30,7 @@ define('namespace/js-local-import', ['lwc', 'namespace-utils'], function (lwc, n
 
     class App extends lwc.LightningElement {
       get myname() {
-        namespaceUtils.log(method('App'));
+        utils.log(method('App'));
         return 'my name comes from utils ' + method('App');
       }
 

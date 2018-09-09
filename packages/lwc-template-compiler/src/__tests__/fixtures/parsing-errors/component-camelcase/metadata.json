@@ -6,6 +6,6 @@
     "length": 12
   }],
   "metadata": {
-    "templateDependencies": ["x-test"]
+    "templateDependencies": ["x/test"]
   }
 }
