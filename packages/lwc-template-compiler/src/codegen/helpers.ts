@@ -5,6 +5,7 @@ import State from '../state';
 import { isElement } from '../shared/ir';
 import { IRElement } from '../shared/types';
 import { TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { kebabcaseToCamelcase } from "../shared/naming";
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
@@ -14,25 +15,7 @@ export function getKeyGenerator() {
     return () => counter++;
 }
 
-export function kebabcaseToCamelcase(name) {
-    const newName: string[] = [];
-    let nsFound = false;
-    let upper = false;
-    for (let i = 0; i < name.length; i++) {
-        if (name[i] === '-') {
-            if (!nsFound) {
-                nsFound = true;
-                newName.push('/');
-            } else {
-                upper = true;
-            }
-        } else {
-            newName.push(upper ? name[i].toUpperCase() : name[i]);
-            upper = false;
-        }
-    }
-    return newName.join('');
-}
+export { kebabcaseToCamelcase };
 
 export function getMemberExpressionRoot(
     expression: t.MemberExpression,

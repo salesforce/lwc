@@ -57,6 +57,8 @@ import {
     bindExpression,
 } from '../shared/scope';
 
+import { kebabcaseToCamelcase } from "../shared/naming";
+
 import State from '../state';
 
 import {

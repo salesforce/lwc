@@ -7,6 +7,6 @@
   }],
   "metadata": {
     "templateUsedIds": ["mySlot"],
-    "templateDependencies": ["ns-cmp"]
+    "templateDependencies": ["ns/cmp"]
   }
 }

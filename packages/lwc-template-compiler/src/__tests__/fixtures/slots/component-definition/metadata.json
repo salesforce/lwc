@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "templateDependencies": ["x-foo"],
+    "templateDependencies": ["x/foo"],
     "definedSlots": [""]
   }
 }

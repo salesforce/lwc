@@ -6,6 +6,6 @@
     "length": 13
   }],
   "metadata": {
-    "templateDependencies": ["x-foo"]
+    "templateDependencies": ["x/foo"]
   }
 }

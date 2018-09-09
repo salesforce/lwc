@@ -1,5 +1,5 @@
 {
   "metadata": {
-    "templateDependencies": ["ns-foo", "x-foo", "ns-bar", "nested-c-foo", "ns-baz", "x-baz"]
+    "templateDependencies": ["ns/foo", "x/foo", "ns/bar", "nested/cFoo", "ns/baz", "x/baz"]
   }
 }
