@@ -6,18 +6,18 @@ const pluginTest = require('./utils/test-transform').pluginTest([
 describe('module namespace mapping', () => {
     pluginTest(
         'should replace handle single namespace remapping',
-        `import { method } from 'c-utils';`,
+        `import { method } from 'c/utils';`,
         {
-            output: { code: `import { method } from \"nsC-utils\";` },
+            output: { code: `import { method } from \"nsC/utils\";` },
         },
     );
 
     pluginTest(
         'should handle multiple namespace remapping',
-        `import { methodA } from 'a-utils';\n import { methodC } from 'c-utils';`,
+        `import { methodA } from 'a/utils';\n import { methodC } from 'c/utils';`,
         {
             output: {
-                code: `import { methodA } from \"nsA-utils\";\n import { methodC } from \"nsC-utils\";`,
+                code: `import { methodA } from \"nsA/utils\";\n import { methodC } from \"nsC/utils\";`,
             },
         },
     );

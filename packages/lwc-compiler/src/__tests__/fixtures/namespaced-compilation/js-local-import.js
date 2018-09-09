@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { log } from 'c-utils';
+import { log } from 'c/utils';
 import { method } from './utils';
 
 export default class App extends LightningElement {

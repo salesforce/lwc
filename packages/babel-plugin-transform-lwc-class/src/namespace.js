@@ -81,8 +81,8 @@ function getSalesforceNamespacedModule(moduleName, namespaceMapping) {
 
 function getStandardNamespacedModule(moduleName, namespaceMapping) {
     for (let [original, target] of Object.entries(namespaceMapping)) {
-        if (moduleName.startsWith(`${original}-`)) {
-            return moduleName.replace(`${original}-`, `${target}-`);
+        if (moduleName.startsWith(`${original}/`)) {
+            return moduleName.replace(`${original}/`, `${target}/`);
         }
     }
 
