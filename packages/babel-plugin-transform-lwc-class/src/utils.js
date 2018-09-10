@@ -58,6 +58,7 @@ function getEngineImportSpecifiers(path) {
         return [...acc, ...importStatement.get('specifiers')];
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
+
         if (specifier.isImportNamespaceSpecifier()) {
             throw specifier.buildCodeFrameError(
                 `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { ${LWC_PACKAGE_EXPORTS.BASE_COMPONENT} } from '${LWC_PACKAGE_ALIAS}'".`,
@@ -70,6 +71,7 @@ function getEngineImportSpecifiers(path) {
 
         // Get the list of specifiers with their name
         const imported = specifier.get('imported').node.name;
+
         return [...acc, { name: imported, path: specifier }];
     }, []);
 }

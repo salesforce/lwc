@@ -220,6 +220,56 @@ describe("compiler result", () => {
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
         expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
     });
+
+    test('compiler should correctly point out missing "track" decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { api, LightningElement } from 'lwc';
+                export default class Test extends LightningElement {
+                    @track title = 'hello'
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@track' decorator from the 'lwc'");
+    });
+
+    test('compiler should correctly point out missing "wire" decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { LightningElement } from 'lwc';
+                import { getTodo } from "todo";
+                export default class Test extends LightningElement {
+                    @wire(getTodo, {})
+                    data = {};
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@wire' decorator from the 'lwc'");
+    });
+
+    test('compiler should correctly point out missing "api" decorator import error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { LightningElement } from 'lwc';
+                export default class Test extends LightningElement {
+                    @api boo = 'jel';
+                }
+                `,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(diagnostics[0].message).toContain("Invalid decorator usage. It seems that you are not importing '@api' decorator from the 'lwc'");
+    });
 });
 
 describe("compiler metadata", () => {
