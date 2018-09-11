@@ -555,9 +555,7 @@ describe('Metadata', () => {
         `
         import { wire } from 'lwc';
         import { getRecord } from 'recordDataService';
-        let anotherParameter = userId;
         export default class Test {
-            data;
             @wire(getRecord, { recordId: '$data.Id' })
             recordData;
         }
