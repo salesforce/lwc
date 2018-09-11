@@ -74,11 +74,13 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
-function getWiredStaticMetadata(properties) {
-    const ret  = {};
+function getWiredStaticMetadata(properties, identifierValueResolver) {
+    const ret = {};
     properties.forEach(s => {
         if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
             ret[s.key.name] = s.value.elements.map(e => e.value);
+        } else if (s.key.type === 'Identifier' && s.value.type === 'Identifier') {
+            ret[s.key.name] = {reference: identifierValueResolver(s.value.name)};
         }
     });
     return ret;
@@ -107,17 +109,19 @@ module.exports = function transform(t, klass, decorators) {
         const wiredValue = {
             propertyName,
             isClassMethod
-        }
+        };
 
         if (config) {
             wiredValue.static = getWiredStatic(config);
             wiredValue.params = getWiredParams(t, config);
         }
 
+        const identifierValueResolver = name => path.scope.getBinding(name).path.parentPath.node.source.value;
+
         if (id.isIdentifier()) {
             wiredValue.adapter = {
                 name: id.node.name,
-                reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
+                reference: identifierValueResolver(id.node.name)
             }
         }
 
@@ -128,7 +132,7 @@ module.exports = function transform(t, klass, decorators) {
         };
 
         if (config) {
-            wireMetadata.static = getWiredStaticMetadata(wiredValue.static);
+            wireMetadata.static = getWiredStaticMetadata(wiredValue.static, identifierValueResolver);
             wireMetadata.params = getWiredParamMetadata(wiredValue.params);
         }
 
@@ -154,4 +158,4 @@ module.exports = function transform(t, klass, decorators) {
             targets: metadata
         };
     }
-}
+};

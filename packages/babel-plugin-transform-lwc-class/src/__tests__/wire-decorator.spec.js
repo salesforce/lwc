@@ -126,7 +126,7 @@ Test.wire = {
   }
 };`
         }
-    })
+    });
 
     pluginTest('decorator accepts an optional config object as second parameter', `
         import { wire } from 'lwc';
@@ -331,7 +331,7 @@ Test.wire = {
 
 describe('Metadata', () => {
     pluginTest(
-        'gather track metadata',
+        'gather wire metadata',
         `
         import { wire } from 'lwc';
         import { getFoo } from 'data-service';
@@ -362,6 +362,36 @@ describe('Metadata', () => {
                             static: { key2: ['fixed'] },
                             type: 'method',
                         }],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'gather wire metadata for an imported property',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        import userId from '@salesforce/user/Id';
+        export default class Test {
+            @wire(getRecord, { recordId: userId })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: { recordId: { reference: '@salesforce/user/Id' } },
+                            type: 'property',
+                        }
+                       ],
                     }]
                 },
             },
