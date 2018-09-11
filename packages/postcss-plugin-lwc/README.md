@@ -6,7 +6,7 @@
 
 * Selectors
     * Scoping CSS selectors to enforce Shadow DOM style encapsulation
-    * Transform `:host` and `:host-context` pseudo-class selectors
+    * Transform `:host` pseudo-class selectors
 * Custom Properties
     * Inline replacement of `var()` CSS function
 
@@ -143,6 +143,7 @@ x-btn[min=0] {}     /* 🚨 ERROR - invalid usage "min" attribute on "x-btn" */
 
 * No support for [`::slotted`](https://drafts.csswg.org/css-scoping/#slotted-pseudo) pseudo-element.
 * No support for [`>>>`](https://drafts.csswg.org/css-scoping/#deep-combinator) deep combinator (spec still under consideration: [issue](https://github.com/w3c/webcomponents/issues/78)).
+* No support for [`:host-context`](https://drafts.csswg.org/css-scoping/#selectordef-host-context) pseudo-selector (browser vendors are not able to agree: [webkit](https://bugs.webkit.org/show_bug.cgi?id=160038), [gecko](https://bugzilla.mozilla.org/show_bug.cgi?id=1082060))
 * Scoped CSS has a non-negligeable performance impact:
-    * Each selector chain is scoped and each compound expression passed to the `:host()` and `:host-context()` need to be spread into multiple selectors. This tranformation greatly increases the overall size and complexity of the generated CSS, leading to more bits on the wire, longer parsing time and longer style recalculation.
+    * Each selector chain is scoped and each compound expression passed to the `:host()` need to be spread into multiple selectors. This transformation greatly increases the overall size and complexity of the generated CSS, leading to more bits on the wire, longer parsing time and longer style recalculation.
     * In order to ensure CSS encapsulation, each element needs to add an extra attribute. This increases the actual rendering time.

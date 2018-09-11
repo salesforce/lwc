@@ -105,13 +105,6 @@ describe('custom-element', () => {
             ].join(''),
         );
     });
-
-    it('should handle custom elements in the :host-context selector', async () => {
-        const { css } = await process(':host-context(x-bar) {}');
-        expect(css).toBe(
-            `x-bar [x-foo_tmpl-host],[is="x-bar"] [x-foo_tmpl-host] {}`,
-        );
-    });
 });
 
 describe(':host', () => {
@@ -140,21 +133,5 @@ describe(':host', () => {
     it('should handle pseudo-element', async () => {
         const { css } = await process(':host(:hover) {}');
         expect(css).toBe(`[x-foo_tmpl-host]:hover {}`);
-    });
-});
-
-describe(':host-context', () => {
-    it('should handle selector', async () => {
-        const { css } = await process(':host-context(.darktheme) {}');
-        expect(css).toBe(`.darktheme [x-foo_tmpl-host] {}`);
-    });
-
-    it('should handle multiple selectors', async () => {
-        const { css } = await process(
-            ':host-context(.darktheme, .nighttheme) {}',
-        );
-        expect(css).toBe(
-            `.darktheme [x-foo_tmpl-host],.nighttheme [x-foo_tmpl-host] {}`,
-        );
     });
 });

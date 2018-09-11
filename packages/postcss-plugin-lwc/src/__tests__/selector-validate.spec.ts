@@ -44,6 +44,17 @@ describe('selector validation', () => {
             column: 1,
         });
     });
+
+    it('should restrict usage of unsupported :host-context selector', () => {
+        return expect(process(':host-context(.foo) {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /Invalid usage of unsupported selector ":host-context"/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 1,
+        });
+    });
 });
 
 describe('attribute validation', () => {

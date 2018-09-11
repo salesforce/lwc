@@ -12,7 +12,7 @@ import {
 } from './html-attributes';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
-const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root']);
+const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
 
 function validateSelectors(root: Root) {
     root.walk(node => {
