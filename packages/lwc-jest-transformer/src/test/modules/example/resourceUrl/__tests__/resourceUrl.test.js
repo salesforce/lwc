@@ -21,14 +21,14 @@ describe('example-resource-url', () => {
     it('returns default resource value as import path', () => {
         const element = createElement('example-resource-url', { is: ResourceUrl });
         document.body.appendChild(element);
-        const resourceUrl = document.body.querySelector(".unmockedResource").textContent;
+        const resourceUrl = element.querySelector(".unmockedResource").textContent;
         expect(resourceUrl).toBe("c.unmocked");
     });
 
     it('returns value from mock defined in test file', () => {
         const element = createElement('example-resource-url', { is: ResourceUrl });
         document.body.appendChild(element);
-        const resourceUrl = document.body.querySelector(".mockedResource").textContent;
+        const resourceUrl = element.querySelector(".mockedResource").textContent;
         expect(resourceUrl).toBe("value set in test");
     });
 });

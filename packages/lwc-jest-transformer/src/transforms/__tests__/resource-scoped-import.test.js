@@ -37,7 +37,7 @@ describe('@salesforce/resource-url import', () => {
         import { default as resource } from '@salesforce/resource-url/c.foo';
     `, undefined, 'Invalid import from @salesforce/resource-url/c.foo');
 
-    test('throws error if renamed multipel default imports', `
+    test('throws error if renamed multiple default imports', `
         import { default as resource, foo } from '@salesforce/resource-url/c.foo';
     `, undefined, 'Invalid import from @salesforce/resource-url/c.foo');
 });
