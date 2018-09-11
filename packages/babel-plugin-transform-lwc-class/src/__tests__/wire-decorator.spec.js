@@ -368,13 +368,13 @@ describe('Metadata', () => {
         },
     );
     pluginTest(
-        'gather wire metadata for an imported property',
+        'gathered for an imported reference',
         `
         import { wire } from 'lwc';
         import { getRecord } from 'recordDataService';
-        import userId from '@salesforce/user/Id';
+        import id from '@salesforce/user/Id';
         export default class Test {
-            @wire(getRecord, { recordId: userId })
+            @wire(getRecord, { recordId: id })
             recordData;
         }
     `,
@@ -389,6 +389,190 @@ describe('Metadata', () => {
                             name: 'recordData',
                             params: {},
                             static: { recordId: { reference: '@salesforce/user/Id' } },
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'gathered for an imported with "as" reference',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        import { id as currentUserId } from '@salesforce/user/Id';
+        export default class Test {
+            @wire(getRecord, { recordId: currentUserId })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: { recordId: { reference: '@salesforce/user/Id' } },
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'sets reference to undefined for unresolved import',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        export default class Test {
+            @wire(getRecord, { recordId: currentUserId })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: { recordId: { reference: undefined } },
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'preserves relative references',
+        `
+        import { wire } from 'lwc';
+        import userId from './relative.js';
+        import relativeParameter from './other/relative.js';
+        import { getRecord } from 'recordDataService';
+        export default class Test {
+            @wire(getRecord, { recordId: userId, anotherParameter: relativeParameter })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: { recordId: { reference: './relative.js' },
+                                anotherParameter: { reference: './other/relative.js' } },
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'sets reference to undefined for const, let references',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        const userId = '005000000000000000';
+        let letParameter = userId;
+        const data = { dotParameter: '123' };
+        export default class Test {
+            @wire(getRecord, { recordId: userId, letParameter: letParameter, dotParameter: data.dotParameter })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: { recordId: { reference: undefined }, letParameter: { reference: undefined } },
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'ignored for dot static references',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        const data = { dotParameter: '123' };
+        export default class Test {
+            @wire(getRecord, { dotParameter: data.dotParameter })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: {},
+                            static: {},
+                            type: 'property',
+                        }
+                       ],
+                    }]
+                },
+            },
+        },
+    );
+    pluginTest(
+        'gathered for $foo parameters with dots',
+        `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        let anotherParameter = userId;
+        export default class Test {
+            data;
+            @wire(getRecord, { recordId: '$data.Id' })
+            recordData;
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [
+                        {
+                            adapter: { name: 'getRecord', reference: 'recordDataService' },
+                            name: 'recordData',
+                            params: { recordId: 'data.Id' },
+                            static: {} ,
                             type: 'property',
                         }
                        ],

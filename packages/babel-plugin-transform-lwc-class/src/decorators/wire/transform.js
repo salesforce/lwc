@@ -116,12 +116,22 @@ module.exports = function transform(t, klass, decorators) {
             wiredValue.params = getWiredParams(t, config);
         }
 
-        const getReferenceByName = name => path.scope.getBinding(name).path.parentPath.node.source.value;
+        const getReferenceByName = name => {
+            let binding = path.scope.getBinding(name);
+            if (binding) {
+                if (binding.kind === 'module') {
+                    let parentPathNode = binding.path.parentPath.node;
+                    return parentPathNode && parentPathNode.source && parentPathNode.source.value;
+                }
+            }
+            return undefined;
+        };
 
         if (id.isIdentifier()) {
+            const adapterName = id.node.name;
             wiredValue.adapter = {
-                name: id.node.name,
-                reference: getReferenceByName(id.node.name)
+                name: adapterName,
+                reference: getReferenceByName(adapterName)
             }
         }
 
