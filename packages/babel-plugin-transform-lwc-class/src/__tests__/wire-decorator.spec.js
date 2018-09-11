@@ -497,7 +497,7 @@ describe('Metadata', () => {
         let letParameter = userId;
         const data = { dotParameter: '123' };
         export default class Test {
-            @wire(getRecord, { recordId: userId, letParameter: letParameter, dotParameter: data.dotParameter })
+            @wire(getRecord, { recordId: userId, letParameter: letParameter })
             recordData;
         }
     `,
