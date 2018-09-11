@@ -12,10 +12,7 @@
     "test:performance": "lerna exec --scope benchmark -- best --runner remote",
     "build": "lerna run build --ignore benchmark --ignore lwc-integration",
     "release:ci:npm": "./scripts/release_npm.sh",
-    "release:ci:changelog": "./scripts/release_changelog.sh",
-    "release:manual": "lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' --skip-git",
-    "release:beta": "yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary=beta --yes",
-    "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+    "release:ci:changelog": "./scripts/release_changelog.sh"
   },
   "husky": {
     "hooks": {
