@@ -107,4 +107,33 @@ describe('attribute validation', () => {
             column: 2,
         });
     });
+
+    it('should allow usage of data-* attributes', async () => {
+        await expect(process('[data-foo] {}')).resolves.toBeDefined();
+        await expect(process('[data-foo="bar"] {}')).resolves.toBeDefined();
+    });
+
+    it('should forbid usage of the data attribute', async () => {
+        await expect(process('[data] {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /is too generic/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 2,
+        });
+        await expect(process('div[data] {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /"\[data\]" can't be applied to match on <div>/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 4,
+        });
+    });
+
+    it('should allow usage of ARIA attributes', async () => {
+        await expect(process('[data-foo] {}')).resolves.toBeDefined();
+        await expect(process('[data-foo="bar"] {}')).resolves.toBeDefined();
+    });
 });
