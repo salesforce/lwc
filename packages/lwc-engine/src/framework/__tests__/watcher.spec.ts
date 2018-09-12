@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
 describe('watcher', () => {
@@ -18,10 +19,8 @@ describe('watcher', () => {
 
         it('should rerender the component if any reactive prop changes', () => {
             let counter = 0;
-            function html($api, $cmp) {
-                $cmp.x;
-                return [];
-            }
+
+            const html = compileTemplate(`<template>{x}</template>`);
             class MyComponent2 extends LightningElement {
                 render() {
                     counter++;
@@ -62,26 +61,33 @@ describe('watcher', () => {
 
         it('should rerender the component if any reactive slot changes', () => {
             let counter = 0;
-            function html1($api, $cmp, $slotset, $ctx) {
-                return [$api.s('x', {
-                    key: 0,
-                    attrs: {
-                        name: 'x'
-                    }
-                }, [], $slotset)];
-            }
-            html1.slots = ["x"];
+
+            const childTmpl = compileTemplate(`
+                <template>
+                    <slot name="x"></slot>
+                </template>
+            `);
             class Child extends LightningElement {
                 render() {
                     counter++;
-                    return html1;
+                    return childTmpl;
                 }
             }
-            function html2($api, $cmp) {
-                const r = $cmp.round;
-                return [$api.c('x-child', Child, {}, r === 0 ? [] : [$api.h('p', { key: 0, attrs: { slot: 'x' } }, [])])];
+
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <template if:true={round}>
+                            <p slot="x"></p>
+                        </template>
+                    </x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child,
             }
-            class MyComponent4 extends LightningElement {
+            });
+            class Parent extends LightningElement {
                 constructor() {
                     super();
                     this.round = 0;
@@ -90,13 +96,13 @@ describe('watcher', () => {
                     this.round += 1;
                 }
                 render() {
-                    return html2;
+                    return parentTmpl;
                 }
             }
-            MyComponent4.track = { round: 1 };
-            MyComponent4.publicMethods = ['updateRound'];
+            Parent.track = { round: 1 };
+            Parent.publicMethods = ['updateRound'];
 
-            const elm = createElement('x-foo', { is: MyComponent4 });
+            const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             elm.updateRound();
 
@@ -108,10 +114,8 @@ describe('watcher', () => {
         it('should rerender the component if tracked property changes', () => {
             let counter = 0;
             let state;
-            function html($api, $cmp) {
-                $cmp.state.x;
-                return [];
-            }
+
+            const html = compileTemplate(`<template>{state.x}</template>`);
             class MyComponent6 extends LightningElement {
                 state = { x: 0 };
                 constructor() {
@@ -124,6 +128,7 @@ describe('watcher', () => {
                 }
             }
             MyComponent6.track = { state: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent6 });
             document.body.appendChild(elm);
             state.x = 2;
@@ -135,6 +140,7 @@ describe('watcher', () => {
         it('should not rerender the component if a non-reactive state changes', () => {
             let counter = 0;
             let state;
+
             class MyComponent7 extends LightningElement {
                 state = { x: 0 };
                 constructor() {
@@ -145,6 +151,7 @@ describe('watcher', () => {
                     counter++;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent7 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
@@ -154,23 +161,10 @@ describe('watcher', () => {
             });
         });
 
-        it('should prevent any mutation during the rendering phase', () => {
-            function html($api, $cmp) {
-                $cmp.state.x = 1;
-            }
-            class MyComponent8 extends LightningElement {
-                state = { x: 0 };
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent8 });
-            expect(() => document.body.appendChild(elm)).toThrow();
-        });
-
         it('should compute reactive state per rendering', () => {
             let counter = 0;
             let state;
+
             function html($api, $cmp) {
                 if (counter === 1) {
                     $cmp.state.x;
@@ -189,6 +183,7 @@ describe('watcher', () => {
                 }
             }
             MyComponent9.track = { state: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent9 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
@@ -204,10 +199,8 @@ describe('watcher', () => {
 
         it('should mark public prop as reactive even if it is used via a getter', () => {
             let counter = 0;
-            function html($api, $cmp) {
-                $cmp.foo;
-                return [];
-            }
+
+            const html = compileTemplate(`<template>{foo}</template>`);
             class MyComponent2 extends LightningElement {
                 get foo() {
                     return this.x;
@@ -223,6 +216,7 @@ describe('watcher', () => {
                 }
             }
             MyComponent2.publicProps = { x: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent2 });
             elm.x = 2;
             document.body.appendChild(elm);
@@ -235,6 +229,7 @@ describe('watcher', () => {
         it('should allow observing public prop via setter', () => {
             let counter = 0;
             let newValue, oldValue;
+
             class MyComponent2 extends LightningElement {
                 set x(value) {
                     counter++;
@@ -246,6 +241,7 @@ describe('watcher', () => {
                 }
             }
             MyComponent2.publicProps = { x: { config: 3 } };
+
             const elm = createElement('x-foo', { is: MyComponent2 });
             elm.x = 2;
             document.body.appendChild(elm);
@@ -259,6 +255,7 @@ describe('watcher', () => {
     describe('#reactivity()', () => {
         it('should react when a reactive array invokes Array.prototype.push()', () => {
             let counter = 0;
+
             class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
 
@@ -273,6 +270,7 @@ describe('watcher', () => {
             }
             MyComponent1.track = { state: 1 };
             MyComponent1.publicMethods = ['pushToList'];
+
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
@@ -283,6 +281,7 @@ describe('watcher', () => {
         });
         it('should react when a reactive array invokes Array.prototype.pop()', () => {
             let counter = 0;
+
             class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
 
@@ -297,6 +296,7 @@ describe('watcher', () => {
             }
             MyComponent1.publicMethods = ['popFromList'];
             MyComponent1.track = { state: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
@@ -307,6 +307,7 @@ describe('watcher', () => {
         });
         it('should react when a reactive array invokes Array.prototype.unshift()', () => {
             let counter = 0;
+
             class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
                 unshiftFromList(value: number) {
@@ -319,6 +320,7 @@ describe('watcher', () => {
             }
             MyComponent1.publicMethods = ['unshiftFromList'];
             MyComponent1.track = { state: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);

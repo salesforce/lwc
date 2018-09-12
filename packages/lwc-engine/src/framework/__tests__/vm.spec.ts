@@ -1,7 +1,7 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
 import { getErrorComponentStack } from "../vm";
-import { compileTemplate } from 'test-utils';
 
 describe('vm', () => {
     describe('insertion index', () => {
