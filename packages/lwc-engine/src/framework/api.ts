@@ -5,7 +5,7 @@ import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDepen
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { patchEvent } from "../faux-shadow/faux";
+import { patchEvent, patchSlotElement } from "../faux-shadow/faux";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
@@ -218,6 +218,15 @@ export function s(slotName: string, data: VNodeData, children: VNodes, slotset: 
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+    }
+    // special logic to support slotchange event in fallback mode
+    if (getCurrentFallback()) {
+        data.hook = {
+            create(oldVnode: VNode, vnode: VNode) {
+                const elm = vnode.elm as HTMLSlotElement;
+                patchSlotElement(elm);
+            },
+        };
     }
     return h('slot', data, isUndefined(slotset) || isUndefined(slotset[slotName]) || slotset[slotName].length === 0 ? children : slotset[slotName]);
 }
