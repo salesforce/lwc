@@ -58,7 +58,7 @@ function validateAttribute(root: Root) {
             }
 
             // If the attribute name is not a globally available attribute, the attribute selector is required
-            // to be associated with a tag selector, so we can validate it's usage. Let's walk the compound selector
+            // to be associated with a tag selector, so we can validate its usage. Let's walk the compound selector
             // backward to find the associated tag selector.
             let tagSelector: Tag | undefined = undefined;
             let runner = node.prev();
@@ -79,8 +79,9 @@ function validateAttribute(root: Root) {
             // the compound selector need to be more specific.
             if (tagSelector === undefined) {
                 const message = [
-                    `Attribute selector "${node}" is too generic. `,
-                    `Add a tag selector to validate the usage of the attribute selector.`,
+                    `Invalid usage of attribute selector "${attributeName}". `,
+                    `For validation purposes, attributes that are not global attributes must be associated `,
+                    `with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")`,
                 ];
 
                 throw root.error(
@@ -97,8 +98,8 @@ function validateAttribute(root: Root) {
             const { value: tagName } = tagSelector;
             if (!isKnowAttributeOnElement(tagName, attributeName)) {
                 const message = [
-                    `Attribute selector "${node}" can't be applied to match on <${tagSelector.value}>. `,
-                    `Use another method to match on the element.`,
+                    `Invalid usage of attribute selector "${attributeName}". `,
+                    `Attribute "${attributeName}" is not a known attribute on <${tagName}> element.`,
                 ];
 
                 throw root.error(message.join(''), {
