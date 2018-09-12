@@ -1,31 +1,35 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { querySelector, querySelectorAll } from "../../faux-shadow/element";
 
-function createBoundaryComponent(elementsToRender) {
-    function html($api, $cmp) {
-        if ($cmp.getError()) {
-            return [];
-        } else {
-            return elementsToRender.map((config) => {
-                return $api.c(config.name, config.ctor, config.props || {});
-            });
-        }
-    }
+function createBoundaryComponent({ name, ctor }) {
+    const baseTmpl = compileTemplate(`
+        <template>
+            <${name}></${name}>
+        </template>
+    `, {
+        modules: { [name]: ctor },
+    });
+
+    const recoveryTmpl = compileTemplate(`
+        <template></template>
+    `);
+
     class Boundary extends LightningElement {
+        error = null;
         getError() {
             return this.error;
         }
-
         errorCallback(error) {
             this.error = error.message;
         }
-
         render() {
-            return html;
+            return this.error ? recoveryTmpl : baseTmpl;
         }
     }
-    Boundary.publicMethods = ['getError'];
     Boundary.track = { error: 1 };
+    Boundary.publicMethods = ['getError'];
+
     return Boundary;
 }
 
@@ -41,10 +45,10 @@ describe('error boundary component', () => {
                         throw new Error("Child Constructor Throw");
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
+                });
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
                 document.body.appendChild(boundaryElm);
 
@@ -59,33 +63,48 @@ describe('error boundary component', () => {
                         throw new Error("Child Constructor Throw");
                     }
                 }
+
                 class BoundarySibling extends LightningElement {}
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
-                function html($api, $cmp) {
-                    return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
-                    ];
+                });
+
+                const html = compileTemplate(`
+                    <template>
+                        <x-boundary></x-boundary>
+                        <x-boundary-sibling></x-boundary-sibling>
+                    </template>
+                `, {
+                    modules: {
+                        'x-boundary': Boundary,
+                        'x-boundary-sibling': BoundarySibling,
                 }
-                class BoundryHost extends LightningElement {
+                });
+                class BoundaryHost extends LightningElement {
                     render() {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
 
+                const boundaryHostElm = createElement('x-parent', {is: BoundaryHost});
                 document.body.appendChild(boundaryHostElm);
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
             it('should unmount enitre subtree up to boundary component if child throws inside constructor', () => {
                 class SecondLevelChild extends LightningElement {}
-                function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
+
+                const firstChildTmpl = compileTemplate(`
+                    <template>
+                        <x-second-level-child></x-second-level-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-second-level-child': SecondLevelChild,
                 }
+                });
                 class FirstLevelChild extends LightningElement {
                     constructor() {
                         super();
@@ -93,13 +112,14 @@ describe('error boundary component', () => {
                     }
 
                     render() {
-                        return html;
+                        return firstChildTmpl;
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-first-level-child',
                     ctor: FirstLevelChild
-                }]);
+                });
 
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
@@ -109,14 +129,21 @@ describe('error boundary component', () => {
             }),
 
             it('should throw if error occurs in error boundary constructor', () => {
-                class FirstLevelChild extends LightningElement {}
                 class FirstLevelChildSibling extends LightningElement {}
-                function html($api, $cmp) {
-                    return [
-                        $api.c('x-first-level-child-sibling', FirstLevelChildSibling, {}),
-                        $api.c('x-first-level-child', FirstLevelChild, {})
-                    ];
+
+                class FirstLevelChild extends LightningElement {}
+
+                const html = compileTemplate(`
+                    <template>
+                        <x-first-level-child-sibling></x-first-level-child-sibling>
+                        <x-first-level-child></x-first-level-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-first-level-child-sibling': FirstLevelChildSibling,
+                        'x-first-level-child': FirstLevelChild,
                 }
+                });
                 class Boundary extends LightningElement {
                     constructor() {
                         super();
@@ -127,6 +154,7 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
+
                 expect( () => {
                     const elm = createElement('x-boundary', { is: Boundary });
                     document.body.appendChild(elm);
@@ -143,10 +171,12 @@ describe('error boundary component', () => {
                         throw new Error("Child Render Throw");
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
+                });
+
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
                 document.body.appendChild(boundaryElm);
 
@@ -181,23 +211,32 @@ describe('error boundary component', () => {
                         throw new Error("Child Constructor Throw");
                     }
                 }
+
                 class BoundarySibling extends LightningElement {}
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
-                function html($api, $cmp) {
-                    return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
-                    ];
+                });
+
+                const html = compileTemplate(`
+                    <template>
+                        <x-boundary></x-boundary>
+                        <x-boundary-sibling></x-boundary-sibling>
+                    </template>
+                `, {
+                    modules: {
+                        'x-boundary': Boundary,
+                        'x-boundary-sibling': BoundarySibling,
                 }
-                class BoundryHost extends LightningElement {
+                });
+                class BoundaryHost extends LightningElement {
                     render() {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
+
+                const boundaryHostElm = createElement('x-parent', {is: BoundaryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -209,18 +248,26 @@ describe('error boundary component', () => {
                         throw new Error("Child Render Throw");
                     }
                 }
-                function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
+
+                const firstChildTmpl = compileTemplate(`
+                    <template>
+                        <x-second-level-child></x-second-level-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-second-level-child': SecondLevelChild,
                 }
+                });
                 class FirstLevelChild extends LightningElement {
                     render() {
-                        return html;
+                        return firstChildTmpl;
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-first-level-child',
                     ctor: FirstLevelChild
-                }]);
+                });
 
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
@@ -235,23 +282,30 @@ describe('error boundary component', () => {
                         throw Error('Slot cmp throws in render method');
                     }
                 }
-                function html1($api, $cmp, $slotset, $ctx) {
-                    return [$api.s('x', {
-                        key: 0,
-                        attrs: {
-                            name: 'x'
-                        }
-                    }, [], $slotset)];
-                }
-                html1.slots = ["x"];
+
+                const childWithSlotTmpl = compileTemplate(`
+                    <template>
+                        <slot name="x"></slot>
+                    </template>
+                `);
                 class ChildWithSlot extends LightningElement {
                     render() {
-                        return html1;
+                        return childWithSlotTmpl;
                     }
                 }
-                function html2($api, $cmp) {
-                    return [ $api.c('x-child-with-slot', ChildWithSlot, { key: 0 }, [ $api.c('x-slot-cmp', SlotCmp, { attrs: { slot: 'x' } })]) ];
+
+                const boundaryWithSlot = compileTemplate(`
+                    <template>
+                        <x-child-with-slot>
+                            <x-slot-cmp slot="x"></x-slot-cmp>
+                        </x-child-with-slot>
+                    </template>
+                `, {
+                    modules: {
+                        'x-slot-cmp': SlotCmp,
+                        'x-child-with-slot': ChildWithSlot,
                 }
+                });
                 class BoundaryWithSlot extends LightningElement {
                     getError() {
                         return this.error;
@@ -260,7 +314,7 @@ describe('error boundary component', () => {
                         this.error = error.message;
                     }
                     render() {
-                        return html2;
+                        return boundaryWithSlot;
                     }
                 }
                 BoundaryWithSlot.publicMethods = ['getError'];
@@ -280,10 +334,12 @@ describe('error boundary component', () => {
                         throw new Error("Child RenderedCallback Throw");
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
+                });
+
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
                 document.body.appendChild(boundaryElm);
 
@@ -318,9 +374,14 @@ describe('error boundary component', () => {
                         throw new Error("Child RenderedCallback Throw");
                     }
                 }
-                function html($api, $cmp) {
-                    return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
-                }
+
+                const html = compileTemplate(`
+                    <template>
+                        <child-boundary-content></child-boundary-content>
+                    </template>
+                `, {
+                    modules: { 'child-boundary-content': ChildBoundaryContent }
+                });
                 class ChildErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
@@ -335,10 +396,10 @@ describe('error boundary component', () => {
                 ChildErrorBoundary.publicMethods = ['getError'];
                 ChildErrorBoundary.track = { error: 1 };
 
-                const HostErrorBoundary = createBoundaryComponent([{
+                const HostErrorBoundary = createBoundaryComponent({
                     name: 'child-error-boundary',
                     ctor: ChildErrorBoundary
-                }]);
+                });
 
                 const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
@@ -362,10 +423,10 @@ describe('error boundary component', () => {
                 ChildErrorBoundary.publicMethods = ['getError'];
                 ChildErrorBoundary.track = { error: 1 };
 
-                const HostErrorBoundary  = createBoundaryComponent([{
+                const HostErrorBoundary  = createBoundaryComponent({
                     name: 'child-error-boundary',
                     ctor: ChildErrorBoundary
-                }]);
+                });
 
                 const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
@@ -380,9 +441,14 @@ describe('error boundary component', () => {
                         throw new Error("Child RenderedCallback Throw");
                     }
                 }
-                function html($api, $cmp) {
-                    return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
-                }
+
+                const html = compileTemplate(`
+                    <template>
+                        <child-boundary-content></child-boundary-content>
+                    </template>
+                `, {
+                    modules: { 'child-boundary-content': ChildBoundaryContent }
+                });
                 class ChildErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
@@ -400,10 +466,10 @@ describe('error boundary component', () => {
                 ChildErrorBoundary.publicMethods = ['getError'];
                 ChildErrorBoundary.track = { error: 1 };
 
-                const HostErrorBoundary = createBoundaryComponent([{
+                const HostErrorBoundary = createBoundaryComponent({
                     name: 'child-error-boundary',
                     ctor: ChildErrorBoundary
-                }]);
+                });
 
                 const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
@@ -421,22 +487,28 @@ describe('error boundary component', () => {
                 }
                 class BoundarySibling extends LightningElement {}
 
-                const Boundary = createBoundaryComponent([{
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
-                function html($api, $cmp) {
-                    return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
-                    ];
-                }
-                class BoundryHost extends LightningElement {
+                });
+
+                const html = compileTemplate(`
+                    <template>
+                        <x-boundary></x-boundary>
+                        <x-boundary-sibling></x-boundary-sibling>
+                    </template>
+                `, {
+                    modules: {
+                        'x-boundary': Boundary,
+                        'x-boundary-sibling': BoundarySibling,
+                    }
+                });
+                class BoundaryHost extends LightningElement {
                     render() {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundaryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -448,18 +520,26 @@ describe('error boundary component', () => {
                         throw new Error("Child RenderedCallback Throw");
                     }
                 }
-                function html($api, $cmp) {
-                    return [$api.c('x-second-level-child', SecondLevelChild, {})];
-                }
+
+                const firstChildTmpl = compileTemplate(`
+                    <template>
+                        <x-second-level-child></x-second-level-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-second-level-child': SecondLevelChild,
+                    }
+                });
                 class FirstLevelChild extends LightningElement {
                     render() {
-                        return html;
+                        return firstChildTmpl;
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-first-level-child',
                     ctor: FirstLevelChild
-                }]);
+                });
 
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
@@ -476,10 +556,11 @@ describe('error boundary component', () => {
                         throw new Error("Child ConnectedCallback Throw");
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
+                });
 
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
                 document.body.appendChild(boundaryElm);
@@ -515,24 +596,31 @@ describe('error boundary component', () => {
                         throw new Error("Child ConnectedCallback Throw");
                     }
                 }
+
                 class BoundarySibling extends LightningElement {}
 
-                const Boundary = createBoundaryComponent([{
+                const Boundary = createBoundaryComponent({
                     name: 'x-child',
                     ctor: BoundaryChild
-                }]);
-                function html($api, $cmp) {
-                    return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
-                    ];
+                });
+
+                const html = compileTemplate(`
+                    <template>
+                        <x-boundary></x-boundary>
+                        <x-boundary-sibling></x-boundary-sibling>
+                    </template>
+                `, {
+                    modules: {
+                        'x-boundary': Boundary,
+                        'x-boundary-sibling': BoundarySibling,
                 }
-                class BoundryHost extends LightningElement {
+                });
+                class BoundaryHost extends LightningElement {
                     render() {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundaryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -544,18 +632,25 @@ describe('error boundary component', () => {
                         throw new Error("Child ConnectedCallback Throw");
                     }
                 }
-                function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
-                }
+
+                const firstChildTmpl = compileTemplate(`
+                    <template>
+                        <x-second-level-child></x-second-level-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-second-level-child': SecondLevelChild,
+                    }
+                });
                 class FirstLevelChild extends LightningElement {
                     render() {
                         return html;
                     }
                 }
-                const Boundary = createBoundaryComponent([{
+                const Boundary = createBoundaryComponent({
                     name: 'x-first-level-child',
                     ctor: FirstLevelChild
-                }]);
+                });
 
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
@@ -565,82 +660,95 @@ describe('error boundary component', () => {
             });
         });
 
+        // TODO: How does this works !!
+        // It's impossible to invoke getError from the template.
         describe('error boundary failures in rendering alternative view', () => {
             it('should throw if error boundary fails to render alternative view', () => {
-                class PostErrorChildOffender extends LightningElement {
-                    render() {
-                        throw new Error("Post-Failure Child Content Throws in Render");
-                    }
-                }
                 class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
                 }
-                function html($api, $cmp) {
-                    if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
-                    } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+                class PostErrorChildOffender extends LightningElement {
+                    render() {
+                        throw new Error("Post-Failure Child Content Throws in Render");
                     }
                 }
+
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                const recoveryTmpl = compileTemplate(`
+                    <template>
+                        <post-error-child-content></post-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'post-error-child-content': PostErrorChildOffender },
+                });
                 class AltViewErrorBoundary extends LightningElement {
-                    getError() {
-                        return this.error;
-                    }
-                    errorCallback(error, info) {
+                    error = null;
+                    errorCallback(error) {
                         this.error = error.message;
                     }
                     render() {
-                        return html;
+                        return this.error ? recoveryTmpl : baseTmpl;
                     }
                 }
-                AltViewErrorBoundary.publicMethods = ['getError'];
                 AltViewErrorBoundary.track = { error: 1 };
 
-                const altViewElm = createElement('alt-view-boundary', { is: AltViewErrorBoundary });
+                const elm = createElement('alt-view-boundary', { is: AltViewErrorBoundary });
 
                 expect( () => {
-                    document.body.appendChild(altViewElm);
+                    document.body.appendChild(elm);
                 }).toThrowError();
             }),
 
             it('should rethrow error to the parent error boundary when child boundary fails to render alternative view', () => {
-                class PostErrorChildOffender extends LightningElement {
-                    render() {
-                        throw new Error("Post-Failure Child Content Throws in Render");
-                    }
-                }
                 class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
                 }
-                function html($api, $cmp) {
-                    if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
-                    } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+
+                class PostErrorChildOffender extends LightningElement {
+                    render() {
+                        throw new Error("Post-Failure Child Content Throws in Render");
                     }
                 }
+
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                const recoveryTmpl = compileTemplate(`
+                    <template>
+                        <post-error-child-content></post-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'post-error-child-content': PostErrorChildOffender },
+                });
                 class AltViewErrorBoundary extends LightningElement {
-                    getError() {
-                        return this.error;
-                    }
-                    errorCallback(error, info) {
+                    error = null;
+                    errorCallback(error) {
                         this.error = error.message;
                     }
                     render() {
-                        return html;
+                        return this.error ? recoveryTmpl : baseTmpl;
                     }
                 }
-                AltViewErrorBoundary.publicMethods = ['getError'];
                 AltViewErrorBoundary.track = { error: 1 };
 
-                const HostBoundary = createBoundaryComponent([{
+                const HostBoundary = createBoundaryComponent({
                     name: 'alt-view-error-boundary',
                     ctor: AltViewErrorBoundary
-                }]);
+                });
 
                 const hostElm = createElement('host-boundary', { is: HostBoundary });
                 document.body.appendChild(hostElm);
