@@ -127,16 +127,20 @@ div {
 
 Since LWC uses the HTML attribute syntax to define properties on components, it will be misleading to use attribute selectors when styling a component. For this reason the CSS transform restricts the usage of CSS attribute selectors.
 
-* CSS selectors using [Global HTML attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes) are allowed.
-* Usage of attributes are only allowed in compound selectors with known tag selectors
+* CSS selectors using [Global HTML attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes), [data-* attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*) and [aria-* attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) are allowed.
+* Usage of attributes are only allowed in compound selectors with known tag selectors.
 
 ```css
-[hidden] {}         /* ✅ OK - global HTML attribute selector */
-x-btn[hidden] {}    /* ✅ OK - global HTML attribute selector */
+[hidden] {}                 /* ✅ OK - global HTML attribute selector */
+x-btn[hidden] {}            /* ✅ OK - global HTML attribute selector */
 
-[min=0] {}          /* 🚨 ERROR - the compound selector is not specific enough */
-input[min=0] {}     /* ✅ OK - "min" attribute is a known special attribute on the "input" element */
-x-btn[min=0] {}     /* 🚨 ERROR - invalid usage "min" attribute on "x-btn" */
+[data-foo] {}               /* ✅ OK - data-* attribute selector */
+
+[aria-hidden="true"] {}     /* ✅ OK - aria-* attribute selector */
+
+[min=0] {}                  /* 🚨 ERROR - the compound selector is not specific enough */
+input[min=0] {}             /* ✅ OK - "min" attribute is a known special attribute on the "input" element */
+x-btn[min=0] {}             /* 🚨 ERROR - invalid usage "min" attribute on "x-btn" */
 ```
 
 ## Selector scoping caveats

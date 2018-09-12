@@ -1,9 +1,16 @@
-export function isValidAttribute(tagName: string, attribute: string): boolean {
-    // All the element possess global HTML attributes.
-    if (GLOBAL_ATTRIBUTE_SET.has(attribute)) {
-        return true;
-    }
+export function isGlobalAttribute(attributeName: string): boolean {
+    return GLOBAL_ATTRIBUTE_SET.has(attributeName);
+}
 
+export function isAriaAttribute(attributeName: string): boolean {
+    return attributeName.startsWith('aria-');
+}
+
+export function isDataAttribute(attributeName: string): boolean {
+    return attributeName.startsWith('data-');
+}
+
+export function isKnowAttributeOnElement(tagName: string, attributeName: string): boolean {
     // We can't validate the attribute on custom elements.
     const isCustomElement = tagName.includes('-');
     if (isCustomElement) {
@@ -12,12 +19,12 @@ export function isValidAttribute(tagName: string, attribute: string): boolean {
 
     // Finally check in the list of known attributes for standard elements.
     return (
-        Array.isArray(HTML_ATTRIBUTES_REVERSE_LOOKUP[attribute]) &&
-        HTML_ATTRIBUTES_REVERSE_LOOKUP[attribute].includes(tagName)
+        Array.isArray(HTML_ATTRIBUTES_REVERSE_LOOKUP[attributeName]) &&
+        HTML_ATTRIBUTES_REVERSE_LOOKUP[attributeName].includes(tagName)
     );
 }
 
-export const GLOBAL_ATTRIBUTE_SET: Set<string> = new Set([
+const GLOBAL_ATTRIBUTE_SET: Set<string> = new Set([
     'role',
     'accesskey',
     'class',
@@ -37,7 +44,7 @@ export const GLOBAL_ATTRIBUTE_SET: Set<string> = new Set([
     'title',
 ]);
 
-export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
+const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
     'xlink:href': [
         'use',
     ],

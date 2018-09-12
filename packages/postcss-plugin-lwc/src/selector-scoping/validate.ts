@@ -7,9 +7,11 @@ import {
 } from 'postcss-selector-parser';
 
 import {
-    GLOBAL_ATTRIBUTE_SET,
-    isValidAttribute,
-} from './html-attributes';
+    isGlobalAttribute,
+    isAriaAttribute,
+    isDataAttribute,
+    isKnowAttributeOnElement,
+} from '../helpers/html-attributes';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
@@ -47,18 +49,17 @@ function validateSelectors(root: Root) {
 function validateAttribute(root: Root) {
     root.walk(node => {
         if (isAttribute(node)) {
-            const { attribute, sourceIndex } = node;
+            const { attribute: attributeName, sourceIndex } = node;
 
-            // Global HTML attributes are valid on all the element, custom or not.
-            const isGlobalHTMLAttribute = GLOBAL_ATTRIBUTE_SET.has(attribute);
-            if (isGlobalHTMLAttribute) {
+            // Let's check if the attribute name is either a Global HTML attribute, an ARIA attribute
+            // or a data-* attribute since those are available on all the elements.
+            if (isGlobalAttribute(attributeName) || isAriaAttribute(attributeName) || isDataAttribute(attributeName)) {
                 return;
             }
 
-            // If the attribute is not a global one we need to validate it's usage. Walking
-            // backward the selector chain to find a tag selector in the compound selector.
-            // The lookup stop when either a tag is found or when reaching the next
-            // combinator - which indicates the end of the compound selector.
+            // If the attribute name is not a globally available attribute, the attribute selector is required
+            // to be associated with a tag selector, so we can validate its usage. Let's walk the compound selector
+            // backward to find the associated tag selector.
             let tagSelector: Tag | undefined = undefined;
             let runner = node.prev();
 
@@ -74,31 +75,36 @@ function validateAttribute(root: Root) {
                 }
             }
 
-            // Error out when not tag selector is present in the compound selector.
-            if (!tagSelector) {
+            // If the tag selector is not present in the compound selector, we need to warn the user that
+            // the compound selector need to be more specific.
+            if (tagSelector === undefined) {
+                const message = [
+                    `Invalid usage of attribute selector "${attributeName}". `,
+                    `For validation purposes, attributes that are not global attributes must be associated `,
+                    `with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")`,
+                ];
+
                 throw root.error(
-                    `Selector "${node}" is too generic, add a tag selector.`,
+                    message.join(''),
                     {
                         index: sourceIndex,
-                        word: attribute,
-                    },
+                        word: attributeName,
+                    }
                 );
             }
 
-            // Check if the attribute is permitted for the considered tag.
-            const isValidSelector = isValidAttribute(
-                tagSelector.value,
-                attribute,
-            );
-            if (!isValidSelector) {
+            // If compound selector is associated with a tag selector, we can validate the usage of the
+            // attribute against the specific tag.
+            const { value: tagName } = tagSelector;
+            if (!isKnowAttributeOnElement(tagName, attributeName)) {
                 const message = [
-                    `Attribute selector "${node}" can't be applied to match on <${tagSelector}>. `,
-                    `Use another method to match on the element.`,
+                    `Invalid usage of attribute selector "${attributeName}". `,
+                    `Attribute "${attributeName}" is not a known attribute on <${tagName}> element.`,
                 ];
 
                 throw root.error(message.join(''), {
                     index: sourceIndex,
-                    word: attribute,
+                    word: attributeName,
                 });
             }
         }
