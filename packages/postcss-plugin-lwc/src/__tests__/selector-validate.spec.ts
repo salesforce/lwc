@@ -133,7 +133,7 @@ describe('attribute validation', () => {
     });
 
     it('should allow usage of ARIA attributes', async () => {
-        await expect(process('[data-labelledby] {}')).resolves.toBeDefined();
-        await expect(process('[data-labelledby="bar"] {}')).resolves.toBeDefined();
+        await expect(process('[aria-labelledby] {}')).resolves.toBeDefined();
+        await expect(process('[aria-labelledby="bar"] {}')).resolves.toBeDefined();
     });
 });
