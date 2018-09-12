@@ -648,6 +648,11 @@ describe('Shadow Root events', () => {
     it('should call event handler with correct target', () => {
         expect.assertions(1);
 
+        const html = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', (evt) => {
@@ -660,11 +665,7 @@ describe('Shadow Root events', () => {
             }
 
             render() {
-                return function ($api) {
-                    return [$api.h('div', {
-                        key: 0,
-                    }, [])];
-                }
+                return html;
             }
         }
         MyComponent.publicMethods = ['clickDiv'];

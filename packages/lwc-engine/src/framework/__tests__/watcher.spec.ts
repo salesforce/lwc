@@ -83,9 +83,7 @@ describe('watcher', () => {
                     </x-child>
                 </template>
             `, {
-                modules: {
-                    'x-child': Child,
-            }
+                modules: { 'x-child': Child }
             });
             class Parent extends LightningElement {
                 constructor() {

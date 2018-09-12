@@ -263,12 +263,7 @@ describe('performance-timing', () => {
         });
         class Foo extends LightningElement {
             render() {
-                return ($api: any) => {
-                    return [
-                        $api.c('x-bar', Bar, {}),
-                        $api.c('x-baz', Baz, {}),
-                    ];
-                };
+                return fooTmpl;
             }
         }
 
