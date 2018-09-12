@@ -3,7 +3,7 @@ export function isGlobalAttribute(attributeName: string): boolean {
 }
 
 export function isAriaAttribute(attributeName: string): boolean {
-    return attributeName.startsWith('aria-*');
+    return attributeName.startsWith('aria-');
 }
 
 export function isDataAttribute(attributeName: string): boolean {
