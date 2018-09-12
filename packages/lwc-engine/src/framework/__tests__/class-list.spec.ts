@@ -1,11 +1,10 @@
 import { compileTemplate } from 'test-utils';
-
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
 describe('class-list', () => {
     describe('integration', () => {
-        it('should support outer className', () => {
+        it('should support static class attribute', () => {
             class ChildComponent extends LightningElement {}
 
             const html = compileTemplate(
@@ -16,7 +15,6 @@ describe('class-list', () => {
                     modules: { 'x-child': ChildComponent }
                 }
             );
-
             class MyComponent extends LightningElement {
                 render() {
                     return html;
@@ -31,34 +29,50 @@ describe('class-list', () => {
 
         it('should support outer classMap', () => {
             class ChildComponent extends LightningElement {}
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class={dynamicClass}></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
             class MyComponent extends LightningElement {
+                dynamicClass = 'foo';
+
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
-        it('should combine data.className first and then inner classes', () => {
+        it('should combine static class first and then inner classes', () => {
             class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                 }
             }
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'bar  baz' })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class="bar baz"></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
             class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');
@@ -71,14 +85,21 @@ describe('class-list', () => {
                     this.classList.remove('foo');
                 }
             }
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class="foo"></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
             class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');
@@ -91,34 +112,50 @@ describe('class-list', () => {
                     this.classList.add('foo');
                 }
             }
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo   foo' })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class="foo foo"></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
             class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
-        it('should combine outer classMap and inner classes', () => {
+        it('should combine dynamic class first and inner classes', () => {
             class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                 }
             }
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class={dynamicClass}></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
             class MyComponent extends LightningElement {
+                dynamicClass = 'bar';
+
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');
@@ -133,6 +170,7 @@ describe('class-list', () => {
                     this.classList.toggle('bar');
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.className).toBe('bar');
@@ -145,6 +183,7 @@ describe('class-list', () => {
                     this.classList.toggle('bar', false);
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.className).toBe('foo');
@@ -152,6 +191,7 @@ describe('class-list', () => {
 
         it('should support contains', () => {
             expect.assertions(2);
+
             class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
@@ -160,6 +200,7 @@ describe('class-list', () => {
                     expect(this.classList.contains('bar')).toBe(false);
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
         });
@@ -175,6 +216,7 @@ describe('class-list', () => {
                     expect(this.classList.item(1)).toBeNull();
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
         });
@@ -210,9 +252,7 @@ describe('class-list', () => {
             elm.updateTracked(2); // dirty trigger
             elm.addOtherClass();
 
-            return Promise.resolve().then(() => {
-                expect(elm.className).toBe('foo bar baz');
-            });
+            expect(elm.className).toBe('foo bar baz');
         });
 
         it('should support adding new values to classList via connectedCallback', () => {
@@ -226,12 +266,12 @@ describe('class-list', () => {
                 }
             };
             def.publicMethods = ['initClassNames'];
+
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
             document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                expect(elm.className).toBe('classFromInit classFromConnectedCallback');
-            });
+
+            expect(elm.className).toBe('classFromInit classFromConnectedCallback');
         });
 
         it('should support removing values from classList via connectedCallback', () => {
@@ -246,12 +286,12 @@ describe('class-list', () => {
                 }
             };
             def.publicMethods = ['initClassNames'];
+
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
             document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                expect(elm.className).toBe('theOnlyClassThatShouldRemain');
-            });
+
+            expect(elm.className).toBe('theOnlyClassThatShouldRemain');
         });
     });
 });
