@@ -19,9 +19,9 @@ const options = {
     name: "foo",
     namespace: "x",
     files: {
-        "foo": `
+        "foo.js": `
           import { LightningElement } from 'lwc';
-          export default class Foo extends from LightningElement {}
+          export default class Foo extends LightningElement {}
         `,
         "foo.html": `<template><h1>Foo</h1></template>`
     }
