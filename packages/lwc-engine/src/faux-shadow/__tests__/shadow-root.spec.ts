@@ -1,6 +1,6 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from '../../framework/html-element';
-import { h } from '../../framework/api';
 
 describe('root', () => {
     describe('integration', () => {
@@ -8,17 +8,23 @@ describe('root', () => {
 
         it('should support this.template.mode', () => {
             class MyComponent extends LightningElement {}
+
             const elm = createElement('x-foo', { is: MyComponent });
             expect(getHostShadowRoot(elm).mode).toBe('closed');
         });
 
         it('should allow searching for elements from template', () => {
-            function html($api) { return [$api.h('p', { key: 0 }, [])]; }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return html;
+                    return myComponentTmpl;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
@@ -28,12 +34,14 @@ describe('root', () => {
         });
 
         it('should allow searching for one element from template', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return html;
+                    return myComponentTmpl;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -44,40 +52,9 @@ describe('root', () => {
             });
         });
 
-        it('should ignore elements from other owner', () => {
-            const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
-            function html() { return [vnodeFromAnotherOwner]; }
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const nodes = getHostShadowRoot(elm).querySelectorAll('p');
-                expect(nodes).toHaveLength(0);
-            });
-        });
-
-        it('should ignore element from other owner', () => {
-            const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
-            function html() { return [vnodeFromAnotherOwner]; }
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const node = getHostShadowRoot(elm).querySelector('p');
-                expect(node).toBeNull();
-            });
-        });
-
         it('should expose the shadow root via $$ShadowRoot$$ when in test mode', () => {
             class MyComponent extends LightningElement {}
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.$$ShadowRoot$$).toBeDefined();
@@ -87,25 +64,17 @@ describe('root', () => {
 
     describe('childNodes', () => {
         it('should return array of childnodes', () => {
-            function tmpl($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, [
-                        $api.h('span', {
-                            key: 1,
-                        } , []),
-                    ]),
-                    $api.h('p', {
-                        key: 2,
-                    } , [
-
-                    ]),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div>
+                        <span></span>
+                    </div>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 
@@ -123,19 +92,15 @@ describe('root', () => {
     });
     describe('.firstChild', () => {
         it('should return the first child', () => {
-            function tmpl($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, []),
-                    $api.h('p', {
-                        key: 2,
-                    }, []),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 
@@ -147,17 +112,15 @@ describe('root', () => {
             );
         });
         it('could be a text node', () => {
-            function tmpl($api) {
-                return [
-                    $api.t('first-text-node'),
-                    $api.h('div', {
-                        key: 0,
-                    }, []),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    first-text-node
+                    <div></div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 
@@ -170,19 +133,15 @@ describe('root', () => {
 
     describe('.lastChild', () => {
         it('should return the last child', () => {
-            function tmpl($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, []),
-                    $api.h('p', {
-                        key: 2,
-                    }, []),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 
@@ -194,17 +153,15 @@ describe('root', () => {
             );
         });
         it('could be a text node', () => {
-            function tmpl($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, []),
-                    $api.t('last-text-node'),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    last-text-node
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 
@@ -216,31 +173,32 @@ describe('root', () => {
     });
     describe('.contains', () => {
         it('should implements shadow dom semantics', () => {
-            function tmpl1($api) {
-                return [
-                    $api.h('p', {
-                        key: 2,
-                    }, []),
-                ];
-            }
+            const myChildTmpl = compileTemplate(`
+                <template>
+                    <p></p>
+                </template>
+            `);
             class MyChild extends LightningElement {
                 render() {
-                    return tmpl1;
+                    return myChildTmpl;
                 }
             }
-            function tmpl2($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, [
-                        $api.c('x-child', MyChild, {}, []),
-                    ]),
-                    $api.t('just text'),
-                ];
-            }
+
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div>
+                        <x-child></x-child>
+                    </div>
+                    just text
+                </template>
+            `, {
+                modules: {
+                    'x-child': MyChild,
+                }
+            });
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -264,31 +222,32 @@ describe('root', () => {
     });
     describe('.compareDocumentPosition', () => {
         it('should implements shadow dom semantics', () => {
-            function tmpl1($api) {
-                return [
-                    $api.h('p', {
-                        key: 2,
-                    }, []),
-                ];
-            }
+            const myChildTmpl = compileTemplate(`
+                <template>
+                    <p></p>
+                </template>
+            `);
             class MyChild extends LightningElement {
                 render() {
-                    return tmpl1;
+                    return myChildTmpl;
                 }
             }
-            function tmpl2($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, [
-                        $api.c('x-child', MyChild, {}, []),
-                    ]),
-                    $api.t('just text'),
-                ];
-            }
+
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div>
+                        <x-child></x-child>
+                    </div>
+                    just text
+                </template>
+            `, {
+                modules: {
+                    'x-child': MyChild,
+                }
+            });
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -322,12 +281,12 @@ describe('root', () => {
     });
     describe('.hasChildNodes', () => {
         it('should return false when no child is added to the shadow root', () => {
-            function tmpl2($api) {
-                return [];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template></template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -337,12 +296,12 @@ describe('root', () => {
             expect(root.hasChildNodes()).toBe(false);
         });
         it('should return false for empty shadow root', () => {
-            function tmpl2($api) {
-                return [];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template></template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -352,12 +311,14 @@ describe('root', () => {
             expect(root.hasChildNodes()).toBe(false);
         });
         it('should return true when at least a text node is present', () => {
-            function tmpl2($api) {
-                return [$api.t('something')];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    something
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -367,12 +328,14 @@ describe('root', () => {
             expect(root.hasChildNodes()).toBe(true);
         });
         it('should return true when at least a slot is present', () => {
-            function tmpl2($api, $cmp, $slotset) {
-                return [$api.s('something', {key: 0}, [], $slotset)];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <slot name="something"></slot>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl2;
+                    return myComponentTmpl;
                 }
             }
 
@@ -385,19 +348,15 @@ describe('root', () => {
 
     describe('.parentElement', () => {
         it('should return null on child node', () => {
-            function tmpl($api) {
-                return [
-                    $api.h('div', {
-                        key: 0,
-                    }, []),
-                    $api.h('p', {
-                        key: 2,
-                    }, []),
-                ];
-            }
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    <p></p>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return myComponentTmpl;
                 }
             }
 

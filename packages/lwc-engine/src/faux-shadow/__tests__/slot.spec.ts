@@ -1,6 +1,6 @@
-import { createElement } from "../../framework/upgrade";
 import { compileTemplate } from 'test-utils';
-import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
+import { createElement, LightningElement } from "../../framework/main";
+import { getHostShadowRoot } from "../../framework/html-element";
 
 interface LightningSlotElement extends HTMLSlotElement {
     assignedElements(options?: object): Element[];
@@ -137,7 +137,6 @@ describe('assignedNodes and assignedElements', () => {
                 </slot>
             </template>
         `);
-        html.slots = [''];
 
         class MyComponent extends LightningElement {
             render() {
@@ -191,7 +190,6 @@ describe('assignedNodes and assignedElements', () => {
                 </slot>
             </template>
         `);
-        html.slots = ['outer', 'inner'];
 
         class MyComponent extends LightningElement {
             render() {
@@ -246,7 +244,6 @@ describe('assignedNodes and assignedElements', () => {
                     </slot>
                 </template>
             `);
-            childHtml.slots = ['outer', 'inner'];
 
             class AssignedNodesChild extends LightningElement {
                 render() {
@@ -329,7 +326,6 @@ describe('assignedNodes and assignedElements', () => {
                     </slot>
                 </template>
             `);
-            childHtml.slots = ['outer', 'inner'];
 
             class AssignedNodesChild extends LightningElement {
                 render() {
@@ -411,7 +407,6 @@ describe('slot.name', () => {
                     </slot>
                 </template>
             `);
-            html.slots = ['', 'foo'];
 
             class MyComponent extends LightningElement {
                 render() {
@@ -459,7 +454,6 @@ describe('slotted elements', () => {
                 <slot onclick={handleClickInSlot}></slot>
             </template>
         `);
-        htmlContainer.slots = [''];
 
         class XContainer extends LightningElement {
             connectedCallback() {
