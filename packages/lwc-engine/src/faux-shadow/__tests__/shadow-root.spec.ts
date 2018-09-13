@@ -52,7 +52,7 @@ describe('root', () => {
             });
         });
 
-        it('should ignore slotted elements', () => {
+        it('should ignore slotted elements when queried via querySelectorAll', () => {
             const childTmpl = compileTemplate(`
                 <template>
                     <slot></slot>
@@ -88,7 +88,7 @@ describe('root', () => {
             expect(getHostShadowRoot(xChild).querySelectorAll('p')).toHaveLength(0);
         });
 
-        it('should ignore element from other owner', () => {
+        it('should ignore slotted elements when queried via querySelector', () => {
             const childTmpl = compileTemplate(`
                 <template>
                     <slot></slot>
