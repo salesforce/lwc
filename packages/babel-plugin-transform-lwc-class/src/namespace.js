@@ -28,8 +28,8 @@ function getSalesforceNamespacedModule(moduleName, namespaceMapping) {
             }
             break;
 
-        // @salesforce/resource-url/resource1 -> @salesforce/resource-url/namespace__resource1
-        case 'resource-url':
+        // @salesforce/resourceUrl/resource1 -> @salesforce/resourceUrl/namespace__resource1
+        case 'resourceUrl':
             // Only prefix with the namespace if no other namespace is provided
             if (!value.includes('__')) {
                 updatedValue = `${targetSalesforceNamespace}__${value}`;
