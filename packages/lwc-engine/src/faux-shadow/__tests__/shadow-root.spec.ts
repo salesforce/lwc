@@ -52,6 +52,79 @@ describe('root', () => {
             });
         });
 
+        it('should ignore slotted elements', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <p></p>
+                    </x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            class Parent extends LightningElement {
+                render() {
+                    return parentTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Parent });
+            document.body.appendChild(elm);
+
+            expect(getHostShadowRoot(elm).querySelectorAll('p')).toHaveLength(1);
+
+            const xChild = getHostShadowRoot(elm).querySelector('x-child');
+            expect(getHostShadowRoot(xChild).querySelectorAll('p')).toHaveLength(0);
+        });
+
+        it('should ignore element from other owner', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <p></p>
+                    </x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            class Parent extends LightningElement {
+                render() {
+                    return parentTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Parent });
+            document.body.appendChild(elm);
+
+            expect(getHostShadowRoot(elm).querySelector('p')).not.toBeNull();
+
+            const xChild = getHostShadowRoot(elm).querySelector('x-child');
+            expect(getHostShadowRoot(xChild).querySelector('p')).toBeNull();
+        });
+
+
         it('should expose the shadow root via $$ShadowRoot$$ when in test mode', () => {
             class MyComponent extends LightningElement {}
 
