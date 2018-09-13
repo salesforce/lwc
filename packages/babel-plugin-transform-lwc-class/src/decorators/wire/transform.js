@@ -77,11 +77,29 @@ function buildWireConfigValue(t, wiredValues) {
 function getWiredStaticMetadata(properties, getReferenceByName) {
     const ret = {};
     properties.forEach(s => {
+        let result = {};
         if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
-            ret[s.key.name] = s.value.elements.map(e => e.value);
+            // @wire(getRecord, { fields: ['Id', 'Name'] })
+            result = {type: 'array', value: s.value.elements.map(e => e.value)};
+        } else if (s.key.type === 'Identifier' && s.value.type === 'StringLiteral') {
+            // @wire(getRecord, { companyName: ['Acme'] })
+            result = {type: 'string', value: s.value.value};
         } else if (s.key.type === 'Identifier' && s.value.type === 'Identifier') {
-            ret[s.key.name] = {reference: getReferenceByName(s.value.name)};
+            // References such as:
+            // 1. Modules
+            // import id from '@salesforce/user/id'
+            // @wire(getRecord, { userId: id })
+            //
+            // 2. 1st order constant references with string literals
+            // const userId = '123';
+            // @wire(getRecord, { userId: userId })
+            const reference = getReferenceByName(s.value.name);
+            result = {value: reference.value, type: reference.type};
+        } else if (s.key.type === 'Identifier' && s.value.type === 'MemberExpression') {
+            // @wire(getRecord, { userId: recordData.Id })
+            result = {type: 'object', value: undefined };
         }
+        ret[s.key.name] = result;
     });
     return ret;
 }
@@ -96,9 +114,39 @@ function getWiredParamMetadata(properties) {
     return ret;
 }
 
+function getScopedReferenceByName(scope, name) {
+    let binding = scope.getBinding(name);
+
+    let type;
+    let value;
+
+    if (binding) {
+        if (binding.kind === 'module') {
+            // Resolves module import to the name of the module imported
+            // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
+            let parentPathNode = binding.path.parentPath.node;
+            if (parentPathNode && parentPathNode.source) {
+                type = 'module';
+                value = parentPathNode.source.value;
+            }
+        } else if (binding.kind === 'const') {
+            // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
+            const init = binding.path.node.init;
+            if (init && init.type === 'StringLiteral') {
+                type = 'string';
+                value = init.value;
+            }
+        }
+    }
+    return {
+        type,
+        value
+    };
+}
+
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
-    const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
+    const wiredValues = decorators.filter(isWireDecorator).map(({path}) => {
         const [id, config] = path.get('arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
@@ -116,22 +164,14 @@ module.exports = function transform(t, klass, decorators) {
             wiredValue.params = getWiredParams(t, config);
         }
 
-        const getReferenceByName = name => {
-            let binding = path.scope.getBinding(name);
-            if (binding) {
-                if (binding.kind === 'module') {
-                    let parentPathNode = binding.path.parentPath.node;
-                    return parentPathNode && parentPathNode.source && parentPathNode.source.value;
-                }
-            }
-            return undefined;
-        };
+        const getReferenceByName = getScopedReferenceByName.bind(this, path.scope);
 
         if (id.isIdentifier()) {
             const adapterName = id.node.name;
+            const referenceByName = getReferenceByName(adapterName);
             wiredValue.adapter = {
                 name: adapterName,
-                reference: getReferenceByName(adapterName)
+                reference: referenceByName.type === 'module' ? referenceByName.value : undefined
             }
         }
 

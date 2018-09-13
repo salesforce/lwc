@@ -1,5 +1,39 @@
 const pluginTest = require('./utils/test-transform').pluginTest(require('../index'));
 
+const wireMetadataParameterTest =
+    (testName, {declaration = '', wireParameters = '', expectedStaticParameters = {}, expectedVariableParameters = {}}) => {
+        pluginTest(
+            testName,
+            `
+        import { wire } from 'lwc';
+        import { getRecord } from 'recordDataService';
+        ${declaration};
+        export default class Test {
+            @wire(getRecord, { ${wireParameters.join(',')} })
+            recordData;
+        }
+    `,
+            {
+                output: {
+                    metadata: {
+                        decorators: [{
+                            type: 'wire',
+                            targets: [
+                                {
+                                    adapter: { name: 'getRecord', reference: 'recordDataService' },
+                                    name: 'recordData',
+                                    params: expectedVariableParameters,
+                                    static: expectedStaticParameters ,
+                                    type: 'property',
+                                }
+                            ],
+                        }]
+                    },
+                },
+            },
+        );
+};
+
 describe('Transform property', () => {
     pluginTest('transforms wired field', `
         import { wire } from 'lwc';
@@ -352,14 +386,14 @@ describe('Metadata', () => {
                             adapter: { name: 'getFoo', reference: 'data-service' },
                             name: 'wiredProp',
                             params: { key1: 'prop1' },
-                            static: { key2: ['fixed'] },
+                            static: { key2: { value: ['fixed'], type: 'array' } },
                             type: 'property',
                         },
                         {
                             adapter: { name: 'getFoo', reference: 'data-service' },
                             name: 'wiredMethod',
                             params: { key1: 'prop1' },
-                            static: { key2: ['fixed'] },
+                            static: { key2: { value: ['fixed'], type: 'array' } },
                             type: 'method',
                         }],
                     }]
@@ -367,216 +401,60 @@ describe('Metadata', () => {
             },
         },
     );
-    pluginTest(
-        'gathered for an imported reference',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        import id from '@salesforce/user/Id';
-        export default class Test {
-            @wire(getRecord, { recordId: id })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: { recordId: { reference: '@salesforce/user/Id' } },
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'gathered for an imported with "as" reference',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        import { id as currentUserId } from '@salesforce/user/Id';
-        export default class Test {
-            @wire(getRecord, { recordId: currentUserId })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: { recordId: { reference: '@salesforce/user/Id' } },
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'sets reference to undefined for unresolved import',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        export default class Test {
-            @wire(getRecord, { recordId: currentUserId })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: { recordId: { reference: undefined } },
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'preserves relative references',
-        `
-        import { wire } from 'lwc';
-        import userId from './relative.js';
-        import relativeParameter from './other/relative.js';
-        import { getRecord } from 'recordDataService';
-        export default class Test {
-            @wire(getRecord, { recordId: userId, anotherParameter: relativeParameter })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: { recordId: { reference: './relative.js' },
-                                anotherParameter: { reference: './other/relative.js' } },
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'sets reference to undefined for const, let references',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        const userId = '005000000000000000';
-        let letParameter = userId;
-        const data = { dotParameter: '123' };
-        export default class Test {
-            @wire(getRecord, { recordId: userId, letParameter: letParameter })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: { recordId: { reference: undefined }, letParameter: { reference: undefined } },
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'ignored for dot static references',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        const data = { dotParameter: '123' };
-        export default class Test {
-            @wire(getRecord, { dotParameter: data.dotParameter })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: {},
-                            static: {},
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
-    pluginTest(
-        'gathered for $foo parameters with dots',
-        `
-        import { wire } from 'lwc';
-        import { getRecord } from 'recordDataService';
-        export default class Test {
-            @wire(getRecord, { recordId: '$data.Id' })
-            recordData;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [{
-                        type: 'wire',
-                        targets: [
-                        {
-                            adapter: { name: 'getRecord', reference: 'recordDataService' },
-                            name: 'recordData',
-                            params: { recordId: 'data.Id' },
-                            static: {} ,
-                            type: 'property',
-                        }
-                       ],
-                    }]
-                },
-            },
-        },
-    );
+
+    wireMetadataParameterTest('when constant initialised to a string literal should extract the value',
+        { declaration: `const stringConstant = '123';`,
+            wireParameters: ['userId: stringConstant'],
+            expectedStaticParameters: { userId: { value: '123', type: 'string'} } });
+
+    wireMetadataParameterTest('when constant initialised as a reference to another should mark as unresolved',
+        { declaration: `const stringConstant = '123'; const referenceConstant = stringConstant;`,
+            wireParameters: ['recordId: referenceConstant'],
+            expectedStaticParameters: { recordId: {} } });
+
+    wireMetadataParameterTest('when importing from a module should reference the name of the module',
+        { declaration: `import id from '@salesforce/user/Id';`,
+            wireParameters: ['recordId: id'],
+            expectedStaticParameters: { recordId: { value: '@salesforce/user/Id', type: 'module' } } });
+
+    wireMetadataParameterTest('when parameter declaration missing should mark as undefined',
+        { wireParameters: ['recordId: id'],
+            expectedStaticParameters: { recordId: {} } });
+
+    wireMetadataParameterTest('when importing with "as" from a module should reference the name of the module',
+        { declaration: `import { id as currentUserId } from '@salesforce/user/Id';`,
+            wireParameters: ['recordId: currentUserId'],
+            expectedStaticParameters: { recordId: { value: '@salesforce/user/Id', type: 'module' } } });
+
+    wireMetadataParameterTest('when importing from a relative module should reference the name of the module',
+        { declaration: `import id from './someReference.js';`,
+            wireParameters: ['recordId: id'],
+            expectedStaticParameters: { recordId: { value: './someReference.js', type: 'module' } } });
+
+    wireMetadataParameterTest('when referencing a "let" variable should mark as undefined',
+        { declaration: `let userId = '123';`,
+            wireParameters: ['recordId: userId'],
+            expectedStaticParameters: { recordId: {} } });
+
+    wireMetadataParameterTest('when refercing a member expression, should mark as undefined with type object',
+        { declaration: `const data = {userId: '123'};`,
+            wireParameters: ['recordId: data.userId'],
+            expectedStaticParameters: { recordId: { type: 'object' } } });
+
+    wireMetadataParameterTest('when an inline initialisation is used, should use value',
+        { wireParameters: ['recordId: "123"'],
+            expectedStaticParameters: { recordId: { value: '123', type: 'string' } } });
+
+    wireMetadataParameterTest('when $foo parameters are used, should use name of the parameter',
+        { wireParameters: ['recordId: "$userId"'],
+            expectedVariableParameters: { recordId: 'userId' } });
+
+    wireMetadataParameterTest('when $foo parameters with dots are used, should use name of the parameter',
+        { wireParameters: ['recordId: "$userRecord.Id"'],
+            expectedVariableParameters: { recordId: 'userRecord.Id' } });
+
+    wireMetadataParameterTest('when inline array with a non-string literal is used, should have "undefined" for non-string literal values',
+        { declaration: `const bar = '123';`,
+            wireParameters: ['fields: ["foo", bar]'],
+            expectedStaticParameters: { fields: {type: 'array', value: ['foo', undefined]} } });
 });
