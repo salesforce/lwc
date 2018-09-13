@@ -20,6 +20,8 @@ npm install --save-dev postcss-plugin-lwc
 
 ```js
 const postcss = require('postcss');
+const lwcPlugin = require('postcss-plugin-lwc');
+
 const source = `
 :host {
     opacity: 0.4;
@@ -37,13 +39,17 @@ postcss([
 ]).process(source).then(res => {
     console.log(res)
     /*
-    [x-btn_tmpl-host] {
-        opacity: 0.4;
-    }
+        :host {
+            opacity: 0.4;
+        }
 
-    span[x-btn_tmpl] {
-        text-transform: uppercase;
-    }
+        [x-btn_tmpl-host] {
+            opacity: 0.4;
+        }
+
+        span[x-btn_tmpl] {
+            text-transform: uppercase;
+        }
     */
 });
 ```

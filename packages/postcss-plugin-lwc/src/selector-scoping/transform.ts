@@ -20,6 +20,11 @@ import {
 } from './utils';
 import { PluginConfig } from '../config';
 
+export interface SelectorScopingConfig {
+    /** When set to true, the :host selector gets replace with the the scoping token. */
+    transformHost: boolean;
+}
+
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
 /** Generate a scoping attribute based on the passed token */
@@ -187,17 +192,20 @@ function transformHost(selector: Selector, config: PluginConfig) {
 
 export default function transformSelector(
     root: Root,
-    config: PluginConfig,
+    pluginConfig: PluginConfig,
+    transformConfig: SelectorScopingConfig,
 ) {
     validateSelectors(root);
 
     root.each((selector: Selector) => {
-        scopeSelector(selector, config);
+        scopeSelector(selector, pluginConfig);
     });
 
-    root.each((selector: Selector) => {
-        transformHost(selector, config);
-    });
+    if (transformConfig.transformHost) {
+        root.each((selector: Selector) => {
+            transformHost(selector, pluginConfig);
+        });
+    }
 
     customElementSelector(root);
 }
