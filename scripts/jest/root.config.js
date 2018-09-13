@@ -3,6 +3,7 @@ module.exports = {
     projects: [
         '<rootDir>/packages/babel-plugin-transform-lwc-class',
         '<rootDir>/packages/lwc-compiler',
+        '<rootDir>/packages/lwc-compiler-utils',
         '<rootDir>/packages/lwc-engine',
         '<rootDir>/packages/lwc-jest-preset',
         '<rootDir>/packages/lwc-jest-resolver',

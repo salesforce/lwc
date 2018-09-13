@@ -8,6 +8,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "yarn compile",
-    "compile": "echo 'Building Compiler Utils...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json"
+    "compile": "echo 'Building Compiler Utils...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
+    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
   }
 }

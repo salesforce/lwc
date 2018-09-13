@@ -1,16 +1,16 @@
-// TODO: THIS ENTIRE FILE WILL BE MOVED INTO A MODULE ( this is a duplicate from oss )
 const SALESFORCE_IMPORT_PREFIX = '@salesforce/';
 const DEFAULT_SALESFORCE_NAMESPACE = 'c';
 
-export function applyNamespaceAliasingFromSource(moduleName: string, namespaceMapping: {[name: string]: string}) {
+export function applyNamespaceAliasingToScopedResource(moduleName: string, namespaceMapping: {[name: string]: string}) {
     let updatedModuleName = moduleName;
     if (moduleName.startsWith(SALESFORCE_IMPORT_PREFIX)) {
         const [prefix, type, value] = moduleName.split('/');
-        updatedModuleName = getSalesforceNamespacedModule(
+        const updateModuleId = getSalesforceNamespacedModule(
             value,
             type,
             namespaceMapping,
         );
+        updatedModuleName = [prefix, type, updateModuleId].join('/');
     } else {
         updatedModuleName = getStandardNamespacedModule(
             moduleName,
@@ -21,7 +21,11 @@ export function applyNamespaceAliasingFromSource(moduleName: string, namespaceMa
     return updatedModuleName;
 }
 
-export function applyNamespaceAliasing(moduleName: string, moduleType: string, namespaceMapping: {[name: string]: string}) {
+export function applyNamespaceAliasingToModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
+    return applyNamespaceAliasingToTypedResource(moduleName, undefined, namespaceMapping);
+}
+
+export function applyNamespaceAliasingToTypedResource(moduleName: string, moduleType: string | undefined, namespaceMapping: {[name: string]: string}) {
     let updatedModuleName = moduleName;
 
     if (moduleType && moduleType !== 'module') {
@@ -40,15 +44,13 @@ export function applyNamespaceAliasing(moduleName: string, moduleType: string, n
 }
 
 function getSalesforceNamespacedModule(value: string, type: string, namespaceMapping: {[name: string]: string}) {
-    // Escape early if no namespace mapping is provided
-    const targetSalesforceNamespace =
-        namespaceMapping[DEFAULT_SALESFORCE_NAMESPACE];
-    if (targetSalesforceNamespace === undefined) {
+
+    if (value === undefined || type === undefined || !namespaceMapping) {
         return value;
     }
 
-    // early exit to support a case such as @salesforce/apex, where the value is not present
-    if (value === undefined) {
+    const targetSalesforceNamespace = namespaceMapping[DEFAULT_SALESFORCE_NAMESPACE];
+    if (targetSalesforceNamespace === undefined) {
         return value;
     }
 
@@ -64,8 +66,8 @@ function getSalesforceNamespacedModule(value: string, type: string, namespaceMap
             }
             break;
 
-        // @salesforce/resource-url/resource1 -> @salesforce/resource-url/namespace__resource1
-        case 'resource-url':
+        // @salesforce/resourceUrl/resource1 -> @salesforce/resourceUrl/namespace__resource1
+        case 'resourceUrl':
             // Only prefix with the namespace if no other namespace is provided
             if (!value.includes('__')) {
                 updatedValue = `${targetSalesforceNamespace}__${value}`;
@@ -116,6 +118,10 @@ function getSalesforceNamespacedModule(value: string, type: string, namespaceMap
 }
 
 function getStandardNamespacedModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
+    if (!name || !namespaceMapping) {
+        return moduleName;
+    }
+
     for (const [original, target] of Object.entries(namespaceMapping)) {
         if (moduleName.startsWith(`${original}/`)) {
             return moduleName.replace(`${original}/`, `${target}/`);
