@@ -117,35 +117,35 @@ describe('"@salesforce/componentTagName" namespace mapping', () => {
     );
 });
 
-describe('"@salesforce/resource-url" namespace mapping', () => {
+describe('"@salesforce/resourceUrl" namespace mapping', () => {
     pluginTest(
         'should add namespace if not present',
-        `import resource from '@salesforce/resource-url/resource';`,
+        `import resource from '@salesforce/resourceUrl/resource';`,
         {
             output: {
-                code: `import resource from \"@salesforce/resource-url/nsC__resource\";`,
+                code: `import resource from \"@salesforce/resourceUrl/nsC__resource\";`,
             },
         },
     );
 
     pluginTest(
         'should add namespace if not present on all imports',
-        `import r1 from '@salesforce/resource-url/resource1';
-         import r2 from '@salesforce/resource-url/resource2';`,
+        `import r1 from '@salesforce/resourceUrl/resource1';
+         import r2 from '@salesforce/resourceUrl/resource2';`,
         {
             output: {
-                code: `import r1 from \"@salesforce/resource-url/nsC__resource1\";
-                             import r2 from \"@salesforce/resource-url/nsC__resource2\";`,
+                code: `import r1 from \"@salesforce/resourceUrl/nsC__resource1\";
+                             import r2 from \"@salesforce/resourceUrl/nsC__resource2\";`,
             },
         },
     );
 
     pluginTest(
         'should ignore import if namespace if already present',
-        `import resource from '@salesforce/resource-url/anotherNs__resource';`,
+        `import resource from '@salesforce/resourceUrl/anotherNs__resource';`,
         {
             output: {
-                code: `import resource from '@salesforce/resource-url/anotherNs__resource';`,
+                code: `import resource from '@salesforce/resourceUrl/anotherNs__resource';`,
             },
         },
     );
