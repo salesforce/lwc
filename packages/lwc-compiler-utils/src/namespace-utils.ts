@@ -1,7 +1,29 @@
 const SALESFORCE_IMPORT_PREFIX = '@salesforce/';
 const DEFAULT_SALESFORCE_NAMESPACE = 'c';
 
-export function applyNamespaceAliasingToScopedResource(moduleName: string, namespaceMapping: {[name: string]: string}) {
+export function getNamespacedResourceForModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
+    return getNamespacedResourceForTypedResource(moduleName, undefined, namespaceMapping);
+}
+
+export function getNamespacedResourceForTypedResource(moduleName: string, moduleType: string | undefined, namespaceMapping: {[name: string]: string}) {
+    let updatedModuleName = moduleName;
+
+    if (moduleType && moduleType !== 'module') {
+        updatedModuleName = getSalesforceNamespacedModule(
+            moduleName,
+            moduleType,
+            namespaceMapping,
+        );
+    } else {
+        updatedModuleName = getStandardNamespacedModule(
+            moduleName,
+            namespaceMapping,
+        );
+    }
+    return updatedModuleName;
+}
+
+export function getNamespacedResourceForScopedResource(moduleName: string, namespaceMapping: {[name: string]: string}) {
     let updatedModuleName = moduleName;
     if (moduleName.startsWith(SALESFORCE_IMPORT_PREFIX)) {
         const [prefix, type, value] = moduleName.split('/');
@@ -18,28 +40,6 @@ export function applyNamespaceAliasingToScopedResource(moduleName: string, names
         );
     }
 
-    return updatedModuleName;
-}
-
-export function applyNamespaceAliasingToModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
-    return applyNamespaceAliasingToTypedResource(moduleName, undefined, namespaceMapping);
-}
-
-export function applyNamespaceAliasingToTypedResource(moduleName: string, moduleType: string | undefined, namespaceMapping: {[name: string]: string}) {
-    let updatedModuleName = moduleName;
-
-    if (moduleType && moduleType !== 'module') {
-        updatedModuleName = getSalesforceNamespacedModule(
-            moduleName,
-            moduleType,
-            namespaceMapping,
-        );
-    } else {
-        updatedModuleName = getStandardNamespacedModule(
-            moduleName,
-            namespaceMapping,
-        );
-    }
     return updatedModuleName;
 }
 

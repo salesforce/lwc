@@ -1,3 +1,3 @@
-export { applyNamespaceAliasingToModule } from './namespace-utils';
-export { applyNamespaceAliasingToTypedResource } from './namespace-utils';
-export { applyNamespaceAliasingToScopedResource } from './namespace-utils';
+export { getNamespacedResourceForModule } from './namespace-utils';
+export { getNamespacedResourceForTypedResource } from './namespace-utils';
+export { getNamespacedResourceForScopedResource } from './namespace-utils';
