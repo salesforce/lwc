@@ -80,7 +80,7 @@ const SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE = {
     BooleanLiteral: 'boolean'
 };
 
-function getWiredStaticMetadata(properties, getReferenceByName) {
+function getWiredStaticMetadata(properties, referenceLookup) {
     const ret = {};
     properties.forEach(s => {
         let result = {};
@@ -103,12 +103,18 @@ function getWiredStaticMetadata(properties, getReferenceByName) {
                 // 2. 1st order constant references with string literals
                 // const userId = '123';
                 // @wire(getRecord, { userId: userId })
-                const reference = getReferenceByName(s.value.name);
+                const reference = referenceLookup(s.value.name);
                 result = {value: reference.value, type: reference.type};
+                if (!result.type) {
+                    result = {type: 'unresolved', value: 'reference'}
+                }
             } else if (valueType === 'MemberExpression') {
                 // @wire(getRecord, { userId: recordData.Id })
-                result = {type: 'object', value: undefined};
+                result = {type: 'unresolved', value: 'member_expression'};
             }
+        }
+        if (!result.type) {
+            result = {type: 'unresolved'};
         }
         ret[s.key.name] = result;
     });
@@ -125,7 +131,7 @@ function getWiredParamMetadata(properties) {
     return ret;
 }
 
-const getScopedReferenceByName = scope => name => {
+const scopedReferenceLookup = scope => name => {
     const binding = scope.getBinding(name);
 
     let type;
@@ -175,14 +181,14 @@ module.exports = function transform(t, klass, decorators) {
             wiredValue.params = getWiredParams(t, config);
         }
 
-        const getReferenceByName = getScopedReferenceByName(path.scope);
+        const referenceLookup = scopedReferenceLookup(path.scope);
 
         if (id.isIdentifier()) {
             const adapterName = id.node.name;
-            const referenceByName = getReferenceByName(adapterName);
+            const reference = referenceLookup(adapterName);
             wiredValue.adapter = {
                 name: adapterName,
-                reference: referenceByName.type === 'module' ? referenceByName.value : undefined
+                reference: reference.type === 'module' ? reference.value : undefined
             }
         }
 
@@ -193,7 +199,7 @@ module.exports = function transform(t, klass, decorators) {
         };
 
         if (config) {
-            wireMetadata.static = getWiredStaticMetadata(wiredValue.static, getReferenceByName);
+            wireMetadata.static = getWiredStaticMetadata(wiredValue.static, referenceLookup);
             wireMetadata.params = getWiredParamMetadata(wiredValue.params);
         }
 

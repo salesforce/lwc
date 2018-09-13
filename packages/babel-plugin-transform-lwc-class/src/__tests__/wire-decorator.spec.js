@@ -420,7 +420,7 @@ describe('Metadata', () => {
     wireMetadataParameterTest('when constant initialised as a reference to another should mark as unresolved',
         { declaration: `const stringConstant = '123'; const referenceConstant = stringConstant;`,
             wireParameters: ['recordId: referenceConstant'],
-            expectedStaticParameters: { recordId: {} } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference' } } });
 
     wireMetadataParameterTest('when importing a default export from a module should reference the name of the module',
         { declaration: `import id from '@salesforce/user/Id';`,
@@ -429,7 +429,7 @@ describe('Metadata', () => {
 
     wireMetadataParameterTest('when parameter reference missing should mark as undefined',
         { wireParameters: ['recordId: id'],
-            expectedStaticParameters: { recordId: {} } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
 
     wireMetadataParameterTest('when importing named export with "as" from a module should reference the name of the module',
         { declaration: `import { id as currentUserId } from '@salesforce/user/Id';`,
@@ -449,12 +449,12 @@ describe('Metadata', () => {
     wireMetadataParameterTest('when referencing a "let" variable should mark as undefined',
         { declaration: `let userId = '123';`,
             wireParameters: ['recordId: userId'],
-            expectedStaticParameters: { recordId: {} } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
 
     wireMetadataParameterTest('when referencing a member expression, should mark as undefined with type object',
         { declaration: `const data = {userId: '123'};`,
             wireParameters: ['recordId: data.userId'],
-            expectedStaticParameters: { recordId: { type: 'object' } } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'member_expression' } } });
 
     wireMetadataParameterTest('when an inline string-literal initialization is used, should use value',
         { wireParameters: ['recordId: "123"'],
