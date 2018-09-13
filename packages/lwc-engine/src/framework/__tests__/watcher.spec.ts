@@ -161,37 +161,38 @@ describe('watcher', () => {
 
         it('should compute reactive state per rendering', () => {
             let counter = 0;
-            let state;
 
-            function html($api, $cmp) {
-                if (counter === 1) {
-                    $cmp.state.x;
-                }
-                return [];
-            }
+            const dynamicTmpl = compileTemplate(`<template>{x}</template>`);
+            const staticTmpl = compileTemplate(`<template>static</template>`);
             class MyComponent9 extends LightningElement {
-                state = { x: 0 };
-                constructor() {
-                    super();
-                    state = this.state;
+                x = 0;
+
+                updateTracked() {
+                    this.x++;
                 }
+
                 render() {
                     counter++;
-                    return html;
+                    return counter <= 1 ? dynamicTmpl : staticTmpl;
                 }
             }
-            MyComponent9.track = { state: 1 };
+            MyComponent9.track = { x: 1 };
+            MyComponent9.publicMethods = ['updateTracked'];
 
             const elm = createElement('x-foo', { is: MyComponent9 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
-            state.x = 1; // this is marked as reactive
+
+            // x is marked as reactive since it's tracked and used in the template
+            elm.updateTracked();
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
-                state.x = 2; // this is not longer reactive and should not trigger the rerendering anymore
-                return Promise.resolve().then(() => {
-                    expect(counter).toBe(2);
-                });
+
+                // x is not longer reactive since it's not consumed in the template.
+                // Updating it's value should not trigger the rerendering anymore.
+                elm.updateTracked();
+            }).then(() => {
+                expect(counter).toBe(2);
             });
         });
 
