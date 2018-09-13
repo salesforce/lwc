@@ -1,9 +1,10 @@
 {
   "name": "lwc-test-utils",
-  "version": "0.28.2",
+  "version": "0.29.0",
   "description": "Test utilities for LWC",
   "main": "index.js",
   "keywords": [
     "lwc"
-  ]
+  ],
+  "gitHead": "79d1f05efa56e08446e2829fdc2c57ce82625dc6"
 }

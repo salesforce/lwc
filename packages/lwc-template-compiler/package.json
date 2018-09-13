@@ -1,6 +1,6 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.28.2",
+  "version": "0.29.0",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
@@ -29,5 +29,6 @@
     "camelcase": "~5.0.0",
     "he": "^1.1.1",
     "parse5-with-errors": "^4.0.1"
-  }
+  },
+  "gitHead": "79d1f05efa56e08446e2829fdc2c57ce82625dc6"
 }

@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v) (2018-09-09)
+# [](https://github.com/salesforce/lwc/compare/v0.28.2...v) (2018-09-13)
+
+
+### Bug Fixes
+
+* rename [@salesforce](https://github.com/salesforce)/resource-url to [@salesforce](https://github.com/salesforce)/resourceUrl ([#638](https://github.com/salesforce/lwc/issues/638)) ([2a86c4d](https://github.com/salesforce/lwc/commit/2a86c4d))
+
+
+### Features
+
+* open usage of data-* and aria-* attributes in CSS ([#632](https://github.com/salesforce/lwc/issues/632)) ([9e269bf](https://github.com/salesforce/lwc/commit/9e269bf)), closes [#623](https://github.com/salesforce/lwc/issues/623)
+* remove usage of :host-context ([#629](https://github.com/salesforce/lwc/issues/629)) ([5634840](https://github.com/salesforce/lwc/commit/5634840))
+
+
+
+<a name="0.28.2"></a>
+## [0.28.2](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v0.28.2) (2018-09-09)
 
 
 ### Bug Fixes
