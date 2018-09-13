@@ -74,30 +74,43 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
+const supportedValueTypeToMetadataType = {
+    'StringLiteral': 'string',
+    'NumericLiteral': 'number',
+    'BooleanLiteral': 'boolean'
+};
+
 function getWiredStaticMetadata(properties, getReferenceByName) {
     const ret = {};
     properties.forEach(s => {
         let result = {};
-        if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
-            // @wire(getRecord, { fields: ['Id', 'Name'] })
-            result = {type: 'array', value: s.value.elements.map(e => e.value)};
-        } else if (s.key.type === 'Identifier' && s.value.type === 'StringLiteral') {
-            // @wire(getRecord, { companyName: ['Acme'] })
-            result = {type: 'string', value: s.value.value};
-        } else if (s.key.type === 'Identifier' && s.value.type === 'Identifier') {
-            // References such as:
-            // 1. Modules
-            // import id from '@salesforce/user/id'
-            // @wire(getRecord, { userId: id })
-            //
-            // 2. 1st order constant references with string literals
-            // const userId = '123';
-            // @wire(getRecord, { userId: userId })
-            const reference = getReferenceByName(s.value.name);
-            result = {value: reference.value, type: reference.type};
-        } else if (s.key.type === 'Identifier' && s.value.type === 'MemberExpression') {
-            // @wire(getRecord, { userId: recordData.Id })
-            result = {type: 'object', value: undefined };
+        const valueType = s.value.type;
+        if (s.key.type === 'Identifier') {
+            if (valueType === 'ArrayExpression') {
+                // @wire(getRecord, { fields: ['Id', 'Name'] })
+                result = {type: 'array', value: s.value.elements.map(e => e.value)};
+            } else if (supportedValueTypeToMetadataType[valueType]) {
+                // @wire(getRecord, { companyName: ['Acme'] })
+                // @wire(getRecord, { size: 100 })
+                // @wire(getRecord, { isAdmin: true  })
+                result = {type: supportedValueTypeToMetadataType[valueType], value: s.value.value};
+            } else if (valueType === 'Identifier') {
+                // References such as:
+                // 1. Modules
+                // import id from '@salesforce/user/id'
+                // @wire(getRecord, { userId: id })
+                //
+                // 2. 1st order constant references with string literals
+                // const userId = '123';
+                // @wire(getRecord, { userId: userId })
+                const reference = getReferenceByName(s.value.name);
+                result = {value: reference.value, type: reference.type};
+            } else if (valueType === 'MemberExpression') {
+                // @wire(getRecord, { userId: recordData.Id })
+                result = {type: 'object', value: undefined};
+            }
+        } else {
+            result = {type: 'unknown', value: `${s.key.type}-${valueType}`};
         }
         ret[s.key.name] = result;
     });
@@ -132,8 +145,8 @@ function getScopedReferenceByName(scope, name) {
         } else if (binding.kind === 'const') {
             // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
             const init = binding.path.node.init;
-            if (init && init.type === 'StringLiteral') {
-                type = 'string';
+            if (init && supportedValueTypeToMetadataType[init.type]) {
+                type = supportedValueTypeToMetadataType[init.type];
                 value = init.value;
             }
         }
