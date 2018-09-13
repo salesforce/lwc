@@ -1,3 +1,3 @@
-export { getNamespacedResourceForModule } from './namespace-utils';
-export { getNamespacedResourceForTypedResource } from './namespace-utils';
-export { getNamespacedResourceForScopedResource } from './namespace-utils';
+export { getNamespacedIdForModule } from './namespace-utils';
+export { getNamespacedIdForResource } from './namespace-utils';
+export { getNamespacedIdForType } from './namespace-utils';

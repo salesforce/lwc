@@ -1,4 +1,4 @@
-const { getNamespacedResourceForScopedResource } = require('lwc-compiler-utils');
+const { getNamespacedIdForResource } = require('lwc-compiler-utils');
 
 module.exports = function namespaceReplaceVisitor({ types: t }, config) {
     if (!config) {
@@ -15,20 +15,7 @@ module.exports = function namespaceReplaceVisitor({ types: t }, config) {
     return {
         ImportDeclaration(path) {
             const moduleName = path.node.source.value;
-            const updatedModuleName = getNamespacedResourceForScopedResource(moduleName, namespaceMapping);
-
-            // let updatedModuleName = moduleName;
-            // if (moduleName.startsWith(SALESFORCE_IMPORT_PREFIX)) {
-            //     updatedModuleName = getNamespaceAliasingForScopedResource(
-            //         moduleName,
-            //         namespaceMapping,
-            //     );
-            // } else {
-            //     updatedModuleName = getNamespaceAliasingForModule(
-            //         moduleName,
-            //         namespaceMapping,
-            //     );
-            // }
+            const updatedModuleName = getNamespacedIdForResource(moduleName, namespaceMapping);
 
             if (moduleName !== updatedModuleName) {
                 path

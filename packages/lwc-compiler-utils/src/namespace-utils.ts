@@ -1,11 +1,11 @@
 const SALESFORCE_IMPORT_PREFIX = '@salesforce/';
 const DEFAULT_SALESFORCE_NAMESPACE = 'c';
 
-export function getNamespacedResourceForModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
-    return getNamespacedResourceForTypedResource(moduleName, undefined, namespaceMapping);
+export function getNamespacedIdForModule(moduleName: string, namespaceMapping: {[name: string]: string}) {
+    return getNamespacedIdForType(moduleName, undefined, namespaceMapping);
 }
 
-export function getNamespacedResourceForTypedResource(moduleName: string, moduleType: string | undefined, namespaceMapping: {[name: string]: string}) {
+export function getNamespacedIdForType(moduleName: string, moduleType: string | undefined, namespaceMapping: {[name: string]: string}) {
     let updatedModuleName = moduleName;
 
     if (moduleType && moduleType !== 'module') {
@@ -23,7 +23,7 @@ export function getNamespacedResourceForTypedResource(moduleName: string, module
     return updatedModuleName;
 }
 
-export function getNamespacedResourceForScopedResource(moduleName: string, namespaceMapping: {[name: string]: string}) {
+export function getNamespacedIdForResource(moduleName: string, namespaceMapping: {[name: string]: string}) {
     let updatedModuleName = moduleName;
     if (moduleName.startsWith(SALESFORCE_IMPORT_PREFIX)) {
         const [prefix, type, value] = moduleName.split('/');
