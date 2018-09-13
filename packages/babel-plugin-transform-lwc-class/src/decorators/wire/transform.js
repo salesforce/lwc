@@ -74,10 +74,10 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
-const supportedValueTypeToMetadataType = {
-    'StringLiteral': 'string',
-    'NumericLiteral': 'number',
-    'BooleanLiteral': 'boolean'
+const SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE = {
+    StringLiteral: 'string',
+    NumericLiteral: 'number',
+    BooleanLiteral: 'boolean'
 };
 
 function getWiredStaticMetadata(properties, getReferenceByName) {
@@ -89,11 +89,11 @@ function getWiredStaticMetadata(properties, getReferenceByName) {
             if (valueType === 'ArrayExpression') {
                 // @wire(getRecord, { fields: ['Id', 'Name'] })
                 result = {type: 'array', value: s.value.elements.map(e => e.value)};
-            } else if (supportedValueTypeToMetadataType[valueType]) {
+            } else if (SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType]) {
                 // @wire(getRecord, { companyName: ['Acme'] })
                 // @wire(getRecord, { size: 100 })
                 // @wire(getRecord, { isAdmin: true  })
-                result = {type: supportedValueTypeToMetadataType[valueType], value: s.value.value};
+                result = {type: SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType], value: s.value.value};
             } else if (valueType === 'Identifier') {
                 // References such as:
                 // 1. Modules
@@ -110,9 +110,6 @@ function getWiredStaticMetadata(properties, getReferenceByName) {
                 result = {type: 'object', value: undefined};
             }
         }
-        if (!result.type) {
-            result = {type: 'unknown', value: `${s.key.type}-${valueType}`};
-        }
         ret[s.key.name] = result;
     });
     return ret;
@@ -128,8 +125,8 @@ function getWiredParamMetadata(properties) {
     return ret;
 }
 
-function getScopedReferenceByName(scope, name) {
-    let binding = scope.getBinding(name);
+const getScopedReferenceByName = scope => name => {
+    const binding = scope.getBinding(name);
 
     let type;
     let value;
@@ -146,8 +143,8 @@ function getScopedReferenceByName(scope, name) {
         } else if (binding.kind === 'const') {
             // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
             const init = binding.path.node.init;
-            if (init && supportedValueTypeToMetadataType[init.type]) {
-                type = supportedValueTypeToMetadataType[init.type];
+            if (init && SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type]) {
+                type = SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type];
                 value = init.value;
             }
         }
@@ -178,7 +175,7 @@ module.exports = function transform(t, klass, decorators) {
             wiredValue.params = getWiredParams(t, config);
         }
 
-        const getReferenceByName = getScopedReferenceByName.bind(this, path.scope);
+        const getReferenceByName = getScopedReferenceByName(path.scope);
 
         if (id.isIdentifier()) {
             const adapterName = id.node.name;
