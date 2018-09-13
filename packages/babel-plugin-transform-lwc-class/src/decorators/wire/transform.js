@@ -153,7 +153,7 @@ const getScopedReferenceByName = scope => name => {
         type,
         value
     };
-}
+};
 
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
