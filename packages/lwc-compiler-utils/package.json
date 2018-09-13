@@ -1,0 +1,13 @@
+{
+  "name": "lwc-compiler-utils",
+  "version": "0.28.2",
+  "description": "LWC Compiler Utilities",
+  "main": "dist/commonjs/index.js",
+  "license": "MIT",
+
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "yarn compile",
+    "compile": "echo 'Building Compiler Utils...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json"
+  }
+}

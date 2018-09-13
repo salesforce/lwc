@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+      "target" : "es2017",
+      "rootDir": "src",
+      "outDir": "dist/commonjs",
+      "declarationDir": "dist/types",
+      "moduleResolution": "node",
+      "strict": true,
+      "strictFunctionTypes": true,
+      "strictPropertyInitialization": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noUnusedLocals": true,
+      "allowJs": false,
+      "checkJs": false,
+      "module": "commondjs",
+      "sourceMap": true,
+      "declaration": true,
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/__tests__"
+  ]
+}
