@@ -109,7 +109,8 @@ function getWiredStaticMetadata(properties, getReferenceByName) {
                 // @wire(getRecord, { userId: recordData.Id })
                 result = {type: 'object', value: undefined};
             }
-        } else {
+        }
+        if (!result.type) {
             result = {type: 'unknown', value: `${s.key.type}-${valueType}`};
         }
         ret[s.key.name] = result;
