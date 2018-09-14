@@ -22,7 +22,7 @@ function selectorProcessorFactory(config: PluginConfig) {
             namespaceMappingTransform(root, namespaceMapping);
         }
 
-        validateIdSelectors(root);
+        validateIdSelectors(root, config.filename);
         selectorScopingTransform(root, config);
     }) as Processor;
 }

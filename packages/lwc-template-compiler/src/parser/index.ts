@@ -566,7 +566,8 @@ export default function parse(source: string, state: State): {
             if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
                 warnOnElement(
                     `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
-                    element.__original as parse5.AST.Default.Element
+                    element.__original as parse5.AST.Default.Element,
+                    'warning'
                 );
             }
         });
