@@ -1,9 +1,10 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from "../../framework/html-element";
 import { wrapIframeWindow } from "../iframe";
 
 describe('wrapped iframe window', () => {
-    describe('methods', function () {
+    describe('methods', () => {
         let contentWindow;
         let wrapped;
         let setLocation;
@@ -49,81 +50,84 @@ describe('wrapped iframe window', () => {
             wrapped = wrapIframeWindow(contentWindow);
         });
 
-        it('should delegate setting location', function () {
+        it('should delegate setting location', () => {
             wrapped.location = 'foo';
             expect(setLocation).toHaveBeenCalledWith('foo');
         });
 
-        it('should delegate window', function () {
+        it('should delegate window', () => {
             expect(wrapped.window).toBe('mock window');
         });
 
-        it('should delegate top', function () {
+        it('should delegate top', () => {
             expect(wrapped.top).toBe('mock top');
         });
 
-        it('should delegate self', function () {
+        it('should delegate self', () => {
             expect(wrapped.self).toBe('mock self');
         });
 
-        it('should delegate parent', function () {
+        it('should delegate parent', () => {
             expect(wrapped.parent).toBe('mock parent');
         });
 
-        it('should delegate opener', function () {
+        it('should delegate opener', () => {
             expect(wrapped.opener).toBe('mock opener');
         });
 
-        it('should delegate location', function () {
+        it('should delegate location', () => {
             expect(wrapped.location).toBe('mock location');
         });
 
-        it('should delegate length', function () {
+        it('should delegate length', () => {
             expect(wrapped.length).toBe('mock length');
         });
 
-        it('should delegate frames', function () {
+        it('should delegate frames', () => {
             expect(wrapped.frames).toBe('mock frames');
         });
 
-        it('should delegate closed', function () {
+        it('should delegate closed', () => {
             expect(wrapped.closed).toBe('mock closed');
         });
 
-        it('should delegate close', function () {
+        it('should delegate close', () => {
             wrapped.close();
             expect(contentWindow.close).toHaveBeenCalled();
         });
 
-        it('should delegate focus', function () {
+        it('should delegate focus', () => {
             wrapped.focus();
             expect(contentWindow.focus).toHaveBeenCalled();
         });
 
-        it('should delegate postMessage', function () {
+        it('should delegate postMessage', () => {
             wrapped.postMessage('foo', '*');
             expect(contentWindow.postMessage).toHaveBeenCalledWith('foo', '*');
         });
 
-        it('should delegate blur', function () {
+        it('should delegate blur', () => {
             wrapped.blur();
             expect(contentWindow.blur).toHaveBeenCalled();
         });
     });
 
-    describe('unwrapping', function () {
-        it('should return original object', function () {
-            function html($api) {
-                return [$api.h('iframe', { key: 0, src: 'https://salesforce.com' }, [])];
-            }
+    describe('unwrapping', () => {
+        it('should return original object', () => {
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <iframe src="https://salesforce.com"></iframe>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return html;
+                    return myComponentTmpl;
                 }
             }
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
+
             const nativeIframeContentWindow = document.querySelector('iframe').contentWindow;
             const wrappedIframe = getHostShadowRoot(elm).querySelector('iframe'); // will return monkey patched contentWindow
             const contentWindowGetter = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
