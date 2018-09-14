@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter } from "./dom-api";
+import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -472,7 +472,9 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
-            ArrayPush.call(wcStack, (currentVm.component as ComponentInterface).toString());
+            const tagName = elementTagNameGetter.call(elm);
+            const is = elm.getAttribute('is');
+            ArrayPush.call(wcStack, `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`);
         }
         // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary

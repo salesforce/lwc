@@ -548,12 +548,14 @@ describe('html-element', () => {
     });
 
     describe('#tagName', () => {
-        it('should have a valid value during construction', () => {
+        it('should throw when accessed', () => {
             expect.assertions(1);
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
-                    expect(this.tagName).toBe('X-FOO');
+                    expect(() => {
+                        this.tagName;
+                    }).toThrow('Usage of property `tagName` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prompted.');
                 }
             };
             createElement('x-foo', { is: def });
@@ -760,12 +762,12 @@ describe('html-element', () => {
     });
 
     describe('#toString()', () => {
-        it('should produce a nice tag', () => {
+        it('should rely on the class.name', () => {
             expect.assertions(1);
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
-                    expect(this.toString()).toBe('<x-foo>');
+                    expect(this.toString()).toBe('[object MyComponent]');
                 }
             };
             createElement('x-foo', { is: def });
