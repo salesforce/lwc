@@ -420,7 +420,7 @@ describe('Metadata', () => {
     wireMetadataParameterTest('when constant initialised as a reference to another should mark as unresolved',
         { declaration: `const stringConstant = '123'; const referenceConstant = stringConstant;`,
             wireParameters: ['recordId: referenceConstant'],
-            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference' } } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'identifier' } } });
 
     wireMetadataParameterTest('when importing a default export from a module should reference the name of the module',
         { declaration: `import id from '@salesforce/user/Id';`,
@@ -429,7 +429,7 @@ describe('Metadata', () => {
 
     wireMetadataParameterTest('when parameter reference missing should mark as unresolved',
         { wireParameters: ['recordId: id'],
-            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'identifier'} } });
 
     wireMetadataParameterTest('when importing named export with "as" from a module should reference the name of the module',
         { declaration: `import { id as currentUserId } from '@salesforce/user/Id';`,
@@ -449,7 +449,7 @@ describe('Metadata', () => {
     wireMetadataParameterTest('when referencing a "let" variable should mark as unresolved',
         { declaration: `let userId = '123';`,
             wireParameters: ['recordId: userId'],
-            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
+            expectedStaticParameters: { recordId: { type: 'unresolved', value: 'identifier'} } });
 
     wireMetadataParameterTest('when referencing a member expression, should mark as unresolved',
         { declaration: `const data = {userId: '123'};`,
@@ -480,8 +480,12 @@ describe('Metadata', () => {
         { wireParameters: ['recordId: "$userRecord.Id"'],
             expectedVariableParameters: { recordId: 'userRecord.Id' } });
 
-    wireMetadataParameterTest('when inline array with a non-string literal is used, should have "undefined" for non-string literal values',
+    wireMetadataParameterTest('when inline array with a non-string literal is used, should mark as unresolved',
         { declaration: `const bar = '123';`,
             wireParameters: ['fields: ["foo", bar]'],
-            expectedStaticParameters: { fields: {type: 'array', value: ['foo', undefined]} } });
+            expectedStaticParameters: { fields: {type: 'unresolved', value: 'array_expression'} } });
+
+    wireMetadataParameterTest('when inline array with literals is used, should have the array',
+        {wireParameters: ['data: ["foo", 123, false]'],
+            expectedStaticParameters: { data: {type: 'array', value: ['foo', 123, false]} } });
 });

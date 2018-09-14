@@ -88,7 +88,15 @@ function getWiredStaticMetadata(properties, referenceLookup) {
         if (s.key.type === 'Identifier') {
             if (valueType === 'ArrayExpression') {
                 // @wire(getRecord, { fields: ['Id', 'Name'] })
-                result = {type: 'array', value: s.value.elements.map(e => e.value)};
+                // @wire(getRecord, { data: [123, false, 'string'] })
+                const elements = s.value.elements;
+                const hasUnsupportedElement =
+                    elements.some(element => !SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[element.type]);
+                if (hasUnsupportedElement) {
+                    result = {type: 'unresolved', value: 'array_expression'};
+                } else {
+                    result = {type: 'array', value: elements.map(e => e.value)};
+                }
             } else if (SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType]) {
                 // @wire(getRecord, { companyName: ['Acme'] })
                 // @wire(getRecord, { size: 100 })
@@ -106,7 +114,7 @@ function getWiredStaticMetadata(properties, referenceLookup) {
                 const reference = referenceLookup(s.value.name);
                 result = {value: reference.value, type: reference.type};
                 if (!result.type) {
-                    result = {type: 'unresolved', value: 'reference'}
+                    result = {type: 'unresolved', value: 'identifier'}
                 }
             } else if (valueType === 'MemberExpression') {
                 // @wire(getRecord, { userId: recordData.Id })
