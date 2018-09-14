@@ -427,7 +427,7 @@ describe('Metadata', () => {
             wireParameters: ['recordId: id'],
             expectedStaticParameters: { recordId: { value: '@salesforce/user/Id', type: 'module' } } });
 
-    wireMetadataParameterTest('when parameter reference missing should mark as undefined',
+    wireMetadataParameterTest('when parameter reference missing should mark as unresolved',
         { wireParameters: ['recordId: id'],
             expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
 
@@ -446,12 +446,12 @@ describe('Metadata', () => {
             wireParameters: ['recordId: id'],
             expectedStaticParameters: { recordId: { value: './someReference.js', type: 'module' } } });
 
-    wireMetadataParameterTest('when referencing a "let" variable should mark as undefined',
+    wireMetadataParameterTest('when referencing a "let" variable should mark as unresolved',
         { declaration: `let userId = '123';`,
             wireParameters: ['recordId: userId'],
             expectedStaticParameters: { recordId: { type: 'unresolved', value: 'reference'} } });
 
-    wireMetadataParameterTest('when referencing a member expression, should mark as undefined with type object',
+    wireMetadataParameterTest('when referencing a member expression, should mark as unresolved',
         { declaration: `const data = {userId: '123'};`,
             wireParameters: ['recordId: data.userId'],
             expectedStaticParameters: { recordId: { type: 'unresolved', value: 'member_expression' } } });
