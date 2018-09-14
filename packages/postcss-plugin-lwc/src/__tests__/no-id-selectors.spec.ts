@@ -1,6 +1,6 @@
 import { process, FILE_NAME } from './shared';
 
-describe('id selector validation', () => {
+describe.skip('id selector validation', () => {
     it('should restrict usage of unsupported id selectors (simple)', () => {
         return expect(process('.foo #bar span {}')).rejects.toMatchObject({
             message: expect.stringMatching(
