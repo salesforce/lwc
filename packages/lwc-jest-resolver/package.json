@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "lwc-module-resolver": "0.28.x"
+    "lwc-module-resolver": "0.29.x"
   },
   "devDependencies": {
     "lwc-engine": "0.29.1",
