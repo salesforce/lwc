@@ -63,11 +63,33 @@ describe('rollup in prod_compat mode', () => {
     });
 });
 
+
+describe.only('rollup compat with engine in es5', () => {
+    const rollupOptions = {
+        allowUnnamespaced: true,
+        mode: 'compat',
+        compat: {
+            polyfills: false,
+        },
+    };
+
+    it(`simple app`, async () => {
+        const input = path.join(simpleAppDir, 'main.js');
+        const bundle = await rollup.rollup({ input, plugins: [rollupCompile(rollupOptions)] });
+        const result = await bundle.generate({
+            format: 'iife',
+            name: 'test'
+        });
+
+        console.log(result.code);
+    });
+});
+
 const globalModules = { lwc: 'Engine' };
 function doRollup(input, options = {}) {
     return rollup.rollup({
         input,
-        external: (id) => id in globalModules,
+        external: (id) => (id in globalModules),
         plugins: [ rollupCompile(options) ],
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {

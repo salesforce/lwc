@@ -6,17 +6,15 @@ const compiler = require("lwc-compiler");
 const pluginUtils = require("rollup-pluginutils");
 const replacePlugin = require("rollup-plugin-replace");
 const lwcResolver = require("lwc-module-resolver");
-const rollupCompatPlugin = require("rollup-plugin-compat").default;
 
-
-const { DEFAULT_NS, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
+const { LWC_ENGINE, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
 function getModuleQualifiedName(file) {
     const registry = {
         entry: file,
         moduleSpecifier: null,
         moduleName: null,
-        moduleNamespace: DEFAULT_NS
+        moduleNamespace: null
     };
 
     const rootParts = path.dirname(file).split(path.sep);
@@ -29,6 +27,39 @@ function getModuleQualifiedName(file) {
 
 function normalizeResult(result) {
     return { code: result.code || result, map: result.map || { mappings: "" } };
+}
+
+function getLwcEnginePath(mode) {
+    const path = require.resolve('lwc-engine');
+    const moduleTypeFolder = 'modules';
+    const target = mode.includes('compat') ? 'es5' : 'es2017';
+
+    return path
+        .replace('commonjs', moduleTypeFolder)
+        .replace('es2017', target);
+}
+
+function resolveRollupCompat({ mode, compat }) {
+    if (mode === 'compat' || mode === 'prod_compat') {
+        try {
+            // We will compose compat plugin on top of this one (delegated)
+            return require("rollup-plugin-compat").default(compat);
+        } catch (e) {
+            throw new Error(
+                `Unable to compile resources for mode ${mode}` +
+                `In order to use "compat" mode, you must include 'rollup-plugin-compat' as part of your dependencies`
+            );
+        }
+    }
+    // If we are not in compat, rollup becomes a noop
+    // This just simplifies the logic bellow
+    return {
+        resolveId() { return undefined; },
+        load() { return undefined; },
+        knownCompatModule() { return false; },
+        transform(src) { return src; },
+        transformBundle(src) { return src; }
+    };
 }
 
 /*
@@ -44,11 +75,9 @@ function normalizeResult(result) {
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
-    const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions,);
-    const { mode, compat } = mergedPluginOptions;
-
-    // We will compose compat plugin on top of this one
-    const rollupCompatInstance = rollupCompatPlugin(compat);
+    const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
+    const { mode } = mergedPluginOptions;
+    const rollupCompat = resolveRollupCompat(mergedPluginOptions);
 
     // Closure to store the resolved modules
     let modulePaths = {};
@@ -70,6 +99,11 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
         },
 
         resolveId(importee, importer) {
+            // lwc is special
+            if (importee === LWC_ENGINE) {
+                return getLwcEnginePath(mode);
+            }
+
             // Resolve entry point if the import references a LWC module
             if (modulePaths[importee]) {
                 return modulePaths[importee].entry;
@@ -85,7 +119,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // Check if compat needs to resolve this file
-            return rollupCompatInstance.resolveId(importee, importer);
+            return rollupCompat.resolveId(importee, importer);
         },
 
         load(id) {
@@ -97,11 +131,12 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // Check if compat knows how to load this file
-            return rollupCompatInstance.load(id);
+            return rollupCompat.load(id);
         },
 
         async transform(code, id) {
-            if (!filter(id)) {
+            // Filter user-land config and lwc import
+            if (!filter(id) || id === getLwcEnginePath(mode)) {
                 return;
             }
 
@@ -111,7 +146,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             let result = code;
 
-            if (!rollupCompatInstance.knownCompatModule(id)) {
+            if (!rollupCompat.knownCompatModule(id)) {
                 result = await compiler.transform(code, id, {
                     mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
                     name: moduleRegistry.moduleName,
@@ -124,7 +159,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             if (mode === "compat" || mode === "prod_compat") {
                 result = normalizeResult(
-                    rollupCompatInstance.transform(result.code, id)
+                    rollupCompat.transform(result.code, id)
                 );
             }
 
@@ -133,9 +168,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
         transformBundle(code) {
             if (mode === "compat" || mode === "prod_compat") {
-                code = rollupCompatInstance.transformBundle(code);
+                code = rollupCompat.transformBundle(code);
             }
-            let result = undefined;
+
+            let result;
             if (mode === "prod" || mode === "prod_compat") {
                 const rollupReplace = replacePlugin({
                     "process.env.NODE_ENV": JSON.stringify("production")
