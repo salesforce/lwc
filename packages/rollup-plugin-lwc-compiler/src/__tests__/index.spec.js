@@ -3,6 +3,7 @@ const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
 const rollupCompile = require('../index');
+const { getLwcEnginePath } = require('../utils');
 
 function pretty(str) {
     return prettier.format(str);
@@ -64,7 +65,7 @@ describe('rollup in prod_compat mode', () => {
 });
 
 
-describe.only('rollup compat with engine in es5', () => {
+describe('rollup compat with engine in es5', () => {
     const rollupOptions = {
         allowUnnamespaced: true,
         mode: 'compat',
@@ -74,6 +75,7 @@ describe.only('rollup compat with engine in es5', () => {
     };
 
     it(`simple app`, async () => {
+        const lwcPath = getLwcEnginePath(rollupOptions.mode);
         const input = path.join(simpleAppDir, 'main.js');
         const bundle = await rollup.rollup({ input, plugins: [rollupCompile(rollupOptions)] });
         const result = await bundle.generate({
@@ -81,7 +83,9 @@ describe.only('rollup compat with engine in es5', () => {
             name: 'test'
         });
 
-        console.log(result.code);
+        const modules = Object.keys(result.modules);
+        expect(modules).toContain(lwcPath);
+
     });
 });
 
