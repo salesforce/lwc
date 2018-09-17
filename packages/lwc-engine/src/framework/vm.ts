@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { isArray, ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty, isFunction } from "../shared/language";
+import { isArray, ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty, isFunction, StringToLowerCase } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
@@ -474,7 +474,7 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
         if (!isUndefined(currentVm)) {
             const tagName = elementTagNameGetter.call(elm);
             const is = elm.getAttribute('is');
-            ArrayPush.call(wcStack, `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`);
+            ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
         }
         // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary

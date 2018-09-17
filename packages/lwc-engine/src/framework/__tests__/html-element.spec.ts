@@ -555,7 +555,7 @@ describe('html-element', () => {
                     super();
                     expect(() => {
                         this.tagName;
-                    }).toThrow('Usage of property `tagName` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prompted.');
+                    }).toThrow('Usage of property `tagName` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.');
                 }
             };
             createElement('x-foo', { is: def });

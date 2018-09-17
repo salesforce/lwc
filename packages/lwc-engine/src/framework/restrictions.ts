@@ -258,7 +258,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
         tagName: {
             get(this: ComponentInterface) {
                 throw new Error(
-                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prompted.`,
+                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`,
                 );
             },
             enumerable: true,
