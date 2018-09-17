@@ -180,7 +180,6 @@ function isDataAttribute(attrName: string): boolean {
 
 function isFmkAttribute(attrName: string): boolean {
     return (
-        attrName === 'is' ||
         attrName === 'key' ||
         attrName === 'slot'
     );
@@ -188,7 +187,6 @@ function isFmkAttribute(attrName: string): boolean {
 
 function isCustomElementAttribute(attrName: string): boolean {
     return (
-        attrName === 'is' ||
         attrName === 'key' ||
         attrName === 'slot' ||
         !!attrName.match(DATA_RE)
@@ -218,13 +216,6 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
     if (isInputStateAttribute(element, attrName)) {
         return false;
-    }
-
-    // Handle attributes applied to a subclassed element via the is="" attribute.
-    // Returns true only attributes that are valid attribute for the base element.
-    const hasIsAttr = !!getAttribute(element, 'is');
-    if (hasIsAttr) {
-        return isValidHTMLAttribute(element.tag, attrName);
     }
 
     // Handle general case where only standard element have attribute value.

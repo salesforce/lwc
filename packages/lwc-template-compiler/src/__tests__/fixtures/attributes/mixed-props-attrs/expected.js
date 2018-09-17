@@ -73,10 +73,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 )
             ]
         ),
-        api_custom_element('div', _nsBuzz, {
-            attrs: {
-                is: 'ns-buzz',
-            },
+        api_custom_element('ns-buzz', _nsBuzz, {
             props: {
                 bgColor: 'x',
                 ariaHidden: 'hidden'
@@ -93,10 +90,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             []
         ),
-        api_custom_element('table', _nsTable, {
-            attrs: {
-                is: 'ns-table',
-            },
+        api_custom_element('ns-table', _nsTable, {
             props: {
                 bgColor: 'x',
                 tabIndex: '2',
@@ -105,10 +99,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 8
         }, []),
-        api_custom_element("input", _nsInput, {
-            attrs: {
-                is: "ns-input"
-            },
+        api_custom_element("ns-input", _nsInput, {
             props: {
                 minLength: "3",
                 maxLength: "10"

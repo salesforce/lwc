@@ -49,23 +49,17 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             [],
         ),
         api_custom_element(
-            'section',
+            'ns-baz',
             _nsBaz,
             {
-                attrs: {
-                    is: 'ns-baz',
-                },
                 key: 6,
             },
             [],
         ),
         api_custom_element(
-            'section',
+            'x-baz',
             _xBaz,
             {
-                attrs: {
-                    is: 'x-baz',
-                },
                 key: 7,
             },
             [],

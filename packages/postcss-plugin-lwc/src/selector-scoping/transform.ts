@@ -38,64 +38,6 @@ function scopeAttribute({ token }: PluginConfig, { host } = { host: false }) {
 }
 
 /**
- * Duplicate all the custom element tag to it's "is attribute" form
- *   x-foo -> x-foo, [is="x-foo"]
- */
-function customElementSelector(selectors: Root) {
-    // List of selectors waiting to be treated. Need to keep track of a list of pending
-    // selectors to process to avoid processing twice the same custom element selector.
-    const pending: Selector[] = [];
-
-    // Find all the custom element selector and prefix them to be retrieved later
-    selectors.each((selector: Selector) => {
-        selector.each(node => {
-            if (isCustomElement(node)) {
-                node.value = CUSTOM_ELEMENT_SELECTOR_PREFIX + node.value;
-                pending.push(selector);
-            }
-        });
-    });
-
-    while (pending.length > 0) {
-        const selector = pending.pop()!;
-
-        // Find first custom element tag in the selector
-        const customElement = findNode(
-            selector,
-            node =>
-                isTag(node) &&
-                node.value.startsWith(CUSTOM_ELEMENT_SELECTOR_PREFIX),
-        ) as Selector | undefined;
-
-        if (customElement) {
-            // Reassign original value to the selector by removing the prefix
-            const name = customElement.value.slice(
-                CUSTOM_ELEMENT_SELECTOR_PREFIX.length,
-            );
-            customElement.value = name;
-
-            const clonedSelector = selector.clone({}) as Selector;
-            selectors.append(clonedSelector);
-
-            // Locate the node in the cloned selector and replace it
-            const index = selector.index(customElement);
-            replaceNodeWith(
-                clonedSelector.at(index),
-                attribute({
-                    attribute: `is="${name}"`,
-                    value: undefined,
-                    raws: {},
-                }),
-            );
-
-            // Add both original and transformed selectors to the pending queue for further processing.
-            // Each of those selector can still contain other custom element nodes to process.
-            pending.push(clonedSelector, selector);
-        }
-    }
-}
-
-/**
  * Add scoping attributes to all the matching selectors:
  *   h1 -> h1[x-foo_tmpl]
  *   p a -> p[x-foo_tmpl] a[x-foo_tmpl]
@@ -198,6 +140,4 @@ export default function transformSelector(
     root.each((selector: Selector) => {
         transformHost(selector, config);
     });
-
-    customElementSelector(root);
 }

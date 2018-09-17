@@ -1,5 +1,19 @@
 {
+  "warnings": [
+    {
+      "length": 11,
+      "level": "error",
+      "message": "The \"is\" attribute is not longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.",
+      "start": 55
+    },
+    {
+      "length": 11,
+      "level": "error",
+      "message": "is is not valid attribute for tr. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/tr",
+      "start": 55
+    }
+  ],
   "metadata": {
-    "templateDependencies": ["ns/row"]
+    "templateDependencies": []
   }
 }

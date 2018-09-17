@@ -219,20 +219,9 @@ describe('custom component', () => {
         });
     });
 
-    it('custom component via is attribute', () => {
-        const { root } = parseTemplate(`<template><button is="x-button"></button></template>`);
-        expect(root.children[0].tag).toBe('button');
-        expect(root.children[0].component).toBe('x-button');
-    });
-
-    it('is dynamic attribute error', () => {
-        const { warnings } = parseTemplate(`<template><button is={dynamicCmp}></button></template>`);
-        expect(warnings).toContainEqual({
-            level: 'error',
-            message: `Is attribute value can't be an expression`,
-            start: 18,
-            length: 15,
-        });
+    it('cannot be instantiated via "is" attribute', () => {
+        const { warnings } = parseTemplate(`<template><button is="x-button"></button></template>`);
+        expect(warnings).toContainEqual({"length": 13, "level": "error", "message": "The \"is\" attribute is not longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.", "start": 18});
     });
 });
 
@@ -431,21 +420,6 @@ describe('props and attributes', () => {
             'data-xx': { value: 'foo' },
         });
     });
-
-    it('custom element using is with attribute / prop mix', () => {
-        const { root } = parseTemplate(`<template>
-            <table bgcolor="x" is="x-table" tabindex="2" bar="test" min="3"></table>
-        </template>`);
-        expect(root.children[0].props).toMatchObject({
-            bar: { value: 'test' },
-            min: { value: '3' },
-            bgColor: { value: 'x' },
-            tabIndex: { value: '2' },
-        });
-        expect(root.children[0].attrs).toMatchObject({
-            is: { value: 'x-table' },
-        });
-    });
 });
 
 describe('metadata', () => {
@@ -468,7 +442,7 @@ describe('metadata', () => {
     it('dependent component', () => {
         const { state } = parseTemplate(`<template>
             <x-menu></x-menu>
-            <button is="x-button"></button>
+            <x-button></x-button>
         </template>`);
 
         expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);

@@ -93,15 +93,14 @@ describe('pseudo element selectors', () => {
 describe('custom-element', () => {
     it('should handle custom element', async () => {
         const { css } = await process('x-bar {}');
-        expect(css).toBe(`x-bar[x-foo_tmpl],[is="x-bar"][x-foo_tmpl] {}`);
+        expect(css).toBe(`x-bar[x-foo_tmpl] {}`);
     });
 
     it('should handle nested custom element', async () => {
         const { css } = await process('x-bar x-baz {}');
         expect(css).toBe(
             [
-                `x-bar[x-foo_tmpl] x-baz[x-foo_tmpl],[is="x-bar"][x-foo_tmpl] x-baz[x-foo_tmpl],`,
-                `x-bar[x-foo_tmpl] [is="x-baz"][x-foo_tmpl],[is="x-bar"][x-foo_tmpl] [is="x-baz"][x-foo_tmpl] {}`,
+                `x-bar[x-foo_tmpl] x-baz[x-foo_tmpl] {}`,
             ].join(''),
         );
     });

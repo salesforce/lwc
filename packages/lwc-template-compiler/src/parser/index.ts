@@ -429,16 +429,7 @@ export default function parse(source: string, state: State): {
 
         const isAttr = getTemplateAttribute(element, 'is');
         if (isAttr) {
-            if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(`Is attribute value can't be an expression`, isAttr.location);
-            }
-
-            componentName = getNamespacedTagName(isAttr.value);
-
-            // Update the original is attribute value with the namespaced name to get it reflected in the
-            // generated code.
-            const originalIsAttribute = getAttribute(element, 'is');
-            originalIsAttribute!.value = componentName;
+            warnAt(`The "is" attribute is not longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.`, isAttr.location, 'error');
         }
 
         if (componentName) {
