@@ -20,6 +20,5 @@
     "lwc-jest-transformer": "0.29.1",
     "lwc-module-resolver": "0.29.1",
     "lwc-wire-service": "0.29.1"
-  },
-  "gitHead": "79d1f05efa56e08446e2829fdc2c57ce82625dc6"
+  }
 }
