@@ -3,6 +3,7 @@ const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
 const rollupCompile = require('../index');
+const { getLwcEnginePath } = require('../utils');
 
 function pretty(str) {
     return prettier.format(str);
@@ -63,11 +64,36 @@ describe('rollup in prod_compat mode', () => {
     });
 });
 
+
+describe('rollup compat with engine in es5', () => {
+    const rollupOptions = {
+        allowUnnamespaced: true,
+        mode: 'compat',
+        compat: {
+            polyfills: false,
+        },
+    };
+
+    it(`simple app`, async () => {
+        const lwcPath = getLwcEnginePath(rollupOptions.mode);
+        const input = path.join(simpleAppDir, 'main.js');
+        const bundle = await rollup.rollup({ input, plugins: [rollupCompile(rollupOptions)] });
+        const result = await bundle.generate({
+            format: 'iife',
+            name: 'test'
+        });
+
+        const modules = Object.keys(result.modules);
+        expect(modules).toContain(lwcPath);
+
+    });
+});
+
 const globalModules = { lwc: 'Engine' };
 function doRollup(input, options = {}) {
     return rollup.rollup({
         input,
-        external: (id) => id in globalModules,
+        external: (id) => (id in globalModules),
         plugins: [ rollupCompile(options) ],
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
