@@ -7,10 +7,10 @@
     "test": "echo 'No unit test in this package'"
   },
   "devDependencies": {
-    "@best/runner-headless": "0.5.0",
-    "@best/runner-remote": "0.5.0",
-    "@best/store-aws": "0.5.0",
-    "best-cli": "0.5.0"
+    "@best/runner-headless": "0.6.0",
+    "@best/runner-remote": "0.6.0",
+    "@best/store-aws": "0.6.0",
+    "best-cli": "0.6.0"
   },
   "dependencies": {
     "lwc-engine": "0.29.1",
