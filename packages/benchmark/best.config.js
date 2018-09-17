@@ -17,7 +17,7 @@ module.exports = {
             "runner": '@best/runner-remote',
             "name": "remote",
             "config": {
-                "host": "http://best-agent-pool.lwcjs.org",
+                "host": "http://best-agent-chrome-70.lwcjs.org",
                 "options": { path: '/best' },
                 "remoteRunner": "@best/runner-headless"
             }
