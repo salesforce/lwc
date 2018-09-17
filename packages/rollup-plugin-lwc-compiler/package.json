@@ -21,6 +21,5 @@
   "peerDependencies": {
     "lwc-compiler": "0.29.x",
     "lwc-engine": "0.29.x"
-  },
-  "gitHead": "79d1f05efa56e08446e2829fdc2c57ce82625dc6"
+  }
 }
