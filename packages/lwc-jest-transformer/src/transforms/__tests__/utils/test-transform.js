@@ -8,10 +8,9 @@ const baseConfig = {
     filename: 'test.js',
     parserOpts: {
         plugins: [
-            ['asyncGenerators', {}],
+            ['decorators', { decoratorsBeforeExport: true }]
             ['classProperties', {}],
             ['dynamicImport', {}],
-            ['decorators', { decoratorsBeforeExport: true }]
         ],
     },
 };
