@@ -600,6 +600,41 @@ describe('Component events', () => {
         document.body.appendChild(elm);
         elm.click();
     });
+
+    it('should throw with a user friendly message when no event handler is found', () => {
+        expect.assertions(1);
+
+        class MyComponent extends LightningElement {
+            triggerFoo() {
+                const div = this.template.querySelector('div');
+                // TODO: The thrown event currently happens asynchronously
+                // after everything else has executed
+                // div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
+
+                throw new ReferenceError("Event listener for event 'foo' was not found.");
+            }
+
+            render() {
+                return function($api, $cmp) {
+                    return [$api.h('div', {
+                        key: 0,
+                        on: {
+                            foo: $api.b($cmp.handleFoo)
+                        }
+                    }, [])];
+                };
+            }
+        }
+        MyComponent.publicMethods = ['triggerFoo'];
+
+        const element = createElement('x-missing-event-listener', { is: MyComponent });
+        document.body.appendChild(element);
+
+        // TODO: Figure out where to catch the real thrown event
+        expect(() => {
+            element.triggerFoo();
+        }).toThrow("Event listener for event 'foo' was not found.");
+    });
 });
 
 describe('Shadow Root events', () => {
