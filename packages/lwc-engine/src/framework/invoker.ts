@@ -125,7 +125,13 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
     establishContext(context);
     let error;
     try {
-        callHook(thisValue, fn, [event]);
+        if (fn) {
+            callHook(thisValue, fn, [event]);
+        } else {
+            if (process.env.NODE_ENV !== 'production') {
+                throw new ReferenceError(`Event listener for event '${event.type}' was not found.`);
+            }
+        }
     } catch (e) {
         error = Object(e);
     } finally {
