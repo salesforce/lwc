@@ -195,7 +195,7 @@ describe('watcher', () => {
             state.x = 1; // this is marked as reactive
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
-                state.x = 2; // this is not longer reactive and should not trigger the rerendering anymore
+                state.x = 2; // this is no longer reactive and should not trigger the rerendering anymore
                 return Promise.resolve().then(() => {
                     expect(counter).toBe(2);
                 });

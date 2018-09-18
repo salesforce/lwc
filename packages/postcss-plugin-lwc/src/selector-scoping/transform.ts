@@ -1,6 +1,5 @@
 import {
     attribute,
-    isTag,
     isPseudoElement,
     isCombinator,
     Selector,
@@ -12,15 +11,12 @@ import {
 
 import validateSelectors from './validate';
 import {
-    isCustomElement,
     findNode,
     replaceNodeWith,
     trimNodeWhitespaces,
     isHostPseudoClass,
 } from './utils';
 import { PluginConfig } from '../config';
-
-const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
 /** Generate a scoping attribute based on the passed token */
 function scopeAttribute({ token }: PluginConfig, { host } = { host: false }) {

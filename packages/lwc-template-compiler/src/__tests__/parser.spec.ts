@@ -221,7 +221,7 @@ describe('custom component', () => {
 
     it('cannot be instantiated via "is" attribute', () => {
         const { warnings } = parseTemplate(`<template><button is="x-button"></button></template>`);
-        expect(warnings).toContainEqual({"length": 13, "level": "error", "message": "The \"is\" attribute is not longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.", "start": 18});
+        expect(warnings).toContainEqual({"length": 13, "level": "error", "message": "The \"is\" attribute is no longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.", "start": 18});
     });
 });
 
@@ -442,10 +442,9 @@ describe('metadata', () => {
     it('dependent component', () => {
         const { state } = parseTemplate(`<template>
             <x-menu></x-menu>
-            <x-button></x-button>
         </template>`);
 
-        expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);
+        expect(Array.from(state.dependencies)).toEqual(['x-menu']);
     });
 
     it('slots', () => {

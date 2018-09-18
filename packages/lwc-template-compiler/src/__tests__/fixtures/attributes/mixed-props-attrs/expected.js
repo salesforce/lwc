@@ -99,7 +99,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 8
         }, []),
-        api_custom_element("ns-input", _nsInput, {
+        api_custom_element('ns-input', _nsInput, {
             props: {
                 minLength: "3",
                 maxLength: "10"

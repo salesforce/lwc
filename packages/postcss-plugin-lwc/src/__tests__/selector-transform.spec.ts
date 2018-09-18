@@ -98,11 +98,7 @@ describe('custom-element', () => {
 
     it('should handle nested custom element', async () => {
         const { css } = await process('x-bar x-baz {}');
-        expect(css).toBe(
-            [
-                `x-bar[x-foo_tmpl] x-baz[x-foo_tmpl] {}`,
-            ].join(''),
-        );
+        expect(css).toBe(`x-bar[x-foo_tmpl] x-baz[x-foo_tmpl] {}`);
     });
 });
 
