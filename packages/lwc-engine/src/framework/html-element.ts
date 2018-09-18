@@ -1,13 +1,13 @@
 import assert from "../shared/assert";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse } from "../shared/language";
 import { setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM, setNodeKey } from "./vm";
 import { ArrayReduce, isFunction } from "../shared/language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
+import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { unlockAttribute, lockAttribute } from "./attributes";
@@ -114,15 +114,8 @@ const LightningElement = function BaseLightningElement(this: ComponentInterface)
     setNodeKey(elm, uid);
     // registered custom elements will be patched at the proto level already, not need to patch them here.
     if (isFalse(PatchedFlag in elm)) {
-        if (elm.constructor.prototype !== BaseCustomElementProto) {
-            // this is slow path for component instances using `is` attribute or `forceTagName`, which
-            // are set to be removed in the near future.
-            const { descriptors } = def;
-            defineProperties(elm, descriptors);
-        } else {
-            const { elmProto } = def;
-            setPrototypeOf(elm, elmProto);
-        }
+        const { elmProto } = def;
+        setPrototypeOf(elm, elmProto);
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);

@@ -4,7 +4,6 @@ import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey 
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
-import { setAttribute } from "./dom-api";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = createFieldName('connecting');
@@ -71,12 +70,8 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // TODO: for now, we default to true, but eventually it should default to false
     if (fallback !== false) { fallback = true; }
 
-    // extracting the registered constructor just in case we need to force the tagName
-    const { forceTagName } = Ctor as ComponentConstructor;
-    const tagName = isUndefined(forceTagName) ? sel : forceTagName;
-
     // Create element with correct tagName
-    const element = document.createElement(tagName);
+    const element = document.createElement(sel);
     if (!isUndefined(getNodeKey(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
@@ -91,12 +86,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         const vm = getCustomElementVM(element);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
-        // TODO: this is the kind of awkwardness introduced by "is" attribute
-        // We don't want to do this during construction because it breaks another
-        // WC invariant.
-        if (!isUndefined(forceTagName)) {
-            setAttribute.call(element, 'is', sel);
-        }
         renderVM(vm);
     });
     setInternalField(element, DisconnectingSlot, () => {
