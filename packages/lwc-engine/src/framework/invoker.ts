@@ -127,7 +127,10 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
     try {
         callHook(thisValue, fn, [event]);
     } catch (e) {
-        error = Object(e);
+        // Provide a more useful error message if any exception was caused by a nonexistent listener
+        error = fn
+            ? Object(e)
+            : new ReferenceError(`Event listener for event '${event.type}' was not found.`);
     } finally {
         establishContext(ctx);
         if (error) {
