@@ -8,6 +8,7 @@ module.exports = {
     ],
     benchmarkOnClient: false,
     benchmarkIterations: 60,
+    testPathIgnorePatterns: ['**/__benchmarks__/benchmark-table-wc/*.benchmark.js'],
     runnerConfig: [
         {
             "runner": "@best/runner-remote",
