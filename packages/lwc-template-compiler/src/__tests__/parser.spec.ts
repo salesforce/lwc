@@ -221,7 +221,12 @@ describe('custom component', () => {
 
     it('cannot be instantiated via "is" attribute', () => {
         const { warnings } = parseTemplate(`<template><button is="x-button"></button></template>`);
-        expect(warnings).toContainEqual({"length": 13, "level": "error", "message": "The \"is\" attribute is no longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.", "start": 18});
+        expect(warnings).toContainEqual({
+            length: 13,
+            level: 'error',
+            message: 'The usage of the "is" attribute on custom elements is not supported.',
+            start: 18
+        });
     });
 });
 

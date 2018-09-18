@@ -429,7 +429,10 @@ export default function parse(source: string, state: State): {
 
         const isAttr = getTemplateAttribute(element, 'is');
         if (isAttr) {
-            warnAt(`The "is" attribute is no longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.`, isAttr.location, 'error');
+            warnAt(`The usage of the "is" attribute on custom elements is not supported.`, isAttr.location, 'error');
+
+            // Remove is attribute to avoid validating twice the "is" attributes.
+            removeAttribute(element, 'is');
         }
 
         if (componentName) {
@@ -489,14 +492,13 @@ export default function parse(source: string, state: State): {
             }
 
             const { name, location } = attr;
-            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name) && (name !== 'is')) {
+            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 const msg = [
                     `${name} is not valid attribute for ${tag}. For more information refer to`,
                     `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
                 ].join(' ');
 
                 warnAt(msg, location);
-                removeAttribute(element, name);
             }
 
             if (isAttribute(element, name)) {

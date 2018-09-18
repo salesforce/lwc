@@ -3,7 +3,7 @@
     {
       "length": 11,
       "level": "error",
-      "message": "The \"is\" attribute is no longer allowed in templates. Please refactor your component to not rely on this attribute to force specific markup.",
+      "message": "The usage of the \"is\" attribute on custom elements is not supported.",
       "start": 55
     }
   ],
