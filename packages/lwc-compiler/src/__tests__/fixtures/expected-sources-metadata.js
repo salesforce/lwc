@@ -22,8 +22,9 @@ if (style) {
 }
 class Metadata extends LightningElement {
     constructor(...args) {
-        var _temp;
-        return _temp = super(...args), this.publicProp = void 0, this.wiredProp = void 0, _temp;
+        super(...args);
+        this.publicProp = void 0;
+        this.wiredProp = void 0;
     }
     publicMethod(name) {
         return "hello" + name;

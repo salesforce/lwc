@@ -47,8 +47,8 @@ module.exports = function () {
     function extractLWCDecorator(node) {
         if (node.decorators) {
             for (const decorator of node.decorators) {
-                if (isLWCDecorator(decorator.callee.name)) {
-                    return decorator.callee.name;
+                if (isLWCDecorator(decorator.expression.name)) {
+                    return decorator.expression.name;
                 }
             }
         }
