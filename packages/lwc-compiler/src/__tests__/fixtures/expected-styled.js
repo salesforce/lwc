@@ -8,7 +8,7 @@ function style(token) {
 div[${token}] {
     color: red;
 }
-x-foo[${token}],[is="x-foo"][${token}] {
+x-foo[${token}] {
     color: green;
 }
     `;

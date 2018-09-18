@@ -1,7 +1,7 @@
 define('namespace/css-local', ['lwc'], function (lwc) {
 
     function style(token) {
-       return `namespace-css-local[${token}],[is="namespace-css-local"][${token}] {
+       return `namespace-css-local[${token}] {
     background-color: red;
 }
 `;

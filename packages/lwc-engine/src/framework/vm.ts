@@ -473,8 +473,7 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             const tagName = elementTagNameGetter.call(elm);
-            const is = elm.getAttribute('is');
-            ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
+            ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}>`);
         }
         // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
