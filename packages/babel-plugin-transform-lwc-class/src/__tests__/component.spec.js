@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
-describe.only('Element import', () => {
+describe('Element import', () => {
     pluginTest('throws if using default import on lwc', `
         import engine from 'lwc';
     `, {
