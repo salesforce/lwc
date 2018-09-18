@@ -514,112 +514,112 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@best/analyzer@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/analyzer/-/@best/analyzer-0.6.0/3cc8e64cef670b1639fa4beb4653921e20780d43.tgz#3cc8e64cef670b1639fa4beb4653921e20780d43"
+"@best/analyzer@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/analyzer/-/@best/analyzer-0.6.1/842a89c8f00af7cee967b9d1665b2bbaaaa6032b.tgz#842a89c8f00af7cee967b9d1665b2bbaaaa6032b"
 
-"@best/build@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/build/-/@best/build-0.6.0/a495ef8ce39c6a86cb8d0f7a7ecd739853cfd07f.tgz#a495ef8ce39c6a86cb8d0f7a7ecd739853cfd07f"
+"@best/build@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/build/-/@best/build-0.6.1/5ee06776ff98ed9cb992c418f7e88923cf67c0bd.tgz#5ee06776ff98ed9cb992c418f7e88923cf67c0bd"
   dependencies:
-    "@best/messager" "0.6.0"
-    "@best/runtime" "0.6.0"
+    "@best/messager" "0.6.1"
+    "@best/runtime" "0.6.1"
     ncp "^2.0.0"
     rollup "~0.53.0"
 
-"@best/compare@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/compare/-/@best/compare-0.6.0/4a2e9353457066f102fdd733b246febc7acffdd5.tgz#4a2e9353457066f102fdd733b246febc7acffdd5"
+"@best/compare@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/compare/-/@best/compare-0.6.1/0cadf7afeab78319f71192fdc98cfd3dbe7cd2ff.tgz#0cadf7afeab78319f71192fdc98cfd3dbe7cd2ff"
   dependencies:
-    "@best/analyzer" "0.6.0"
-    "@best/messager" "0.6.0"
+    "@best/analyzer" "0.6.1"
+    "@best/messager" "0.6.1"
     chalk "~2.3.0"
 
-"@best/config@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/config/-/@best/config-0.6.0/931ac43080c4892ecb5f4d4af8c344f949994117.tgz#931ac43080c4892ecb5f4d4af8c344f949994117"
+"@best/config@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/config/-/@best/config-0.6.1/f4c02e3abd91013f84c56beebd063feb03f85a4c.tgz#f4c02e3abd91013f84c56beebd063feb03f85a4c"
   dependencies:
-    "@best/regex-util" "0.6.0"
-    "@best/utils" "0.6.0"
+    "@best/regex-util" "0.6.1"
+    "@best/utils" "0.6.1"
     chalk "~2.3.0"
 
-"@best/github-integration@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/github-integration/-/@best/github-integration-0.6.0/ae6b6f552629c2edccce50cf241ac8046b794e31.tgz#ae6b6f552629c2edccce50cf241ac8046b794e31"
+"@best/github-integration@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/github-integration/-/@best/github-integration-0.6.1/e055eca62b5e8a4e84114c6b01032d78da59f785.tgz#e055eca62b5e8a4e84114c6b01032d78da59f785"
   dependencies:
-    "@best/messager" "0.6.0"
-    "@best/utils" "0.6.0"
+    "@best/messager" "0.6.1"
+    "@best/utils" "0.6.1"
     "@octokit/rest" "^14.0.9"
     base-64 "^0.1.0"
     expand-tilde "~2.0.2"
     json2md "~1.5.11"
     jsonwebtoken "8.1.0"
 
-"@best/messager@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/messager/-/@best/messager-0.6.0/d47bc0e18f98f3b9dd8945ffdcebf057864084f5.tgz#d47bc0e18f98f3b9dd8945ffdcebf057864084f5"
+"@best/messager@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/messager/-/@best/messager-0.6.1/9ce1d50ebe4200bfc8343ab094c0970593874dc2.tgz#9ce1d50ebe4200bfc8343ab094c0970593874dc2"
   dependencies:
-    "@best/utils" "0.6.0"
+    "@best/utils" "0.6.1"
 
-"@best/regex-util@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.6.0/ccfa54adaa0870d0f414b37f29868b9107795db3.tgz#ccfa54adaa0870d0f414b37f29868b9107795db3"
+"@best/regex-util@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.6.1/63d27305fdc5fcb69301429be506589aa4dda892.tgz#63d27305fdc5fcb69301429be506589aa4dda892"
 
-"@best/runner-headless@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.6.0/628abc8f2c0fb8af73719a64b3397c47bb6d6289.tgz#628abc8f2c0fb8af73719a64b3397c47bb6d6289"
+"@best/runner-headless@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.6.1/a5012cae3ff1615db4f7b3b6da831fb6c9733014.tgz#a5012cae3ff1615db4f7b3b6da831fb6c9733014"
   dependencies:
-    "@best/utils" "0.6.0"
+    "@best/utils" "0.6.1"
     puppeteer "1.7.0"
 
-"@best/runner-remote@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/runner-remote/-/@best/runner-remote-0.6.0/19a67207fd72136680624257dae7253d18321f70.tgz#19a67207fd72136680624257dae7253d18321f70"
+"@best/runner-remote@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/runner-remote/-/@best/runner-remote-0.6.1/bb3176c37a6c7847c032aabc12965c7d47a5ee53.tgz#bb3176c37a6c7847c032aabc12965c7d47a5ee53"
   dependencies:
-    "@best/messager" "0.6.0"
+    "@best/messager" "0.6.1"
     socket.io-client "~2.0.4"
     tar "~4.2.0"
 
-"@best/runner@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/runner/-/@best/runner-0.6.0/794bc067d79272f68796bd304a402971d4ec8c5b.tgz#794bc067d79272f68796bd304a402971d4ec8c5b"
+"@best/runner@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/runner/-/@best/runner-0.6.1/f87aaae9e59778f6b9c24f45ced2af9bf51a6dd7.tgz#f87aaae9e59778f6b9c24f45ced2af9bf51a6dd7"
   dependencies:
     chalk "~2.3.0"
 
-"@best/runtime@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/runtime/-/@best/runtime-0.6.0/fca813a8ff062502baaf536b854bec1da2254d3d.tgz#fca813a8ff062502baaf536b854bec1da2254d3d"
+"@best/runtime@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/runtime/-/@best/runtime-0.6.1/34ce364c6034b4e23310886f39e938f1d87c53e8.tgz#34ce364c6034b4e23310886f39e938f1d87c53e8"
   dependencies:
     chalk "~2.3.0"
 
-"@best/store-aws@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/store-aws/-/@best/store-aws-0.6.0/398ef7ee90329290dd50f5b6b6741bb59ec525d0.tgz#398ef7ee90329290dd50f5b6b6741bb59ec525d0"
+"@best/store-aws@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/store-aws/-/@best/store-aws-0.6.1/25e8dfb63b21fced1393e517c9e76d3630a3c71f.tgz#25e8dfb63b21fced1393e517c9e76d3630a3c71f"
   dependencies:
     aws-sdk "~2.176.0"
     chalk "~2.3.0"
     mime-types "~2.1.17"
     node-fetch "~1.7.3"
 
-"@best/store-fs@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/store-fs/-/@best/store-fs-0.6.0/57cbfbd977f35d059f78330ca5e12c22636b699e.tgz#57cbfbd977f35d059f78330ca5e12c22636b699e"
+"@best/store-fs@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/store-fs/-/@best/store-fs-0.6.1/270509acc1be9d9bbad9bc3be715288797a21ea0.tgz#270509acc1be9d9bbad9bc3be715288797a21ea0"
   dependencies:
     chalk "~2.3.0"
     globby "~7.1.1"
 
-"@best/store@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/store/-/@best/store-0.6.0/67f416eed112f90936dd05fe61dc070ff6d3f2c4.tgz#67f416eed112f90936dd05fe61dc070ff6d3f2c4"
+"@best/store@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/store/-/@best/store-0.6.1/6f293fc715008696f8b19073dbf12639b56fc6ef.tgz#6f293fc715008696f8b19073dbf12639b56fc6ef"
   dependencies:
     json2md "~1.5.11"
     mkdirp "^0.5.1"
     ncp "^2.0.0"
     rimraf "~2.6.2"
 
-"@best/utils@0.6.0":
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/@best/utils/-/@best/utils-0.6.0/e4ca01869f35e61cb7218bbd2c585a84b72844b9.tgz#e4ca01869f35e61cb7218bbd2c585a84b72844b9"
+"@best/utils@0.6.1":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@best/utils/-/@best/utils-0.6.1/cd30b7f1f266b2c56639cfc233432e8106b517ed.tgz#cd30b7f1f266b2c56639cfc233432e8106b517ed"
   dependencies:
     chalk "~2.3.0"
     is-ci "^1.0.10"
@@ -2707,19 +2707,19 @@ before-after-hook@^1.1.0:
   version "1.1.0"
   resolved "http://npm.lwcjs.org/before-after-hook/-/before-after-hook-1.1.0/83165e15a59460d13702cb8febd6a1807896db5a.tgz#83165e15a59460d13702cb8febd6a1807896db5a"
 
-best-cli@0.6.0:
-  version "0.6.0"
-  resolved "http://npm.lwcjs.org/best-cli/-/best-cli-0.6.0/0c732562ed158f5c043ccab25892bfcbd3eb2f23.tgz#0c732562ed158f5c043ccab25892bfcbd3eb2f23"
+best-cli@0.6.1:
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/best-cli/-/best-cli-0.6.1/6a8baece73456a198675ff4a84737ff678278140.tgz#6a8baece73456a198675ff4a84737ff678278140"
   dependencies:
-    "@best/analyzer" "0.6.0"
-    "@best/build" "0.6.0"
-    "@best/compare" "0.6.0"
-    "@best/config" "0.6.0"
-    "@best/github-integration" "0.6.0"
-    "@best/messager" "0.6.0"
-    "@best/runner" "0.6.0"
-    "@best/store" "0.6.0"
-    "@best/store-fs" "0.6.0"
+    "@best/analyzer" "0.6.1"
+    "@best/build" "0.6.1"
+    "@best/compare" "0.6.1"
+    "@best/config" "0.6.1"
+    "@best/github-integration" "0.6.1"
+    "@best/messager" "0.6.1"
+    "@best/runner" "0.6.1"
+    "@best/store" "0.6.1"
+    "@best/store-fs" "0.6.1"
     asciichart "1.5.7"
     chalk "~2.3.0"
     cli-table "~0.3.1"

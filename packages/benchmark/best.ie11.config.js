@@ -1,0 +1,33 @@
+module.exports = {
+    projectName: 'lwc-engine-benchmark-ie11',
+    plugins: [
+        ['rollup-plugin-lwc-compiler', {
+            rootDir: '<rootDir>/src/',
+            mode: 'compat',
+        }],
+    ],
+    benchmarkOnClient: false,
+    benchmarkIterations: 60,
+    testPathIgnorePatterns: ['**/__benchmarks__/benchmark-table-wc/*.benchmark.js'],
+    runnerConfig: [
+        {
+            "runner": "@best/runner-remote",
+            "name": "remote",
+            "config": {
+                "host": "https://best-ie11-pool.lwcjs.org:5000",
+                "options": { path: "/best", rejectUnauthorized: false },
+                "remoteRunner": "@best/runner-webdriver",
+                "webdriverOptions": {
+                    "desiredCapabilities": {
+                        "platform": "WINDOWS",
+                        "browserName": "internet explorer",
+                        "version": "11",
+                        "ignoreZoomSetting": true,
+                        "initialBrowserUrl": "about:blank",
+                        "nativeEvents": false,
+                    }
+                }
+            }
+        }
+    ],
+};
