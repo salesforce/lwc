@@ -9,8 +9,8 @@
     "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
   },
   "dependencies": {
-    "@babel/helper-module-imports": "7.0.0-beta.49",
-    "@babel/plugin-proposal-class-properties": "7.0.0-beta.49"
+    "@babel/helper-module-imports": "7.0.0",
+    "@babel/plugin-proposal-class-properties": "7.1.0"
   },
   "devDependencies": {
     "common-tags": "^1.8.0"

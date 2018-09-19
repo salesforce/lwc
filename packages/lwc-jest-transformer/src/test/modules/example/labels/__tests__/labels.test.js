@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('example-labels', () => {
-    it.only('default snapshot', () => {
+    it('default snapshot', () => {
         const element = createElement('example-labels', { is: Labels });
         document.body.appendChild(element);
         expect(element).toMatchSnapshot();

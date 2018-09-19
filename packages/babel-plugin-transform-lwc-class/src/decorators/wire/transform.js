@@ -172,7 +172,7 @@ const scopedReferenceLookup = scope => name => {
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({path}) => {
-        const [id, config] = path.get('arguments');
+        const [id, config] = path.get('expression.arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
         const isClassMethod = path.parentPath.isClassMethod({

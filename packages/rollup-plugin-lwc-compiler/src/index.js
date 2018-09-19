@@ -139,7 +139,13 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 const transformConfig = {
                     babelrc: false,
                     sourceMaps: true,
-                    parserOpts: { plugins: ["*"] },
+                    parserOpts: {
+                        plugins: [
+                            ['decorators', { decoratorsBeforeExport: true }],
+                            ['classProperties', {}],
+                            ['dynamicImport', {}]
+                        ]
+                    },
                     presets: [[minify, { guards: false, evaluate: false }]],
                 };
 
