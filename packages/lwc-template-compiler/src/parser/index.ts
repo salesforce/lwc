@@ -429,7 +429,7 @@ export default function parse(source: string, state: State): {
 
         const isAttr = getTemplateAttribute(element, 'is');
         if (isAttr) {
-            warnAt(`The usage of the "is" attribute on custom elements is not supported.`, isAttr.location, 'error');
+            warnAt('The usage of the "is" attribute is not supported.', isAttr.location, 'error');
 
             // Remove is attribute to avoid validating twice the "is" attributes.
             removeAttribute(element, 'is');

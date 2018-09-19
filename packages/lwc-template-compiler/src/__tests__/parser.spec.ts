@@ -224,7 +224,7 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             length: 13,
             level: 'error',
-            message: 'The usage of the "is" attribute on custom elements is not supported.',
+            message: 'The usage of the "is" attribute is not supported.',
             start: 18
         });
     });
