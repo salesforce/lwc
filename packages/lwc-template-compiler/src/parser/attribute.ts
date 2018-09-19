@@ -17,7 +17,6 @@ import {
     SVG_TAG_SET,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
-    STATIC_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
@@ -55,10 +54,6 @@ const booleanAttributes = new Set<string>([
     'reversed', // <ol>
     'selected', // <option>
 ]);
-
-export function isRestrictedStaticAttribute(attrName: string): boolean {
-    return STATIC_ATTRIBUTE_SET.has(attrName);
-}
 
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,

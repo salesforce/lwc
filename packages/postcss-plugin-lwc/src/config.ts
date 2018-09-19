@@ -9,7 +9,6 @@ export interface PluginConfig {
     namespaceMapping?: {
         [namespace: string]: string;
     };
-    filename: string;
 }
 
 export function validateConfig(options: PluginConfig) {

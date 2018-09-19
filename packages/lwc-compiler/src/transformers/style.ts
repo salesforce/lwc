@@ -88,8 +88,7 @@ export default async function transformStyle(
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),
-            },
-            filename,
+            }
         })
     );
 
