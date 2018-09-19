@@ -6,7 +6,6 @@ import selectorScopingTransform from './selector-scoping/transform';
 import namespaceMappingTransform from './namespace-mapping/transform';
 import validateCustomProperties from './custom-properties/validate';
 import transformCustomProperties from './custom-properties/transform';
-import validateIdSelectors from './no-id-selectors/validate';
 
 import { validateConfig, PluginConfig } from './config';
 
@@ -22,7 +21,6 @@ function selectorProcessorFactory(config: PluginConfig) {
             namespaceMappingTransform(root, namespaceMapping);
         }
 
-        validateIdSelectors(root, config.filename);
         selectorScopingTransform(root, config);
     }) as Processor;
 }
