@@ -16,17 +16,6 @@ function getModuleQualifiedName(file) {
     return registry;
 }
 
-function getLwcEnginePath(mode) {
-    const path = require.resolve('lwc-engine');
-    const moduleTypeFolder = 'modules';
-    const target = mode.includes('compat') ? 'es5' : 'es2017';
-
-    return path
-        .replace('commonjs', moduleTypeFolder)
-        .replace('es2017', target);
-}
-
 module.exports = {
-    getModuleQualifiedName,
-    getLwcEnginePath
+    getModuleQualifiedName
 };
