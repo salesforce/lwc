@@ -4,13 +4,12 @@ const compiler = require("lwc-compiler");
 const pluginUtils = require("rollup-pluginutils");
 const lwcResolver = require("lwc-module-resolver");
 const { getModuleQualifiedName, getLwcEnginePath } = require('./utils');
-const { LWC_ENGINE, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
+const { DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
-    const { mode } = mergedPluginOptions;
 
     // Closure to store the resolved modules
     let modulePaths = {};
@@ -32,11 +31,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
         },
 
         resolveId(importee, importer) {
-            // lwc is a special import
-            if (importee === LWC_ENGINE) {
-                return getLwcEnginePath(mode);
-            }
-
             // Resolve entry point if the import references a LWC module
             if (modulePaths[importee]) {
                 return modulePaths[importee].entry;
@@ -63,7 +57,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
         async transform(src, id) {
             // Filter user-land config and lwc import
-            if (!filter(id) || id === getLwcEnginePath(mode)) {
+            if (!filter(id)) {
                 return;
             }
 

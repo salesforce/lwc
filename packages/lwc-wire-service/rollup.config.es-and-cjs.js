@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 const path = require('path');
-const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const rollupCompatPlugin = require('rollup-plugin-compat');
 const typescript = require('rollup-plugin-typescript');
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');

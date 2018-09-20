@@ -3,7 +3,7 @@
 const path = require('path');
 const rollupReplacePlugin = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
-const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const rollupCompatPlugin = require('rollup-plugin-compat');
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
 

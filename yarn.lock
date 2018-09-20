@@ -2431,6 +2431,12 @@ babel-plugin-transform-proxy-compat@0.20.3:
   dependencies:
     "@babel/types" "7.0.0"
 
+babel-plugin-transform-proxy-compat@0.20.4:
+  version "0.20.4"
+  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.20.4/acc60a1c2a764d715f52e7f75a34d943b8f92549.tgz#acc60a1c2a764d715f52e7f75a34d943b8f92549"
+  dependencies:
+    "@babel/types" "7.0.0"
+
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-regenerator/-/babel-plugin-transform-regenerator-6.26.0/e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f.tgz#e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f"
@@ -2512,6 +2518,41 @@ babel-preset-compat@0.20.3:
     "@babel/plugin-transform-typeof-symbol" "7.0.0"
     "@babel/plugin-transform-unicode-regex" "7.0.0"
     babel-plugin-transform-proxy-compat "0.20.3"
+
+babel-preset-compat@0.20.4:
+  version "0.20.4"
+  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.20.4/24c8c85cc0c561b7b53d36f5b5555f1cb476dbd8.tgz#24c8c85cc0c561b7b53d36f5b5555f1cb476dbd8"
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "7.1.0"
+    "@babel/plugin-proposal-object-rest-spread" "7.0.0"
+    "@babel/plugin-transform-arrow-functions" "7.0.0"
+    "@babel/plugin-transform-async-to-generator" "7.1.0"
+    "@babel/plugin-transform-block-scoped-functions" "7.0.0"
+    "@babel/plugin-transform-block-scoping" "7.0.0"
+    "@babel/plugin-transform-classes" "7.1.0"
+    "@babel/plugin-transform-computed-properties" "7.0.0"
+    "@babel/plugin-transform-destructuring" "7.0.0"
+    "@babel/plugin-transform-duplicate-keys" "7.0.0"
+    "@babel/plugin-transform-exponentiation-operator" "7.1.0"
+    "@babel/plugin-transform-for-of" "7.0.0"
+    "@babel/plugin-transform-function-name" "7.1.0"
+    "@babel/plugin-transform-instanceof" "7.0.0"
+    "@babel/plugin-transform-literals" "7.0.0"
+    "@babel/plugin-transform-modules-amd" "7.1.0"
+    "@babel/plugin-transform-modules-commonjs" "7.1.0"
+    "@babel/plugin-transform-modules-systemjs" "7.0.0"
+    "@babel/plugin-transform-modules-umd" "7.1.0"
+    "@babel/plugin-transform-object-super" "7.1.0"
+    "@babel/plugin-transform-parameters" "7.1.0"
+    "@babel/plugin-transform-regenerator" "7.0.0"
+    "@babel/plugin-transform-runtime" "7.1.0"
+    "@babel/plugin-transform-shorthand-properties" "7.0.0"
+    "@babel/plugin-transform-spread" "7.0.0"
+    "@babel/plugin-transform-sticky-regex" "7.0.0"
+    "@babel/plugin-transform-template-literals" "7.0.0"
+    "@babel/plugin-transform-typeof-symbol" "7.0.0"
+    "@babel/plugin-transform-unicode-regex" "7.0.0"
+    babel-plugin-transform-proxy-compat "0.20.4"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -3405,6 +3446,10 @@ compare-versions@^3.1.0:
 compat-polyfills@0.20.3:
   version "0.20.3"
   resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.20.3/ace5856744ffc1fc8c411fae0dd8a485a0801004.tgz#ace5856744ffc1fc8c411fae0dd8a485a0801004"
+
+compat-polyfills@0.20.4:
+  version "0.20.4"
+  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.20.4/37aa7736d4a610c50cb899005876e49d42e2c7eb.tgz#37aa7736d4a610c50cb899005876e49d42e2c7eb"
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -9066,9 +9111,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-compat@0.20.3:
-  version "0.20.3"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.3/2a2a4289f09f2d2d6d83ae853845344189cb23c7.tgz#2a2a4289f09f2d2d6d83ae853845344189cb23c7"
+rollup-plugin-compat@0.20.4:
+  version "0.20.4"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.4/a26f09e54b52c0df9533f97d76801298a7f17c43.tgz#a26f09e54b52c0df9533f97d76801298a7f17c43"
   dependencies:
     "@babel/core" "7.1.0"
     rollup-pluginutils "~2.0.1"

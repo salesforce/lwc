@@ -6,9 +6,11 @@ import { defineProperty } from "./language";
  * creation of symbols, so we can fallback to string when native symbols
  * are not supported.
  */
+const supportSymbols = Symbol('x').toString() === 'Symbol(x)';
+
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
-    return typeof Symbol() === 'symbol' ? Symbol(key) : `$$lwc-${key}$$`;
+    return supportSymbols ? Symbol(key) : `$$lwc-${key}$$`;
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {

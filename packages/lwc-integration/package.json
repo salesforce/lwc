@@ -23,11 +23,10 @@
     "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
-    "babel-preset-compat": "0.20.3",
-    "compat-polyfills": "0.20.3",
+    "babel-preset-compat": "0.20.4",
+    "compat-polyfills": "0.20.4",
     "deepmerge": "^1.5.2",
     "dotenv": "^4.0.0",
-    "es5-proxy-compat": "0.20.3",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
     "lwc-compiler": "0.29.1",

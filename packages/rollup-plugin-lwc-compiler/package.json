@@ -12,7 +12,6 @@
     "lwc-engine": "0.29.1"
   },
   "dependencies": {
-    "es5-proxy-compat": "0.20.3",
     "glob": "^7.1.2",
     "lwc-module-resolver": "0.29.1",
     "rollup-pluginutils": "^2.0.1"
