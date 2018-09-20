@@ -73,9 +73,20 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
         return getShadowRoot(owner);
-    } else if (value instanceof Element && getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
-        // cutting out access to something outside of the shadow of the current target (usually slots)
-        return patchShadowDomTraversalMethods(value);
+    } else if (value instanceof Element) {
+        if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
+            // the element and its parent node belong to the same shadow root
+            return patchShadowDomTraversalMethods(value);
+        } else if (!isNull(owner) && tagNameGetter.call(value) === 'SLOT') {
+            // slotted elements must be top level childNodes of the slot element
+            // where they slotted into, but its shadowed parent is always the
+            // owner of the slot.
+            const slotOwner = getNodeOwner(value);
+            if (!isNull(slotOwner) && isNodeOwnedBy(owner, slotOwner)) {
+                // it is an slotted element, and therefore its parent is always going to be the host of the slot
+                return patchShadowDomTraversalMethods(slotOwner);
+            }
+        }
     }
     return null;
 }

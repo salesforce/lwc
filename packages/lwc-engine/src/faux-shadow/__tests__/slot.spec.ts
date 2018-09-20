@@ -502,4 +502,43 @@ describe('slotted elements', () => {
         const button = getHostShadowRoot(child as HTMLUnknownElement).querySelector('button');
         button.click();
     });
+
+    it('should allow traversing up to its parentNode', () => {
+        const childHTML = compileTemplate(`<template>
+            <slot>
+            </slot>
+        </template>`);
+
+        let childTemplate;
+        class ChildComponent extends LightningElement {
+            render() {
+                childTemplate = this.template;
+                return childHTML;
+            }
+        }
+        const parentHTML = compileTemplate(`<template>
+            <c-child>
+                <div>Slotted</div>
+            </c-child>
+        </template>`, {
+            modules: {
+                'c-child': ChildComponent
+            }
+        });
+        let parentTemplate;
+        class ParentComponent extends LightningElement {
+            render() {
+                parentTemplate = this.template;
+                return parentHTML;
+            }
+        }
+        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        document.body.appendChild(elm);
+        const divFromParent = parentTemplate.querySelector('div');
+        const child = parentTemplate.querySelector('c-child');
+        const slottedDiv = childTemplate.querySelector('slot').assignedElements()[0];
+        expect(slottedDiv).toBe(divFromParent);
+        expect(slottedDiv.parentNode).toBe(child);
+    });
+
 });
