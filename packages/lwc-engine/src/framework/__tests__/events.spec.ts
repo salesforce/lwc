@@ -607,19 +607,22 @@ describe('Component events', () => {
         class MyComponent extends LightningElement {
             triggerFoo() {
                 const div = this.template.querySelector('div');
-                // TODO: The thrown event currently happens asynchronously
-                // after everything else has executed
-                // div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
-
-                throw new ReferenceError("Event listener for event 'foo' was not found.");
+                div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
             }
 
             render() {
-                return function($api, $cmp) {
+                return function($api) {
+                    const listener = $api.b(undefined);
+                    const fn = event => {
+                        expect(() => {
+                            listener(event);
+                        }).toThrow("Assert Violation: Event listener for event 'foo' was not found on [object:vm MyComponent (26)].");
+                    };
+
                     return [$api.h('div', {
                         key: 0,
                         on: {
-                            foo: $api.b($cmp.handleFoo)
+                            foo: fn
                         }
                     }, [])];
                 };
@@ -629,11 +632,7 @@ describe('Component events', () => {
 
         const element = createElement('x-missing-event-listener', { is: MyComponent });
         document.body.appendChild(element);
-
-        // TODO: Figure out where to catch the real thrown event
-        expect(() => {
-            element.triggerFoo();
-        }).toThrow("Event listener for event 'foo' was not found.");
+        element.triggerFoo();
     });
 });
 
