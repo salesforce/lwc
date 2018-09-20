@@ -155,6 +155,7 @@ export default function parse(source: string, state: State): {
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
+                validateProperties(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -560,6 +561,10 @@ export default function parse(source: string, state: State): {
         }
     }
 
+    function isValidTabIndexAttribute(attr: parse5.AST.Default.Attribute): boolean {
+        return isExpression(attr.value) || (attr.value === '0' || attr.value === '-1');
+    }
+
     function validateAttributes(element: IRElement) {
         const { attrsList } = element;
         attrsList.forEach(attr => {
@@ -569,8 +574,36 @@ export default function parse(source: string, state: State): {
                     element.__original as parse5.AST.Default.Element,
                     'warning'
                 );
+            } else if (attr.name === 'tabindex') {
+                // tabindex remains an attribute for regular elements
+                if (!isValidTabIndexAttribute(attr)) {
+                    warnOnElement(
+                        `The attribute "tabindex" can only be set to "0" or "-1".`,
+                        element.__original as parse5.AST.Default.Element,
+                        'error'
+                    );
+                }
             }
         });
+    }
+
+    function validateProperties(element: IRElement) {
+        const { props } = element;
+        if (props !== undefined) {
+            for (const propName in props) {
+                const prop = props[propName] as parse5.AST.Default.Attribute;
+                if (prop.name === 'tabindex') {
+                    // tabindex becomes a prop for custom elements
+                    if (!isValidTabIndexAttribute(prop)) {
+                        warnOnElement(
+                            `The attribute "tabindex" can only be set to "0" or "-1".`,
+                            element.__original as parse5.AST.Default.Element,
+                            'error'
+                        );
+                    }
+                }
+            }
+        }
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
