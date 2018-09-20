@@ -11,7 +11,7 @@ const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
-const banner = (`/* proxy-compat-disable */`);
+const banner = (`/* es5-compat-disable */\n/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
