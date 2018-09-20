@@ -5,7 +5,7 @@ import { process, DEFAULT_TOKEN } from './shared';
 
 describe('default export (postcss plugin)', () => {
     it('assert token option', () => {
-        expect(() => process('', { } as any)).toThrow(
+        expect(() => process('', { })).toThrow(
             /token option must be a string but instead received undefined/,
         );
     });
