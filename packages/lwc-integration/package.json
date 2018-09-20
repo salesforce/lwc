@@ -33,7 +33,6 @@
     "lwc-compiler": "0.29.1",
     "lwc-engine": "0.29.1",
     "minimist": "^1.2.0",
-    "rollup-plugin-compat": "0.20.3",
     "rollup-plugin-lwc-compiler": "0.29.1",
     "wdio-junit-reporter": "^0.4.3",
     "wdio-mocha-framework": "~0.5.13",

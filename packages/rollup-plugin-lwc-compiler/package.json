@@ -9,8 +9,7 @@
   },
   "devDependencies": {
     "lwc-compiler": "0.29.1",
-    "lwc-engine": "0.29.1",
-    "rollup-plugin-compat": "0.20.3"
+    "lwc-engine": "0.29.1"
   },
   "dependencies": {
     "es5-proxy-compat": "0.20.3",

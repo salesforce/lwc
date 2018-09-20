@@ -41,6 +41,7 @@
     "jest": "~23.1.0",
     "lerna": "3.0.4",
     "prettier": "~1.10.2",
+    "rollup-plugin-compat": "0.20.3",
     "semver": "^5.5.0",
     "tslint": "~5.9.1",
     "typescript": "2.7.2"
