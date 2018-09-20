@@ -616,7 +616,7 @@ describe('Component events', () => {
                     const fn = event => {
                         expect(() => {
                             listener(event);
-                        }).toThrow("Assert Violation: Event listener for event 'foo' was not found on [object:vm MyComponent (26)].");
+                        }).toThrow("Assert Violation: Event listener for event 'foo' was not found.");
                     };
 
                     return [$api.h('div', {
