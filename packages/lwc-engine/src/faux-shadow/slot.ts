@@ -13,26 +13,48 @@ import {
     forEach,
 } from "../shared/language";
 
+// MutationObserver is not yet implemented in jsdom:
+// https://github.com/jsdom/jsdom/issues/639
+if (typeof MutationObserver === 'undefined') {
+    /* tslint:disable-next-line:no-empty */
+    function MutationObserverMock() {}
+    MutationObserverMock.prototype = {
+        observe() {
+            assert.isTrue(
+                process.env.NODE_ENV === 'test',
+                'MutationObserver should not be mocked outside of the jest test environment'
+            );
+        }
+    };
+    (window as any).MutationObserver = MutationObserverMock;
+}
+
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
 // reference to the node."
 // https://dom.spec.whatwg.org/#garbage-collection
 let observer;
 
-function initSlotObserver() {
-    // MutationObserver is not yet implemented in jsdom:
-    // https://github.com/jsdom/jsdom/issues/639
-    if (typeof MutationObserver === 'undefined') {
-        return observer = {
-            observe() {
-                assert.isTrue(
-                    process.env.NODE_ENV === 'test',
-                    'MutationObserver should not be mocked outside of the jest test environment'
-                );
-            },
-        };
-    }
+const observe = MutationObserver.prototype.observe;
+const observerConfig: MutationObserverInit = { childList: true };
+const SlotChangeKey = createFieldName('slotchange');
 
+function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+    if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
+        if (process.env.NODE_ENV === 'test') {
+            /* tslint:disable-next-line:no-console */
+            console.warn('The "slotchange" event is not supported in our jest test environment.');
+        }
+        setInternalField(this, SlotChangeKey, true);
+        if (!observer) {
+            observer = initSlotObserver();
+        }
+        observe.call(observer, this as Node, observerConfig);
+    }
+    addEventListener.call(this as HTMLSlotElement, type, listener, options);
+}
+
+function initSlotObserver() {
     const slotchangeEventConfig: CustomEventInit = { bubbles: true };
 
     return new MutationObserver(mutations => {
@@ -53,25 +75,6 @@ function initSlotObserver() {
             }
         });
     });
-}
-
-const observe = MutationObserver.prototype.observe;
-const observerConfig: MutationObserverInit = { childList: true };
-const SlotChangeKey = createFieldName('slotchange');
-
-function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
-        if (process.env.NODE_ENV === 'test') {
-            /* tslint:disable-next-line:no-console */
-            console.warn('The "slotchange" event is not supported in our jest test environment.');
-        }
-        setInternalField(this, SlotChangeKey, true);
-        if (!observer) {
-            observer = initSlotObserver();
-        }
-        observe.call(observer, this as Node, observerConfig);
-    }
-    addEventListener.call(this as HTMLSlotElement, type, listener, options);
 }
 
 const HTMLSlotElementPatchDescriptors: PropertyDescriptorMap = {
