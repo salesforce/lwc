@@ -1,5 +1,10 @@
 import assert from "../shared/assert";
-import { defineProperties } from "../shared/language";
+import {
+    ArrayIndexOf,
+    ArrayPush,
+    defineProperties,
+    forEach,
+} from "../shared/language";
 import { addEventListener } from "./element";
 import {
     getInternalField,
@@ -31,7 +36,7 @@ function initSlotObserver() {
 
     return new MutationObserver(mutations => {
         const slots: Node[] = [];
-        mutations.forEach(mutation => {
+        forEach.call(mutations, mutation => {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
                     mutation.type === 'childList',
@@ -41,8 +46,8 @@ function initSlotObserver() {
                 );
             }
             const { target: slot } = mutation;
-            if (!slots.includes(slot)) {
-                slots.push(slot);
+            if (ArrayIndexOf.call(slots, slot) === -1) {
+                ArrayPush.call(slots, slot);
                 slot.dispatchEvent(
                     new CustomEvent('slotchange', slotchangeEventConfig)
                 );
