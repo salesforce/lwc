@@ -26,6 +26,9 @@ function initSlotObserver() {
             },
         };
     }
+
+    const slotchangeEventConfig: CustomEventInit = { bubbles: true };
+
     return new MutationObserver(mutations => {
         const slots: Node[] = [];
         mutations.forEach(mutation => {
@@ -41,14 +44,14 @@ function initSlotObserver() {
             if (!slots.includes(slot)) {
                 slots.push(slot);
                 slot.dispatchEvent(
-                    new CustomEvent('slotchange', { bubbles: true })
+                    new CustomEvent('slotchange', slotchangeEventConfig)
                 );
             }
         });
     });
 }
 
-const observerConfig = { childList: true };
+const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createFieldName('slotchange');
 
 function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
