@@ -27,6 +27,7 @@ function initSlotObserver() {
         };
     }
     return new MutationObserver(mutations => {
+        const slots: Node[] = [];
         mutations.forEach(mutation => {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
@@ -36,9 +37,13 @@ function initSlotObserver() {
                     }. This mutation handler for slots should only handle "childList" mutations.`
                 );
             }
-            mutation.target.dispatchEvent(
-                new CustomEvent('slotchange', { bubbles: true })
-            );
+            const { target: slot } = mutation;
+            if (!slots.includes(slot)) {
+                slots.push(slot);
+                slot.dispatchEvent(
+                    new CustomEvent('slotchange', { bubbles: true })
+                );
+            }
         });
     });
 }
