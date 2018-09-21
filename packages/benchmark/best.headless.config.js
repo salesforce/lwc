@@ -1,10 +1,8 @@
 module.exports = {
     projectName: 'lwc-engine-benchmark',
     plugins: [
-        ['rollup-plugin-lwc-compiler', {
-            rootDir: '<rootDir>/src/',
-            mode: 'prod',
-        }],
+        ['rollup-plugin-lwc-compiler', { rootDir: '<rootDir>/src/' }],
+        ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }]
     ],
     benchmarkOnClient: false,
     benchmarkIterations: 60,
