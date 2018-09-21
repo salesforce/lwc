@@ -23,20 +23,26 @@ function getLeakedSlotChangeEvents() {
         .leakedSlotChangeEvents;
 }
 
-describe('slotchange:', () => {
+describe('slotchange', () => {
+    it('should not be composed', () => {
+        browser.url(URL);
+        const leakedSlotChangeEvents = browser.execute(getLeakedSlotChangeEvents).value;
+        assert.strictEqual(leakedSlotChangeEvents.length, 0);
+    });
+
     describe('when initially rendered', () => {
         before(() => {
             browser.url(URL);
         });
 
-        it('should not be dispatched unless a slotchange listener has been added to the slot', () => {
-            const slotNames = browser.execute(getSlotNames).value;
-            assert(!slotNames.includes('nochange'));
-        });
-
         it('should be dispatched if a slotchange listener has been added to the slot', () => {
             const slotNames = browser.execute(getSlotNames).value;
-            assert(slotNames.includes('yeschange'));
+            assert(slotNames.includes('default'));
+        });
+
+        it('should not be dispatched unless a slotchange listener has been added to the slot', () => {
+            const slotNames = browser.execute(getSlotNames).value;
+            assert(!slotNames.includes('programmatic-listener'));
         });
     });
 
@@ -73,20 +79,13 @@ describe('slotchange:', () => {
         });
 
         it('should be dispatched if a slotchange listener has been dynamically added to the slot', () => {
-            // This test fails when the assigned element uses an element with the same tag name.
             browser.execute(() => {
-                const parent = document.querySelector('integration-parent');
-                parent.addEventListenerToSlot();
-                parent.toggleAssignedElement();
+                const el = document.querySelector('integration-slotchange-event');
+                el.addEventListenerToSlot();
+                el.toggle();
             });
             const slotNames = browser.execute(getSlotNames).value;
-            assert(slotNames.includes('nochange'));
+            assert(slotNames.includes('programmatic-listener'));
         });
-    });
-
-    it('should not be composed', () => {
-        browser.url(URL);
-        const leakedSlotChangeEvents = browser.execute(getLeakedSlotChangeEvents).value;
-        assert.strictEqual(leakedSlotChangeEvents.length, 0);
     });
 });

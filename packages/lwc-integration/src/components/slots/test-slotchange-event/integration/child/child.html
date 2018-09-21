@@ -1,8 +1,8 @@
 <template>
-    <slot class="default" onslotchange={handleChangeDefault}></slot>
+    <slot class="default" onslotchange={handleChange}></slot>
 
     <div onslotchange={handleChange}>
-        <slot class="nochange" name="nochange">
+        <slot class="programmatic-listener" name="programmatic-listener">
             <span>
                 This slot SHOULD NOT result in any slotchange event because
                 of the limitation we put in place where we only dispatch on
@@ -10,10 +10,6 @@
             </span>
         </slot>
     </div>
-
-    <slot class="yeschange" name="yeschange" onslotchange={handleChange}>
-        <p>This slot SHOULD result in a slotchange event.</p>
-    </slot>
 
     <slot class="full" name="full" onslotchange={handleChangeNested}>
         <slot class="first" name="first" onslotchange={handleChangeNested}>

@@ -1,16 +1,13 @@
-import { api, track, LightningElement } from 'lwc';
+import { api, LightningElement } from 'lwc';
 
-export default class App extends LightningElement {
+export default class Child extends LightningElement {
     @api
     addEventListenerToSlot() {
-        const slot = this.template.querySelector('.nochange');
+        const slot = this.template.querySelector('.programmatic-listener');
         slot.addEventListener('slotchange', () => {});
     }
 
     handleChange(event) {
-        this.dispatchMessage(event);
-    }
-    handleChangeDefault(event) {
         this.dispatchMessage(event);
     }
     handleChangeNested(event) {
