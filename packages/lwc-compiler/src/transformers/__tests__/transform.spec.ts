@@ -94,26 +94,6 @@ describe('Javascript transform', () => {
         });
     });
 
-    it('should throw if invalid resolveProxyCompat value is specified in compat mode', async () => {
-        await expect(
-            transform(`debugger`, 'foo.js', {
-                namespace: 'x',
-                name: 'foo',
-                outputConfig: {
-                    compat: true,
-                    resolveProxyCompat: {
-                        badkey: 'hello',
-                    },
-                },
-            })
-        ).rejects.toMatchObject({
-            filename: 'foo.js',
-            message: expect.stringContaining(
-                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
-            )
-        });
-    });
-
     it('allows dynamic imports', async () => {
         const actual = `
             export function test() {

@@ -43,8 +43,6 @@ function rollupConfig(config) {
 
 module.exports = [
     rollupConfig({ format:'es', target:'es2017' }),
-    rollupConfig({ format:'es', target:'es5' }),
-
     rollupConfig({ format:'cjs', target:'es2017' }),
     rollupConfig({ format: 'cjs', target: 'es5' }),
 ];
