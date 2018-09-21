@@ -10,6 +10,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
+    const { resolveFromPackages, resolveFromSource } = mergedPluginOptions;
 
     // Closure to store the resolved modules
     let modulePaths = {};
@@ -21,12 +22,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             modulePaths = {};
             const entry = rollupOptions.input || rollupOptions.entry;
             const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
-            const externalPaths = mergedPluginOptions.resolveFromPackages
-                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
-                : {};
-            const sourcePaths = mergedPluginOptions.resolveFromSource
-                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
-                : {};
+            const externalPaths = resolveFromPackages ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions) : {};
+            const sourcePaths = resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions) : {};
             Object.assign(modulePaths, externalPaths, sourcePaths);
         },
 
@@ -38,10 +35,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             // Normalize relative import to absolute import
             if (importee.startsWith(".") && importer) {
-                const normalizedPath = path.resolve(
-                    path.dirname(importer),
-                    importee
-                );
+                const normalizedPath = path.resolve(path.dirname(importer), importee);
                 return pluginUtils.addExtension(normalizedPath);
             }
         },
