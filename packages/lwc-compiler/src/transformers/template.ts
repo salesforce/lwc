@@ -18,9 +18,7 @@ function attachStyleToTemplate(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-    // Derive component namespace from the authored namespace and the namespace mapping.
-    const { name, namespace: authoredNamespace, namespaceMapping } = options;
-    const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
+    const { name, namespace } = options;
 
     const templateFilename = path.basename(filename, path.extname(filename));
 
@@ -67,12 +65,12 @@ const transform: FileTransformer = function(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
+
     let code;
     let metadata;
 
     try {
-        const { namespaceMapping } = options;
-        const result = compile(src, { namespaceMapping });
+        const result = compile(src, {});
         const warnings = result.warnings;
 
         code = result.code;
@@ -80,10 +78,7 @@ const transform: FileTransformer = function(
 
         const fatalError = warnings.find(warning => warning.level === "error");
         if (fatalError) {
-            throw new CompilerError(
-                `${filename}: ${fatalError.message}`,
-                filename
-            );
+            throw new CompilerError(`${filename}: ${fatalError.message}`, filename);
         }
     } catch (e) {
         throw new CompilerError(e.message, filename, e.loc);

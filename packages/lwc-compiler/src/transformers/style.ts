@@ -62,7 +62,7 @@ function replaceToken(src: string): string {
 export default async function transformStyle(
     src: string,
     filename: string,
-    { stylesheetConfig, outputConfig, namespaceMapping }: NormalizedCompilerOptions
+    { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
@@ -84,7 +84,6 @@ export default async function transformStyle(
     postcssPlugins.push(
         postcssPluginLwc({
             token: TOKEN_PLACEHOLDER,
-            namespaceMapping,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),

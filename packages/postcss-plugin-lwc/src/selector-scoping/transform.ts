@@ -1,3 +1,5 @@
+/* tslint:disable:no-duplicate-imports */
+
 import {
     attribute,
     isTag,
@@ -184,7 +186,6 @@ function transformHost(selector: Selector, config: PluginConfig) {
         replaceNodeWith(selector, ...contextualSelectors);
     }
 }
-
 export default function transformSelector(
     root: Root,
     config: PluginConfig,
