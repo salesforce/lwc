@@ -1,16 +1,17 @@
 import assert from "../shared/assert";
+import { addEventListener } from "./element";
+import {
+    createFieldName,
+    getInternalField,
+    setInternalField,
+} from "../shared/fields";
+import { dispatchEvent } from "./event-target";
 import {
     ArrayIndexOf,
     ArrayPush,
     defineProperties,
     forEach,
 } from "../shared/language";
-import { addEventListener } from "./element";
-import {
-    getInternalField,
-    setInternalField,
-    createFieldName,
-} from "../shared/fields";
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -48,14 +49,13 @@ function initSlotObserver() {
             const { target: slot } = mutation;
             if (ArrayIndexOf.call(slots, slot) === -1) {
                 ArrayPush.call(slots, slot);
-                slot.dispatchEvent(
-                    new CustomEvent('slotchange', slotchangeEventConfig)
-                );
+                dispatchEvent.call(slot, new CustomEvent('slotchange', slotchangeEventConfig));
             }
         });
     });
 }
 
+const observe = MutationObserver.prototype.observe;
 const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createFieldName('slotchange');
 
@@ -69,7 +69,7 @@ function addEventListenerPatchedValue(this: EventTarget, type: string, listener:
         if (!observer) {
             observer = initSlotObserver();
         }
-        observer.observe(this as Node, observerConfig);
+        observe.call(observer, this as Node, observerConfig);
     }
     addEventListener.call(this as HTMLSlotElement, type, listener, options);
 }
