@@ -1,0 +1,26 @@
+<template>
+    <slot class="default" onslotchange={handleChangeDefault}></slot>
+
+    <div onslotchange={handleChange}>
+        <slot class="nochange" name="nochange">
+            <span>
+                This slot SHOULD NOT result in any slotchange event because
+                of the limitation we put in place where we only dispatch on
+                slots that have direct slotchange event listeners.
+            </span>
+        </slot>
+    </div>
+
+    <slot class="yeschange" name="yeschange" onslotchange={handleChange}>
+        <p>This slot SHOULD result in a slotchange event.</p>
+    </slot>
+
+    <slot class="full" name="full" onslotchange={handleChangeNested}>
+        <slot class="first" name="first" onslotchange={handleChangeNested}>
+            <span>Awesome</span>
+        </slot>
+        <slot class="last" name="last" onslotchange={handleChangeNested}>
+            <span>Possum</span>
+        </slot>
+    </slot>
+</template>

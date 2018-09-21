@@ -1,0 +1,8 @@
+<template>
+    <integration-parent onmessage={handleMessage}></integration-parent>
+    <ol>
+        <template for:each={messages} for:item="message">
+            <li class="message" key={message}>{message}</li>
+        </template>
+    </ol>
+</template>
