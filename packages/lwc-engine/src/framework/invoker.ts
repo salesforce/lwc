@@ -126,7 +126,7 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
     let error;
     try {
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(fn), `Event listener for event '${event.type}' was not found.`);
+            assert.isTrue(isFunction(fn), `Invalid event handler for event '${event.type}' on ${vm}.`);
         }
         callHook(thisValue, fn, [event]);
     } catch (e) {
