@@ -1,5 +1,32 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.0...v) (2018-09-13)
+# [](https://github.com/salesforce/lwc/compare/v0.29.1...v) (2018-09-21)
+
+
+### Bug Fixes
+
+* remove release artifacts ([#649](https://github.com/salesforce/lwc/issues/649)) ([a528117](https://github.com/salesforce/lwc/commit/a528117))
+* revert namespace mapping support ([#662](https://github.com/salesforce/lwc/issues/662)) ([728b557](https://github.com/salesforce/lwc/commit/728b557))
+* simplify rollup package ([#659](https://github.com/salesforce/lwc/issues/659)) ([e59f0f6](https://github.com/salesforce/lwc/commit/e59f0f6))
+* upgrade lwc rollup to support compat ([#646](https://github.com/salesforce/lwc/issues/646)) ([d1d3fa5](https://github.com/salesforce/lwc/commit/d1d3fa5))
+* upgrading babel ([#653](https://github.com/salesforce/lwc/issues/653)) ([ee1e513](https://github.com/salesforce/lwc/commit/ee1e513))
+
+
+### Features
+
+* augments metadata gathering for [@wire](https://github.com/wire) decorator ([#631](https://github.com/salesforce/lwc/issues/631)) ([4920a4e](https://github.com/salesforce/lwc/commit/4920a4e))
+* **compiler:** warnings to change dynamic ids to static ids ([#620](https://github.com/salesforce/lwc/issues/620)) ([a32289a](https://github.com/salesforce/lwc/commit/a32289a))
+
+
+### Performance Improvements
+
+* added ie11 agent and benchmark config ([#654](https://github.com/salesforce/lwc/issues/654)) ([2b1dac4](https://github.com/salesforce/lwc/commit/2b1dac4))
+* upgrade agent: chrome 70 ([#648](https://github.com/salesforce/lwc/issues/648)) ([39e71c8](https://github.com/salesforce/lwc/commit/39e71c8))
+* upgrade best ([#647](https://github.com/salesforce/lwc/issues/647)) ([4f6f1c1](https://github.com/salesforce/lwc/commit/4f6f1c1))
+
+
+
+<a name="0.29.1"></a>
+## [0.29.1](https://github.com/salesforce/lwc/compare/v0.29.0...v0.29.1) (2018-09-13)
 
 
 
