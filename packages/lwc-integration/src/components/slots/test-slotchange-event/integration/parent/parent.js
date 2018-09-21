@@ -35,8 +35,8 @@ export default class App extends LightningElement {
     handleClickFooBar() {
         this.state.things = ['foo', 'bar'];
     }
-    handleClickBarBaz() {
-        this.state.things = ['bar', 'baz'];
+    handleClickCountries() {
+        this.state.things = ['belarus', 'china', 'cuba', 'france', 'india', 'japan', 'spain'];
     }
     handleClickAddSlotChange() {
         this.addEventListenerToSlot();

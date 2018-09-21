@@ -1,5 +1,6 @@
 <template>
-    <integration-parent onmessage={handleMessage}></integration-parent>
+    <integration-parent onmessage={handleMessage} onslotchange={handleLeakedSlotChange}></integration-parent>
+
     <ol>
         <template for:each={messages} for:item="message">
             <li class="message" key={message}>{message}</li>

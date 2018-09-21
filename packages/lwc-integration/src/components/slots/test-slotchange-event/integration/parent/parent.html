@@ -4,15 +4,15 @@
             <span key={thing}>{thing}</span>
         </template>
         <template if:true={state.assignSlotable}>
-            <div slot="nochange">assigned by programmatic toggle</div>
+            <div slot="nochange" class="programmatically-assigned">assigned by programmatic toggle</div>
         </template>
     </integration-child>
 
     <div>
-        <button class="default" onclick={handleClickClear}>set ""</button>
+        <button class="clear" onclick={handleClickClear}>set ""</button>
         <button class="foo" onclick={handleClickFoo}>set "foo"</button>
         <button class="foo-bar" onclick={handleClickFooBar}>set "foo bar"</button>
-        <button class="bar-baz" onclick={handleClickBarBaz}>set "bar baz"</button>
+        <button class="countries" onclick={handleClickCountries}>set countries</button>
     </div>
 
     <div>

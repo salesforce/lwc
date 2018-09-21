@@ -5,6 +5,13 @@ export default class App extends LightningElement {
         events: [],
     }
 
+    _leakedSlotChangeEvents = [];
+
+    @api
+    get leakedSlotChangeEvents() {
+        return this._leakedSlotChangeEvents;
+    }
+
     @api
     get events() {
         return this.state.events;
@@ -22,5 +29,9 @@ export default class App extends LightningElement {
             name,
             elements,
         });
+    }
+
+    handleLeakedSlotChange(event) {
+        this._leakedSlotChangeEvents.push(event);
     }
 }
