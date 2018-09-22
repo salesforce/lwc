@@ -46,12 +46,12 @@ describe("module resolver", () => {
                 }, [api_text(\"Manually Imported Template\")])];
                 }
                 if (style) {
-                tmpl.hostToken = 'x-class_and_template_class_and_template-host';
-                tmpl.shadowToken = 'x-class_and_template_class_and_template';
+                tmpl.hostToken = style.hostToken;
+                tmpl.shadowToken = style.shadowToken;
                 const style$$1 = document.createElement('style');
                 style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_class_and_template';
-                style$$1.textContent = style('x-class_and_template_class_and_template');
+                style$$1.dataset.token = style.shadowToken;
+                style$$1.textContent = style.content;
                 document.head.appendChild(style$$1);
                 }
                 class Test extends lwc.LightningElement {
@@ -95,12 +95,12 @@ describe("module resolver", () => {
                 }, [api_text(\"Another Template\")])];
                 }
                 if (style) {
-                tmpl.hostToken = 'x-class_and_template_anotherTemplate-host';
-                tmpl.shadowToken = 'x-class_and_template_anotherTemplate';
+                tmpl.hostToken = style.hostToken;
+                tmpl.shadowToken = style.shadowToken;
                 const style$$1 = document.createElement('style');
                 style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_anotherTemplate';
-                style$$1.textContent = style('x-class_and_template_anotherTemplate');
+                style$$1.dataset.token = style.shadowToken;
+                style$$1.textContent = style.content;
                 document.head.appendChild(style$$1);
                 }
                 class Test extends lwc.LightningElement {

@@ -12,12 +12,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 if (style) {
-    tmpl.hostToken = 'x-foo_foo-host';
-    tmpl.shadowToken = 'x-foo_foo';
+    tmpl.hostToken = style.hostToken;
+    tmpl.shadowToken = style.shadowToken;
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
-    style$$1.dataset.token = 'x-foo_foo';
-    style$$1.textContent = style('x-foo_foo');
+    style$$1.dataset.token = style.shadowToken;
+    style$$1.textContent = style.content;
     document.head.appendChild(style$$1);
 }
 class Metadata extends LightningElement {

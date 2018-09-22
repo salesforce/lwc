@@ -1,5 +1,6 @@
 import postcss from "postcss";
 import cssnano from "cssnano";
+import { sha256 } from 'hash.js';
 import postcssPluginLwc from "postcss-plugin-lwc";
 
 import { CompilerError } from "../common-interfaces/compiler-error";
@@ -7,17 +8,11 @@ import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compil
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
 
-/**
- * A placeholder string used to locate the style scoping token generated during
- * the CSS transformation.
- */
-const TOKEN_PLACEHOLDER = '__TOKEN__';
+/** Length of the hash used to generate CSS token */
+const HASH_LENGTH = 5;
 
 /** The default stylesheet content if no source has been provided. */
-const EMPTY_CSS_OUTPUT = `
-const style = undefined;
-export default style;
-`;
+const EMPTY_CSS_OUTPUT = `const style = undefined; export default style;`;
 
 /** The javascript identifier used when custom properties get resolved from a module. */
 const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
@@ -51,28 +46,39 @@ function transformVar(resolution: CustomPropertiesResolution) {
 }
 
 /**
- * Replace token placeholder in the generated CSS string with the actual template string
- * lookup.
+ * Generate a unique token to be used for CSS scoping.
+ * This token is composed of component name, namespace and a hash generated from the CSS source.The
+ * only case where two component will have an identical token is when both of them have the same
+ * component name and CSS source.
+ *
+ * TODO: name and namespaced are added into the token value for debugging purposes. We should revise
+ * the token value once the compiler supports source-map.
  */
-function replaceToken(src: string): string {
-    const placeholderRegexp = new RegExp(TOKEN_PLACEHOLDER, 'g');
-    return src.replace(placeholderRegexp, '${token}');
+function generateToken(src: string, name: string, namespace: string) {
+    const hash = sha256().update(src).digest('hex').slice(0, HASH_LENGTH);
+    return `${name}-${namespace}-${hash}`;
 }
 
 export default async function transformStyle(
     src: string,
     filename: string,
-    { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
+    { name, namespace, stylesheetConfig, outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
-    const { minify } = outputConfig;
-    const { customProperties } = stylesheetConfig;
 
+    // The compiler automatically resolves the CSS for the component template. Therefore, if the CSS
+    // file is not found, the loader returns an empty CSS source. In order to keep the generated code
+    // minimal, we only return the stylesheet object when the CSS source is not empty.
+    if (!src.length) {
+        return { code: EMPTY_CSS_OUTPUT, map: null };
+    }
+
+    const token = generateToken(src, name, namespace);
     const postcssPlugins: postcss.AcceptedPlugin[] = [];
 
     // The LWC plugin produces invalid CSS since it transforms all the var function with actual
-    // javascript function call. The mification plugin produces invalid CSS when it runs after
+    // javascript function call. The minification plugin produces invalid CSS when it runs after
     // the LWC plugin.
-    if (minify) {
+    if (outputConfig.minify) {
         postcssPlugins.push(
             cssnano({
                 svgo: false,
@@ -81,9 +87,10 @@ export default async function transformStyle(
         );
     }
 
+    const { customProperties } = stylesheetConfig;
     postcssPlugins.push(
         postcssPluginLwc({
-            token: TOKEN_PLACEHOLDER,
+            token,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),
@@ -99,26 +106,26 @@ export default async function transformStyle(
         res = await postcss(postcssPlugins).process(escapedSource, {
             from: filename,
         });
+        console.log('----> ', res.css);
     } catch (e) {
         throw new CompilerError(e.message, filename, e.loc);
     }
 
     let code: string = '';
-    if (res.css && res.css.length) {
-        // Add import statement for the custom resolver at the top of the file.
-        if (customProperties.resolution.type === 'module') {
-            code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolution.name}';\n`;
-        }
 
-        code += [
-            'function style(token) {',
-            '   return `' + replaceToken(res.css) + '`;',
-            '}',
-            'export default style;'
-        ].join('\n');
-    } else {
-        code = EMPTY_CSS_OUTPUT;
+    // Add import statement for the custom resolver at the top of the file.
+    if (customProperties.resolution.type === 'module') {
+        code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolution.name}';\n`;
     }
+
+    console.log('token ------->  ', token);
+    code += [
+        'export default {',
+        `   hostToken: '${token}-host',`,
+        `   shadowToken: '${token}',`,
+        `   content: '${res.css}',`,
+        '}'
+    ].join('\n');
 
     return { code, map: null };
 }

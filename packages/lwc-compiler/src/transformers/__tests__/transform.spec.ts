@@ -1,5 +1,6 @@
 import { transform } from '../../transformers/transformer';
 import { pretify } from '../../__tests__/utils';
+import { createHash } from '../../utils';
 
 describe('transform', () => {
     it('should validate presence of src', () => {
@@ -164,7 +165,7 @@ describe('HTML transform', () => {
     });
 });
 
-describe('CSS transform', () => {
+describe.only('CSS transform', () => {
     it('should throw when processing an invalid CSS file', async () => {
         await expect(
             transform(`<`, 'foo.css', {
@@ -184,21 +185,25 @@ describe('CSS transform', () => {
             }
         `;
 
-        const expected = `
-            function style(token) {
-                return \`
-            div[\${token}] {
+        const name = 'foo';
+        const namespace = 'x';
+
+        const expected = `export default {
+            hostToken: 'foo-x-19829-host',
+            shadowToken: 'foo-x-19829',
+            content: '
+            div[foo-x-19829] {
                 background-color: red;
             }
-                \`;
-            }
-            export default style;
-        `;
+            ',
+        }`;
 
         const { code } = await transform(actual, 'foo.css', {
-            namespace: 'x',
-            name: 'foo',
+            namespace,
+            name,
         });
+
+        console.log('----> code: ', code);
 
         expect(pretify(code)).toBe(pretify(expected));
     });
@@ -226,14 +231,16 @@ describe('CSS transform', () => {
 
     it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
-        const expected = `
-            function style(token) {
-                return \`div[\${token}] { color: var(--bg-color); }\`;
-            }
-            export default style;
-        `;
+
+        const expected = `export default {
+            hostToken: 'foo-x-02f5f-host',
+            shadowToken: 'foo-x-02f5f',
+            content: 'div[foo-x-02f5f] { color: var(--bg-color); }',
+        }`;
 
         const { code } = await transform(actual, 'foo.css', {
+            name: 'foo',
+            namespace: 'x',
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'native' } },
             },
@@ -252,16 +259,16 @@ describe('CSS transform', () => {
 
         const expected = `
             import customProperties from '@customProperties';
-
-            function style(token) {
-                return \`div[\${token}] {
+            export default {
+                hostToken: 'undefined-undefined-94e85-host',
+                shadowToken: 'undefined-undefined-94e85',
+                content: 'div[undefined-undefined-94e85] {
                     color: \${customProperties(\`--bg-color\`)};
                     font-size: \${customProperties(\`--font-size\`, \`16px\`)};
                     margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
                     border-bottom: 1px solid \${customProperties(\`--lwc-border\`)};
-                }\`;
+                }',
             }
-            export default style;
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -283,17 +290,19 @@ describe('CSS transform', () => {
 
         const expected = `
             import customProperties from '@customProperties';
-
-            function style(token) {
-                return \`div[\${token}]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}\`;
+            export default {
+                hostToken: 'foo-x-94e85-host',
+                shadowToken: 'foo-x-94e85',
+                content: 'div[foo-x-94e85]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}',
             }
-            export default style;
         `;
 
         const { code } = await transform(actual, 'foo.css', {
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
+            name: 'foo',
+            namespace: 'x',
             outputConfig: {
                 minify: true
             }
@@ -304,12 +313,11 @@ describe('CSS transform', () => {
 
     it('should escape grave accents', async () => {
         const actual = `/* Comment with grave accents \`#\` */`;
-        const expected = `
-            function style(token) {
-                return \`/* Comment with grave accents \\\`#\\\` */\`;
-            }
-
-            export default style;
+        const expected = `export default {
+            hostToken: 'foo-x-30ca4-host',
+            shadowToken: 'foo-x-30ca4',
+            content: '/* Comment with grave accents \\\`#\\\` */',
+        }
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -322,12 +330,11 @@ describe('CSS transform', () => {
 
     it('should escape backslash', async () => {
         const actual = '.foo { content: "\\\\"; }';
-        const expected = `
-            function style(token) {
-                return \`.foo[\${token}] { content: "\\\\\\\\"; }\`;
-            }
-
-            export default style;
+        const expected = `export default {
+            hostToken: 'foo-x-c09ca-host',
+            shadowToken: 'foo-x-c09ca',
+            content: '.foo[foo-x-c09ca] { content: "\\\\\\\\"; }',
+        }
         `;
 
         const { code } = await transform(actual, 'foo.css', {
