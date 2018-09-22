@@ -1,32 +1,15 @@
 import { api, track, LightningElement } from 'lwc';
 
-export default class App extends LightningElement {
+export default class SlotChangeEvent extends LightningElement {
     @track state = {
         events: [],
+        leakedEvents: [],
         things: ['foo'],
         toggle: false,
     }
 
-    @api
-    addEventListenerToSlot() {
-        const child = this.template.querySelector('integration-child');
-        child.addEventListenerToSlot();
-    }
-
-    @api
-    toggle() {
-        this.state.toggle = !this.state.toggle;
-    }
-
-    @api
-    get leakedSlotChangeEvents() {
-        return this._leakedSlotChangeEvents;
-    }
-    _leakedSlotChangeEvents = [];
-
-    @api
-    get events() {
-        return this.state.events;
+    get leakedSlotChangeEventCount() {
+        return this.state.leakedEvents.length;
     }
 
     get things() {
@@ -35,20 +18,29 @@ export default class App extends LightningElement {
 
     get messages() {
         return this.state.events.map(
-            data => `${data.name}: ${data.elements.join(' ')}`
+            data => JSON.stringify(data)
         );
     }
 
+    addEventListenerToSlot() {
+        const child = this.template.querySelector('integration-child');
+        child.addEventListenerToSlot();
+    }
+
+    toggle() {
+        this.state.toggle = !this.state.toggle;
+    }
+
     handleMessage(event) {
-        const { name, elements } = event.detail;
+        const { slotName, assignedContents } = event.detail;
         this.state.events.push({
-            name,
-            elements,
+            slotName,
+            assignedContents,
         });
     }
 
     handleLeakedSlotChange(event) {
-        this._leakedSlotChangeEvents.push(event);
+        this.state.leakedEvents.push(event);
     }
 
     handleClickClear() {

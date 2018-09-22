@@ -11,6 +11,7 @@ export default class Child extends LightningElement {
         this.dispatchMessage(event);
     }
     handleChangeNested(event) {
+        // Ignore slotchange events that bubble up from below
         if (event.target !== event.currentTarget) {
             return;
         }
@@ -24,8 +25,8 @@ export default class Child extends LightningElement {
                 bubbles: true,
                 composed: true,
                 detail: {
-                    name: event.target.className,
-                    elements: elements.map(el => el.textContent),
+                    slotName: event.target.className,
+                    assignedContents: elements.map(el => el.textContent),
                 },
             })
         );

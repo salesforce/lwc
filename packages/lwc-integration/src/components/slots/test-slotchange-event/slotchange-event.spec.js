@@ -3,31 +3,25 @@ const assert = require('assert');
 const URL = 'http://localhost:4567/slotchange-event';
 
 function getEvents() {
-    return document
-        .querySelector('integration-slotchange-event')
-        .events;
+    var messages = Array.prototype.slice.call(
+        document.querySelectorAll('.message')
+    );
+    return messages
+        .map(function (message) { return message.textContent; })
+        .map(JSON.parse);
 }
 
-function getSlotNames() {
-    return document
-        .querySelector('integration-slotchange-event')
-        .events
-        .map(function (event) {
-            return event.name;
-        });
-}
-
-function getLeakedSlotChangeEvents() {
-    return document
-        .querySelector('integration-slotchange-event')
-        .leakedSlotChangeEvents;
+function getSlotNames(events) {
+    return events.map(function (event) {
+        return event.slotName;
+    });
 }
 
 describe('slotchange', () => {
     it('should not be composed', () => {
         browser.url(URL);
-        const leakedSlotChangeEvents = browser.execute(getLeakedSlotChangeEvents).value;
-        assert.strictEqual(leakedSlotChangeEvents.length, 0);
+        const el = browser.element('.leaked-slotchange-event-count');
+        assert.strictEqual(el.getText(), '0');
     });
 
     describe('when initially rendered', () => {
@@ -36,12 +30,14 @@ describe('slotchange', () => {
         });
 
         it('should be dispatched if a slotchange listener has been added to the slot', () => {
-            const slotNames = browser.execute(getSlotNames).value;
+            const events = browser.execute(getEvents).value;
+            const slotNames = getSlotNames(events);
             assert(slotNames.includes('default'));
         });
 
         it('should not be dispatched unless a slotchange listener has been added to the slot', () => {
-            const slotNames = browser.execute(getSlotNames).value;
+            const events = browser.execute(getEvents).value;
+            const slotNames = getSlotNames(events);
             assert(!slotNames.includes('programmatic-listener'));
         });
     });
@@ -55,21 +51,21 @@ describe('slotchange', () => {
             browser.click('.clear');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
-            assert.strictEqual(event.elements.length, 0, 'should have no assigned nodes');
+            assert.strictEqual(event.assignedContents.length, 0, 'should have no assigned nodes');
         });
 
         it('should be dispatched when adding an assigned node', () => {
             browser.click('.foo-bar');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
-            assert.strictEqual(event.elements.join('.'), 'foo.bar', 'should have added an assigned node');
+            assert.strictEqual(event.assignedContents.join('.'), 'foo.bar', 'should have added an assigned node');
         });
 
         it('should be dispatched when replacing a single existing node with two different nodes', () => {
             browser.click('.countries');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
-            assert.strictEqual(event.elements.join('.'), 'belarus.china.cuba.france.india.japan.spain');
+            assert.strictEqual(event.assignedContents.join('.'), 'belarus.china.cuba.france.india.japan.spain');
         });
     });
 
@@ -79,12 +75,10 @@ describe('slotchange', () => {
         });
 
         it('should be dispatched if a slotchange listener has been dynamically added to the slot', () => {
-            browser.execute(() => {
-                const el = document.querySelector('integration-slotchange-event');
-                el.addEventListenerToSlot();
-                el.toggle();
-            });
-            const slotNames = browser.execute(getSlotNames).value;
+            browser.click('.add-slotchange');
+            browser.click('.toggle-content');
+            const events = browser.execute(getEvents).value;
+            const slotNames = getSlotNames(events);
             assert(slotNames.includes('programmatic-listener'));
         });
     });

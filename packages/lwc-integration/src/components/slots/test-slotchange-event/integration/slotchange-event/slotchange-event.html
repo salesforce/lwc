@@ -7,9 +7,11 @@
     </div>
 
     <div>
-        <button onclick={handleClickAddSlotChange}>add slotchange listener to "slot.programmatic-listener"</button>
-        <button onclick={handleClickToggle}>toggle assigned content for "slot.programmatic-listener"</button>
+        <button class="add-slotchange" onclick={handleClickAddSlotChange}>add slotchange listener to "slot.programmatic-listener"</button>
+        <button class="toggle-content" onclick={handleClickToggle}>toggle assigned content for "slot.programmatic-listener"</button>
     </div>
+
+    <p>Leaked slotchange event count: <span class="leaked-slotchange-event-count">{leakedSlotChangeEventCount}</span></p>
 
     <integration-child onmessage={handleMessage} onslotchange={handleLeakedSlotChange}>
         <template for:each={things} for:item="thing">
