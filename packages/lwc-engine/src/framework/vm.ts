@@ -573,7 +573,12 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         const data = (vnode.data as VNodeData);
         const slotName = ((data.attrs && data.attrs.slot) || '') as string;
         const vnodes: VNodes = cmpSlots[slotName] = cmpSlots[slotName] || [];
-        vnodes.push(vnode);
+        // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
+        // which might have similar keys. Each vnode will always have a key that
+        // starts with a numeric character from compiler. In this case, we add a unique
+        // notation for slotted vnodes keys, e.g.: `@foo:1:1`
+        vnode.key = `@${slotName}:${vnode.key}`;
+        ArrayPush.call(vnodes, vnode);
     }
     if (!vm.isDirty) {
         // We need to determine if the old allocation is really different from the new one
