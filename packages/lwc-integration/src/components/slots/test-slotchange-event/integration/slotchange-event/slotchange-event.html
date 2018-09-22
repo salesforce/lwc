@@ -11,6 +11,10 @@
         <button class="toggle-content" onclick={handleClickToggle}>toggle assigned content for "slot.programmatic-listener"</button>
     </div>
 
+    <div>
+        <button class="update-name" onclick={handleClickUpdateName}>update name</button>
+    </div>
+
     <p>Leaked slotchange event count: <span class="leaked-slotchange-event-count">{leakedSlotChangeEventCount}</span></p>
 
     <integration-child onmessage={handleMessage} onslotchange={handleLeakedSlotChange}>
@@ -18,7 +22,10 @@
             <span key={thing}>{thing}</span>
         </template>
         <template if:true={state.toggle}>
-            <div slot="programmatic-listener" class="programmatically-assigned">assigned by programmatic toggle</div>
+            <div slot="programmatic-listener">assigned by programmatic toggle</div>
+        </template>
+        <template if:true={state.updateName}>
+            <span slot="last">Eugene</span>
         </template>
     </integration-child>
 

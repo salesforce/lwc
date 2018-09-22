@@ -6,6 +6,7 @@ export default class SlotChangeEvent extends LightningElement {
         leakedEvents: [],
         things: ['foo'],
         toggle: false,
+        updateName: false,
     }
 
     get leakedSlotChangeEventCount() {
@@ -61,5 +62,9 @@ export default class SlotChangeEvent extends LightningElement {
     }
     handleClickToggle() {
         this.toggle();
+    }
+
+    handleClickUpdateName() {
+        this.state.updateName = true;
     }
 }

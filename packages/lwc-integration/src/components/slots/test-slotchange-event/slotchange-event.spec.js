@@ -69,6 +69,19 @@ describe('slotchange', () => {
         });
     });
 
+    describe('when slots are nested', () => {
+        before(() => {
+            browser.url(URL);
+        });
+
+        it('should bubble up to the parent slot', () => {
+            browser.click('.update-name');
+            const events = browser.execute(getEvents).value;
+            const event = events.pop();
+            assert.strictEqual(event.slotName, 'full');
+        });
+    });
+
     describe('when adding listener programmatically', () => {
         before(() => {
             browser.url(URL);
