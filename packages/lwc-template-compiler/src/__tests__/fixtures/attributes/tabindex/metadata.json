@@ -1,0 +1,56 @@
+{
+    "warnings": [
+        {
+            "length": 24,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 15
+        },
+        {
+            "length": 21,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 44
+        },
+        {
+            "length": 30,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 70
+        },
+        {
+            "length": 23,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 105
+        },
+        {
+            "length": 32,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 231
+        },
+        {
+            "length": 29,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 268
+        },
+        {
+            "length": 38,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 302
+        },
+        {
+            "length": 31,
+            "level": "error",
+            "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "start": 345
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": ["computed"],
+        "templateDependencies": ["x/foo"]
+    }
+}

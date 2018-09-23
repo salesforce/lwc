@@ -9,7 +9,7 @@ import {
 } from './expression';
 
 import {
-    IRElement,
+    IRElement, IRAttribute,
 } from '../shared/types';
 
 import {
@@ -166,6 +166,15 @@ function isAriaAttribute(attrName: string): boolean {
     return attrName === 'role' || ARIA_RE.test(attrName);
 }
 
+export function isTabIndexAttribute(attrName: string): boolean {
+    return attrName === 'tabindex';
+}
+
+export function isValidTabIndexAttributeValue(value: any): boolean {
+    // object means it is a Node representing the expression
+    return value === '0' || value === '-1';
+}
+
 export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
     return (
         isAriaAttribute(attrName) ||
@@ -260,4 +269,10 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
     }
 
     return camelcase(propName);
+}
+
+export function isPropFromAttrWithExpression(prop: IRAttribute): boolean {
+    // props derived from attributes with a parsed expression will
+    // always have the value to a Node object
+    return typeof prop.value === 'object';
 }

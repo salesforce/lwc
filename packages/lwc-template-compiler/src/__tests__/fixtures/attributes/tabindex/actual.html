@@ -1,0 +1,17 @@
+<template>
+    <p tabindex="">empty</p>
+    <p tabindex=1>one</p>
+    <p tabindex="true">invalid</p>
+    <p tabindex="2">two</p>
+    <p tabindex={computed}>valid</p>
+    <p tabindex=0>zero</p>
+    <p tabindex=-1>minus-one</p>
+
+    <x-foo tabindex="">empty</x-foo>
+    <x-foo tabindex=1>one</x-foo>
+    <x-foo tabindex="true">invalid</x-foo>
+    <x-foo tabindex="2">two</x-foo>
+    <x-foo tabindex={computed}>valid</x-foo>
+    <x-foo tabindex=0>zero</x-foo>
+    <x-foo tabindex=-1>minus-one</x-foo>
+</template>
