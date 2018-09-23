@@ -1,18 +1,21 @@
 import _xFoo from 'x/foo';
 import { LightningElement } from 'lwc';
 
-function style(token) {
-    return `[${token}-host] {
-    color: blue;
-}
-div[${token}] {
-    color: red;
-}
-x-foo[${token}],[is="x-foo"][${token}] {
-    color: green;
-}
-    `;
-}
+var stylesheet = {
+    hostToken: 'styled-x-c715c-host',
+    shadowToken: 'styled-x-c715c',
+    content: `[styled-x-c715c-host] {
+        color: blue;
+        }
+        div[styled-x-c715c] {
+        color: red;
+        }
+        x-foo[styled-x-c715c],[is="x-foo"][styled-x-c715c] {
+        color: green;
+        }
+        `,
+};
+
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -27,14 +30,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 
-if (style) {
-    tmpl.hostToken = 'x-styled_styled-host';
-    tmpl.shadowToken = 'x-styled_styled';
-    const style$$1 = document.createElement('style');
-    style$$1.type = 'text/css';
-    style$$1.dataset.token = 'x-styled_styled';
-    style$$1.textContent = style('x-styled_styled');
-    document.head.appendChild(style$$1);
+if (stylesheet) {
+    tmpl.hostToken = stylesheet.hostToken;
+    tmpl.shadowToken = stylesheet.shadowToken;
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.dataset.token = stylesheet.shadowToken;
+    style.textContent = stylesheet.content;
+    document.head.appendChild(style);
 }
 
 class Styled extends LightningElement {

@@ -1,9 +1,15 @@
 import { LightningElement } from 'lwc';
-const style = undefined;
+var stylesheet = {
+    hostToken: 'styled-x-c715c-host',
+    shadowToken: 'styled-x-c715c',
+    content:
+        '[styled-x-c715c-host]{color:blue}div[styled-x-c715c]{color:red}x-foo[styled-x-c715c],[is="x-foo"][styled-x-c715c]{color:green}',
+};
+
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
-if (style) {
+if (stylesheet) {
     tmpl.hostToken = style.hostToken;
     tmpl.shadowToken = style.shadowToken;
     const style$$1 = document.createElement('style');

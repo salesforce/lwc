@@ -12,7 +12,10 @@ import { isUndefined } from "../utils";
 const HASH_LENGTH = 5;
 
 /** The default stylesheet content if no source has been provided. */
-const EMPTY_CSS_OUTPUT = `const style = undefined; export default style;`;
+const EMPTY_CSS_OUTPUT = `
+const style = undefined;
+export default style;
+`;
 
 /** The javascript identifier used when custom properties get resolved from a module. */
 const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
@@ -118,12 +121,11 @@ export default async function transformStyle(
         code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolution.name}';\n`;
     }
 
-    console.log('token ------->  ', token);
     code += [
         'export default {',
         `   hostToken: '${token}-host',`,
         `   shadowToken: '${token}',`,
-        `   content: '${res.css}',`,
+        `   content: \`${res.css}\`,`,
         '}'
     ].join('\n');
 

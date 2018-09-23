@@ -14,7 +14,7 @@ describe("stylesheet", () => {
                 ),
                 "styled.css": readFixture("namespaced_folder/styled/styled.css")
             },
-            outputConfig: { format: "es", minify: true }
+            outputConfig: { format: "es" }
         });
         expect(pretify(code)).toBe(pretify(readFixture("expected-styled.js")));
     });
