@@ -210,7 +210,7 @@ function getWrappedShadowRootListener(sr: ShadowRoot, listener: EventListener): 
             if (
                 // it is composed and was not dispatched onto the custom element directly
                 (composed === true && target !== currentTarget) ||
-                // it is coming from an slotted element
+                // it is coming from a slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(target) === currentTarget)) {
@@ -347,7 +347,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         composed === true ||
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
-        // it is coming from an slotted element
+        // it is coming from a slotted element
         isChildNode(getRootNode.call(target, NON_COMPOSED), currentTarget as Node)
     );
 }

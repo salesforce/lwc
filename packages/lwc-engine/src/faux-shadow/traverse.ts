@@ -83,7 +83,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
             // owner of the slot.
             const slotOwner = getNodeOwner(value);
             if (!isNull(slotOwner) && isNodeOwnedBy(owner, slotOwner)) {
-                // it is an slotted element, and therefore its parent is always going to be the host of the slot
+                // it is a slotted element, and therefore its parent is always going to be the host of the slot
                 return patchShadowDomTraversalMethods(slotOwner);
             }
         }
