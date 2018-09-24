@@ -203,8 +203,6 @@ describe('CSS transform', () => {
             name,
         });
 
-        console.log('----> code: ', code);
-
         expect(pretify(code)).toBe(pretify(expected));
     });
 
