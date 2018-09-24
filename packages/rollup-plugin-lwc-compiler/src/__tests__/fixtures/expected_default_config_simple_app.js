@@ -1,9 +1,9 @@
 (function (lwc) {
     'use strict';
 
-    const style = undefined;
+    const stylesheet = undefined;
 
-    const style$1 = undefined;
+    const stylesheet$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {
@@ -16,14 +16,14 @@
       }, [api_dynamic($cmp.x)])];
     }
 
-    if (style$1) {
-        tmpl.hostToken = 'x-foo_foo-host';
-        tmpl.shadowToken = 'x-foo_foo';
+    if (stylesheet$1) {
+        tmpl.hostToken = stylesheet$1.hostToken;
+        tmpl.shadowToken = stylesheet$1.shadowToken;
 
         const style = document.createElement('style');
         style.type = 'text/css';
-        style.dataset.token = 'x-foo_foo';
-        style.textContent = style$1('x-foo_foo');
+        style.dataset.token = stylesheet$1.shadowToken;
+        style.textContent = stylesheet$1.content;
         document.head.appendChild(style);
     }
 
@@ -63,15 +63,15 @@
       }, [])])];
     }
 
-    if (style) {
-        tmpl$1.hostToken = 'x-app_app-host';
-        tmpl$1.shadowToken = 'x-app_app';
+    if (stylesheet) {
+        tmpl$1.hostToken = stylesheet.hostToken;
+        tmpl$1.shadowToken = stylesheet.shadowToken;
 
-        const style$$1 = document.createElement('style');
-        style$$1.type = 'text/css';
-        style$$1.dataset.token = 'x-app_app';
-        style$$1.textContent = style('x-app_app');
-        document.head.appendChild(style$$1);
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.dataset.token = stylesheet.shadowToken;
+        style.textContent = stylesheet.content;
+        document.head.appendChild(style);
     }
 
     class App extends lwc.LightningElement {

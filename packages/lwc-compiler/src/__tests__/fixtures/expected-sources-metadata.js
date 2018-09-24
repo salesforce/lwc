@@ -2,7 +2,7 @@ import _xBar from 'x/bar';
 import { LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
-const style = undefined;
+const stylesheet = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         c: api_custom_element
@@ -11,14 +11,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
     }, [])];
 }
-if (style) {
-    tmpl.hostToken = 'x-foo_foo-host';
-    tmpl.shadowToken = 'x-foo_foo';
-    const style$$1 = document.createElement('style');
-    style$$1.type = 'text/css';
-    style$$1.dataset.token = 'x-foo_foo';
-    style$$1.textContent = style('x-foo_foo');
-    document.head.appendChild(style$$1);
+if (stylesheet) {
+    tmpl.hostToken = stylesheet.hostToken;
+    tmpl.shadowToken = stylesheet.shadowToken;
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.dataset.token = stylesheet.shadowToken;
+    style.textContent = stylesheet.content;
+    document.head.appendChild(style);
 }
 class Metadata extends LightningElement {
     constructor(...args) {

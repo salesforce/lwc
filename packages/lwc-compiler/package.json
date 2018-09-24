@@ -22,6 +22,7 @@
     "babel-preset-compat": "0.20.4",
     "babel-preset-minify": "0.5.0-alpha.5a128fd5",
     "cssnano": "^3.10.0",
+    "hash.js": "^1.1.5",
     "lwc-template-compiler": "0.29.6",
     "parse5": "^3.0.3",
     "postcss": "~6.0.19",
