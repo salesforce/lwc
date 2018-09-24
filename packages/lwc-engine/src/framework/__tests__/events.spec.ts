@@ -600,6 +600,40 @@ describe('Component events', () => {
         document.body.appendChild(elm);
         elm.click();
     });
+
+    it('should throw with a user friendly message when no event handler is found', () => {
+        expect.assertions(1);
+
+        class MyComponent extends LightningElement {
+            triggerFoo() {
+                const div = this.template.querySelector('div');
+                div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
+            }
+
+            render() {
+                return function($api) {
+                    const listener = $api.b(undefined);
+                    const fn = event => {
+                        expect(() => {
+                            listener(event);
+                        }).toThrow("Assert Violation: Invalid event handler for event 'foo' on [object:vm MyComponent (26)].");
+                    };
+
+                    return [$api.h('div', {
+                        key: 0,
+                        on: {
+                            foo: fn
+                        }
+                    }, [])];
+                };
+            }
+        }
+        MyComponent.publicMethods = ['triggerFoo'];
+
+        const element = createElement('x-missing-event-listener', { is: MyComponent });
+        document.body.appendChild(element);
+        element.triggerFoo();
+    });
 });
 
 describe('Shadow Root events', () => {
