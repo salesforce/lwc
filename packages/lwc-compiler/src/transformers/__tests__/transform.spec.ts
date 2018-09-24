@@ -277,8 +277,6 @@ describe('CSS transform', () => {
             },
         });
 
-        console.log('code ----> ', code);
-
         expect(pretify(code)).toBe(pretify(expected));
     });
 
