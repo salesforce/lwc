@@ -126,17 +126,21 @@
     }
 
     if (style$1) {
-      __setKey(tmpl, "hostToken", "x-foo_foo-host");
+      __setKey$3(tmpl, "hostToken", __getKey$3(style$1, "hostToken"));
 
-      __setKey(tmpl, "shadowToken", "x-foo_foo");
+      __setKey$3(tmpl, "shadowToken", __getKey$3(style$1, "shadowToken"));
 
       var style$2 = __callKey1(document, "createElement", "style");
 
       __setKey(style$2, "type", "text/css");
 
-      __setKey(__getKey(style$2, "dataset"), "token", "x-foo_foo");
+      __setKey$3(
+        __getKey$3(style$2, "dataset"),
+        "token",
+        __getKey$3(style$1, "shadowToken")
+      );
 
-      __setKey(style$2, "textContent", style$1("x-foo_foo"));
+      __setKey$3(style$2, "textContent", __getKey$3(style$1, "content"));
 
       __callKey1(__getKey(document, "head"), "appendChild", style$2);
     }
@@ -225,17 +229,21 @@
     }
 
     if (style) {
-      __setKey(tmpl$1, "hostToken", "x-app_app-host");
+      __setKey$5(tmpl$1, "hostToken", __getKey$5(style, "hostToken"));
 
-      __setKey(tmpl$1, "shadowToken", "x-app_app");
+      __setKey$5(tmpl$1, "shadowToken", __getKey$5(style, "shadowToken"));
 
       var style$3 = __callKey1(document, "createElement", "style");
 
       __setKey(style$3, "type", "text/css");
 
-      __setKey(__getKey(style$3, "dataset"), "token", "x-app_app");
+      __setKey$5(
+        __getKey$5(style$3, "dataset"),
+        "token",
+        __getKey$5(style, "shadowToken")
+      );
 
-      __setKey(style$3, "textContent", style("x-app_app"));
+      __setKey$5(style$3, "textContent", __getKey$5(style, "content"));
 
       __callKey1(__getKey(document, "head"), "appendChild", style$3);
     }

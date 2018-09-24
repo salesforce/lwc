@@ -35,7 +35,7 @@ describe("module resolver", () => {
         expect(success).toBe(true);
         expect(pretify(result.code)).toMatch(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
-                const style = undefined;
+                const stylesheet = undefined;
                 function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
                 t: api_text,
@@ -45,14 +45,14 @@ describe("module resolver", () => {
                 key: 1
                 }, [api_text(\"Manually Imported Template\")])];
                 }
-                if (style) {
-                tmpl.hostToken = style.hostToken;
-                tmpl.shadowToken = style.shadowToken;
-                const style$$1 = document.createElement('style');
-                style$$1.type = 'text/css';
-                style$$1.dataset.token = style.shadowToken;
-                style$$1.textContent = style.content;
-                document.head.appendChild(style$$1);
+                if (stylesheet) {
+                tmpl.hostToken = stylesheet.hostToken;
+                tmpl.shadowToken = stylesheet.shadowToken;
+                const style = document.createElement('style');
+                style.type = 'text/css';
+                style.dataset.token = stylesheet.shadowToken;
+                style.textContent = stylesheet.content;
+                document.head.appendChild(style);
                 }
                 class Test extends lwc.LightningElement {
                 render() {
@@ -84,7 +84,7 @@ describe("module resolver", () => {
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
-                const style = undefined;
+                const stylesheet = undefined;
                 function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
                 t: api_text,
@@ -94,14 +94,14 @@ describe("module resolver", () => {
                 key: 1
                 }, [api_text(\"Another Template\")])];
                 }
-                if (style) {
-                tmpl.hostToken = style.hostToken;
-                tmpl.shadowToken = style.shadowToken;
-                const style$$1 = document.createElement('style');
-                style$$1.type = 'text/css';
-                style$$1.dataset.token = style.shadowToken;
-                style$$1.textContent = style.content;
-                document.head.appendChild(style$$1);
+                if (stylesheet) {
+                tmpl.hostToken = stylesheet.hostToken;
+                tmpl.shadowToken = stylesheet.shadowToken;
+                const style = document.createElement('style');
+                style.type = 'text/css';
+                style.dataset.token = stylesheet.shadowToken;
+                style.textContent = stylesheet.content;
+                document.head.appendChild(style);
                 }
                 class Test extends lwc.LightningElement {
                 render() {

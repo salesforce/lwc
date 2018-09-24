@@ -17,13 +17,13 @@
     }
 
     if (style$1) {
-        tmpl.hostToken = 'x-foo_foo-host';
-        tmpl.shadowToken = 'x-foo_foo';
+        tmpl.hostToken = style$1.hostToken;
+        tmpl.shadowToken = style$1.shadowToken;
 
         const style = document.createElement('style');
         style.type = 'text/css';
-        style.dataset.token = 'x-foo_foo';
-        style.textContent = style$1('x-foo_foo');
+        style.dataset.token = style$1.shadowToken;
+        style.textContent = style$1.content;
         document.head.appendChild(style);
     }
 
@@ -64,13 +64,13 @@
     }
 
     if (style) {
-        tmpl$1.hostToken = 'x-app_app-host';
-        tmpl$1.shadowToken = 'x-app_app';
+        tmpl$1.hostToken = style.hostToken;
+        tmpl$1.shadowToken = style.shadowToken;
 
         const style$$1 = document.createElement('style');
         style$$1.type = 'text/css';
-        style$$1.dataset.token = 'x-app_app';
-        style$$1.textContent = style('x-app_app');
+        style$$1.dataset.token = style.shadowToken;
+        style$$1.textContent = style.content;
         document.head.appendChild(style$$1);
     }
 

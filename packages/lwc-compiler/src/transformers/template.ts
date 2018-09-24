@@ -17,9 +17,7 @@ function attachStyleToTemplate(
     src: string,
     filename: string,
 ) {
-    console.log('---- pre file reading');
     const templateFilename = path.basename(filename, path.extname(filename));
-    console.log('---- post file reading: ', templateFilename);
     const result = [
         `import stylesheet from './${templateFilename}.css'`,
         "",

@@ -13,8 +13,8 @@ const HASH_LENGTH = 5;
 
 /** The default stylesheet content if no source has been provided. */
 const EMPTY_CSS_OUTPUT = `
-const style = undefined;
-export default style;
+const stylesheet = undefined;
+export default stylesheet;
 `;
 
 /** The javascript identifier used when custom properties get resolved from a module. */
@@ -109,7 +109,6 @@ export default async function transformStyle(
         res = await postcss(postcssPlugins).process(escapedSource, {
             from: filename,
         });
-        console.log('----> ', res.css);
     } catch (e) {
         throw new CompilerError(e.message, filename, e.loc);
     }

@@ -1,6 +1,6 @@
 define('x-class_and_template', ['lwc'], function (lwc) {
 
-const style = undefined;
+const stylesheet = undefined;
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -12,14 +12,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 
-if (style) {
-    tmpl.hostToken = 'x-class_and_template_class_and_template-host';
-    tmpl.shadowToken = 'x-class_and_template_class_and_template';
+if (stylesheet) {
+    tmpl.hostToken = stylesheet.hostToken;
+    tmpl.shadowToken = stylesheet.shadowToken;
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
-    style$$1.dataset.token = 'x-class_and_template_class_and_template';
-    style$$1.textContent = style('x-class_and_template_class_and_template');
+    style$$1.dataset.token = stylesheet.shadowToken;
+    style$$1.textContent = stylesheet.content;
     document.head.appendChild(style$$1);
 }
 

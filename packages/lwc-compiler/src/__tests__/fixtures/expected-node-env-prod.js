@@ -1,16 +1,16 @@
 import { LightningElement } from 'lwc';
-const style = undefined;
+const stylesheet = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
-if (style) {
-    tmpl.hostToken = style.hostToken;
-    tmpl.shadowToken = style.shadowToken;
-    const style$$1 = document.createElement('style');
-    style$$1.type = 'text/css';
-    style$$1.dataset.token = style.shadowToken;
-    style$$1.textContent = style.content;
-    document.head.appendChild(style$$1);
+if (stylesheet) {
+    tmpl.hostToken = stylesheet.hostToken;
+    tmpl.shadowToken = stylesheet.shadowToken;
+    const style = document.createElement('style');
+    style.type = 'text/css';
+    style.dataset.token = stylesheet.shadowToken;
+    style.textContent = stylesheet.content;
+    document.head.appendChild(style);
 }
 class ClassAndTemplate extends LightningElement {
     connectedCallback() {

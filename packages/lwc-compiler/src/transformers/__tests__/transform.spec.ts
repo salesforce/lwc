@@ -134,12 +134,12 @@ describe('HTML transform', () => {
             }, [api_text(\"Hello\")])];
             }
             if (stylesheet) {
-            tmpl.hostToken = 'x-foo_foo-host';
-            tmpl.shadowToken = 'x-foo_foo';
+            tmpl.hostToken = stylesheet.hostToken;
+            tmpl.shadowToken = stylesheet.shadowToken;
             const style = document.createElement('style');
             style.type = 'text/css';
-            style.dataset.token = 'x-foo_foo'
-            style.textContent = stylesheet('x-foo_foo');
+            style.dataset.token = stylesheet.shadowToken
+            style.textContent = stylesheet.content
             document.head.appendChild(style);
             }
         `;
@@ -165,7 +165,7 @@ describe('HTML transform', () => {
     });
 });
 
-describe.only('CSS transform', () => {
+describe('CSS transform', () => {
     it('should throw when processing an invalid CSS file', async () => {
         await expect(
             transform(`<`, 'foo.css', {
@@ -191,11 +191,11 @@ describe.only('CSS transform', () => {
         const expected = `export default {
             hostToken: 'foo-x-19829-host',
             shadowToken: 'foo-x-19829',
-            content: '
+            content: \`
             div[foo-x-19829] {
-                background-color: red;
+            background-color: red;
             }
-            ',
+            \`,
         }`;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -235,7 +235,7 @@ describe.only('CSS transform', () => {
         const expected = `export default {
             hostToken: 'foo-x-02f5f-host',
             shadowToken: 'foo-x-02f5f',
-            content: 'div[foo-x-02f5f] { color: var(--bg-color); }',
+            content: \`div[foo-x-02f5f] { color: var(--bg-color); }\`,
         }`;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -262,12 +262,12 @@ describe.only('CSS transform', () => {
             export default {
                 hostToken: 'undefined-undefined-94e85-host',
                 shadowToken: 'undefined-undefined-94e85',
-                content: 'div[undefined-undefined-94e85] {
+                content: \`div[undefined-undefined-94e85] {
                     color: \${customProperties(\`--bg-color\`)};
                     font-size: \${customProperties(\`--font-size\`, \`16px\`)};
                     margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
                     border-bottom: 1px solid \${customProperties(\`--lwc-border\`)};
-                }',
+                }\`,
             }
         `;
 
@@ -293,7 +293,7 @@ describe.only('CSS transform', () => {
             export default {
                 hostToken: 'foo-x-94e85-host',
                 shadowToken: 'foo-x-94e85',
-                content: 'div[foo-x-94e85]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}',
+                content: \`div[foo-x-94e85]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}\`,
             }
         `;
 
@@ -316,7 +316,7 @@ describe.only('CSS transform', () => {
         const expected = `export default {
             hostToken: 'foo-x-30ca4-host',
             shadowToken: 'foo-x-30ca4',
-            content: '/* Comment with grave accents \\\`#\\\` */',
+            content: \`/* Comment with grave accents \\\`#\\\` */\`,
         }
         `;
 
@@ -333,7 +333,7 @@ describe.only('CSS transform', () => {
         const expected = `export default {
             hostToken: 'foo-x-c09ca-host',
             shadowToken: 'foo-x-c09ca',
-            content: '.foo[foo-x-c09ca] { content: "\\\\\\\\"; }',
+            content: \`.foo[foo-x-c09ca] { content: "\\\\\\\\"; }\`,
         }
         `;
 
