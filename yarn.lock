@@ -5588,7 +5588,7 @@ hash.js@^1.0.0, hash.js@^1.0.3:
 
 hash.js@^1.1.5:
   version "1.1.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/hash.js/-/hash.js-1.1.5.tgz#e38ab4b85dfb1e0c40fe9265c0e9b54854c23812"
+  resolved "http://npm.lwcjs.org/hash.js/-/hash.js-1.1.5/e38ab4b85dfb1e0c40fe9265c0e9b54854c23812.tgz#e38ab4b85dfb1e0c40fe9265c0e9b54854c23812"
   dependencies:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
@@ -7318,7 +7318,7 @@ minimalistic-assert@^1.0.0:
 
 minimalistic-assert@^1.0.1:
   version "1.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
+  resolved "http://npm.lwcjs.org/minimalistic-assert/-/minimalistic-assert-1.0.1/2e194de044626d4a10e7f7fbc00ce73e83e4d5c7.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
 
 minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
