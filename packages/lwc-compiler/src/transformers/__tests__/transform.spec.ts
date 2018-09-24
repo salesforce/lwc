@@ -258,9 +258,9 @@ describe('CSS transform', () => {
         const expected = `
             import customProperties from '@customProperties';
             export default {
-                hostToken: 'undefined-undefined-94e85-host',
-                shadowToken: 'undefined-undefined-94e85',
-                content: \`div[undefined-undefined-94e85] {
+                hostToken: 'foo-x-94e85-host',
+                shadowToken: 'foo-x-94e85',
+                content: \`div[foo-x-94e85] {
                     color: \${customProperties(\`--bg-color\`)};
                     font-size: \${customProperties(\`--font-size\`, \`16px\`)};
                     margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
@@ -270,10 +270,14 @@ describe('CSS transform', () => {
         `;
 
         const { code } = await transform(actual, 'foo.css', {
+            name: 'foo',
+            namespace: 'x',
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
         });
+
+        console.log('code ----> ', code);
 
         expect(pretify(code)).toBe(pretify(expected));
     });
