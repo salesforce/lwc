@@ -5,23 +5,16 @@ import { Processor } from 'postcss-selector-parser';
 import { validateConfig, PluginConfig } from './config';
 
 import selectorScopingTransform, { SelectorScopingConfig } from './selector-scoping/transform';
-import namespaceMappingTransform from './namespace-mapping/transform';
 import validateCustomProperties from './custom-properties/validate';
 import transformCustomProperties from './custom-properties/transform';
+import validateIdSelectors from './no-id-selectors/validate';
 
 const PLUGIN_NAME = 'postcss-plugin-lwc';
 
-function selectorProcessorFactory(pluginConfig: PluginConfig, transformConfig: SelectorScopingConfig) {
-    const { namespaceMapping } = pluginConfig;
-
+function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
     return postCssSelector(root => {
-        // Run first the remapping on the selectors before the scoping since the selector
-        // scoping use the tag name to generated attribute values.
-        if (namespaceMapping) {
-            namespaceMappingTransform(root, namespaceMapping);
-        }
-
-        selectorScopingTransform(root, pluginConfig, transformConfig);
+        validateIdSelectors(root, config.filename);
+        selectorScopingTransform(root, config, transformConfig);
     }) as Processor;
 }
 

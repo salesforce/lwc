@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { ComponentInterface, getWrappedComponentsListener } from "./component";
+import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
 import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
 import { setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
@@ -7,7 +7,7 @@ import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } 
 import { getComponentVM, VM, getCustomElementVM, setNodeKey } from "./vm";
 import { ArrayReduce, isFunction } from "../shared/language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
+import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { unlockAttribute, lockAttribute } from "./attributes";
@@ -55,7 +55,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
                 assert.invariant(!isObject(newValue) || isNull(newValue), `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`);
             }
 
@@ -140,22 +140,22 @@ LightningElement.prototype = {
 
         if (process.env.NODE_ENV !== 'production') {
             if (arguments.length === 0) {
-                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: 1 argument required, but only 0 present.`);
+                throw new Error(`Failed to execute 'dispatchEvent' on ${getComponentAsString(this)}: 1 argument required, but only 0 present.`);
             }
             if (!(event instanceof GlobalEvent)) {
-                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: parameter 1 is not of type 'Event'.`);
+                throw new Error(`Failed to execute 'dispatchEvent' on ${getComponentAsString(this)}: parameter 1 is not of type 'Event'.`);
             }
             const { type: evtName, composed, bubbles } = event;
-            assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
+            assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(this)} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && ('composed' in event && !composed)) {
-                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`, elm);
+                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${getComponentAsString(this)}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`, elm);
             }
             if (vm.idx === 0) {
-                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`, elm);
+                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(this)}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`, elm);
             }
 
             if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
-                assert.logWarning(`Invalid event type "${evtName}" dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`, elm);
+                assert.logWarning(`Invalid event type "${evtName}" dispatched in element ${getComponentAsString(this)}. Event name should only contain lowercase alphanumeric characters.`, elm);
             }
         }
         return dispatchEvent.call(elm, event);
@@ -181,7 +181,7 @@ LightningElement.prototype = {
     setAttributeNS(ns: string, attrName: string, value: any) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
         }
         unlockAttribute(elm, attrName);
         elm.setAttributeNS.apply(elm, arguments);
@@ -202,7 +202,7 @@ LightningElement.prototype = {
     setAttribute(attrName: string, value: any) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
         }
         unlockAttribute(elm, attrName);
         elm.setAttribute.apply(elm, arguments);
@@ -226,14 +226,14 @@ LightningElement.prototype = {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             const vm = getComponentVM(this);
-            assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
+            assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${getComponentAsString(this)} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         }
         return elm.getBoundingClientRect();
     },
     querySelector(selector: string): Element | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+            assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
         }
         const { elm } = vm;
         // fallback to a patched querySelector to respect
@@ -247,7 +247,7 @@ LightningElement.prototype = {
     querySelectorAll(selector: string): Element[] {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+            assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
         }
         const { elm } = vm;
         // fallback to a patched querySelectorAll to respect
@@ -257,10 +257,6 @@ LightningElement.prototype = {
         }
         // Delegate to custom element querySelectorAll.
         return ArraySlice.call(elm.querySelectorAll(selector));
-    },
-    get tagName(): string {
-        const elm = getLinkedElement(this);
-        return elementTagNameGetter.call(elm);
     },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
@@ -282,7 +278,7 @@ LightningElement.prototype = {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`, vm.elm);
+            assert.logWarning(`"this.root" access in ${getComponentAsString(this)} has been deprecated and will be removed. Use "this.template" instead.`, vm.elm);
         }
         return vm.cmpRoot;
     },
@@ -295,10 +291,7 @@ LightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         }
-        const { elm } = vm;
-        const tagName = elementTagNameGetter.call(elm);
-        const is = elm.getAttribute('is');
-        return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
+        return `[object ${vm.def.name}]`;
     },
 };
 

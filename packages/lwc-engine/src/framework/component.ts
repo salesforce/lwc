@@ -6,11 +6,12 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined } from "../shared/language";
+import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined, StringToLowerCase } from "../shared/language";
 import { invokeServiceHook, Services } from "./services";
 import { PropsDef, WireHash } from './def';
-import { VM } from "./vm";
+import { VM, getComponentVM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
+import { elementTagNameGetter } from "./dom-api";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -117,4 +118,12 @@ export function getWrappedComponentsListener(vm: VM, listener: EventListener): E
         cmpEventListenerMap.set(listener, wrappedListener);
     }
     return wrappedListener;
+}
+
+export function getComponentAsString(component: ComponentInterface): string {
+    if (process.env.NODE_ENV === 'production') {
+        throw new ReferenceError();
+    }
+    const vm = getComponentVM(component);
+    return `<${StringToLowerCase.call(elementTagNameGetter.call(vm.elm))}>`;
 }

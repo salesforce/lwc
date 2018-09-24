@@ -265,7 +265,7 @@ describe("compiler metadata", () => {
                             },
                             name: "wiredMethod",
                             params: { name: "publicProp" },
-                            static: { fields: ["one", "two"] }
+                            static: { fields: { type: "array", value: ["one", "two"] } }
                         }
                     ]
                 }
