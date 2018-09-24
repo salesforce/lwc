@@ -102,13 +102,13 @@
       if (superClass) _setPrototypeOf(subClass, superClass);
     }
 
-    var style = undefined;
+    var stylesheet = undefined;
 
     var __callKey2 = Proxy.callKey2;
 
     var __concat = Proxy.concat;
 
-    var style$1 = undefined;
+    var stylesheet$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       var api_dynamic = __getKey($api, "d"),
@@ -125,24 +125,24 @@
       ];
     }
 
-    if (style$1) {
-      __setKey$3(tmpl, "hostToken", __getKey$3(style$1, "hostToken"));
+    if (stylesheet$1) {
+      __setKey(tmpl, "hostToken", __getKey(stylesheet$1, "hostToken"));
 
-      __setKey$3(tmpl, "shadowToken", __getKey$3(style$1, "shadowToken"));
+      __setKey(tmpl, "shadowToken", __getKey(stylesheet$1, "shadowToken"));
 
-      var style$2 = __callKey1(document, "createElement", "style");
+      var style = __callKey1(document, "createElement", "style");
 
-      __setKey(style$2, "type", "text/css");
+      __setKey(style, "type", "text/css");
 
-      __setKey$3(
-        __getKey$3(style$2, "dataset"),
+      __setKey(
+        __getKey(style, "dataset"),
         "token",
-        __getKey$3(style$1, "shadowToken")
+        __getKey(stylesheet$1, "shadowToken")
       );
 
-      __setKey$3(style$2, "textContent", __getKey$3(style$1, "content"));
+      __setKey(style, "textContent", __getKey(stylesheet$1, "content"));
 
-      __callKey1(__getKey(document, "head"), "appendChild", style$2);
+      __callKey1(__getKey(document, "head"), "appendChild", style);
     }
 
     var Foo =
@@ -228,24 +228,24 @@
       ];
     }
 
-    if (style) {
-      __setKey$5(tmpl$1, "hostToken", __getKey$5(style, "hostToken"));
+    if (stylesheet) {
+      __setKey(tmpl$1, "hostToken", __getKey(stylesheet, "hostToken"));
 
-      __setKey$5(tmpl$1, "shadowToken", __getKey$5(style, "shadowToken"));
+      __setKey(tmpl$1, "shadowToken", __getKey(stylesheet, "shadowToken"));
 
-      var style$3 = __callKey1(document, "createElement", "style");
+      var style$1 = __callKey1(document, "createElement", "style");
 
-      __setKey(style$3, "type", "text/css");
+      __setKey(style$1, "type", "text/css");
 
-      __setKey$5(
-        __getKey$5(style$3, "dataset"),
+      __setKey(
+        __getKey(style$1, "dataset"),
         "token",
-        __getKey$5(style, "shadowToken")
+        __getKey(stylesheet, "shadowToken")
       );
 
-      __setKey$5(style$3, "textContent", __getKey$5(style, "content"));
+      __setKey(style$1, "textContent", __getKey(stylesheet, "content"));
 
-      __callKey1(__getKey(document, "head"), "appendChild", style$3);
+      __callKey1(__getKey(document, "head"), "appendChild", style$1);
     }
 
     var App =
