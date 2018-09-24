@@ -6,6 +6,7 @@ import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { patchEvent } from "../faux-shadow/faux";
+import { patchElementWithRestrictions } from "lwc-engine/src/framework/restrictions";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
@@ -195,6 +196,15 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
+    if (process.env.NODE_ENV !== 'production') {
+        // adding a hook to patch elements generated from template
+        // with the corresponding set of restrictions only in dev-demo
+        data.hook = {
+            create(oldVNode: VNode, newVnode: VNode) {
+                patchElementWithRestrictions(newVnode.elm as Element);
+            }
+        };
+    }
     let text, elm; // tslint:disable-line
     const vnode: VElement = {
         nt: ELEMENT_NODE,
