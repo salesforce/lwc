@@ -1,6 +1,52 @@
 {
   "metadata": {
     "templateUsedIds": ["p", "foo"],
-    "templateDependencies": ["ns/foo", "ns/bar", "ns/buzz", "ns/table", "ns/input"]
+    "templateDependencies": ["ns/foo", "ns/bar", "ns/buzz", "ns/table", "ns/input"],
+    "alternativeTemplateDependencies": [
+      {
+        "nodeType": "component",
+        "parameters": {
+          "d": {
+            "type": "expression",
+            "value": "p.foo"
+          }
+        },
+        "tagName": "ns/foo"
+      },
+      {
+        "nodeType": "component",
+        "parameters": {
+          "ariaDescribedBy": {
+            "type": "literal",
+            "value": "describedby"
+          },
+          "ariaHidden": {
+            "type": "literal",
+            "value": "hidden"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "blue"
+          },
+          "foo": {
+            "type": "literal",
+            "value": "bar"
+          },
+          "fooBar": {
+            "type": "literal",
+            "value": "x"
+          },
+          "role": {
+            "type": "literal",
+            "value": "xx"
+          },
+          "tabIndex": {
+            "type": "literal",
+            "value": "bar"
+          }
+        },
+        "tagName": "ns/bar"
+      }
+    ]
   }
 }

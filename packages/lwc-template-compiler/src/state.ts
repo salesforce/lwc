@@ -6,6 +6,7 @@ export default class State {
 
     ids: string[] = [];
     slots: string[] = [];
+    alternativeDependencies: object[] = [];
     dependencies: string[] = [];
 
     constructor(code: string, config: ResolvedConfig) {

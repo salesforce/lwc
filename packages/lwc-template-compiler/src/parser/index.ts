@@ -54,6 +54,10 @@ import {
 } from '../shared/types';
 
 import {
+    getCustomElementMetadata
+} from '../metadata/collectors';
+
+import {
     bindExpression,
 } from '../shared/scope';
 
@@ -515,6 +519,9 @@ export default function parse(source: string, state: State): {
                 removeAttribute(element, name);
             }
         });
+        if (isCustomElementTag(tag)) {
+            state.alternativeDependencies.push(getCustomElementMetadata(element));
+        }
     }
 
     function validateElement(element: IRElement) {

@@ -28,14 +28,14 @@ describe('fixtures', () => {
 
             const configOverride = JSON.parse(readFixtureFile('config.json', '{}'));
             const expectedCode = readFixtureFile('expected.js', '');
-            const expetedMetaData = JSON.parse(readFixtureFile('metadata.json', '{}'));
+            const expectedMetaData = JSON.parse(readFixtureFile('metadata.json', '{}'));
 
             const actual = compiler(src, {
                 ...BASE_CONFIG,
                 ...configOverride,
             });
 
-            expect(actual.warnings).toEqual(expetedMetaData.warnings || []);
+            expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
 
             if (expectedCode && expectedCode.length) {
                 expect(
@@ -47,10 +47,11 @@ describe('fixtures', () => {
 
             if (actual.metadata) {
                 const actualMeta = actual.metadata;
-                const expectMeta = expetedMetaData.metadata || {};
+                const expectMeta = expectedMetaData.metadata || {};
 
                 expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);
                 expect(Array.from(actualMeta.templateDependencies)).toEqual(expectMeta.templateDependencies || []);
+                expect(Array.from(actualMeta.alternativeTemplateDependencies)).toEqual(expectMeta.alternativeTemplateDependencies || []);
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }
         });

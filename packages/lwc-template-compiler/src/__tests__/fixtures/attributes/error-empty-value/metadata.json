@@ -1,5 +1,21 @@
 {
   "metadata": {
-    "templateDependencies": ["foo/bar"]
+    "templateDependencies": ["foo/bar"],
+    "alternativeTemplateDependencies": [
+      {
+        "nodeType": "component",
+        "parameters": {
+          "content": {
+            "type": "literal",
+            "value": ""
+          },
+          "visible": {
+            "type": "literal",
+            "value": true
+          }
+        },
+        "tagName": "foo/bar"
+      }
+    ]
   }
 }

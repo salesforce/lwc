@@ -1,6 +1,13 @@
 {
   "metadata": {
     "templateDependencies": ["x/foo"],
-    "definedSlots": [""]
+    "definedSlots": [""],
+    "alternativeTemplateDependencies": [
+      {
+        "nodeType": "component",
+        "parameters": {},
+        "tagName": "x/foo"
+      }
+    ]
   }
 }
