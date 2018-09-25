@@ -1,4 +1,5 @@
 import { ResolvedConfig } from './config';
+import {TemplateDependencyMetadata} from "./shared/types";
 
 export default class State {
     code: string;
@@ -6,7 +7,7 @@ export default class State {
 
     ids: string[] = [];
     slots: string[] = [];
-    alternativeDependencies: object[] = [];
+    alternativeDependencies: TemplateDependencyMetadata[] = [];
     dependencies: string[] = [];
 
     constructor(code: string, config: ResolvedConfig) {
