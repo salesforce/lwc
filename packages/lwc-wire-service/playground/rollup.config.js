@@ -12,7 +12,7 @@ module.exports = {
         name: 'Main',
     },
     plugins: [
-        lwcCompiler({ mapNamespaceFromPath: true }),
-        replace({ 'process.env.NODE_ENV': JSON.stringify('development') }),
+        lwcCompiler(),
+        replace({ 'process.env.NODE_ENV': JSON.stringify('development') })
     ]
 };
