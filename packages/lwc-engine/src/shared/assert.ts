@@ -66,8 +66,8 @@ const assert = {
     fail(msg: string) {
         throw new Error(msg);
     },
-    logError(message: string, elm: Element | null) {
-        let msg = message;
+    logError(message: string, elm?: Element) {
+        let msg = `[LWC error]: ${message}`;
 
         if (elm) {
             msg = `${msg}\n${getFormattedComponentStack(elm)}`;
@@ -83,8 +83,8 @@ const assert = {
             console.error(e); // tslint:disable-line
         }
     },
-    logWarning(message: string, elm: Element | null) {
-        let msg = message;
+    logWarning(message: string, elm?: Element) {
+        let msg = `[LWC warning]: ${message}`;
 
         if (elm) {
             msg = `${msg}\n${getFormattedComponentStack(elm)}`;
@@ -99,7 +99,7 @@ const assert = {
         } catch (e) {
             // first line is the dummy message and second this function (which does not need to be there)
             const stackTraceLines: string[] = StringSplit.call(e.stack, '\n').splice(2);
-            console.group(`Warning: ${msg}`); // tslint:disable-line
+            console.group(msg); // tslint:disable-line
             forEach.call(stackTraceLines, (trace) => {
                 // We need to format this as a string,
                 // because Safari will detect that the string

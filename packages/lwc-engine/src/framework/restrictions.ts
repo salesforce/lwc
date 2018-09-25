@@ -29,7 +29,7 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
             get(this: Node) {
                 assert.logWarning(
                     `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
-                    (this instanceof Element) ? this as Element : getShadowRootHost(this as ShadowRoot)
+                    (this instanceof Element) ? this as Element : (getShadowRootHost(this as ShadowRoot) || undefined)
                 );
                 return originalChildNodesDescriptor!.get!.call(this);
             },
