@@ -1,5 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
-import { getTodo } from 'x-todo-api';
+import { getTodo } from 'x/todoApi';
 
 export default class SingleWire extends LightningElement {
     @api todoId;

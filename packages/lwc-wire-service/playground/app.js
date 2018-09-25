@@ -1,7 +1,7 @@
 // bootstrapping process for App
 import { createElement, register } from 'lwc';
 import { registerWireService } from 'wire-service';
-import App from 'x-demo';
+import App from 'x/demo';
 
 
 registerWireService(register);
