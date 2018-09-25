@@ -55,7 +55,7 @@ import {
 
 import {
     getCustomElementMetadata
-} from '../metadata/collectors';
+} from '../metadata/metadata';
 
 import {
     bindExpression,
