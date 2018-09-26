@@ -31,6 +31,7 @@ export interface VNode {
   hook: Hooks;
   uid: number;
   token?: string;
+  fallback: boolean;
 }
 
 export interface VElement extends VNode {
@@ -43,7 +44,6 @@ export interface VElement extends VNode {
 
 export interface VCustomElement extends VElement {
   mode: "closed" | "open";
-  fallback: boolean;
   ctor: any;
 }
 

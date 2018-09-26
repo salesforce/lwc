@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty, StringToLowerCase } from "../shared/language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
@@ -15,9 +15,6 @@ import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
-import { patchCustomElement } from "../faux-shadow/faux";
-
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -169,11 +166,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode } = options;
-    const fallback = isTrue(options.fallback) || isFalse(isNativeShadowRootAvailable);
-    if (fallback) {
-        patchCustomElement(elm);
-    }
+    const { isRoot, mode, fallback } = options;
     uid += 1;
     const vm: VM = {
         uid,
