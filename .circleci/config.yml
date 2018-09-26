@@ -121,7 +121,7 @@ jobs:
       - run:
           name: Preformance Test
           working_directory: packages/benchmark
-          command: yarn start --externalStorage=@best/store-aws --runner remote
+          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
           no_output_timeout: 40m
 
 
@@ -169,8 +169,8 @@ jobs:
       - run:
           name: Preformance Test
           working_directory: packages/benchmark
-          command: yarn start --externalStorage=@best/store-aws --runner remote
-          no_output_timeout: 30m
+          command: yarn start --projects best.ie11.config.js --externalStorage=@best/store-aws --runner remote
+          no_output_timeout: 40m
 
 
       - store_artifacts:
