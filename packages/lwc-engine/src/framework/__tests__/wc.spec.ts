@@ -20,13 +20,4 @@ describe('wc', () => {
         expect('bar' in WC.prototype).toBe(true);
     });
 
-    it('should not support forceTagName', () => {
-        class MyComponent extends LightningElement {
-            static forceTagName = 'button';
-        }
-        expect(() => {
-            buildCustomElementConstructor(MyComponent)
-        }).toThrow();
-    });
-
 });

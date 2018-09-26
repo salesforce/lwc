@@ -1,4 +1,5 @@
 import { createElement, LightningElement } from '../main';
+import { compileTemplate } from 'test-utils';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
@@ -83,6 +84,44 @@ describe('upgrade', () => {
             expect(document.body.replaceChild(el, anchor)).toBe(anchor);
             expect(document.body.childNodes[0]).toBe(el);
             expect(document.body.childNodes.length).toBe(1);
+        });
+    });
+
+    describe('patches for Element', () => {
+        it('should patch querySelector', () => {
+            class Root extends LightningElement {
+                render() {
+                    return compileTemplate(`
+                        <template>
+                            <p>Paragraph</p>
+                        </template>
+                    `);
+                }
+            }
+
+            const el = createElement('x-foo', { is: Root });
+            document.body.appendChild(el);
+            expect(el.querySelector('p')).toBeNull();
+        });
+
+        it('should patch shadowRoot', () => {
+            let root
+            class Root extends LightningElement {
+                connectedCallback() {
+                    root = this.template
+                }
+                render() {
+                    return compileTemplate(`
+                        <template>
+                            <p>Paragraph</p>
+                        </template>
+                    `);
+                }
+            }
+
+            const el = createElement('x-foo', { is: Root });
+            document.body.appendChild(el);
+            expect(el.shadowRoot).toBe(root)
         });
     });
 });

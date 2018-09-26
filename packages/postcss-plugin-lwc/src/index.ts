@@ -4,9 +4,12 @@ import { Processor } from 'postcss-selector-parser';
 
 import { validateConfig, PluginConfig } from './config';
 
-import selectorScopingTransform, { SelectorScopingConfig } from './selector-scoping/transform';
+import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
+import validateSelectorScoping from './selector-scoping/validate';
+
 import validateCustomProperties from './custom-properties/validate';
 import transformCustomProperties from './custom-properties/transform';
+
 import validateIdSelectors from './no-id-selectors/validate';
 
 const PLUGIN_NAME = 'postcss-plugin-lwc';
@@ -14,7 +17,9 @@ const PLUGIN_NAME = 'postcss-plugin-lwc';
 function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
     return postCssSelector(root => {
         validateIdSelectors(root, config.filename);
-        selectorScopingTransform(root, config, transformConfig);
+
+        validateSelectorScoping(root);
+        transformSelectorScoping(root, config, transformConfig);
     }) as Processor;
 }
 

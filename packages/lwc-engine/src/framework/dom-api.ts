@@ -18,11 +18,13 @@ const {
     hasChildNodes,
 } = Node.prototype;
 
-const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const nodeValueSetter: (this: Node, value: string) => void = getOwnPropertyDescriptor(Node.prototype, 'nodeValue')!.set!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
+
+const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
@@ -44,7 +46,7 @@ const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = typeof 
     throw new Error('Internal Error: Missing ShadowRoot');
 };
 
-const BaseCustomElementProto = document.createElement('x-lwc').constructor.prototype;
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export {
     dispatchEvent,
@@ -54,8 +56,9 @@ export {
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
-    parentNodeGetter,
+    nodeValueSetter,
     parentElementGetter,
+    parentNodeGetter,
     elementTagNameGetter,
     ShadowRootHostGetter,
     addEventListener,
@@ -68,5 +71,5 @@ export {
     appendChild,
     hasChildNodes,
 
-    BaseCustomElementProto,
+    isNativeShadowRootAvailable,
 };

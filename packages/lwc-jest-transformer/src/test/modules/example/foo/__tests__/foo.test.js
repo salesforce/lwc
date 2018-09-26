@@ -15,6 +15,12 @@ describe('example-foo', () => {
         }
     });
 
+    it('should render correct snapshot', () => {
+        const element = createElement('example-foo', { is: Foo });
+        document.body.appendChild(element);
+        expect(element).toMatchSnapshot();
+    });
+
     it('renders foo-inner DOM', () => {
         const element = createElement('example-foo', { is: Foo });
         document.body.appendChild(element);
@@ -53,7 +59,7 @@ describe('example-foo', () => {
     it('returns value on inner element from mock defined in test file', () => {
         const element = createElement('example-foo', { is: Foo });
         document.body.appendChild(element);
-        const inner = element.querySelector('example-foo-inner');
+        const inner = element.shadowRoot.querySelector('example-foo-inner');
         expect(inner.globalLibReturn).toBe("from foo.test.js");
     });
 });

@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { isArray, ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty, isFunction, StringToLowerCase } from "../shared/language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
@@ -15,7 +15,6 @@ import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
-import { patchCustomElement } from "../faux-shadow/faux";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -171,11 +170,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode } = options;
-    const fallback = isTrue(options.fallback) || isFalse(isNativeShadowRootAvailable);
-    if (fallback) {
-        patchCustomElement(elm);
-    }
+    const { isRoot, mode, fallback } = options;
     uid += 1;
     const vm: VM = {
         uid,
@@ -235,14 +230,14 @@ function patchErrorBoundaryVm(errorBoundaryVm: VM) {
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
     const children = renderComponent(errorBoundaryVm);
-    const { cmpRoot, children: oldCh } = errorBoundaryVm;
+    const { elm, cmpRoot, fallback, children: oldCh } = errorBoundaryVm;
     errorBoundaryVm.isScheduled = false;
     errorBoundaryVm.children = children; // caching the new children collection
 
     // patch function mutates vnodes by adding the element reference,
     // however, if patching fails it contains partial changes.
     // patch failures are caught in flushRehydrationQueue
-    patchChildren(cmpRoot, oldCh, children);
+    patchChildren(elm, cmpRoot, oldCh, children, fallback);
     processPostPatchCallbacks(errorBoundaryVm);
 }
 
@@ -250,7 +245,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { cmpRoot, children: oldCh } = vm;
+    const { elm, cmpRoot, fallback, children: oldCh } = vm;
     vm.children = children; // caching the new children collection
     if (children.length === 0 && oldCh.length === 0) {
         return; // nothing to do here
@@ -264,7 +259,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(cmpRoot, oldCh, children);
+        patchChildren(elm, cmpRoot, oldCh, children, fallback);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -374,21 +369,15 @@ function destroyChildren(children: VNodes) {
         if (isUndefined(elm)) {
             continue;
         }
-        const { data: { hook }, children: grandChildren } = vnode;
-        if (isObject(hook) && isFunction(hook.destroy)) {
-            try {
-                // if destroy fails, it really means that the service hook or disconnect hook failed,
-                // we should just log the issue and continue our destroying procedure
-                hook.destroy(vnode);
-            } catch (e) {
-                if (process.env.NODE_ENV !== 'production') {
-                    const vm = getCustomElementVM(elm as HTMLElement);
-                    assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
-                }
+        try {
+            // if destroy fails, it really means that the service hook or disconnect hook failed,
+            // we should just log the issue and continue our destroying procedure
+            vnode.hook.destroy(vnode);
+        } catch (e) {
+            if (process.env.NODE_ENV !== 'production') {
+                const vm = getCustomElementVM(elm as HTMLElement);
+                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
             }
-        }
-        if (isArray(grandChildren)) {
-            destroyChildren(grandChildren);
         }
     }
 }

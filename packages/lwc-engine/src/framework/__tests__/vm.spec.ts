@@ -192,7 +192,7 @@ describe('vm', () => {
                     this.h1 = this.h2 = true;
                 }
                 disable() {
-                    this.h1 = this.h2 = true;
+                    this.h1 = this.h2 = false;
                 }
             }
             Parent.track = { h1: 1, h2: 1 };
