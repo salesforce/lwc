@@ -43,7 +43,6 @@ import apiDecorator from "./decorators/api";
 import { LightningElement as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
-    PatchedFlag,
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     ViewModelReflection,
@@ -404,13 +403,7 @@ import "../polyfills/aria-properties/main";
 const HTML_PROPS: PropsDef = create(null);
 const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
 const globalElmProto: object = create(BaseCustomElementProto);
-const globalElmDescriptors: PropertyDescriptorMap = create(null, {
-    // this symbol is used as a flag for html-element.ts to determine if
-    // the element needs some patches of the proto chain of not. Which
-    // helps for the cases when a Web Component is created via the global
-    // registry.
-    [PatchedFlag]: {}
-});
+const globalElmDescriptors: PropertyDescriptorMap = create(null, {});
 
 forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because

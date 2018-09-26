@@ -2,10 +2,9 @@ import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener } from "./invoker";
 import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
-import { VM, SlotSet, setNodeOwnerKey } from "./vm";
+import { VM, SlotSet } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks, Key, VCustomElement } from "../3rdparty/snabbdom/types";
-import { patchEvent } from "../faux-shadow/faux";
 import {
     createCustomElmHook,
     insertCustomElmHook,
@@ -25,12 +24,14 @@ import {
     updateCustomElmDefaultHook,
     updateChildrenHook,
     allocateChildrenHook,
+    createTextHook,
+    createCommentHook,
 } from "./hooks";
-import { markAsDynamicChildren, hasDynamicChildren } from "./patch";
-import { patchSlotElementWithRestrictions } from "./restrictions";
+import { markAsDynamicChildren, hasDynamicChildren, patchEvent } from "./patch";
 import {
     insertBefore,
     removeChild,
+    isNativeShadowRootAvailable,
 } from "./dom-api";
 
 export interface ElementCompilerData extends VNodeData {
@@ -71,8 +72,8 @@ function noop() { /* do nothing */ }
 
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
-        const text: Text = vnode.elm = createTextNode.call(document, vnode.text);
-        setNodeOwnerKey(text, vnode.uid);
+        vnode.elm = createTextNode.call(document, vnode.text);
+        createTextHook(vnode);
     },
     update: updateNodeHook,
     insert: insertNodeHook,
@@ -82,8 +83,8 @@ const TextHook: Hooks = {
 
 const CommentHook: Hooks = {
     create: (vnode: VComment) => {
-        const comment = vnode.elm = createComment.call(document, vnode.text);
-        setNodeOwnerKey(comment, vnode.uid);
+        vnode.elm = createComment.call(document, vnode.text);
+        createCommentHook(vnode);
     },
     update: updateNodeHook,
     insert: insertNodeHook,
@@ -100,15 +101,9 @@ const ElementHook: Hooks = {
     create: (vnode: VElement) => {
         const { data, sel } = vnode;
         const { ns, create } = data;
-        const elm = vnode.elm = isUndefined(ns)
+        vnode.elm = isUndefined(ns)
             ? createElement.call(document, sel)
             : createElementNS.call(document, ns, sel);
-        setNodeOwnerKey(elm, vnode.uid);
-        if (process.env.NODE_ENV !== 'production') {
-            if (sel === 'slot') {
-                patchSlotElementWithRestrictions(elm as HTMLSlotElement);
-            }
-        }
         createElmHook(vnode);
         create(vnode);
     },
@@ -131,8 +126,7 @@ const ElementHook: Hooks = {
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
         const { sel, data: { create } } = vnode;
-        const elm = vnode.elm = createElement.call(document, sel);
-        setNodeOwnerKey(elm, vnode.uid);
+        vnode.elm = createElement.call(document, sel);
         createElmHook(vnode);
         createCustomElmHook(vnode);
         allocateChildrenHook(vnode);
@@ -181,20 +175,41 @@ function addNS(vnode: VElement) {
 }
 
 function getCurrentOwnerId(): number {
-    return isNull(vmBeingRendered) ? 0 : vmBeingRendered.uid;
+    if (process.env.NODE_ENV !== 'production') {
+        // TODO: enable this after refactoring all failing tests
+        if (isNull(vmBeingRendered)) {
+            return 0;
+        }
+        // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentOwnerId().`);
+    }
+    return (vmBeingRendered as VM).uid;
 }
 
-function getCurrentFallback(): boolean {
-    // TODO: eventually this should fallback to false to favor real Shadow DOM
-    return isNull(vmBeingRendered) || vmBeingRendered.fallback;
-}
+const getCurrentFallback: () => boolean = isNativeShadowRootAvailable ?
+    function() {
+        if (process.env.NODE_ENV !== 'production') {
+            // TODO: enable this after refactoring all failing tests
+            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
+        }
+        return (vmBeingRendered as VM).fallback;
+    } : () => {
+        if (process.env.NODE_ENV !== 'production') {
+            // TODO: enable this after refactoring all failing tests
+            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
+        }
+        return true;
+    };
 
 function getCurrentShadowToken(): string | undefined {
-    // For root elements and other special cases the vm is not set.
-    if (isNull(vmBeingRendered)) {
-        return;
+    if (process.env.NODE_ENV !== 'production') {
+        // TODO: enable this after refactoring all failing tests
+        if (isNull(vmBeingRendered)) {
+            return;
+        }
+        // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentShadowToken().`);
     }
-    return vmBeingRendered.context.shadowToken;
+    // TODO: remove this condition after refactoring all failing tests
+    return (vmBeingRendered as VM).context.shadowToken;
 }
 
 // [h]tml node
@@ -439,6 +454,7 @@ export function t(text: string): VText {
 
         hook: TextHook,
         uid: getCurrentOwnerId(),
+        fallback: getCurrentFallback(),
     };
 }
 
@@ -456,6 +472,7 @@ export function p(text: string): VComment {
 
         hook: CommentHook,
         uid: getCurrentOwnerId(),
+        fallback: getCurrentFallback(),
     };
 }
 

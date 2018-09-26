@@ -1,14 +1,14 @@
 import assert from "../shared/assert";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse } from "../shared/language";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "../shared/language";
 import { setInternalField } from "../shared/fields";
-import { ViewModelReflection, PatchedFlag } from "./utils";
+import { ViewModelReflection } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM, setNodeKey } from "./vm";
 import { ArrayReduce, isFunction } from "../shared/language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
-import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
+import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { unlockAttribute, lockAttribute } from "./attributes";
 
@@ -95,7 +95,7 @@ const LightningElement = function BaseLightningElement(this: ComponentInterface)
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, cmpRoot, uid } = vm;
+    const { elm, cmpRoot, uid } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -112,13 +112,7 @@ const LightningElement = function BaseLightningElement(this: ComponentInterface)
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
-    // registered custom elements will be patched at the proto level already, not need to patch them here.
-    if (isFalse(PatchedFlag in elm)) {
-        const { elmProto } = def;
-        setPrototypeOf(elm, elmProto);
-    }
     if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot);
     }

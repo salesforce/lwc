@@ -31,6 +31,7 @@ export interface VNode {
   hook: Hooks;
   uid: number;
   token?: string;
+  fallback: boolean;
 }
 
 export interface VElement extends VNode {

@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
 import { EmptyArray, ViewModelReflection } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
     setAttribute,
@@ -19,6 +19,9 @@ import modStaticClassName from "./modules/static-class-attr";
 import modStaticStyle from "./modules/static-style-attr";
 import { hasDynamicChildren } from "./patch";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
+import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
+import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
+import { getComponentDef } from "./def";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
@@ -32,6 +35,22 @@ export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: No
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
     removeChild.call(parentNode, vnode.elm as Node);
+}
+
+export function createTextHook(vnode: VNode) {
+    const text = vnode.elm as Text;
+    setNodeOwnerKey(text, vnode.uid);
+    if (isTrue(vnode.fallback)) {
+        patchTextNodeProto(text);
+    }
+}
+
+export function createCommentHook(vnode: VNode) {
+    const comment = vnode.elm as Comment;
+    setNodeOwnerKey(comment, vnode.uid);
+    if (isTrue(vnode.fallback)) {
+        patchCommentNodeProto(comment);
+    }
 }
 
 export function createElmDefaultHook(vnode: VElement) {
@@ -48,12 +67,18 @@ export function createElmDefaultHook(vnode: VElement) {
 }
 
 export function createElmHook(vnode: VElement) {
-    const { token } = vnode;
-    if (isUndefined(token)) {
-        return;
+    const { token, uid, sel, fallback } = vnode;
+    const elm = vnode.elm as HTMLElement;
+    if (!isUndefined(token)) {
+        setAttribute.call(elm, token, '');
     }
-    const elm = vnode.elm as Node;
-    setAttribute.call(elm, token, '');
+    setNodeOwnerKey(elm, uid);
+    if (isTrue(fallback)) {
+        patchElementProto(elm, sel);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchElementWithRestrictions(elm);
+    }
 }
 
 export function createSlotElmHook(vnode: VElement) {
@@ -100,13 +125,24 @@ export function allocateChildrenHook(vnode: VCustomElement) {
 }
 
 export function createCustomElmHook(vnode: VCustomElement) {
-    const { fallback, mode, ctor } = vnode;
     const elm = vnode.elm as HTMLElement;
     if (hasOwnProperty.call(elm, ViewModelReflection)) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
+    }
+    const { mode, ctor, token, uid, sel, fallback } = vnode;
+    if (!isUndefined(token)) {
+        setAttribute.call(elm, token, '');
+    }
+    setNodeOwnerKey(elm, uid);
+    if (isTrue(fallback)) {
+        const def = getComponentDef(ctor);
+        patchCustomElementProto(elm, sel, def);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
     }
     createVM(vnode.sel as string, elm, ctor, {
         mode,

@@ -48,6 +48,8 @@ const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = typeof 
 
 const BaseCustomElementProto = document.createElement('x-lwc').constructor.prototype;
 
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
+
 export {
     dispatchEvent,
     setAttribute,
@@ -72,4 +74,5 @@ export {
     hasChildNodes,
 
     BaseCustomElementProto,
+    isNativeShadowRootAvailable,
 };

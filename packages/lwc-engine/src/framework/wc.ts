@@ -1,10 +1,12 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase, getOwnPropertyNames } from "../shared/language";
+import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
-import { elementTagNameGetter } from "./dom-api";
+import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
 import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
+import { patchCustomElementProto } from "./patch";
+import { patchCustomElementWithRestrictions } from "./restrictions";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
     if (isCircularModuleDependency(Ctor)) {
@@ -17,12 +19,19 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // TODO: for now, we default to open, but eventually it should default to 'closed'
         if (mode === 'closed') { normalizedOptions.mode = mode; }
         // fallback defaults to false to favor shadowRoot
-        if (fallback === true) { normalizedOptions.fallback = true; }
+        normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
     }
     class LightningWrapperElement extends HTMLElement {
         constructor() {
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
+            if (isTrue(normalizedOptions.fallback)) {
+                const def = getComponentDef(Ctor);
+                patchCustomElementProto(this, tagName, def);
+            }
+            if (process.env.NODE_ENV !== 'production') {
+                patchCustomElementWithRestrictions(this);
+            }
             createVM(tagName, this, Ctor, normalizedOptions);
         }
         connectedCallback() {
