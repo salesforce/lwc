@@ -1,11 +1,14 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
-        const tmpl = $api => [
-            $api.h('section', { key: 0 }, [ $api.t('test') ]),
-        ];
+        const tmpl = compileTemplate(`
+            <template>
+                <section>test</section>
+            </template>
+        `);
         tmpl.shadowToken = 'test';
 
         class Component extends LightningElement {
@@ -21,14 +24,18 @@ describe('modules/token', () => {
     });
 
     it('removes children element tokens if the template has no token', () => {
-        const styledTmpl = $api => [
-            $api.h('section', { key: 0 }, [ $api.t('test') ]),
-        ];
+        const styledTmpl = compileTemplate(`
+            <template>
+                <section>styled</section>
+            </template>
+        `);
         styledTmpl.shadowToken = 'test';
 
-        const unstyledTmpl = $api => [
-            $api.h('section', { key: 0 }, [ $api.t('test') ]),
-        ];
+        const unstyledTmpl = compileTemplate(`
+            <template>
+                <section>unstyled</section>
+            </template>
+        `);
 
         class Component extends LightningElement {
             tmpl = styledTmpl;
@@ -55,14 +62,18 @@ describe('modules/token', () => {
     });
 
     it('replace children element tokens when swapping template', () => {
-        const styledTmplA = $api => [
-            $api.h('section', { key: 0 }, [ $api.t('test') ]),
-        ];
+        const styledTmplA = compileTemplate(`
+            <template>
+                <section>styledA</section>
+            </template>
+        `);
         styledTmplA.shadowToken = 'testA';
 
-        const styledTmplB = $api => [
-            $api.h('section', { key: 0 }, [ $api.t('test') ]),
-        ];
+        const styledTmplB = compileTemplate(`
+            <template>
+                <section>styledB</section>
+            </template>
+        `);
         styledTmplB.shadowToken = 'testB';
 
         class Component extends LightningElement {

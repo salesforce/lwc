@@ -23,12 +23,12 @@ describe('html-element', () => {
                     'x-child': Child
                 }
             });
-
             class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
+
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
             const child = getHostShadowRoot(element).querySelector('x-child');
@@ -45,6 +45,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['setFoo'];
+
             const element = createElement('x-foo', { is: MyComponent });
             element.setFoo();
             expect(element.hasAttributeNS('x', 'foo')).toBe(true);
@@ -60,6 +61,7 @@ describe('html-element', () => {
                     }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
                 }
             }
+
             createElement('x-foo', { is: MyComponent });
         });
     });
@@ -80,6 +82,7 @@ describe('html-element', () => {
                     }
                 }
             }
+
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
 
@@ -97,6 +100,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['setFoo'];
+
             const element = createElement('should-set-attribute-on-host-element', { is: MyComponent });
             element.setFoo();
             expect(element.hasAttribute('foo')).toBe(true);
@@ -112,6 +116,7 @@ describe('html-element', () => {
                     }).toThrowError("Assert Violation: Failed to construct '<throw-during-construction>': The result must not have attributes.");
                 }
             }
+
             createElement('throw-during-construction', { is: MyComponent });
         });
     });
@@ -125,6 +130,7 @@ describe('html-element', () => {
             }
             Child.publicMethods = ['removeTitle'];
 
+            // TODO: How is it possible to have those kind of attributes?!
             class Parent extends LightningElement {
                 render() {
                     return ($api) => {
@@ -150,6 +156,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['removeTitle'];
+
             const element = createElement('x-foo', { is: MyComponent });
             element.setAttributeNS('x', 'title', 'foo');
             element.removeTitle();
@@ -166,17 +173,19 @@ describe('html-element', () => {
             }
             Child.publicMethods = ['removeTitle'];
 
+            const html = compileTemplate(`
+                <template>
+                    <x-child title="foo"></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
             class Parent extends LightningElement {
                 render() {
-                    return ($api) => {
-                        return [$api.c('x-child', Child, {
-                            attrs: {
-                                title: 'foo',
-                            }
-                        })]
-                    }
+                    return html;
                 }
             }
+
             const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
             const child = getHostShadowRoot(element).querySelector('x-child');
@@ -191,6 +200,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['removeTitle'];
+
             const element = createElement('should-remove-attribute-on-host-element', { is: MyComponent });
             element.title = 'foo';
             element.removeTitle();
@@ -200,6 +210,8 @@ describe('html-element', () => {
 
     describe('#getBoundingClientRect()', () => {
         it('should throw during construction', () => {
+            expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -208,8 +220,8 @@ describe('html-element', () => {
                     }).toThrow();
                 }
             };
+
             createElement('getBoundingClientRect-should-throw-during-construction', { is: def });
-            expect.assertions(1);
         });
     });
 
@@ -226,12 +238,14 @@ describe('html-element', () => {
 
         it('should have a valid classList during connectedCallback', () => {
             expect.assertions(2);
+
             const def = class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                     expect(this.classList.contains('foo')).toBe(true);
                 }
             };
+
             const elm = createElement('classList-valid-classList-during-connectedCallback', { is: def });
             document.body.appendChild(elm);
             expect(elm.classList.contains('foo')).toBe(true);
@@ -246,6 +260,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['getXTitle'];
+
             const elm = createElement('getAttributeNS-correct-attribute-value', { is: MyComponent });
             elm.setAttributeNS('x', 'title', 'foo');
             expect(elm.getXTitle()).toBe('foo');
@@ -255,16 +270,19 @@ describe('html-element', () => {
     describe('#getAttribute()', () => {
         it('should throw when no attribute name is provided', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => this.getAttribute()).toThrow();
                 }
             };
+
             createElement('getAttribute-throw-when-no-attribute-name-is-provided', { is: def });
         });
         it('should not throw when attribute name matches a declared public property', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -272,10 +290,12 @@ describe('html-element', () => {
                 }
             };
             def.publicProps = { foo: "default value" };
+
             createElement('x-foo', { is: def });
         });
         it('should be null for non-valid attribute names', () => {
             expect.assertions(3);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -284,16 +304,19 @@ describe('html-element', () => {
                     expect(this.getAttribute("")).toBeNull();
                 }
             };
+
             createElement('x-foo', { is: def });
         });
         it('should be null for non-existing attributes', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute("foo-bar-baz")).toBeNull();
                 }
             };
+
             createElement('x-foo', { is: def });
         });
 
@@ -302,6 +325,7 @@ describe('html-element', () => {
     describe('#dispatchEvent', function() {
         it('should throw when event is dispatched during construction', function() {
             expect.assertions(1);
+
             class Foo extends LightningElement {
                 constructor() {
                     super();
@@ -310,6 +334,7 @@ describe('html-element', () => {
                     }).toThrow('this.dispatchEvent() should not be called during the construction of the custom element for <x-foo> because no one is listening for the event "constructorevent" just yet.');
                 }
             }
+
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
         });
@@ -430,10 +455,14 @@ describe('html-element', () => {
 
         it('should get native click event in host', function () {
             expect.assertions(3);
-            function html($api) {
-                return [$api.h('div', { key: 1 }, [])];
-            };
+
             let elm;
+
+            const html = compileTemplate(`
+                <template>
+                    <div></div>
+                </template>
+            `);
             class Foo extends LightningElement {
                 constructor() {
                     super();
@@ -443,14 +472,15 @@ describe('html-element', () => {
                         expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
-                render() {
-                    return html;
-                }
                 run() {
                     this.template.querySelector('div').click();
                 }
+                render() {
+                    return html;
+                }
             }
             Foo.publicMethods = ['run'];
+
             elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
@@ -458,9 +488,12 @@ describe('html-element', () => {
 
         it('should get native events from template', function () {
             expect.assertions(2);
-            function html($api, $cmp) {
-                return [$api.h('div', { key: 1, on: { click: $api.b($cmp.handleClick)} }, [])];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}></div>
+                </template>
+            `);
             class Foo extends LightningElement {
                 handleClick(e: Event) {
                     expect(e.target).toBe(this.template.querySelector('div'));
@@ -474,6 +507,7 @@ describe('html-element', () => {
                 }
             }
             Foo.publicMethods = ['run'];
+
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
@@ -481,10 +515,13 @@ describe('html-element', () => {
 
         it('should get custom events in root when marked as bubbles=true', function () {
             expect.assertions(6);
-            function html($api) {
-                return [$api.h('div', { key: 1 }, [])];
-            }
             let elm;
+
+            const html = compileTemplate(`
+                <template>
+                    <div></div>
+                </template>
+            `);
             class Foo extends LightningElement {
                 constructor() {
                     super();
@@ -510,6 +547,7 @@ describe('html-element', () => {
                 }
             }
             Foo.publicMethods = ['run'];
+
             elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
@@ -517,9 +555,12 @@ describe('html-element', () => {
 
         it('should listen for custom events declare in template', function () {
             expect.assertions(6);
-            function html($api, $cmp) {
-                return [$api.h('div', { key: 1, on: { xyz: $api.b($cmp.handleXyz)} }, [])];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    <div onxyz={handleXyz}></div>
+                </template>
+            `);
             class Foo extends LightningElement {
                 handleXyz(e: Event) {
                     expect(e.target).toBe(this.template.querySelector('div'));
@@ -541,6 +582,7 @@ describe('html-element', () => {
                 }
             }
             Foo.publicMethods = ['run'];
+
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
@@ -550,6 +592,7 @@ describe('html-element', () => {
     describe('#tagName', () => {
         it('should throw when accessed', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -558,6 +601,7 @@ describe('html-element', () => {
                     }).toThrow('Usage of property `tagName` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.');
                 }
             };
+
             createElement('x-foo', { is: def });
         });
     });
@@ -585,6 +629,7 @@ describe('html-element', () => {
         it('should be mutable during construction', () => {
             let state;
             const o = { foo: 1, bar: 2, baz: 1 };
+
             const def = class MyComponent extends LightningElement {
                 state = {
                     foo: undefined,
@@ -599,6 +644,7 @@ describe('html-element', () => {
                 }
             };
             def.track = { state: 1 };
+
             createElement('x-foo', { is: def });
             expect(state.foo).toBe(1);
             expect(state.bar).toBe(2);
@@ -611,6 +657,7 @@ describe('html-element', () => {
         it('should accept member properties', () => {
             let state;
             const o = { foo: 1 };
+
             const def = class MyComponent extends LightningElement {
                 state = { x: 1, y: o };
                 constructor() {
@@ -619,12 +666,14 @@ describe('html-element', () => {
                 }
             };
             def.track = { state: 1 };
+
             createElement('x-foo', { is: def });
             expect({ x: 1, y: o }).toEqual(state);
             expect(state.y).not.toBe(o);
         });
         it('should not throw an error when assigning observable object', function() {
             expect.assertions(1);
+
             class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -634,6 +683,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.track = { state: 1 };
+
             createElement('x-foo', { is: MyComponent });
         });
     });
@@ -641,46 +691,52 @@ describe('html-element', () => {
     describe('global HTML Properties', () => {
         it('should always return null', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute('title')).toBeNull();
                 }
             };
+
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
         });
 
         it('should set user specified value during setAttribute call', () => {
             let userDefinedTabIndexValue = -1;
+
             class MyComponent extends LightningElement {
                 renderedCallback() {
                     userDefinedTabIndexValue = this.getAttribute("tabindex");
                 }
             }
+
             const elm = createElement('x-foo', {is: MyComponent});
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                expect(userDefinedTabIndexValue).toBe('0');
-            });
-
+            expect(userDefinedTabIndexValue).toBe('0');
         }),
 
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code changes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
+
+            class Child extends LightningElement {}
+
+            const html = compileTemplate(`
+                <template>
+                    <x-child title="child title"></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
             class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Child extends LightningElement {}
+
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
@@ -694,17 +750,22 @@ describe('html-element', () => {
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
+
+            class Child extends LightningElement {}
+
+            const html = compileTemplate(`
+                <template>
+                    <x-child title="child title"></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
             class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Child extends LightningElement {}
+
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
@@ -719,11 +780,14 @@ describe('html-element', () => {
         it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
             jest.spyOn(assertLogger, 'logError');
             class Child extends LightningElement {}
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    <x-child title="child title"></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
             class Parent extends LightningElement {
                 render() {
                     return html;
@@ -732,17 +796,17 @@ describe('html-element', () => {
                     this.template.querySelector('x-child').setAttribute('tabindex', 0);
                 }
             }
+
             const elm = createElement('x-foo', {is: Parent});
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            expect(assertLogger.logError).toBeCalled();
+            assertLogger.logError.mockRestore();
         });
 
         it('should not throw when accessing attribute in root elements', () => {
             class Parent extends LightningElement {}
+
             const elm = createElement('x-foo', {is: Parent});
             document.body.appendChild(elm);
             elm.setAttribute('tabindex', 1);
@@ -750,26 +814,27 @@ describe('html-element', () => {
 
         it('should delete existing attribute prior rendering', () => {
             const def = class MyComponent extends LightningElement {};
+
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'parent title');
             elm.removeAttribute('title');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                expect(elm.getAttribute('title')).not.toBe('parent title');
-            });
+            expect(elm.getAttribute('title')).not.toBe('parent title');
         });
     });
 
     describe('#toString()', () => {
         it('should rely on the class.name', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.toString()).toBe('[object MyComponent]');
                 }
             };
+
             createElement('x-foo', { is: def });
         });
     });
@@ -858,13 +923,13 @@ describe('html-element', () => {
 
         it('should not trigger render cycle', function() {
             let callCount = 0;
+
             class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
                 render() {
                     callCount += 1;
-                    return () => [];
                 }
             }
 
@@ -872,9 +937,7 @@ describe('html-element', () => {
             elm.setAttribute('tabindex', 3);
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => {
-                expect(callCount).toBe(1);
-            });
+            expect(callCount).toBe(1);
         });
 
         it('should allow parent component to overwrite internally set tabIndex', function() {
@@ -901,12 +964,12 @@ describe('html-element', () => {
 
         it('should throw if setting tabIndex during render', function() {
             expect.assertions(1);
+
             class MyComponent extends LightningElement {
                 render() {
                     expect(() => {
                         this.tabIndex = 2;
                     }).toThrow();
-                    return () => [];
                 }
             }
 
@@ -916,6 +979,7 @@ describe('html-element', () => {
 
         it('should throw if setting tabIndex during construction', function() {
             expect.assertions(1);
+
             class MyComponent extends LightningElement {
                 constructor() {
                     super();
@@ -924,6 +988,7 @@ describe('html-element', () => {
                     }).toThrow();
                 }
             }
+
             createElement('x-foo', { is: MyComponent });
         });
     });
@@ -931,12 +996,13 @@ describe('html-element', () => {
     describe('life-cycles', function() {
         it('should guarantee that the element is rendered when inserted in the DOM', function() {
             let rendered = 0;
+
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
-                    return () => [];
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             expect(rendered).toBe(0);
             document.body.appendChild(elm);
@@ -945,14 +1011,13 @@ describe('html-element', () => {
 
         it('should guarantee that the connectedCallback is invoked sync after the element is inserted in the DOM', function() {
             let called = 0;
+
             class MyComponent extends LightningElement {
-                render() {
-                    return () => [];
-                }
                 connectedCallback() {
                     called++;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             expect(called).toBe(0);
             document.body.appendChild(elm);
@@ -961,15 +1026,16 @@ describe('html-element', () => {
 
         it('should guarantee that the connectedCallback is invoked before render after the element is inserted in the DOM', function() {
             const ops: string[] = [];
+
             class MyComponent extends LightningElement {
                 render() {
                     ops.push('render');
-                    return () => [];
                 }
                 connectedCallback() {
                     ops.push('connected');
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(ops).toEqual(['connected', 'render']);
@@ -977,14 +1043,13 @@ describe('html-element', () => {
 
         it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function() {
             let called = 0;
+
             class MyComponent extends LightningElement {
-                render() {
-                    return () => [];
-                }
                 disconnectedCallback() {
                     called++;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(called).toBe(0);
@@ -994,14 +1059,15 @@ describe('html-element', () => {
 
         it('should not render even if there is a mutation if the element is not in the DOM yet', function() {
             let rendered = 0;
+
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     this.x; // reactive
-                    return () => [];
                 }
             }
             MyComponent.publicProps = { x: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = 2;
             return Promise.resolve().then(() => {
@@ -1011,14 +1077,15 @@ describe('html-element', () => {
 
         it('should not render if the element was removed from the DOM', function() {
             let rendered = 0;
+
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     this.x; // reactive
-                    return () => [];
                 }
             }
             MyComponent.publicProps = { x: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -1033,10 +1100,10 @@ describe('html-element', () => {
             let rendered = 0;
             let connected = 0;
             let disconnected = 0;
+
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
-                    return () => [];
                 }
                 connectedCallback() {
                     connected++;
@@ -1045,6 +1112,7 @@ describe('html-element', () => {
                     disconnected++;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             expect(rendered).toBe(0);
             document.body.appendChild(elm);
@@ -1067,13 +1135,11 @@ describe('html-element', () => {
                     return this.state.foo;
                 }
             }
-
             MyComponent.publicProps = {
                 foo: {
                     config: 3
                 }
             };
-
             MyComponent.track = { state: 1 };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -1092,6 +1158,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.track = { state: 1 };
+
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
 
             expect(() => (
@@ -1108,6 +1175,7 @@ describe('html-element', () => {
                     config: 0
                 }
             };
+
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
             expect(() => (
@@ -1443,23 +1511,20 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div title={lang}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set lang(value) {
-
-                    }
-
+                    set lang(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    title: $cmp.lang
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-setter-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.lang = 'en';
@@ -1471,6 +1536,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get lang() {
                         count += 1;
@@ -1482,6 +1548,7 @@ describe('html-element', () => {
                         config: 1,
                     }
                 }
+
                 const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
                 expect(element.lang).toBe('en');
                 expect(count).toBe(1);
@@ -1489,28 +1556,33 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div lang={lang}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
+                    lang = 'fr';
+
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        id: $cmp.lang
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 0,
+                    }
+                };
+
                 const element = createElement('prop-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.lang = 'en';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('en');
+                        expect(getHostShadowRoot(element).querySelector('div').lang).toBe('en');
                     });
             });
 
@@ -1521,6 +1593,7 @@ describe('html-element', () => {
                         this.lang = 'en';
                     }
                 }
+
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
                 }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
@@ -1567,23 +1640,20 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div hidden={hidden}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set hidden(value) {
-
-                    }
-
+                    set hidden(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    title: $cmp.hidden
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-setter-hidden-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.hidden = true;
@@ -1595,6 +1665,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get hidden() {
                         count += 1;
@@ -1606,6 +1677,7 @@ describe('html-element', () => {
                         config: 1,
                     }
                 }
+
                 const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
                 expect(element.hidden).toBe('hidden');
                 expect(count).toBe(1);
@@ -1613,28 +1685,28 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div hidden={hidden}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
+                    hidden = false;
+
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        id: $cmp.hidden
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-hidden-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.hidden = true;
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('true');
+                        expect(getHostShadowRoot(element).querySelector('div').hidden).toBe('true');
                     });
             });
 
@@ -1673,6 +1745,7 @@ describe('html-element', () => {
 
             it('should call setter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     set dir(value) {
                         count += 1;
@@ -1684,6 +1757,7 @@ describe('html-element', () => {
                         config: 3,
                     }
                 }
+
                 const element = createElement('prop-setter-dir', { is: MyComponent });
                 element.dir = {},
                 expect(count).toBe(1);
@@ -1691,23 +1765,20 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div dir={dir}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set dir(value) {
-
-                    }
-
+                    set dir(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    title: $cmp.dir
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-setter-dir-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.dir = 'ltr';
@@ -1719,6 +1790,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get dir() {
                         count += 1;
@@ -1729,7 +1801,8 @@ describe('html-element', () => {
                     dir: {
                         config: 1,
                     }
-                }
+                };
+
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
                 expect(element.dir).toBe('ltr');
                 expect(count).toBe(1);
@@ -1737,28 +1810,27 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div dir={dir}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        id: $cmp.dir
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-dir-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.dir = 'ltr';
+
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('ltr');
+                        expect(getHostShadowRoot(element).querySelector('div').dir).toBe('ltr');
                     });
             });
 
@@ -1769,6 +1841,7 @@ describe('html-element', () => {
                         this.dir = 'ltr';
                     }
                 }
+
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
                 }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
@@ -1797,6 +1870,7 @@ describe('html-element', () => {
 
             it('should call setter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     set id(value) {
                         count += 1;
@@ -1808,6 +1882,7 @@ describe('html-element', () => {
                         config: 3,
                     }
                 }
+
                 const element = createElement('prop-setter-id', { is: MyComponent });
                 element.id = {},
                 expect(count).toBe(1);
@@ -1815,21 +1890,17 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div id={id}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set id(value) {
-
-                    }
-
+                    set id(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    title: $cmp.id
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
                 const element = createElement('prop-setter-id-reactive', { is: MyComponent });
@@ -1843,6 +1914,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get id() {
                         count += 1;
@@ -1853,7 +1925,8 @@ describe('html-element', () => {
                     id: {
                         config: 1,
                     }
-                }
+                };
+
                 const element = createElement('prop-getter-id-imperative', { is: MyComponent });
                 expect(element.id).toBe('id');
                 expect(count).toBe(1);
@@ -1861,21 +1934,19 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div id={id}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        title: $cmp.id
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-id-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.id = 'id';
@@ -1893,6 +1964,7 @@ describe('html-element', () => {
                         this.id = 'id';
                     }
                 }
+
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
                 }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
@@ -1939,23 +2011,20 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div accesskey={accessKey}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set accessKey(value) {
-
-                    }
-
+                    set accessKey(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    title: $cmp.accessKey
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-setter-accessKey-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.accessKey = 'accessKey';
@@ -1967,6 +2036,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get accessKey() {
                         count += 1;
@@ -1977,7 +2047,8 @@ describe('html-element', () => {
                     accessKey: {
                         config: 1,
                     }
-                }
+                };
+
                 const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
                 expect(element.accessKey).toBe('accessKey');
                 expect(count).toBe(1);
@@ -1985,21 +2056,19 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div accesskey={accessKey}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        title: $cmp.accessKey
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-accessKey-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.accessKey = 'accessKey';
@@ -2017,6 +2086,7 @@ describe('html-element', () => {
                         this.accessKey = 'accessKey';
                     }
                 }
+
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
                 }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
@@ -2063,23 +2133,20 @@ describe('html-element', () => {
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div title={title}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
-                    set title(value) {
-
-                    }
-
+                    set title(value) {}
                     render() {
                         count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', {
-                                key: 0,
-                                props: {
-                                    id: $cmp.title
-                                }
-                            }, [])];
-                        }
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-setter-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.title = 'title';
@@ -2091,6 +2158,7 @@ describe('html-element', () => {
 
             it('should call getter defined in component', () => {
                 let count = 0;
+
                 class MyComponent extends LightningElement {
                     get title() {
                         count += 1;
@@ -2101,7 +2169,8 @@ describe('html-element', () => {
                     title: {
                         config: 1,
                     }
-                }
+                };
+
                 const element = createElement('prop-getter-title-imperative', { is: MyComponent });
                 expect(element.title).toBe('title');
                 expect(count).toBe(1);
@@ -2109,21 +2178,19 @@ describe('html-element', () => {
 
             it('should be reactive by default', () => {
                 let renderCount = 0;
+
+                const html = compileTemplate(`
+                    <template>
+                        <div title={title}></div>
+                    </template>
+                `);
                 class MyComponent extends LightningElement {
                     render() {
-                        return ($api, $cmp) => {
-                            renderCount += 1;
-                            return [
-                                $api.h('div', {
-                                    key: 0,
-                                    props: {
-                                        id: $cmp.title
-                                    }
-                                }, [])
-                            ];
-                        }
+                        renderCount += 1;
+                        return html;
                     }
                 }
+
                 const element = createElement('prop-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.title = 'title';
@@ -2141,6 +2208,7 @@ describe('html-element', () => {
                         this.title = 'title';
                     }
                 }
+
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
                 }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
@@ -2150,30 +2218,31 @@ describe('html-element', () => {
 
         it('should always return null', () => {
             expect.assertions(1);
+
             const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute('title')).toBeNull();
                 }
             }
+
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
         });
 
         it('should set user specified value during setAttribute call', () => {
             let userDefinedTabIndexValue = -1;
+
             class MyComponent extends LightningElement {
                 renderedCallback() {
                     userDefinedTabIndexValue = this.getAttribute("tabindex");
                 }
             }
+
             const elm = createElement('x-foo', {is: MyComponent});
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( ()=> {
-                expect(userDefinedTabIndexValue).toBe('0');
-            });
-
+            expect(userDefinedTabIndexValue).toBe('0');
         }),
 
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
