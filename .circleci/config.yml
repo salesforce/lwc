@@ -86,7 +86,7 @@ jobs:
           command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
 
 
-  perf_and_compare:
+  perf_and_compare_chrome:
     working_directory: ~/lwc
 
     docker:
@@ -132,7 +132,55 @@ jobs:
       - run:
           name: Comparing Benchmarks
           working_directory: packages/benchmark
-          command: yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+
+  perf_and_compare_ie11:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8.9.3-stretch-browsers
+
+    environment:
+      - CUSTOM_BASH_ENV: ~/.bashrc
+      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
+      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v4-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: Setup dynamic environment variables
+          command:
+              echo '
+              export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
+              export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
+              export TARGET_COMMIT=${CIRCLE_SHA1}
+              export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+
+      - run:
+          name: Decode PEM as environment variable
+          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+
+      - run: yarn install
+      - run:
+          name: Preformance Test
+          working_directory: packages/benchmark
+          command: yarn start --externalStorage=@best/store-aws --runner remote
+          no_output_timeout: 30m
+
+
+      - store_artifacts:
+          path: ~/lwc/packages/benchmark/__benchmark_results__/
+          destination: benchmarks
+
+      - run:
+          name: Comparing Benchmarks
+          working_directory: packages/benchmark
+          command: yarn start --projects best.ie11.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 
 workflows:
@@ -149,6 +197,10 @@ workflows:
           requires:
             - build_and_test
 
-      - perf_and_compare:
+      - perf_and_compare_chrome:
+          requires:
+            - build_and_test
+
+      - perf_and_compare_ie11:
           requires:
             - build_and_test
