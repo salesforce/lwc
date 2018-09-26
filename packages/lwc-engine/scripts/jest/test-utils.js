@@ -1,4 +1,5 @@
 const { compileToFunction } = require('lwc-template-compiler');
+const { getShadowRoot } = require('lwc-test-utils');
 
 const TEMPLATE_CACHE = Object.create(null);
 
@@ -24,4 +25,5 @@ function compileTemplate(source, config = {}) {
 
 module.exports = {
     compileTemplate,
+    getShadowRoot,
 };
