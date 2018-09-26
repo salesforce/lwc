@@ -1,7 +1,6 @@
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase, getOwnPropertyNames } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
-import assert from "../shared/assert";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter } from "./dom-api";
@@ -12,9 +11,6 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         Ctor = resolveCircularModuleDependency(Ctor);
     }
     const { props, descriptors } = getComponentDef(Ctor);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isUndefined(Ctor.forceTagName), `The experimental support for web components does not include the support for \`static forceTagName\` to "${Ctor.forceTagName}" declaration in the class definition for ${Ctor}.`);
-    }
     const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
     if (isObject(options) && !isNull(options)) {
         const { mode, fallback } = (options as any);

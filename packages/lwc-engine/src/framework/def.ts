@@ -28,7 +28,6 @@ import {
     seal,
     forEach,
     getPropertyDescriptor,
-    StringIndexOf,
 } from "../shared/language";
 import {
     getGlobalHTMLPropertiesInfo,
@@ -116,29 +115,6 @@ function getCtorProto(Ctor: any): ComponentConstructor {
     return proto as ComponentConstructor;
 }
 
-// According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
-// are not allowed to attached a shadow dom, and therefore, we need to prevent setting forceTagName to
-// those, otherwise we will not be able to use shadowDOM when forceTagName is specified in the future.
-function assertValidForceTagName(Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { forceTagName } = Ctor;
-    if (isUndefined(forceTagName)) {
-        return;
-    }
-    const invalidTags = [
-        "article", "aside", "blockquote", "body", "div", "footer", "h1", "h2", "h3", "h4",
-        "h5", "h6", "header", "main", "nav", "p", "section", "span"];
-    if (ArrayIndexOf.call(invalidTags, forceTagName) !== -1) {
-        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. None of the following tag names can be used: ${invalidTags.join(", ")}.`);
-    }
-    if (StringIndexOf.call(forceTagName, '-') !== -1) {
-        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. It cannot have a dash (-) on it because that is reserved for existing custom elements.`);
-    }
-}
-
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
@@ -161,8 +137,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
-
-        assertValidForceTagName(Ctor);
     }
 
     const name: string = Ctor.name;

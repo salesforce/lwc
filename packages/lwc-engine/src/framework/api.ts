@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "../shared/language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "../shared/language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
@@ -251,21 +251,9 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
             });
         }
     }
-    const { key, styleMap, style, on, className, classMap, props } = data;
-    let { attrs } = data;
+    const { key, styleMap, style, on, className, classMap, props, attrs } = data;
 
-    // hack to allow component authors to force the usage of the "is" attribute in their components
-    const { forceTagName } = Ctor;
     let tag = sel, text, elm; // tslint:disable-line
-    if (!isUndefined(attrs) && !isUndefined(attrs.is)) {
-        tag = sel;
-        sel = attrs.is as string;
-    } else if (!isUndefined(forceTagName)) {
-        tag = forceTagName;
-        attrs = assign(create(null), attrs);
-        (attrs as any).is = sel;
-    }
-
     data = { hook, key, attrs, on, props, ctor: Ctor };
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
