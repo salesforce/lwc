@@ -2,7 +2,7 @@ import assert from "../../shared/assert";
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../../shared/language';
 import { EmptyObject } from '../utils';
-import { Module, VNode } from "../../3rdparty/snabbdom/types";
+import { VNode } from "../../3rdparty/snabbdom/types";
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
@@ -51,8 +51,9 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
     }
 }
 
-const attributesModule: Module = {
-    create: updateAttrs,
+const emptyVNode = { data: {} };
+
+export default {
+    create: (vnode: VNode) => updateAttrs(emptyVNode as VNode, vnode),
     update: updateAttrs
 };
-export default attributesModule;
