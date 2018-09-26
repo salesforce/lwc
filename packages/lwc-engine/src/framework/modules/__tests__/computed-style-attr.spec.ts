@@ -2,34 +2,14 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
-describe('modules/styles', () => {
-    it('should add handle static style attribute', () => {
+describe('modules/computed-style-attr', () => {
+    it('should add style to the element', () => {
         const tmpl = compileTemplate(`
             <template>
                 <div style="display: inline"></div>
             </template>
         `);
         class Component extends LightningElement {
-            render() {
-                return tmpl;
-            }
-        }
-
-        const elm = createElement('x-cmp', { is: Component });
-        document.body.appendChild(elm);
-
-        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
-    });
-
-    it('should add handle static style attribute', () => {
-        const tmpl = compileTemplate(`
-            <template>
-                <div style={dynamicStyle}></div>
-            </template>
-        `);
-        class Component extends LightningElement {
-            dynamicStyle = 'display: inline';
-
             render() {
                 return tmpl;
             }
@@ -71,4 +51,5 @@ describe('modules/styles', () => {
             expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('block');
         });
     });
+
 });

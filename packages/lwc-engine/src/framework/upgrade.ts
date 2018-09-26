@@ -1,10 +1,13 @@
 import assert from "../shared/assert";
-import { isUndefined, assign, isNull, isObject } from "../shared/language";
+import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
-import { setAttribute } from "./dom-api";
+import { isNativeShadowRootAvailable } from "./dom-api";
+import { patchCustomElementProto } from "./patch";
+import { getComponentDef, setElementProto } from "./def";
+import { patchCustomElementWithRestrictions } from "./restrictions";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = createFieldName('connecting');
@@ -69,21 +72,24 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }
     // TODO: for now, we default to true, but eventually it should default to false
-    if (fallback !== false) { fallback = true; }
-
-    // extracting the registered constructor just in case we need to force the tagName
-    const { forceTagName } = Ctor as ComponentConstructor;
-    const tagName = isUndefined(forceTagName) ? sel : forceTagName;
+    fallback = isUndefined(fallback) || isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
 
     // Create element with correct tagName
-    const element = document.createElement(tagName);
+    const element = document.createElement(sel);
     if (!isUndefined(getNodeKey(element))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.
         return element;
     }
-
+    const def = getComponentDef(Ctor);
+    setElementProto(element, def);
+    if (isTrue(fallback)) {
+        patchCustomElementProto(element, sel, def);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(element);
+    }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
     // Handle insertion and removal from the DOM manually
@@ -91,12 +97,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         const vm = getCustomElementVM(element);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
-        // TODO: this is the kind of awkwardness introduced by "is" attribute
-        // We don't want to do this during construction because it breaks another
-        // WC invariant.
-        if (!isUndefined(forceTagName)) {
-            setAttribute.call(element, 'is', sel);
-        }
         renderVM(vm);
     });
     setInternalField(element, DisconnectingSlot, () => {

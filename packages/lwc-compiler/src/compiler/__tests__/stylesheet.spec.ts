@@ -1,6 +1,5 @@
-import { readFile } from "fs";
 import { compile } from "../../index";
-import { fixturePath, readFixture, pretify } from "../../__tests__/utils";
+import { readFixture, pretify } from "../../__tests__/utils";
 
 describe("stylesheet", () => {
     it("should import the associated stylesheet by default", async () => {

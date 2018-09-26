@@ -2,15 +2,16 @@
 
 exports[`example-content-asset-url default snapshot 1`] = `
 <example-content-asset-url>
-  <p
-    class="mockedAsset"
-  >
-    value set in test
-  </p>
-  <p
-    class="unmockedAsset"
-  >
-    unmocked
-  </p>
+  #shadow-root(open)
+    <p
+      class="mockedAsset"
+    >
+      value set in test
+    </p>
+    <p
+      class="unmockedAsset"
+    >
+      unmocked
+    </p>
 </example-content-asset-url>
 `;

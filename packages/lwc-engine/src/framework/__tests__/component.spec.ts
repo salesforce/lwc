@@ -113,6 +113,10 @@ describe('component', function() {
             class MyComponent extends LightningElement  {
                 state = { value: 0 };
 
+                getTextContent() {
+                    return this.template.querySelector('div').textContent;
+                }
+
                 get validity() {
                     return this.state.value > 5;
                 }
@@ -132,13 +136,13 @@ describe('component', function() {
                     config: 1
                 }
             };
-            MyComponent.publicMethods = ['updateTrackedValue'];
+            MyComponent.publicMethods = ['updateTrackedValue', 'getTextContent'];
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.updateTrackedValue(10);
             return Promise.resolve().then(() => {
-                expect(elm.textContent).toBe('true');
+                expect(elm.getTextContent()).toBe('true');
             });
         });
 

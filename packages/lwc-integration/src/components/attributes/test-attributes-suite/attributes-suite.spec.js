@@ -5,7 +5,6 @@ describe('test pre dom-insertion setAttribute and removeAttribute functionality'
 
     before(() => {
         browser.url(URL);
-
     });
 
     it('should set user defined attribute value', () => {

@@ -8,10 +8,10 @@ import {
     parentNodeGetter,
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { patchShadowDomTraversalMethods, isNodeSlotted } from "./traverse";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
+import { isNodeSlotted } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
-import { getHost } from "./shadow-root";
+import { getHost, SyntheticShadowRoot } from "./shadow-root";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -34,18 +34,6 @@ const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnProperty
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const EventPatchDescriptors: PropertyDescriptorMap = {
-    currentTarget: {
-        get(this: Event): EventTarget | null {
-            const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-            if (isNull(currentTarget) || isUndefined(getNodeOwnerKey(currentTarget as Node))) {
-                // event is already beyond the boundaries of our controlled shadow roots
-                return currentTarget;
-            }
-            return patchShadowDomTraversalMethods(currentTarget as Element);
-        },
-        enumerable: true,
-        configurable: true,
-    },
     target: {
         get(this: Event): EventTarget {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
@@ -81,7 +69,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
 
             // Retarget to currentTarget if the listener was added to a custom element.
             if (eventContext === EventListenerContext.CUSTOM_ELEMENT_LISTENER) {
-                return patchShadowDomTraversalMethods(currentTarget as Element);
+                return currentTarget as Element;
             }
 
             // We need to determine 2 things in order to retarget correctly:
@@ -175,10 +163,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
              * while the event is patched because the component is listening for it internally
              * via this.addEventListener('click') in constructor or something similar
              */
-            if (isUndefined(getNodeOwnerKey(closestTarget as Node))) {
-                return closestTarget;
-            }
-            return patchShadowDomTraversalMethods(closestTarget as Element);
+            return closestTarget as Element;
         },
         enumerable: true,
         configurable: true,
@@ -209,7 +194,7 @@ function getEventMap(elm: HTMLElement): ListenerMap {
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedShadowRootListener(sr: ShadowRoot, listener: EventListener): WrappedListener {
+function getWrappedShadowRootListener(sr: SyntheticShadowRoot, listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -388,7 +373,7 @@ export function removeCustomElementEventListener(elm: HTMLElement, type: string,
     detachDOMListener(elm, type, wrappedListener);
 }
 
-export function addShadowRootEventListener(sr: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function addShadowRootEventListener(sr: SyntheticShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(sr)} for event "${type}". Expected an EventListener but received ${listener}.`);
         // TODO: issue #420
@@ -405,7 +390,7 @@ export function addShadowRootEventListener(sr: ShadowRoot, type: string, listene
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeShadowRootEventListener(sr: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function removeShadowRootEventListener(sr: SyntheticShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);

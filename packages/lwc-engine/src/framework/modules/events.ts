@@ -1,5 +1,5 @@
 import { isUndefined } from "../../shared/language";
-import { VNode, Module } from "../../3rdparty/snabbdom/types";
+import { VNode } from "../../3rdparty/snabbdom/types";
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;
@@ -25,34 +25,22 @@ function createListener(): EventListener {
     };
 }
 
-function removeAllEventListeners(vnode: InteractiveVNode) {
-    const { data: { on }, listener } = vnode;
-    if (on && listener) {
-        const elm = vnode.elm as Element;
-        let name;
-        for (name in on) {
-            elm.removeEventListener(name, listener);
-        }
-        vnode.listener = undefined;
-    }
-}
-
 function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveVNode) {
     if (isUndefined(oldVnode.listener)) {
-        createAllEventListeners(oldVnode, vnode);
+        createAllEventListeners(vnode);
     } else {
         vnode.listener = oldVnode.listener;
         vnode.listener.vnode = vnode;
     }
 }
 
-function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveVNode) {
+function createAllEventListeners(vnode: VNode) {
     const { data: { on } } = vnode;
     if (isUndefined(on)) {
         return;
     }
     const elm = vnode.elm as Element;
-    const listener: VNodeEventListener = vnode.listener = createListener();
+    const listener: VNodeEventListener = (vnode as InteractiveVNode).listener = createListener();
     listener.vnode = vnode;
 
     let name;
@@ -61,9 +49,7 @@ function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
     }
 }
 
-const eventListenersModule: Module = {
+export default {
     update: updateAllEventListeners,
     create: createAllEventListeners,
-    destroy: removeAllEventListeners
 };
-export default eventListenersModule;
