@@ -122,7 +122,7 @@ jobs:
           name: Preformance Test
           working_directory: packages/benchmark
           command: yarn start --externalStorage=@best/store-aws --runner remote
-          no_output_timeout: 30m
+          no_output_timeout: 40m
 
 
       - store_artifacts:
