@@ -11,12 +11,19 @@ describe('api', () => {
         class Foo extends LightningElement {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function() { return class extends LightningElement {
-                static forceTagName = 'input';
-            }; };
+            const factory = function() {
+                class Foo extends LightningElement {
+                    xyz() {
+                        return 1;
+                    }
+                }
+                Foo.publicMethods = ['xyz'];
+                return Foo;
+            };
             factory.__circular__ = true;
-            const vnode = api.c('x-foo', factory, { className: 'foo' });
-            expect(vnode.tag).toBe('input');
+            const elm = createElement('x-foo', { is: factory });
+            document.body.appendChild(elm);
+            expect(elm.xyz()).toBe(1);
         });
 
         it('should convert className to a classMap property', () => {
@@ -80,67 +87,6 @@ describe('api', () => {
             expect(() => {
                 createElement('x-foo');
             }).toThrow();
-        });
-
-        it('should support forceTagName static definition to force tagname on root node', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'input';
-            }
-            const element = createElement('x-foo', { is: Bar });
-            document.body.appendChild(element);
-            expect(element.tagName).toBe('INPUT');
-            // the "is" attribute is only inserted after the element is connected
-            expect(element.getAttribute('is')).toBe('x-foo');
-        });
-
-        it('should not include is attribute when forceTagName is not present on root', () => {
-            class Bar extends LightningElement {}
-            const element = createElement('x-foo', { is: Bar });
-            expect(element.hasAttribute('is')).toBe(false);
-        });
-
-        it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
-            function html($api) {
-                return [$api.c('button', Bar, { attrs: { is: "x-bar" } })];
-            }
-            class Foo extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-            class Bar extends LightningElement {
-                static forceTagName = 'input';
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-
-            const span = getHostShadowRoot(elm).querySelector('button');
-            expect(span.tagName).toEqual('BUTTON');
-            expect(span.getAttribute('is')).toEqual('x-bar');
-        });
-
-        it('should throw if the forceTagName value is a reserved standard element name', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'div';
-            }
-
-            expect(() => {
-                createElement('x-foo', { is: Bar });
-            }).toThrow(
-                /Invalid static forceTagName property set to "div"/
-            );
-        });
-
-        it('should throw if the forceTagName is a custom element name', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'x-bar';
-            }
-
-            expect(() => {
-                createElement('x-foo', { is: Bar });
-            }).toThrow(
-                /Invalid static forceTagName property set to "x-bar"/
-            );
         });
 
         it('should log warning if passed style is not a string', () => {
@@ -331,7 +277,7 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (9)], it should be an Array or an iterable Object.`);
+            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (7)], it should be an Array or an iterable Object.`);
         });
     });
 
@@ -401,7 +347,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (13)]. Key must be a string or number.');
+            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (11)]. Key must be a string or number.');
         });
     });
 });
