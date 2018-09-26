@@ -1,4 +1,4 @@
-import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../shared/language";
+import { isNull, hasOwnProperty, ArrayMap, isFunction, getOwnPropertyDescriptor, isFalse, isUndefined } from "../shared/language";
 import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
 import { createFieldName } from "../shared/fields";
 import { tagNameGetter } from "./element";
@@ -18,6 +18,16 @@ const traverseMembraneHandler = {
     get(originalTarget: any, key: PropertyKey): any {
         if (key === TargetSlot) {
             return originalTarget;
+        }
+
+        // We don't want to introduce shadow targets to this membrane,
+        // so if user is trying to access something that is non-configurable,
+        // we just return the unwrapped value to the user. One use case for
+        // this is accessing element.constructor.prototype. Other use cases
+        // may exist.
+        const propertyDescriptor = getOwnPropertyDescriptor(originalTarget, key);
+        if (!isUndefined(propertyDescriptor) && isFalse(propertyDescriptor.configurable)) {
+            return originalTarget[key];
         }
         if (!isFunction(originalTarget)) {
             let descriptors: PropertyDescriptorMap = NodePatchDescriptors;
