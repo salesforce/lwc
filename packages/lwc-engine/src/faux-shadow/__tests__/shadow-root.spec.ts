@@ -1,16 +1,40 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from '../../framework/html-element';
+import { SyntheticShadowRoot } from "../shadow-root";
 
 describe('root', () => {
+    describe('constructor', () => {
+        it('should throw when calling constructor', () => {
+            expect(() => {
+                new SyntheticShadowRoot();
+            }).toThrow('Illegal constructor');
+        });
+    });
     describe('integration', () => {
-        it.skip('should support this.template.host', () => {});
+        it('should support template.host', () => {
+            const html = compileTemplate(`
+                <template></template>
+            `);
+            class Parent extends LightningElement {
+                getHost() {
+                    return this.template.host;
+                }
+                render() {
+                    return html;
+                }
+            }
+            Parent.publicMethods = ['getHost'];
+            const elm = createElement('x-parent', { is: Parent });
+            expect(elm.getHost()).toBe(elm);
+            expect(elm.shadowRoot.host).toBe(elm);
+        });
 
         it('should support this.template.mode', () => {
             class MyComponent extends LightningElement {}
 
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(getHostShadowRoot(elm).mode).toBe('closed');
+            expect(getHostShadowRoot(elm).mode).toBe('open');
         });
 
         it('should allow searching for elements from template', () => {

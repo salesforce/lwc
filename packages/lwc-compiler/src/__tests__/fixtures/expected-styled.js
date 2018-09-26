@@ -12,7 +12,7 @@ ${hostSelector} {
 div${shadowSelector} {
     color: red;
 }
-x-foo${shadowSelector},[is="x-foo"]${shadowSelector} {
+x-foo${shadowSelector} {
     color: green;
 }
     `;

@@ -185,6 +185,24 @@ describe('template', () => {
             });
         });
 
+        it('should support array of vnode', () => {
+            function html($api) {
+                return [$api.h('span', { key: 0 }, [$api.t('some text')]];
+            }
+            class MyComponent3 extends LightningElement {
+                getTextContent() {
+                    return this.template.querySelector('span').textContent;
+                }
+                render() {
+                    return html;
+                }
+            }
+            MyComponent3.publicMethods = ['getTextContent']
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            expect(elm.getTextContent()).toBe('some text');
+        });
+
         it('should profixied default objects', () => {
             const x = [1, 2, 3];
 
@@ -291,15 +309,22 @@ describe('template', () => {
                 get computedStyle() {
                     return '';
                 }
+
+                getInnerHTML() {
+                    return this.template.querySelector('div').outerHTML;
+                }
+
                 render() {
                     return html;
                 }
             }
+            MyComponent.publicMethods = ['getInnerHTML'];
 
             const element = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(getHostShadowRoot(element).querySelector('div').hasAttribute('style')).toBe(false);
+            // there should not be a style="" attribute in the DOM
+            expect(element.getInnerHTML()).toBe('<div></div>');
         });
     });
 

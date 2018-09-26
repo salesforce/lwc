@@ -110,7 +110,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         // validating slots in every rendering since the allocated content might change over time
         validateSlots(vm, html);
     }
-    const vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+    const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
 
     const { styleVNode } = context;
     if (!isUndefined(context.styleVNode)) {
