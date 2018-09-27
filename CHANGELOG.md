@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.7-pre01...v) (2018-09-27)
+# [](https://github.com/salesforce/lwc/compare/v0.29.7...v) (2018-09-27)
+
+
+### Bug Fixes
+
+* upgrade compat ([#683](https://github.com/salesforce/lwc/issues/683)) ([eaab65c](https://github.com/salesforce/lwc/commit/eaab65c))
+
+
+
+<a name="0.29.7"></a>
+## [0.29.7](https://github.com/salesforce/lwc/compare/v0.29.7-pre01...v0.29.7) (2018-09-27)
 
 
 ### Bug Fixes
