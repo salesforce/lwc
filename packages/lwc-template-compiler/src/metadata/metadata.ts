@@ -11,7 +11,7 @@ import * as babelTypes from 'babel-types';
 
 export function getModuleMetadata(element: IRElement): DependencyMetadata {
     let properties;
-    // Note that we only collect properties and not attributes (such as 'class')
+    // Note that we only collect properties and not attributes (such as 'class', 'data-*')
     if (element.props) {
         properties = {};
         for (const [name, value] of Object.entries(element.props)) {

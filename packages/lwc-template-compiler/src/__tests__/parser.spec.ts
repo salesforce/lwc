@@ -441,9 +441,9 @@ describe('metadata', () => {
     });
 
     describe('Alternative Template Dependencies', () => {
-        it('return transformed parameters for special attributes', () => {
+        it('returns transformed parameters for special attributes', () => {
             const { state } = parseTemplate(`<template>
-           <x-foo aria-describedby="label"></x-foo>
+           <x-foo aria-describedby="label" readonly></x-foo>
        </template>`);
             expect(state.extendedDependencies).toEqual([
                 {
@@ -451,6 +451,10 @@ describe('metadata', () => {
                         ariaDescribedBy: {
                             type: 'literal',
                             value: 'label'
+                        },
+                        readOnly: {
+                            type: 'literal',
+                            value: true
                         }
                     },
                     moduleName: 'x/foo'
@@ -458,9 +462,9 @@ describe('metadata', () => {
             ]);
         });
 
-        it('ignores class attribute', () => {
+        it('ignores attributes such as class, data-*', () => {
             const { state } = parseTemplate(`<template>
-           <x-foo class="foo"></x-foo>
+           <x-foo class="foo" data-foo="data"></x-foo>
        </template>`);
             expect(state.extendedDependencies).toEqual([
                 {
