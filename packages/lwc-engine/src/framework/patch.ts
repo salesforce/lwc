@@ -2,8 +2,7 @@ import { VNodes } from "../3rdparty/snabbdom/types";
 import { patchEvent } from "../faux-shadow/faux";
 import { patchCustomElement } from "../faux-shadow/faux";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { isUndefined } from "lwc-compiler/src/utils";
-import { setPrototypeOf, getPrototypeOf, create } from "../shared/language";
+import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
