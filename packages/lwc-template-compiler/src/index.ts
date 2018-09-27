@@ -6,7 +6,6 @@ import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 import { CompilationMetadata, CompilationWarning } from './shared/types';
-import { kebabcaseToCamelcase } from './shared/naming';
 
 export default function compiler(
     source: string,
