@@ -1,6 +1,6 @@
 {
   "name": "benchmark",
-  "version": "0.24.27",
+  "version": "0.24.29",
   "private": true,
   "scripts": {
     "start": "best",
@@ -13,7 +13,7 @@
     "best-cli": "0.5.0"
   },
   "dependencies": {
-    "lwc-engine": "0.24.27",
-    "rollup-plugin-lwc-compiler": "0.24.27"
+    "lwc-engine": "0.24.29",
+    "rollup-plugin-lwc-compiler": "0.24.29"
   }
 }
