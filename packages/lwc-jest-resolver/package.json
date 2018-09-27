@@ -12,9 +12,7 @@
     "LWC"
   ],
   "license": "MIT",
-  "peerDependencies": {
-    "lwc-module-resolver": "0.29.x"
-  },
+
   "devDependencies": {
     "lwc-engine": "0.29.7",
     "lwc-jest-transformer": "0.29.7",
