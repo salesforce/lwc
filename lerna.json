@@ -7,5 +7,5 @@
   "exact": true,
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "version": "0.24.29"
+  "version": "0.24.30"
 }
