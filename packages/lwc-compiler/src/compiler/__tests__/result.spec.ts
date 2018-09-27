@@ -398,7 +398,8 @@ describe("compiler metadata", () => {
                 start: {column: 16, line: 3},
                 end: {column: 17, line: 13},
             },
-            doc: "* class jsdoc"
+            doc: "* class jsdoc",
+            experimentalTemplateDependencies: []
         });
     });
 });

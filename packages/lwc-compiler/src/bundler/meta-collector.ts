@@ -28,7 +28,7 @@ export class MetadataCollector {
         ApiDecorator | TrackDecorator | WireDecorator
     > = [];
     private importLocations: ModuleImportLocation[] = [];
-    private experimentalTemplateDependencies?: TemplateModuleDependency[] = [];
+    private experimentalTemplateDependencies?: TemplateModuleDependency[];
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
     private doc?: string;
