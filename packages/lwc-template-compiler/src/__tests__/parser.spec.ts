@@ -447,14 +447,13 @@ describe('metadata', () => {
        </template>`);
             expect(state.alternativeDependencies).toEqual([
                 {
-                    nodeType: "component",
-                    parameters: {
+                    properties: {
                         ariaDescribedBy: {
-                            type: "literal",
-                            value: "label"
+                            type: 'literal',
+                            value: 'label'
                         }
                     },
-                    tagName: "x/foo"
+                    moduleName: 'x/foo'
                 }
             ]);
         });
@@ -465,18 +464,17 @@ describe('metadata', () => {
        </template>`);
             expect(state.alternativeDependencies).toEqual([
                 {
-                    nodeType: "component",
-                    parameters: {
+                    properties: {
                         myBoolean: {
-                            type: "literal",
+                            type: 'literal',
                             value: true
                         },
                         myString: {
-                            type: "literal",
-                            value: "123"
+                            type: 'literal',
+                            value: '123'
                         }
                     },
-                    tagName: "x/foo"
+                    moduleName: 'x/foo'
                 }
             ]);
         });
@@ -487,32 +485,30 @@ describe('metadata', () => {
        </template>`);
             expect(state.alternativeDependencies).toEqual([
                 {
-                    nodeType: 'component',
-                    parameters: {
+                    properties: {
                         parameter: {
                             type: 'expression',
                             value: 'p1.level1.level2'
                         }
                     },
-                    tagName: 'x/foo'
+                    moduleName: 'x/foo'
                 }
             ]);
         });
 
         it('returns parameters for statement expression', () => {
             const { state } = parseTemplate(`<template>
-           <x-foo parameter={p1}></x-foo>
+           <x-foo property={p1}></x-foo>
        </template>`);
             expect(state.alternativeDependencies).toEqual([
                 {
-                    nodeType: 'component',
-                    parameters: {
-                        parameter: {
+                    properties: {
+                        property: {
                             type: 'expression',
                             value: 'p1'
                         }
                     },
-                    tagName: 'x/foo'
+                    moduleName: 'x/foo'
                 }
             ]);
         });

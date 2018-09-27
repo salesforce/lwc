@@ -1,28 +1,28 @@
 import {
     IRAttributeType,
     IRElement,
-    TemplateDependencyMetadata,
-    TemplateDependencyParameter,
-    TemplateDependencyParameterType,
-    TemplateDependencyParameterValue,
+    DependencyMetadata,
     TemplateExpression,
     TemplateIdentifier
 } from "../shared/types";
-import {kebabcaseToCamelcase} from "../shared/naming";
+import { kebabcaseToCamelcase } from "../shared/naming";
+import generate from 'babel-generator';
 import * as babelTypes from 'babel-types';
 
-export function getCustomElementMetadata(element: IRElement): TemplateDependencyMetadata {
-    const parameters = {};
+export function getModuleMetadata(element: IRElement): DependencyMetadata {
+    let properties;
+    // Note that we only collect properties and not attributes (such as 'class', 'id', etc.)
     if (element.props) {
+        properties = {};
         for (const [name, value] of Object.entries(element.props)) {
-            let returnedType: TemplateDependencyParameterType;
-            let returnedValue: TemplateDependencyParameterValue;
+            let returnedType;
+            let returnedValue;
 
             if (value.type === IRAttributeType.Expression) {
                 returnedType = 'expression';
                 const expression = value.value as TemplateExpression;
                 if (babelTypes.isMemberExpression(expression)) {
-                    returnedValue = buildRawExpression(expression);
+                    returnedValue = generate(expression).code;
                 } else {
                     returnedValue = (expression as TemplateIdentifier).name;
                 }
@@ -30,27 +30,14 @@ export function getCustomElementMetadata(element: IRElement): TemplateDependency
                 returnedType = 'literal';
                 returnedValue = value.value;
             }
-            parameters[name] = {
+            properties[name] = {
                 type: returnedType,
                 value: returnedValue
-            } as TemplateDependencyParameter;
+            };
         }
     }
     return {
-        nodeType: 'component',
-        tagName: kebabcaseToCamelcase(element.tag),
-        parameters,
-    } as TemplateDependencyMetadata;
-}
-
-function buildRawExpression(expression: babelTypes.MemberExpression): string {
-    const result: String[] = [];
-    let current: babelTypes.Expression = expression;
-    while (babelTypes.isMemberExpression(current)) {
-        const property = (current as babelTypes.MemberExpression).property;
-        result.push((property as TemplateIdentifier).name);
-        current = current.object;
-    }
-    result.push((current as TemplateIdentifier).name);
-    return result.reverse().join('.');
+        moduleName: kebabcaseToCamelcase(element.tag),
+        properties,
+    };
 }

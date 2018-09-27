@@ -1,21 +1,19 @@
 {
   "metadata": {
     "templateUsedIds": ["p", "foo"],
-    "templateDependencies": ["ns/foo", "ns/bar", "ns/buzz", "ns/table", "ns/input"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {
+
+        "properties": {
           "d": {
             "type": "expression",
             "value": "p.foo"
           }
         },
-        "tagName": "ns/foo"
+        "moduleName": "ns/foo"
       },
       {
-        "nodeType": "component",
-        "parameters": {
+        "properties": {
           "ariaDescribedBy": {
             "type": "literal",
             "value": "describedby"
@@ -45,7 +43,7 @@
             "value": "bar"
           }
         },
-        "tagName": "ns/bar"
+        "moduleName": "ns/bar"
       }
     ]
   }

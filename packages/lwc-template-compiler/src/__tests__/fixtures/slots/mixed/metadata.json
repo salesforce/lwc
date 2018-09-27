@@ -1,12 +1,9 @@
 {
   "metadata": {
     "templateUsedIds": ["isLoading", "haveLoadedItems", "menuItems"],
-    "templateDependencies": ["x/b"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "x/b"
+        "moduleName": "x/b"
       }
     ]
   }

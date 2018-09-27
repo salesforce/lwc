@@ -49,8 +49,7 @@ export default function compiler(
         metadata: {
             definedSlots: state.slots,
             templateUsedIds: state.ids,
-            templateDependencies: state.dependencies.map(kebabcaseToCamelcase),
-            alternativeTemplateDependencies: state.alternativeDependencies,
+            templateDependencies: state.alternativeDependencies,
         },
     };
 }

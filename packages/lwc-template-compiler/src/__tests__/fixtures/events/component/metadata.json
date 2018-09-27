@@ -2,12 +2,9 @@
 {
   "metadata": {
     "templateUsedIds": ["handleFoo"],
-    "templateDependencies": ["ns/foo"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "ns/foo"
+        "moduleName": "ns/foo"
       }
     ]
   }

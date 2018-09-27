@@ -1,26 +1,20 @@
 {
   "metadata": {
-    "templateDependencies": ["ns/foo", "x/foo", "ns/bar", "nested/cFoo", "ns/baz", "x/baz"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "ns/foo"
+
+        "moduleName": "ns/foo"
       },
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "x/foo"
+
+        "moduleName": "x/foo"
       },
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "ns/bar"
+
+        "moduleName": "ns/bar"
       },
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "nested/cFoo"
+        "moduleName": "nested/cFoo"
       }
     ]
   }

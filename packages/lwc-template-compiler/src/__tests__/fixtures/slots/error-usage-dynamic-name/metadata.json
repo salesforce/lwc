@@ -7,12 +7,9 @@
   }],
   "metadata": {
     "templateUsedIds": ["mySlot"],
-    "templateDependencies": ["ns/cmp"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "ns/cmp"
+        "moduleName": "ns/cmp"
       }
     ]
   }

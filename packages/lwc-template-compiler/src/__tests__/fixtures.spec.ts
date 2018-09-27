@@ -51,7 +51,6 @@ describe('fixtures', () => {
 
                 expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);
                 expect(Array.from(actualMeta.templateDependencies)).toEqual(expectMeta.templateDependencies || []);
-                expect(Array.from(actualMeta.alternativeTemplateDependencies)).toEqual(expectMeta.alternativeTemplateDependencies || []);
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }
         });

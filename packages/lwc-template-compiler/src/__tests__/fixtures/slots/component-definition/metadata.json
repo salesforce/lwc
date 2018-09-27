@@ -1,12 +1,9 @@
 {
   "metadata": {
-    "templateDependencies": ["x/foo"],
     "definedSlots": [""],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "x/foo"
+        "moduleName": "x/foo"
       }
     ]
   }

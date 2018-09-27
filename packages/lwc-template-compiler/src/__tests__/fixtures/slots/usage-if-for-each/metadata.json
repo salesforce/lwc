@@ -1,12 +1,9 @@
 {
   "metadata": {
     "templateUsedIds": ["isTrue", "items"],
-    "templateDependencies": ["a/b"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "a/b"
+        "moduleName": "a/b"
       }
     ]
   }

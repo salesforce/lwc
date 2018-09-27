@@ -1,16 +1,14 @@
 {
   "metadata": {
-    "templateDependencies": ["x/cmp"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {
+        "properties": {
           "xClass": {
             "type": "literal",
             "value": "bar"
           }
         },
-        "tagName": "x/cmp"
+        "moduleName": "x/cmp"
       }
     ]
   }

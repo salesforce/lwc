@@ -6,12 +6,9 @@
     "length": 12
   }],
   "metadata": {
-    "templateDependencies": ["x/test"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "x/test"
+        "moduleName": "x/test"
       }
     ]
   }

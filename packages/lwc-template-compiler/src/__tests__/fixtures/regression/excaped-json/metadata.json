@@ -1,16 +1,14 @@
 {
   "metadata": {
-    "templateDependencies": ["x/test"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {
+        "properties": {
           "json": {
             "type": "literal",
             "value": "[{\"column\":\"ID\",\"value\":\"5e\",\"operator\":\"equals\",\"f\":true}]"
           }
         },
-        "tagName": "x/test"
+        "moduleName": "x/test"
       }
     ]
   }

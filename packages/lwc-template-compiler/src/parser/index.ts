@@ -54,7 +54,7 @@ import {
 } from '../shared/types';
 
 import {
-    getCustomElementMetadata
+    getModuleMetadata
 } from '../metadata/metadata';
 
 import {
@@ -157,6 +157,7 @@ export default function parse(source: string, state: State): {
                 const element = stack.pop() as IRElement;
                 applyAttributes(element);
                 validateElement(element);
+                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -519,9 +520,7 @@ export default function parse(source: string, state: State): {
                 removeAttribute(element, name);
             }
         });
-        if (isCustomElementTag(tag)) {
-            state.alternativeDependencies.push(getCustomElementMetadata(element));
-        }
+
     }
 
     function validateElement(element: IRElement) {
@@ -562,6 +561,12 @@ export default function parse(source: string, state: State): {
                     node,
                 );
             }
+        }
+    }
+
+    function collectMetadata(element: IRElement) {
+        if (isCustomElementTag(element.tag)) {
+            state.alternativeDependencies.push(getModuleMetadata(element));
         }
     }
 

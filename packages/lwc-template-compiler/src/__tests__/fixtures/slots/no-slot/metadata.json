@@ -1,11 +1,8 @@
 {
   "metadata": {
-    "templateDependencies": ["x/cmp"],
-    "alternativeTemplateDependencies": [
+    "templateDependencies": [
       {
-        "nodeType": "component",
-        "parameters": {},
-        "tagName": "x/cmp"
+        "moduleName": "x/cmp"
       }
     ]
   }
