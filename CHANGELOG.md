@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.25...v) (2018-09-04)
+# [](https://github.com/salesforce/lwc/compare/v0.24.26...v) (2018-09-27)
+
+
+### Bug Fixes
+
+* **engine:** bail retargeting if target is detached ([#679](https://github.com/salesforce/lwc/issues/679)) ([#682](https://github.com/salesforce/lwc/issues/682)) ([27c7c41](https://github.com/salesforce/lwc/commit/27c7c41))
+
+
+
+<a name="0.24.26"></a>
+## [0.24.26](https://github.com/salesforce/lwc/compare/v0.24.25...v0.24.26) (2018-09-04)
 
 
 
