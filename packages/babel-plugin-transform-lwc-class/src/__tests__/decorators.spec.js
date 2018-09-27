@@ -109,17 +109,4 @@ describe('decorators', () => {
             message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
         }
     });
-
-    pluginTest('compiler should throw when "track" decorator is used in the inner class but was not imported from lwc', `
-        import { LightningElement } from 'lwc';
-        export default class Test extends Inner {}
-        class Inner extends LightningElement {
-            @track
-            name = 'h';
-        }
-    `, {
-        error: {
-            message: 'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
-        }
-    });
 })
