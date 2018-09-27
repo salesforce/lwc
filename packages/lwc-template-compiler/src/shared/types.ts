@@ -127,7 +127,7 @@ export interface DependencyParameter {
     value: string | boolean;
 }
 
-export interface DependencyMetadata {
+export interface ModuleDependency {
     moduleName: string;
     properties?: { [name: string]: DependencyParameter };
 }
@@ -135,7 +135,7 @@ export interface DependencyMetadata {
 export interface CompilationMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
-    templateDependencies: DependencyMetadata[];
+    templateDependencies: ModuleDependency[];
 }
 
 export interface CompilationOutput {

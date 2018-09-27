@@ -223,7 +223,7 @@ describe("compiler result", () => {
 });
 
 describe("compiler metadata", () => {
-    it("decorators and import locations", async () => {
+    it("decorators, import locations and template dependencies", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
             namespace: "x",
@@ -312,7 +312,13 @@ describe("compiler metadata", () => {
             declarationLoc: {
                 start: {column: 0, line: 5},
                 end: {column: 1, line: 20},
-            }
+            },
+            experimentalTemplateDependencies: [
+                {
+                    moduleName: "x/bar"
+                }
+            ]
+
         });
     });
 
@@ -392,7 +398,7 @@ describe("compiler metadata", () => {
                 start: {column: 16, line: 3},
                 end: {column: 17, line: 13},
             },
-            doc: "* class jsdoc",
+            doc: "* class jsdoc"
         });
     });
 });

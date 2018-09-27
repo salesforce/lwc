@@ -4,13 +4,15 @@ import compile from "lwc-template-compiler";
 import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
+import { TemplateModuleDependency } from "lwc-template-compiler";
+import { MetadataCollector } from "../bundler/meta-collector";
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
 export interface TemplateMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
-    templateDependencies: string[];
+    templateDependencies: TemplateModuleDependency[];
 }
 
 function attachStyleToTemplate(
@@ -63,7 +65,8 @@ function attachStyleToTemplate(
 const transform: FileTransformer = function(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedCompilerOptions,
+    metadataCollector?: MetadataCollector
 ) {
 
     let code;
@@ -75,6 +78,10 @@ const transform: FileTransformer = function(
 
         code = result.code;
         metadata = result.metadata;
+
+        if (metadataCollector) {
+            metadataCollector.setExperimentalTemplateDependencies(result.metadata.templateDependencies);
+        }
 
         const fatalError = warnings.find(warning => warning.level === "error");
         if (fatalError) {

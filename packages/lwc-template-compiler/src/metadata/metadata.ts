@@ -1,7 +1,7 @@
 import {
     IRAttributeType,
     IRElement,
-    DependencyMetadata,
+    ModuleDependency,
     TemplateExpression,
     TemplateIdentifier
 } from "../shared/types";
@@ -9,7 +9,7 @@ import { kebabcaseToCamelcase } from "../shared/naming";
 import generate from 'babel-generator';
 import * as babelTypes from 'babel-types';
 
-export function getModuleMetadata(element: IRElement): DependencyMetadata {
+export function getModuleMetadata(element: IRElement): ModuleDependency {
     let properties;
     // Note that we only collect properties and not attributes (such as 'class', 'data-*')
     if (element.props) {
