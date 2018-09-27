@@ -339,6 +339,49 @@ describe('expression', () => {
 });
 
 describe('props and attributes', () => {
+    describe('attributes that must have static values', () => {
+        it('should restrict usage of dynamic attributes', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <div id={foo}></div>
+                    <label for={foo}></label>
+                    <div aria-activedescendant={foo}></div>
+                    <div aria-controls={foo}></div>
+                    <div aria-describedby={foo}></div>
+                    <div aria-details={foo}></div>
+                    <div aria-errormessage={foo}></div>
+                    <div aria-flowto={foo}></div>
+                    <div aria-labelledby={foo}></div>
+                    <div aria-owns={foo}></div>
+                </template>
+            `);
+            expect(warnings.length).toBe(10);
+
+            const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
+            for (const { message } of warnings) {
+                expect(message).toMatch(MESSAGE_RE);
+            }
+        });
+
+        it('should not restrict usage of static values', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <div id="foo"></div>
+                    <label for="foo"></label>
+                    <div aria-activedescendant="foo"></div>
+                    <div aria-controls="foo"></div>
+                    <div aria-describedby="foo bar baz"></div>
+                    <div aria-details="foo"></div>
+                    <div aria-errormessage="foo"></div>
+                    <div aria-flowto="foo"></div>
+                    <div aria-labelledby="foo bar baz"></div>
+                    <div aria-owns="foo"></div>
+                </template>
+            `);
+            expect(warnings.length).toBe(0);
+        });
+    });
+
     it('invalid html attribute error', () => {
         const { warnings } = parseTemplate(`<template><div minlength="1" maxlength="5"></div></template>`);
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);

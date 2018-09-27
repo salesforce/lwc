@@ -1,5 +1,79 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v) (2018-09-09)
+# [](https://github.com/salesforce/lwc/compare/v0.29.7...v) (2018-09-27)
+
+
+### Bug Fixes
+
+* upgrade compat ([#683](https://github.com/salesforce/lwc/issues/683)) ([eaab65c](https://github.com/salesforce/lwc/commit/eaab65c))
+
+
+
+<a name="0.29.7"></a>
+## [0.29.7](https://github.com/salesforce/lwc/compare/v0.29.7-pre01...v0.29.7) (2018-09-27)
+
+
+### Bug Fixes
+
+* **engine:** bail retargeting if target is detached ([#679](https://github.com/salesforce/lwc/issues/679)) ([faf9cd4](https://github.com/salesforce/lwc/commit/faf9cd4))
+
+
+
+<a name="0.29.7-pre01"></a>
+## [0.29.7-pre01](https://github.com/salesforce/lwc/compare/v0.29.1...v0.29.7-pre01) (2018-09-26)
+
+
+### Bug Fixes
+
+* **engine:** fixes [#663](https://github.com/salesforce/lwc/issues/663) - unique keys for sloted elements ([#664](https://github.com/salesforce/lwc/issues/664)) ([00529a9](https://github.com/salesforce/lwc/commit/00529a9))
+* **engine:** fixes issue [#658](https://github.com/salesforce/lwc/issues/658) - parentNode on slotted elements ([#661](https://github.com/salesforce/lwc/issues/661)) ([d22bdd8](https://github.com/salesforce/lwc/commit/d22bdd8))
+* remove ignoring files ([#673](https://github.com/salesforce/lwc/issues/673)) ([c5d3e80](https://github.com/salesforce/lwc/commit/c5d3e80))
+* remove release artifacts ([#649](https://github.com/salesforce/lwc/issues/649)) ([a528117](https://github.com/salesforce/lwc/commit/a528117))
+* revert namespace mapping support ([#662](https://github.com/salesforce/lwc/issues/662)) ([728b557](https://github.com/salesforce/lwc/commit/728b557))
+* simplify rollup package ([#659](https://github.com/salesforce/lwc/issues/659)) ([e59f0f6](https://github.com/salesforce/lwc/commit/e59f0f6))
+* upgrade lwc rollup to support compat ([#646](https://github.com/salesforce/lwc/issues/646)) ([d1d3fa5](https://github.com/salesforce/lwc/commit/d1d3fa5))
+* upgrading babel ([#653](https://github.com/salesforce/lwc/issues/653)) ([ee1e513](https://github.com/salesforce/lwc/commit/ee1e513))
+
+
+### Features
+
+* augments metadata gathering for [@wire](https://github.com/wire) decorator ([#631](https://github.com/salesforce/lwc/issues/631)) ([4920a4e](https://github.com/salesforce/lwc/commit/4920a4e))
+* **compiler:** warnings to change dynamic ids to static ids ([#620](https://github.com/salesforce/lwc/issues/620)) ([a32289a](https://github.com/salesforce/lwc/commit/a32289a))
+* better error message when event listener is missing ([#656](https://github.com/salesforce/lwc/issues/656)) ([e77f7a7](https://github.com/salesforce/lwc/commit/e77f7a7))
+* **postcss-plugin-lwc:** make CSS transform compatible with shadow DOM ([#637](https://github.com/salesforce/lwc/issues/637)) ([69ece4b](https://github.com/salesforce/lwc/commit/69ece4b))
+
+
+### Performance Improvements
+
+* added ie11 agent and benchmark config ([#654](https://github.com/salesforce/lwc/issues/654)) ([2b1dac4](https://github.com/salesforce/lwc/commit/2b1dac4))
+* upgrade agent: chrome 70 ([#648](https://github.com/salesforce/lwc/issues/648)) ([39e71c8](https://github.com/salesforce/lwc/commit/39e71c8))
+* upgrade best ([#647](https://github.com/salesforce/lwc/issues/647)) ([4f6f1c1](https://github.com/salesforce/lwc/commit/4f6f1c1))
+* upgrade best ([#677](https://github.com/salesforce/lwc/issues/677)) ([633a000](https://github.com/salesforce/lwc/commit/633a000))
+
+
+
+<a name="0.29.1"></a>
+## [0.29.1](https://github.com/salesforce/lwc/compare/v0.29.0...v0.29.1) (2018-09-13)
+
+
+
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/salesforce/lwc/compare/v0.28.2...v0.29.0) (2018-09-13)
+
+
+### Bug Fixes
+
+* rename [@salesforce](https://github.com/salesforce)/resource-url to [@salesforce](https://github.com/salesforce)/resourceUrl ([#638](https://github.com/salesforce/lwc/issues/638)) ([2a86c4d](https://github.com/salesforce/lwc/commit/2a86c4d))
+
+
+### Features
+
+* open usage of data-* and aria-* attributes in CSS ([#632](https://github.com/salesforce/lwc/issues/632)) ([9e269bf](https://github.com/salesforce/lwc/commit/9e269bf)), closes [#623](https://github.com/salesforce/lwc/issues/623)
+* remove usage of :host-context ([#629](https://github.com/salesforce/lwc/issues/629)) ([5634840](https://github.com/salesforce/lwc/commit/5634840))
+
+
+
+<a name="0.28.2"></a>
+## [0.28.2](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v0.28.2) (2018-09-09)
 
 
 ### Bug Fixes

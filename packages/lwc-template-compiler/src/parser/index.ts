@@ -17,6 +17,7 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
+    isRestrictedStaticAttribute,
 } from './attribute';
 
 import {
@@ -36,7 +37,6 @@ import {
 import {
     createElement,
     isCustomElement,
-    isCustomElementTag,
     createText,
 } from '../shared/ir';
 
@@ -71,8 +71,8 @@ import {
     EVENT_HANDLER_NAME_RE,
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
+    DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
-
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
@@ -131,7 +131,6 @@ export default function parse(source: string, state: State): {
                 const elementNode = node as parse5.AST.Default.Element;
 
                 const element = createElement(elementNode.tagName, node);
-
                 element.attrsList = elementNode.attrs;
 
                 if (!root) {
@@ -157,6 +156,7 @@ export default function parse(source: string, state: State): {
                 const element = stack.pop() as IRElement;
                 applyAttributes(element);
                 validateElement(element);
+                validateAttributes(element);
                 collectMetadata(element);
 
                 parent = stack[stack.length - 1];
@@ -408,26 +408,12 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function getNamespacedTagName(name: string): string {
-        for (const [original, target] of Object.entries(state.config.namespaceMapping)) {
-            if (name.startsWith(`${original}-`)) {
-                return name.replace(`${original}-`, `${target}-`);
-            }
-        }
-
-        return name;
-    }
-
     function applyComponent(element: IRElement) {
         const { tag } = element;
-        let componentName: string | undefined;
+        let component: string | undefined;
 
-        if (isCustomElementTag(tag)) {
-            componentName = getNamespacedTagName(tag);
-
-            // Update the original tag name with the namespaced name to get it reflected in the generated
-            // code.
-            element.tag = componentName;
+        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+            component = tag;
         }
 
         const isAttr = getTemplateAttribute(element, 'is');
@@ -436,19 +422,15 @@ export default function parse(source: string, state: State): {
                 return warnAt(`Is attribute value can't be an expression`, isAttr.location);
             }
 
-            componentName = getNamespacedTagName(isAttr.value);
-
-            // Update the original is attribute value with the namespaced name to get it reflected in the
-            // generated code.
-            const originalIsAttribute = getAttribute(element, 'is');
-            originalIsAttribute!.value = componentName;
+            // Don't remove the is, because passed as attribute
+            component = isAttr.value;
         }
 
-        if (componentName) {
-            element.component = componentName;
+        if (component) {
+            element.component = component;
 
-            if (!state.dependencies.includes(componentName)) {
-                state.dependencies.push(componentName);
+            if (!state.dependencies.includes(component)) {
+                state.dependencies.push(component);
             }
         }
     }
@@ -520,7 +502,6 @@ export default function parse(source: string, state: State): {
                 removeAttribute(element, name);
             }
         });
-
     }
 
     function validateElement(element: IRElement) {
@@ -564,8 +545,21 @@ export default function parse(source: string, state: State): {
         }
     }
 
+    function validateAttributes(element: IRElement) {
+        const { attrsList } = element;
+        attrsList.forEach(attr => {
+            if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
+                warnOnElement(
+                    `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
+                    element.__original as parse5.AST.Default.Element,
+                    'warning'
+                );
+            }
+        });
+    }
+
     function collectMetadata(element: IRElement) {
-        if (isCustomElementTag(element.tag)) {
+        if (isCustomElement(element)) {
             state.extendedDependencies.push(getModuleMetadata(element));
         }
     }

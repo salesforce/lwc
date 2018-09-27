@@ -125,6 +125,9 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
     establishContext(context);
     let error;
     try {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(isFunction(fn), `Invalid event handler for event '${event.type}' on ${vm}.`);
+        }
         callHook(thisValue, fn, [event]);
     } catch (e) {
         error = Object(e);

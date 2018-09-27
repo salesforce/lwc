@@ -9,7 +9,7 @@ coverage/
 .project/
 
 lib/
-playground/
+playground/index.js
 packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/

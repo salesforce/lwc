@@ -1,14 +1,16 @@
 import { defineProperty } from "./language";
 
 /**
- * In IE11, symbols that we plan to apply everywhere are expensive
- * due to the nature of the symbol polyfill. This method abstract the
+ * In IE11, symbols are expensive.
+ * Due to the nature of the symbol polyfill. This method abstract the
  * creation of symbols, so we can fallback to string when native symbols
- * are not supported.
+ * are not supported. Note that we can't use typeof since it will fail when tranpiling.
  */
+const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
+
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
-    return typeof Symbol() === 'symbol' ? Symbol(key) : `$$lwc-${key}$$`;
+    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${key}$$`;
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {

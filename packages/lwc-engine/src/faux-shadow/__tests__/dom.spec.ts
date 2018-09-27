@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from "../../framework/html-element";
 import { getRootNode } from "../node";
@@ -17,26 +18,22 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-child onfoo={handleFoo}></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': MyComponent,
+                }
+            });
             class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
-                    return ($api, $cmp) => {
-                        return [
-                            $api.c(
-                                'x-child',
-                                MyComponent,
-                                {
-                                    on: {
-                                        foo: $api.b($cmp.handleFoo)
-                                    },
-                                    key: 0,
-                                },
-                            )
-                        ]
-                    }
+                    return parentTmpl;
                 }
             }
 
@@ -74,26 +71,22 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-child onfoo={handleFoo}></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': MyComponent,
+                }
+            });
             class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
-                    return ($api, $cmp) => {
-                        return [
-                            $api.c(
-                                'x-child',
-                                MyComponent,
-                                {
-                                    on: {
-                                        foo: $api.b($cmp.handleFoo)
-                                    },
-                                    key: 0,
-                                },
-                            )
-                        ]
-                    }
+                    return parentTmpl;
                 }
             }
 
@@ -162,25 +155,22 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <x-foo onfoo={handleFoo}></x-foo>
+                </template>
+            `, {
+                modules: {
+                    'x-foo': MyComponent,
+                }
+            });
             class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
-                    return ($api, $cmp) => {
-                        return [
-                            $api.c(
-                                'x-foo',
-                                MyComponent,
-                                {
-                                    on: {
-                                        foo: $api.b($cmp.handleFoo)
-                                    }
-                                }
-                            )
-                        ]
-                    }
+                    return parentTmpl;
                 }
             }
 

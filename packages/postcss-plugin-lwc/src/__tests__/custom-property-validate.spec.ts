@@ -1,6 +1,7 @@
-import { process, FILE_NAME, DEFAULT_TOKEN } from './shared';
+import { process, FILE_NAME, DEFAULT_TAGNAME, DEFAULT_TOKEN } from './shared';
 
 const NO_CUSTOM_PROPERTY_CONFIG = {
+    tagName: DEFAULT_TAGNAME,
     token: DEFAULT_TOKEN,
     customProperties: {
         allowDefinition: false,

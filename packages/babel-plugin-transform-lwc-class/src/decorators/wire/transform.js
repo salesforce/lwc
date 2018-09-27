@@ -74,12 +74,57 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
-function getWiredStaticMetadata(properties) {
-    const ret  = {};
+const SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE = {
+    StringLiteral: 'string',
+    NumericLiteral: 'number',
+    BooleanLiteral: 'boolean'
+};
+
+function getWiredStaticMetadata(properties, referenceLookup) {
+    const ret = {};
     properties.forEach(s => {
-        if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
-            ret[s.key.name] = s.value.elements.map(e => e.value);
+        let result = {};
+        const valueType = s.value.type;
+        if (s.key.type === 'Identifier') {
+            if (valueType === 'ArrayExpression') {
+                // @wire(getRecord, { fields: ['Id', 'Name'] })
+                // @wire(getRecord, { data: [123, false, 'string'] })
+                const elements = s.value.elements;
+                const hasUnsupportedElement =
+                    elements.some(element => !SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[element.type]);
+                if (hasUnsupportedElement) {
+                    result = {type: 'unresolved', value: 'array_expression'};
+                } else {
+                    result = {type: 'array', value: elements.map(e => e.value)};
+                }
+            } else if (SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType]) {
+                // @wire(getRecord, { companyName: ['Acme'] })
+                // @wire(getRecord, { size: 100 })
+                // @wire(getRecord, { isAdmin: true  })
+                result = {type: SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType], value: s.value.value};
+            } else if (valueType === 'Identifier') {
+                // References such as:
+                // 1. Modules
+                // import id from '@salesforce/user/id'
+                // @wire(getRecord, { userId: id })
+                //
+                // 2. 1st order constant references with string literals
+                // const userId = '123';
+                // @wire(getRecord, { userId: userId })
+                const reference = referenceLookup(s.value.name);
+                result = {value: reference.value, type: reference.type};
+                if (!result.type) {
+                    result = {type: 'unresolved', value: 'identifier'}
+                }
+            } else if (valueType === 'MemberExpression') {
+                // @wire(getRecord, { userId: recordData.Id })
+                result = {type: 'unresolved', value: 'member_expression'};
+            }
         }
+        if (!result.type) {
+            result = {type: 'unresolved'};
+        }
+        ret[s.key.name] = result;
     });
     return ret;
 }
@@ -94,10 +139,40 @@ function getWiredParamMetadata(properties) {
     return ret;
 }
 
+const scopedReferenceLookup = scope => name => {
+    const binding = scope.getBinding(name);
+
+    let type;
+    let value;
+
+    if (binding) {
+        if (binding.kind === 'module') {
+            // Resolves module import to the name of the module imported
+            // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
+            let parentPathNode = binding.path.parentPath.node;
+            if (parentPathNode && parentPathNode.source) {
+                type = 'module';
+                value = parentPathNode.source.value;
+            }
+        } else if (binding.kind === 'const') {
+            // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
+            const init = binding.path.node.init;
+            if (init && SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type]) {
+                type = SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type];
+                value = init.value;
+            }
+        }
+    }
+    return {
+        type,
+        value
+    };
+};
+
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
-    const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
-        const [id, config] = path.get('arguments');
+    const wiredValues = decorators.filter(isWireDecorator).map(({path}) => {
+        const [id, config] = path.get('expression.arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
         const isClassMethod = path.parentPath.isClassMethod({
@@ -107,17 +182,21 @@ module.exports = function transform(t, klass, decorators) {
         const wiredValue = {
             propertyName,
             isClassMethod
-        }
+        };
 
         if (config) {
             wiredValue.static = getWiredStatic(config);
             wiredValue.params = getWiredParams(t, config);
         }
 
+        const referenceLookup = scopedReferenceLookup(path.scope);
+
         if (id.isIdentifier()) {
+            const adapterName = id.node.name;
+            const reference = referenceLookup(adapterName);
             wiredValue.adapter = {
-                name: id.node.name,
-                reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
+                name: adapterName,
+                reference: reference.type === 'module' ? reference.value : undefined
             }
         }
 
@@ -128,7 +207,7 @@ module.exports = function transform(t, klass, decorators) {
         };
 
         if (config) {
-            wireMetadata.static = getWiredStaticMetadata(wiredValue.static);
+            wireMetadata.static = getWiredStaticMetadata(wiredValue.static, referenceLookup);
             wireMetadata.params = getWiredParamMetadata(wiredValue.params);
         }
 
@@ -154,4 +233,4 @@ module.exports = function transform(t, klass, decorators) {
             targets: metadata
         };
     }
-}
+};

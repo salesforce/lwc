@@ -1,7 +1,7 @@
 {
   "name": "lwc-integration",
   "private": true,
-  "version": "0.28.2",
+  "version": "0.29.8",
   "license": "Beerware",
   "scripts": {
     "test": "echo 'No unit test in lwc-integration package'",
@@ -23,18 +23,14 @@
     "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
-    "babel-preset-compat": "0.18.12",
-    "compat-polyfills": "0.18.12",
     "deepmerge": "^1.5.2",
     "dotenv": "^4.0.0",
-    "es5-proxy-compat": "0.18.12",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
-    "lwc-compiler": "0.28.2",
-    "lwc-engine": "0.28.2",
+    "lwc-compiler": "0.29.8",
+    "lwc-engine": "0.29.8",
     "minimist": "^1.2.0",
-    "rollup-plugin-compat": "0.18.12",
-    "rollup-plugin-lwc-compiler": "0.28.2",
+    "rollup-plugin-lwc-compiler": "0.29.8",
     "wdio-junit-reporter": "^0.4.3",
     "wdio-mocha-framework": "~0.5.13",
     "wdio-sauce-service": "~0.4.8",

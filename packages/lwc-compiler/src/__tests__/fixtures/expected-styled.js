@@ -2,7 +2,11 @@ import _xFoo from 'x/foo';
 import { LightningElement } from 'lwc';
 
 function style(token) {
-    return `[${token}-host] {
+    return `:host {
+    color: blue;
+}
+
+[${token}-host] {
     color: blue;
 }
 div[${token}] {

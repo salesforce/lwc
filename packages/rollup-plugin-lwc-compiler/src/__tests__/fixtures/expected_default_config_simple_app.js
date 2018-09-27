@@ -29,9 +29,8 @@
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
-        var _temp;
-
-        return _temp = super(...args), this.x = void 0, _temp;
+        super(...args);
+        this.x = void 0;
       }
 
       render() {
