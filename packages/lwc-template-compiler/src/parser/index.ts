@@ -566,7 +566,7 @@ export default function parse(source: string, state: State): {
 
     function collectMetadata(element: IRElement) {
         if (isCustomElementTag(element.tag)) {
-            state.alternativeDependencies.push(getModuleMetadata(element));
+            state.extendedDependencies.push(getModuleMetadata(element));
         }
     }
 

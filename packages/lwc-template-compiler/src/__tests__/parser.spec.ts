@@ -445,7 +445,7 @@ describe('metadata', () => {
             const { state } = parseTemplate(`<template>
            <x-foo aria-describedby="label"></x-foo>
        </template>`);
-            expect(state.alternativeDependencies).toEqual([
+            expect(state.extendedDependencies).toEqual([
                 {
                     properties: {
                         ariaDescribedBy: {
@@ -458,11 +458,22 @@ describe('metadata', () => {
             ]);
         });
 
+        it('ignores class attribute', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo class="foo"></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    moduleName: 'x/foo'
+                }
+            ]);
+        });
+
         it('returns literals in parameters', () => {
             const { state } = parseTemplate(`<template>
            <x-foo my-string="123" my-boolean></x-foo>
        </template>`);
-            expect(state.alternativeDependencies).toEqual([
+            expect(state.extendedDependencies).toEqual([
                 {
                     properties: {
                         myBoolean: {
@@ -483,7 +494,7 @@ describe('metadata', () => {
             const { state } = parseTemplate(`<template>
            <x-foo parameter={p1.level1.level2}></x-foo>
        </template>`);
-            expect(state.alternativeDependencies).toEqual([
+            expect(state.extendedDependencies).toEqual([
                 {
                     properties: {
                         parameter: {
@@ -500,7 +511,7 @@ describe('metadata', () => {
             const { state } = parseTemplate(`<template>
            <x-foo property={p1}></x-foo>
        </template>`);
-            expect(state.alternativeDependencies).toEqual([
+            expect(state.extendedDependencies).toEqual([
                 {
                     properties: {
                         property: {
