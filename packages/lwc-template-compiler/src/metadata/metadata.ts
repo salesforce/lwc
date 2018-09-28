@@ -37,7 +37,7 @@ export function getModuleMetadata(element: IRElement): ModuleDependency {
         }
     }
     return {
-        moduleName: kebabcaseToCamelcase(element.tag),
+        moduleName: kebabcaseToCamelcase(element.component),
         properties,
     };
 }

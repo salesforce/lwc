@@ -1,3 +1,9 @@
 {
-  "metadata": { }
+  "metadata": {
+    "templateDependencies": [
+      {
+        "moduleName": "ns/row"
+      }
+    ]
+  }
 }

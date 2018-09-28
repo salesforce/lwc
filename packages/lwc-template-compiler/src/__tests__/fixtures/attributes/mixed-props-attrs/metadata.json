@@ -3,16 +3,16 @@
     "templateUsedIds": ["p", "foo"],
     "templateDependencies": [
       {
-
+        "moduleName": "ns/foo",
         "properties": {
           "d": {
             "type": "expression",
             "value": "p.foo"
           }
-        },
-        "moduleName": "ns/foo"
+        }
       },
       {
+        "moduleName": "ns/bar",
         "properties": {
           "ariaDescribedBy": {
             "type": "literal",
@@ -42,8 +42,54 @@
             "type": "literal",
             "value": "bar"
           }
-        },
-        "moduleName": "ns/bar"
+        }
+      },
+      {
+        "moduleName": "ns/buzz",
+        "properties": {
+          "ariaHidden": {
+            "type": "literal",
+            "value": "hidden"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "x"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/table",
+        "properties": {
+          "bar": {
+            "type": "literal",
+            "value": "test"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "x"
+          },
+          "min": {
+            "type": "literal",
+            "value": "3"
+          },
+          "tabIndex": {
+            "type": "literal",
+            "value": "2"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/input",
+        "properties": {
+          "maxLength": {
+            "type": "literal",
+            "value": "10"
+          },
+          "minLength": {
+            "type": "literal",
+            "value": "3"
+          }
+        }
       }
     ]
   }
