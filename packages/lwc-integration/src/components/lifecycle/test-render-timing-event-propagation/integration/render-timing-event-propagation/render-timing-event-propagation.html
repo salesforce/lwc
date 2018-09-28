@@ -1,0 +1,11 @@
+<template>
+    <integration-button
+        hide-button={state.hideButton}
+        onbad={handleBad}
+        onclick={handleClick}
+    ></integration-button>
+
+    <template if:true={state.bad}>
+        <p>Ruh-roh! Button was removed before the click event finished propagating!</p>
+    </template>
+</template>
