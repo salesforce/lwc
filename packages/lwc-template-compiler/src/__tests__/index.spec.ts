@@ -17,6 +17,20 @@ function functionMatchCode(fn, code) {
     );
 }
 
+
+describe('option secure', () => {
+    it.only('validated presence of options', () => {
+        try {
+            const { code } = compiler(`<template>test</template>`, { secure: true });
+            console.log(code);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+});
+
+
+
 describe('option validation', () => {
     it('validated presence of options', () => {
         expect(() => {

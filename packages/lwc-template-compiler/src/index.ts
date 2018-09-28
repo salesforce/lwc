@@ -35,7 +35,7 @@ export default function compiler(
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const output = generate(parsingResults.root, state);
+            const output = generate(parsingResults.root, state, options);
             code = output.code;
         }
     } catch (error) {
@@ -82,6 +82,6 @@ export function compileToFunction(source: string): Function {
         throw new Error(`Invalid template`);
     }
 
-    const { code } = generate(parsingResults.root, state);
+    const { code } = generate(parsingResults.root, state, options);
     return new Function(TEMPLATE_MODULES_PARAMETER, code);
 }
