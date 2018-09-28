@@ -11,18 +11,11 @@ const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     }
 };
 
-const DEFAULT_OUTPUT_CONFIG = {
-    env: {
-        NODE_ENV: "development"
-    },
+const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
+    env: {},
     minify: false,
     compat: false
 };
-
-export type OutputProxyCompatConfig =
-    | { global: string }
-    | { module: string }
-    | { independent: string };
 
 export type CustomPropertiesResolution =
     | { type: 'native' }
@@ -41,7 +34,6 @@ export interface OutputConfig {
     env?: { [name: string]: string };
     compat?: boolean;
     minify?: boolean;
-    resolveProxyCompat?: OutputProxyCompatConfig;
 }
 
 export interface BundleFiles {
