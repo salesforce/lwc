@@ -28,6 +28,7 @@ import {
     seal,
     forEach,
     getPropertyDescriptor,
+    setPrototypeOf,
 } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
@@ -40,7 +41,7 @@ import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { LightningElement as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
+import { LightningElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
     resolveCircularModuleDependency,
@@ -48,7 +49,6 @@ import {
     ViewModelReflection,
 } from "./utils";
 import { getCustomElementVM } from "./vm";
-import { BaseCustomElementProto } from "./dom-api";
 
 interface PropDef {
     config: number;
@@ -78,9 +78,8 @@ export interface ComponentDef {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
-    descriptors: PropertyDescriptorMap;
     ctor: ComponentConstructor;
-    elmProto: object;
+    WC: new() => HTMLElement;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
@@ -112,7 +111,7 @@ function getCtorProto(Ctor: any): ComponentConstructor {
         // of our Base class without having to leak it to user-land. If the circular function returns
         // itself, that's the signal that we have hit the end of the proto chain, which must always
         // be base.
-        proto = p === proto ? BaseElement : p;
+        proto = p === proto ? LightningElement : p;
     }
     return proto as ComponentConstructor;
 }
@@ -123,7 +122,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getCtorProto(Ctor);
-    if (proto as any === BaseElement) {
+    if (proto as any === LightningElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -180,10 +179,9 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback,
         render,
     } = proto;
-    let superElmProto = globalElmProto;
-    let superElmDescriptors = globalElmDescriptors;
+    let SuperElement = HTMLLightningElement;
     const superProto = getCtorProto(Ctor);
-    const superDef: ComponentDef | null = superProto as any !== BaseElement ? getComponentDef(superProto) : null;
+    const superDef: ComponentDef | null = superProto as any !== LightningElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -193,13 +191,12 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
-        superElmProto = superDef.elmProto;
-        superElmDescriptors = superDef.descriptors;
+        SuperElement = superDef.WC;
     }
 
     const localKeyDescriptors = createCustomElementDescriptorMap(props, methods);
-    const elmProto = create(superElmProto, localKeyDescriptors);
-    const descriptors = assign(create(null), superElmDescriptors, localKeyDescriptors);
+    const WC = class HTMLCustomElement extends SuperElement {};
+    defineProperties(WC.prototype, localKeyDescriptors);
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
@@ -209,8 +206,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
-        descriptors,
-        elmProto,
+        WC,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -392,6 +388,10 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
     return ctor;
 }
 
+export function setElementProto(elm: HTMLElement, def: ComponentDef) {
+    setPrototypeOf(elm, def.WC.prototype);
+}
+
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
 import "../polyfills/click-event-composed/main"; // must come before event-composed
@@ -402,8 +402,8 @@ import "../polyfills/aria-properties/main";
 
 const HTML_PROPS: PropsDef = create(null);
 const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
-const globalElmProto: object = create(BaseCustomElementProto);
-const globalElmDescriptors: PropertyDescriptorMap = create(null, {});
+const HTMLLightningElement = class extends HTMLElement {};
+const HTMLLightningElementProto = HTMLLightningElement.prototype;
 
 forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
@@ -416,13 +416,13 @@ forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
             type: 'any',
             attr: attrName,
         };
-        const globalElmDescriptor = globalElmDescriptors[propName] = {
+        const globalElmDescriptor = {
             get: createGetter(propName),
             set: createSetter(propName),
             enumerable: true,
             configurable: true,
         };
-        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        defineProperty(HTMLLightningElementProto, propName, globalElmDescriptor);
         GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
     }
 });
@@ -438,22 +438,22 @@ forEach.call(defaultDefHTMLPropertyNames, (propName) => {
             type: 'any',
             attr: attrName,
         };
-        const globalElmDescriptor = globalElmDescriptors[propName] = {
+        const globalElmDescriptor = {
             get: createGetter(propName),
             set: createSetter(propName),
             enumerable: true,
             configurable: true,
         };
-        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        defineProperty(HTMLLightningElementProto, propName, globalElmDescriptor);
         GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
     }
 });
 
-defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
+defineProperties(LightningElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+    patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
 }
 
-freeze(BaseElement);
-seal(BaseElement.prototype);
+freeze(LightningElement);
+seal(LightningElement.prototype);

@@ -69,10 +69,10 @@ interface PatchedComponentDef extends ComponentDef {
 export function patchCustomElementProto(elm: HTMLElement, tag: string, def: ComponentDef) {
     let proto = (def as PatchedComponentDef).patchedElmProto;
     if (isUndefined(proto)) {
-        proto = (def as PatchedComponentDef).patchedElmProto = def.elmProto;
-        // temporary patching the proto, eventually this should be just more nodes in the proto chain
-        patchCustomElement(proto as HTMLElement);
+        proto = (def as PatchedComponentDef).patchedElmProto = def.WC.prototype;
     }
+    // temporary patching the proto, eventually this should be just more nodes in the proto chain
+    patchCustomElement(elm);
     setPrototypeOf(elm, proto);
 }
 
