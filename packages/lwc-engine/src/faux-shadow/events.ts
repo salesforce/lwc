@@ -8,7 +8,6 @@ import {
     parentNodeGetter,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { patchShadowDomTraversalMethods } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
 
@@ -40,7 +39,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 // event is already beyond the boundaries of our controlled shadow roots
                 return currentTarget;
             }
-            return patchShadowDomTraversalMethods(currentTarget as Element);
+            return currentTarget as Element;
         },
         enumerable: true,
         configurable: true,
@@ -71,7 +70,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const eventContext = eventToContextMap.get(this);
             // Executing event listener on component, target is always currentTarget
             if (eventContext === EventListenerContext.CUSTOM_ELEMENT_LISTENER) {
-                return patchShadowDomTraversalMethods(currentTarget as Element);
+                return currentTarget as Element;
             }
             const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE); // x-child
 
@@ -163,7 +162,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             if (isUndefined(getNodeOwnerKey(closestTarget as Node))) {
                 return closestTarget;
             }
-            return patchShadowDomTraversalMethods(closestTarget as Element);
+            return closestTarget as Element;
         },
         enumerable: true,
         configurable: true,

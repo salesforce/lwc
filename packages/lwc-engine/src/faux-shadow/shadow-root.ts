@@ -1,14 +1,13 @@
 import assert from "../shared/assert";
 import { create, assign, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, patchShadowDomTraversalMethods } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
-import { unwrap } from "./traverse-membrane";
 import { DocumentPrototypeActiveElement } from "./document";
 
 let ArtificialShadowRootPrototype;
@@ -115,7 +114,7 @@ function activeElementGetter(this: ShadowRoot): Element | null {
     // activeElement must be child of the host and owned by it
     // TODO: what happen with delegatesFocus is true for a child component?
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
-        isNodeOwnedBy(host, activeElement) ? patchShadowDomTraversalMethods(activeElement) : null;
+        isNodeOwnedBy(host, activeElement) ? activeElement : null;
 }
 
 function hostGetter(this: ShadowRoot): HTMLElement {
@@ -203,7 +202,6 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     compareDocumentPosition: {
         value(this: ShadowRoot, otherNode: Node): number {
             // this API might be called with proxies
-            otherNode = unwrap(otherNode);
             const host = getHost(this);
             if (this === otherNode) {
                 // it is the root itself
@@ -226,7 +224,6 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     contains: {
         value(this: ShadowRoot, otherNode: Node): boolean {
             // this API might be called with proxies
-            otherNode = unwrap(otherNode);
             const host = getHost(this);
             // must be child of the host and owned by it.
             return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&

@@ -14,20 +14,16 @@ import {
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
-    defineProperty,
     ArrayReduce,
-    isFalse,
     ArrayPush,
     assign,
     isUndefined,
     toString,
     ArrayFilter,
     isTrue,
-    ArrayMap,
     create,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
-import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
@@ -76,7 +72,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
     } else if (value instanceof Element) {
         if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
-            return patchShadowDomTraversalMethods(value);
+            return value;
         } else if (!isNull(owner) && tagNameGetter.call(value) === 'SLOT') {
             // slotted elements must be top level childNodes of the slot element
             // where they slotted into, but its shadowed parent is always the
@@ -84,7 +80,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
             const slotOwner = getNodeOwner(value);
             if (!isNull(slotOwner) && isNodeOwnedBy(owner, slotOwner)) {
                 // it is a slotted element, and therefore its parent is always going to be the host of the slot
-                return patchShadowDomTraversalMethods(slotOwner);
+                return slotOwner;
             }
         }
     }
@@ -123,7 +119,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node));
+            ArrayPush.call(filteredAndPatched, node);
         }
     }
     return filteredAndPatched;
@@ -132,7 +128,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
-            return patchShadowDomTraversalMethods(nodeList[i] as Element);
+            return (nodeList[i] as Element);
         }
     }
     return null;
@@ -230,12 +226,6 @@ export function getFilteredChildNodes(node: Node): Element[] {
 }
 
 function lightDomChildNodesGetter(this: HTMLElement): Node[] {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(
-            `childNodes on ${toString(this)} returns a live NodeList which is not stable. Use querySelectorAll instead.`,
-            this
-        );
-    }
     const owner = getNodeOwner(this);
     if (isNull(owner)) {
         return [];
@@ -266,7 +256,7 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
     if (isNull(parentNode) || tagNameGetter.call(parentNode) !== 'SLOT' || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
         return null;
     }
-    return patchShadowDomTraversalMethods(parentNode as HTMLElement);
+    return parentNode as HTMLElement;
 }
 
 interface AssignedNodesOptions {
@@ -275,15 +265,13 @@ interface AssignedNodesOptions {
 
 function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
     const flatten = !isUndefined(options) && isTrue(options.flatten);
-    const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-    return ArrayMap.call(nodes, patchShadowDomTraversalMethods);
+    return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
 }
 
 function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
     const flatten = !isUndefined(options) && isTrue(options.flatten);
     const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-    const elements: Element[] = ArrayFilter.call(nodes, node => node instanceof Element);
-    return ArrayMap.call(elements, patchShadowDomTraversalMethods);
+    return ArrayFilter.call(nodes, node => node instanceof Element);
 }
 
 function slotNameGetter(this: HTMLElement): string {
@@ -375,34 +363,3 @@ const contentWindowDescriptor: PropertyDescriptor = {
     },
     configurable: true,
 };
-
-function nodeIsPatched(node: Node): boolean {
-    // TODO: Remove comment once membrane is gone
-    // return isFalse(hasOwnProperty.call(node, 'querySelector'));
-    return traverseMembraneContains(node);
-}
-
-function patchDomNode<T extends Node>(node: T): T {
-    return traverseMembraneWrap(node);
-}
-
-// For the time being, we have to use a proxy to get Shadow Semantics.
-// The other possibility is to monkey patch the element itself, but this
-// is very difficult to integrate because almost no integration tests
-// understand what to do with shadow root. Using a Proxy here allows us
-// to enforce shadow semantics from within components and still allows browser
-// to use "light" apis as expected.
-export function patchShadowDomTraversalMethods<T extends Node>(node: T): T {
-    // Patching is done at the HTMLElement instance level.
-    // Avoid monkey patching shadow methods twice for perf reasons.
-    // If the node has querySelector defined on it, we have already
-    // seen it and can move on.
-    if (isFalse(nodeIsPatched(node as Node)) && node instanceof Element) {
-        if (tagNameGetter.call(node) === 'IFRAME') {
-            // We need to patch iframe.contentWindow because raw access to the contentWindow
-            // Will break in compat mode
-            defineProperty(node, 'contentWindow', contentWindowDescriptor);
-        }
-    }
-    return patchDomNode(node);
-}
