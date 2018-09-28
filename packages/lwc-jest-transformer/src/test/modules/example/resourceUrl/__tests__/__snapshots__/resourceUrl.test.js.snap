@@ -10,7 +10,7 @@ exports[`example-resource-url default snapshot 1`] = `
   <p
     class="unmockedResource"
   >
-    c.unmocked
+    unmocked
   </p>
 </example-resource-url>
 `;
