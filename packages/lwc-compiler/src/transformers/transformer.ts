@@ -15,6 +15,7 @@ import compatPluginFactory from "../rollup-plugins/compat";
 
 import { isString, isUndefined } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
+import { SourceMap } from "../compiler/compiler";
 
 // TODO: Improve on metadata type by providing consistent interface. Currently
 // javascript transformer output differs from css and html in that later return a promise
@@ -23,7 +24,7 @@ export interface FileTransformerResult {
     metadata?:
         | TemplateMetadata
         | lwcClassTransformPlugin.Metadata;
-    map: null;
+    map: SourceMap | null;
 }
 
 export type FileTransformer = (
@@ -72,6 +73,8 @@ export async function transformFile(
 
     let compatResult;
     if (options.outputConfig.compat) {
+        // @todo: Evaluate for removal.
+        // **Note: this is dead code since it was only used in the rollup-plugin-lwc, but it was refactored to do this as part of the rollup-plugin-compat
         try {
             const compatPlugin = compatPluginFactory(
                 options.outputConfig.resolveProxyCompat

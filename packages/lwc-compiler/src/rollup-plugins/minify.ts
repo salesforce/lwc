@@ -9,15 +9,33 @@ export const MINIFY_CONFIG: any = Object.assign({
     presets: [[minify, { guards: false, evaluate: false }]]
 });
 
+export interface LwcMinifierOptions {
+    sourcemap?: boolean | 'inline';
+}
+
+function normalizeOptions(options: LwcMinifierOptions | undefined) {
+    const defaultOptions = Object.assign({}, MINIFY_CONFIG);
+
+    if (options) {
+        if (options.sourcemap !== undefined) {
+            defaultOptions.sourceMaps = options.sourcemap;
+        }
+    }
+
+    return defaultOptions;
+}
+
 /**
  * Rollup plugin applying minification to the generated bundle.
  */
-export default function() {
+export default function(options?: LwcMinifierOptions) {
+    const config = normalizeOptions(options);
+
     return {
         name: 'lwc-minify',
 
         transformBundle(src: string) {
-            const { code, map } = babel.transform(src, MINIFY_CONFIG);
+            const { code, map } = babel.transform(src, config);
             return { code, map };
         },
     };

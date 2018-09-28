@@ -87,7 +87,7 @@ const transform: FileTransformer = function(
     return {
         code: attachStyleToTemplate(code, filename, options),
         metadata,
-        map: null
+        map: { mappings: '' }
     };
 };
 

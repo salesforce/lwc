@@ -15,9 +15,18 @@ export interface CompilerOutput {
 
 export interface BundleResult {
     code: string;
-    map: null;
+    map: SourceMap | null;
     metadata: BundleMetadata;
     outputConfig: NormalizedOutputConfig;
+}
+
+export interface SourceMap {
+    version?: 3;
+    file?: string;
+    sourceRoot?: string;
+    sources?: string[];
+    names?: string[];
+    mappings: string;
 }
 
 export async function compile(
@@ -32,6 +41,7 @@ export async function compile(
     const {
         diagnostics: bundleDiagnostics,
         code,
+        map,
         metadata,
     } = await bundle(normalizedOptions);
 
@@ -40,7 +50,7 @@ export async function compile(
     if (!hasError(diagnostics)) {
         result = {
             code,
-            map: null,
+            map,
             metadata,
             outputConfig: normalizedOptions.outputConfig,
         };

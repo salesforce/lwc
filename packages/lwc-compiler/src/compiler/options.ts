@@ -16,7 +16,8 @@ const DEFAULT_OUTPUT_CONFIG = {
         NODE_ENV: "development"
     },
     minify: false,
-    compat: false
+    compat: false,
+    sourcemap: false
 };
 
 export type OutputProxyCompatConfig =
@@ -42,6 +43,7 @@ export interface OutputConfig {
     compat?: boolean;
     minify?: boolean;
     resolveProxyCompat?: OutputProxyCompatConfig;
+    sourcemap?: boolean | 'inline';
 }
 
 export interface BundleFiles {
@@ -76,6 +78,7 @@ export interface NormalizedStylesheetConfig extends StylesheetConfig {
 export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
     minify: boolean;
+    sourcemap: boolean | 'inline';
     env: {
         [name: string]: string;
     };
@@ -170,6 +173,14 @@ function validateOutputConfig(config: OutputConfig) {
             `Expected a boolean for outputConfig.compat, received "${
                 config.compat
             }".`
+        );
+    }
+
+    if (!isUndefined(config.sourcemap) && !(isBoolean(config.sourcemap) || config.sourcemap === 'inline')) {
+        throw new TypeError(
+            `Expected a boolean or string 'inline' for outputConfig.sourcemap, received "${
+                config.sourcemap
+                }".`
         );
     }
 }

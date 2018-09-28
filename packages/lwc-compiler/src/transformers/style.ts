@@ -127,5 +127,5 @@ export default async function transformStyle(
         code = EMPTY_CSS_OUTPUT;
     }
 
-    return { code, map: null };
+    return { code, map: { mappings: '' } };
 }
