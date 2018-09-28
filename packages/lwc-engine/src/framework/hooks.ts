@@ -11,7 +11,7 @@ import {
 } from "./dom-api";
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
-import { getComponentDef } from "./def";
+import { getComponentDef, setElementProto } from "./def";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
@@ -77,8 +77,9 @@ export const createCustomElmHook = (vnode: VCustomElement) => {
         setAttribute.call(elm, token, '');
     }
     setNodeOwnerKey(elm, uid);
+    const def = getComponentDef(ctor);
+    setElementProto(elm, def);
     if (isTrue(fallback)) {
-        const def = getComponentDef(ctor);
         patchCustomElementProto(elm, sel, def);
     }
     if (process.env.NODE_ENV !== 'production') {

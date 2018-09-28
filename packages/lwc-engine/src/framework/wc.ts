@@ -1,5 +1,5 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse } from "../shared/language";
+import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
@@ -12,7 +12,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
-    const { props, descriptors } = getComponentDef(Ctor);
+    const { props, WC } = getComponentDef(Ctor);
     const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
     if (isObject(options) && !isNull(options)) {
         const { mode, fallback } = (options as any);
@@ -21,7 +21,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // fallback defaults to false to favor shadowRoot
         normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
     }
-    class LightningWrapperElement extends HTMLElement {
+    class LightningWrapperElement extends WC {
         constructor() {
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
@@ -67,8 +67,5 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         }
         static observedAttributes = getOwnPropertyNames(props);
     }
-    // adding all public descriptors to the prototype so we don't have to
-    // do it per instance in html-element.ts constructors
-    defineProperties(LightningWrapperElement.prototype, descriptors);
     return LightningWrapperElement;
 }
