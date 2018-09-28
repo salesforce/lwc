@@ -18,7 +18,6 @@ import {
     ArrayPush,
     assign,
     isUndefined,
-    toString,
     ArrayFilter,
     isTrue,
     create,
@@ -353,13 +352,14 @@ export const SlotPatchDescriptors: PropertyDescriptorMap = assign(create(null), 
     },
 });
 
-const contentWindowDescriptor: PropertyDescriptor = {
-    get(this: HTMLIFrameElement) {
-        const original = iFrameContentWindowGetter.call(this);
-        if (original) {
-            return wrapIframeWindow(original);
-        }
-        return original;
-    },
-    configurable: true,
-};
+export const IframeDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
+    contentWindow: {
+        get(this: HTMLIFrameElement) {
+            const original = iFrameContentWindowGetter.call(this);
+            if (original) {
+                return wrapIframeWindow(original);
+            }
+            return original;
+        },
+    }
+});

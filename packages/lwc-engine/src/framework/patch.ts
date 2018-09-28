@@ -1,11 +1,12 @@
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { patchEvent } from "../faux-shadow/faux";
 import { patchCustomElement } from "../faux-shadow/faux";
+import { elementTagNameGetter } from "./dom-api";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { setPrototypeOf, getPrototypeOf, create, isUndefined, assign } from "../shared/language";
+import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "lwc-engine/src/framework/base-bridge-element";
-import { ElementPatchDescriptors, SlotPatchDescriptors, NodePatchDescriptors } from "../faux-shadow/traverse";
+import { ElementPatchDescriptors, SlotPatchDescriptors, NodePatchDescriptors, IframeDescriptors } from "../faux-shadow/traverse";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
@@ -53,12 +54,16 @@ export function patchCommentNodeProto(comment: Comment) {
 const TagToProtoCache: Record<string, object> = create(null);
 
 function getPatchedElementPrototypeOf(elm: HTMLElement) {
-    const proto = assign({}, NodePatchDescriptors, ElementPatchDescriptors);
-    if (elm.tagName === 'SLOT') {
-        assign(proto, SlotPatchDescriptors);
+    let descriptors = ElementPatchDescriptors;
+    switch (elementTagNameGetter.call(elm)) {
+        case 'SLOT':
+            descriptors = SlotPatchDescriptors;
+            break;
+        case 'IFRAME':
+            descriptors = IframeDescriptors;
+            break;
     }
-
-    return create(getPrototypeOf(elm), proto);
+    return create(getPrototypeOf(elm), descriptors);
 }
 
 // this method is supposed to be invoked when in fallback mode only
