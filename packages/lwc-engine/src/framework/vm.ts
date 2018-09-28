@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
+import { parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -430,9 +430,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm } = vm;
-    // TODO: bug #435 - shadowDOM will preventing this walking process, we
-    // need to find a different way to find the right boundary
-    const parentElm = elm && parentElementGetter.call(elm);
+    const parentElm = elm && getParentElement(elm);
     return getErrorBoundaryVM(parentElm);
 }
 
@@ -444,8 +442,8 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
-function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
-    let elm: Element | null = startingElement;
+function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined {
+    let elm: HTMLElement | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
@@ -453,9 +451,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        // TODO: bug #435 - shadowDOM will preventing this walking process, we
-        // need to find a different way to find the right boundary
-        elm = parentElementGetter.call(elm);
+        elm = getParentElement(elm);
     }
 }
 
@@ -476,11 +472,24 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
             const is = elm.getAttribute('is');
             ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
         }
-        // TODO: bug #435 - shadowDOM will preventing this walking process, we
-        // need to find a different way to find the right boundary
-        elm = parentElementGetter.call(elm);
+        elm = getParentElement(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
+}
+
+/**
+ * Grabs the parent of the specified element. If shadow DOM is enabled, grabs
+ * the host of the shadow root to escape the shadow boundary.
+ * @param elm
+ */
+function getParentElement(elm: HTMLElement): HTMLElement {
+    const parentNode = parentNodeGetter.call(elm);
+    // If this is a shadow root, grab the host instead
+    return isShadowRoot(parentNode) ? getShadowRootHost(parentNode) : parentNode;
+}
+
+function isShadowRoot(node: Node | null): boolean {
+    return !isNull(node) && isNull(parentNodeGetter.call(node));
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
