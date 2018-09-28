@@ -478,13 +478,14 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
 }
 
 /**
- * Grabs the parent of the specified element. If shadow DOM is enabled, grabs
+ * Finds the parent of the specified element. If shadow DOM is enabled, finds
  * the host of the shadow root to escape the shadow boundary.
- * @param elm
+ * @param {HTMLElement} elm
+ * @return {HTMLElement} the parent element, escaping any shadow root boundaries
  */
 function getParentElement(elm: HTMLElement): HTMLElement {
     const parentNode = parentNodeGetter.call(elm);
-    // If this is a shadow root, grab the host instead
+    // If this is a shadow root, find the host instead
     return isShadowRoot(parentNode) ? getShadowRootHost(parentNode) : parentNode;
 }
 
