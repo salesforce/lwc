@@ -15,6 +15,18 @@ describe('@salesforce/contentAssetUrl import', () => {
         }
     `);
 
+    test('does default transformation for namespaced values', `
+        import myResource from '@salesforce/contentAssetUrl/ns__foo';
+    `, `
+        let myResource;
+
+        try {
+          myResource = require('@salesforce/contentAssetUrl/ns__foo').default;
+        } catch (e) {
+          myResource = 'ns__foo';
+        }
+    `);
+
     test('allows non-@salesforce/contentAssetUrl named imports', `
         import { otherNamed } from './something-valid';
         import myResource from '@salesforce/contentAssetUrl/foo';
