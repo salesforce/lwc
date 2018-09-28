@@ -14,7 +14,7 @@ import {
 
 import {
     DATA_RE,
-    SVG_TAG_SET,
+    ALLOWED_SVG_TAG_SET,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     STATIC_ATTRIBUTE_SET,
@@ -234,7 +234,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
     if (GLOBAL_ATTRIBUTE_SET.has(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
-        SVG_TAG_SET.has(tagName) ||
+        ALLOWED_SVG_TAG_SET.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName)) {
         return true;
     }
@@ -246,7 +246,7 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
 function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
     const { tag } = element;
     const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
-    const isSvgTag = SVG_TAG_SET.has(tag);
+    const isSvgTag = ALLOWED_SVG_TAG_SET.has(tag);
     return (
         !isSvgTag &&
         !isDataAttributeOrFmk

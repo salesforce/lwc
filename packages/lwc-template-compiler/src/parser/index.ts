@@ -68,6 +68,7 @@ import {
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
+    ALLOWED_SVG_TAG_SET,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
@@ -531,10 +532,21 @@ export default function parse(source: string, state: State): {
                 );
             }
         } else {
-            if (HTML_TAG_BLACKLIST[tag]) {
+            const namespace = node.namespaceURI;
+            const htmlNamespace = 'http://www.w3.org/1999/xhtml';
+            const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
+            if (namespace === htmlNamespace && isNotAllowedHtmlTag) {
                 return warnOnElement(
                     `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
                     node,
+                );
+            }
+            const svgNamespace = 'http://www.w3.org/2000/svg';
+            const isNotAllowedSvgTag = !ALLOWED_SVG_TAG_SET.has(tag);
+            if (namespace === svgNamespace && isNotAllowedSvgTag) {
+                return warnOnElement(
+                    `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
+                    node
                 );
             }
         }
