@@ -9,6 +9,7 @@ const { waitForPromise } = require('./utils');
 const apexScopedImport = require('./transforms/apex-scoped-import');
 const labelScopedImport = require('./transforms/label-scoped-import');
 const resourceScopedImport = require('./transforms/resource-scoped-import');
+const contentAssetUrlScopedImport = require('./transforms/content-asset-url-scoped-import');
 const schemaScopedImport = require('./transforms/schema-scoped-import');
 const userScopedImport = require('./transforms/user-scoped-import');
 
@@ -20,6 +21,7 @@ const BABEL_CONFIG = {
         babelCommonJs,
         apexScopedImport,
         labelScopedImport,
+        contentAssetUrlScopedImport,
         resourceScopedImport,
         schemaScopedImport,
         userScopedImport,
