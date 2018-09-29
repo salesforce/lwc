@@ -1,18 +1,18 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse } from "../shared/language";
+import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse, ArrayMap } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
 import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
-import { patchCustomElementWithRestrictions } from "./restrictions";
+import { HTMLElementConstructor } from "./base-html-element";
 
-export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
+export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
-    const { props, WC } = getComponentDef(Ctor);
+    const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
     if (isObject(options) && !isNull(options)) {
         const { mode, fallback } = (options as any);
@@ -21,16 +21,13 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // fallback defaults to false to favor shadowRoot
         normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
     }
-    class LightningWrapperElement extends WC {
+    return class extends BaseElement {
         constructor() {
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
                 const def = getComponentDef(Ctor);
                 patchCustomElementProto(this, tagName, def);
-            }
-            if (process.env.NODE_ENV !== 'production') {
-                patchCustomElementWithRestrictions(this);
             }
             createVM(tagName, this, Ctor, normalizedOptions);
         }
@@ -65,7 +62,8 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             // from outside.
             this[propName] = newValue;
         }
-        static observedAttributes = getOwnPropertyNames(props);
-    }
-    return LightningWrapperElement;
+        // collecting all attribute names from all public props to apply
+        // the reflection from attributes to props via attributeChangedCallback.
+        static observedAttributes = ArrayMap.call(getOwnPropertyNames(props), (propName) => props[propName].attr);
+    };
 }

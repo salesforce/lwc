@@ -4,6 +4,7 @@ import { patchCustomElement } from "../faux-shadow/faux";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
+import { HTMLElementConstructor } from "lwc-engine/src/framework/base-html-element";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
@@ -60,20 +61,20 @@ export function patchElementProto(elm: HTMLElement, tag: string) {
     setPrototypeOf(elm, proto);
 }
 
-// since the proto chain is unique per constructor, we can just store it inside the
-// def
+// since the proto chain is unique per constructor,
+// we can just store it inside the `def`
 interface PatchedComponentDef extends ComponentDef {
-    patchedElmProto: object;
+    patchedBridge: HTMLElementConstructor;
 }
 
 export function patchCustomElementProto(elm: HTMLElement, tag: string, def: ComponentDef) {
-    let proto = (def as PatchedComponentDef).patchedElmProto;
-    if (isUndefined(proto)) {
-        proto = (def as PatchedComponentDef).patchedElmProto = def.WC.prototype;
+    let bridge = (def as PatchedComponentDef).patchedBridge;
+    if (isUndefined(bridge)) {
+        bridge = (def as PatchedComponentDef).patchedBridge = def.bridge;
     }
     // temporary patching the proto, eventually this should be just more nodes in the proto chain
     patchCustomElement(elm);
-    setPrototypeOf(elm, proto);
+    setPrototypeOf(elm, bridge.prototype);
 }
 
 export {
