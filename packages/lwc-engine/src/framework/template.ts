@@ -1,35 +1,21 @@
 import assert from "../shared/assert";
 import * as api from "./api";
-import { isArray, isFunction, isTrue, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
 import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
-import { evaluateCSS, StyleFunction, applyStyleTokens, resetStyleTokens } from "./style";
+import { evaluateCSS, Stylesheet, applyStyleAttributes, resetStyleAttributes } from "lwc-engine/src/framework/stylesheet";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
 
     /**
-     * HTML attribute that need to be applied to the host element.
-     * This attribute is used for the `:host` pseudo class CSS selector.
+     * The stylesheet associated with the template.
      */
-    hostToken?: string;
-
-    /**
-     * HTML attribute that need to the applied to all the element that the template produces.
-     * This attribute is used for style encapsulation when the engine runs in fallback mode.
-     */
-    shadowToken?: string;
-
-    /**
-     * Optional function that produces the CSS associated to the HTML if any.
-     * This function will be invoked by the engine with different values depending
-     * on the mode that the component is running on.
-     */
-    style?: StyleFunction;
+    stylesheet?: Stylesheet;
 }
 
 const EmptySlots: SlotSet = create(null);
@@ -87,16 +73,14 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         // Populate context with template information
         context.tplCache = create(null);
 
-        const { style } = html;
-        resetStyleTokens(vm);
-        if (isTrue(vm.fallback)) {
-            // TODO: for now passing `html`, but eventually passing `style`
-            // TODO: move this block inside the following condition
-            applyStyleTokens(vm, html as any);
-        }
-        if (!isUndefined(style)) {
-            // caching style vnode so it can be reused on every render
-            context.styleVNode = evaluateCSS(vm, style);
+        resetStyleAttributes(vm);
+
+        const { stylesheet } = html;
+        if (!isUndefined(stylesheet)) {
+            applyStyleAttributes(vm, stylesheet);
+
+            // Caching style vnode so it can be reused on every render
+            context.styleVNode = evaluateCSS(vm, stylesheet);
         } else {
             context.styleVNode = undefined;
         }

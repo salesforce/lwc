@@ -1,8 +1,8 @@
 import { Template } from "./template";
 
 export interface Context {
-    hostToken?: string;
-    shadowToken?: string;
+    hostAttribute?: string;
+    shadowAttribute?: string;
     tplCache?: Template;
     [key: string]: any;
 }

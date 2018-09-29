@@ -34,7 +34,8 @@ span {
 
 postcss([
     lwcPlugin({
-        token: 'x-btn_tmpl'
+        hostSelector: '[x-btn-host]',
+        shadowSelector: '[x-btn]',
     })
 ]).process(source).then(res => {
     console.log(res)
@@ -43,11 +44,11 @@ postcss([
             opacity: 0.4;
         }
 
-        [x-btn_tmpl-host] {
+        [x-btn-host] {
             opacity: 0.4;
         }
 
-        span[x-btn_tmpl] {
+        span[x-btn] {
             text-transform: uppercase;
         }
     */
@@ -56,12 +57,19 @@ postcss([
 
 ## Options
 
-#### `token`
+#### `hostSelector`
 
 Type: `string`
 Required: `true`
 
-A unique token to scope the CSS rules. The rules will apply only to element having the token as attribute.
+A unique selector to scope the styles on the host element.
+
+#### `shadowSelector`
+
+Type: `string`
+Required: `true`
+
+A unique selector to scope the styles on the shadow DOM content.
 
 ### `customProperties`
 
