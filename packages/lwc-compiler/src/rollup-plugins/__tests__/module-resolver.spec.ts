@@ -36,31 +36,30 @@ describe("module resolver", () => {
         expect(pretify(result.code)).toMatch(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 const style = undefined;
+
                 function tmpl($api, $cmp, $slotset, $ctx) {
-                const {
-                t: api_text,
-                h: api_element
-                } = $api;
-                return [api_element(\"p\", {
-                key: 1
-                }, [api_text(\"Manually Imported Template\")])];
+                    const {
+                        t: api_text,
+                        h: api_element
+                    } = $api;
+
+                    return [api_element(\"p\", {
+                        key: 1
+                    }, [api_text(\"Manually Imported Template\")])];
                 }
+
                 if (style) {
-                tmpl.hostToken = 'x-class_and_template_class_and_template-host';
-                tmpl.shadowToken = 'x-class_and_template_class_and_template';
-                const style$$1 = document.createElement('style');
-                style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_class_and_template';
-                style$$1.textContent = style('x-class_and_template_class_and_template');
-                document.head.appendChild(style$$1);
+                    tmpl.stylesheet = style;
                 }
+
                 class Test extends lwc.LightningElement {
-                render() {
-                return tmpl;
+                    render() {
+                        return tmpl;
+                    }
                 }
-                }
+
                 return Test;
-                });`)
+            });`)
         );
     });
     test("compiler should resolve bundle with manually imported template that does not match component name", async () => {
@@ -85,31 +84,30 @@ describe("module resolver", () => {
         expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
                 const style = undefined;
+
                 function tmpl($api, $cmp, $slotset, $ctx) {
-                const {
-                t: api_text,
-                h: api_element
-                } = $api;
-                return [api_element(\"p\", {
-                key: 1
-                }, [api_text(\"Another Template\")])];
+                    const {
+                        t: api_text,
+                        h: api_element
+                    } = $api;
+
+                    return [api_element(\"p\", {
+                        key: 1
+                    }, [api_text(\"Another Template\")])];
                 }
+
                 if (style) {
-                tmpl.hostToken = 'x-class_and_template_anotherTemplate-host';
-                tmpl.shadowToken = 'x-class_and_template_anotherTemplate';
-                const style$$1 = document.createElement('style');
-                style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_anotherTemplate';
-                style$$1.textContent = style('x-class_and_template_anotherTemplate');
-                document.head.appendChild(style$$1);
+                    tmpl.stylesheet = style;
                 }
+
                 class Test extends lwc.LightningElement {
-                render() {
-                return tmpl;
+                    render() {
+                        return tmpl;
+                    }
                 }
-                }
+
                 return Test;
-                });`)
+            });`)
         );
     });
 

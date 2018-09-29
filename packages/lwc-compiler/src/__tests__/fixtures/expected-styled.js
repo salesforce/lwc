@@ -1,22 +1,28 @@
 import _xFoo from 'x/foo';
 import { LightningElement } from 'lwc';
 
-function style(token) {
+function factory(hostSelector, shadowSelector) {
     return `:host {
     color: blue;
 }
 
-[${token}-host] {
+${hostSelector} {
     color: blue;
 }
-div[${token}] {
+div${shadowSelector} {
     color: red;
 }
-x-foo[${token}],[is="x-foo"][${token}] {
+x-foo${shadowSelector},[is="x-foo"]${shadowSelector} {
     color: green;
 }
     `;
 }
+
+var stylesheet = {
+    factory,
+    hostAttribute: 'x-styled_styled-host',
+    shadowAttribute: 'x-styled_styled',
+};
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -31,14 +37,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 
-if (style) {
-    tmpl.hostToken = 'x-styled_styled-host';
-    tmpl.shadowToken = 'x-styled_styled';
-    const style$$1 = document.createElement('style');
-    style$$1.type = 'text/css';
-    style$$1.dataset.token = 'x-styled_styled';
-    style$$1.textContent = style('x-styled_styled');
-    document.head.appendChild(style$$1);
+if (stylesheet) {
+    tmpl.stylesheet = stylesheet;
 }
 
 class Styled extends LightningElement {

@@ -14,14 +14,7 @@ define('namespace/js-local-import', ['lwc', 'namespace/utils'], function (lwc, u
     }
 
     if (style) {
-        tmpl.hostToken = 'namespace-js-local-import_js-local-import-host';
-        tmpl.shadowToken = 'namespace-js-local-import_js-local-import';
-
-        const style$$1 = document.createElement('style');
-        style$$1.type = 'text/css';
-        style$$1.dataset.token = 'namespace-js-local-import_js-local-import';
-        style$$1.textContent = style('namespace-js-local-import_js-local-import');
-        document.head.appendChild(style$$1);
+        tmpl.stylesheet = style;
     }
 
     function method(name) {

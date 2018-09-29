@@ -126,19 +126,7 @@
     }
 
     if (style$1) {
-      __setKey(tmpl, "hostToken", "x-foo_foo-host");
-
-      __setKey(tmpl, "shadowToken", "x-foo_foo");
-
-      var style$2 = __callKey1(document, "createElement", "style");
-
-      __setKey(style$2, "type", "text/css");
-
-      __setKey(__getKey(style$2, "dataset"), "token", "x-foo_foo");
-
-      __setKey(style$2, "textContent", style$1("x-foo_foo"));
-
-      __callKey1(__getKey(document, "head"), "appendChild", style$2);
+        __setKey(tmpl, "stylesheet", style$1);
     }
 
     var Foo =
@@ -225,19 +213,7 @@
     }
 
     if (style) {
-      __setKey(tmpl$1, "hostToken", "x-app_app-host");
-
-      __setKey(tmpl$1, "shadowToken", "x-app_app");
-
-      var style$3 = __callKey1(document, "createElement", "style");
-
-      __setKey(style$3, "type", "text/css");
-
-      __setKey(__getKey(style$3, "dataset"), "token", "x-app_app");
-
-      __setKey(style$3, "textContent", style("x-app_app"));
-
-      __callKey1(__getKey(document, "head"), "appendChild", style$3);
+        __setKey(tmpl$1, "stylesheet", style);
     }
 
     var App =

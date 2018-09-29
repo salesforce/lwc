@@ -18,14 +18,7 @@ define('namespace/html-local-import', ['namespace/importedTemplate', 'lwc'], fun
     }
 
     if (style) {
-        tmpl.hostToken = 'namespace-html-local-import_html-local-import-host';
-        tmpl.shadowToken = 'namespace-html-local-import_html-local-import';
-
-        const style$$1 = document.createElement('style');
-        style$$1.type = 'text/css';
-        style$$1.dataset.token = 'namespace-html-local-import_html-local-import';
-        style$$1.textContent = style('namespace-html-local-import_html-local-import');
-        document.head.appendChild(style$$1);
+        tmpl.stylesheet = style;
     }
 
     class App extends lwc.LightningElement {

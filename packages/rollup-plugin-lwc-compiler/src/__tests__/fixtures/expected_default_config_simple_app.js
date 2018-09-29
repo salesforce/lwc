@@ -17,14 +17,7 @@
     }
 
     if (style$1) {
-        tmpl.hostToken = 'x-foo_foo-host';
-        tmpl.shadowToken = 'x-foo_foo';
-
-        const style = document.createElement('style');
-        style.type = 'text/css';
-        style.dataset.token = 'x-foo_foo';
-        style.textContent = style$1('x-foo_foo');
-        document.head.appendChild(style);
+        tmpl.stylesheet = style$1;
     }
 
     class Foo extends lwc.LightningElement {
@@ -64,14 +57,7 @@
     }
 
     if (style) {
-        tmpl$1.hostToken = 'x-app_app-host';
-        tmpl$1.shadowToken = 'x-app_app';
-
-        const style$$1 = document.createElement('style');
-        style$$1.type = 'text/css';
-        style$$1.dataset.token = 'x-app_app';
-        style$$1.textContent = style('x-app_app');
-        document.head.appendChild(style$$1);
+        tmpl$1.stylesheet = style;
     }
 
     class App extends lwc.LightningElement {
