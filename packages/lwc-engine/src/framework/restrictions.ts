@@ -111,6 +111,15 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     return descriptors;
 }
 
+// Regular Elements Restrictions:
+// ------------------------------
+
+function getElementRestrictionsDescriptors(elm: Element): PropertyDescriptorMap {
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    assign(descriptors, {});
+    return descriptors;
+}
+
 // Custom Elements Restrictions:
 // -----------------------------
 
@@ -315,6 +324,10 @@ function getSlotElementRestrictionsDescriptors(slot: HTMLSlotElement): PropertyD
 
 export function patchNodeWithRestrictions(node: Node) {
     defineProperties(node, getNodeRestrictionsDescriptors(node));
+}
+
+export function patchElementWithRestrictions(elm: Element) {
+    defineProperties(elm, getElementRestrictionsDescriptors(elm));
 }
 
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
