@@ -1,6 +1,6 @@
 // TODO: Legacy File that should be removed
 //       It is used only from the tests. The content of it
-//       was split into base-html-element and base-lightning-element
+//       was split into base-bridge-element and base-lightning-element
 
 import { getCustomElementVM } from "./vm";
 

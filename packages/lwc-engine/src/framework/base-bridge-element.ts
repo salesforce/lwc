@@ -1,5 +1,5 @@
 /**
- * This module is responsible for creating the base class HTMLBaseLightningElement
+ * This module is responsible for creating the base bridge class BaseBridgeElement
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
 import {
@@ -60,8 +60,8 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
 
 export type HTMLElementConstructor = new () => HTMLElement;
 
-export function HTMLElementBridgeFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {
-    class HTMLElementBridge extends SuperClass {}
+export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {
+    class HTMLBridgeElement extends SuperClass {}
     const descriptors: PropertyDescriptorMap = create(null);
     // expose getters and setters for each public props on the new Element Bridge
     for (let i = 0, len = props.length; i < len; i += 1) {
@@ -82,15 +82,15 @@ export function HTMLElementBridgeFactory(SuperClass: HTMLElementConstructor, pro
             configurable: true,
         };
     }
-    defineProperties(HTMLElementBridge.prototype, descriptors);
-    return HTMLElementBridge;
+    defineProperties(HTMLBridgeElement.prototype, descriptors);
+    return HTMLBridgeElement;
 }
 
-export const BaseHTMLElement = HTMLElementBridgeFactory(HTMLElement, getOwnPropertyNames(HTMLElementOriginalDescriptors), []);
+export const BaseBridgeElement = HTMLBridgeElementFactory(HTMLElement, getOwnPropertyNames(HTMLElementOriginalDescriptors), []);
 
 if (process.env.NODE_ENV !== 'production') {
-    patchCustomElementWithRestrictions(BaseHTMLElement.prototype);
+    patchCustomElementWithRestrictions(BaseBridgeElement.prototype);
 }
 
-freeze(BaseHTMLElement);
-seal(BaseHTMLElement.prototype);
+freeze(BaseBridgeElement);
+seal(BaseBridgeElement.prototype);

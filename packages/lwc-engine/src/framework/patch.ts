@@ -4,7 +4,7 @@ import { patchCustomElement } from "../faux-shadow/faux";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
-import { HTMLElementConstructor } from "lwc-engine/src/framework/base-html-element";
+import { HTMLElementConstructor } from "lwc-engine/src/framework/base-bridge-element";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
