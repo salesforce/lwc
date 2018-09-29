@@ -8,6 +8,13 @@ import {
 } from '../helpers';
 import { ResolvedConfig } from '../../config';
 
+import {
+    TEMPLATE_FUNCTION_NAME,
+    SECURE_IMPORT_NAME, SECURE_REGISTER_TEMPLATE_METHOD_NAME,
+    LWC_MODULE_NAME
+} from '../../shared/constants';
+import { FunctionDeclaration, ExportDefaultDeclaration } from 'babel-types';
+
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);
 
@@ -19,8 +26,8 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
 
 function generateSecureImport(): t.ImportDeclaration {
     return t.importDeclaration(
-        [t.importSpecifier(t.identifier('secure'), t.identifier('secure'))],
-        t.stringLiteral('lwc')
+        [t.importSpecifier(t.identifier(SECURE_IMPORT_NAME), t.identifier(SECURE_IMPORT_NAME))],
+        t.stringLiteral(LWC_MODULE_NAME)
     );
 }
 
@@ -34,16 +41,28 @@ export function format(
         moduleNameToImport(cmpClassName),
     );
 
+    const metadata = generateTemplateMetadata(state);
+    let templateBody: Array<FunctionDeclaration | ExportDefaultDeclaration> = [t.exportDefaultDeclaration(templateFn)];
+
     if (secure) {
         imports.push(generateSecureImport());
+        templateBody = [
+            templateFn,
+            t.exportDefaultDeclaration(
+                t.callExpression(
+                    t.memberExpression(
+                        t.identifier(SECURE_IMPORT_NAME),
+                        t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME)
+                    ),
+                    [t.identifier(TEMPLATE_FUNCTION_NAME)]
+                )
+            )
+        ]
     }
-
-    const metadata = generateTemplateMetadata(state);
-
 
     return t.program([
         ...imports,
-        t.exportDefaultDeclaration(templateFn),
+        ...templateBody,
         ...metadata,
     ]);
 }

@@ -19,13 +19,24 @@ function functionMatchCode(fn, code) {
 
 
 describe('option secure', () => {
-    it.only('validated presence of options', () => {
-        try {
-            const { code } = compiler(`<template>test</template>`, { secure: true });
-            console.log(code);
-        } catch (err) {
-            console.log(err);
-        }
+    it.only('validate secure transformation', () => {
+        const { code } = compiler(`<template><x-test></x-test></template>`, { secure: true });
+        functionMatchCode(code, `
+            import _xTest from "x/test";
+            import { secure } from "lwc";
+
+            function tmpl($api, $cmp, $slotset, $ctx) {
+            const {
+                c: api_custom_element
+            } = $api;
+
+            return [api_custom_element("x-test", _xTest, {
+                key: 1
+            }, [])];
+            }
+
+            export default secure.registerTemplate(tmpl);
+        `);
     });
 });
 
