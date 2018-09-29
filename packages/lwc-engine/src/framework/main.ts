@@ -1,7 +1,7 @@
 // TODO: Revisit all of this exports figure out a better separation
 export { createElement } from "./upgrade";
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from "./def";
-export { LightningElement } from "./html-element";
+export { BaseLightningElement as LightningElement } from "./base-lightning-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
 export { registerTemplate } from "./template";
@@ -17,4 +17,4 @@ export { default as decorate } from "./decorators/decorate";
 export { buildCustomElementConstructor } from "./wc";
 
 // Deprecated APIs
-export { LightningElement as Element } from "./html-element";
+export { BaseLightningElement as Element } from "./base-lightning-element";

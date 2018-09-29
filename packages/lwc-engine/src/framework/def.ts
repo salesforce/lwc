@@ -21,34 +21,26 @@ import {
     getPrototypeOf,
     isString,
     isFunction,
-    isUndefined,
-    ArraySlice,
     isNull,
-    defineProperties,
-    seal,
-    forEach,
-    getPropertyDescriptor,
     setPrototypeOf,
+    ArrayReduce,
+    isUndefined,
 } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
-    defaultDefHTMLPropertyNames,
 } from "./attributes";
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { LightningElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     ViewModelReflection,
 } from "./utils";
-import { getCustomElementVM } from "./vm";
 
 interface PropDef {
     config: number;
@@ -79,7 +71,7 @@ export interface ComponentDef {
     props: PropsDef;
     methods: MethodDef;
     ctor: ComponentConstructor;
-    WC: new() => HTMLElement;
+    bridge: HTMLElementConstructor;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
@@ -87,10 +79,9 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, ErrorCallback, ComponentInterface
+    ComponentConstructor, ErrorCallback
  } from './component';
 import { Template } from "./template";
-import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -111,7 +102,7 @@ function getCtorProto(Ctor: any): ComponentConstructor {
         // of our Base class without having to leak it to user-land. If the circular function returns
         // itself, that's the signal that we have hit the end of the proto chain, which must always
         // be base.
-        proto = p === proto ? LightningElement : p;
+        proto = p === proto ? BaseLightningElement : p;
     }
     return proto as ComponentConstructor;
 }
@@ -122,7 +113,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getCtorProto(Ctor);
-    if (proto as any === LightningElement) {
+    if (proto as any === BaseLightningElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -179,9 +170,10 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback,
         render,
     } = proto;
-    let SuperElement = HTMLLightningElement;
     const superProto = getCtorProto(Ctor);
-    const superDef: ComponentDef | null = superProto as any !== LightningElement ? getComponentDef(superProto) : null;
+    const superDef: ComponentDef | null = superProto as any !== BaseLightningElement ? getComponentDef(superProto) : null;
+    const SuperElement = isNull(superDef) ? BaseHTMLElement : superDef.bridge;
+    const bridge = HTMLElementBridgeFactory(SuperElement, getOwnPropertyNames(props), getOwnPropertyNames(methods));
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -191,12 +183,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
-        SuperElement = superDef.WC;
     }
-
-    const localKeyDescriptors = createCustomElementDescriptorMap(props, methods);
-    const WC = class HTMLCustomElement extends SuperElement {};
-    defineProperties(WC.prototype, localKeyDescriptors);
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
@@ -206,7 +193,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
-        WC,
+        bridge,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -227,67 +214,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         }
     }
     return def;
-}
-
-// across components, the public props are almost much the same, we just cache
-// the getter and setter for perf reasons considering that most of them are standard
-// global properties, but they need to be monkey patch so we can delegate their
-// behavior to the corresponding instance.
-const cachedGetterByKey: Record<string, (this: HTMLElement) => any> = create(null);
-const cachedSetterByKey: Record<string, (this: HTMLElement, newValue: any) => any> = create(null);
-
-function createGetter(key: string) {
-    let fn = cachedGetterByKey[key];
-    if (isUndefined(fn)) {
-        fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
-            const vm = getCustomElementVM(this);
-            const { getHook } = vm;
-            return getHook(vm.component as ComponentInterface, key);
-        };
-    }
-    return fn;
-}
-
-function createSetter(key: string) {
-    let fn = cachedSetterByKey[key];
-    if (isUndefined(fn)) {
-        fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
-            const vm = getCustomElementVM(this);
-            const { setHook } = vm;
-            setHook(vm.component as ComponentInterface, key, newValue);
-        };
-    }
-    return fn;
-}
-
-function createMethodCaller(method: PublicMethod): PublicMethod {
-    return function(this: HTMLElement): any {
-        const vm = getCustomElementVM(this);
-        const { callHook } = vm;
-        return callHook(vm.component as ComponentInterface, method, ArraySlice.call(arguments));
-    };
-}
-
-function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
-    const descriptors: PropertyDescriptorMap = create(null);
-    // expose getters and setters for each public props on the Element
-    for (const key in publicProps) {
-        descriptors[key] = {
-            get: createGetter(key),
-            set: createSetter(key),
-            enumerable: true,
-            configurable: true,
-        };
-    }
-    // expose public methods as props on the Element
-    for (const key in publicMethodsConfig) {
-        descriptors[key] = {
-            value: createMethodCaller(publicMethodsConfig[key]),
-            writable: true,
-            configurable: true,
-        };
-    }
-    return descriptors;
 }
 
 function getTrackHash(target: ComponentConstructor): TrackDef {
@@ -389,71 +315,19 @@ export function getComponentConstructor(elm: HTMLElement): ComponentConstructor 
 }
 
 export function setElementProto(elm: HTMLElement, def: ComponentDef) {
-    setPrototypeOf(elm, def.WC.prototype);
+    setPrototypeOf(elm, def.bridge.prototype);
 }
 
-// Initialization Routines
-import "../polyfills/proxy-concat/main";
-import "../polyfills/click-event-composed/main"; // must come before event-composed
-import "../polyfills/event-composed/main";
-import "../polyfills/custom-event-composed/main";
-import "../polyfills/focus-event-composed/main";
-import "../polyfills/aria-properties/main";
+import { HTMLElementOriginalDescriptors } from "./html-properties";
+import { BaseLightningElement } from "./base-lightning-element";
+import { BaseHTMLElement, HTMLElementBridgeFactory, HTMLElementConstructor } from "./base-html-element";
 
-const HTML_PROPS: PropsDef = create(null);
-const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
-const HTMLLightningElement = class extends HTMLElement {};
-const HTMLLightningElementProto = HTMLLightningElement.prototype;
-
-forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
-    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-    if (!isUndefined(descriptor)) {
-        const attrName = getAttrNameFromPropName(propName);
-        HTML_PROPS[propName] = {
-            config: 3,
-            type: 'any',
-            attr: attrName,
-        };
-        const globalElmDescriptor = {
-            get: createGetter(propName),
-            set: createSetter(propName),
-            enumerable: true,
-            configurable: true,
-        };
-        defineProperty(HTMLLightningElementProto, propName, globalElmDescriptor);
-        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-    }
-});
-forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
-    // this category, so, better to be sure.
-    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-    if (!isUndefined(descriptor)) {
-        const attrName = getAttrNameFromPropName(propName);
-        HTML_PROPS[propName] = {
-            config: 3,
-            type: 'any',
-            attr: attrName,
-        };
-        const globalElmDescriptor = {
-            get: createGetter(propName),
-            set: createSetter(propName),
-            enumerable: true,
-            configurable: true,
-        };
-        defineProperty(HTMLLightningElementProto, propName, globalElmDescriptor);
-        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-    }
-});
-
-defineProperties(LightningElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
-
-if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(LightningElement.prototype);
-}
-
-freeze(LightningElement);
-seal(LightningElement.prototype);
+const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (props: PropsDef, propName: string): PropsDef => {
+    const attrName = getAttrNameFromPropName(propName);
+    props[propName] = {
+        config: 3,
+        type: 'any',
+        attr: attrName,
+    };
+    return props;
+}, create(null));

@@ -6,7 +6,6 @@ import { resolveCircularModuleDependency, isCircularModuleDependency } from "./u
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
 import { isNativeShadowRootAvailable } from "./dom-api";
 import { patchCustomElementProto } from "./patch";
-import { patchCustomElementWithRestrictions } from "./restrictions";
 import { getComponentDef, setElementProto } from "./def";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
@@ -86,9 +85,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     setElementProto(element, def);
     if (isTrue(fallback)) {
         patchCustomElementProto(element, sel, def);
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(element);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });

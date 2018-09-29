@@ -19,7 +19,7 @@ import modStaticClassName from "./modules/static-class-attr";
 import modStaticStyle from "./modules/static-style-attr";
 import { hasDynamicChildren } from "./patch";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
+import { patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 
@@ -141,9 +141,6 @@ export function createCustomElmHook(vnode: VCustomElement) {
     setElementProto(elm, def);
     if (isTrue(fallback)) {
         patchCustomElementProto(elm, sel, def);
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
     }
     createVM(vnode.sel as string, elm, ctor, {
         mode,
