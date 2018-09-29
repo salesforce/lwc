@@ -1,5 +1,5 @@
-import * as postcss from "postcss";
-import * as cssnano from "cssnano";
+import postcss from "postcss";
+import cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
 import { CompilerError } from "../common-interfaces/compiler-error";
@@ -67,30 +67,43 @@ export default async function transformStyle(
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
 
-    const plugins = [
+    const postcssPlugins: postcss.AcceptedPlugin[] = [];
+
+    // The LWC plugin produces invalid CSS since it transforms all the var function with actual
+    // javascript function call. The mification plugin produces invalid CSS when it runs after
+    // the LWC plugin.
+    if (minify) {
+        postcssPlugins.push(
+            cssnano({
+                preset: ['default'],
+
+                // Disable SVG compression, since it prevent the compiler to be bundle by webpack since
+                // it dynamically require the svgo package: https://github.com/svg/svgo
+                svgo: false,
+
+                // Disable zindex normalization, since it only works when it works only if the rules
+                // css file contains all the selectors applied on the page.
+                zindex: false,
+            })
+        );
+    }
+
+    postcssPlugins.push(
         postcssPluginLwc({
             token: TOKEN_PLACEHOLDER,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),
-            }
+            },
+            filename,
         })
-    ];
-
-    if (minify) {
-        plugins.push(
-            cssnano({
-                svgo: false,
-                preset: ['default']
-            })
-        );
-    }
+    );
 
     const escapedSource = escapeString(src);
 
     let res;
     try {
-        res = await postcss(plugins).process(escapedSource, {
+        res = await postcss(postcssPlugins).process(escapedSource, {
             from: filename,
         });
     } catch (e) {

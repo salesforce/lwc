@@ -1,2 +1,2 @@
-import { Element } from "engine";
-export default class FooBar extends Element {}
+import { LightningElement } from "lwc";
+export default class FooBar extends LightningElement {}

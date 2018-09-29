@@ -9,9 +9,11 @@ function createMatcher(methodName) {
         }
 
         const receivedMessages = [];
+        const receivedNode = [];
 
-        const consoleSpy = message => {
+        const consoleSpy = (message, node) => {
             receivedMessages.push(message);
+            receivedNode.push(node !== undefined);
         };
 
         // Swap the original logging method with the spy
@@ -53,7 +55,15 @@ function createMatcher(methodName) {
                 } else if (receivedMessages.length === 1) {
                     const [receivedMessage] = receivedMessages;
 
-                    if (!receivedMessage.includes(expectedMessage)) {
+                    if (!receivedMessage.includes(expectedMessage) || !receivedNode[0]) {
+                        if (!receivedNode[0]) {
+                            return {
+                                message: () =>
+                                    `Method "${methodName}" expect to receive a Node to print the stacktrace, but none was passed.`,
+                                pass: false,
+                            };
+                        }
+
                         return {
                             message: () =>
                                 `Expect message:\n${this.utils.printExpected(

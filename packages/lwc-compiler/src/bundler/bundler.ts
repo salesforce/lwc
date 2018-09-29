@@ -1,5 +1,5 @@
 import { rollup } from "rollup";
-import * as rollupPluginReplace from "rollup-plugin-replace";
+import rollupPluginReplace from "rollup-plugin-replace";
 
 import { MetadataCollector, BundleMetadata } from "./meta-collector";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
@@ -92,7 +92,7 @@ export async function bundle(
         });
 
         const result = await rollupBundler.generate({
-            amd: { id: namespace + "-" + name },
+            amd: { id: namespace + "/" + name },
             interop: false,
             strict: false,
             format

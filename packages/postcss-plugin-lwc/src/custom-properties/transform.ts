@@ -1,5 +1,5 @@
 import { Declaration } from 'postcss';
-import * as balanced from 'balanced-match';
+import balanced from 'balanced-match';
 
 import { VarTransformer } from '../config';
 

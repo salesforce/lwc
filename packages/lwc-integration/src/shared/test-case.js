@@ -1,6 +1,6 @@
-import { Element, api } from 'engine';
+import { LightningElement, api } from "lwc";
 
-export default class TestCase extends Element {
+export default class TestCase extends LightningElement {
     @api issueId;
     @api issueTitle = '';
     @api playgroundId;

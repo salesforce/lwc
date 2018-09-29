@@ -1,7 +1,4 @@
-import * as postcss from 'postcss';
-
-import { transformSelector } from '../index';
-import { process, DEFAULT_TOKEN } from './shared';
+import { process } from './shared';
 
 describe('default export (postcss plugin)', () => {
     it('assert token option', () => {
@@ -15,26 +12,10 @@ describe('default export (postcss plugin)', () => {
             ':host { display: block; } h1 { color: red; }',
         );
         expect(css).toBe(
-            `[x-foo_tmpl-host] { display: block; } h1[x-foo_tmpl] { color: red; }`,
+            [
+                `:host { display: block; }`,
+                `[x-foo_tmpl-host] { display: block; } h1[x-foo_tmpl] { color: red; }`,
+            ].join(' ')
         );
-    });
-});
-
-describe('transformSelector', () => {
-    it('transforms string selector', () => {
-        const res = transformSelector(':host', {
-            token: DEFAULT_TOKEN,
-        });
-        expect(res).toBe('[x-foo_tmpl-host]');
-    });
-
-    it('transforms postCSS node rules', () => {
-        const res = transformSelector(
-            postcss.rule({
-                selector: ':host',
-            }),
-            { token: DEFAULT_TOKEN },
-        );
-        expect(res).toBe('[x-foo_tmpl-host]');
     });
 });

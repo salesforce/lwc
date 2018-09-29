@@ -1,0 +1,11 @@
+<template>
+    <integration-child>
+        <select onchange={handleChange}>
+            <option value="1">First</option>
+            <option value="2">Second</option>
+        </select>
+    </integration-child>
+    <template if:true={targetIsSelect}>
+        <div class="target-is-select">Event Target is select element</div>
+    </template>
+</template>

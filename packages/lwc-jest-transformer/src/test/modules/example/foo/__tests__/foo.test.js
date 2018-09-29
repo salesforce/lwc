@@ -1,6 +1,6 @@
-import { createElement } from 'engine';
-import Foo from 'example-foo';
-import Bar from 'other-bar';
+import { createElement } from 'lwc';
+import Foo from 'example/foo';
+import Bar from 'other/bar';
 
 jest.mock('globalLib', () => {
     return {

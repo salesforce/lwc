@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 const style = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
@@ -12,7 +12,7 @@ if (style) {
     style$$1.textContent = style('x-node_env_node_env');
     document.head.appendChild(style$$1);
 }
-class ClassAndTemplate extends Element {
+class ClassAndTemplate extends LightningElement {
     connectedCallback() {
         {
             this.root.querySelector('insideOfProductionCheck');

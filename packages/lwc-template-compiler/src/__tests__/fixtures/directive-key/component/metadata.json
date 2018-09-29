@@ -1,6 +1,6 @@
 {
   "metadata": {
     "templateUsedIds": ["items"],
-    "templateDependencies": ["ns-item"]
+    "templateDependencies": ["ns/item"]
   }
 }

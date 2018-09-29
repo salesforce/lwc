@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "templateDependencies": ["ns-cmp"],
-    "templateUsedIds": ["isTrue"]
+    "templateUsedIds": ["isTrue"],
+    "templateDependencies": ["ns/cmp"]
   }
 }

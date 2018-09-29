@@ -10,7 +10,7 @@ describe.skip('Composed events', () => {
     });
 
     it('should have the right value', function () {
-        const element = browser.element('x-child');
+        const element = browser.element('integration-child');
         element.click();
         const defaultPreventedIndicator = browser.element('.default-prevented-indicator');
         assert.deepEqual(defaultPreventedIndicator.getText(), 'Default Prevented');

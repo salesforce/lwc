@@ -1,3 +1,4 @@
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
 import {
     StringToLowerCase,
     StringReplace,
@@ -26,61 +27,6 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'isMap',
     'maxLength',
     'useMap',
-];
-
-// this regular expression is used to transform aria props into aria attributes because
-// that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
-const ARIA_REGEX = /^aria/;
-
-// Global Aria and Role Properties derived from ARIA and Role Attributes.
-// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
-export const ElementAOMPropertyNames = [
-    'ariaAutoComplete',
-    'ariaChecked',
-    'ariaCurrent',
-    'ariaDisabled',
-    'ariaExpanded',
-    'ariaHasPopUp',
-    'ariaHidden',
-    'ariaInvalid',
-    'ariaLabel',
-    'ariaLevel',
-    'ariaMultiLine',
-    'ariaMultiSelectable',
-    'ariaOrientation',
-    'ariaPressed',
-    'ariaReadOnly',
-    'ariaRequired',
-    'ariaSelected',
-    'ariaSort',
-    'ariaValueMax',
-    'ariaValueMin',
-    'ariaValueNow',
-    'ariaValueText',
-    'ariaLive',
-    'ariaRelevant',
-    'ariaAtomic',
-    'ariaBusy',
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-    'ariaPosInSet',
-    'ariaSetSize',
-    'ariaColCount',
-    'ariaColIndex',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaKeyShortcuts',
-    'ariaModal',
-    'ariaPlaceholder',
-    'ariaRoleDescription',
-    'ariaRowCount',
-    'ariaRowIndex',
-    'ariaRowSpan',
-    'role',
 ];
 
 const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
@@ -235,8 +181,8 @@ const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);
 
 // Synthetic creation of all AOM property descriptors for Custom Elements
-forEach.call(ElementAOMPropertyNames, (propName: string) => {
-    const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
+forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
+    const attrName = StringToLowerCase.call(StringReplace.call(propName, /^aria/, 'aria-'));
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
 });
@@ -277,4 +223,21 @@ export function getAttrNameFromPropName(propName: string): string {
         PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
     }
     return PropNameToAttrNameMap[propName];
+}
+
+let controlledElement: Element | null = null;
+let controlledAttributeName: string | void;
+
+export function isAttributeLocked(elm: Element, attrName: string): boolean {
+    return elm !== controlledElement || attrName !== controlledAttributeName;
+}
+
+export function lockAttribute(elm: Element, key: string) {
+    controlledElement = null;
+    controlledAttributeName = undefined;
+}
+
+export function unlockAttribute(elm: Element, key: string) {
+    controlledElement = elm;
+    controlledAttributeName = key;
 }

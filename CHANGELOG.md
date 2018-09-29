@@ -1,5 +1,316 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-26)
+# [](https://github.com/salesforce/lwc/compare/v0.29.7...v) (2018-09-27)
+
+
+### Bug Fixes
+
+* upgrade compat ([#683](https://github.com/salesforce/lwc/issues/683)) ([eaab65c](https://github.com/salesforce/lwc/commit/eaab65c))
+
+
+
+<a name="0.29.7"></a>
+## [0.29.7](https://github.com/salesforce/lwc/compare/v0.29.7-pre01...v0.29.7) (2018-09-27)
+
+
+### Bug Fixes
+
+* **engine:** bail retargeting if target is detached ([#679](https://github.com/salesforce/lwc/issues/679)) ([faf9cd4](https://github.com/salesforce/lwc/commit/faf9cd4))
+
+
+
+<a name="0.29.7-pre01"></a>
+## [0.29.7-pre01](https://github.com/salesforce/lwc/compare/v0.29.1...v0.29.7-pre01) (2018-09-26)
+
+
+### Bug Fixes
+
+* **engine:** fixes [#663](https://github.com/salesforce/lwc/issues/663) - unique keys for sloted elements ([#664](https://github.com/salesforce/lwc/issues/664)) ([00529a9](https://github.com/salesforce/lwc/commit/00529a9))
+* **engine:** fixes issue [#658](https://github.com/salesforce/lwc/issues/658) - parentNode on slotted elements ([#661](https://github.com/salesforce/lwc/issues/661)) ([d22bdd8](https://github.com/salesforce/lwc/commit/d22bdd8))
+* remove ignoring files ([#673](https://github.com/salesforce/lwc/issues/673)) ([c5d3e80](https://github.com/salesforce/lwc/commit/c5d3e80))
+* remove release artifacts ([#649](https://github.com/salesforce/lwc/issues/649)) ([a528117](https://github.com/salesforce/lwc/commit/a528117))
+* revert namespace mapping support ([#662](https://github.com/salesforce/lwc/issues/662)) ([728b557](https://github.com/salesforce/lwc/commit/728b557))
+* simplify rollup package ([#659](https://github.com/salesforce/lwc/issues/659)) ([e59f0f6](https://github.com/salesforce/lwc/commit/e59f0f6))
+* upgrade lwc rollup to support compat ([#646](https://github.com/salesforce/lwc/issues/646)) ([d1d3fa5](https://github.com/salesforce/lwc/commit/d1d3fa5))
+* upgrading babel ([#653](https://github.com/salesforce/lwc/issues/653)) ([ee1e513](https://github.com/salesforce/lwc/commit/ee1e513))
+
+
+### Features
+
+* augments metadata gathering for [@wire](https://github.com/wire) decorator ([#631](https://github.com/salesforce/lwc/issues/631)) ([4920a4e](https://github.com/salesforce/lwc/commit/4920a4e))
+* **compiler:** warnings to change dynamic ids to static ids ([#620](https://github.com/salesforce/lwc/issues/620)) ([a32289a](https://github.com/salesforce/lwc/commit/a32289a))
+* better error message when event listener is missing ([#656](https://github.com/salesforce/lwc/issues/656)) ([e77f7a7](https://github.com/salesforce/lwc/commit/e77f7a7))
+* **postcss-plugin-lwc:** make CSS transform compatible with shadow DOM ([#637](https://github.com/salesforce/lwc/issues/637)) ([69ece4b](https://github.com/salesforce/lwc/commit/69ece4b))
+
+
+### Performance Improvements
+
+* added ie11 agent and benchmark config ([#654](https://github.com/salesforce/lwc/issues/654)) ([2b1dac4](https://github.com/salesforce/lwc/commit/2b1dac4))
+* upgrade agent: chrome 70 ([#648](https://github.com/salesforce/lwc/issues/648)) ([39e71c8](https://github.com/salesforce/lwc/commit/39e71c8))
+* upgrade best ([#647](https://github.com/salesforce/lwc/issues/647)) ([4f6f1c1](https://github.com/salesforce/lwc/commit/4f6f1c1))
+* upgrade best ([#677](https://github.com/salesforce/lwc/issues/677)) ([633a000](https://github.com/salesforce/lwc/commit/633a000))
+
+
+
+<a name="0.29.1"></a>
+## [0.29.1](https://github.com/salesforce/lwc/compare/v0.29.0...v0.29.1) (2018-09-13)
+
+
+
+<a name="0.29.0"></a>
+# [0.29.0](https://github.com/salesforce/lwc/compare/v0.28.2...v0.29.0) (2018-09-13)
+
+
+### Bug Fixes
+
+* rename [@salesforce](https://github.com/salesforce)/resource-url to [@salesforce](https://github.com/salesforce)/resourceUrl ([#638](https://github.com/salesforce/lwc/issues/638)) ([2a86c4d](https://github.com/salesforce/lwc/commit/2a86c4d))
+
+
+### Features
+
+* open usage of data-* and aria-* attributes in CSS ([#632](https://github.com/salesforce/lwc/issues/632)) ([9e269bf](https://github.com/salesforce/lwc/commit/9e269bf)), closes [#623](https://github.com/salesforce/lwc/issues/623)
+* remove usage of :host-context ([#629](https://github.com/salesforce/lwc/issues/629)) ([5634840](https://github.com/salesforce/lwc/commit/5634840))
+
+
+
+<a name="0.28.2"></a>
+## [0.28.2](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v0.28.2) (2018-09-09)
+
+
+### Bug Fixes
+
+* renaming for namespaces ([#627](https://github.com/salesforce/lwc/issues/627)) ([6e9b75c](https://github.com/salesforce/lwc/commit/6e9b75c))
+
+
+
+<a name="0.28.0-rc1"></a>
+# [0.28.0-rc1](https://github.com/salesforce/lwc/compare/v0.27.1...v0.28.0-rc1) (2018-09-08)
+
+
+
+<a name="0.27.1"></a>
+## [0.27.1](https://github.com/salesforce/lwc/compare/v0.27.0...v0.27.1) (2018-09-05)
+
+
+### Bug Fixes
+
+* **engine:** asserts logs require elm to print component stack ([#573](https://github.com/salesforce/lwc/issues/573)) ([387fd05](https://github.com/salesforce/lwc/commit/387fd05)), closes [#563](https://github.com/salesforce/lwc/issues/563)
+
+
+### Features
+
+* **babel-plugin-transform-lwc-class:** add component tag name support ([#621](https://github.com/salesforce/lwc/issues/621)) ([57cae0c](https://github.com/salesforce/lwc/commit/57cae0c))
+* **compiler:** add namespace support for js/html transform ([#611](https://github.com/salesforce/lwc/issues/611)) ([d5ced31](https://github.com/salesforce/lwc/commit/d5ced31))
+* **engine:** adding this.template.activeElement into faux-shadow ([#612](https://github.com/salesforce/lwc/issues/612)) ([90d18ef](https://github.com/salesforce/lwc/commit/90d18ef))
+
+
+### Performance Improvements
+
+* **engine:** trying to get best back on track ([#616](https://github.com/salesforce/lwc/issues/616)) ([6e78171](https://github.com/salesforce/lwc/commit/6e78171))
+
+
+
+<a name="0.27.0"></a>
+# [0.27.0](https://github.com/salesforce/lwc/compare/v0.26.0...v0.27.0) (2018-08-25)
+
+
+### Bug Fixes
+
+* **engine:** undefined initial values should be respected ([#558](https://github.com/salesforce/lwc/issues/558)) ([e2f24b8](https://github.com/salesforce/lwc/commit/e2f24b8)), closes [#490](https://github.com/salesforce/lwc/issues/490)
+
+
+
+<a name="0.26.0"></a>
+# [0.26.0](https://github.com/salesforce/lwc/compare/v0.25.5...v0.26.0) (2018-08-24)
+
+
+### Bug Fixes
+
+* disable dual [@api](https://github.com/api) decorators support  @W-5165180 ([#598](https://github.com/salesforce/lwc/issues/598)) ([ce9308b](https://github.com/salesforce/lwc/commit/ce9308b))
+* **engine:** closes [#515](https://github.com/salesforce/lwc/issues/515) by removing lazy init ([#517](https://github.com/salesforce/lwc/issues/517)) ([38fe207](https://github.com/salesforce/lwc/commit/38fe207))
+* remove comments in minified bundle @W-5320429 ([#599](https://github.com/salesforce/lwc/issues/599)) ([46d65c0](https://github.com/salesforce/lwc/commit/46d65c0))
+* update package version when releasing ([#595](https://github.com/salesforce/lwc/issues/595)) ([ea0434d](https://github.com/salesforce/lwc/commit/ea0434d))
+* update wire pkg and playground ([#604](https://github.com/salesforce/lwc/issues/604)) ([ccc92ed](https://github.com/salesforce/lwc/commit/ccc92ed))
+* validate directive-less template tag ([#589](https://github.com/salesforce/lwc/issues/589)) ([7739e64](https://github.com/salesforce/lwc/commit/7739e64))
+* **engine:** invert condition to apply click-event-composed polyfill ([#590](https://github.com/salesforce/lwc/issues/590)) ([#591](https://github.com/salesforce/lwc/issues/591)) ([cb7c43a](https://github.com/salesforce/lwc/commit/cb7c43a))
+
+
+
+<a name="0.25.5"></a>
+## [0.25.5](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v0.25.5) (2018-08-15)
+
+
+### Bug Fixes
+
+* **build:** update version before building dist files to publish ([#585](https://github.com/salesforce/lwc/issues/585)) ([bd5da03](https://github.com/salesforce/lwc/commit/bd5da03))
+* disable verify when using auth token ([#587](https://github.com/salesforce/lwc/issues/587)) ([2a3ec2a](https://github.com/salesforce/lwc/commit/2a3ec2a))
+* remove npm client configuration ([10ef9be](https://github.com/salesforce/lwc/commit/10ef9be))
+
+
+
+<a name="0.25.5-alpha"></a>
+## [0.25.5-alpha](https://github.com/salesforce/lwc/compare/v0.25.4...v0.25.5-alpha) (2018-08-14)
+
+
+### Bug Fixes
+
+* **engine:** support stopPropagation on the tpl ([#571](https://github.com/salesforce/lwc/issues/571)) ([7e729c8](https://github.com/salesforce/lwc/commit/7e729c8)), closes [#566](https://github.com/salesforce/lwc/issues/566)
+
+
+### Features
+
+* **engine:** polyfill for non-composed click events ([#568](https://github.com/salesforce/lwc/issues/568)) ([d15b77b](https://github.com/salesforce/lwc/commit/d15b77b))
+
+
+
+<a name="0.25.4"></a>
+## [0.25.4](https://github.com/salesforce/lwc/compare/v0.25.3...v0.25.4) (2018-08-12)
+
+
+### Bug Fixes
+
+* make [@api](https://github.com/api) decorator spec compliant ([#572](https://github.com/salesforce/lwc/issues/572)) ([deeb6bb](https://github.com/salesforce/lwc/commit/deeb6bb))
+
+
+
+<a name="0.25.3"></a>
+## [0.25.3](https://github.com/salesforce/lwc/compare/v0.25.3-alpha11...v0.25.3) (2018-08-11)
+
+
+
+<a name="0.25.3-alpha11"></a>
+## [0.25.3-alpha11](https://github.com/salesforce/lwc/compare/v0.25.3-alpha10...v0.25.3-alpha11) (2018-08-11)
+
+
+
+<a name="0.25.3-alpha07"></a>
+## [0.25.3-alpha07](https://github.com/salesforce/lwc/compare/v0.25.3-alpha06...v0.25.3-alpha07) (2018-08-10)
+
+
+
+<a name="0.25.2"></a>
+## [0.25.2](https://github.com/salesforce/lwc/compare/v0.25.2-alpha01...v0.25.2) (2018-08-10)
+
+
+
+<a name="0.25.2-alpha01"></a>
+## [0.25.2-alpha01](https://github.com/salesforce/lwc/compare/v0.24.20...v0.25.2-alpha01) (2018-08-09)
+
+
+### Bug Fixes
+
+* allow test resolver to resolve lwc ([#565](https://github.com/salesforce/lwc/issues/565)) ([1f6653d](https://github.com/salesforce/lwc/commit/1f6653d))
+* renaming engine and named imports ([#567](https://github.com/salesforce/lwc/issues/567)) ([c0da00d](https://github.com/salesforce/lwc/commit/c0da00d))
+
+
+
+<a name="0.24.20"></a>
+## [0.24.20](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v0.24.20) (2018-08-07)
+
+
+
+<a name="0.24.19-alpha03"></a>
+## [0.24.19-alpha03](https://github.com/salesforce/lwc/compare/v0.24.19-alpha02...v0.24.19-alpha03) (2018-08-06)
+
+
+
+<a name="0.24.17"></a>
+## [0.24.17](https://github.com/salesforce/lwc/compare/v0.24.17-alpha02...v0.24.17) (2018-08-06)
+
+
+
+<a name="0.24.17-alpha02"></a>
+## [0.24.17-alpha02](https://github.com/salesforce/lwc/compare/v0.24.17-alpha01...v0.24.17-alpha02) (2018-08-06)
+
+
+### Bug Fixes
+
+* upgrade compat dependencies (add setPrototypeOf) ([#559](https://github.com/salesforce/lwc/issues/559)) ([b982bd8](https://github.com/salesforce/lwc/commit/b982bd8))
+
+
+### Features
+
+* allow both "lwc" and "engine" sources ([#560](https://github.com/salesforce/lwc/issues/560)) ([501586c](https://github.com/salesforce/lwc/commit/501586c))
+
+
+
+<a name="0.24.16"></a>
+## [0.24.16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha24...v0.24.16) (2018-08-02)
+
+
+
+<a name="0.25.1-alpha24"></a>
+## [0.25.1-alpha24](https://github.com/salesforce/lwc/compare/v0.25.1-alpha22...v0.25.1-alpha24) (2018-08-02)
+
+
+
+<a name="0.25.1-alpha19"></a>
+## [0.25.1-alpha19](https://github.com/salesforce/lwc/compare/v0.24.14...v0.25.1-alpha19) (2018-08-01)
+
+
+### Bug Fixes
+
+* **compiler:** correct module-resolver error messages [@bug](https://github.com/bug) W-5192589@ ([#551](https://github.com/salesforce/lwc/issues/551)) ([d1e93cc](https://github.com/salesforce/lwc/commit/d1e93cc))
+
+
+
+<a name="0.25.1-alpha18"></a>
+## [0.25.1-alpha18](https://github.com/salesforce/lwc/compare/v0.25.1-alpha17...v0.25.1-alpha18) (2018-08-01)
+
+
+### Bug Fixes
+
+* **engine:** never access props from proxies ([#546](https://github.com/salesforce/lwc/issues/546)) ([d0cf318](https://github.com/salesforce/lwc/commit/d0cf318))
+* **lwc-compiler:** invalid CSS generation when minified is enabled ([#552](https://github.com/salesforce/lwc/issues/552)) ([f19ebb1](https://github.com/salesforce/lwc/commit/f19ebb1))
+
+
+
+<a name="0.25.1-alpha17"></a>
+## [0.25.1-alpha17](https://github.com/salesforce/lwc/compare/v0.25.1-alpha16...v0.25.1-alpha17) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha16"></a>
+## [0.25.1-alpha16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha15...v0.25.1-alpha16) (2018-07-31)
+
+
+### Bug Fixes
+
+* update babel-minify to fix minification issue ([#545](https://github.com/salesforce/lwc/issues/545)) ([3c68a69](https://github.com/salesforce/lwc/commit/3c68a69))
+
+
+
+<a name="0.25.1-alpha15"></a>
+## [0.25.1-alpha15](https://github.com/salesforce/lwc/compare/v0.25.1-alpha14...v0.25.1-alpha15) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha14"></a>
+## [0.25.1-alpha14](https://github.com/salesforce/lwc/compare/v0.25.1-alpha13...v0.25.1-alpha14) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha11"></a>
+## [0.25.1-alpha11](https://github.com/salesforce/lwc/compare/v0.25.1-alpha10...v0.25.1-alpha11) (2018-07-30)
+
+
+### Bug Fixes
+
+* **engine:** wrapping assert for dev-only ([#544](https://github.com/salesforce/lwc/issues/544)) ([751904b](https://github.com/salesforce/lwc/commit/751904b))
+
+
+
+<a name="0.25.1-alpha06"></a>
+## [0.25.1-alpha06](https://github.com/salesforce/lwc/compare/v0.25.1-alpha05...v0.25.1-alpha06) (2018-07-27)
+
+
+### Bug Fixes
+
+* **engine:** closes issue [#538](https://github.com/salesforce/lwc/issues/538) to support remove listener during invoke  ([#541](https://github.com/salesforce/lwc/issues/541)) ([19121d1](https://github.com/salesforce/lwc/commit/19121d1))
+
+
+
+<a name="0.24.13-alpha01"></a>
+## [0.24.13-alpha01](https://github.com/salesforce/lwc/compare/v0.24.12-alpha06...v0.24.13-alpha01) (2018-07-26)
 
 
 ### Bug Fixes

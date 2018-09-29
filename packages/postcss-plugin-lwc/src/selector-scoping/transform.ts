@@ -1,19 +1,15 @@
 /* tslint:disable:no-duplicate-imports */
 
-import * as parser from 'postcss-selector-parser';
 import {
     attribute,
-    combinator,
     isTag,
     isPseudoElement,
     isCombinator,
-    Processor,
     Selector,
     Root,
     Node,
     Pseudo,
     Tag,
-    PostCSSRuleNode,
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
@@ -22,10 +18,14 @@ import {
     findNode,
     replaceNodeWith,
     trimNodeWhitespaces,
-    isHostContextPseudoClass,
     isHostPseudoClass,
 } from './utils';
 import { PluginConfig } from '../config';
+
+export interface SelectorScopingConfig {
+    /** When set to true, the :host selector gets replace with the the scoping token. */
+    transformHost: boolean;
+}
 
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
@@ -122,11 +122,9 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
     });
 
     for (const compoundSelector of compoundSelectors) {
-        // Compound selectors containing :host or :host-context have a special treatment and should
-        // not be scoped like the rest of the complex selectors
-        const shouldScopeCompoundSelector = compoundSelector.every(node => {
-            return !isHostPseudoClass(node) && !isHostContextPseudoClass(node);
-        });
+        // Compound selectors containing :host have a special treatment and should not be scoped like the rest of the
+        // complex selectors.
+        const shouldScopeCompoundSelector = compoundSelector.every(node => !isHostPseudoClass(node));
 
         if (shouldScopeCompoundSelector) {
             let nodeToScope: Node | undefined;
@@ -193,74 +191,22 @@ function transformHost(selector: Selector, config: PluginConfig) {
         replaceNodeWith(selector, ...contextualSelectors);
     }
 }
-
-/**
- * Mark transform :host-context by prepending the selector with the contextual selectors.
- *   :host-context(.bar) -> .bar [x-foo_tmpl-host]
- *   :host-context(.bar, .baz) -> .bar [x-foo_tmpl-host], .baz [x-foo_tmpl-host]
- */
-function transformHostContext(selector: Selector, config: PluginConfig) {
-    // Locate the first :host-context pseudo-selector
-    const hostContextNode = findNode(selector, isHostContextPseudoClass) as
-        | Pseudo
-        | undefined;
-
-    if (hostContextNode) {
-        // Swap the :host-context pseudo-class with the host scoping token
-        const hostScopeAttr = scopeAttribute(config, { host: true });
-        hostContextNode.replaceWith(hostScopeAttr);
-
-        // Generate a unique contextualized version of the selector for each selector pass as argument
-        // to the :host-context
-        const contextualSelectors = hostContextNode.nodes.map(
-            (contextSelectors: Selector) => {
-                const cloneSelector = selector.clone({}) as Selector;
-
-                // Prepend the cloned selector with the context selector
-                cloneSelector.insertBefore(
-                    cloneSelector.first,
-                    combinator({ value: ' ' }),
-                );
-
-                contextSelectors.each(node => {
-                    trimNodeWhitespaces(node);
-                    cloneSelector.insertBefore(cloneSelector.first, node);
-                });
-
-                return cloneSelector;
-            },
-        );
-
-        // Replace the current selector with the different variants
-        replaceNodeWith(selector, ...contextualSelectors);
-    }
-}
-
-/** Returns selector processor based on the passed config */
-function selectorProcessor(config: PluginConfig) {
-    return parser(root => {
-        validateSelectors(root);
-
-        root.each((selector: Selector) => {
-            scopeSelector(selector, config);
-        });
-
-        root.each((selector: Selector) => {
-            transformHost(selector, config);
-        });
-
-        root.each((selector: Selector) => {
-            transformHostContext(selector, config);
-        });
-
-        customElementSelector(root);
-    }) as Processor;
-}
-
 export default function transformSelector(
-    selector: string | PostCSSRuleNode,
-    config: PluginConfig,
-): string {
-    const processor = selectorProcessor(config);
-    return processor.processSync(selector);
+    root: Root,
+    pluginConfig: PluginConfig,
+    transformConfig: SelectorScopingConfig,
+) {
+    validateSelectors(root);
+
+    root.each((selector: Selector) => {
+        scopeSelector(selector, pluginConfig);
+    });
+
+    if (transformConfig.transformHost) {
+        root.each((selector: Selector) => {
+            transformHost(selector, pluginConfig);
+        });
+    }
+
+    customElementSelector(root);
 }

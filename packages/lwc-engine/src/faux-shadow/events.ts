@@ -69,15 +69,17 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 return outerMostElement;
             }
             const eventContext = eventToContextMap.get(this);
-            // Executing event listener on component, target is always currentTarget
+
+            // Retarget to currentTarget if the listener was added to a custom element.
             if (eventContext === EventListenerContext.CUSTOM_ELEMENT_LISTENER) {
                 return patchShadowDomTraversalMethods(currentTarget as Element);
             }
-            const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE); // x-child
 
-            // Before we can process any events, we need to first determine three things:
-            // 1) What VM context was the event attached to? (e.g. in what VM context was addEventListener called in).
-            // 2) What VM owns the context where the event was attached? (e.g. who rendered the VM context from step 1).
+            const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
+
+            // We need to determine three things in order to retarget correctly:
+            // 1) What VM context was the listener added? (e.g. in what VM context was addEventListener called in).
+            // 2) What VM owns the context where the listener was added? (e.g. who rendered the VM context from step 1).
             // 3) What is the event's original target's relationship to 1 and 2?
 
             // Determining Number 1:
@@ -86,8 +88,8 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // // x-parent.html
             // <template>
             //  <!--
-            //    The event below is attached inside of x-parent's template
-            //    so vm context will be <x-parent>'s owner VM
+            //    This listener is added inside of <x-parent>'s template
+            //    so its VM context will be <x-parent>'s VM
             //  -->
             //  <div onclick={handleClick}</div>
             // </template>
@@ -145,8 +147,15 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // </template>
             //
             let closestTarget = originalTarget;
-            while (getNodeOwnerKey(closestTarget as Node) !== myCurrentShadowKey && getNodeOwnerKey(closestTarget as Node) !== myOwnerKey) {
+            let nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
+            while (nodeOwnerKey !== myCurrentShadowKey && nodeOwnerKey !== myOwnerKey) {
                 closestTarget = parentNodeGetter.call(closestTarget);
+                // In this case, the original target is in a detached root, making it
+                // impossible to retarget (unless we figure out something clever).
+                if (closestTarget === null) {
+                    return originalTarget;
+                }
+                nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
             }
 
             /**
@@ -210,7 +219,7 @@ function getWrappedShadowRootListener(sr: ShadowRoot, listener: EventListener): 
             if (
                 // it is composed and was not dispatched onto the custom element directly
                 (composed === true && target !== currentTarget) ||
-                // it is coming from an slotted element
+                // it is coming from a slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(target) === currentTarget)) {
@@ -252,15 +261,25 @@ function getWrappedCustomElementListener(elm: HTMLElement, listener: EventListen
 }
 
 function domListener(evt: Event) {
-    let interrupted = false;
-    const { type, stopImmediatePropagation } = evt;
+    let immediatePropagationStopped = false;
+    let propagationStopped = false;
+    const { type, stopImmediatePropagation, stopPropagation } = evt;
     const currentTarget = eventCurrentTargetGetter.call(evt);
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
         value() {
-            interrupted = true;
+            immediatePropagationStopped = true;
             stopImmediatePropagation.call(evt);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
+    defineProperty(evt, 'stopPropagation', {
+        value() {
+            propagationStopped = true;
+            stopPropagation.call(evt);
         },
         writable: true,
         enumerable: true,
@@ -272,7 +291,7 @@ function domListener(evt: Event) {
 
     function invokeListenersByPlacement(placement: EventListenerContext) {
         forEach.call(bookkeeping, (listener: WrappedListener) => {
-            if (isFalse(interrupted) && listener.placement === placement) {
+            if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
                 // making sure that the listener was not removed from the original listener queue
                 if (ArrayIndexOf.call(listeners, listener) !== -1) {
                     // all handlers on the custom element should be called with undefined 'this'
@@ -284,7 +303,7 @@ function domListener(evt: Event) {
 
     eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
     invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
-    if (isFalse(interrupted)) {
+    if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
         // doing the second iteration only if the first one didn't interrupt the event propagation
         eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
         invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
@@ -303,7 +322,7 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         addEventListener.call(elm, type, domListener);
     } else if (process.env.NODE_ENV !== 'production') {
         if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-            assert.logWarning(`${toString(elm)} has duplicate listener ${wrappedListener.original} for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
+            assert.logWarning(`${toString(elm)} has duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`, elm);
         }
     }
     ArrayPush.call(cmpEventHandlers, wrappedListener);
@@ -320,7 +339,10 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
             removeEventListener.call(elm, type, domListener);
         }
     } else if (process.env.NODE_ENV !== 'production') {
-        assert.logError(`Did not find event listener ${wrappedListener.original} for event "${type}" on ${toString(elm)}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
+        assert.logError(
+            `Did not find event listener for event "${type}" executing removeEventListener on ${toString(elm)}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`,
+            elm
+        );
     }
 }
 
@@ -334,7 +356,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         composed === true ||
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
-        // it is coming from an slotted element
+        // it is coming from a slotted element
         isChildNode(getRootNode.call(target, NON_COMPOSED), currentTarget as Node)
     );
 }
@@ -345,7 +367,10 @@ export function addCustomElementEventListener(elm: HTMLElement, type: string, li
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {
-            assert.logWarning(`The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed: ${toString(options)} in ${toString(elm)}`);
+            assert.logWarning(
+                `The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(options)}`,
+                elm
+            );
         }
     }
     const wrappedListener = getWrappedCustomElementListener(elm, listener);
@@ -363,7 +388,10 @@ export function addShadowRootEventListener(sr: ShadowRoot, type: string, listene
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
         if (!isUndefined(options)) {
-            assert.logWarning(`The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed: ${toString(options)} in ${toString(sr)}`);
+            assert.logWarning(
+                `The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(options)}`,
+                getHost(sr)
+            );
         }
     }
     const elm = getHost(sr);

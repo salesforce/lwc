@@ -33,9 +33,9 @@ import {
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
-    ElementAOMPropertyNames,
     defaultDefHTMLPropertyNames,
 } from "./attributes";
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
@@ -94,9 +94,26 @@ import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: any): any {
-    const proto = getPrototypeOf(Ctor);
-    return isCircularModuleDependency(proto) ? resolveCircularModuleDependency(proto) : proto;
+function getCtorProto(Ctor: any): ComponentConstructor {
+    let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
+    if (isNull(proto)) {
+        throw new ReferenceError(`Invalid prototype chain for ${Ctor}, you must extend LightningElement.`);
+    }
+    // covering the cases where the ref is circular in AMD
+    if (isCircularModuleDependency(proto)) {
+        const p = resolveCircularModuleDependency(proto);
+        if (process.env.NODE_ENV !== 'production') {
+            if (isNull(p)) {
+                throw new ReferenceError(`Circular module dependency must resolve to a constructor that extends LightningElement.`);
+            }
+        }
+        // escape hatch for Locker and other abstractions to provide their own base class instead
+        // of our Base class without having to leak it to user-land. If the circular function returns
+        // itself, that's the signal that we have hit the end of the proto chain, which must always
+        // be base.
+        proto = p === proto ? BaseElement : p;
+    }
+    return proto as ComponentConstructor;
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
@@ -128,7 +145,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getCtorProto(Ctor);
-    if (proto === BaseElement) {
+    if (proto as any === BaseElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -137,12 +154,8 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 }
 
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
-    if (globalInitialization) {
-        // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-        globalInitialization();
-    }
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
 
         // local to dev block
         const ctorName = Ctor.name;
@@ -194,7 +207,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let superElmProto = globalElmProto;
     let superElmDescriptors = globalElmDescriptors;
     const superProto = getCtorProto(Ctor);
-    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
+    const superDef: ComponentDef | null = superProto as any !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -345,7 +358,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
                     msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
                     msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                 }
-                console.error(msg.join('\n')); // tslint:disable-line
+                assert.logError(msg.join('\n'));
             }
         }
 
@@ -384,6 +397,7 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
+import "../polyfills/click-event-composed/main"; // must come before event-composed
 import "../polyfills/event-composed/main";
 import "../polyfills/custom-event-composed/main";
 import "../polyfills/focus-event-composed/main";
@@ -400,58 +414,55 @@ const globalElmDescriptors: PropertyDescriptorMap = create(null, {
     [PatchedFlag]: {}
 });
 
-let globalInitialization: any = () => {
-    // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-    forEach.call(ElementAOMPropertyNames, (propName: string) => {
-        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-        // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
-        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-        if (!isUndefined(descriptor)) {
-            const attrName = getAttrNameFromPropName(propName);
-            HTML_PROPS[propName] = {
-                config: 3,
-                type: 'any',
-                attr: attrName,
-            };
-            const globalElmDescriptor = globalElmDescriptors[propName] = {
-                get: createGetter(propName),
-                set: createSetter(propName),
-                enumerable: true,
-                configurable: true,
-            };
-            defineProperty(globalElmProto, propName, globalElmDescriptor);
-            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-        }
-    });
-    forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-        // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
-        // this category, so, better to be sure.
-        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-        if (!isUndefined(descriptor)) {
-            const attrName = getAttrNameFromPropName(propName);
-            HTML_PROPS[propName] = {
-                config: 3,
-                type: 'any',
-                attr: attrName,
-            };
-            const globalElmDescriptor = globalElmDescriptors[propName] = {
-                get: createGetter(propName),
-                set: createSetter(propName),
-                enumerable: true,
-                configurable: true,
-            };
-            defineProperty(globalElmProto, propName, globalElmDescriptor);
-            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-        }
-    });
-    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
-
-    if (process.env.NODE_ENV !== 'production') {
-        patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
+    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+    // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
+    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+    if (!isUndefined(descriptor)) {
+        const attrName = getAttrNameFromPropName(propName);
+        HTML_PROPS[propName] = {
+            config: 3,
+            type: 'any',
+            attr: attrName,
+        };
+        const globalElmDescriptor = globalElmDescriptors[propName] = {
+            get: createGetter(propName),
+            set: createSetter(propName),
+            enumerable: true,
+            configurable: true,
+        };
+        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
     }
+});
+forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
+    // this category, so, better to be sure.
+    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+    if (!isUndefined(descriptor)) {
+        const attrName = getAttrNameFromPropName(propName);
+        HTML_PROPS[propName] = {
+            config: 3,
+            type: 'any',
+            attr: attrName,
+        };
+        const globalElmDescriptor = globalElmDescriptors[propName] = {
+            get: createGetter(propName),
+            set: createSetter(propName),
+            enumerable: true,
+            configurable: true,
+        };
+        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
+    }
+});
 
-    freeze(BaseElement);
-    seal(BaseElement.prototype);
-    globalInitialization = void(0);
-};
+defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
+
+if (process.env.NODE_ENV !== 'production') {
+    patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+}
+
+freeze(BaseElement);
+seal(BaseElement.prototype);

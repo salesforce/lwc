@@ -7,12 +7,12 @@ describe('Composed events', () => {
     });
 
     it('should dispatch Event on the custom element', function () {
-        browser.element('x-child').click();
+        browser.element('integration-child').click();
         assert.ok(browser.element('.event-received-indicator'));
     });
 
     it('should dispatch CustomEvent on the custom element', function () {
-        browser.element('x-child').click();
+        browser.element('integration-child').click();
         assert.ok(browser.element('.custom-event-received-indicator'));
     });
 });

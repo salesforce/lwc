@@ -1,45 +1,42 @@
-(function(engine) {
-    "use strict";
+(function (lwc) {
+    'use strict';
 
     const style = undefined;
 
     const style$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
-      const { d: api_dynamic, h: api_element } = $api;
+      const {
+        d: api_dynamic,
+        h: api_element
+      } = $api;
 
-      return [
-        api_element(
-          "div",
-          {
-            key: 1
-          },
-          [api_dynamic($cmp.x)]
-        )
-      ];
+      return [api_element("div", {
+        key: 1
+      }, [api_dynamic($cmp.x)])];
     }
 
     if (style$1) {
-      tmpl.hostToken = "x-foo_foo-host";
-      tmpl.shadowToken = "x-foo_foo";
+        tmpl.hostToken = 'x-foo_foo-host';
+        tmpl.shadowToken = 'x-foo_foo';
 
-      const style = document.createElement("style");
-      style.type = "text/css";
-      style.dataset.token = "x-foo_foo";
-      style.textContent = style$1("x-foo_foo");
-      document.head.appendChild(style);
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.dataset.token = 'x-foo_foo';
+        style.textContent = style$1('x-foo_foo');
+        document.head.appendChild(style);
     }
 
-    class Foo extends engine.Element {
+    class Foo extends lwc.LightningElement {
       constructor(...args) {
-        var _temp;
-
-        return (_temp = super(...args)), (this.x = void 0), _temp;
+        super(...args);
+        this.x = void 0;
       }
 
       render() {
         return tmpl;
       }
+
     }
     Foo.publicProps = {
       x: {
@@ -48,46 +45,36 @@
     };
 
     function tmpl$1($api, $cmp, $slotset, $ctx) {
-      const { c: api_custom_element, h: api_element } = $api;
+      const {
+        c: api_custom_element,
+        h: api_element
+      } = $api;
 
-      return [
-        api_element(
-          "div",
-          {
-            classMap: {
-              container: true
-            },
-            key: 2
-          },
-          [
-            api_custom_element(
-              "x-foo",
-              Foo,
-              {
-                props: {
-                  x: "1"
-                },
-                key: 1
-              },
-              []
-            )
-          ]
-        )
-      ];
+      return [api_element("div", {
+        classMap: {
+          "container": true
+        },
+        key: 2
+      }, [api_custom_element("x-foo", Foo, {
+        props: {
+          "x": "1"
+        },
+        key: 1
+      }, [])])];
     }
 
     if (style) {
-      tmpl$1.hostToken = "x-app_app-host";
-      tmpl$1.shadowToken = "x-app_app";
+        tmpl$1.hostToken = 'x-app_app-host';
+        tmpl$1.shadowToken = 'x-app_app';
 
-      const style$$1 = document.createElement("style");
-      style$$1.type = "text/css";
-      style$$1.dataset.token = "x-app_app";
-      style$$1.textContent = style("x-app_app");
-      document.head.appendChild(style$$1);
+        const style$$1 = document.createElement('style');
+        style$$1.type = 'text/css';
+        style$$1.dataset.token = 'x-app_app';
+        style$$1.textContent = style('x-app_app');
+        document.head.appendChild(style$$1);
     }
 
-    class App extends engine.Element {
+    class App extends lwc.LightningElement {
       constructor() {
         super();
         this.list = [];
@@ -96,11 +83,13 @@
       render() {
         return tmpl$1;
       }
+
     }
 
-    const container = document.getElementById("main");
-    const element = engine.createElement("x-app", {
+    const container = document.getElementById('main');
+    const element = lwc.createElement('x-app', {
       is: App
     });
     container.appendChild(element);
-  })(engine);
+
+}(Engine));

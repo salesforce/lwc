@@ -8,10 +8,6 @@ export function isHostPseudoClass(node: Node): node is Pseudo {
     return isPseudoClass(node) && node.value === ':host';
 }
 
-export function isHostContextPseudoClass(node: Node): node is Pseudo {
-    return isPseudoClass(node) && node.value === ':host-context';
-}
-
 export function findNode(
     container: Container,
     predicate: (node: Node) => boolean,

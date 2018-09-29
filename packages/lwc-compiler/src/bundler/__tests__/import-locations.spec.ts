@@ -7,13 +7,13 @@ describe("import locations", () => {
     });
 
     test("location collector should return empty array if no imports were specified", () => {
-        const src = `define('x-foo', function () {});`
+        const src = `define('x/foo', function () {});`
         const locs = collectImportLocations("debugger");
         expect(locs.length).toBe(0);
     });
 
     test("location collector should return location object for each import", () => {
-        const src = `define('x-foo', ['x-bar', '@xfoose', 'xy/zoolaf'], function (xBar, xFoose, xZoolaf) {
+        const src = `define('x/foo', ['x/bar', '@xfoose', 'xy/zoolaf'], function (xBar, xFoose, xZoolaf) {
             xBoo();
             xFoose();
             xZoolaf();
@@ -22,7 +22,7 @@ describe("import locations", () => {
 
         expect(locs.length).toBe(3);
         expect(locs[0]).toMatchObject({
-            name: "x-bar",
+            name: "x/bar",
             location: {
                 start: 18,
                 length: 5

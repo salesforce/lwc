@@ -44,6 +44,17 @@ describe('selector validation', () => {
             column: 1,
         });
     });
+
+    it('should restrict usage of unsupported :host-context selector', () => {
+        return expect(process(':host-context(.foo) {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /Invalid usage of unsupported selector ":host-context"/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 1,
+        });
+    });
 });
 
 describe('attribute validation', () => {
@@ -58,7 +69,7 @@ describe('attribute validation', () => {
 
         await expect(process('div[min] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /"\[min\]" can't be applied to match on <div>/,
+                /Attribute \"min\" is not a known attribute on <div> element\./,
             ),
             file: FILE_NAME,
             line: 1,
@@ -70,7 +81,7 @@ describe('attribute validation', () => {
         await expect(process('x-foo[hidden] {}')).resolves.toBeDefined();
         await expect(process('x-foo[custom-attribute] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /"\[custom-attribute\]" can't be applied to match on <x-foo>/,
+                /Attribute \"custom-attribute\" is not a known attribute on <x-foo> element./,
             ),
             file: FILE_NAME,
             line: 1,
@@ -81,7 +92,7 @@ describe('attribute validation', () => {
     it('should forbid usage of unknown selector with out tag name', async () => {
         await expect(process('[my-title] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /is too generic/,
+                /attributes that are not global attributes must be associated with a tag name/,
             ),
             file: FILE_NAME,
             line: 1,
@@ -89,11 +100,40 @@ describe('attribute validation', () => {
         });
         await expect(process('[my-lang="fr"] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /is too generic/,
+                /attributes that are not global attributes must be associated with a tag name/,
             ),
             file: FILE_NAME,
             line: 1,
             column: 2,
         });
+    });
+
+    it('should allow usage of data-* attributes', async () => {
+        await expect(process('[data-foo] {}')).resolves.toBeDefined();
+        await expect(process('[data-foo="bar"] {}')).resolves.toBeDefined();
+    });
+
+    it('should forbid usage of the data attribute', async () => {
+        await expect(process('[data] {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /attributes that are not global attributes must be associated with a tag name/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 2,
+        });
+        await expect(process('div[data] {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /Attribute \"data\" is not a known attribute on <div> element./,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 4,
+        });
+    });
+
+    it('should allow usage of ARIA attributes', async () => {
+        await expect(process('[aria-labelledby] {}')).resolves.toBeDefined();
+        await expect(process('[aria-labelledby="bar"] {}')).resolves.toBeDefined();
     });
 });

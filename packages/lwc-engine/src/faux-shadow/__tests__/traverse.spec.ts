@@ -1,63 +1,40 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from "../../framework/html-element";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
         it('should allow searching for passed elements', () => {
-            function tmpl$1($api, $cmp, $slotset, $ctx) {
-                return [$api.s('', {
-                    key: 0,
-                    attrs: {
-                        name: ''
-                    }
-                }, [], $slotset)];
-            }
-            tmpl$1.slots = [""];
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
 
             class Parent extends LightningElement {
                 render() {
-                    return tmpl$1;
+                    return parentTmpl;
                 }
-
             }
 
-            function tmpl$2($api, $cmp, $slotset, $ctx) {
-                const {
-                    t: api_text,
-                    h: api_element,
-                    c: api_custom_element
-                } = $api;
+            const containerTmpl = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <div class="first">First</div>
+                        <div class="second">Second</div>
+                    </x-parent>
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
 
-                return [
-                    api_custom_element("x-parent", Parent, {
-                        key: 1,
-                    }, [
-                        api_element("div", {
-                                key: 2,
-                                classMap: {
-                                    first: true
-                                }
-                            },
-                            [api_text("First")]
-                        ), api_element("div", {
-                                key: 3,
-                                classMap: {
-                                    second: true
-                                }
-                            },
-                            [api_text("Second")]
-                        )
-                    ])];
-            }
-
-            class LightdomQuerySelector extends LightningElement {
+            class Container extends LightningElement {
                 render() {
-                    return tmpl$2;
+                    return containerTmpl;
                 }
-
             }
 
-            const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
+            const element = createElement('lightdom-queryselector', { is: Container });
             document.body.appendChild(element);
             const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
@@ -66,100 +43,76 @@ describe('#LightDom querySelectorAll()', () => {
         });
 
         it('should ignore elements from template', () => {
-            function html1($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
+            const childTmpl = compileTemplate(`<template><p></p></template>`);
             class Child extends LightningElement {
                 render() {
-                    return html1;
+                    return childTmpl;
                 }
             }
-            function html2($api) {
-                return [$api.c('x-child', Child, { key: 0 }, [])];
-            }
+
+            const parentTmpl = compileTemplate(
+                `<template><x-child></x-child></template>`,
+                { modules: { 'x-child': Child } }
+            );
             class Parent extends LightningElement {
                 render() {
-                    return html2;
+                    return parentTmpl;
                 }
             }
+
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
             expect(getHostShadowRoot(elm).querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
         });
 
-        it('should not throw an error if no nodes are found', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends LightningElement {
+        it('should return an empty array if no elements match', () => {
+            const testTmpl = compileTemplate(`<template><p></p></template>`);
+            class Test extends LightningElement {
                 render() {
-                    return html;
+                    return testTmpl;
                 }
-            };
-            const elm = createElement('should-not-throw-an-error-if-no-nodes-are-found', { is: def });
+            }
+
+            const elm = createElement('x-test', { is: Test });
             document.body.appendChild(elm);
-            expect(() => {
-                getHostShadowRoot(elm).querySelectorAll('div');
-            }).not.toThrow();
+            expect(getHostShadowRoot(elm).querySelectorAll('div')).toEqual([]);
         });
     });
 
     describe('Invoked from element instance', () => {
         it('should allow searching for passed elements', () => {
-            function tmpl$1($api, $cmp, $slotset, $ctx) {
-                return [$api.s('', {
-                    key: 0,
-                    attrs: {
-                        name: ''
-                    }
-                }, [], $slotset)];
-            }
-            tmpl$1.slots = [""];
+            const parentTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
 
             class Parent extends LightningElement {
                 render() {
-                    return tmpl$1;
+                    return parentTmpl;
                 }
-
             }
 
-            function tmpl$2($api, $cmp, $slotset, $ctx) {
-                const {
-                    t: api_text,
-                    h: api_element,
-                    c: api_custom_element
-                } = $api;
+            const containerTmpl = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <div class="first">First</div>
+                        <div class="second">Second</div>
+                    </x-parent>
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
 
-                return [
-                    api_custom_element("x-parent", Parent, {
-                        key: 1,
-                    }, [
-                        api_element("div", {
-                                key: 2,
-                                classMap: {
-                                    first: true
-                                }
-                            },
-                            [api_text("First")]
-                        ), api_element("div", {
-                                key: 3,
-                                classMap: {
-                                    second: true
-                                }
-                            },
-                            [api_text("Second")]
-                        )
-                    ])];
-            }
-
-            class LightdomQuerySelector extends LightningElement {
+            class Container extends LightningElement {
                 render() {
-                    return tmpl$2;
+                    return containerTmpl;
                 }
             }
 
-            const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
+            const element = createElement('lightdom-queryselector', { is: Container });
             document.body.appendChild(element);
+
             const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
@@ -170,112 +123,74 @@ describe('#LightDom querySelectorAll()', () => {
 
 describe('#LightDom querySelector()', () => {
     it('should allow searching for the passed element', () => {
-        function tmpl$1($api, $cmp, $slotset, $ctx) {
-            return [$api.s('', {
-                key: 0,
-                attrs: {
-                    name: ''
-                }
-            }, [], $slotset)];
-        }
-        tmpl$1.slots = [""];
+        const parentTmpl = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
 
         class Parent extends LightningElement {
             render() {
-                return tmpl$1;
+                return parentTmpl;
             }
-
         }
 
-        function tmpl$2($api, $cmp, $slotset, $ctx) {
-            const {
-                t: api_text,
-                h: api_element,
-                c: api_custom_element
-            } = $api;
+        const containerTmpl = compileTemplate(`
+            <template>
+                <x-parent>
+                    <div class="first">First</div>
+                    <div class="second">Second</div>
+                </x-parent>
+            </template>
+        `, {
+            modules: { 'x-parent': Parent },
+        });
 
-            return [
-                api_custom_element("x-parent", Parent, {
-                    key: 1,
-                }, [
-                    api_element("div", {
-                            key: 2,
-                            classMap: {
-                                first: true
-                            }
-                        },
-                        [api_text("First")]
-                    ), api_element("div", {
-                            key: 3,
-                            classMap: {
-                                second: true
-                            }
-                        },
-                        [api_text("Second")]
-                    )
-                ])];
-        }
-
-        class LightdomQuerySelector extends LightningElement {
+        class Container extends LightningElement {
             render() {
-                return tmpl$2;
+                return containerTmpl;
             }
         }
 
-        const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
+        const element = createElement('lightdom-queryselector', { is: Container });
         document.body.appendChild(element);
+
         const div = getHostShadowRoot(element).querySelector('x-parent').querySelector('div');
         expect(div).toBe(getHostShadowRoot(element).querySelector('.first'));
     });
 
     it('should ignore element from template', () => {
-        function html1($api) {
-            return [$api.h('p', { key: 0 }, [])];
-        }
+        const childTmpl = compileTemplate(`<template><p></p></template>`);
         class Child extends LightningElement {
             render() {
-                return html1;
+                return childTmpl;
             }
         }
-        function html2($api) {
-            return [$api.c('x-child', Child, { key: 0 }, [])];
-        }
+
+        const parentTmpl = compileTemplate(
+            `<template><x-child></x-child></template>`,
+            { modules: { 'x-child': Child } }
+        );
         class Parent extends LightningElement {
             render() {
-                return html2;
+                return parentTmpl;
             }
         }
+
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(getHostShadowRoot(elm).querySelector('x-child').querySelector('p')).toBeNull();
     });
 
-    it('should not throw an error if element does not exist', () => {
-        function html($api) {
-            return [$api.h('p', { key: 0 }, [])];
-        }
-        const def = class MyComponent extends LightningElement {
+    it('should return null if element does not exist', () => {
+        const testTmpl = compileTemplate(`<template><p></p></template>`);
+        class Test extends LightningElement {
             render() {
-                return html;
+                return testTmpl;
             }
-        };
-        const elm = createElement('x-foo', { is: def });
-        document.body.appendChild(elm);
-        expect(() => {
-            getHostShadowRoot(elm).querySelector('div');
-        }).not.toThrow();
-    });
+        }
 
-    it('should return null if element does not exist', function () {
-        function html($api) {
-            return [$api.h('p', { key: 0 }, [])];
-        }
-        const def = class MyComponent extends LightningElement {
-            render() {
-                return html;
-            }
-        };
-        const elm = createElement('x-foo', { is: def });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         expect(getHostShadowRoot(elm).querySelector('div')).toBeNull();
     });
@@ -283,41 +198,52 @@ describe('#LightDom querySelector()', () => {
 
 describe('#shadowRoot querySelector', () => {
     it('should querySelector on element from template', () => {
-        function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-        class MyComponent extends LightningElement {
+        const testTmpl = compileTemplate(`
+            <template>
+                <ul>
+                    <li></li>
+                </ul>
+            </template>
+        `);
+        class Test extends LightningElement {
             render() {
-                return html;
+                return testTmpl;
             }
         }
-        const elm = createElement('x-foo', { is: MyComponent });
+
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const ul = getHostShadowRoot(elm).querySelector('ul');
-            expect(ul);
-            const li = ul.querySelector('li');
-            expect(li);
-        });
+
+        const ul = getHostShadowRoot(elm).querySelector('ul');
+        expect(ul).toBeDefined();
+        const li = ul.querySelector('li');
+        expect(li).toBeDefined();
     });
 
     it('should not reach into child components template when querySelector invoked on child custom element', () => {
-        expect.assertions(1);
+        const myChildTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyChild extends LightningElement {
             render() {
-                return function($api) {
-                    return [$api.h('div', {
-                        key: 0,
-                    }, [])];
-                };
+                return myChildTmpl;
             }
         }
 
-        function html($api, $cmp) {
-            return [$api.c('membrane-parent-query-selector-child-custom-element-child', MyChild, {})];
-        }
-
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <membrane-parent-query-selector-child-custom-element-child></membrane-parent-query-selector-child-custom-element-child>
+            </template>
+        `, {
+            modules: {
+                'membrane-parent-query-selector-child-custom-element-child': MyChild,
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
@@ -327,98 +253,116 @@ describe('#shadowRoot querySelector', () => {
     });
 
     it('should querySelectorAll on element from template', () => {
-        function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <ul>
+                    <li></li>
+                </ul>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
+
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const ul = getHostShadowRoot(elm).querySelectorAll('ul')[0];
-            expect(ul);
-            const li = ul.querySelectorAll('li')[0];
-            expect(li);
-        });
+        const ul = getHostShadowRoot(elm).querySelectorAll('ul')[0];
+        expect(ul);
+        const li = ul.querySelectorAll('li')[0];
+        expect(li);
     });
 
     it('should adopt elements not defined in template as part of the shadow', () => {
-        function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <ul></ul>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
+
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const ul = getHostShadowRoot(elm).querySelector('ul');
-            expect(ul);
-            ul.appendChild(document.createElement('li'));
-            const li1 = ul.querySelectorAll('li')[0];
-            expect(li1).toBeDefined();
-            const li2 = ul.querySelector('li');
-            expect(li2).toBe(li1);
-            const li3 = ul.childNodes[0];
-            expect(li3).toBe(li1);
-        });
+        const ul = getHostShadowRoot(elm).querySelector('ul');
+        expect(ul);
+        ul.appendChild(document.createElement('li'));
+        const li1 = ul.querySelectorAll('li')[0];
+        expect(li1).toBeDefined();
+        const li2 = ul.querySelector('li');
+        expect(li2).toBe(li1);
+        const li3 = ul.childNodes[0];
+        expect(li3).toBe(li1);
     });
 
     it('should not throw error if querySelector does not match any elements', () => {
-        function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <ul></ul>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            expect(() => {
-                getHostShadowRoot(elm).querySelector('doesnotexist');
-            }).not.toThrow();
-        });
+        expect(() => {
+            getHostShadowRoot(elm).querySelector('doesnotexist');
+        }).not.toThrow();
     });
 
     it('should return null if querySelector does not match any elements', () => {
-        function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <ul></ul>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            expect(getHostShadowRoot(elm).querySelector('doesnotexist')).toBeNull();
-        });
+        expect(getHostShadowRoot(elm).querySelector('doesnotexist')).toBeNull();
     });
 
     it('should not throw error if querySelectorAll does not match any elements', () => {
-        function html($api) {
-            return [$api.h('ul', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <ul></ul>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            expect(() => {
-                getHostShadowRoot(elm).querySelectorAll('doesnotexist');
-            }).not.toThrow();
-        });
+        expect(() => {
+            getHostShadowRoot(elm).querySelectorAll('doesnotexist');
+        }).not.toThrow();
     });
 
     it('should not expose shadow root on child custom element', () => {
         expect.assertions(1);
         let childTemplate;
+
+        const myChildTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyChild extends LightningElement {
             constructor() {
                 super();
@@ -426,88 +370,85 @@ describe('#shadowRoot querySelector', () => {
             }
 
             render() {
-                return function($api) {
-                    return [$api.h('div', {
-                        key: 0,
-                    }, [])];
-                };
+                return myChildTmpl;
             }
         }
 
-        function html($api, $cmp) {
-            return [$api.c('x-child-parent-shadow-root', MyChild, {
-                on: {
-                    click: $api.b($cmp.handleClick)
-                }
-            })];
-        }
-
+        const myComponentTemplate = compileTemplate(`
+            <template>
+                <x-child-parent-shadow-root onclick={handleClick}></x-child-parent-shadow-root>
+            </template>
+        `, {
+            modules: {
+                'x-child-parent-shadow-root': MyChild,
+            }
+        });
         class MyComponent extends LightningElement {
             handleClick(evt) {
                 expect(evt.target.parentNode).not.toBe(childTemplate);
             }
 
             render() {
-                return html;
+                return myComponentTemplate;
             }
         }
 
         const elm = createElement('membrane-child-parent-shadow-root-parent', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            getHostShadowRoot(
-                getHostShadowRoot(elm).querySelector('x-child-parent-shadow-root')
-            ).querySelector('div').click();
-        });
+        getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-child-parent-shadow-root')
+        ).querySelector('div').click();
     });
 });
 
 describe('#parentNode and #parentElement', () => {
     it('should allow walking back to the shadow root', () => {
-        function html($api) {
-            return [$api.h('div', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const root = getHostShadowRoot(elm);
-            expect(root.querySelector('div').parentNode).toBe(root);
-        });
+        const root = getHostShadowRoot(elm);
+        expect(root.querySelector('div').parentNode).toBe(root);
     });
 
     it('should not allow walking back to the shadow root via parentElement', () => {
-        function html($api) {
-            return [$api.h('div', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const root = getHostShadowRoot(elm);
-            expect(root.querySelector('div').parentElement).toBe(null);
-        });
+        const root = getHostShadowRoot(elm);
+        expect(root.querySelector('div').parentElement).toBe(null);
     });
 });
 
 describe('proxy', () => {
     it('should allow setting properties manually', () => {
-        function html($api) {
-            return [$api.h('div', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
@@ -518,12 +459,14 @@ describe('proxy', () => {
         expect(root.querySelector('div').getAttribute('id')).toBe('something');
     });
     it('should allow setting innerHTML manually', () => {
-        function html($api) {
-            return [$api.h('span', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <span></span>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
             renderedCallback() {
                 this.template.querySelector('span').innerHTML = '<i>something</i>';
@@ -536,12 +479,16 @@ describe('proxy', () => {
         expect(root.querySelector('span').textContent).toBe('something');
     });
     it('should unwrap arguments when invoking a method on a proxy', () => {
-        function html($api) {
-            return [$api.h('div', { key: 0 }, [$api.h('p', { key: 1 }, [])])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <p></p>
+                </div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
@@ -553,12 +500,14 @@ describe('proxy', () => {
         expect(div.contains(p)).toBe(true);
     });
     it('should allow setting attributes manually', () => {
-        function html($api) {
-            return [$api.h('div', { key: 0 }, [])];
-        }
+        const myComponentTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
-                return html;
+                return myComponentTmpl;
             }
         }
 
@@ -572,36 +521,35 @@ describe('proxy', () => {
 
 describe('#childNodes', () => {
     it('should always return an empty array for slots not rendering default content', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 0,
-                }, [
-                    $api.h('div', {
-                        key: 2,
-                    } ,[]),
-                ], $slotset),
-            ];
-        }
-        tmpl.slots = [''];
-
+        const hasSlotTmpl = compileTemplate(`
+            <template>
+                <slot>
+                    <div></div>
+                </slot>
+            </template>
+        `);
         class HasSlot extends LightningElement {
             render() {
-                return tmpl;
+                return hasSlotTmpl;
             }
         }
 
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child-node-with-slot>
+                        <p></p>
+                    </x-child-node-with-slot>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child-node-with-slot': HasSlot
+            }
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.c('x-child-node-with-slot', HasSlot, {}, [
-                            $api.h('p', {
-                                key: 1,
-                            }, []),
-                        ]),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -614,32 +562,33 @@ describe('#childNodes', () => {
     });
 
     it('should return correct elements for slots rendering default content', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 0,
-                }, [
-                    $api.h('div', {
-                        key: 2,
-                    } ,[]),
-                ], $slotset),
-            ];
-        }
-        tmpl.slots = [''];
-
+        const hasSlotTmpl = compileTemplate(`
+            <template>
+                <slot>
+                    <div></div>
+                </slot>
+            </template>
+        `);
         class HasSlot extends LightningElement {
             render() {
-                return tmpl;
+                return hasSlotTmpl;
             }
         }
 
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child-node-with-slot></x-child-node-with-slot>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child-node-with-slot': HasSlot
+            }
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.c('x-child-node-with-slot', HasSlot, {}, []),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -652,19 +601,16 @@ describe('#childNodes', () => {
     });
 
     it('should return correct elements for non-slot elements', () => {
+        const html = compileTemplate(`
+            <template>
+                <div>
+                    <p></p>
+                </div>
+            </template>
+        `);
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, [
-                            $api.h('p', {
-                                key: 1,
-                            }, []),
-                        ]),
-                    ];
-                }
+                return html;
             }
         }
 
@@ -676,33 +622,59 @@ describe('#childNodes', () => {
         expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('p'));
     });
 
-    it('should return correct elements for custom elements when no children present', () => {
-        function tmpl($api) {
-            return [
-                $api.h('div', {
-                    key: 3,
-                }, []),
-            ]
-        }
-        class Child extends LightningElement {
+    it('should log a warning when accessing childNodes property', () => {
+        const html = compileTemplate(`
+            <template>
+                <div>
+                    <p></p>
+                </div>
+            </template>
+        `);
+        class Parent extends LightningElement {
             render() {
-                return tmpl;
+                return html;
             }
         }
 
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            const childNodes = getHostShadowRoot(elm).childNodes;
+        }).toLogWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
+
+        expect(() => {
+            const child = getHostShadowRoot(elm).querySelector('div');
+            const childNodes = child.childNodes;
+        }).toLogWarning(`childNodes on [object HTMLDivElement] returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+    });
+
+    it('should return correct elements for custom elements when no children present', () => {
+        const childTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
+        class Child extends LightningElement {
+            render() {
+                return childTmpl;
+            }
+        }
+
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child></x-child>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            }
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, [
-                            $api.c('x-child', Child, {
-                                key: 1,
-                            }, []),
-                        ]),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -714,36 +686,33 @@ describe('#childNodes', () => {
     });
 
     it('should return correct elements for custom elements when children present', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 3,
-                }, [], $slotset),
-            ]
-        }
+        const childTmpl = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
         class Child extends LightningElement {
             render() {
-                return tmpl;
+                return childTmpl;
             }
         }
 
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child>
+                        <p></p>
+                    </x-child>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            }
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, [
-                            $api.c('x-child', Child, {
-                                key: 1,
-                            }, [
-                                $api.h('p', {
-                                    key: 4,
-                                } ,[])
-                            ]),
-                        ]),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -755,34 +724,33 @@ describe('#childNodes', () => {
     });
 
     it('should return child text content passed via slot', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 3,
-                }, [], $slotset),
-            ]
-        }
+        const childTmpl = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
         class Child extends LightningElement {
             render() {
-                return tmpl;
+                return childTmpl;
             }
         }
 
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child>
+                        text
+                    </x-child>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            }
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, [
-                            $api.c('x-child', Child, {
-                                key: 1,
-                            }, [
-                                $api.t('text')
-                            ]),
-                        ]),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -796,30 +764,31 @@ describe('#childNodes', () => {
     });
 
     it('should not return child text from within template', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.t('text'),
-            ]
-        }
+        const childTmpl = compileTemplate(`
+            <template>
+                text
+            </template>
+        `);
         class Child extends LightningElement {
             render() {
-                return tmpl;
+                return childTmpl;
             }
         }
 
+        const parentTmpl = compileTemplate(`
+            <template>
+                <div>
+                    <x-child></x-child>
+                </div>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            },
+        });
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, [
-                            $api.c('x-child', Child, {
-                                key: 1,
-                            }, []),
-                        ]),
-                    ];
-                }
+                return parentTmpl;
             }
         }
 
@@ -831,30 +800,32 @@ describe('#childNodes', () => {
     });
 
     it('should not return dynamic child text from within template', () => {
-        function tmpl($api, $cmp, $slotset) {
-            return [
-                $api.d($cmp.dynamicText),
-            ];
-        }
-
+        const childTmpl = compileTemplate(`
+            <template>
+                {dynamicText}
+            </template>
+        `);
         class Child extends LightningElement {
             get dynamicText() {
                 return 'text';
             }
             render() {
-                return tmpl;
+                return childTmpl;
             }
         }
 
-        function tmplParent($api, $cmp, $slotset) {
-            return [
-                $api.c('x-child', Child, {}, []),
-            ];
-        }
+        const parentTmpl = compileTemplate(`
+            <template>
+                <x-child></x-child>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            },
+        });
         class Parent extends LightningElement {
-
             render() {
-                return tmplParent;
+                return parentTmpl;
             }
         }
 
@@ -865,16 +836,15 @@ describe('#childNodes', () => {
     });
 
     it('should return correct childNodes from shadowRoot', () => {
+        const html = compileTemplate(`
+            <template>
+                <div></div>
+                text
+            </template>
+        `);
         class Parent extends LightningElement {
             render() {
-                return function ($api) {
-                    return [
-                        $api.h('div', {
-                            key: 0,
-                        }, []),
-                        $api.t('text'),
-                    ];
-                }
+                return html;
             }
         }
 
@@ -893,12 +863,15 @@ describe('assignedSlot', () => {
     it('should return null when custom element is not in slot', () => {
         class NoSlot extends LightningElement {}
 
-        function html($api) {
-            return [
-                $api.c('x-assigned-slot-child', NoSlot, {}, []),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <x-assigned-slot-child></x-assigned-slot-child>
+            </template>
+        `, {
+            modules: {
+                'x-assigned-slot-child': NoSlot,
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -912,14 +885,11 @@ describe('assignedSlot', () => {
     });
 
     it('should return null when native element is not in slot', () => {
-        function html($api) {
-            return [
-                $api.h('div', {
-                    key: 0,
-                }, []),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -933,36 +903,30 @@ describe('assignedSlot', () => {
     });
 
     it('should return correct slot when native element is slotted', () => {
-        function slottedHtml($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 1,
-                }, [], $slotset),
-            ];
-        }
-
-        slottedHtml.slots = [""];
-
+        const slottedHtml = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
         class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
         }
 
-        function html($api) {
-            return [
-                $api.c('x-native-slotted-component-child', WithSlot, {
-                    key: 0,
-                }, [
-                    $api.h('div', {
-                        key: 2,
-                    }, [
-                        $api.t('test')
-                    ])
-                ]),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <x-native-slotted-component-child>
+                    <div>
+                        test
+                    </div>
+                </x-native-slotted-component-child>
+            </template>
+        `, {
+            modules: {
+                'x-native-slotted-component-child': WithSlot,
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -981,34 +945,29 @@ describe('assignedSlot', () => {
     it('should return correct slot when custom element is slotted', () => {
         class InsideSlot extends LightningElement {}
 
-        function slottedHtml($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 1,
-                }, [], $slotset),
-            ];
-        }
-
-        slottedHtml.slots = [""];
-
+        const slottedHtml = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
         class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
         }
 
-        function html($api) {
-            return [
-                $api.c('x-native-slotted-component-child', WithSlot, {
-                    key: 0,
-                }, [
-                    $api.c('x-inside-slot', InsideSlot, {
-                        key: 2,
-                    }, [])
-                ]),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <x-native-slotted-component-child>
+                    <x-inside-slot></x-inside-slot>
+                </x-native-slotted-component-child>
+            </template>
+        `, {
+            modules: {
+                'x-native-slotted-component-child': WithSlot,
+                'x-inside-slot': InsideSlot,
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -1025,18 +984,13 @@ describe('assignedSlot', () => {
     });
 
     it('should return null when native element default slot content', () => {
-        function html($api) {
-            return [
-                $api.s('', {
-                    key: 0,
-                }, [
-                    $api.h('div', {
-                        key: 1,
-                    }, []),
-                ]),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <slot>
+                    <div></div>
+                </slot>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -1050,22 +1004,19 @@ describe('assignedSlot', () => {
     });
 
     it('should return null when custom element default slot content', () => {
-        class CustomElement extends LightningElement {
+        class CustomElement extends LightningElement {}
 
-        }
-
-        function html($api) {
-            return [
-                $api.s('', {
-                    key: 0,
-                }, [
-                    $api.c('x-default-slot-custom-element', CustomElement, {
-                        key: 1,
-                    }, []),
-                ]),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <slot>
+                    <x-default-slot-custom-element></x-default-slot-custom-element>
+                </slot>
+            </template>
+        `, {
+            modules: {
+                'x-default-slot-custom-element': CustomElement
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -1079,34 +1030,28 @@ describe('assignedSlot', () => {
     });
 
     it('should return correct slot when text is slotted', () => {
-        class InsideSlot extends LightningElement {}
-
-        function slottedHtml($api, $cmp, $slotset) {
-            return [
-                $api.s('', {
-                    key: 1,
-                }, [], $slotset),
-            ];
-        }
-
-        slottedHtml.slots = [""];
-
+        const slottedHtml = compileTemplate(`
+            <template>
+                <slot></slot>
+            </template>
+        `);
         class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
         }
 
-        function html($api) {
-            return [
-                $api.c('x-native-slotted-component-child', WithSlot, {
-                    key: 0,
-                }, [
-                    $api.t('text')
-                ]),
-            ];
-        }
-
+        const html = compileTemplate(`
+            <template>
+                <x-native-slotted-component-child>
+                    text
+                </x-native-slotted-component-child>
+            </template>
+        `, {
+            modules: {
+                'x-native-slotted-component-child': WithSlot
+            }
+        });
         class MyComponent extends LightningElement {
             render() {
                 return html;

@@ -8,12 +8,12 @@ describe('Component with a wired property', () => {
     });
 
     it('should display data correctly', () => {
-        const element = browser.element('wired-prop');
+        const element = browser.element('integration-wired-prop');
         assert.equal(element.getText(), 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
-        const element = browser.element('wired-prop');
+        const element = browser.element('integration-wired-prop');
         const button = browser.element('button');
         button.click();
         browser.waitUntil(() => {

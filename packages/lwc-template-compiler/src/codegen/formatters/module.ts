@@ -4,6 +4,7 @@ import State from '../../state';
 import {
     identifierFromComponentName,
     generateTemplateMetadata,
+    kebabcaseToCamelcase
 } from '../helpers';
 
 function moduleNameToImport(name: string): t.ImportDeclaration {
@@ -11,7 +12,7 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
 
     return t.importDeclaration(
         [t.importDefaultSpecifier(localIdentifier)],
-        t.stringLiteral(name),
+        t.stringLiteral(kebabcaseToCamelcase(name)),
     );
 }
 

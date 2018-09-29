@@ -105,56 +105,36 @@ describe('custom-element', () => {
             ].join(''),
         );
     });
-
-    it('should handle custom elements in the :host-context selector', async () => {
-        const { css } = await process(':host-context(x-bar) {}');
-        expect(css).toBe(
-            `x-bar [x-foo_tmpl-host],[is="x-bar"] [x-foo_tmpl-host] {}`,
-        );
-    });
 });
 
 describe(':host', () => {
     it('should handle no context', async () => {
         const { css } = await process(':host {}');
-        expect(css).toBe(`[x-foo_tmpl-host] {}`);
+        expect(css).toBe(`:host {}\n[x-foo_tmpl-host] {}`);
     });
 
     it('should handle class', async () => {
         const { css } = await process(':host(.active) {}');
-        expect(css).toBe(`[x-foo_tmpl-host].active {}`);
+        expect(css).toBe(`:host(.active) {}\n[x-foo_tmpl-host].active {}`);
     });
 
     it('should handle attribute', async () => {
         const { css } = await process(':host([draggable]) {}');
-        expect(css).toBe(`[x-foo_tmpl-host][draggable] {}`);
+        expect(css).toBe(`:host([draggable]) {}\n[x-foo_tmpl-host][draggable] {}`);
     });
 
     it('should handle multiple selectors', async () => {
         const { css } = await process(':host(.a, .b) > p {}');
         expect(css).toBe(
-            `[x-foo_tmpl-host].a > p[x-foo_tmpl],[x-foo_tmpl-host].b > p[x-foo_tmpl] {}`,
+            [
+                `:host(.a, .b) > p[x-foo_tmpl] {}`,
+                `[x-foo_tmpl-host].a > p[x-foo_tmpl],[x-foo_tmpl-host].b > p[x-foo_tmpl] {}`,
+            ].join('\n')
         );
     });
 
     it('should handle pseudo-element', async () => {
         const { css } = await process(':host(:hover) {}');
-        expect(css).toBe(`[x-foo_tmpl-host]:hover {}`);
-    });
-});
-
-describe(':host-context', () => {
-    it('should handle selector', async () => {
-        const { css } = await process(':host-context(.darktheme) {}');
-        expect(css).toBe(`.darktheme [x-foo_tmpl-host] {}`);
-    });
-
-    it('should handle multiple selectors', async () => {
-        const { css } = await process(
-            ':host-context(.darktheme, .nighttheme) {}',
-        );
-        expect(css).toBe(
-            `.darktheme [x-foo_tmpl-host],.nighttheme [x-foo_tmpl-host] {}`,
-        );
+        expect(css).toBe(`:host(:hover) {}\n[x-foo_tmpl-host]:hover {}`);
     });
 });

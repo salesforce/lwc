@@ -4,8 +4,8 @@ const babel = require('@babel/core');
 const rollup = require('rollup');
 const templates = require('../src/shared/templates.js');
 const rollupLwcCompilerPlugin = require('rollup-plugin-lwc-compiler');
-const rollupCompatPlugin = require('rollup-plugin-compat').default;
-const babelPresetCompat = require('babel-preset-compat');
+const rollupCompatPlugin = require('rollup-plugin-compat');
+const rollupReplacePlugin = require('rollup-plugin-replace');
 const compatPolyfills = require('compat-polyfills');
 
 // -- Build Config -------------------------------------------
@@ -44,8 +44,8 @@ function testCaseComponentResolverPlugin() {
     return {
         name: 'test-case-resolver',
         resolveId(id, importee) {
-            if (/test-case/.test(id)) {
-                return path.resolve(`./src/shared/${id}.js`);
+            if (/test\/case/.test(id)) {
+                return path.resolve(`./src/shared/test-case.js`);
             }
         }
     };
@@ -77,7 +77,7 @@ function entryPointResolverPlugin() {
 const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
-    'engine': 'Engine',
+    'lwc': 'Engine',
     'wire-service': 'WireService',
     'todo': 'Todo'
 };
@@ -89,17 +89,11 @@ const baseInputConfig = {
     plugins: [
         entryPointResolverPlugin(),
         rollupLwcCompilerPlugin({
-            mode,
             exclude: `**/*${testSufix}`,
-            resolveFromPackages: false,
-            mapNamespaceFromPath: false,
-            ignoreFolderName: true,
-            allowUnnamespaced: true,
-            compat: { // In order to build faster we manually add compat artifacts later
-                downgrade: false,
-                polyfills: false
-            }
+            resolveFromPackages: false
         }),
+        isCompat && rollupCompatPlugin({ polyfills: false }),
+        isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         testCaseComponentResolverPlugin(),
     ].filter(Boolean)
 };

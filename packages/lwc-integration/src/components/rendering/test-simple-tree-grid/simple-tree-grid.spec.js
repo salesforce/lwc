@@ -5,7 +5,7 @@ describe('Testing component: simple-list-container', () => {
 
     before(() => {
         browser.url(URL);
-        element = browser.element('simple-tree-grid');
+        element = browser.element('integration-simple-tree-grid');
     });
 
     it('page load', () => {
@@ -15,15 +15,15 @@ describe('Testing component: simple-list-container', () => {
     });
 
     it('toggle collapsible', () => {
-        const toggleAnchor = browser.element('tree-node a');
+        const toggleAnchor = browser.element('integration-tree-node a');
         assert.ok(toggleAnchor);
 
-        let nodes = browser.elements('tree-node2');
+        let nodes = browser.elements('integration-tree-node2');
         assert.ok(nodes);
         assert.equal(nodes.value.length, 3);
         toggleAnchor.click();
 
-        nodes = browser.elements('tree-node2');
+        nodes = browser.elements('integration-tree-node2');
         assert.ok(nodes);
         assert.equal(nodes.value.length, 1);
     });

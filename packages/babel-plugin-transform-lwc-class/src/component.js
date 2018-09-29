@@ -11,7 +11,7 @@ module.exports = function ({ types: t }) {
 
             // Store on state local identifiers referencing engine base component
             state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
-                name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT
+                name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT || name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT_LEGACY
             )).map(({ path }) => (
                 path.get('local')
             ));

@@ -1,5 +1,5 @@
-import { createElement } from 'engine';
-import Labels from 'example-labels';
+import { createElement } from 'lwc';
+import Labels from 'example/labels';
 
 jest.mock('@salesforce/label/c.mocked', () => {
     return { default: "value set in test" };
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('example-labels', () => {
-    it.only('default snapshot', () => {
+    it('default snapshot', () => {
         const element = createElement('example-labels', { is: Labels });
         document.body.appendChild(element);
         expect(element).toMatchSnapshot();

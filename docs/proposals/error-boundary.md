@@ -25,9 +25,9 @@ Conditions
 ```js
 ## boundary.js
 
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
-export default class Boundary extends Element {
+export default class Boundary extends LightningElement {
     @track error;
     @track info;
 

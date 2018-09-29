@@ -1,5 +1,7 @@
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
+import { getErrorComponentStack } from "../vm";
+import { compileTemplate } from 'test-utils';
 
 describe('vm', () => {
     describe('insertion index', () => {
@@ -92,4 +94,103 @@ describe('vm', () => {
 
     });
 
+    describe('getComponentStack', () => {
+        it('should return stack with hierarchy bottom up.', () => {
+            let vm: VM;
+            class ChildComponentCs extends LightningElement {
+                constructor() {
+                    super();
+                    vm = this[ViewModelReflection];
+                }
+            }
+            const html  = compileTemplate(
+                `<template><x-child></x-child></template>`,
+                { modules: { 'x-child': ChildComponentCs }
+            });
+            class ParentComponentCs extends LightningElement {
+                constructor() {
+                    super();
+                }
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-parent', { is: ParentComponentCs });
+            document.body.appendChild(elm);
+
+            expect(getErrorComponentStack(vm.elm)).toBe('<x-parent>\n\t<x-child>');
+        });
+    });
+    describe('slotting for slowpath', () => {
+        it('should re-keyed slotted content to avoid reusing elements from default content', () => {
+            const childHTML = compileTemplate(`<template>
+                <slot>
+                    <h1>default slot default content</h1>
+                </slot>
+                <slot name="foo">
+                    <h2>foo slot default content</h2>
+                </slot>
+            </template>`);
+            class ChildComponent extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+                renderedCallback() {
+                    const h1 = this.template.querySelector('h1');
+                    const h2 = this.template.querySelector('h2');
+                    if (h1) {
+                        h1.setAttribute('def-1', 'internal');
+                    }
+                    if (h2) {
+                        h2.setAttribute('def-2', 'internal');
+                    }
+                }
+            }
+            const parentHTML = compileTemplate(`<template>
+                <c-child>
+                    <template if:true={h1}>
+                        <h1 slot="">slotted</h1>
+                    </template>
+                    <template if:true={h2}>
+                        <h2 slot="foo"></h2>
+                    </template>
+                </c-child>
+            </template>`, {
+                modules: {
+                    'c-child': ChildComponent
+                }
+            });
+            let parentTemplate;
+            class Parent extends LightningElement {
+                constructor() {
+                    super();
+                    this.h1 = false;
+                    this.h2 = false;
+                    parentTemplate = this.template;
+                }
+                render() {
+                    return parentHTML;
+                }
+                enable() {
+                    this.h1 = this.h2 = true;
+                }
+                disable() {
+                    this.h1 = this.h2 = true;
+                }
+            }
+            Parent.track = { h1: 1, h2: 1 };
+            Parent.publicMethods = ['enable', 'disable'];
+
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
+            elm.enable();
+            return Promise.resolve().then(() => {
+                // at this point, if we are reusing the h1 and h2 from the default content
+                // of the slots in c-child, they will have an extraneous attribute on them,
+                // which will be a problem.
+                expect(parentTemplate.querySelector('c-child').outerHTML).toBe(`<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`);
+            });
+        });
+    });
 });

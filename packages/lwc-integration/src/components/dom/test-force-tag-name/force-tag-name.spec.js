@@ -5,7 +5,7 @@ describe('Issue 572: [brain-dump] problems with accessibility and semantic marku
 
     before(() => {
         browser.url(URL);
-        element = browser.element('force-tag-name');
+        element = browser.element('integration-force-tag-name');
     });
 
     it('page load', () => {
@@ -17,8 +17,8 @@ describe('Issue 572: [brain-dump] problems with accessibility and semantic marku
     it('should have rendered a li with correct is attribute', function () {
         const items = browser.elements('li');
         assert.equal(items.value.length, 2);
-        assert.equal(items.value[0].getAttribute('is'), 'list-item');
-        assert.equal(items.value[1].getAttribute('is'), 'list-item');
+        assert.equal(items.value[0].getAttribute('is'), 'integration-list-item');
+        assert.equal(items.value[1].getAttribute('is'), 'integration-list-item');
         assert.equal(items.value[0].getText(), 'Item 1');
         assert.equal(items.value[1].getText(), 'Item 2');
     });

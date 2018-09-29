@@ -45,7 +45,7 @@ function validateSlots(vm: VM, html: any) {
         assert.isTrue(isArray(cmpSlots[slotName]), `Slots can only be set to an array, instead received ${toString(cmpSlots[slotName])} for slot "${slotName}" in ${vm}.`);
         if (ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
-            assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
+            assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`, vm.elm);
         }
     }
 }
@@ -60,7 +60,7 @@ function validateFields(vm: VM, html: any) {
     const { ids = [] } = html;
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
-            assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
+            assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`, vm.elm);
         } else if (hasOwnProperty.call(component, propName)) {
             assert.fail(`${component}'s template is accessing \`this.${toString(propName)}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(propName)}\`.`);
         }
@@ -78,6 +78,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     // reset the cache memoizer for template when needed
     if (html !== cmpTemplate) {
         if (!isUndefined(cmpTemplate)) {
+            // It is important to reset the content to avoid reusing similar elements generated from a different
+            // template, because they could have similar IDs, and snabbdom just rely on the IDs.
             resetShadowRoot(vm);
         }
         vm.cmpTemplate = html;

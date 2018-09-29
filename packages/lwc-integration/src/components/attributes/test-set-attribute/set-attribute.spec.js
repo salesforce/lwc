@@ -8,7 +8,7 @@ describe('setAttribute', () => {
     });
 
     it('should correctly set attribute on custom element', function () {
-        const element = browser.element('set-attribute');
+        const element = browser.element('integration-set-attribute');
         assert.equal( element.getAttribute('customattribute'), 'bar');
     });
 });

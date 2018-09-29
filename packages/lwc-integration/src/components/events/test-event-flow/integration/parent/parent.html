@@ -1,0 +1,17 @@
+<template>
+    <div
+        onslottedbuttonclick={handleSlottedButtonClickOnDiv}
+        onchildbuttonclick={handleChildButtonClickOnDiv}
+    >
+        <integration-child
+            onslottedbuttonclick={handleSlottedButtonClickOnChild}
+            onchildbuttonclick={handleChildButtonClickOnChild}
+        >
+            <button
+                id="slotted"
+                onclick={handleSlottedClick}
+                onslottedbuttonclick={handleSlottedButtonClickOnSlottedButton}
+            >slotted button</button>
+        </integration-child>
+    </div>
+</template>

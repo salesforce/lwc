@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(require('../inde
 
 describe('Transform property', () => {
     pluginTest('transforms public props', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api test = 1;
         }
@@ -23,7 +23,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('transform nested classes', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Outer {
             @api outer;
             a = class {
@@ -59,7 +59,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('transforms public getters', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api get publicGetter() {
                 return 1;
@@ -81,103 +81,38 @@ describe('Transform property', () => {
         }
     });
 
-    pluginTest('transforms public getter/setter', `
-        import { api } from 'engine';
+    pluginTest('detecting @api on both getter and a setter should produce an error', `
+        import { api } from 'lwc';
         export default class Test {
-            @api get something() {
+            @api
+            get something() {
                 return this.s;
             }
-            @api set something (value) {
+            @api
+            set something (value) {
                 this.s = value;
             }
         }
     `, {
-        output: {
-            code: `export default class Test {
-                    get something() {
-                        return this.s;
-                    }
-
-                    set something(value) {
-                        this.s = value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    something: {
-                        config: 3
-                    }
-                };`
+        error: {
+            message: '@api get something and @api set something',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    pluginTest('@api decorator for public getter should not require a matching setter decorator', `
-        import { api } from 'engine';
-        export default class Test {
-            set publicAccessor(value) {
-                this.thing = value;
-            }
-            @api get publicAccessor() {
-                return this.thing;
-            }
-        }
-    `, {
-        output: {
-            code: `export default class Test {
-                    set publicAccessor(value) {
-                        this.thing = value;
-                    }
-
-                    get publicAccessor() {
-                        return this.thing;
-                    }
-
-                    }
-                    Test.publicProps = {
-                        publicAccessor: {
-                        config: 1
-                    }
-                };`
-    }});
-
-    pluginTest('@api decorator for public setter should not require a matching getter decorator', `
-        import { api } from 'engine';
-        export default class Test {
-            @api set publicAccessor(value) {
-                this.thing = value;
-            }
-            get publicAccessor() {
-                return this.value;
-            }
-        }
-    `, {
-        output: {
-            code: `export default class Test {
-                    set publicAccessor(value) {
-                        this.thing = value;
-                    }
-
-                    get publicAccessor() {
-                        return this.value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    publicAccessor: {
-                        config: 2
-                    }
-                };`
-    }});
-
     pluginTest('transform pairs of setter and getter', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             _a = true;
             _b = false;
+
             @api get a () { return this._a; }
-            @api set a (value) { this._a = value; }
+            set a (value) { this._a = value; }
             @api get b () { return this._b; }
-            @api set b (value) { this._b = value; }
+            set b (value) { this._b = value; }
         }
     `, {
         output: {
@@ -216,13 +151,14 @@ describe('Transform property', () => {
     })
 
     pluginTest(`transform complex attributes`, `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Text {
             @api publicProp;
             privateProp;
+
             @api get aloneGet(){}
             @api get myget(){}
-            @api set myget(x){ return 1; }
+            set myget(x){ return 1; }
             @api m1(){}
             m2(){}
             static ctor = "ctor";
@@ -270,7 +206,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if default value is true', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api publicProp = true;
         }
@@ -285,7 +221,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name is "is"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api is;
         }
@@ -300,7 +236,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name prefixed with "on"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api onChangeHandler;
         }
@@ -315,7 +251,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('does not throw error if property name is "data"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api data;
         }
@@ -336,7 +272,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name prefixed with "data"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api dataFooBar;
         }
@@ -351,7 +287,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name is ambiguous', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api tabindex;
         }
@@ -366,7 +302,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws correct error if property name is maxlength', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api maxlength;
         }
@@ -381,7 +317,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('does not throw if property name prefixed with "aria"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api ariaDescribedBy;
         }
@@ -402,7 +338,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name conflicts with disallowed global html attribute name', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api slot;
         }
@@ -417,7 +353,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws error if property name is "part"', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api part;
         }
@@ -432,7 +368,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('throws when combined with @track', `
-        import { api, track } from 'engine';
+        import { api, track } from 'lwc';
         export default class Test {
             @track
             @api
@@ -449,7 +385,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('Duplicate api properties', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
             @api foo = 2;
@@ -465,13 +401,15 @@ describe('Transform property', () => {
     });
 
     pluginTest('Conflicting api properties with getter/setter', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
 
             _internal = 1;
-            @api get foo() { return 'foo' };
-            @api set foo(val) { this._internal = val };
+
+            @api
+            get foo() { return 'foo' };
+            set foo(val) { this._internal = val };
         }
     `, {
         error: {
@@ -484,7 +422,7 @@ describe('Transform property', () => {
     });
 
     pluginTest('Conflicting api properties with method', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
             @api foo() { return 'foo'; }
@@ -502,7 +440,7 @@ describe('Transform property', () => {
 
 describe('Transform method', () => {
     pluginTest('transforms public methods', `
-        import { api } from 'engine';
+        import { api } from 'lwc';
         export default class Test {
             @api foo() {}
         }
@@ -517,10 +455,11 @@ Test.publicMethods = ["foo"];`
     });
 
     pluginTest('Does not allow computed api getters and setters', `
-        import { api } from 'engine';
-        export default class ComputedAPIProp extends Element {
-            @api set [x](value) {}
-            @api get [x]() {}
+        import { LightningElement, api } from 'lwc';
+        export default class ComputedAPIProp extends LightningElement {
+            @api
+            set [x](value) {}
+            get [x]() {}
         }
     `, {
         error: {
@@ -537,13 +476,15 @@ describe('Metadata', () => {
     pluginTest(
         'gather metadata',
         `
-        import { Element, api } from 'engine';
-        export default class Foo extends Element {
+        import { LightningElement, api } from 'lwc';
+        export default class Foo extends LightningElement {
             _privateTodo;
-            @api get todo () {
+
+            get todo () {
                 return this._privateTodo;
             }
-            @api set todo (val) {
+            @api
+            set todo (val) {
                 return this._privateTodo = val;
             }
 
@@ -571,8 +512,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "todo",
                             loc: {
-                                start: { line: 4, column: 0 },
-                                end: { line: 6, column: 1 }
+                                start: { line: 7, column: 0 },
+                                end: { line: 10, column: 1 }
                             },
                             decorator: "api"
                         },
@@ -580,8 +521,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "index",
                             loc: {
-                                start: { line: 10, column: 0 },
-                                end: { line: 11, column: 6 }
+                                start: { line: 11, column: 0 },
+                                end: { line: 12, column: 6 }
                             },
                             decorator: "api"
                         },
@@ -589,15 +530,15 @@ describe('Metadata', () => {
                             type: "method",
                             name: "publicMethod",
                             loc: {
-                                start: { line: 12, column: 0 },
-                                end: { line: 12, column: 22 }
+                                start: { line: 13, column: 0 },
+                                end: { line: 13, column: 22 }
                             },
                             decorator: "api"
                         }
                     ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 13 }
+                        end: { column: 1, line: 14 }
                     }
                 }
             }

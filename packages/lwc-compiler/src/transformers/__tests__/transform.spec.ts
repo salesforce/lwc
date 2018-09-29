@@ -18,14 +18,14 @@ describe('transform', () => {
 describe('Javascript transform', () => {
     it('should apply transformation for valid javascript file', async () => {
         const actual = `
-            import { Element } from 'engine';
-            export default class Foo extends Element {}
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
         `;
 
         const expected = `
             import _tmpl from "./foo.html";
-            import { Element } from 'engine';
-            export default class Foo extends Element {
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {
                 render() {
                     return _tmpl;
                 }
@@ -41,16 +41,19 @@ describe('Javascript transform', () => {
 
     it('outputs proper metadata', async () => {
         const content = `
-            import { Element, api } from 'engine';
+            import { LightningElement, api } from 'lwc';
             /** Foo doc */
-            export default class Foo extends Element {
+            export default class Foo extends LightningElement {
                 _privateTodo;
-                @api get todo () {
+
+                @api
+                get todo () {
                     return this._privateTodo;
                 }
-                @api set todo (val) {
+                set todo (val) {
                     return this._privateTodo = val;
                 }
+
                 @api
                 index;
             }
@@ -75,7 +78,7 @@ describe('Javascript transform', () => {
         expect(metadata.doc).toBe('* Foo doc');
         expect(metadata.declarationLoc).toEqual({
             start: { line: 4, column: 12 },
-            end: { line: 14, column: 13 },
+            end: { line: 17, column: 13 },
         });
     });
 
@@ -88,26 +91,6 @@ describe('Javascript transform', () => {
         ).rejects.toMatchObject({
             filename: 'foo.js',
             message: expect.stringContaining('foo.js: Unexpected token (1:5)')
-        });
-    });
-
-    it('should throw if invalid resolveProxyCompat value is specified in compat mode', async () => {
-        await expect(
-            transform(`debugger`, 'foo.js', {
-                namespace: 'x',
-                name: 'foo',
-                outputConfig: {
-                    compat: true,
-                    resolveProxyCompat: {
-                        badkey: 'hello',
-                    },
-                },
-            })
-        ).rejects.toMatchObject({
-            filename: 'foo.js',
-            message: expect.stringContaining(
-                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
-            )
         });
     });
 
@@ -264,6 +247,7 @@ describe('CSS transform', () => {
             color: var(--bg-color);
             font-size: var(--font-size, 16px);
             margin: var(--margin-small, var(--margin-medium, 20px));
+            border-bottom: 1px solid var(--lwc-border);
         }`;
 
         const expected = `
@@ -274,6 +258,7 @@ describe('CSS transform', () => {
                     color: \${customProperties(\`--bg-color\`)};
                     font-size: \${customProperties(\`--font-size\`, \`16px\`)};
                     margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
+                    border-bottom: 1px solid \${customProperties(\`--lwc-border\`)};
                 }\`;
             }
             export default style;
@@ -283,6 +268,35 @@ describe('CSS transform', () => {
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('should transform var functions properly when minification is enabled', async () => {
+        const actual = `div {
+            color: var(--bg-color);
+            font-size: var(--font-size, 16px);
+            margin: var(--margin-small, var(--margin-medium, 20px));
+            border-bottom: 1px solid var(--lwc-border);
+        }`;
+
+        const expected = `
+            import customProperties from '@customProperties';
+
+            function style(token) {
+                return \`div[\${token}]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}\`;
+            }
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            stylesheetConfig: {
+                customProperties: { resolution: { type: 'module', name: '@customProperties' } },
+            },
+            outputConfig: {
+                minify: true
+            }
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -322,5 +336,20 @@ describe('CSS transform', () => {
         });
 
         expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('#689 - should not transform z-index in production', async () => {
+        const actual = 'h1 { z-index: 100; } h2 { z-index: 500; }';
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+            outputConfig: {
+                minify: true
+            }
+        });
+
+        expect(code).toContain('z-index:100');
+        expect(code).toContain('z-index:500');
     });
 });

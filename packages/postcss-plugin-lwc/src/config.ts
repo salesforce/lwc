@@ -6,6 +6,7 @@ export interface PluginConfig {
         allowDefinition?: boolean;
         transformVar?: VarTransformer;
     };
+    filename: string;
 }
 
 export function validateConfig(options: PluginConfig) {

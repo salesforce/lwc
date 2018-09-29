@@ -4,7 +4,8 @@ const replace = require('rollup-plugin-replace');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const babelMinify = require('babel-minify');
+const babel = require("@babel/core");
+const minify = require("babel-preset-minify");
 const { version } = require('../../package.json');
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 
@@ -13,10 +14,17 @@ const outputDir = path.resolve(__dirname, '../../dist/umd');
 const banner = (`/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;
 
+const minifyBabelConfig = {
+    babelrc: false,
+    comments: false,
+    presets: [minify],
+};
+
 function inlineMinifyPlugin() {
     return {
         transformBundle(code) {
-            return babelMinify(code);
+            const result = babel.transform(code, minifyBabelConfig);
+            return result.code;
         }
     };
 }
@@ -25,7 +33,12 @@ function rollupConfig(config){
     const { format, target, prod } = config;
     let plugins = [
         nodeResolve(),
-        rollupTypescriptPlugin({ typescript, target, module: 'es6', sourceMap: false }),
+        rollupTypescriptPlugin({
+            typescript,
+            target, module: 'es6',
+            sourceMap: false,
+            include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
+        }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         prod && inlineMinifyPlugin({})
     ].filter(p => p);

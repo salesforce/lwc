@@ -8,7 +8,7 @@ describe('Setting AOM property to null from outside', () => {
     });
 
     it('should correctly set attribute on custom element', function () {
-        const element = browser.element('x-child');
+        const element = browser.element('integration-child');
         element.click();
         assert.equal( element.getAttribute('aria-label'), 'tab');
     });

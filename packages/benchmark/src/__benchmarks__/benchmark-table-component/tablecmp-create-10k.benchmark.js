@@ -1,7 +1,7 @@
-import { createElement } from 'engine';
-import Table from 'benchmark-table-component';
+import { createElement } from 'lwc';
+import Table from 'benchmark/tableComponent';
 
-import { Store } from '../../table-store';
+import { Store } from '../../tableStore';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
 benchmark(`benchmark-table-component/create/10k`, () => {

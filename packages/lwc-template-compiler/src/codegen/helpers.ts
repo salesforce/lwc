@@ -1,10 +1,11 @@
 import * as t from 'babel-types';
-import * as toCamelCase from 'camelcase';
+import toCamelCase from 'camelcase';
 
 import State from '../state';
 import { isElement } from '../shared/ir';
 import { IRElement } from '../shared/types';
 import { TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { kebabcaseToCamelcase } from "../shared/naming";
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
@@ -13,6 +14,8 @@ export function getKeyGenerator() {
     let counter = 1;
     return () => counter++;
 }
+
+export { kebabcaseToCamelcase };
 
 export function getMemberExpressionRoot(
     expression: t.MemberExpression,

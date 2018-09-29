@@ -1,6 +1,6 @@
 {
   "metadata": {
     "templateUsedIds": ["isLoading", "haveLoadedItems", "menuItems"],
-    "templateDependencies": ["x-b"]
+    "templateDependencies": ["x/b"]
   }
 }

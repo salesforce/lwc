@@ -8,7 +8,7 @@ describe('Default AOM values on Shadow Root', () => {
     });
 
     it('should correctly set attribute on custom element', function () {
-        const element = browser.element('shadow-root-aom');
+        const element = browser.element('integration-shadow-root-aom');
         assert.equal( element.getAttribute('aria-label'), 'internallabel');
     });
 });

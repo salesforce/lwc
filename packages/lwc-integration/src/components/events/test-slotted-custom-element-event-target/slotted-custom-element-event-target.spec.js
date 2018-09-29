@@ -9,7 +9,7 @@ describe('Event target in slot elements', () => {
 
     it('should receive event with correct target', function () {
         browser.execute(function () {
-            document.querySelector('x-child').click();
+            document.querySelector('integration-child').click();
         });
         return Promise.resolve(() => {
             assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');

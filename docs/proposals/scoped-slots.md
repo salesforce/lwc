@@ -26,7 +26,7 @@ This example is a list component that supports an optional template for the list
 
 ```html
 <script>
-import { Element } from "engine";
+import { LightningElement } from "lwc";
 export default class MyComponent extends Element {
   state = {
     items: [
@@ -47,7 +47,7 @@ export default class MyComponent extends Element {
         </li>
     </ul>
 </template>
-``` 
+```
 
 ### Parent component
 

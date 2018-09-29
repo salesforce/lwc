@@ -1,5 +1,126 @@
-import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
-import { createElement } from "../../framework/upgrade";
+import { compileTemplate } from 'test-utils';
+import { createElement, LightningElement } from "../../framework/main";
+import { getHostShadowRoot } from "../../framework/html-element";
+
+interface LightningSlotElement extends HTMLSlotElement {
+    assignedElements(options?: object): Element[];
+}
+
+describe.skip('slotchange event', () => {
+    describe('declarative binding', () => {
+        // Initialized before each test
+        let element;
+
+        beforeEach(() => {
+            element = createElement('x-parent', { is: Parent });
+        });
+
+        it('should dispatch on initial render', () => {
+            document.body.appendChild(element);
+            const child: HTMLUnknownElement = getHostShadowRoot(element).querySelector('x-child');
+            expect(child.assignedElementsCount).toBe(1);
+            expect(child.slotChangeCount).toBe(1);
+        });
+
+        it('should dispatch when adding slotables', () => {
+            document.body.appendChild(element);
+            element.setThings(['foo', 'bar']);
+            const child: HTMLUnknownElement = getHostShadowRoot(element).querySelector('x-child');
+            expect(child.assignedElementsCount).toBe(2);
+            expect(child.slotChangeCount).toBe(2);
+        });
+
+        it('should dispatch when removing slotables', () => {
+            document.body.appendChild(element);
+            element.setThings([]);
+            const child: HTMLUnknownElement = getHostShadowRoot(element).querySelector('x-child');
+            expect(child.assignedElementsCount).toBe(0);
+            expect(child.slotChangeCount).toBe(2);
+        });
+    });
+
+    describe('programmatic binding', () => {
+        // Initialized before each test
+        let element;
+
+        class Child extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <slot></slot>
+                    </template>
+                `);
+            }
+        }
+
+        class Parent extends LightningElement {
+            things;
+            constructor() {
+                super();
+                this.things = ['foo'];
+            }
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <template for:each={things} for:item="thing">
+                                <span key={thing}>{thing}</span>
+                            </template>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child }
+                });
+            }
+            setThings(things) {
+                this.things = things;
+            }
+        }
+        Parent.publicMethods = ['setThings'];
+        Parent.track = { things: 1 };
+
+        beforeEach(() => {
+            element = createElement('x-parent', { is: Parent });
+        });
+
+        it('should not be composed', () => {
+            expect.assertions(1);
+
+            element.addEventListener('slotchange', () => {
+                // Host element should not get the event
+                expect(false);
+            });
+            document.body.appendChild(element);
+            expect(true);
+        });
+
+        it('should dispatch when adding slotables', () => {
+            expect.assertions(1);
+
+            document.body.appendChild(element);
+            const child: HTMLUnknownElement = getHostShadowRoot(element).querySelector('x-child');
+            const shadowRoot = getHostShadowRoot(child);
+            shadowRoot.addEventListener('slotchange', () => {
+                const slot = event.target as LightningSlotElement;
+                expect(slot.assignedElements().length).toBe(2);
+            });
+            element.setThings(['foo', 'bar']);
+        });
+
+        it('should dispatch when removing slotables', () => {
+            expect.assertions(1);
+
+            document.body.appendChild(element);
+            const child: HTMLUnknownElement = getHostShadowRoot(element).querySelector('x-child');
+            const shadowRoot = getHostShadowRoot(child);
+            shadowRoot.addEventListener('slotchange', () => {
+                const slot = event.target as LightningSlotElement;
+                expect(slot.assignedElements().length).toBe(0);
+            });
+            element.setThings([]);
+        });
+    });
+});
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
 describe('assignedNodes and assignedElements', () => {
@@ -7,59 +128,49 @@ describe('assignedNodes and assignedElements', () => {
         // Initialized before each test
         let element;
 
-        beforeEach(() => {
-            function html($api, $cmp, $slotset) {
-                return [
-                    $api.s('', { key: 0 }, [
-                        $api.p('awesome comment'),
-                        $api.t('foo bar baz'),
-                        $api.h('div', { key: 1 }, [])
-                    ], $slotset)
-                ];
-            }
-            html.slots = [''];
-
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            /*
-            <x-assigned-nodes>
+        const html = compileTemplate(`
+            <template>
                 <slot>
-                    <!-- awesome comment -->
-                    foo bar baz
-                    <div />
+                    foo
+                    <div></div>
+                    bar
                 </slot>
-            </x-assigned-nodes>
-            */
+            </template>
+        `);
+
+        class MyComponent extends LightningElement {
+            render() {
+                return html;
+            }
+        }
+
+        beforeEach(() => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
         it('should not find any slotables (assignedNodes)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot');
+            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should not find any slotables (assignedElements)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot');
+            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             expect(slot.assignedElements()).toHaveLength(0);
         });
 
         it('should find flattened slotables (assignedNodes)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot');
+            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(3);
-            expect(assigned[2].tagName).toBe('DIV');
+            expect(assigned[1].tagName).toBe('DIV');
         });
 
         it('should find flattened slotables (assignedElements)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot');
+            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             const assigned = slot.assignedElements({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -70,51 +181,41 @@ describe('assignedNodes and assignedElements', () => {
         // Initialized before each test
         let element;
 
-        beforeEach(() => {
-            function html($api, $cmp, $slotset) {
-                return [
-                    $api.s('outer', { key: 0, attrs: { name: 'outer' } }, [
-                        $api.s('inner', { key: 1, attrs: { name: 'inner' } }, [
-                            $api.h('div', { key: 2 }, [])
-                        ], $slotset)
-                    ], $slotset)
-                ];
-            }
-            html.slots = ['outer', 'inner'];
-
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            /*
-            <x-assigned-nodes>
+        const html = compileTemplate(`
+            <template>
                 <slot name="outer">
                     <slot name="inner">
-                        <div />
+                        <div></div>
                     </slot>
                 </slot>
-            </x-assigned-nodes>
-            */
+            </template>
+        `);
+
+        class MyComponent extends LightningElement {
+            render() {
+                return html;
+            }
+        }
+
+        beforeEach(() => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
         it('should not find any slotables for the outer slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="outer"]');
+            const slot = getHostShadowRoot(element).querySelector('[name="outer"]') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should not find any slotables for the inner slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="inner"]');
+            const slot = getHostShadowRoot(element).querySelector('[name="inner"]') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should find flattened slotables for the outer slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="outer"]');
+            const slot = getHostShadowRoot(element).querySelector('[name="outer"]') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -122,7 +223,7 @@ describe('assignedNodes and assignedElements', () => {
 
         it('should find flattened slotables for the inner slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="inner"]');
+            const slot = getHostShadowRoot(element).querySelector('[name="inner"]') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -134,57 +235,46 @@ describe('assignedNodes and assignedElements', () => {
             // Initialized before each test
             let element;
 
-            beforeEach(() => {
-                class AssignedNodesChild extends LightningElement {
-                    render() {
-                        const html = function($api, $cmp, $slotset) {
-                            return [
-                                $api.s('outer', { key: 0, attrs: { name: 'outer' } }, [
-                                    $api.s('inner', { key: 1, attrs: { name: 'inner' } }, [
-                                        $api.h('div', { key: 2 }, [])
-                                    ], $slotset)
-                                ], $slotset)
-                            ];
-                        };
-                        html.slots = ['outer', 'inner'];
-                        return html;
-                    }
-                }
-
-                class AssignedNodes extends LightningElement {
-                    render() {
-                        return function($api, $cmp, $slotset) {
-                            return [
-                                $api.c('x-assigned-nodes-child', AssignedNodesChild, { key: 3 }, [
-                                    $api.h('p', { key: 4, attrs: { slot: 'outer' }, }, []),
-                                ])
-                            ];
-                        };
-                    }
-                }
-
-                /*
-                <x-assigned-nodes>
-                    <x-assigned-nodes-child>
-                        <p slot="outer" />
-                    </x-assigned-nodes-child>
-                </x-assigned-nodes>
-
-                <x-assigned-nodes-child>
+            const childHtml = compileTemplate(`
+                <template>
                     <slot name="outer">
                         <slot name="inner">
-                            <div />
+                            <div></div>
                         </slot>
                     </slot>
-                </x-assigned-nodes-child>
-                */
-                element = createElement('x-assigned-nodes', { is: AssignedNodes });
+                </template>
+            `);
+
+            class AssignedNodesChild extends LightningElement {
+                render() {
+                    return childHtml;
+                }
+            }
+
+            const parentHtml = compileTemplate(`
+                <template>
+                    <x-assigned-nodes-child>
+                        <p slot="outer"></p>
+                    </x-assigned-nodes-child>
+                </template>
+            `, {
+                modules: { 'x-assigned-nodes-child': AssignedNodesChild }
+            });
+
+            class AssignedNodesParent extends LightningElement {
+                render() {
+                    return parentHtml;
+                }
+            }
+
+            beforeEach(() => {
+                element = createElement('x-assigned-nodes', { is: AssignedNodesParent });
             });
 
             it('should find the slotable for the outer slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="outer"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -195,16 +285,16 @@ describe('assignedNodes and assignedElements', () => {
                 // slotted correctly, its fallback with the inner is not going to be added
                 // to the dom.
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="inner"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(0);
             });
 
             it('should find assigned content for the outer slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="outer"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -215,8 +305,8 @@ describe('assignedNodes and assignedElements', () => {
                 // slotted correctly, its fallback with the inner is not going to be added
                 // to the dom.
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="inner"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('DIV');
@@ -227,65 +317,54 @@ describe('assignedNodes and assignedElements', () => {
             // Initialized before each test
             let element;
 
-            beforeEach(() => {
-                class AssignedNodesChild extends LightningElement {
-                    render() {
-                        const html = function($api, $cmp, $slotset) {
-                            return [
-                                $api.s('outer', { key: 0, attrs: { name: 'outer' } }, [
-                                    $api.s('inner', { key: 1, attrs: { name: 'inner' } }, [
-                                        $api.h('div', { key: 2 }, [])
-                                    ], $slotset)
-                                ], $slotset)
-                            ];
-                        };
-                        html.slots = ['outer', 'inner'];
-                        return html;
-                    }
-                }
-
-                class AssignedNodes extends LightningElement {
-                    render() {
-                        return function($api, $cmp, $slotset) {
-                            return [
-                                $api.c('x-assigned-nodes-child', AssignedNodesChild, { key: 3 }, [
-                                    $api.h('p', { key: 4, attrs: { slot: 'inner' } }, []),
-                                ])
-                            ];
-                        };
-                    }
-                }
-
-                /*
-                <x-assigned-nodes>
-                    <x-assigned-nodes-child>
-                        <p slot="inner" />
-                    </x-assigned-nodes-child>
-                </x-assigned-nodes>
-
-                <x-assigned-nodes-child>
+            const childHtml = compileTemplate(`
+                <template>
                     <slot name="outer">
                         <slot name="inner">
-                            <div />
+                            <div></div>
                         </slot>
                     </slot>
-                </x-assigned-nodes-child>
-                */
-                element = createElement('x-assigned-nodes', { is: AssignedNodes });
+                </template>
+            `);
+
+            class AssignedNodesChild extends LightningElement {
+                render() {
+                    return childHtml;
+                }
+            }
+
+            const parentHtml = compileTemplate(`
+                <template>
+                    <x-assigned-nodes-child>
+                        <p slot="inner"></p>
+                    </x-assigned-nodes-child>
+                </template>
+            `, {
+                modules: { 'x-assigned-nodes-child': AssignedNodesChild }
+            });
+
+            class AssignedNodesParent extends LightningElement {
+                render() {
+                    return parentHtml;
+                }
+            }
+
+            beforeEach(() => {
+                element = createElement('x-assigned-nodes', { is: AssignedNodesParent });
             });
 
             it('should not find any slotable for the outer slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="outer"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(0);
             });
 
             it('should find the slotable for the inner slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="inner"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -293,8 +372,8 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should find default content for the outer slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="outer"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -302,8 +381,8 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should find assigned content for the inner slot', () => {
                 document.body.appendChild(element);
-                const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
-                    .querySelector('[name="inner"]');
+                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
+                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -317,17 +396,17 @@ describe('slot.name', () => {
 
         it('should resolve the right property name on every slot', () => {
             let element;
-            function html($api, $cmp, $slotset) {
-                return [
-                    $api.s('', { key: 0 }, [
-                        $api.h('h1', { key: 1 }, [])
-                    ], $slotset),
-                    $api.s('foo', { key: 3, attrs: { name: "foo" } }, [
-                        $api.h('h2', { key: 4 }, [])
-                    ], $slotset)
-                ];
-            }
-            html.slots = ['', 'foo'];
+
+            const html = compileTemplate(`
+                <template>
+                    <slot>
+                        <h1></h1>
+                    </slot>
+                    <slot name="foo">
+                        <h2></h2>
+                    </slot>
+                </template>
+            `);
 
             class MyComponent extends LightningElement {
                 render() {
@@ -335,16 +414,6 @@ describe('slot.name', () => {
                 }
             }
 
-            /*
-            <x-nodes>
-                <slot>
-                    <h1 />
-                </slot>
-                <slot name="foo">
-                    <h2 />
-                </slot>
-            </x-nodes>
-            */
             element = createElement('x-assigned-nodes', { is: MyComponent });
             document.body.appendChild(element);
             const slots = getHostShadowRoot(element).querySelectorAll('slot');
@@ -362,13 +431,11 @@ describe('slotted elements', () => {
     it('should be visible via event.target', () => {
         expect.assertions(5);
 
-        function htmlChild($api, $cmp) {
-            return [
-                $api.h('button', {
-                    key: 0,
-                }, [ $api.t('click me') ]),
-            ];
-        }
+        const htmlChild = compileTemplate(`
+            <template>
+                <button>click me</button>
+            </template>
+        `);
 
         class XChild extends LightningElement {
             connectedCallback() {
@@ -382,12 +449,11 @@ describe('slotted elements', () => {
             }
         }
 
-        function htmlContainer($api, $cmp, $slotSet) {
-            return [
-                $api.s('', { key: 0, on: { click: $api.b($cmp.handleClickInSlot) } }, [], $slotSet),
-            ];
-        }
-        htmlContainer.slots = [''];
+        const htmlContainer = compileTemplate(`
+            <template>
+                <slot onclick={handleClickInSlot}></slot>
+            </template>
+        `);
 
         class XContainer extends LightningElement {
             connectedCallback() {
@@ -405,13 +471,18 @@ describe('slotted elements', () => {
             }
         }
 
-        function htmlMock($api, $cmp) {
-            return [
-                $api.c('x-container', XContainer, {
-                    key: 0,
-                }, [ $api.c('x-child', XChild, { key: 1 }, []) ]),
-            ];
-        }
+        const htmlMock = compileTemplate(`
+            <template>
+                <x-container>
+                    <x-child></x-child>
+                </x-container>
+            </template>
+        `, {
+            modules: {
+                'x-container': XContainer,
+                'x-child': XChild,
+            }
+        });
 
         class MyMock extends LightningElement {
             connectedCallback() {
@@ -428,7 +499,46 @@ describe('slotted elements', () => {
         const elm = createElement('x-mock', { is: MyMock, fallback: true });
         document.body.appendChild(elm);
         const child = getHostShadowRoot(elm).querySelector('x-child');
-        const button = getHostShadowRoot(child).querySelector('button');
+        const button = getHostShadowRoot(child as HTMLUnknownElement).querySelector('button');
         button.click();
     });
+
+    it('should allow traversing up to its parentNode', () => {
+        const childHTML = compileTemplate(`<template>
+            <slot>
+            </slot>
+        </template>`);
+
+        let childTemplate;
+        class ChildComponent extends LightningElement {
+            render() {
+                childTemplate = this.template;
+                return childHTML;
+            }
+        }
+        const parentHTML = compileTemplate(`<template>
+            <c-child>
+                <div>Slotted</div>
+            </c-child>
+        </template>`, {
+            modules: {
+                'c-child': ChildComponent
+            }
+        });
+        let parentTemplate;
+        class ParentComponent extends LightningElement {
+            render() {
+                parentTemplate = this.template;
+                return parentHTML;
+            }
+        }
+        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        document.body.appendChild(elm);
+        const divFromParent = parentTemplate.querySelector('div');
+        const child = parentTemplate.querySelector('c-child');
+        const slottedDiv = childTemplate.querySelector('slot').assignedElements()[0];
+        expect(slottedDiv).toBe(divFromParent);
+        expect(slottedDiv.parentNode).toBe(child);
+    });
+
 });

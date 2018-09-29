@@ -1,6 +1,6 @@
 import * as t from 'babel-types';
 import * as esutils from 'esutils';
-import * as toCamelCase from 'camelcase';
+import toCamelCase from 'camelcase';
 
 type RenderPrimitive =
     | 'iterator'

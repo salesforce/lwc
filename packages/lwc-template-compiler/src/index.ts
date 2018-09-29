@@ -6,6 +6,7 @@ import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 import { CompilationMetadata, CompilationWarning } from './shared/types';
+import { kebabcaseToCamelcase } from './shared/naming';
 
 export default function compiler(
     source: string,
@@ -48,7 +49,7 @@ export default function compiler(
         metadata: {
             definedSlots: state.slots,
             templateUsedIds: state.ids,
-            templateDependencies: state.dependencies,
+            templateDependencies: state.dependencies.map(kebabcaseToCamelcase),
         },
     };
 }

@@ -1,8 +1,8 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from 'lwc';
 import mockedImport from '@salesforce/label/c.mocked';
 import unmockedImport from '@salesforce/label/c.unmocked';
 
-export default class Labels extends Element {
+export default class Labels extends LightningElement {
     @track
     mockedLabel = mockedImport;
 

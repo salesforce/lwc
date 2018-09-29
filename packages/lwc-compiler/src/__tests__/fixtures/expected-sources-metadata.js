@@ -1,5 +1,5 @@
-import _xBar from 'x-bar';
-import { Element } from 'engine';
+import _xBar from 'x/bar';
+import { LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
 const style = undefined;
@@ -20,10 +20,11 @@ if (style) {
     style$$1.textContent = style('x-foo_foo');
     document.head.appendChild(style$$1);
 }
-class Metadata extends Element {
+class Metadata extends LightningElement {
     constructor(...args) {
-        var _temp;
-        return _temp = super(...args), this.publicProp = void 0, this.wiredProp = void 0, _temp;
+        super(...args);
+        this.publicProp = void 0;
+        this.wiredProp = void 0;
     }
     publicMethod(name) {
         return "hello" + name;

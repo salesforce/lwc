@@ -25,6 +25,7 @@ const {
     indexOf: ArrayIndexOf,
     push: ArrayPush,
     map: ArrayMap,
+    join: ArrayJoin,
     forEach,
     reduce: ArrayReduce,
 } = Array.prototype;
@@ -68,6 +69,7 @@ export {
     ArrayUnshift,
     ArrayFilter,
     ArrayMap,
+    ArrayJoin,
     ArrayConcat,
     isArray,
     ArrayIndexOf,

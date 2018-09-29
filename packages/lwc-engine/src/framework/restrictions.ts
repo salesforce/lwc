@@ -1,9 +1,15 @@
 import assert from "../shared/assert";
 import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase } from "../shared/language";
 import { ComponentInterface } from "./component";
-import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
+import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getShadowRootVM, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
+import {
+    getShadowRootVM,
+    getCustomElementVM,
+    VM,
+    getNodeOwnerKey,
+    getComponentVM, getShadowRootHost
+} from "./vm";
 import {
     getAttribute,
     setAttribute,
@@ -21,7 +27,10 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     return {
         childNodes: {
             get(this: Node) {
-                assert.logWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
+                assert.logWarning(
+                    `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
+                    (this instanceof Element) ? this as Element : (getShadowRootHost(this as ShadowRoot) || undefined)
+                );
                 return originalChildNodesDescriptor!.get!.call(this);
             },
             enumerable: true,
@@ -162,7 +171,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     const { elm, def: { props: propsConfig } } = vm;
 
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName) && propsConfig && propName && propsConfig[propName]) {
-        assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+        assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`, elm);
     }
 }
 
@@ -173,37 +182,8 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     }
     const { elm } = vm;
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
-        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`, elm);
     }
-}
-
-let controlledElement: Element | null = null;
-let controlledAttributeName: string | void;
-
-function isAttributeLocked(elm: Element, attrName: string): boolean {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return elm !== controlledElement || attrName !== controlledAttributeName;
-}
-
-export function lockAttribute(elm: Element, key: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    controlledElement = null;
-    controlledAttributeName = undefined;
-}
-
-export function unlockAttribute(elm: Element, key: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    controlledElement = elm;
-    controlledAttributeName = key;
 }
 
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
@@ -260,9 +240,12 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                     if (info[propName] && info[propName].attribute) {
                         const { error, experimental } = info[propName];
                         if (error) {
-                            assert.logError(error);
+                            assert.logError(error, getComponentVM(this).elm);
                         } else if (experimental) {
-                            assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
+                            assert.logError(
+                                `Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`,
+                                getComponentVM(this).elm
+                            );
                         }
                     }
                 }
@@ -271,6 +254,15 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
             enumerable: true,
             configurable: true,
             writable: true,
+        },
+        tagName: {
+            get(this: ComponentInterface) {
+                throw new Error(
+                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`,
+                );
+            },
+            enumerable: true,
+            configurable: true,
         },
     };
 }
@@ -303,7 +295,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                         msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                     }
                 }
-                console.log(msg.join('\n')); // tslint:disable-line
+                assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
                 return; // explicit undefined
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined

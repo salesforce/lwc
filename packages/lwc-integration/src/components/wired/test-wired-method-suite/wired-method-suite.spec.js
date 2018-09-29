@@ -8,12 +8,12 @@ describe('Component with a wired method', () => {
     });
 
     it('should display data correctly', () => {
-        const element = browser.element('wired-method');
+        const element = browser.element('integration-wired-method');
         assert.equal(element.getText(), 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
-        const element = browser.element('wired-method');
+        const element = browser.element('integration-wired-method');
         const button = browser.element('button');
         button.click();
         browser.waitUntil(() => {

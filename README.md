@@ -1,10 +1,10 @@
 # LWC Repository
 
-This repository contains the source code for the LWC Engine and Compiler. Additionaly, it contains examples, documentation, meeting notes and discussion notes for developers [contributing](CONTRIBUTING.md) or using Raptor.
+This repository contains the source code for the LWC Engine and Compiler. Additionally, it contains examples, documentation, meeting notes and discussion notes for developers [contributing](CONTRIBUTING.md) or using LWC.
 
 ## Getting Start
 
-Read [this document about Raptor Project][project-philosophy].
+Read [this document about LWC Project][project-philosophy].
 
 ## The Project
 

@@ -8,7 +8,7 @@ describe('removeAttribute', () => {
     });
 
     it('should correctly set attribute on custom element', function () {
-        const element = browser.element('remove-attribute');
+        const element = browser.element('integration-remove-attribute');
         assert.equal(element.getAttribute('title'), '');
     });
 });

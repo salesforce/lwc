@@ -1,4 +1,4 @@
-import _xTest from 'x-test';
+import _xTest from 'x/test';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element } = $api;
 

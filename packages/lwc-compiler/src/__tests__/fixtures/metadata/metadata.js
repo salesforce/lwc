@@ -1,8 +1,8 @@
-import { Element, api, wire } from "engine";
+import { LightningElement, api, wire } from "lwc";
 import { getTodo } from "todo";
 import { getHello } from "@schema/foo.bar";
 
-export default class Metadata extends Element {
+export default class Metadata extends LightningElement {
     @api
     publicProp;
 

@@ -54,7 +54,7 @@ Cons:
 
 ```js
 // @platform min=1, max=2
-import { Element } from "engine";
+import { LightningElement } from "lwc";
 export default class Foo extends Element {
     // ...
 }
@@ -83,7 +83,7 @@ It seems that somehow a runtime forking logic might be needed. We haven't found 
 ### Proposal 1: Runtime Logic Fork on Version
 
 ```js
-import { Element } from "engine";
+import { LightningElement } from "lwc";
 export default class Foo extends Element {
     handleClick() {
         if (this.version === 23) {

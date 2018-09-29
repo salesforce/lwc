@@ -1,6 +1,7 @@
 const path = require('path');
 const replace = require('rollup-plugin-replace');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('typescript');
+const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
 const { version } = require('../../package.json');
@@ -28,12 +29,16 @@ function rollupConfig(config) {
         },
         plugins: [
             nodeResolve(),
-            typescript({ target: target, typescript: require('typescript') })
+            rollupTypescriptPlugin({
+                target,
+                typescript,
+                include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
+            })
         ]
     }
 }
 
 module.exports = [
-    rollupConfig({ format:'umd', target:'es5' }),
-    rollupConfig({ format:'umd', target:'es2017' })
+    rollupConfig({ format:'umd', target: 'es5' }),
+    rollupConfig({ format:'umd', target: 'es2017' })
 ]

@@ -9,7 +9,7 @@ describe('Default AOM values on Shadow Root', () => {
 
     it('should correctly set attribute on custom element', function () {
         const hasAttribute = browser.execute(function () {
-            return document.querySelector('x-child').hasAttribute('aria-label');
+            return document.querySelector('integration-child').hasAttribute('aria-label');
         });
         assert.equal(hasAttribute.value, false);
     });
