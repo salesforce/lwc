@@ -4,7 +4,7 @@ describe('secure', () => {
     beforeEach(() => (secure.enabled = true));
     afterEach(() => (secure.enabled = false));
 
-    it.only('forbidden access to template', () => {
+    it('forbidden access to template', () => {
         function html($api) {
             return [$api.h('div', { key: 1 }, [])];
         };
@@ -14,9 +14,9 @@ describe('secure', () => {
                 return html;
             }
         }
-
+        const elmt = createElement('x-foo', { is: Foo });;
         expect(() => {
-            createElement('x-foo', { is: Foo });
+            document.body.appendChild(elmt);
         }).toThrowError('Unknown template');
     });
 });
