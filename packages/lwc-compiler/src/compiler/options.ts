@@ -15,7 +15,8 @@ const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
     env: {},
     minify: false,
     compat: false,
-    sourcemap: false
+    sourcemap: false,
+    secure: false
 };
 
 const KNOWN_ENV = new Set([
@@ -42,6 +43,7 @@ export interface OutputConfig {
     env?: {
         NODE_ENV?: string;
     };
+    secure?: boolean;
 }
 
 export interface BundleFiles {
@@ -74,6 +76,7 @@ export interface NormalizedStylesheetConfig extends StylesheetConfig {
 }
 
 export interface NormalizedOutputConfig extends OutputConfig {
+    secure: boolean;
     compat: boolean;
     minify: boolean;
     sourcemap: boolean;
@@ -162,6 +165,14 @@ function validateOutputConfig(config: OutputConfig) {
         throw new TypeError(
             `Expected a boolean for outputConfig.minify, received "${
                 config.minify
+            }".`
+        );
+    }
+
+    if (!isUndefined(config.secure) && !isBoolean(config.secure)) {
+        throw new TypeError(
+            `Expected a boolean for outputConfig.secure, received "${
+                config.secure
             }".`
         );
     }

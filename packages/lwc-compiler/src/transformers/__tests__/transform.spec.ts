@@ -162,6 +162,28 @@ describe('HTML transform', () => {
             message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
         });
     });
+
+    it('should compile with secure option', async () => {
+        const actual = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+
+        const { code } = await transform(actual, 'foo.html', {
+            namespace: 'x',
+            name: 'foo',
+            outputConfig: {
+                secure: true
+            }
+        });
+
+        const expected = '';
+
+        expect.stringContaining('import { secure } from \"lwc\";');
+        expect.stringContaining('export default secure.registerTemplate(tmpl);');
+
+    });
 });
 
 describe('CSS transform', () => {
