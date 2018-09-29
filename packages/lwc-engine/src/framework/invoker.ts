@@ -3,12 +3,14 @@ import {
     currentContext,
     establishContext,
 } from "./context";
+
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "../shared/language";
 import { getErrorComponentStack, VM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
+import { secure } from "./secure";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -93,7 +95,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     try {
         const html = callHook(component, render);
         if (isFunction(html)) {
-            result = evaluateTemplate(vm, html);
+            result = evaluateTemplate(vm, secure.verifyTemplate(html));
         } else if (!isUndefined(html)) {
             if (process.env.NODE_ENV !== 'production') {
                 assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./mytemplate.html"\`) or undefined, instead, it has returned ${html}.`);

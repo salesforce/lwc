@@ -15,5 +15,7 @@ export { default as wire } from "./decorators/wire";
 export { default as decorate } from "./decorators/decorate";
 export { buildCustomElementConstructor } from "./wc";
 
+export { secure } from "./secure";
+
 // Deprecated APIs
 export { LightningElement as Element } from "./html-element";
