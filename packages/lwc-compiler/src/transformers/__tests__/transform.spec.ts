@@ -178,10 +178,8 @@ describe('HTML transform', () => {
             }
         });
 
-        const expected = '';
-
-        expect.stringContaining('import { secure } from \"lwc\";');
-        expect.stringContaining('export default secure.registerTemplate(tmpl);');
+        expect(code).toContain('import { secure } from \"lwc\";');
+        expect(code).toContain('export default secure.registerTemplate(tmpl);');
 
     });
 });
