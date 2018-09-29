@@ -1,5 +1,22 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.7...v) (2018-09-27)
+# [](https://github.com/salesforce/lwc/compare/v0.29.8...v) (2018-09-29)
+
+
+### Bug Fixes
+
+* **engine:** identify LWC console logs ([#674](https://github.com/salesforce/lwc/issues/674)) ([816b643](https://github.com/salesforce/lwc/commit/816b643))
+* **jest-transformer:** update tests to reflect namespace syntax ([#685](https://github.com/salesforce/lwc/issues/685)) ([648922f](https://github.com/salesforce/lwc/commit/648922f))
+* zindex optimization in prod ([#690](https://github.com/salesforce/lwc/issues/690)) ([88f3dcd](https://github.com/salesforce/lwc/commit/88f3dcd)), closes [#689](https://github.com/salesforce/lwc/issues/689)
+
+
+### Features
+
+* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/contentAssetUrl ([#684](https://github.com/salesforce/lwc/issues/684)) ([b711b32](https://github.com/salesforce/lwc/commit/b711b32))
+
+
+
+<a name="0.29.8"></a>
+## [0.29.8](https://github.com/salesforce/lwc/compare/v0.29.7...v0.29.8) (2018-09-27)
 
 
 ### Bug Fixes
