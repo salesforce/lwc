@@ -6,7 +6,7 @@ import { getComponentDef } from "./def";
 import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
 import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
-import { HTMLElementConstructor } from "./base-html-element";
+import { HTMLElementConstructor } from "./base-bridge-element";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
     if (isCircularModuleDependency(Ctor)) {

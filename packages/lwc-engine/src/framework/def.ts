@@ -168,8 +168,8 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     } = proto;
     const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto as any !== BaseLightningElement ? getComponentDef(superProto) : null;
-    const SuperElement = isNull(superDef) ? BaseHTMLElement : superDef.bridge;
-    const bridge = HTMLElementBridgeFactory(SuperElement, getOwnPropertyNames(props), getOwnPropertyNames(methods));
+    const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
+    const bridge = HTMLBridgeElementFactory(SuperBridge, getOwnPropertyNames(props), getOwnPropertyNames(methods));
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -295,7 +295,7 @@ export function setElementProto(elm: HTMLElement, def: ComponentDef) {
 
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { BaseLightningElement } from "./base-lightning-element";
-import { BaseHTMLElement, HTMLElementBridgeFactory, HTMLElementConstructor } from "./base-html-element";
+import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from "./base-bridge-element";
 
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (props: PropsDef, propName: string): PropsDef => {
     const attrName = getAttrNameFromPropName(propName);
