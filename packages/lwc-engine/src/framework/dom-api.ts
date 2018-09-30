@@ -38,7 +38,7 @@ const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = typeof 
     throw new Error('Internal Error: Missing ShadowRoot');
 };
 
-const BaseCustomElementProto = document.createElement('x-lwc').constructor.prototype;
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export {
     dispatchEvent,
@@ -61,5 +61,5 @@ export {
     appendChild,
     hasChildNodes,
 
-    BaseCustomElementProto,
+    isNativeShadowRootAvailable,
 };

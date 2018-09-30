@@ -36,7 +36,18 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
             enumerable: true,
             configurable: true,
         },
+        // TODO: add restrictions for getRootNode() method
     };
+}
+
+function getElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    assign(descriptors, {});
+    return descriptors;
 }
 
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
@@ -268,6 +279,10 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
 }
 
 function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
     const info = getGlobalHTMLPropertiesInfo();
     const descriptors = {};
     forEach.call(getOwnPropertyNames(info), (propName: string) => {
@@ -305,16 +320,12 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
     return descriptors;
 }
 
-function getSlotElementRestrictionsDescriptors(slot: HTMLSlotElement): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return {};
-}
-
 export function patchNodeWithRestrictions(node: Node) {
     defineProperties(node, getNodeRestrictionsDescriptors(node));
+}
+
+export function patchElementWithRestrictions(elm: HTMLElement) {
+    defineProperties(elm, getElementRestrictionsDescriptors(elm));
 }
 
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
@@ -333,8 +344,4 @@ export function patchComponentWithRestrictions(cmp: ComponentInterface) {
 
 export function patchLightningElementPrototypeWithRestrictions(proto: object) {
     defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
-}
-
-export function patchSlotElementWithRestrictions(slot: HTMLSlotElement) {
-    defineProperties(slot, getSlotElementRestrictionsDescriptors(slot));
 }

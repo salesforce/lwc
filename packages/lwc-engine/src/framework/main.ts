@@ -1,6 +1,6 @@
 export { createElement } from "./upgrade";
 export { getComponentDef } from "./def";
-export { LightningElement } from "./html-element";
+export { BaseLightningElement as LightningElement } from "./base-lightning-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
 
@@ -15,4 +15,4 @@ export { default as decorate } from "./decorators/decorate";
 export { buildCustomElementConstructor } from "./wc";
 
 // Deprecated APIs
-export { LightningElement as Element } from "./html-element";
+export { BaseLightningElement as Element } from "./base-lightning-element";
