@@ -3,7 +3,8 @@
     "templateUsedIds": ["rows"],
     "templateDependencies": [
       {
-        "moduleName": "ns/row"
+        "moduleName": "ns/row",
+        "tagName": "tr"
       }
     ]
   }

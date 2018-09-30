@@ -8,7 +8,8 @@
   "metadata": {
     "templateDependencies": [
       {
-        "moduleName": "x/foo"
+        "moduleName": "x/foo",
+        "tagName": "x-foo"
       }
     ]
   }

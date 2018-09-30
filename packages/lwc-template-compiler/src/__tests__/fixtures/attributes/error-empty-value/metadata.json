@@ -12,7 +12,8 @@
             "value": true
           }
         },
-        "moduleName": "foo/bar"
+        "moduleName": "foo/bar",
+        "tagName": "foo-bar"
       }
     ]
   }

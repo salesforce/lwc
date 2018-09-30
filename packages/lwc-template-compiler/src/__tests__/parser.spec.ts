@@ -500,7 +500,8 @@ describe('metadata', () => {
                             value: true
                         }
                     },
-                    moduleName: 'x/foo'
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
                 }
             ]);
         });
@@ -511,7 +512,8 @@ describe('metadata', () => {
        </template>`);
             expect(state.extendedDependencies).toEqual([
                 {
-                    moduleName: 'x/foo'
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
                 }
             ]);
         });
@@ -532,7 +534,8 @@ describe('metadata', () => {
                             value: '123'
                         }
                     },
-                    moduleName: 'x/foo'
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo'
                 }
             ]);
         });
@@ -549,7 +552,8 @@ describe('metadata', () => {
                             value: 'p1.level1.level2'
                         }
                     },
-                    moduleName: 'x/foo'
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
                 }
             ]);
         });
@@ -566,7 +570,8 @@ describe('metadata', () => {
                             value: 'p1'
                         }
                     },
-                    moduleName: 'x/foo'
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo'
                 }
             ]);
         });

@@ -20,7 +20,7 @@ export interface BundleMetadata {
     classMembers: ClassMember[];
     declarationLoc?: Location;
     doc?: string;
-    experimentalTemplateDependencies?: TemplateModuleDependency[];
+    experimentalTemplateDependencies?: { [templatePath: string]: TemplateModuleDependency[] };
 }
 
 export class MetadataCollector {
@@ -28,7 +28,7 @@ export class MetadataCollector {
         ApiDecorator | TrackDecorator | WireDecorator
     > = [];
     private importLocations: ModuleImportLocation[] = [];
-    private experimentalTemplateDependencies?: TemplateModuleDependency[];
+    private experimentalTemplateDependencies?: { [templatePath: string]: TemplateModuleDependency[] };
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
     private doc?: string;
@@ -55,8 +55,12 @@ export class MetadataCollector {
         this.doc = doc;
     }
 
-    public setExperimentalTemplateDependencies(templateDependencies?: TemplateModuleDependency[]) {
-        this.experimentalTemplateDependencies = templateDependencies;
+    public collectExperimentalTemplateDependencies(
+        templatePath: string, templateDependencies: TemplateModuleDependency[]) {
+        if (!this.experimentalTemplateDependencies) {
+            this.experimentalTemplateDependencies = {};
+        }
+        this.experimentalTemplateDependencies[templatePath] = templateDependencies;
     }
 
     public getMetadata(): BundleMetadata {

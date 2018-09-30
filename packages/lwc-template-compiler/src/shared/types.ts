@@ -129,6 +129,7 @@ export interface DependencyParameter {
 
 export interface ModuleDependency {
     moduleName: string;
+    tagName: string;
     properties?: { [name: string]: DependencyParameter };
 }
 

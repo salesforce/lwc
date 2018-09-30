@@ -2,7 +2,8 @@
   "metadata": {
     "templateDependencies": [
       {
-        "moduleName": "ns/cmp"
+        "moduleName": "ns/cmp",
+        "tagName": "ns-cmp"
       }
     ]
   }

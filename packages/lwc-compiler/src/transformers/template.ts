@@ -80,7 +80,7 @@ const transform: FileTransformer = function(
         metadata = result.metadata;
 
         if (metadataCollector) {
-            metadataCollector.setExperimentalTemplateDependencies(result.metadata.templateDependencies);
+            metadataCollector.collectExperimentalTemplateDependencies(filename, result.metadata.templateDependencies);
         }
 
         const fatalError = warnings.find(warning => warning.level === "error");

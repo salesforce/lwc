@@ -3,7 +3,8 @@
     "templateUsedIds": ["items"],
     "templateDependencies": [
       {
-        "moduleName": "ns/item"
+        "moduleName": "ns/item",
+        "tagName": "ns-item"
       }
     ]
   }

@@ -3,7 +3,8 @@
     "templateUsedIds": ["isTrue", "items"],
     "templateDependencies": [
       {
-        "moduleName": "a/b"
+        "moduleName": "a/b",
+        "tagName": "a-b"
       }
     ]
   }

@@ -8,7 +8,8 @@
             "value": "bar"
           }
         },
-        "moduleName": "x/cmp"
+        "moduleName": "x/cmp",
+        "tagName": "x-cmp"
       }
     ]
   }
