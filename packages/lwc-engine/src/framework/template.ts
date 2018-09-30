@@ -1,13 +1,13 @@
 import assert from "../shared/assert";
-import * as api from "./api";
 import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
+import * as api from "./api";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
 import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
-import { evaluateCSS, Stylesheet, applyStyleAttributes, resetStyleAttributes } from "lwc-engine/src/framework/stylesheet";
+import { evaluateCSS, Stylesheet, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;

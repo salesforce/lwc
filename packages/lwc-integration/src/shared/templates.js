@@ -1,13 +1,19 @@
-exports.app = function (cmpName) {
+exports.app = function(cmpName) {
     return `
         import { createElement } from 'lwc';
         import Cmp from 'integration/${cmpName}';
-        var element = createElement('integration-${cmpName}', { is: Cmp });
+
+        var fallback = location.search.indexOf('nativeShadow=true') !== -1 ? false : true;
+        var element = createElement('integration-${cmpName}', {
+            is: Cmp,
+            fallback: fallback
+        });
+
         document.body.appendChild(element);
     `;
-}
+};
 
-exports.todoApp = function (cmpName) {
+exports.todoApp = function(cmpName) {
     return `
         import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'lwc';
@@ -52,43 +58,43 @@ exports.todoApp = function (cmpName) {
         var element = createElement('integration-${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
-}
+};
 
 const COMPAT = `
     <script src="../../shared/downgrade.js"></script>
     <script src="../../shared/polyfills.js"></script>
 `;
 
-exports.html = function (cmpName, isCompat) {
+exports.html = function(cmpName, isCompat) {
 
     return `
-    <html>
-        <head>
-            <title>${cmpName}</title>
-        </head>
-        <body>
-            ${isCompat ? COMPAT : ''}
-            <script src="../../shared/engine.js"></script>
-            <script src="./${cmpName}.js"></script>
-        </body>
-    </html>
-`;
-}
+        <html>
+            <head>
+                <title>${cmpName}</title>
+            </head>
+            <body>
+                ${isCompat ? COMPAT : ''}
+                <script src="../../shared/engine.js"></script>
+                <script src="./${cmpName}.js"></script>
+            </body>
+        </html>
+    `;
+};
 
-exports.wireServiceHtml = function (cmpName, isCompat) {
+exports.wireServiceHtml = function(cmpName, isCompat) {
 
     return `
-    <html>
-        <head>
-            <title>${cmpName}</title>
-        </head>
-        <body>
-            ${isCompat ? COMPAT : ''}
-            <script src="../../shared/engine.js"></script>
-            <script src="../../shared/todo.js"></script>
-            <script src="../../shared/wire.js"></script>
-            <script src="./${cmpName}.js"></script>
-        </body>
-    </html>
-`;
-}
+        <html>
+            <head>
+                <title>${cmpName}</title>
+            </head>
+            <body>
+                ${isCompat ? COMPAT : ''}
+                <script src="../../shared/engine.js"></script>
+                <script src="../../shared/todo.js"></script>
+                <script src="../../shared/wire.js"></script>
+                <script src="./${cmpName}.js"></script>
+            </body>
+        </html>
+    `;
+};

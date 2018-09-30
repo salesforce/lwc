@@ -1,10 +1,11 @@
-import assert from "lwc-engine/src/shared/assert";
-import * as api from "lwc-engine/src/framework/api";
-import { isString, isFunction, isUndefined, create } from "lwc-engine/src/shared/language";
-import { VNode } from "lwc-engine/src/3rdparty/snabbdom/types";
-import { EmptyArray } from "lwc-engine/src/framework/utils";
-import { VM } from "lwc-engine/src/framework/vm";
-import { removeAttribute, setAttribute } from "lwc-engine/src/framework/dom-api";
+import assert from "../shared/assert";
+import { isString, isFunction, isUndefined, create } from "../shared/language";
+import { VNode } from "../3rdparty/snabbdom/types";
+
+import * as api from "./api";
+import { EmptyArray } from "./utils";
+import { VM } from "./vm";
+import { removeAttribute, setAttribute } from "./dom-api";
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -48,15 +49,17 @@ function createStyleElement(styleContent: string): Element {
     return elm;
 }
 
-function getCachedStyleElement(styleContent: string): Element {
+function getCachedStyleElement(styleContent: string): HTMLStyleElement {
     let fragment = CachedStyleFragments[styleContent];
+
     if (isUndefined(fragment)) {
         fragment = createDocumentFragment.call(document);
         const elm = createStyleElement(styleContent);
         appendChild.call(fragment, elm);
         CachedStyleFragments[styleContent] = fragment;
     }
-    return fragment.cloneNode(true).firstChild as Element;
+
+    return fragment.cloneNode(true).firstChild as HTMLStyleElement;
 }
 
 const globalStyleParent = document.head || document.body || document;
@@ -71,9 +74,15 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
-function createStyleVNode() {
+function createStyleVNode(elm: HTMLStyleElement) {
     return api.h('style', {
-        key: 'style' // special key
+        key: 'style', // special key
+        hook: {
+            // Force the diffing algo to pickup the generated VNode.
+            create(_oldVnode: VNode, vnode: VNode) {
+                vnode.elm = elm;
+            }
+        }
     }, EmptyArray);
 }
 
@@ -119,8 +128,7 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
     const { fallback } = vm;
     const { factory, hostAttribute, shadowAttribute } = stylesheet;
 
-    const vnode = createStyleVNode();
-
+    let styleElement: HTMLStyleElement;
     if (fallback) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
@@ -130,13 +138,13 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
 
         // Inserting a placeholder for <style> to guarantee that native and synthetic shadow markup
         // are identical.
-        vnode.elm = getCachedStyleElement(process.env.NODE_ENV !== 'production' ? `/* synthetic style for component ${shadowSelector} */` : '');
+        styleElement = getCachedStyleElement(process.env.NODE_ENV !== 'production' ? `/* synthetic style for component ${shadowSelector} */` : '');
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
         const textContent = factory(':host', '');
-        vnode.elm = getCachedStyleElement(textContent);
+        styleElement = getCachedStyleElement(textContent);
     }
 
-    return vnode;
+    return createStyleVNode(styleElement);
 }

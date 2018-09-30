@@ -1,6 +1,6 @@
-import { isUndefined } from "lwc-engine/src/shared/language";
-import { Module, VNode } from "lwc-engine/src/3rdparty/snabbdom/types";
-import { removeAttribute, setAttribute } from "lwc-engine/src/framework/dom-api";
+import { isUndefined } from "../../shared/language";
+import { Module, VNode } from "../../3rdparty/snabbdom/types";
+import { removeAttribute, setAttribute } from "../../framework/dom-api";
 
 function updateToken(oldVnode: VNode, vnode: VNode) {
     const { shadowAttribute: oldAttribute } = oldVnode.data;

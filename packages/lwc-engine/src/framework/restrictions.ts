@@ -320,6 +320,9 @@ export function patchNodeWithRestrictions(node: Node) {
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
     // This routine will prevent access to certain properties on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
+
+    // TODO: Adding those restrictions doesn't play well with how webdriver serialize the Elements on
+    // the wire. WD retrieves the Element host on the shadowRoot when the native shadow is enabled.
     defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
 }
 

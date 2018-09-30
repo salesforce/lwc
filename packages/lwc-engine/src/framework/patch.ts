@@ -6,7 +6,7 @@ import attrs from "./modules/attrs";
 import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
-import shadowAttribute from "lwc-engine/src/framework/modules/shadow-attribute";
+import shadowAttribute from "./modules/shadow-attribute";
 import { isUndefined, isFalse, isTrue } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
