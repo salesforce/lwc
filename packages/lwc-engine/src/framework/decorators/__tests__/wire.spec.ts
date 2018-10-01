@@ -133,9 +133,8 @@ describe('wire.ts', () => {
         });
 
         it('should not proxify exotic objects', function() {
-            expect.assertions(1);
+            expect.assertions(2);
 
-            const d = new Date();
             class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
@@ -147,13 +146,18 @@ describe('wire.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            elm.injectFoo(d);
+
+            const d = new Date();
+            expect(() => {
+                elm.injectFoo(d);
+            }).toLogWarning(
+                'is set to a non-trackable object'
+            );
         });
 
         it('should not proxify non-observable object', function() {
-            expect.assertions(1);
+            expect.assertions(2);
 
-            const o = Object.create({});
             class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
@@ -165,7 +169,13 @@ describe('wire.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            elm.injectFoo(o);
+
+            const o = Object.create({});
+            expect(() => {
+                elm.injectFoo(o);
+            }).toLogWarning(
+                'is set to a non-trackable object'
+            );
         });
 
         it('should not throw an error if wire is observable object', function() {
