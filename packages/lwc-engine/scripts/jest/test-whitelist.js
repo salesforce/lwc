@@ -43,10 +43,6 @@ const CONSOLE_WHITELIST = [
     'root .lastChild should return the last child',
     'root .parentElement should return null on child node',
     'root childNodes should return array of childnodes',
-    'track.ts integration should not proxify exotic objects',
-    'track.ts integration should not proxify non-observable object',
-    'wire.ts integration should not proxify exotic objects',
-    'wire.ts integration should not proxify non-observable object',
 ];
 
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {
