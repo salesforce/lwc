@@ -83,6 +83,9 @@ function testStyles(nativeShadow) {
 describe('Style injection', () => {
     describe('synthetic shadow', () => testStyles(false));
 
+    // TODO: We need a way to use Selenium with LWC when running in `dev` mode.
+    // This test will not pass in `dev` mode since we apply some restrictions on the shadowRoot in `dev`
+    // mode only. This test pass on the CI since it runs the integration tests in production mode only.
     if (process.env.MODE && !process.env.MODE.includes('compat')) {
         describe('native shadow', () => testStyles(true));
     }
