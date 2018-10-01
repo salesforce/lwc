@@ -102,13 +102,13 @@
       if (superClass) _setPrototypeOf(subClass, superClass);
     }
 
-    var style = undefined;
+    var stylesheet = undefined;
 
     var __callKey2 = Proxy.callKey2;
 
     var __concat = Proxy.concat;
 
-    var style$1 = undefined;
+    var stylesheet$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       var api_dynamic = __getKey($api, "d"),
@@ -125,8 +125,8 @@
       ];
     }
 
-    if (style$1) {
-        __setKey(tmpl, "stylesheet", style$1);
+    if (stylesheet$1) {
+        __setKey(tmpl, "stylesheet", stylesheet$1);
     }
 
     var Foo =
@@ -212,8 +212,8 @@
       ];
     }
 
-    if (style) {
-        __setKey(tmpl$1, "stylesheet", style);
+    if (stylesheet) {
+        __setKey(tmpl$1, "stylesheet", stylesheet);
     }
 
     var App =

@@ -1,6 +1,6 @@
 define('namespace/js-local-import', ['lwc', 'namespace/utils'], function (lwc, utils) {
 
-    const style = undefined;
+    const stylesheet = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {
@@ -13,8 +13,8 @@ define('namespace/js-local-import', ['lwc', 'namespace/utils'], function (lwc, u
       }, [api_dynamic($cmp.myname)])];
     }
 
-    if (style) {
-        tmpl.stylesheet = style;
+    if (stylesheet) {
+        tmpl.stylesheet = stylesheet;
     }
 
     function method(name) {

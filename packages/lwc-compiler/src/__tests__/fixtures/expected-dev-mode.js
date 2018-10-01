@@ -1,6 +1,6 @@
 define('x-class_and_template', ['lwc'], function (lwc) {
 
-const style = undefined;
+const stylesheet = undefined;
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -12,8 +12,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 
-if (style) {
-    tmpl.stylesheet = style;
+if (stylesheet) {
+    tmpl.stylesheet = stylesheet;
 }
 
 const Test = 1;

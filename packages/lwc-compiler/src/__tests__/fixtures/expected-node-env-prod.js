@@ -1,10 +1,10 @@
 import { LightningElement } from 'lwc';
-const style = undefined;
+const stylesheet = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
-if (style) {
-    tmpl.stylesheet = style;
+if (stylesheet) {
+    tmpl.stylesheet = stylesheet;
 }
 class ClassAndTemplate extends LightningElement {
     connectedCallback() {

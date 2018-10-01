@@ -1,6 +1,6 @@
 define('namespace/html-local-import', ['namespace/importedTemplate', 'lwc'], function (_namespaceImportedTemplate, lwc) {
 
-    const style = undefined;
+    const stylesheet = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {
@@ -17,8 +17,8 @@ define('namespace/html-local-import', ['namespace/importedTemplate', 'lwc'], fun
       }, [])];
     }
 
-    if (style) {
-        tmpl.stylesheet = style;
+    if (stylesheet) {
+        tmpl.stylesheet = stylesheet;
     }
 
     class App extends lwc.LightningElement {

@@ -33,9 +33,9 @@ describe("module resolver", () => {
 
         const { success, result } = await compile(noOutputConfig);
         expect(success).toBe(true);
-        expect(pretify(result.code)).toMatch(
+        expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
-                const style = undefined;
+                const stylesheet = undefined;
 
                 function tmpl($api, $cmp, $slotset, $ctx) {
                     const {
@@ -48,8 +48,8 @@ describe("module resolver", () => {
                     }, [api_text(\"Manually Imported Template\")])];
                 }
 
-                if (style) {
-                    tmpl.stylesheet = style;
+                if (stylesheet) {
+                    tmpl.stylesheet = stylesheet;
                 }
 
                 class Test extends lwc.LightningElement {
@@ -83,7 +83,7 @@ describe("module resolver", () => {
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
-                const style = undefined;
+                const stylesheet = undefined;
 
                 function tmpl($api, $cmp, $slotset, $ctx) {
                     const {
@@ -96,8 +96,8 @@ describe("module resolver", () => {
                     }, [api_text(\"Another Template\")])];
                 }
 
-                if (style) {
-                    tmpl.stylesheet = style;
+                if (stylesheet) {
+                    tmpl.stylesheet = stylesheet;
                 }
 
                 class Test extends lwc.LightningElement {

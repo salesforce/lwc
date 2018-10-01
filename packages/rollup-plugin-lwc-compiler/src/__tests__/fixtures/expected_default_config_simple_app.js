@@ -1,9 +1,9 @@
 (function (lwc) {
     'use strict';
 
-    const style = undefined;
+    const stylesheet = undefined;
 
-    const style$1 = undefined;
+    const stylesheet$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const {
@@ -16,8 +16,8 @@
       }, [api_dynamic($cmp.x)])];
     }
 
-    if (style$1) {
-        tmpl.stylesheet = style$1;
+    if (stylesheet$1) {
+        tmpl.stylesheet = stylesheet$1;
     }
 
     class Foo extends lwc.LightningElement {
@@ -56,8 +56,8 @@
       }, [])])];
     }
 
-    if (style) {
-        tmpl$1.stylesheet = style;
+    if (stylesheet) {
+        tmpl$1.stylesheet = stylesheet;
     }
 
     class App extends lwc.LightningElement {

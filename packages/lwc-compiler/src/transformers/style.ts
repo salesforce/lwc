@@ -23,8 +23,8 @@ const SHADOW_SELECTOR_PLACEHOLDER = '__TOKEN__';
 
 /** The default stylesheet content if no source has been provided. */
 const EMPTY_CSS_OUTPUT = `
-const style = undefined;
-export default style;
+const stylesheet = undefined;
+export default stylesheet;
 `;
 
 /** The javascript identifier used when custom properties get resolved from a module. */

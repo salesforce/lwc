@@ -2,7 +2,7 @@ import _xBar from 'x/bar';
 import { LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
-const style = undefined;
+const stylesheet = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         c: api_custom_element
@@ -11,8 +11,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
     }, [])];
 }
-if (style) {
-    tmpl.stylesheet = style;
+if (stylesheet) {
+    tmpl.stylesheet = stylesheet;
 }
 class Metadata extends LightningElement {
     constructor(...args) {
