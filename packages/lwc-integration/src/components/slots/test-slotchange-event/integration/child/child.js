@@ -14,7 +14,7 @@ export default class Child extends LightningElement {
     }
 
     dispatchMessage(event) {
-        const elements = event.currentTarget.assignedElements({ flatten: true });
+        const elements = event.currentTarget.assignedNodes({ flatten: true });
         this.dispatchEvent(
             new CustomEvent('message', {
                 bubbles: true,

@@ -87,12 +87,35 @@ describe('slotchange', () => {
             browser.url(URL);
         });
 
+        // The following test asserts that slotchange is dispatched as expected
+        // by first assigning content and then checking that the assigned
+        // content was cleared. This is because the slotchange event.target does
+        // not get patched due to the listener being added dynamically and
+        // assignedNodes() is therefore unavailable.
         it('should be dispatched if a slotchange listener has been dynamically added to the slot', () => {
+            browser.click('.countries');
+            const initialEvents = browser.execute(getEvents).value;
+            const initialSlotNames = getSlotNames(initialEvents);
+            assert(
+                initialSlotNames.join('.'),
+                'belarus.china.cuba.france.india.japan.spain',
+                'Assigned nodes have been initialized as expected.'
+            );
+
+            browser.click('.toggle-content');
+            let events = browser.execute(getEvents).value;
+            let slotNames = getSlotNames(events);
+            assert(
+                slotNames.join('.'),
+                'belarus.china.cuba.france.india.japan.spain',
+                'slotchange should not be dispatched.'
+            );
+
             browser.click('.add-slotchange');
             browser.click('.toggle-content');
-            const events = browser.execute(getEvents).value;
-            const slotNames = getSlotNames(events);
-            assert(slotNames.includes('programmatic-listener'));
+            events = browser.execute(getEvents).value;
+            slotNames = getSlotNames(events);
+            assert(slotNames.join('.'), '', 'slotchange should be dispatched.');
         });
     });
 });
