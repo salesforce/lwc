@@ -1,4 +1,5 @@
 import assert from "../shared/assert";
+import { secure } from "./secure";
 import * as api from "./api";
 import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
@@ -97,6 +98,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
             // template, because they could have similar IDs, and snabbdom just rely on the IDs.
             resetShadowRoot(vm);
         }
+
+        // Check that the template is built by the compiler
+        secure.verifyTemplate(html);
+
         vm.cmpTemplate = html;
 
         // Populate context with template information

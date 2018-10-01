@@ -1,3 +1,5 @@
+import { Template } from "../framework/template";
+
 const DEFAULT_SECURE_ENABLEMENT = false;
 const VERIFIED_TEMPLATES = new Set();
 
@@ -7,13 +9,13 @@ const SECURE_OBJECT = {
     verifyTemplate
 };
 
-function registerTemplate(tmpl) {
+function registerTemplate(tmpl: Template) {
     if (SECURE_OBJECT.enabled) {
         VERIFIED_TEMPLATES.add(tmpl);
     }
 }
 
-function verifyTemplate(tmpl) {
+function verifyTemplate(tmpl: Template) {
     if (SECURE_OBJECT.enabled && !VERIFIED_TEMPLATES.has(tmpl)) {
         throw new TypeError('Unknown template');
     }

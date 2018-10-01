@@ -1,10 +1,9 @@
-import { ResolvedConfig } from '../config';
 import generate from 'babel-generator';
 import * as t from 'babel-types';
-
 import template = require('babel-template');
 
 import State from '../state';
+import { ResolvedConfig } from '../config';
 
 import {
     TEMPLATE_PARAMS,

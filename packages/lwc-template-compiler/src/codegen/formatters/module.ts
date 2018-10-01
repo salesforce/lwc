@@ -13,7 +13,6 @@ import {
     SECURE_IMPORT_NAME, SECURE_REGISTER_TEMPLATE_METHOD_NAME,
     LWC_MODULE_NAME
 } from '../../shared/constants';
-import { FunctionDeclaration, ExportDefaultDeclaration } from 'babel-types';
 
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);
@@ -42,7 +41,7 @@ export function format(
     );
 
     const metadata = generateTemplateMetadata(state);
-    let templateBody: Array<FunctionDeclaration | ExportDefaultDeclaration> = [t.exportDefaultDeclaration(templateFn)];
+    let templateBody: Array<t.FunctionDeclaration | t.ExportDefaultDeclaration>;
 
     if (secure) {
         imports.push(generateSecureImport());
@@ -57,7 +56,9 @@ export function format(
                     [t.identifier(TEMPLATE_FUNCTION_NAME)]
                 )
             )
-        ]
+        ];
+    } else {
+        templateBody = [t.exportDefaultDeclaration(templateFn)];
     }
 
     return t.program([

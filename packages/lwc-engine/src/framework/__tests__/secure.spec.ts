@@ -5,9 +5,12 @@ describe('secure', () => {
     afterEach(() => (secure.enabled = false));
 
     it('forbidden access to template', () => {
-        function html($api) {
-            return [$api.h('div', { key: 1 }, [])];
-        };
+        // We can't use the inline template compiler here
+        // since precesily we are trying to test that handcrafted
+        // functions throw an exception.
+        function html() {
+            return [];
+        }
 
         class Foo extends LightningElement {
             render() {
