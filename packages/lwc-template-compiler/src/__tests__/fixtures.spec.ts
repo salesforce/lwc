@@ -54,7 +54,7 @@ describe('fixtures', () => {
                 writeFixtureFile(expectedJsFile, prettier.format(actual.code));
             }
 
-            if (!fs.existsSync(fixtureFilePath(expectedMetaFile))) {
+            if (expectedMetaData === null) {
                 // write metadata file if doesn't exist (ie new fixture)
                 const metadata = {
                     warnings: actual.warnings,
