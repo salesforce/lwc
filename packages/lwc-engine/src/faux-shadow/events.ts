@@ -7,7 +7,7 @@ import {
     getRootNode,
     parentNodeGetter,
 } from "./node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString, forEach, defineProperty, isFalse } from "../shared/language";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
 
