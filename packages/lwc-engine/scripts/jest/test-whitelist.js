@@ -43,8 +43,6 @@ const CONSOLE_WHITELIST = [
     'root .lastChild should return the last child',
     'root .parentElement should return null on child node',
     'root childNodes should return array of childnodes',
-    'template integration should render arrays correctly',
-    'template integration should render sets correctly',
     'track.ts integration should not proxify exotic objects',
     'track.ts integration should not proxify non-observable object',
     'wire.ts integration should not proxify exotic objects',
