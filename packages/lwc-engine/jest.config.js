@@ -5,8 +5,13 @@ module.exports = {
     ...BASE_CONFIG,
 
     displayName: 'lwc-engine',
+
     moduleNameMapper: {
         'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
     },
     setupTestFrameworkScriptFile: path.resolve(__dirname, 'scripts/jest/setup-test.js'),
+
+    coveragePathIgnorePatterns: [
+        '<rootDir>/scripts/jest/'
+    ],
 };

@@ -2386,13 +2386,13 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
-babel-jest@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-23.0.1/bbad3bf523fb202da05ed0a6540b48c84eed13a6.tgz#bbad3bf523fb202da05ed0a6540b48c84eed13a6"
-  integrity sha1-u6079SP7IC2gXtCmVAtIyE7tE6Y=
+babel-jest@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-23.6.0/a644232366557a2240a0c083da6b25786185a2f1.tgz#a644232366557a2240a0c083da6b25786185a2f1"
+  integrity sha512-lqKGG6LYXYu+DQh/slrQ8nxXQkEkhugdXsU6St7GmhVS7Ilc/22ArwqXNJrf0QaOBjZB0360qZMwXqDYQHXaew==
   dependencies:
     babel-plugin-istanbul "^4.1.6"
-    babel-preset-jest "^23.0.1"
+    babel-preset-jest "^23.2.0"
 
 babel-messages@^6.23.0:
   version "6.23.0"
@@ -2423,10 +2423,10 @@ babel-plugin-jest-hoist@^22.4.1:
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.1/d712fe5da8b6965f3191dacddbefdbdf4fb66d63.tgz#d712fe5da8b6965f3191dacddbefdbdf4fb66d63"
   integrity sha512-gmj5FvFflXSnRapWmF/jDjx5Lof1kX0OwXibCxMOx38V3CFMOnTxLTUrAFfLkhCey3FJvv0ACvv/+h4nzFRxhg==
 
-babel-plugin-jest-hoist@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-23.0.1/eaa11c964563aea9c21becef2bdf7853f7f3c148.tgz#eaa11c964563aea9c21becef2bdf7853f7f3c148"
-  integrity sha1-6qEclkVjrqnCG+zvK994U/fzwUg=
+babel-plugin-jest-hoist@^23.2.0:
+  version "23.2.0"
+  resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-23.2.0/e61fae05a1ca8801aadee57a6d66b8cefaf44167.tgz#e61fae05a1ca8801aadee57a6d66b8cefaf44167"
+  integrity sha1-5h+uBaHKiAGq3uV6bWa4zvr0QWc=
 
 babel-plugin-minify-builtins@^0.5.0-alpha.5a128fd5:
   version "0.5.0-alpha.e9f96ffe"
@@ -2902,12 +2902,12 @@ babel-preset-jest@^22.1.0:
     babel-plugin-jest-hoist "^22.4.1"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
-babel-preset-jest@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-23.0.1/631cc545c6cf021943013bcaf22f45d87fe62198.tgz#631cc545c6cf021943013bcaf22f45d87fe62198"
-  integrity sha1-YxzFRcbPAhlDATvK8i9F2H/mIZg=
+babel-preset-jest@^23.2.0:
+  version "23.2.0"
+  resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-23.2.0/8ec7a03a138f001a1a8fb1e8113652bf1a55da46.tgz#8ec7a03a138f001a1a8fb1e8113652bf1a55da46"
+  integrity sha1-jsegOhOPABoaj7HoETZSvxpV2kY=
   dependencies:
-    babel-plugin-jest-hoist "^23.0.1"
+    babel-plugin-jest-hoist "^23.2.0"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
 babel-preset-minify@0.5.0-alpha.5a128fd5:
@@ -2971,7 +2971,7 @@ babel-template@^6.16.0, babel-template@^6.24.1, babel-template@^6.26.0:
     babylon "^6.18.0"
     lodash "^4.17.4"
 
-babel-traverse@^6.18.0, babel-traverse@^6.24.1, babel-traverse@^6.26.0:
+babel-traverse@^6.0.0, babel-traverse@^6.18.0, babel-traverse@^6.24.1, babel-traverse@^6.26.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-traverse/-/babel-traverse-6.26.0/46a9cbd7edcc62c8e5c064e2d2d8d0f4035766ee.tgz#46a9cbd7edcc62c8e5c064e2d2d8d0f4035766ee"
   integrity sha1-RqnL1+3MYsjlwGTi0tjQ9ANXZu4=
@@ -2986,7 +2986,7 @@ babel-traverse@^6.18.0, babel-traverse@^6.24.1, babel-traverse@^6.26.0:
     invariant "^2.2.2"
     lodash "^4.17.4"
 
-babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1, babel-types@^6.26.0:
+babel-types@^6.0.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1, babel-types@^6.26.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-types/-/babel-types-6.26.0/a3b073f94ab49eb6fa55cd65227a334380632497.tgz#a3b073f94ab49eb6fa55cd65227a334380632497"
   integrity sha1-o7Bz+Uq0nrb6Vc1lInozQ4BjJJc=
@@ -3246,10 +3246,10 @@ browser-process-hrtime@^0.1.2:
   resolved "http://npm.lwcjs.org/browser-process-hrtime/-/browser-process-hrtime-0.1.2/425d68a58d3447f02a04aa894187fce8af8b7b8e.tgz#425d68a58d3447f02a04aa894187fce8af8b7b8e"
   integrity sha1-Ql1opY00R/AqBKqJQYf86K+Le44=
 
-browser-resolve@^1.11.2:
-  version "1.11.2"
-  resolved "http://npm.lwcjs.org/browser-resolve/-/browser-resolve-1.11.2/8ff09b0a2c421718a1051c260b32e48f442938ce.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
-  integrity sha1-j/CbCixCFxihBRwmCzLkj0QpOM4=
+browser-resolve@^1.11.3:
+  version "1.11.3"
+  resolved "http://npm.lwcjs.org/browser-resolve/-/browser-resolve-1.11.3/9b7cbb3d0f510e4cb86bdbd796124d28b5890af6.tgz#9b7cbb3d0f510e4cb86bdbd796124d28b5890af6"
+  integrity sha512-exDi1BYWB/6raKHmDTCicQfTkqwN5fioMFV4j8BsfMU4R2DK/QfZfK7kOVkmWCNANf0snkBzqGqAJBao9gZMdQ==
   dependencies:
     resolve "1.1.7"
 
@@ -3332,6 +3332,13 @@ browserslist@^2.1.2, browserslist@^2.11.3:
     caniuse-lite "^1.0.30000792"
     electron-to-chromium "^1.3.30"
 
+bs-logger@0.x:
+  version "0.2.5"
+  resolved "http://npm.lwcjs.org/bs-logger/-/bs-logger-0.2.5/1d82f0cf88864e1341cd9262237f8d0748a49b22.tgz#1d82f0cf88864e1341cd9262237f8d0748a49b22"
+  integrity sha512-uFLE0LFMxrH8Z5Hd9QgivvRbrl/NFkOTHzGhlqQxsnmx5JBLrp4bc249afLL+GccyY/8hkcGi2LpVaOzaEY0nQ==
+  dependencies:
+    fast-json-stable-stringify "^2.0.0"
+
 bser@^2.0.0:
   version "2.0.0"
   resolved "http://npm.lwcjs.org/bser/-/bser-2.0.0/9ac78d3ed5d915804fd87acb158bc797147a1719.tgz#9ac78d3ed5d915804fd87acb158bc797147a1719"
@@ -3348,6 +3355,11 @@ buffer-equal-constant-time@1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1/f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
   integrity sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=
+
+buffer-from@1.x:
+  version "1.1.1"
+  resolved "http://npm.lwcjs.org/buffer-from/-/buffer-from-1.1.1/32713bc028f75c02fdb710d7c7bcec1f2c6070ef.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
+  integrity sha512-MQcXEUbCKtEo7bhqEs6560Hyd4XaovZlO/k9V3hjVUF/zwW7KBVdSK4gIt/bzwS9MbR5qob+F5jusZsb0YQK2A==
 
 buffer-from@^1.0.0:
   version "1.1.0"
@@ -5339,17 +5351,17 @@ expand-tilde@~2.0.2:
   dependencies:
     homedir-polyfill "^1.0.1"
 
-expect@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/expect/-/expect-23.1.0/bfdfd57a2a20170d875999ee9787cc71f01c205f.tgz#bfdfd57a2a20170d875999ee9787cc71f01c205f"
-  integrity sha1-v9/VeiogFw2HWZnul4fMcfAcIF8=
+expect@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/expect/-/expect-23.6.0/1e0c8d3ba9a581c87bd71fb9bc8862d443425f98.tgz#1e0c8d3ba9a581c87bd71fb9bc8862d443425f98"
+  integrity sha512-dgSoOHgmtn/aDGRVFWclQyPDKl2CQRq0hmIEoUAuQs/2rn2NcvCWcSCovm6BLeuB/7EZuLGu2QfnR+qRt5OM4w==
   dependencies:
     ansi-styles "^3.2.0"
-    jest-diff "^23.0.1"
+    jest-diff "^23.6.0"
     jest-get-type "^22.1.0"
-    jest-matcher-utils "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
+    jest-matcher-utils "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-regex-util "^23.3.0"
 
 express@^4.14.0, express@^4.15.2:
   version "4.16.2"
@@ -5497,7 +5509,7 @@ fast-glob@^2.0.2:
     merge2 "^1.2.1"
     micromatch "^3.1.10"
 
-fast-json-stable-stringify@^2.0.0:
+fast-json-stable-stringify@2.x, fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "http://npm.lwcjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0/d5142c0caee6b1189f87d3a76111064f86c8bbf2.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
   integrity sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
@@ -6684,7 +6696,7 @@ interpret@^1.0.0, interpret@^1.1.0:
   resolved "http://npm.lwcjs.org/interpret/-/interpret-1.1.0/7ed1b1410c6a0e0f78cf95d3b8440c63f78b8614.tgz#7ed1b1410c6a0e0f78cf95d3b8440c63f78b8614"
   integrity sha1-ftGxQQxqDg94z5XTuEQMY/eLhhQ=
 
-invariant@^2.2.0:
+invariant@^2.2.0, invariant@^2.2.4:
   version "2.2.4"
   resolved "http://npm.lwcjs.org/invariant/-/invariant-2.2.4/610f3c92c9359ce1db616e538008d23ff35158e6.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -7166,17 +7178,17 @@ istanbul-reports@^1.3.0:
   dependencies:
     handlebars "^4.0.3"
 
-jest-changed-files@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-changed-files/-/jest-changed-files-23.0.1/f79572d0720844ea5df84c2a448e862c2254f60c.tgz#f79572d0720844ea5df84c2a448e862c2254f60c"
-  integrity sha1-95Vy0HIIROpd+EwqRI6GLCJU9gw=
+jest-changed-files@^23.4.2:
+  version "23.4.2"
+  resolved "http://npm.lwcjs.org/jest-changed-files/-/jest-changed-files-23.4.2/1eed688370cd5eebafe4ae93d34bb3b64968fe83.tgz#1eed688370cd5eebafe4ae93d34bb3b64968fe83"
+  integrity sha512-EyNhTAUWEfwnK0Is/09LxoqNDOn7mU7S3EHskG52djOFS/z+IT0jT3h3Ql61+dklcG7bJJitIWEMB4Sp1piHmA==
   dependencies:
     throat "^4.0.0"
 
-jest-cli@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-23.1.0/eb8bdd4ce0d15250892e31ad9b69bc99d2a8f6bf.tgz#eb8bdd4ce0d15250892e31ad9b69bc99d2a8f6bf"
-  integrity sha1-64vdTODRUlCJLjGtm2m8mdKo9r8=
+jest-cli@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-23.6.0/61ab917744338f443ef2baa282ddffdd658a5da4.tgz#61ab917744338f443ef2baa282ddffdd658a5da4"
+  integrity sha512-hgeD1zRUp1E1zsiyOXjEn4LzRLWdJBV//ukAHGlx6s5mfCNJTbhbHjgxnDUXA8fsKWN/HqFFF6X5XcCwC/IvYQ==
   dependencies:
     ansi-escapes "^3.0.0"
     chalk "^2.0.1"
@@ -7189,23 +7201,24 @@ jest-cli@^23.1.0:
     istanbul-lib-coverage "^1.2.0"
     istanbul-lib-instrument "^1.10.1"
     istanbul-lib-source-maps "^1.2.4"
-    jest-changed-files "^23.0.1"
-    jest-config "^23.1.0"
-    jest-environment-jsdom "^23.1.0"
+    jest-changed-files "^23.4.2"
+    jest-config "^23.6.0"
+    jest-environment-jsdom "^23.4.0"
     jest-get-type "^22.1.0"
-    jest-haste-map "^23.1.0"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve-dependencies "^23.0.1"
-    jest-runner "^23.1.0"
-    jest-runtime "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
-    jest-watcher "^23.1.0"
-    jest-worker "^23.0.1"
+    jest-haste-map "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-regex-util "^23.3.0"
+    jest-resolve-dependencies "^23.6.0"
+    jest-runner "^23.6.0"
+    jest-runtime "^23.6.0"
+    jest-snapshot "^23.6.0"
+    jest-util "^23.4.0"
+    jest-validate "^23.6.0"
+    jest-watcher "^23.4.0"
+    jest-worker "^23.2.0"
     micromatch "^2.3.11"
     node-notifier "^5.2.1"
+    prompts "^0.1.9"
     realpath-native "^1.0.0"
     rimraf "^2.5.4"
     slash "^1.0.0"
@@ -7214,122 +7227,125 @@ jest-cli@^23.1.0:
     which "^1.2.12"
     yargs "^11.0.0"
 
-jest-config@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-config/-/jest-config-23.1.0/708ca0f431d356ee424fb4895d3308006bdd8241.tgz#708ca0f431d356ee424fb4895d3308006bdd8241"
-  integrity sha1-cIyg9DHTVu5CT7SJXTMIAGvdgkE=
+jest-config@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-config/-/jest-config-23.6.0/f82546a90ade2d8c7026fbf6ac5207fc22f8eb1d.tgz#f82546a90ade2d8c7026fbf6ac5207fc22f8eb1d"
+  integrity sha512-i8V7z9BeDXab1+VNo78WM0AtWpBRXJLnkT+lyT+Slx/cbP5sZJ0+NDuLcmBE5hXAoK0aUp7vI+MOxR+R4d8SRQ==
   dependencies:
     babel-core "^6.0.0"
-    babel-jest "^23.0.1"
+    babel-jest "^23.6.0"
     chalk "^2.0.1"
     glob "^7.1.1"
-    jest-environment-jsdom "^23.1.0"
-    jest-environment-node "^23.1.0"
+    jest-environment-jsdom "^23.4.0"
+    jest-environment-node "^23.4.0"
     jest-get-type "^22.1.0"
-    jest-jasmine2 "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve "^23.1.0"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
-    pretty-format "^23.0.1"
+    jest-jasmine2 "^23.6.0"
+    jest-regex-util "^23.3.0"
+    jest-resolve "^23.6.0"
+    jest-util "^23.4.0"
+    jest-validate "^23.6.0"
+    micromatch "^2.3.11"
+    pretty-format "^23.6.0"
 
-jest-diff@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-diff/-/jest-diff-23.0.1/3d49137cee12c320a4b4d2b4a6fa6e82d491a16a.tgz#3d49137cee12c320a4b4d2b4a6fa6e82d491a16a"
-  integrity sha1-PUkTfO4SwyCktNK0pvpugtSRoWo=
+jest-diff@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-diff/-/jest-diff-23.6.0/1500f3f16e850bb3d71233408089be099f610c7d.tgz#1500f3f16e850bb3d71233408089be099f610c7d"
+  integrity sha512-Gz9l5Ov+X3aL5L37IT+8hoCUsof1CVYBb2QEkOupK64XyRR3h+uRpYIm97K7sY8diFxowR8pIGEdyfMKTixo3g==
   dependencies:
     chalk "^2.0.1"
     diff "^3.2.0"
     jest-get-type "^22.1.0"
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
 
-jest-docblock@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-docblock/-/jest-docblock-23.0.1/deddd18333be5dc2415260a04ef3fce9276b5725.tgz#deddd18333be5dc2415260a04ef3fce9276b5725"
-  integrity sha1-3t3RgzO+XcJBUmCgTvP86SdrVyU=
+jest-docblock@^23.2.0:
+  version "23.2.0"
+  resolved "http://npm.lwcjs.org/jest-docblock/-/jest-docblock-23.2.0/f085e1f18548d99fdd69b20207e6fd55d91383a7.tgz#f085e1f18548d99fdd69b20207e6fd55d91383a7"
+  integrity sha1-8IXh8YVI2Z/dabICB+b9VdkTg6c=
   dependencies:
     detect-newline "^2.1.0"
 
-jest-each@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-each/-/jest-each-23.1.0/16146b592c354867a5ae5e13cdf15c6c65b696c6.tgz#16146b592c354867a5ae5e13cdf15c6c65b696c6"
-  integrity sha1-FhRrWSw1SGelrl4TzfFcbGW2lsY=
+jest-each@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-each/-/jest-each-23.6.0/ba0c3a82a8054387016139c733a05242d3d71575.tgz#ba0c3a82a8054387016139c733a05242d3d71575"
+  integrity sha512-x7V6M/WGJo6/kLoissORuvLIeAoyo2YqLOoCDkohgJ4XOXSqOtyvr8FbInlAWS77ojBsZrafbozWoKVRdtxFCg==
   dependencies:
     chalk "^2.0.1"
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
 
-jest-environment-jsdom@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-environment-jsdom/-/jest-environment-jsdom-23.1.0/85929914e23bed3577dac9755f4106d0697c479c.tgz#85929914e23bed3577dac9755f4106d0697c479c"
-  integrity sha1-hZKZFOI77TV32sl1X0EG0Gl8R5w=
+jest-environment-jsdom@^23.4.0:
+  version "23.4.0"
+  resolved "http://npm.lwcjs.org/jest-environment-jsdom/-/jest-environment-jsdom-23.4.0/056a7952b3fea513ac62a140a2c368c79d9e6023.tgz#056a7952b3fea513ac62a140a2c368c79d9e6023"
+  integrity sha1-BWp5UrP+pROsYqFAosNox52eYCM=
   dependencies:
-    jest-mock "^23.1.0"
-    jest-util "^23.1.0"
+    jest-mock "^23.2.0"
+    jest-util "^23.4.0"
     jsdom "^11.5.1"
 
-jest-environment-node@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-environment-node/-/jest-environment-node-23.1.0/452c0bf949cfcbbacda1e1762eeed70bc784c7d5.tgz#452c0bf949cfcbbacda1e1762eeed70bc784c7d5"
-  integrity sha1-RSwL+UnPy7rNoeF2Lu7XC8eEx9U=
+jest-environment-node@^23.4.0:
+  version "23.4.0"
+  resolved "http://npm.lwcjs.org/jest-environment-node/-/jest-environment-node-23.4.0/57e80ed0841dea303167cce8cd79521debafde10.tgz#57e80ed0841dea303167cce8cd79521debafde10"
+  integrity sha1-V+gO0IQd6jAxZ8zozXlSHeuv3hA=
   dependencies:
-    jest-mock "^23.1.0"
-    jest-util "^23.1.0"
+    jest-mock "^23.2.0"
+    jest-util "^23.4.0"
 
 jest-get-type@^22.1.0:
   version "22.1.0"
   resolved "http://npm.lwcjs.org/jest-get-type/-/jest-get-type-22.1.0/4e90af298ed6181edc85d2da500dbd2753e0d5a9.tgz#4e90af298ed6181edc85d2da500dbd2753e0d5a9"
   integrity sha512-nD97IVOlNP6fjIN5i7j5XRH+hFsHL7VlauBbzRvueaaUe70uohrkz7pL/N8lx/IAwZRTJ//wOdVgh85OgM7g3w==
 
-jest-haste-map@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-haste-map/-/jest-haste-map-23.1.0/18e6c7d5a8d27136f91b7d9852f85de0c7074c49.tgz#18e6c7d5a8d27136f91b7d9852f85de0c7074c49"
-  integrity sha1-GObH1ajScTb5G32YUvhd4McHTEk=
+jest-haste-map@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-haste-map/-/jest-haste-map-23.6.0/2e3eb997814ca696d62afdb3f2529f5bbc935e16.tgz#2e3eb997814ca696d62afdb3f2529f5bbc935e16"
+  integrity sha512-uyNhMyl6dr6HaXGHp8VF7cK6KpC6G9z9LiMNsst+rJIZ8l7wY0tk8qwjPmEghczojZ2/ZhtEdIabZ0OQRJSGGg==
   dependencies:
     fb-watchman "^2.0.0"
     graceful-fs "^4.1.11"
-    jest-docblock "^23.0.1"
+    invariant "^2.2.4"
+    jest-docblock "^23.2.0"
     jest-serializer "^23.0.1"
-    jest-worker "^23.0.1"
+    jest-worker "^23.2.0"
     micromatch "^2.3.11"
     sane "^2.0.0"
 
-jest-jasmine2@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-jasmine2/-/jest-jasmine2-23.1.0/4afab31729b654ddcd2b074add849396f13b30b8.tgz#4afab31729b654ddcd2b074add849396f13b30b8"
-  integrity sha1-SvqzFym2VN3NKwdK3YSTlvE7MLg=
+jest-jasmine2@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-jasmine2/-/jest-jasmine2-23.6.0/840e937f848a6c8638df24360ab869cc718592e0.tgz#840e937f848a6c8638df24360ab869cc718592e0"
+  integrity sha512-pe2Ytgs1nyCs8IvsEJRiRTPC0eVYd8L/dXJGU08GFuBwZ4sYH/lmFDdOL3ZmvJR8QKqV9MFuwlsAi/EWkFUbsQ==
   dependencies:
+    babel-traverse "^6.0.0"
     chalk "^2.0.1"
     co "^4.6.0"
-    expect "^23.1.0"
+    expect "^23.6.0"
     is-generator-fn "^1.0.0"
-    jest-diff "^23.0.1"
-    jest-each "^23.1.0"
-    jest-matcher-utils "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    pretty-format "^23.0.1"
+    jest-diff "^23.6.0"
+    jest-each "^23.6.0"
+    jest-matcher-utils "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-snapshot "^23.6.0"
+    jest-util "^23.4.0"
+    pretty-format "^23.6.0"
 
-jest-leak-detector@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-leak-detector/-/jest-leak-detector-23.0.1/9dba07505ac3495c39d3ec09ac1e564599e861a0.tgz#9dba07505ac3495c39d3ec09ac1e564599e861a0"
-  integrity sha1-nboHUFrDSVw50+wJrB5WRZnoYaA=
+jest-leak-detector@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-leak-detector/-/jest-leak-detector-23.6.0/e4230fd42cf381a1a1971237ad56897de7e171de.tgz#e4230fd42cf381a1a1971237ad56897de7e171de"
+  integrity sha512-f/8zA04rsl1Nzj10HIyEsXvYlMpMPcy0QkQilVZDFOaPbv2ur71X5u2+C4ZQJGyV/xvVXtCCZ3wQ99IgQxftCg==
   dependencies:
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
 
-jest-matcher-utils@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-matcher-utils/-/jest-matcher-utils-23.0.1/0c6c0daedf9833c2a7f36236069efecb4c3f6e5f.tgz#0c6c0daedf9833c2a7f36236069efecb4c3f6e5f"
-  integrity sha1-DGwNrt+YM8Kn82I2Bp7+y0w/bl8=
+jest-matcher-utils@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-matcher-utils/-/jest-matcher-utils-23.6.0/726bcea0c5294261a7417afb6da3186b4b8cac80.tgz#726bcea0c5294261a7417afb6da3186b4b8cac80"
+  integrity sha512-rosyCHQfBcol4NsckTn01cdelzWLU9Cq7aaigDf8VwwpIRvWE/9zLgX2bON+FkEW69/0UuYslUe22SOdEf2nog==
   dependencies:
     chalk "^2.0.1"
     jest-get-type "^22.1.0"
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
 
-jest-message-util@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-message-util/-/jest-message-util-23.1.0/9a809ba487ecac5ce511d4e698ee3b5ee2461ea9.tgz#9a809ba487ecac5ce511d4e698ee3b5ee2461ea9"
-  integrity sha1-moCbpIfsrFzlEdTmmO47XuJGHqk=
+jest-message-util@^23.4.0:
+  version "23.4.0"
+  resolved "http://npm.lwcjs.org/jest-message-util/-/jest-message-util-23.4.0/17610c50942349508d01a3d1e0bda2c079086a9f.tgz#17610c50942349508d01a3d1e0bda2c079086a9f"
+  integrity sha1-F2EMUJQjSVCNAaPR4L2iwHkIap8=
   dependencies:
     "@babel/code-frame" "^7.0.0-beta.35"
     chalk "^2.0.1"
@@ -7337,56 +7353,56 @@ jest-message-util@^23.1.0:
     slash "^1.0.0"
     stack-utils "^1.0.1"
 
-jest-mock@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-mock/-/jest-mock-23.1.0/a381c31b121ab1f60c462a2dadb7b86dcccac487.tgz#a381c31b121ab1f60c462a2dadb7b86dcccac487"
-  integrity sha1-o4HDGxIasfYMRiotrbe4bczKxIc=
+jest-mock@^23.2.0:
+  version "23.2.0"
+  resolved "http://npm.lwcjs.org/jest-mock/-/jest-mock-23.2.0/ad1c60f29e8719d47c26e1138098b6d18b261134.tgz#ad1c60f29e8719d47c26e1138098b6d18b261134"
+  integrity sha1-rRxg8p6HGdR8JuETgJi20YsmETQ=
 
-jest-regex-util@^23.0.0:
-  version "23.0.0"
-  resolved "http://npm.lwcjs.org/jest-regex-util/-/jest-regex-util-23.0.0/dd5c1fde0c46f4371314cf10f7a751a23f4e8f76.tgz#dd5c1fde0c46f4371314cf10f7a751a23f4e8f76"
-  integrity sha1-3Vwf3gxG9DcTFM8Q96dRoj9Oj3Y=
+jest-regex-util@^23.3.0:
+  version "23.3.0"
+  resolved "http://npm.lwcjs.org/jest-regex-util/-/jest-regex-util-23.3.0/5f86729547c2785c4002ceaa8f849fe8ca471bc5.tgz#5f86729547c2785c4002ceaa8f849fe8ca471bc5"
+  integrity sha1-X4ZylUfCeFxAAs6qj4Sf6MpHG8U=
 
-jest-resolve-dependencies@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-resolve-dependencies/-/jest-resolve-dependencies-23.0.1/d01a10ddad9152c4cecdf5eac2b88571c4b6a64d.tgz#d01a10ddad9152c4cecdf5eac2b88571c4b6a64d"
-  integrity sha1-0BoQ3a2RUsTOzfXqwriFccS2pk0=
+jest-resolve-dependencies@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-resolve-dependencies/-/jest-resolve-dependencies-23.6.0/b4526af24c8540d9a3fab102c15081cf509b723d.tgz#b4526af24c8540d9a3fab102c15081cf509b723d"
+  integrity sha512-EkQWkFWjGKwRtRyIwRwI6rtPAEyPWlUC2MpzHissYnzJeHcyCn1Hc8j7Nn1xUVrS5C6W5+ZL37XTem4D4pLZdA==
   dependencies:
-    jest-regex-util "^23.0.0"
-    jest-snapshot "^23.0.1"
+    jest-regex-util "^23.3.0"
+    jest-snapshot "^23.6.0"
 
-jest-resolve@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-resolve/-/jest-resolve-23.1.0/b9e316eecebd6f00bc50a3960d1527bae65792d2.tgz#b9e316eecebd6f00bc50a3960d1527bae65792d2"
-  integrity sha1-ueMW7s69bwC8UKOWDRUnuuZXktI=
+jest-resolve@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-resolve/-/jest-resolve-23.6.0/cf1d1a24ce7ee7b23d661c33ba2150f3aebfa0ae.tgz#cf1d1a24ce7ee7b23d661c33ba2150f3aebfa0ae"
+  integrity sha512-XyoRxNtO7YGpQDmtQCmZjum1MljDqUCob7XlZ6jy9gsMugHdN2hY4+Acz9Qvjz2mSsOnPSH7skBmDYCHXVZqkA==
   dependencies:
-    browser-resolve "^1.11.2"
+    browser-resolve "^1.11.3"
     chalk "^2.0.1"
     realpath-native "^1.0.0"
 
-jest-runner@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-23.1.0/fa20a933fff731a5432b3561e7f6426594fa29b5.tgz#fa20a933fff731a5432b3561e7f6426594fa29b5"
-  integrity sha1-+iCpM//3MaVDKzVh5/ZCZZT6KbU=
+jest-runner@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-23.6.0/3894bd219ffc3f3cb94dc48a4170a2e6f23a5a38.tgz#3894bd219ffc3f3cb94dc48a4170a2e6f23a5a38"
+  integrity sha512-kw0+uj710dzSJKU6ygri851CObtCD9cN8aNkg8jWJf4ewFyEa6kwmiH/r/M1Ec5IL/6VFa0wnAk6w+gzUtjJzA==
   dependencies:
     exit "^0.1.2"
     graceful-fs "^4.1.11"
-    jest-config "^23.1.0"
-    jest-docblock "^23.0.1"
-    jest-haste-map "^23.1.0"
-    jest-jasmine2 "^23.1.0"
-    jest-leak-detector "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-runtime "^23.1.0"
-    jest-util "^23.1.0"
-    jest-worker "^23.0.1"
+    jest-config "^23.6.0"
+    jest-docblock "^23.2.0"
+    jest-haste-map "^23.6.0"
+    jest-jasmine2 "^23.6.0"
+    jest-leak-detector "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-runtime "^23.6.0"
+    jest-util "^23.4.0"
+    jest-worker "^23.2.0"
     source-map-support "^0.5.6"
     throat "^4.0.0"
 
-jest-runtime@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-23.1.0/b4ae0e87259ecacfd4a884b639db07cf4dd620af.tgz#b4ae0e87259ecacfd4a884b639db07cf4dd620af"
-  integrity sha1-tK4OhyWeys/UqIS2OdsHz03WIK8=
+jest-runtime@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-23.6.0/059e58c8ab445917cd0e0d84ac2ba68de8f23082.tgz#059e58c8ab445917cd0e0d84ac2ba68de8f23082"
+  integrity sha512-ycnLTNPT2Gv+TRhnAYAQ0B3SryEXhhRj1kA6hBPSeZaNQkJ7GbZsxOLUkwg6YmvWGdX3BB3PYKFLDQCAE1zNOw==
   dependencies:
     babel-core "^6.0.0"
     babel-plugin-istanbul "^4.1.6"
@@ -7395,14 +7411,14 @@ jest-runtime@^23.1.0:
     exit "^0.1.2"
     fast-json-stable-stringify "^2.0.0"
     graceful-fs "^4.1.11"
-    jest-config "^23.1.0"
-    jest-haste-map "^23.1.0"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
+    jest-config "^23.6.0"
+    jest-haste-map "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-regex-util "^23.3.0"
+    jest-resolve "^23.6.0"
+    jest-snapshot "^23.6.0"
+    jest-util "^23.4.0"
+    jest-validate "^23.6.0"
     micromatch "^2.3.11"
     realpath-native "^1.0.0"
     slash "^1.0.0"
@@ -7415,65 +7431,69 @@ jest-serializer@^23.0.1:
   resolved "http://npm.lwcjs.org/jest-serializer/-/jest-serializer-23.0.1/a3776aeb311e90fe83fab9e533e85102bd164165.tgz#a3776aeb311e90fe83fab9e533e85102bd164165"
   integrity sha1-o3dq6zEekP6D+rnlM+hRAr0WQWU=
 
-jest-snapshot@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-snapshot/-/jest-snapshot-23.0.1/6674fa19b9eb69a99cabecd415bddc42d6af3e7e.tgz#6674fa19b9eb69a99cabecd415bddc42d6af3e7e"
-  integrity sha1-ZnT6Gbnraamcq+zUFb3cQtavPn4=
+jest-snapshot@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-snapshot/-/jest-snapshot-23.6.0/f9c2625d1b18acda01ec2d2b826c0ce58a5aa17a.tgz#f9c2625d1b18acda01ec2d2b826c0ce58a5aa17a"
+  integrity sha512-tM7/Bprftun6Cvj2Awh/ikS7zV3pVwjRYU2qNYS51VZHgaAMBs5l4o/69AiDHhQrj5+LA2Lq4VIvK7zYk/bswg==
   dependencies:
+    babel-types "^6.0.0"
     chalk "^2.0.1"
-    jest-diff "^23.0.1"
-    jest-matcher-utils "^23.0.1"
+    jest-diff "^23.6.0"
+    jest-matcher-utils "^23.6.0"
+    jest-message-util "^23.4.0"
+    jest-resolve "^23.6.0"
     mkdirp "^0.5.1"
     natural-compare "^1.4.0"
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
+    semver "^5.5.0"
 
-jest-util@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-util/-/jest-util-23.1.0/c0251baf34644c6dd2fea78a962f4263ac55772d.tgz#c0251baf34644c6dd2fea78a962f4263ac55772d"
-  integrity sha1-wCUbrzRkTG3S/qeKli9CY6xVdy0=
+jest-util@^23.4.0:
+  version "23.4.0"
+  resolved "http://npm.lwcjs.org/jest-util/-/jest-util-23.4.0/4d063cb927baf0a23831ff61bec2cbbf49793561.tgz#4d063cb927baf0a23831ff61bec2cbbf49793561"
+  integrity sha1-TQY8uSe68KI4Mf9hvsLLv0l5NWE=
   dependencies:
     callsites "^2.0.0"
     chalk "^2.0.1"
     graceful-fs "^4.1.11"
     is-ci "^1.0.10"
-    jest-message-util "^23.1.0"
+    jest-message-util "^23.4.0"
     mkdirp "^0.5.1"
     slash "^1.0.0"
     source-map "^0.6.0"
 
-jest-validate@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-validate/-/jest-validate-23.0.1/cd9f01a89d26bb885f12a8667715e9c865a5754f.tgz#cd9f01a89d26bb885f12a8667715e9c865a5754f"
-  integrity sha1-zZ8BqJ0mu4hfEqhmdxXpyGWldU8=
+jest-validate@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest-validate/-/jest-validate-23.6.0/36761f99d1ed33fcd425b4e4c5595d62b6597474.tgz#36761f99d1ed33fcd425b4e4c5595d62b6597474"
+  integrity sha512-OFKapYxe72yz7agrDAWi8v2WL8GIfVqcbKRCLbRG9PAxtzF9b1SEDdTpytNDN12z2fJynoBwpMpvj2R39plI2A==
   dependencies:
     chalk "^2.0.1"
     jest-get-type "^22.1.0"
     leven "^2.1.0"
-    pretty-format "^23.0.1"
+    pretty-format "^23.6.0"
 
-jest-watcher@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-watcher/-/jest-watcher-23.1.0/a8d5842e38d9fb4afff823df6abb42a58ae6cdbd.tgz#a8d5842e38d9fb4afff823df6abb42a58ae6cdbd"
-  integrity sha1-qNWELjjZ+0r/+CPfartCpYrmzb0=
+jest-watcher@^23.4.0:
+  version "23.4.0"
+  resolved "http://npm.lwcjs.org/jest-watcher/-/jest-watcher-23.4.0/d2e28ce74f8dad6c6afc922b92cabef6ed05c91c.tgz#d2e28ce74f8dad6c6afc922b92cabef6ed05c91c"
+  integrity sha1-0uKM50+NrWxq/JIrksq+9u0FyRw=
   dependencies:
     ansi-escapes "^3.0.0"
     chalk "^2.0.1"
     string-length "^2.0.0"
 
-jest-worker@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-worker/-/jest-worker-23.0.1/9e649dd963ff4046026f91c4017f039a6aa4a7bc.tgz#9e649dd963ff4046026f91c4017f039a6aa4a7bc"
-  integrity sha1-nmSd2WP/QEYCb5HEAX8Dmmqkp7w=
+jest-worker@^23.2.0:
+  version "23.2.0"
+  resolved "http://npm.lwcjs.org/jest-worker/-/jest-worker-23.2.0/faf706a8da36fae60eb26957257fa7b5d8ea02b9.tgz#faf706a8da36fae60eb26957257fa7b5d8ea02b9"
+  integrity sha1-+vcGqNo2+uYOsmlXJX+ntdjqArk=
   dependencies:
     merge-stream "^1.0.1"
 
-jest@~23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest/-/jest-23.1.0/bbb7f893100a11a742dd8bd0d047a54b0968ad1a.tgz#bbb7f893100a11a742dd8bd0d047a54b0968ad1a"
-  integrity sha1-u7f4kxAKEadC3YvQ0EelSwlorRo=
+jest@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/jest/-/jest-23.6.0/ad5835e923ebf6e19e7a1d7529a432edfee7813d.tgz#ad5835e923ebf6e19e7a1d7529a432edfee7813d"
+  integrity sha512-lWzcd+HSiqeuxyhG+EnZds6iO3Y3ZEnMrfZq/OTGvF/C+Z4fPMCdhWTGSAiO2Oym9rbEXfwddHhh6jqrTF3+Lw==
   dependencies:
     import-local "^1.0.0"
-    jest-cli "^23.1.0"
+    jest-cli "^23.6.0"
 
 jmespath@0.15.0:
   version "0.15.0"
@@ -7615,6 +7635,13 @@ json2md@~1.5.11:
   dependencies:
     indento "^1.1.7"
 
+json5@2.x:
+  version "2.1.0"
+  resolved "http://npm.lwcjs.org/json5/-/json5-2.1.0/e7a0c62c48285c628d20a10b85c89bb807c32850.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
+  integrity sha512-8Mh9h6xViijj36g7Dxi+Y4S6hNGV96vcJZr/SrlHh1LR/pEn/8j/+qIBbs44YKl69Lrfctp4QD+AdWLTMqEZAQ==
+  dependencies:
+    minimist "^1.2.0"
+
 json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "http://npm.lwcjs.org/json5/-/json5-0.5.1/1eade7acc012034ad84e2396767ead9fa5495821.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
@@ -7734,6 +7761,11 @@ klaw@^1.0.0:
   integrity sha1-QIhDO0azsbolnXh4XY6W9zugJDk=
   optionalDependencies:
     graceful-fs "^4.1.9"
+
+kleur@^2.0.1:
+  version "2.0.2"
+  resolved "http://npm.lwcjs.org/kleur/-/kleur-2.0.2/b704f4944d95e255d038f0cb05fb8a602c55a300.tgz#b704f4944d95e255d038f0cb05fb8a602c55a300"
+  integrity sha512-77XF9iTllATmG9lSlIv0qdQ2BQ/h9t0bJllHlbvsQ0zUWfU7Yi0S8L5JXzPZgkefIiajLmBJJ4BsMJmqcf7oxQ==
 
 lazy-cache@^1.0.3:
   version "1.0.4"
@@ -8101,6 +8133,11 @@ make-dir@^1.0.0:
   dependencies:
     pify "^3.0.0"
 
+make-error@1.x:
+  version "1.3.5"
+  resolved "http://npm.lwcjs.org/make-error/-/make-error-1.3.5/efe4e81f6db28cadd605c70f29c831b58ef776c8.tgz#efe4e81f6db28cadd605c70f29c831b58ef776c8"
+  integrity sha512-c3sIjNUow0+8swNwVpqoH4YCShKNFkMaw6oH1mNS2haDZQqkeZFlHS3dhoeEbKKmJB4vXpJucU6oH75aDYeE9g==
+
 makeerror@1.0.x:
   version "1.0.11"
   resolved "http://npm.lwcjs.org/makeerror/-/makeerror-1.0.11/e01a5c9109f2af79660e4e8b9587790184f5a96c.tgz#e01a5c9109f2af79660e4e8b9587790184f5a96c"
@@ -8415,7 +8452,7 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-mkdirp@0.5.1, mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@~0.5.1:
+mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@0.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@~0.5.1:
   version "0.5.1"
   resolved "http://npm.lwcjs.org/mkdirp/-/mkdirp-0.5.1/30057438eac6cf7f8c4767f38648d6697d75c903.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   integrity sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM=
@@ -9581,10 +9618,10 @@ prettier@~1.10.2:
   resolved "http://npm.lwcjs.org/prettier/-/prettier-1.10.2/1af8356d1842276a99a5b5529c82dd9e9ad3cc93.tgz#1af8356d1842276a99a5b5529c82dd9e9ad3cc93"
   integrity sha512-TcdNoQIWFoHblurqqU6d1ysopjq7UX0oRcT/hJ8qvBAELiYWn+Ugf0AXdnzISEJ7vuhNnQ98N8jR8Sh53x4IZg==
 
-pretty-format@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/pretty-format/-/pretty-format-23.0.1/d61d065268e4c759083bccbca27a01ad7c7601f4.tgz#d61d065268e4c759083bccbca27a01ad7c7601f4"
-  integrity sha1-1h0GUmjkx1kIO8y8onoBrXx2AfQ=
+pretty-format@^23.6.0:
+  version "23.6.0"
+  resolved "http://npm.lwcjs.org/pretty-format/-/pretty-format-23.6.0/5eaac8eeb6b33b987b7fe6097ea6a8a146ab5760.tgz#5eaac8eeb6b33b987b7fe6097ea6a8a146ab5760"
+  integrity sha512-zf9NV1NSlDLDjycnwm6hpFATCGl/K1lt0R/GdkAK2O5LN/rwJoB+Mh93gGJjut4YbmecbfgLWVGSTCr0Ewvvbw==
   dependencies:
     ansi-regex "^3.0.0"
     ansi-styles "^3.2.0"
@@ -9613,6 +9650,14 @@ promise-inflight@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/promise-inflight/-/promise-inflight-1.0.1/98472870bf228132fcbdd868129bad12c3c029e3.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
+
+prompts@^0.1.9:
+  version "0.1.14"
+  resolved "http://npm.lwcjs.org/prompts/-/prompts-0.1.14/a8e15c612c5c9ec8f8111847df3337c9cbd443b2.tgz#a8e15c612c5c9ec8f8111847df3337c9cbd443b2"
+  integrity sha512-rxkyiE9YH6zAz/rZpywySLKkpaj0NMVyNw1qhsubdbjjSgcayjTShDreZGlFMcGSu5sab3bAKPfFk78PB90+8w==
+  dependencies:
+    kleur "^2.0.1"
+    sisteransi "^0.1.1"
 
 promzard@^0.3.0:
   version "0.3.0"
@@ -10626,7 +10671,7 @@ selenium-standalone@^6.13.0:
   resolved "http://npm.lwcjs.org/semver/-/semver-5.5.0/dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
   integrity sha512-4SJ3dm0WAwWy/NVeioZh5AntkdJoWKxHxcmyP622fOkgHa4z3R0TdBJICINyaSDE6uNwVc8gZr+ZinwZAH4xIA==
 
-semver@^5.5.1:
+semver@^5.5, semver@^5.5.1:
   version "5.5.1"
   resolved "http://npm.lwcjs.org/semver/-/semver-5.5.1/7dfdd8814bdb7cabc7be0fb1d734cfb66c940477.tgz#7dfdd8814bdb7cabc7be0fb1d734cfb66c940477"
   integrity sha512-PqpAxfrEhlSUWge8dwIp4tZnQ25DIOthpiaHNIthsjEFQD6EvqUKUDM7L8O2rShkFccYo1VjJR0coWfNkCubRw==
@@ -10777,6 +10822,11 @@ simple-statistics@^6.0.1:
   version "6.1.0"
   resolved "http://npm.lwcjs.org/simple-statistics/-/simple-statistics-6.1.0/63456076bb27bea10aefc180892d163536b6027a.tgz#63456076bb27bea10aefc180892d163536b6027a"
   integrity sha512-Vi/xPPuiEIizXOCDx3N8LjcIqC7Z8euiIfvmj5oYimm9/KmXNKeK4aHiVMeE9q7e9wfg1i9YRoWnUNURq54ZFg==
+
+sisteransi@^0.1.1:
+  version "0.1.1"
+  resolved "http://npm.lwcjs.org/sisteransi/-/sisteransi-0.1.1/5431447d5f7d1675aac667ccd0b865a4994cb3ce.tgz#5431447d5f7d1675aac667ccd0b865a4994cb3ce"
+  integrity sha512-PmGOd02bM9YO5ifxpw36nrNMBTptEtfRl4qUYl9SndkolplkrZZOW7PGHjrZL53QvMVj9nQ+TKqUnRsw4tJa4g==
 
 slash@^1.0.0:
   version "1.0.0"
@@ -11604,6 +11654,20 @@ trim-right@^1.0.1:
   resolved "http://npm.lwcjs.org/trim-right/-/trim-right-1.0.1/cb2e1203067e0c8de1f614094b9fe45704ea6003.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
   integrity sha1-yy4SAwZ+DI3h9hQJS5/kVwTqYAM=
 
+ts-jest@^23.10.3:
+  version "23.10.3"
+  resolved "http://npm.lwcjs.org/ts-jest/-/ts-jest-23.10.3/f42de669888dfd2795b1491016b1813230d553fa.tgz#f42de669888dfd2795b1491016b1813230d553fa"
+  integrity sha512-Lgyfw1MYPfqAs1qrFBmqXu8LRrde8ItH70pmp1iQuRbkVXaap7QcaEpN+yiSxuppfvO8rqezVv8wOYZkKhR5wA==
+  dependencies:
+    bs-logger "0.x"
+    buffer-from "1.x"
+    fast-json-stable-stringify "2.x"
+    json5 "2.x"
+    make-error "1.x"
+    mkdirp "0.x"
+    semver "^5.5"
+    yargs-parser "10.x"
+
 tslib@^1.8.0, tslib@^1.8.1:
   version "1.9.0"
   resolved "http://npm.lwcjs.org/tslib/-/tslib-1.9.0/e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
@@ -12403,7 +12467,7 @@ yallist@^3.0.0, yallist@^3.0.2:
   resolved "http://npm.lwcjs.org/yallist/-/yallist-3.0.2/8452b4bb7e83c7c188d8041c1a837c773d6d8bb9.tgz#8452b4bb7e83c7c188d8041c1a837c773d6d8bb9"
   integrity sha1-hFK0u36Dx8GI2AQcGoN8dz1ti7k=
 
-yargs-parser@^10.1.0:
+yargs-parser@10.x, yargs-parser@^10.1.0:
   version "10.1.0"
   resolved "http://npm.lwcjs.org/yargs-parser/-/yargs-parser-10.1.0/7202265b89f7e9e9f2e5765e0fe735a905edbaa8.tgz#7202265b89f7e9e9f2e5765e0fe735a905edbaa8"
   integrity sha512-VCIyR1wJoEBZUqk5PA+oOBF6ypbwh5aNB3I50guxAL/quggdfs4TtNHQrSazFA3fYZ+tEqfs0zIGlv0c/rgjbQ==
