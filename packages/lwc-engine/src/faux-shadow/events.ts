@@ -32,18 +32,6 @@ const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnProperty
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const EventPatchDescriptors: PropertyDescriptorMap = {
-    currentTarget: {
-        get(this: Event): EventTarget | null {
-            const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-            if (isNull(currentTarget) || isUndefined(getNodeOwnerKey(currentTarget as Node))) {
-                // event is already beyond the boundaries of our controlled shadow roots
-                return currentTarget;
-            }
-            return currentTarget as Element;
-        },
-        enumerable: true,
-        configurable: true,
-    },
     target: {
         get(this: Event): EventTarget {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
@@ -159,9 +147,6 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
              * while the event is patched because the component is listening for it internally
              * via this.addEventListener('click') in constructor or something similar
              */
-            if (isUndefined(getNodeOwnerKey(closestTarget as Node))) {
-                return closestTarget;
-            }
             return closestTarget as Element;
         },
         enumerable: true,
