@@ -68,7 +68,9 @@ import {
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
-    ALLOWED_SVG_TAG_SET,
+    SVG_TAG_WHITELIST,
+    SVG_NAMESPACE_URI,
+    HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
@@ -533,17 +535,15 @@ export default function parse(source: string, state: State): {
             }
         } else {
             const namespace = node.namespaceURI;
-            const htmlNamespace = 'http://www.w3.org/1999/xhtml';
             const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
-            if (namespace === htmlNamespace && isNotAllowedHtmlTag) {
+            if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
                     `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
                     node,
                 );
             }
-            const svgNamespace = 'http://www.w3.org/2000/svg';
-            const isNotAllowedSvgTag = !ALLOWED_SVG_TAG_SET.has(tag);
-            if (namespace === svgNamespace && isNotAllowedSvgTag) {
+            const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
+            if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
                 return warnOnElement(
                     `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
                     node

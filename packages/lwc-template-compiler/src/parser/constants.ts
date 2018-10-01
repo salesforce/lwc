@@ -36,7 +36,7 @@ const ATTRIBUTE_NAME_CHAR = [
 export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
-export const ALLOWED_SVG_TAG_SET = new Set([
+export const SVG_TAG_WHITELIST = new Set([
     'a',
     'circle',
     // 'clippath', // '<clipPath> has no matching closing tag.' even with correct closing
@@ -684,3 +684,6 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
     'textarea',
   ],
 };
+
+export const HTML_NAMESPACE_URI = 'http://www.w3.org/1999/xhtml';
+export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';

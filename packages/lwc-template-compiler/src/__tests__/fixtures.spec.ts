@@ -20,11 +20,11 @@ describe('fixtures', () => {
             return path.join(caseFolder, fileName);
         };
 
-        const readFixtureFile = (fileName, defaultContent = ''): string => {
+        const readFixtureFile = (fileName): string => {
             const filePath = fixtureFilePath(fileName);
             return fs.existsSync(filePath) ?
                 fs.readFileSync(filePath, 'utf-8') :
-                defaultContent;
+                null;
         };
 
         const writeFixtureFile = (fileName, content): void => {
@@ -38,9 +38,9 @@ describe('fixtures', () => {
         it(`${caseName}`, () => {
             const src = readFixtureFile('actual.html');
 
-            const configOverride = JSON.parse(readFixtureFile('config.json', '{}'));
-            const expectedCode = readFixtureFile(expectedJsFile, '');
-            const expectedMetaData = JSON.parse(readFixtureFile(expectedMetaFile, '{}'));
+            const configOverride = JSON.parse(readFixtureFile('config.json'));
+            const expectedCode = readFixtureFile(expectedJsFile);
+            const expectedMetaData = JSON.parse(readFixtureFile(expectedMetaFile));
 
             const actual = compiler(src, {
                 ...BASE_CONFIG,
@@ -49,7 +49,7 @@ describe('fixtures', () => {
 
             const actualMeta = actual.metadata;
 
-            if (!fs.existsSync(fixtureFilePath(expectedJsFile))) {
+            if (expectedCode === null) {
                 // write compiled js file if doesn't exist (ie new fixture)
                 writeFixtureFile(expectedJsFile, prettier.format(actual.code));
             }
