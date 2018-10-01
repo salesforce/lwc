@@ -1,5 +1,6 @@
 module.exports = {
     rootDir: '../..',
+
     projects: [
         '<rootDir>/packages/babel-plugin-transform-lwc-class',
         '<rootDir>/packages/lwc-compiler',
@@ -14,4 +15,14 @@ module.exports = {
         '<rootDir>/packages/postcss-plugin-lwc',
         '<rootDir>/packages/rollup-plugin-lwc-compiler',
     ],
+
+    // Jest doesn't rollup the coverageThreshold properties from the different projects. We need to
+    // define the coverage threshold and the project root for the entire mono-repo.
+    coverageThreshold: {
+        global: {
+            branches: 70,
+            functions: 90,
+            lines: 90,
+        },
+    },
 };
