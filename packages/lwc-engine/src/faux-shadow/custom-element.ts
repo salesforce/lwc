@@ -1,5 +1,5 @@
 import { defineProperties } from "../shared/language";
-import { attachShadow } from "./shadow-root";
+import { attachShadow, getShadowRoot } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 
 function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
@@ -12,6 +12,10 @@ function removeEventListenerPatchedValue(this: EventTarget, type: string, listen
 
 function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowRoot {
     return attachShadow(this, options);
+}
+
+function getShadowRootPatchedValue(this: HTMLElement) {
+    return getShadowRoot(this);
 }
 
 const CustomElementPatchDescriptors: PropertyDescriptorMap = {
@@ -31,6 +35,11 @@ const CustomElementPatchDescriptors: PropertyDescriptorMap = {
         configurable: true,
         enumerable: true,
     },
+    shadowRoot: {
+        value: getShadowRootPatchedValue,
+        configurable: true,
+        enumerable: true,
+    }
 };
 
 export function patchCustomElement(elm: HTMLElement) {

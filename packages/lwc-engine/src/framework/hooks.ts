@@ -9,7 +9,7 @@ import {
     insertBefore,
     removeChild,
 } from "./dom-api";
-import { patchElementWithRestrictions } from "./restrictions";
+import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 
@@ -78,7 +78,6 @@ export const createCustomElmHook = (vnode: VCustomElement) => {
     }
     setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
-    setElementProto(elm, def);
     if (isTrue(fallback)) {
         patchCustomElementProto(elm, sel, def);
     }
@@ -90,6 +89,9 @@ export const createCustomElmHook = (vnode: VCustomElement) => {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
     }
     if (isTrue(vm.fallback)) {
         // slow path

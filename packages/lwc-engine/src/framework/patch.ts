@@ -85,11 +85,11 @@ interface PatchedComponentDef extends ComponentDef {
 export function patchCustomElementProto(elm: HTMLElement, tag: string, def: ComponentDef) {
     let bridge = (def as PatchedComponentDef).patchedBridge;
     if (isUndefined(bridge)) {
-        bridge = (def as PatchedComponentDef).patchedBridge = create(def.bridge, ElementPatchDescriptors);
+        bridge = (def as PatchedComponentDef).patchedBridge = create(def.bridge.prototype, ElementPatchDescriptors);
     }
     // temporary patching the proto, eventually this should be just more nodes in the proto chain
     patchCustomElement(elm);
-    setPrototypeOf(elm, bridge.prototype);
+    setPrototypeOf(elm, bridge);
 }
 
 export {
