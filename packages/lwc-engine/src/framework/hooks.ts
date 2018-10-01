@@ -11,7 +11,7 @@ import {
 } from "./dom-api";
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
-import { getComponentDef, setElementProto } from "./def";
+import { getComponentDef } from "./def";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
