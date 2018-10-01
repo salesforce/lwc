@@ -644,37 +644,35 @@ describe('Component events', () => {
     });
 
     it('should throw with a user friendly message when no event handler is found', () => {
-        expect.assertions(1);
-
+        const html = compileTemplate(`
+            <template>
+                <button onclick={unknownHandler}></button>
+            </template>
+        `);
         class MyComponent extends LightningElement {
-            triggerFoo() {
-                const div = this.template.querySelector('div');
-                div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
-            }
-
             render() {
-                return function($api) {
-                    const listener = $api.b(undefined);
-                    const fn = event => {
-                        expect(() => {
-                            listener(event);
-                        }).toThrow("Assert Violation: Invalid event handler for event 'foo' on [object:vm MyComponent (26)].");
-                    };
-
-                    return [$api.h('div', {
-                        key: 0,
-                        on: {
-                            foo: fn
-                        }
-                    }, [])];
-                };
+                return html;
             }
         }
-        MyComponent.publicMethods = ['triggerFoo'];
 
         const element = createElement('x-missing-event-listener', { is: MyComponent });
         document.body.appendChild(element);
-        element.triggerFoo();
+
+        // expect().toThrowError() is not enough in the case where an Error is thrown during event
+        // dispatching. In the case of event, the only way to catch the error to add an event listener
+        // at the page level.
+        const errorHandler = jest.fn(evt => evt.preventDefault());
+        window.addEventListener('error', errorHandler);
+
+        const buttonEl = getHostShadowRoot(element).querySelector('button');
+        buttonEl.click();
+
+        expect(errorHandler.mock.calls).toHaveLength(1);
+        expect(errorHandler.mock.calls[0][0].message).toMatch(
+            /Invalid event handler for event 'click'/
+        );
+
+        window.removeEventListener('error', errorHandler);
     });
 });
 

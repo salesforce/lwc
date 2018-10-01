@@ -36,9 +36,6 @@ describe('api', () => {
 
         it('assign correct style value when styleMap is present', () => {
             const styleMap = { color: 'red' };
-            const factory = function() {
-                return Foo;
-            };
             const vnode = api.c('x-foo', Foo, { styleMap });
 
             expect(vnode.data.style).toEqual({ color: 'red' });
@@ -334,10 +331,6 @@ describe('api', () => {
         });
     });
 
-    describe('#f()', () => {
-        // TBD
-    });
-
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
@@ -370,14 +363,6 @@ describe('api', () => {
             // TODO: once we switch to shadow DOM this test will have to be adjusted
             expect(elm.innerHTML).toEqual('<!--miami-->');
         });
-    });
-
-    describe('#d()', () => {
-        // TBD
-    });
-
-    describe('#b()', () => {
-        // TBD
     });
 
     describe('#k()', () => {
