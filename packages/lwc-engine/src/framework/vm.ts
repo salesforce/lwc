@@ -430,7 +430,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm } = vm;
-    const parentElm = elm && getParentElement(elm);
+    const parentElm = elm && getContainerElement(elm);
     return getErrorBoundaryVM(parentElm);
 }
 
@@ -451,7 +451,7 @@ function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        elm = getParentElement(elm);
+        elm = getContainerElement(elm);
     }
 }
 
@@ -472,7 +472,7 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
             const is = elm.getAttribute('is');
             ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
         }
-        elm = getParentElement(elm);
+        elm = getContainerElement(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
 }
@@ -483,7 +483,7 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
  * @param {HTMLElement} elm
  * @return {HTMLElement} the parent element, escaping any shadow root boundaries
  */
-function getParentElement(elm: HTMLElement): HTMLElement {
+function getContainerElement(elm: HTMLElement): HTMLElement | null {
     const parentNode = parentNodeGetter.call(elm);
     // If this is a shadow root, find the host instead
     return isShadowRoot(parentNode) ? getShadowRootHost(parentNode) : parentNode;
