@@ -220,8 +220,8 @@ describe('template', () => {
 
         it('should not create a proxy for methods used from tempalte', () => {
             let x, y;
-            function html($api, $cmp) {
-                y = $cmp.x;
+            function html(api, cmp) {
+                y = cmp.x;
                 return [];
             }
             class MyComponent extends LightningElement {
