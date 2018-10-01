@@ -1,8 +1,4 @@
-import { isTag, Node, Container, Tag, Pseudo, isPseudoClass } from 'postcss-selector-parser';
-
-export function isCustomElement(node: Node): node is Tag {
-    return isTag(node) && node.value.includes('-');
-}
+import { Node, Container, Pseudo, isPseudoClass } from 'postcss-selector-parser';
 
 export function isHostPseudoClass(node: Node): node is Pseudo {
     return isPseudoClass(node) && node.value === ':host';
