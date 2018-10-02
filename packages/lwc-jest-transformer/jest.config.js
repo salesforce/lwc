@@ -14,8 +14,4 @@ module.exports = {
     testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
     resolver: 'lwc-jest-resolver',
     snapshotSerializers: ['lwc-jest-serializer'],
-
-    coveragePathIgnorePatterns: [
-        '<rootDir>/src/test/modules/'
-    ],
 };
