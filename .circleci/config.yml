@@ -200,7 +200,7 @@ workflows:
       - perf_and_compare_chrome:
           requires:
             - build_and_test
-
-      - perf_and_compare_ie11:
-          requires:
-            - build_and_test
+      # uncomment this when IE11 agent stabilizes
+      # - perf_and_compare_ie11:
+      #     requires:
+      #       - build_and_test
