@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.8...v) (2018-09-29)
+# [](https://github.com/salesforce/lwc/compare/v0.29.9...v) (2018-10-02)
+
+
+### Features
+
+* **compiler:** detect unimported decorators ([#681](https://github.com/salesforce/lwc/issues/681)) ([4788b26](https://github.com/salesforce/lwc/commit/4788b26))
+* **svg:** validate allowed svg tags ([#694](https://github.com/salesforce/lwc/issues/694)) ([ae82aa7](https://github.com/salesforce/lwc/commit/ae82aa7))
+
+
+
+<a name="0.29.9"></a>
+## [0.29.9](https://github.com/salesforce/lwc/compare/v0.29.8...v0.29.9) (2018-09-29)
 
 
 ### Bug Fixes
