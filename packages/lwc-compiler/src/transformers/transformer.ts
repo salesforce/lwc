@@ -1,6 +1,5 @@
 import * as path from "path";
 import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
-import { CompilerError } from "../common-interfaces/compiler-error";
 
 import {
     NormalizedCompilerOptions,
@@ -11,9 +10,8 @@ import {
 import styleTransform from "./style";
 import templateTransformer, { TemplateMetadata } from "./template";
 import javascriptTransformer from "./javascript";
-import compatPluginFactory from "../rollup-plugins/compat";
 
-import { isString, isUndefined } from "../utils";
+import { isString } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
 import { SourceMap } from "../compiler/compiler";
 
@@ -69,32 +67,5 @@ export async function transformFile(
     metadataCollector?: MetadataCollector
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
-    const result = await transformer(src, id, options, metadataCollector);
-
-    let compatResult;
-    if (options.outputConfig.compat) {
-        // @todo: Evaluate for removal.
-        // **Note: this is dead code since it was only used in the rollup-plugin-lwc, but it was refactored to do this as part of the rollup-plugin-compat
-        try {
-            const compatPlugin = compatPluginFactory(
-                options.outputConfig.resolveProxyCompat
-            );
-            compatResult = compatPlugin.transform(result.code);
-            if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
-                throw new CompilerError(
-                    "babel transform failed to produce code in compat mode",
-                    id
-                );
-            }
-        } catch (e) {
-            throw new CompilerError(
-                e.message,
-                id,
-                e.loc
-            );
-        }
-        return { code: compatResult.code, map: null };
-    }
-
-    return result;
+    return await transformer(src, id, options, metadataCollector);
 }
