@@ -20,7 +20,7 @@ Tools to assist with testing Lightning Web Components (LWC) with Jest. This proj
 
     `yarn add -D lwc-jest-resolver`
 
-1. Use this project's preset config. This maps to the settings in `jest-preset.json`. Any settings added to your project's own `jest` config will take precedence to entires in the preset.
+1. Use this project's preset config. This maps to the settings in `jest-preset.json`. Any settings added to your project's own `jest` config will take precedence to entries in the preset.
 
     ```json
     {
@@ -30,7 +30,7 @@ Tools to assist with testing Lightning Web Components (LWC) with Jest. This proj
     }
     ```
 
-1. Update the `moduleNameMapper` entry in your Jest config to point to where your LWC components live. For example, use the following to map all components in the `example` or `other` namespaces:
+1. Update the `moduleNameMapper` entry in your Jest config to point to where your LWC components live. For example, use the following to map all components in the `example` and `other` namespaces:
 
     ```json
     {

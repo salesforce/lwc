@@ -26,25 +26,7 @@ describe("compiler result", () => {
         const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
         const { result: { outputConfig } } = await compile(noOutputConfig);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
-            minify: false,
-            compat: false
-        });
-    });
-    test("compiler should return bundle result with normalized DEV output config", async () => {
-        const config = Object.assign({}, VALID_CONFIG, {
-            outputConfig: {
-                minify: false,
-                compat: false
-            }
-        });
-        const { result: { outputConfig } } = await compile(config);
-        expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: false
         });
@@ -77,9 +59,7 @@ describe("compiler result", () => {
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: true
         });

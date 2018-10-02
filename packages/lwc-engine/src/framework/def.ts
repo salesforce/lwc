@@ -358,7 +358,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
                     msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
                     msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                 }
-                console.error(msg.join('\n')); // tslint:disable-line
+                assert.logError(msg.join('\n'));
             }
         }
 

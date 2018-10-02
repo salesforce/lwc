@@ -75,8 +75,15 @@ export default async function transformStyle(
     if (minify) {
         postcssPlugins.push(
             cssnano({
+                preset: ['default'],
+
+                // Disable SVG compression, since it prevent the compiler to be bundle by webpack since
+                // it dynamically require the svgo package: https://github.com/svg/svgo
                 svgo: false,
-                preset: ['default']
+
+                // Disable zindex normalization, since it only works when it works only if the rules
+                // css file contains all the selectors applied on the page.
+                zindex: false,
             })
         );
     }

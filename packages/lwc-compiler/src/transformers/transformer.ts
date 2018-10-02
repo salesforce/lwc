@@ -73,9 +73,7 @@ export async function transformFile(
     let compatResult;
     if (options.outputConfig.compat) {
         try {
-            const compatPlugin = compatPluginFactory(
-                options.outputConfig.resolveProxyCompat
-            );
+            const compatPlugin = compatPluginFactory();
             compatResult = compatPlugin.transform(result.code);
             if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
                 throw new CompilerError(

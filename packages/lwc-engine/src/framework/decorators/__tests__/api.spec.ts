@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
@@ -10,15 +11,19 @@ describe('decorators/api.ts', () => {
                     this.breakfast = 'pancakes';
                 }
             }
-
             MyComponent.publicProps = {
                 breakfast: {
                     config: 0
                 }
             };
-            function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    <x-component></x-component>
+                </template>
+            `, {
+                modules: { 'x-component': MyComponent }
+            });
             class Parent extends LightningElement {
                 constructor() {
                     super();
@@ -28,7 +33,6 @@ describe('decorators/api.ts', () => {
                     return html;
                 }
             }
-
             Parent.publicProps = {
                 parentGetter: {
                     config: 0
@@ -43,12 +47,12 @@ describe('decorators/api.ts', () => {
 
         it('should not be consider properties reactive if not used in render', function() {
             let counter = 0;
+
             class MyComponent extends LightningElement  {
                 render() {
                     counter++;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 0
@@ -66,18 +70,19 @@ describe('decorators/api.ts', () => {
 
         it('should consider tracked property reactive if used in render', function() {
             let counter = 0;
+
             class MyComponent extends LightningElement  {
                 render() {
                     this.x;
                     counter++;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 0
                 }
             };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
@@ -88,15 +93,16 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow access to public props from outside and from templates', function() {
-            function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', { key: 0 }, [$api.d($cmp.x)])];
-            }
+            const html = compileTemplate(`
+                <template>
+                    <div>{x}</div>
+                </template>
+            `);
             class MyComponent extends LightningElement  {
                 render() {
                     return html;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 0
@@ -124,9 +130,14 @@ describe('decorators/api.ts', () => {
                     config: 1
                 }
             };
-            function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    <x-component></x-component>
+                </template>
+            `, {
+                modules: { 'x-component': MyComponent }
+            });
             class Parent extends LightningElement {
                 get parentGetter() {
                     return 'parentgetter';
@@ -151,6 +162,7 @@ describe('decorators/api.ts', () => {
 
         it('should not be consider getter and setters reactive', function() {
             let counter = 0;
+
             class MyComponent extends LightningElement  {
                 get x() {
                     return 1;
@@ -162,7 +174,6 @@ describe('decorators/api.ts', () => {
                     counter++;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 3
@@ -180,6 +191,7 @@ describe('decorators/api.ts', () => {
 
         it('should consider tracked property reactive if used via getter and setter', function() {
             let counter = 0;
+
             class MyComponent extends LightningElement  {
                 get x() {
                     return this.y;
@@ -193,7 +205,6 @@ describe('decorators/api.ts', () => {
                     counter++;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 3
@@ -213,9 +224,11 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow access simple getters from outside and from templates', function() {
-            function html ($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
-            }
+            const html = compileTemplate(`
+                <template>
+                    <div>{validity}</div>
+                </template>
+            `);
             class MyComponent extends LightningElement  {
                 get validity() {
                     return 'foo';
@@ -225,7 +238,6 @@ describe('decorators/api.ts', () => {
                     return html;
                 }
             }
-
             MyComponent.publicProps = {
                 validity: {
                     config: 1
@@ -250,7 +262,6 @@ describe('decorators/api.ts', () => {
                     this.x;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 3
@@ -274,7 +285,6 @@ describe('decorators/api.ts', () => {
                     this.x = 2;
                 }
             }
-
             MyComponent.publicProps = {
                 x: {
                     config: 3
@@ -294,7 +304,6 @@ describe('decorators/api.ts', () => {
                     return 1;
                 }
             }
-
             MyComponent.publicMethods = ['x'];
 
             class ChildComponent extends MyComponent {
@@ -302,7 +311,6 @@ describe('decorators/api.ts', () => {
                     return 2;
                 }
             }
-
             ChildComponent.publicMethods = ['y'];
 
             const elm = createElement('x-foo', { is: ChildComponent });

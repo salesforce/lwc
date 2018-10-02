@@ -1,55 +1,45 @@
-import { readFile } from "fs";
-import { compile } from "../../index";
-import { fixturePath, readFixture, pretify } from "../../__tests__/utils";
+import { compile } from '../../index';
 
-const NODE_ENV_CONFIG = {
-    name: "node_env",
-    namespace: "x",
-    files: {
-        "node_env.js": readFixture("../../__tests__/fixtures/node_env/node_env.js"),
-        "node_env.html": readFixture("../../__tests__/fixtures/node_env/node_env.html")
-    },
-    outputConfig: { format: "es" }
-};
+const NODE_ENV_SOURCE = `
+if (process.env.NODE_ENV === 'production') {
+    console.log('I am in prod');
+} else if (process.env.NODE_ENV === 'development') {
+    console.log('I am in dev');
+}
+`;
 
-describe("node env", function() {
-    it('sets env.NODE_ENV to "development" by default', async () => {
-        const config = {
-            name: "foo",
-            namespace: "x",
-            files: {
-                "foo.js": "export const env = process.env.NODE_ENV"
-            },
-            outputConfig: { format: "es" }
-        };
-        const { result: { code, metadata } } = await compile(config);
+function getConfig(env = {}) {
+    return {
+        name: 'node_env',
+        namespace: 'x',
+        files: {
+            'node_env.js': NODE_ENV_SOURCE,
+        },
+        outputConfig: { format: 'es', env },
+    };
+}
 
-        expect(pretify(code)).toBe(
-            'const env = "development";\nexport { env };'
-        );
+describe('environment replacement', function() {
+    it('should not replace environment variable if unset', async () => {
+        const { result: { code } } = await compile(getConfig());
+
+        expect(code).toContain('process.env.NODE_ENV');
     });
 
-    it("removes production code when NODE_ENV option is production", async () => {
-        const config = {
-            ...NODE_ENV_CONFIG,
-            outputConfig: { format: "es", env: { NODE_ENV: "production" } }
-        };
-        const { result: { code, metadata } } = await compile(config);
+    it('should replace environment variable if set', async () => {
+        const { result: { code } } = await compile(getConfig({
+            NODE_ENV: 'development',
+        }));
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-node-env-prod.js"))
-        );
+        expect(code).not.toContain('process.env.NODE_ENV');
     });
 
-    it("does not remove production code when in NODE_ENV option is development", async () => {
-        const config = {
-            ...NODE_ENV_CONFIG,
-            outputConfig: { format: "es", env: { NODE_ENV: "development" } }
-        };
-        const { result: { code, metadata } } = await compile(config);
+    it('should strip branch when the condition is evaluated to false', async () => {
+        const { result: { code } } = await compile(getConfig({
+            NODE_ENV: 'production',
+        }));
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-node-env-dev.js"))
-        );
+        expect(code).toContain('I am in prod');
+        expect(code).not.toContain('I am in dev');
     });
 });

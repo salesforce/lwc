@@ -16,24 +16,52 @@ describe('fixtures', () => {
         const caseFolder = path.dirname(caseEntry);
         const caseName = path.relative(FIXTURE_DIR, caseFolder);
 
-        const readFixtureFile = (fileName, defaultContent = '') => {
-            const filePath = path.join(caseFolder, fileName);
+        const fixtureFilePath = (fileName): string => {
+            return path.join(caseFolder, fileName);
+        };
+
+        const readFixtureFile = (fileName): string => {
+            const filePath = fixtureFilePath(fileName);
             return fs.existsSync(filePath) ?
                 fs.readFileSync(filePath, 'utf-8') :
-                defaultContent;
+                null;
         };
+
+        const writeFixtureFile = (fileName, content): void => {
+            const filePath = fixtureFilePath(fileName);
+            fs.writeFileSync(filePath, content, { encoding: 'utf-8' });
+        };
+
+        const expectedJsFile = 'expected.js';
+        const expectedMetaFile = 'metadata.json';
 
         it(`${caseName}`, () => {
             const src = readFixtureFile('actual.html');
 
-            const configOverride = JSON.parse(readFixtureFile('config.json', '{}'));
-            const expectedCode = readFixtureFile('expected.js', '');
-            const expectedMetaData = JSON.parse(readFixtureFile('metadata.json', '{}'));
+            const configOverride = JSON.parse(readFixtureFile('config.json'));
+            const expectedCode = readFixtureFile(expectedJsFile);
+            const expectedMetaData = JSON.parse(readFixtureFile(expectedMetaFile));
 
             const actual = compiler(src, {
                 ...BASE_CONFIG,
                 ...configOverride,
             });
+
+            const actualMeta = actual.metadata;
+
+            if (expectedCode === null) {
+                // write compiled js file if doesn't exist (ie new fixture)
+                writeFixtureFile(expectedJsFile, prettier.format(actual.code));
+            }
+
+            if (expectedMetaData === null) {
+                // write metadata file if doesn't exist (ie new fixture)
+                const metadata = {
+                    warnings: actual.warnings,
+                    ...actualMeta,
+                };
+                writeFixtureFile(expectedMetaFile, JSON.stringify(metadata, null, 4));
+            }
 
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
 
@@ -45,8 +73,7 @@ describe('fixtures', () => {
                 );
             }
 
-            if (actual.metadata) {
-                const actualMeta = actual.metadata;
+            if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
 
                 expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);

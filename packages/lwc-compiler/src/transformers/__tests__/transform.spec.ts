@@ -337,4 +337,19 @@ describe('CSS transform', () => {
 
         expect(pretify(code)).toBe(pretify(expected));
     });
+
+    it('#689 - should not transform z-index in production', async () => {
+        const actual = 'h1 { z-index: 100; } h2 { z-index: 500; }';
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+            outputConfig: {
+                minify: true
+            }
+        });
+
+        expect(code).toContain('z-index:100');
+        expect(code).toContain('z-index:500');
+    });
 });

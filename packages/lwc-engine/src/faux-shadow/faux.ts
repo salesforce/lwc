@@ -1,5 +1,6 @@
 export { patchNode } from "./node";
 export { patchEvent } from "./events";
+export { patchSlotElement } from "./slot";
 
 export { patchCustomElement } from "./custom-element";
 
