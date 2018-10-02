@@ -14,13 +14,18 @@ export type MetadataDecorators = Array<
     ApiDecorator | TrackDecorator | WireDecorator
 >;
 
+export interface TemplateModuleDependencies {
+    templatePath: string;
+    moduleDependencies: TemplateModuleDependency[];
+}
+
 export interface BundleMetadata {
     decorators: MetadataDecorators;
     importLocations: ModuleImportLocation[];
     classMembers: ClassMember[];
     declarationLoc?: Location;
     doc?: string;
-    experimentalTemplateDependencies?: { [templatePath: string]: TemplateModuleDependency[] };
+    experimentalTemplateDependencies?: TemplateModuleDependencies[];
 }
 
 export class MetadataCollector {
@@ -28,7 +33,7 @@ export class MetadataCollector {
         ApiDecorator | TrackDecorator | WireDecorator
     > = [];
     private importLocations: ModuleImportLocation[] = [];
-    private experimentalTemplateDependencies?: { [templatePath: string]: TemplateModuleDependency[] };
+    private experimentalTemplateDependencies?: TemplateModuleDependencies[];
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
     private doc?: string;
@@ -58,9 +63,12 @@ export class MetadataCollector {
     public collectExperimentalTemplateDependencies(
         templatePath: string, templateDependencies: TemplateModuleDependency[]) {
         if (!this.experimentalTemplateDependencies) {
-            this.experimentalTemplateDependencies = {};
+            this.experimentalTemplateDependencies = [];
         }
-        this.experimentalTemplateDependencies[templatePath] = templateDependencies;
+        this.experimentalTemplateDependencies.push({
+            templatePath,
+            moduleDependencies: templateDependencies
+        });
     }
 
     public getMetadata(): BundleMetadata {

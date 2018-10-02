@@ -313,13 +313,17 @@ describe("compiler metadata", () => {
                 start: {column: 0, line: 5},
                 end: {column: 1, line: 20},
             },
-            experimentalTemplateDependencies: {
-                "foo.html": [
+            experimentalTemplateDependencies: [
+            {
+                moduleDependencies: [
                     {
-                        moduleName: "x/bar"
+                        moduleName: "x/bar",
+                        tagName: "x-bar"
                     }
-                ]
-            },
+                ],
+                templatePath: "foo.html"
+            }
+        ],
         });
     });
 
@@ -400,9 +404,12 @@ describe("compiler metadata", () => {
                 end: {column: 17, line: 13},
             },
             doc: "* class jsdoc",
-            experimentalTemplateDependencies: {
-                "foo.html": []
-            }
+            experimentalTemplateDependencies: [
+                {
+                    moduleDependencies: [],
+                    templatePath: "foo.html"
+                }
+            ],
         });
     });
 });
