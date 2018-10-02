@@ -36,7 +36,7 @@ const CustomElementPatchDescriptors: PropertyDescriptorMap = {
         enumerable: true,
     },
     shadowRoot: {
-        value: getShadowRootPatchedValue,
+        get: getShadowRootPatchedValue,
         configurable: true,
         enumerable: true,
     }

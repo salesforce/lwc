@@ -2,10 +2,12 @@
 
 exports[`example-foo-inner default snapshot 1`] = `
 <example-foo-inner>
-  <p
-    class="exampleFooInner"
-  >
-    example-foo-inner
-  </p>
+  #shadow-root(open)
+    <p
+      class="exampleFooInner"
+    >
+      example-foo-inner
+    </p>
+    <slot />
 </example-foo-inner>
 `;

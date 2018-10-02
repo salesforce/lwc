@@ -5,7 +5,7 @@ import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
 import { isNativeShadowRootAvailable } from "./dom-api";
-import { patchCustomElement } from "../faux-shadow/faux";
+import { patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
@@ -84,7 +84,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
     if (isTrue(fallback)) {
-        patchCustomElement(element);
+        patchCustomElementProto(element, sel, def);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
