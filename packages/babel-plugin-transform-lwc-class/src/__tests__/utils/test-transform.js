@@ -1,15 +1,16 @@
-import {  stripIndents } from 'common-tags';
 const babel = require('@babel/core');
-const baseConfig = { babelrc: false, filename: 'test.js' };
+const { stripIndents } = require('common-tags');
+
+const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
 
 function transform(plugin, opts = {}) {
-    const testConfig = Object.assign({}, baseConfig, {
+    const testConfig = Object.assign({}, BASE_CONFIG, {
         plugins: [plugin]
     }, opts);
 
     return function(source) {
         return babel.transform(prettify(source), testConfig);
-    }
+    };
 }
 
 function prettify(str) {
@@ -48,7 +49,7 @@ function pluginTest(plugin, opts = {}) {
         } else {
             throw new TypeError(`Transform test expect an object with either error or output.`);
         }
-    }
+    };
 
     const pluginTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
     pluginTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));

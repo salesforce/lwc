@@ -5,6 +5,7 @@ module.exports = {
     ...BASE_CONFIG,
 
     displayName: 'lwc-engine',
+
     moduleNameMapper: {
         'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
     },
