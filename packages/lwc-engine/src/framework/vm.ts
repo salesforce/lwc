@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
+import { parentElementGetter, parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -481,16 +481,27 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
  * Finds the parent of the specified element. If shadow DOM is enabled, finds
  * the host of the shadow root to escape the shadow boundary.
  * @param {HTMLElement} elm
- * @return {HTMLElement} the parent element, escaping any shadow root boundaries
+ * @return {HTMLElement | null} the parent element, escaping any shadow root boundaries, if it exists
  */
 function getContainerElement(elm: HTMLElement): HTMLElement | null {
-    const parentNode = parentNodeGetter.call(elm);
+    const parentElement = parentElementGetter.call(elm);
     // If this is a shadow root, find the host instead
-    return isShadowRoot(parentNode) ? getShadowRootHost(parentNode) : parentNode;
+    return isNull(parentElement) ? getHostElement(elm) : parentElement;
 }
 
-function isShadowRoot(node: Node | null): boolean {
-    return !isNull(node) && isNull(parentNodeGetter.call(node));
+/**
+ * Finds the host element, if it exists.
+ * @param {HTMLElement} elm
+ * @return {HTMLElement | null} the host element if it exists
+ */
+function getHostElement(elm: HTMLElement): HTMLElement | null {
+    const parentNode = parentNodeGetter.call(elm);
+
+    if (!(parentNode instanceof Element) && ('host' in parentNode)) {
+        return getShadowRootHost(parentNode);
+    }
+
+    return null;
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
