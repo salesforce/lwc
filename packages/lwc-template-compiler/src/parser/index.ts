@@ -54,6 +54,10 @@ import {
 } from '../shared/types';
 
 import {
+    getModuleMetadata
+} from '../metadata/metadata';
+
+import {
     bindExpression,
 } from '../shared/scope';
 
@@ -156,6 +160,7 @@ export default function parse(source: string, state: State): {
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
+                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -563,6 +568,12 @@ export default function parse(source: string, state: State): {
                 );
             }
         });
+    }
+
+    function collectMetadata(element: IRElement) {
+        if (isCustomElement(element)) {
+            state.extendedDependencies.push(getModuleMetadata(element));
+        }
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {

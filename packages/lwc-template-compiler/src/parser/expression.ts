@@ -44,12 +44,12 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                 const isValidNode = path.isProgram() || path.isBlockStatement() || path.isExpressionStatement() ||
                                     path.isIdentifier() || path.isMemberExpression();
                 if (!isValidNode) {
-                    throw new Error(`Template expression doens't allow ${path.type}`);
+                    throw new Error(`Template expression doesn't allow ${path.type}`);
                 }
 
                 // Ensure expression doesn't contain multiple expressions: {foo;bar}
-                const hasMutipleExpressions = path.isBlock() && (path.get('body') as any).length !== 1;
-                if (hasMutipleExpressions) {
+                const hasMultipleExpressions = path.isBlock() && (path.get('body') as any).length !== 1;
+                if (hasMultipleExpressions) {
                     throw new Error(`Multiple expressions found`);
                 }
 
@@ -65,7 +65,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                         && (path.node as types.MemberExpression).computed;
 
                     if (shouldReportComputed) {
-                        throw new Error(`Template expression doens't allow computed property access`);
+                        throw new Error(`Template expression doesn't allow computed property access`);
                     }
 
                     const memberExpression = path.node as types.MemberExpression;
@@ -89,7 +89,7 @@ export function parseIdentifier(source: string): TemplateIdentifier {
     if (esutils.keyword.isIdentifierES6(source)) {
         return types.identifier(source);
     } else {
-        throw new Error(`Invalid indentifier`);
+        throw new Error(`Invalid identifier`);
     }
 }
 

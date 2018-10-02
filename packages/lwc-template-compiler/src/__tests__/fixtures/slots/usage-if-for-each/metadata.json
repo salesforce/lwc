@@ -1,6 +1,11 @@
 {
   "metadata": {
     "templateUsedIds": ["isTrue", "items"],
-    "templateDependencies": ["a/b"]
+    "templateDependencies": [
+      {
+        "moduleName": "a/b",
+        "tagName": "a-b"
+      }
+    ]
   }
 }

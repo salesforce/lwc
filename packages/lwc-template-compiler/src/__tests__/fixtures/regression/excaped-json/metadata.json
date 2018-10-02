@@ -1,5 +1,16 @@
 {
   "metadata": {
-    "templateDependencies": ["x/test"]
+    "templateDependencies": [
+      {
+        "properties": {
+          "json": {
+            "type": "literal",
+            "value": "[{\"column\":\"ID\",\"value\":\"5e\",\"operator\":\"equals\",\"f\":true}]"
+          }
+        },
+        "moduleName": "x/test",
+        "tagName": "x-test"
+      }
+    ]
   }
 }
