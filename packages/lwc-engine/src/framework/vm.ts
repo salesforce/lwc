@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
+import { parentElementGetter, parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter, ShadowRootHostGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -495,13 +495,14 @@ function getParentOrHostElement(elm: HTMLElement): HTMLElement | null {
  * @return {HTMLElement | null} the host element if it exists
  */
 function getHostElement(elm: HTMLElement): HTMLElement | null {
-    const parentNode = parentNodeGetter.call(elm);
-
-    if (!(parentNode instanceof Element) && ('host' in parentNode)) {
-        return getShadowRootHost(parentNode);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isNativeShadowRootAvailable, 'getHostElement should only be called if native shadow root is available');
+        assert.isTrue(isNull(parentElementGetter.call(elm)), `getHostElement should only be called if the parent element of ${elm} is null`);
     }
-
-    return null;
+    const parentNode = parentNodeGetter.call(elm);
+    return !(parentNode instanceof Element) && ('host' in parentNode)
+        ? ShadowRootHostGetter.call(parentNode)
+        : null;
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
