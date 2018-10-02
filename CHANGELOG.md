@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.9...v) (2018-10-02)
+# [](https://github.com/salesforce/lwc/compare/v0.29.10...v) (2018-10-02)
+
+
+### Features
+
+* **engine:** adding basic support for slotchange event ([#635](https://github.com/salesforce/lwc/issues/635)) ([ee0d7f3](https://github.com/salesforce/lwc/commit/ee0d7f3))
+
+
+
+<a name="0.29.10"></a>
+## [0.29.10](https://github.com/salesforce/lwc/compare/v0.29.9...v0.29.10) (2018-10-02)
 
 
 ### Features
