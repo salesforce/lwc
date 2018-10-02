@@ -4,7 +4,6 @@ import { pretify, readFixture } from "../../__tests__/utils";
 
 const VALID_CONFIG = {
     outputConfig: {
-        env: {},
         minify: false,
         compat: false,
         format: "amd"
@@ -32,6 +31,7 @@ describe("module resolver", () => {
         };
 
         const { success, result } = await compile(noOutputConfig);
+
         expect(success).toBe(true);
         expect(pretify(result.code)).toMatch(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {

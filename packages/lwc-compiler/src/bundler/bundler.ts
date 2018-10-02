@@ -1,9 +1,9 @@
 import { rollup } from "rollup";
-import rollupPluginReplace from "rollup-plugin-replace";
 
 import { MetadataCollector, BundleMetadata } from "./meta-collector";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
+import rollupEnvReplacement from "../rollup-plugins/env-replacement";
 import rollupTransform from "../rollup-plugins/transform";
 import rollupCompat from "../rollup-plugins/compat";
 import rollupMinify from "../rollup-plugins/minify";
@@ -48,7 +48,7 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
 }
 
 export async function bundle(
-    options: NormalizedCompilerOptions
+    options: NormalizedCompilerOptions,
 ): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
@@ -58,25 +58,33 @@ export async function bundle(
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: Diagnostic[] = [];
-
     const metadataCollector = new MetadataCollector();
 
-    const plugins = [
-        rollupPluginReplace({
-            "process.env.NODE_ENV": JSON.stringify(outputConfig.env.NODE_ENV)
-        }),
+    const plugins: any[] = [
         rollupModuleResolver({
-            metadataCollector,
-            options
+            options,
         }),
-        rollupTransform({
-            metadataCollector,
-            options
-        })
     ];
 
+    // Run environment variable replacement first. This ensures that the source code is still untouched
+    // at this point.
+    if (Object.keys(outputConfig.env).length) {
+        plugins.push(
+            rollupEnvReplacement({
+                options,
+            }),
+        );
+    }
+
+    plugins.push(
+        rollupTransform({
+            metadataCollector,
+            options,
+        }),
+    );
+
     if (outputConfig.compat) {
-        plugins.push(rollupCompat(outputConfig.resolveProxyCompat));
+        plugins.push(rollupCompat());
     }
 
     if (outputConfig.minify) {
