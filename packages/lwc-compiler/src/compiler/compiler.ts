@@ -21,7 +21,7 @@ export interface BundleResult {
 }
 
 export interface SourceMap {
-    version?: 3;
+    version?: string;
     file?: string;
     sourceRoot?: string;
     sources?: string[];
