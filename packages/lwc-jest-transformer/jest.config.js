@@ -14,4 +14,11 @@ module.exports = {
     testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
     resolver: 'lwc-jest-resolver',
     snapshotSerializers: ['lwc-jest-serializer'],
+
+    // Disable coverage entirely for this package. This package overrides the jest configuration
+    // to test it's internals. Because of this the coverage reports the fixtures code and not the
+    // packages logic.
+    coveragePathIgnorePatterns: [
+        '<rootDir>/src',
+    ],
 };

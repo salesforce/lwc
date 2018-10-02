@@ -4,10 +4,20 @@ const BASE_CONFIG = require('../../scripts/jest/base.config');
 
 module.exports = {
     ...BASE_CONFIG,
-    transform: {
-        "^.+\\.(js|html|css)$": "lwc-jest-transformer"
-    },
-    resolver: "<rootDir>/src/index.js",
-    testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
+
     displayName: 'lwc-jest-resolver',
+
+    transform: {
+        '^.+\\.(js|html|css)$': 'lwc-jest-transformer',
+    },
+    resolver: '<rootDir>/src/index.js',
+    testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
+
+    // Disable coverage entirely for this package. This package overrides the jest configuration
+    // to test it's internals. Because of this the coverage reports the fixtures code and not the
+    // packages logic.
+    coveragePathIgnorePatterns: [
+        '<rootDir>/src',
+        '<rootDir>/resources',
+    ],
 };

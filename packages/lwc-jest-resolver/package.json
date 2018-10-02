@@ -4,7 +4,6 @@
   "description": "Jest resolver to resolve LWC specific packages",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src/",
     "test": "jest"
   },
   "keywords": [

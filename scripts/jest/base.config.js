@@ -1,11 +1,13 @@
+const path = require('path');
+
 module.exports = {
-    preset: 'ts-jest/presets/js-with-ts',
+    preset: 'ts-jest',
 
     globals: {
         'ts-jest': {
             // The tsconfig location has to be specified otherwise, it will not transform the javascript
             // files.
-            tsConfig: 'tsconfig.json',
+            tsConfig: '<rootDir>/tsconfig.json',
 
             // By default ts-jest reports typescript compilation errors. Let's disable for now diagnostic
             // reporting since some of the packages doesn't pass the typescript compilation.
@@ -16,4 +18,13 @@ module.exports = {
     testMatch: [
         '<rootDir>/**/__tests__/*.spec.(js|ts)'
     ],
+
+    // Global mono-repo code coverage threshold.
+    coverageThreshold: {
+        global: {
+            branches: 80,
+            functions: 85,
+            lines: 85,
+        },
+    },
 };

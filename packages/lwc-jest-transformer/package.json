@@ -4,7 +4,6 @@
   "description": "Jest transformer for LWC and engine",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src/",
     "test": "jest"
   },
   "keywords": [
