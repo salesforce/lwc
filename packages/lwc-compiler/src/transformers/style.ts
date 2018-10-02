@@ -6,7 +6,6 @@ import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
-import { SourceMap } from "../compiler/compiler";
 
 /**
  * A placeholder string used to locate the style scoping token generated during
@@ -112,7 +111,6 @@ export default async function transformStyle(
     }
 
     let code: string = '';
-    let map: SourceMap | null = { mappings: '' };
     if (res.css && res.css.length) {
         // Add import statement for the custom resolver at the top of the file.
         if (customProperties.resolution.type === 'module') {
@@ -125,10 +123,10 @@ export default async function transformStyle(
             '}',
             'export default style;'
         ].join('\n');
-        map = null;
     } else {
         code = EMPTY_CSS_OUTPUT;
     }
 
-    return { code, map };
+    // returning { mappings: '' } since this is not debuggable code.
+    return { code, map: { mappings: '' } };
 }

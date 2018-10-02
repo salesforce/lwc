@@ -84,10 +84,11 @@ const transform: FileTransformer = function(
         throw new CompilerError(e.message, filename, e.loc);
     }
 
+    // returning { mappings: '' } since this is not debuggable code.
     return {
         code: attachStyleToTemplate(code, filename, options),
         metadata,
-        map: null
+        map: { mappings: '' }
     };
 };
 
