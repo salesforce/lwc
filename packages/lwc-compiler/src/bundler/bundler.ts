@@ -15,7 +15,7 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
-import {SourceMap} from "../compiler/compiler";
+import { SourceMap } from "../compiler/compiler";
 
 export interface BundleReport {
     code: string;
@@ -57,7 +57,7 @@ export async function bundle(
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
-    const sourcemap = outputConfig.sourcemap;
+    const { sourcemap } = outputConfig;
 
     const diagnostics: Diagnostic[] = [];
 
@@ -83,7 +83,7 @@ export async function bundle(
     }
 
     if (outputConfig.minify) {
-        plugins.push(rollupMinify({ sourcemap }));
+        plugins.push(rollupMinify(outputConfig));
     }
 
     let code;
@@ -107,6 +107,7 @@ export async function bundle(
     } catch (e) {
         // populate diagnostics
         const {  message, filename } = e;
+        map = null;
 
         diagnostics.push({
             filename,

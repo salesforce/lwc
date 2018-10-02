@@ -43,7 +43,7 @@ export interface OutputConfig {
     compat?: boolean;
     minify?: boolean;
     resolveProxyCompat?: OutputProxyCompatConfig;
-    sourcemap?: boolean | 'inline';
+    sourcemap?: boolean;
 }
 
 export interface BundleFiles {
@@ -78,7 +78,7 @@ export interface NormalizedStylesheetConfig extends StylesheetConfig {
 export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
     minify: boolean;
-    sourcemap: boolean | 'inline';
+    sourcemap: boolean;
     env: {
         [name: string]: string;
     };
@@ -176,9 +176,9 @@ function validateOutputConfig(config: OutputConfig) {
         );
     }
 
-    if (!isUndefined(config.sourcemap) && !(isBoolean(config.sourcemap) || config.sourcemap === 'inline')) {
+    if (!isUndefined(config.sourcemap) && !isBoolean(config.sourcemap)) {
         throw new TypeError(
-            `Expected a boolean or string 'inline' for outputConfig.sourcemap, received "${
+            `Expected a boolean value for outputConfig.sourcemap, received "${
                 config.sourcemap
                 }".`
         );

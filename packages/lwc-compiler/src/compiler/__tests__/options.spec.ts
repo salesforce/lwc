@@ -90,7 +90,7 @@ describe('compiler options', () => {
             }),
         ).rejects.toMatchObject({
             message:
-                "Expected a boolean or string 'inline' for outputConfig.sourcemap, received \"true\".",
+                "Expected a boolean value for outputConfig.sourcemap, received \"true\".",
         });
     });
 

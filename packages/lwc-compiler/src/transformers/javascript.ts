@@ -13,11 +13,10 @@ export default function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ): FileTransformerResult {
-
-    const overrides = { sourceMaps: options.outputConfig.sourcemap };
-    const config = Object.assign({}, BABEL_CONFIG_BASE, overrides, {
+    const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
         filename,
+        sourceMaps: options.outputConfig.sourcemap
     });
 
     let result;
