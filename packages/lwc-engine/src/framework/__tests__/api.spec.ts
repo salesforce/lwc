@@ -181,7 +181,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(getHostShadowRoot(elm).querySelector('span').textContent).toEqual('miami');
+            expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
     });
 
@@ -198,7 +198,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(getHostShadowRoot(elm).querySelector('span').innerHTML).toEqual('<!--miami-->');
+            expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
         });
     });
 

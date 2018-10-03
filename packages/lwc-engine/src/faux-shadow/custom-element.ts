@@ -14,7 +14,7 @@ function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowR
     return attachShadow(this, options);
 }
 
-function getShadowRootPatchedValue(this: HTMLElement) {
+function shadowRootGetter(this: HTMLElement) {
     return getShadowRoot(this);
 }
 
@@ -36,7 +36,7 @@ const CustomElementPatchDescriptors: PropertyDescriptorMap = {
         enumerable: true,
     },
     shadowRoot: {
-        get: getShadowRootPatchedValue,
+        get: shadowRootGetter,
         configurable: true,
         enumerable: true,
     }
