@@ -6,9 +6,9 @@
   "typings": "dist/types/",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
+    "clean": "rm -rf dist/",
+    "build": "tsc",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.1",

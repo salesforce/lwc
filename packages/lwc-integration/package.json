@@ -4,7 +4,6 @@
   "version": "0.29.12",
   "license": "Beerware",
   "scripts": {
-    "test": "echo 'No unit test in lwc-integration package'",
     "build": "node scripts/build.js",
     "build:dev": "MODE=dev yarn build",
     "build:prod": "MODE=prod yarn build",

@@ -20,8 +20,6 @@ async function updateVersion(version) {
         format: "cjs",
         sourcemap: false, // keep typescript generated map to stay consistent with the rest of the files.
     });
-
-    console.log("Compiler version: ", version);
 }
 
 if (!version || typeof version !== "string") {

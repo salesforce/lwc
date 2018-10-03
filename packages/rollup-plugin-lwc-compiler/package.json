@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
+    "test": "jest"
   },
   "devDependencies": {
     "lwc-compiler": "0.29.12",

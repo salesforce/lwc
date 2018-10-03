@@ -5,9 +5,9 @@
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "echo 'Building postcss plugin...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
+    "clean": "rm -rf dist/",
+    "build": "tsc",
+    "test": "jest"
   },
   "dependencies": {
     "balanced-match": "^1.0.0",
