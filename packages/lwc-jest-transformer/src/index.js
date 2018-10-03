@@ -3,6 +3,7 @@ const babelCommonJs = require('@babel/plugin-transform-modules-commonjs');
 const jestPreset = require('babel-preset-jest');
 const lwcCompiler = require('lwc-compiler');
 const crypto = require('crypto');
+const path = require('path');
 const engineVersion = require('lwc-engine/package.json').version;
 const compilerVersion = require('lwc-compiler/package.json').version;
 const { waitForPromise } = require('./utils');
@@ -14,6 +15,7 @@ const schemaScopedImport = require('./transforms/schema-scoped-import');
 const userScopedImport = require('./transforms/user-scoped-import');
 
 const BABEL_CONFIG = {
+    sourceMaps: 'both',
     "presets": [
         jestPreset,
     ],
@@ -33,14 +35,20 @@ module.exports = {
         // Set default module name and namespace value for the namespace because it can't be properly guessed from the path
         const transform = lwcCompiler.transform(src, filePath, {
             moduleName: 'test',
-            moduleNamespace: 'x'
+            moduleNamespace: 'x',
+            outputConfig: {
+                sourcemap: true
+            }
         });
 
-        const { code } = waitForPromise(transform);
+        const { code, map } = waitForPromise(transform);
 
-        const generated = babelCore.transform(code, BABEL_CONFIG);
+        // if is not .js, we add the .compiled extension in the sourcemap
+        const filename = path.extname(filePath) === '.js' ? filePath : filePath + '.compiled';
+        // **Note: .html and .css don't return valid sourcemaps cause they are used for rollup
+        const config = map && map.version ? { inputSourceMap: map } : {};
 
-        return generated.code;
+        return babelCore.transform(code, { ...BABEL_CONFIG, ...{ filename }, ...config });
     },
     getCacheKey(fileData, filePath, configStr, options) {
         const { NODE_ENV } = process.env;
