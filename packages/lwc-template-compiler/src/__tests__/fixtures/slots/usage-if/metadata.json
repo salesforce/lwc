@@ -1,6 +1,11 @@
 {
   "metadata": {
     "templateUsedIds": ["isTrue"],
-    "templateDependencies": ["ns/cmp"]
+    "templateDependencies": [
+      {
+        "moduleName": "ns/cmp",
+        "tagName": "ns-cmp"
+      }
+    ]
   }
 }

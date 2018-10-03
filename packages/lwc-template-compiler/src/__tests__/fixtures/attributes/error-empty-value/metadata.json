@@ -1,5 +1,20 @@
 {
   "metadata": {
-    "templateDependencies": ["foo/bar"]
+    "templateDependencies": [
+      {
+        "properties": {
+          "content": {
+            "type": "literal",
+            "value": ""
+          },
+          "visible": {
+            "type": "literal",
+            "value": true
+          }
+        },
+        "moduleName": "foo/bar",
+        "tagName": "foo-bar"
+      }
+    ]
   }
 }

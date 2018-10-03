@@ -1,16 +1,15 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 
 describe('modules/styles', () => {
-    it('should add style to the element', () => {
-        const tmpl = $api => [
-            $api.h('div', { key: 0, style: 'display: inline' }, [ $api.t('test') ]),
-        ];
-        let cmp;
+    it('should add handle static style attribute', () => {
+        const tmpl = compileTemplate(`
+            <template>
+                <div style="display: inline"></div>
+            </template>
+        `);
         class Component extends LightningElement {
-            constructor() {
-                super();
-                cmp = this;
-            }
             render() {
                 return tmpl;
             }
@@ -19,18 +18,18 @@ describe('modules/styles', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        expect(cmp.template.querySelector('div').style.display).toBe('inline');
+        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
     });
-    it('should add style map to the element', () => {
-        const tmpl = $api => [
-            $api.h('div', { key: 0, styleMap: { display: 'inline' } }, [ $api.t('test') ]),
-        ];
-        let cmp;
+
+    it('should add handle static style attribute', () => {
+        const tmpl = compileTemplate(`
+            <template>
+                <div style={dynamicStyle}></div>
+            </template>
+        `);
         class Component extends LightningElement {
-            constructor() {
-                super();
-                cmp = this;
-            }
+            dynamicStyle = 'display: inline';
+
             render() {
                 return tmpl;
             }
@@ -39,19 +38,22 @@ describe('modules/styles', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        expect(cmp.template.querySelector('div').style.display).toBe('inline');
+        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
     });
+
     it('should patch style to the element', () => {
-        const tmpl = ($api, $cmp) => [
-            $api.h('div', { key: 0, style: $cmp.counter % 2 ? 'display: block' : 'display: inline' }, [ $api.t('test') ]),
-        ];
-        let cmp;
+        const tmpl = compileTemplate(`
+            <template>
+                <div style={dynamicStyle}></div>
+            </template>
+        `);
         class MyComponent extends LightningElement {
-            constructor() {
-                super();
-                cmp = this;
-                this.counter = 0;
+            counter = 0;
+
+            get dynamicStyle() {
+                return this.counter % 2 ? 'display: block' : 'display: inline';
             }
+
             render() {
                 return tmpl;
             }
@@ -59,39 +61,14 @@ describe('modules/styles', () => {
         MyComponent.publicProps = {
             counter: 1
         };
+
         const elm = createElement('x-cmp', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(cmp.template.querySelector('div').style.display).toBe('inline');
-        cmp.counter++;
+        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
+
+        elm.counter++;
         return Promise.resolve().then(() => {
-            expect(cmp.template.querySelector('div').style.display).toBe('block');
-        });
-    });
-    it('should patch style map to the element', () => {
-        const tmpl = ($api, $cmp) => [
-            $api.h('div', { key: 0, styleMap: $cmp.counter % 2 ? { position: 'relative' } : { display: 'inline' } }, [ $api.t('test') ]),
-        ];
-        let cmp;
-        class MyComponent extends LightningElement {
-            constructor() {
-                super();
-                cmp = this;
-                this.counter = 0;
-            }
-            render() {
-                return tmpl;
-            }
-        }
-        MyComponent.publicProps = {
-            counter: 1
-        };
-        const elm = createElement('x-cmp', { is: MyComponent });
-        document.body.appendChild(elm);
-        expect(cmp.template.querySelector('div').style.display).toBe('inline');
-        cmp.counter++;
-        return Promise.resolve().then(() => {
-            expect(cmp.template.querySelector('div').style.position).toBe('relative');
-            expect(cmp.template.querySelector('div').style.display).toBe('');
+            expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('block');
         });
     });
 });

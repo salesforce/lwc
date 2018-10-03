@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, unwrap } from '../main';
 import { reactiveMembrane } from '../membrane';
 
@@ -14,15 +15,17 @@ describe('unwrap', () => {
     });
 
     it('should unwrap shadow membrane object correctly', () => {
-        const renderHandler = ($api) => {
-            return [$api.h('div', { key: 0 }, [])]
-        }
+        const html = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
         class CustomEl extends LightningElement {
             query() {
                 return this.template.querySelector('div');
             }
             render() {
-                return renderHandler;
+                return html;
             }
         }
         CustomEl.publicMethods = ['query'];
@@ -38,4 +41,4 @@ describe('unwrap', () => {
             unwrap(undefined);
         }).not.toThrow();
     });
-})
+});

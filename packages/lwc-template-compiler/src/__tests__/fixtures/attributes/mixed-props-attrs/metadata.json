@@ -1,6 +1,101 @@
 {
   "metadata": {
     "templateUsedIds": ["p", "foo"],
-    "templateDependencies": ["ns/foo", "ns/bar", "ns/buzz", "ns/table", "ns/input"]
+    "templateDependencies": [
+      {
+        "moduleName": "ns/foo",
+        "tagName": "ns-foo",
+        "properties": {
+          "d": {
+            "type": "expression",
+            "value": "p.foo"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/bar",
+        "tagName": "ns-bar",
+        "properties": {
+          "ariaDescribedBy": {
+            "type": "literal",
+            "value": "describedby"
+          },
+          "ariaHidden": {
+            "type": "literal",
+            "value": "hidden"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "blue"
+          },
+          "foo": {
+            "type": "literal",
+            "value": "bar"
+          },
+          "fooBar": {
+            "type": "literal",
+            "value": "x"
+          },
+          "role": {
+            "type": "literal",
+            "value": "xx"
+          },
+          "tabIndex": {
+            "type": "literal",
+            "value": "bar"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/buzz",
+        "tagName": "div",
+        "properties": {
+          "ariaHidden": {
+            "type": "literal",
+            "value": "hidden"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "x"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/table",
+        "tagName": "table",
+        "properties": {
+          "bar": {
+            "type": "literal",
+            "value": "test"
+          },
+          "bgColor": {
+            "type": "literal",
+            "value": "x"
+          },
+          "min": {
+            "type": "literal",
+            "value": "3"
+          },
+          "tabIndex": {
+            "type": "literal",
+            "value": "2"
+          }
+        }
+      },
+      {
+        "moduleName": "ns/input",
+        "tagName": "input",
+        "properties": {
+          "maxLength": {
+            "type": "literal",
+            "value": "10"
+          },
+          "minLength": {
+            "type": "literal",
+            "value": "3"
+          }
+        }
+      }
+    ]
   }
 }

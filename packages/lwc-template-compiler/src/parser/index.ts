@@ -54,6 +54,10 @@ import {
 } from '../shared/types';
 
 import {
+    getModuleMetadata
+} from '../metadata/metadata';
+
+import {
     bindExpression,
 } from '../shared/scope';
 
@@ -68,6 +72,9 @@ import {
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
+    SVG_TAG_WHITELIST,
+    SVG_NAMESPACE_URI,
+    HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
@@ -153,6 +160,7 @@ export default function parse(source: string, state: State): {
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
+                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -531,10 +539,19 @@ export default function parse(source: string, state: State): {
                 );
             }
         } else {
-            if (HTML_TAG_BLACKLIST[tag]) {
+            const namespace = node.namespaceURI;
+            const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
+            if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
                     `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
                     node,
+                );
+            }
+            const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
+            if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
+                return warnOnElement(
+                    `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
+                    node
                 );
             }
         }
@@ -551,6 +568,12 @@ export default function parse(source: string, state: State): {
                 );
             }
         });
+    }
+
+    function collectMetadata(element: IRElement) {
+        if (isCustomElement(element)) {
+            state.extendedDependencies.push(getModuleMetadata(element));
+        }
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {

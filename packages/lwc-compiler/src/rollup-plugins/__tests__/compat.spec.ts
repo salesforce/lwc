@@ -11,14 +11,14 @@ __callKey1(console, "log", a);`;
 
 describe('rollup plugin lwc-compat', () => {
     test('lwc-compat default', () => {
-        const lwcCompat = lwcCompatFactory(undefined);
+        const lwcCompat = lwcCompatFactory();
         const result = lwcCompat.transform(codeFixture);
 
         expect(result.code).toBe(compatCode);
         expect(result.map).not.toBeNull();
     });
     test('should override with options', () => {
-        const lwcCompat = lwcCompatFactory(undefined, false);
+        const lwcCompat = lwcCompatFactory(false);
         const result = lwcCompat.transform(codeFixture);
 
         expect(result.map).toBeNull();

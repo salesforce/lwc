@@ -27,25 +27,7 @@ describe("compiler result", () => {
         const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
         const { result: { outputConfig } } = await compile(noOutputConfig);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
-            minify: false,
-            compat: false
-        });
-    });
-    test("compiler should return bundle result with normalized DEV output config", async () => {
-        const config = Object.assign({}, VALID_CONFIG, {
-            outputConfig: {
-                minify: false,
-                compat: false
-            }
-        });
-        const { result: { outputConfig } } = await compile(config);
-        expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: false
         });
@@ -78,9 +60,7 @@ describe("compiler result", () => {
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: true
         });
@@ -234,7 +214,7 @@ export default class Test extends LightningElement {
         const utilsCode = `export function main() {
   return 'here is your import';
 }`;
-        const { result, success } = await compile({
+        const { result } = await compile({
             name: "foo",
             namespace: "x",
             files: {
@@ -246,55 +226,56 @@ export default class Test extends LightningElement {
                 sourcemap: true
             }
         });
-        expect(success).toBe(true);
+        // @ts-ignore
+        await SourceMapConsumer.with(result!.map as RawSourceMap, null, sourceMapConsumer => {
 
-        const sourceMapConsumer = new SourceMapConsumer(result!.map as RawSourceMap);
-        let gp;
+            let gp;
 
-        // m in main from utils;
-        gp = sourceMapConsumer.generatedPositionFor({
-            source: 'utils/util.js',
-            line: 1,
-            column: 16,
+            // m in main from utils;
+            gp = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 1,
+                column: 16,
+            });
+
+            expect(gp.line).toBe(26);
+            expect(gp.column).toBe(13);
+
+            // ' in return 'here ....
+            gp = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 2,
+                column: 9,
+            });
+
+            expect(gp.line).toBe(27);
+            expect(gp.column).toBe(13);
+
+            // m in myimport()
+            gp = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 4,
+                column: 6,
+            });
+
+            expect(gp.line).toBe(31);
+            expect(gp.column).toBe(10);
+
+            // m in main()
+            gp = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 5,
+                column: 11,
+            });
+
+            expect(gp.line).toBe(32);
+            expect(gp.column).toBe(15);
         });
-
-        expect(gp.line).toBe(26);
-        expect(gp.column).toBe(13);
-
-        // ' in return 'here ....
-        gp = sourceMapConsumer.generatedPositionFor({
-            source: 'utils/util.js',
-            line: 2,
-            column: 9,
-        });
-
-        expect(gp.line).toBe(27);
-        expect(gp.column).toBe(13);
-
-        // m in myimport()
-        gp = sourceMapConsumer.generatedPositionFor({
-            source: 'foo.js',
-            line: 4,
-            column: 6,
-        });
-
-        expect(gp.line).toBe(31);
-        expect(gp.column).toBe(10);
-
-        // m in main()
-        gp = sourceMapConsumer.generatedPositionFor({
-            source: 'foo.js',
-            line: 5,
-            column: 11,
-        });
-
-        expect(gp.line).toBe(32);
-        expect(gp.column).toBe(15);
     });
 });
 
 describe("compiler metadata", () => {
-    it("decorators and import locations", async () => {
+    it("decorators, import locations and template dependencies", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
             namespace: "x",
@@ -383,7 +364,18 @@ describe("compiler metadata", () => {
             declarationLoc: {
                 start: {column: 0, line: 5},
                 end: {column: 1, line: 20},
+            },
+            experimentalTemplateDependencies: [
+            {
+                moduleDependencies: [
+                    {
+                        moduleName: "x/bar",
+                        tagName: "x-bar"
+                    }
+                ],
+                templatePath: "foo.html"
             }
+        ],
         });
     });
 
@@ -464,6 +456,12 @@ describe("compiler metadata", () => {
                 end: {column: 17, line: 13},
             },
             doc: "* class jsdoc",
+            experimentalTemplateDependencies: [
+                {
+                    moduleDependencies: [],
+                    templatePath: "foo.html"
+                }
+            ],
         });
     });
 });

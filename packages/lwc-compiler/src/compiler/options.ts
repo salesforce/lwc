@@ -11,19 +11,16 @@ const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     }
 };
 
-const DEFAULT_OUTPUT_CONFIG = {
-    env: {
-        NODE_ENV: "development"
-    },
+const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
+    env: {},
     minify: false,
     compat: false,
     sourcemap: false
 };
 
-export type OutputProxyCompatConfig =
-    | { global: string }
-    | { module: string }
-    | { independent: string };
+const KNOWN_ENV = new Set([
+    'NODE_ENV',
+]);
 
 export type CustomPropertiesResolution =
     | { type: 'native' }
@@ -39,11 +36,12 @@ export interface StylesheetConfig {
 }
 
 export interface OutputConfig {
-    env?: { [name: string]: string };
     compat?: boolean;
     minify?: boolean;
-    resolveProxyCompat?: OutputProxyCompatConfig;
     sourcemap?: boolean;
+    env?: {
+        NODE_ENV?: string;
+    };
 }
 
 export interface BundleFiles {
@@ -80,7 +78,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
     minify: boolean;
     sourcemap: boolean;
     env: {
-        [name: string]: string;
+        NODE_ENV?: string;
     };
 }
 
@@ -182,6 +180,31 @@ function validateOutputConfig(config: OutputConfig) {
                 config.sourcemap
                 }".`
         );
+    }
+    if (!isUndefined(config.env)) {
+        if (!isObject(config.env)) {
+            throw new TypeError(
+                `Expected an object for outputConfig.env, received "${
+                    config.env
+                }".`
+            );
+        }
+
+        for (const [key, value] of Object.entries(config.env)) {
+            if (!KNOWN_ENV.has(key)) {
+                throw new TypeError(
+                    `Unknown entry "${key}" in outputConfig.env.`
+                );
+            }
+
+            if (!isString(value)) {
+                throw new TypeError(
+                    `Expected a string for outputConfig.env["${key}"], received "${
+                        value
+                    }".`
+                );
+            }
+        }
     }
 }
 

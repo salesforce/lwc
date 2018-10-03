@@ -1,7 +1,6 @@
 import * as path from "path";
 
 import { CompilerError } from "../common-interfaces/compiler-error";
-import { MetadataCollector } from "../bundler/meta-collector";
 import { NormalizedCompilerOptions } from "../compiler/options";
 
 const EMPTY_CSS_CONTENT = ``;
@@ -39,10 +38,8 @@ function readFile(
 }
 
 export default function({
-    metadataCollector,
     options
 }: {
-    metadataCollector: MetadataCollector;
     options: NormalizedCompilerOptions;
 }) {
     return {

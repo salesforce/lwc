@@ -3,7 +3,6 @@ import { pretify, readFixture } from "./utils";
 
 const BASE_CONFIG = {
     outputConfig: {
-        env: {},
         minify: false,
         compat: false,
         format: "amd"
@@ -55,6 +54,7 @@ describe('test shape of the bundle in different modes and environments', () => {
             outputConfig: {
                 compat: true,
                 minify: true,
+                env: { NODE_ENV: 'production' }
             }
         };
         const config = Object.assign({}, BASE_CONFIG, customConfig);

@@ -1,3 +1,5 @@
+import { compileTemplate } from 'test-utils';
+
 declare var global: Global;
 
 interface Global {
@@ -132,20 +134,26 @@ describe('performance-timing', () => {
     });
 
     it('captures nested component tree', () => {
+        const barTmpl = compileTemplate(`<template><span></span></template>`);
         class Bar extends LightningElement {
             render() {
-                return ($api: any) => [
-                    $api.h('span', { key: 0 }, [])
-                ];
+                return barTmpl;
             }
         }
 
+        const fooTmpl = compileTemplate(`
+            <template>
+                <x-bar></x-bar>
+                <x-bar></x-bar>
+            </template>
+        `, {
+            modules: {
+                'x-bar': Bar,
+            }
+        });
         class Foo extends LightningElement {
             render() {
-                return ($api: any) => [
-                    $api.c('x-bar', Bar, {}),
-                    $api.c('x-bar', Bar, {}),
-                ];
+                return fooTmpl;
             }
         }
 
@@ -180,11 +188,18 @@ describe('performance-timing', () => {
             }
         }
 
+        const fooTmpl = compileTemplate(`
+            <template>
+                <x-bar></x-bar>
+            </template>
+        `, {
+            modules: {
+                'x-bar': Bar,
+            }
+        });
         class Foo extends LightningElement {
             render() {
-                return ($api: any) => [
-                    $api.c('x-bar', Bar, {}),
-                ];
+                return fooTmpl;
             }
 
             // tslint:disable-next-line:no-empty
@@ -201,6 +216,7 @@ describe('performance-timing', () => {
         let bar: Bar;
         let baz: Baz;
 
+        const barTmpl = compileTemplate(`<template>{state}</template>`);
         class Bar extends LightningElement {
             state: boolean = false;
 
@@ -209,9 +225,7 @@ describe('performance-timing', () => {
             }
 
             render() {
-                return ($api: any, $cmp: any) => [
-                    $api.t($cmp.state),
-                ];
+                return barTmpl;
             }
 
             static track = {
@@ -219,6 +233,7 @@ describe('performance-timing', () => {
             };
         }
 
+        const bazTmpl = compileTemplate(`<template>{state}</template>`);
         class Baz extends LightningElement {
             state: boolean = false;
 
@@ -227,9 +242,7 @@ describe('performance-timing', () => {
             }
 
             render() {
-                return ($api: any, $cmp: any) => [
-                    $api.t($cmp.state),
-                ];
+                return bazTmpl;
             }
 
             static track = {
@@ -237,14 +250,20 @@ describe('performance-timing', () => {
             };
         }
 
+        const fooTmpl = compileTemplate(`
+            <template>
+                <x-bar></x-bar>
+                <x-baz></x-baz>
+            </template>
+        `, {
+            modules: {
+                'x-bar': Bar,
+                'x-baz': Baz,
+            }
+        });
         class Foo extends LightningElement {
             render() {
-                return ($api: any) => {
-                    return [
-                        $api.c('x-bar', Bar, {}),
-                        $api.c('x-baz', Baz, {}),
-                    ];
-                };
+                return fooTmpl;
             }
         }
 

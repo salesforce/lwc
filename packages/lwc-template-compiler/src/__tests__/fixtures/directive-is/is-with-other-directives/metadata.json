@@ -1,6 +1,11 @@
 {
   "metadata": {
     "templateUsedIds": ["rows"],
-    "templateDependencies": ["ns/row"]
+    "templateDependencies": [
+      {
+        "moduleName": "ns/row",
+        "tagName": "tr"
+      }
+    ]
   }
 }

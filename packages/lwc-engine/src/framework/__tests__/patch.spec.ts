@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
@@ -44,25 +45,6 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order at insertion', () => {
             const calls = [];
-            function html($api) {
-                calls.push('root:render');
-                return [$api.c('x-child', Child, {})];
-            }
-            class Root extends LightningElement {
-                constructor() {
-                    super();
-                    calls.push('root:constructor');
-                }
-                connectedCallback() {
-                    calls.push('root:connectedCallback');
-                }
-                render() {
-                    return html;
-                }
-                renderedCallback() {
-                    calls.push('root:renderedCallback');
-                }
-            }
 
             class Child extends LightningElement {
                 constructor() {
@@ -77,6 +59,30 @@ describe('patch', () => {
                 }
                 renderedCallback() {
                     calls.push('child:renderedCallback');
+                }
+            }
+
+            const html = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
+            class Root extends LightningElement {
+                constructor() {
+                    super();
+                    calls.push('root:constructor');
+                }
+                connectedCallback() {
+                    calls.push('root:connectedCallback');
+                }
+                render() {
+                    calls.push('root:render');
+                    return html;
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
                 }
             }
 
@@ -97,32 +103,6 @@ describe('patch', () => {
 
         it('should destroy children in order', () => {
             const calls = [];
-            function html($api, $cmp) {
-                calls.push('root:render');
-                return [
-                    $api.h("div", { key: 3 },
-                    [$cmp.state.show ? $api.c('x-child', Child, {}) : null]
-                )];
-            }
-            class Root extends LightningElement {
-                state = {
-                    show: false
-                };
-                show() {
-                    this.state.show = true;
-                }
-                hide() {
-                    this.state.show = false;
-                }
-                render() {
-                    return html;
-                }
-                renderedCallback() {
-                    calls.push('root:renderedCallback');
-                }
-            }
-            Root.publicMethods = ['show', 'hide'];
-            Root.track = { state: 1 };
 
             class Child extends LightningElement {
                 constructor() {
@@ -142,6 +122,37 @@ describe('patch', () => {
                     calls.push('child:disconnectedCallback');
                 }
             }
+
+            const html = compileTemplate(`
+                <template>
+                    <div></div>
+                    <template if:true={state.show}>
+                        <x-child></x-child>
+                    </template>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
+            class Root extends LightningElement {
+                state = {
+                    show: false
+                };
+                show() {
+                    this.state.show = true;
+                }
+                hide() {
+                    this.state.show = false;
+                }
+                render() {
+                    calls.push('root:render');
+                    return html;
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
+                }
+            }
+            Root.publicMethods = ['show', 'hide'];
+            Root.track = { state: 1 };
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -169,28 +180,6 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order on update', () => {
             const calls = [];
-            function html($api, $cmp) {
-                calls.push('root:render');
-                return $cmp.state.show
-                    ? [$api.c('x-child', Child, {})]
-                    : [];
-            }
-            class Root extends LightningElement {
-                state = {
-                    show: false
-                };
-                show() {
-                    this.state.show = true;
-                }
-                render() {
-                    return html;
-                }
-                renderedCallback() {
-                    calls.push('root:renderedCallback');
-                }
-            }
-            Root.publicMethods = ['show'];
-            Root.track = { state: 1 };
 
             class Child extends LightningElement {
                 constructor() {
@@ -207,6 +196,33 @@ describe('patch', () => {
                     calls.push('child:renderedCallback');
                 }
             }
+
+            const html = compileTemplate(`
+                <template>
+                    <template if:true={state.show}>
+                        <x-child></x-child>
+                    </template>
+                </template>
+            `, {
+                modules: { 'x-child': Child }
+            });
+            class Root extends LightningElement {
+                state = {
+                    show: false
+                };
+                show() {
+                    this.state.show = true;
+                }
+                render() {
+                    calls.push('root:render');
+                    return html;
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
+                }
+            }
+            Root.publicMethods = ['show'];
+            Root.track = { state: 1 };
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -227,9 +243,11 @@ describe('patch', () => {
         });
 
         it('should rehydrate when state is updated in renderedCallback', function() {
-            function html($api, $cmp) {
-                return [$api.h('span', { key: 0 }, [$api.t($cmp.state.foo)])];
-            }
+            const html = compileTemplate(`
+                <template>
+                    <span>{state.foo}</span>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 state = {
                     foo: 'bar'
@@ -258,11 +276,9 @@ describe('patch', () => {
 
             return Promise.resolve().then(() => {
                 element.triggerRender('first');
-                return Promise.resolve();
             })
             .then(() => {
                 element.triggerRender('second');
-                return Promise.resolve();
             })
             .then(() => {
                 expect(getHostShadowRoot(element).querySelector('span').textContent).toBe('second');
@@ -271,6 +287,7 @@ describe('patch', () => {
 
         it('should preserve the creation order and the hook order', () => {
             let chars = '^';
+
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected-1:';
@@ -279,6 +296,7 @@ describe('patch', () => {
                     chars += 'rendered-1:';
                 }
             }
+
             class MyComponent2 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected-2:';
@@ -287,6 +305,7 @@ describe('patch', () => {
                     chars += 'rendered-2:';
                 }
             }
+
             const elm1 = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm1);
             const elm2 = createElement('x-bar', { is: MyComponent2 });
@@ -296,6 +315,7 @@ describe('patch', () => {
 
         it('should disconnect when mounting a different element', () => {
             let chars = '^';
+
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected:';
@@ -307,6 +327,7 @@ describe('patch', () => {
                     chars += 'rendered:';
                 }
             }
+
             const elm1 = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm1);
             document.body.removeChild(elm1);

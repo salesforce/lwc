@@ -122,10 +122,21 @@ export interface CompilationOptions {
     computedMemberExpression?: boolean;
 }
 
+export interface DependencyParameter {
+    type: 'literal' | 'expression';
+    value: string | boolean;
+}
+
+export interface ModuleDependency {
+    moduleName: string;
+    tagName: string;
+    properties?: { [name: string]: DependencyParameter };
+}
+
 export interface CompilationMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
-    templateDependencies: string[];
+    templateDependencies: ModuleDependency[];
 }
 
 export interface CompilationOutput {

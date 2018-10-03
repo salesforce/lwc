@@ -1,7 +1,7 @@
 {
   "warnings": [{
     "level": "error",
-    "message": "Invalid expression {classNames[0]} - Template expression doens't allow NumericLiteral",
+    "message": "Invalid expression {classNames[0]} - Template expression doesn't allow NumericLiteral",
     "start": 36,
     "length": 21
   }]
