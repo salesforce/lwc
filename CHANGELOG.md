@@ -1,5 +1,30 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.10...v) (2018-10-02)
+# [](https://github.com/salesforce/lwc/compare/v0.29.11-1...v) (2018-10-03)
+
+
+
+<a name="0.29.11-1"></a>
+## [0.29.11-1](https://github.com/salesforce/lwc/compare/v0.29.11...v0.29.11-1) (2018-10-02)
+
+
+### Bug Fixes
+
+* Remove `NODE_ENV` default value ([#687](https://github.com/salesforce/lwc/issues/687)) ([6d81d7a](https://github.com/salesforce/lwc/commit/6d81d7a))
+
+
+### Features
+
+* bundle metadata to include modules used and their props @W-5395396 ([#672](https://github.com/salesforce/lwc/issues/672)) ([039a2af](https://github.com/salesforce/lwc/commit/039a2af))
+
+
+### Performance Improvements
+
+* disable Best on IE11 ([#698](https://github.com/salesforce/lwc/issues/698)) ([bba0480](https://github.com/salesforce/lwc/commit/bba0480))
+
+
+
+<a name="0.29.11"></a>
+## [0.29.11](https://github.com/salesforce/lwc/compare/v0.29.10...v0.29.11) (2018-10-02)
 
 
 ### Features
