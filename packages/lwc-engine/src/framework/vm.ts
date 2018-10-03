@@ -17,7 +17,8 @@ import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "../faux-shadow/faux";
 
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
+const NativeShadowRoot = (window as any).ShadowRoot;
+const isNativeShadowRootAvailable = typeof NativeShadowRoot !== "undefined";
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -500,7 +501,7 @@ function getHostElement(elm: HTMLElement): HTMLElement | null {
         assert.isTrue(isNull(parentElementGetter.call(elm)), `getHostElement should only be called if the parent element of ${elm} is null`);
     }
     const parentNode = parentNodeGetter.call(elm);
-    return !(parentNode instanceof Element) && ('host' in parentNode)
+    return parentNode instanceof NativeShadowRoot
         ? ShadowRootHostGetter.call(parentNode)
         : null;
 }
