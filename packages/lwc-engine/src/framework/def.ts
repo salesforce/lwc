@@ -139,7 +139,7 @@ function assertValidForceTagName(Ctor: ComponentConstructor) {
     }
 }
 
-export function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
+function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
@@ -383,6 +383,10 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
         methodsHash[methodName] = target.prototype[methodName];
         return methodsHash;
     }, create(null));
+}
+
+export function isComponentConstructor(Ctor: any) {
+   return isElementComponent(Ctor);
 }
 
 export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
