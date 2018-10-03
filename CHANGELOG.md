@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.11-1...v) (2018-10-03)
+# [](https://github.com/salesforce/lwc/compare/v0.29.12...v) (2018-10-03)
+
+
+### Features
+
+* expose *internal* APIs ([#703](https://github.com/salesforce/lwc/issues/703)) ([b787190](https://github.com/salesforce/lwc/commit/b787190))
+
+
+### Performance Improvements
+
+* point to our own instance of best ([#700](https://github.com/salesforce/lwc/issues/700)) ([91bc49b](https://github.com/salesforce/lwc/commit/91bc49b))
+
+
+
+<a name="0.29.12"></a>
+## [0.29.12](https://github.com/salesforce/lwc/compare/v0.29.11-1...v0.29.12) (2018-10-03)
 
 
 
