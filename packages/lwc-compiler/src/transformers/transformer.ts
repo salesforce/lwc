@@ -60,17 +60,12 @@ export function getTransformer(fileName: string): FileTransformer {
     }
 }
 
-export function transformFile(
+export async function transformFile(
     src: string,
     id: string,
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
-
-    // Some transforms are synchronous, while the CSS one is async. In order to
-    // have a single output type, we make sure to wrap everything into a promise.
-    return Promise.resolve(
-        transformer(src, id, options, metadataCollector)
-    );
+    return await transformer(src, id, options, metadataCollector);
 }
