@@ -16,8 +16,8 @@ module.exports = {
     snapshotSerializers: ['lwc-jest-serializer'],
 
     // Disable coverage entirely for this package. This package overrides the jest configuration
-    // to test it's internals. Because of this the coverage reports the fixtures code and not the
-    // packages logic.
+    // to test its internals. Because of this the coverage reports the fixtures code and not the
+    // package's logic.
     coveragePathIgnorePatterns: [
         '<rootDir>/src',
     ],
