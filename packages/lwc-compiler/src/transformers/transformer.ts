@@ -13,6 +13,7 @@ import javascriptTransformer from "./javascript";
 
 import { isString } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
+import { SourceMap } from "../compiler/compiler";
 
 // TODO: Improve on metadata type by providing consistent interface. Currently
 // javascript transformer output differs from css and html in that later return a promise
@@ -21,7 +22,7 @@ export interface FileTransformerResult {
     metadata?:
         | TemplateMetadata
         | lwcClassTransformPlugin.Metadata;
-    map: any | null;
+    map: SourceMap | null;
 }
 
 export type FileTransformer = (

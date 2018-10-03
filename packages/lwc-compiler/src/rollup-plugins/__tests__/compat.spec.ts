@@ -12,7 +12,6 @@ __callKey1(console, "log", a);`;
 
 describe('rollup plugin lwc-compat', () => {
     test('output without sourcemap', () => {
-        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcCompat = lwcCompatFactory({ sourcemap: false });
         const result = lwcCompat.transform(codeFixture);
 
@@ -20,7 +19,6 @@ describe('rollup plugin lwc-compat', () => {
         expect(result.map).toBeNull();
     });
     test('outputs a correct sourcemap', async () => {
-        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcCompat = lwcCompatFactory({ sourcemap: true });
         const result = lwcCompat.transform(codeFixture);
 

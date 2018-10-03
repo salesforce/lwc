@@ -10,7 +10,6 @@ const minifiedCode = "var a=1;console.log(a);";
 
 describe('rollup plugin lwc-minify', () => {
     test('lwc-minify should not output sourcemaps', () => {
-        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcMinifier = lwcMinifierFactory({ sourcemap: false });
         const result = lwcMinifier.transformBundle(codeFixture);
 
@@ -18,7 +17,6 @@ describe('rollup plugin lwc-minify', () => {
         expect(result.map).toBeNull();
     });
     test('should output a correct sourcemap', async () => {
-        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcMinifier = lwcMinifierFactory({ sourcemap: true });
         const result = lwcMinifier.transformBundle(codeFixture);
 

@@ -203,6 +203,7 @@ describe("compiler result", () => {
     });
 
     test("sourcemaps correctness", async () => {
+        const tplCode = '<template></template>';
         const cmpCode = `import { LightningElement } from 'lwc';
 import { main } from './utils/util.js';
 export default class Test extends LightningElement {
@@ -219,7 +220,7 @@ export default class Test extends LightningElement {
             namespace: "x",
             files: {
                 "foo.js": cmpCode,
-                "foo.html": readFixture("metadata/metadata.html"),
+                "foo.html": tplCode,
                 "utils/util.js": utilsCode,
             },
             outputConfig: {
@@ -234,8 +235,8 @@ export default class Test extends LightningElement {
                 column: 16,
             });
 
-            expect(mainDefMappedToOutputPosition.line).toBe(26);
-            expect(mainDefMappedToOutputPosition.column).toBe(13);
+            expect(mainDefMappedToOutputPosition.line).toBe(21);
+            expect(mainDefMappedToOutputPosition.column).toBe(11);
 
             const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'utils/util.js',
@@ -243,8 +244,8 @@ export default class Test extends LightningElement {
                 column: 9,
             });
 
-            expect(stringConstantInOutputPosition.line).toBe(27);
-            expect(stringConstantInOutputPosition.column).toBe(13);
+            expect(stringConstantInOutputPosition.line).toBe(22);
+            expect(stringConstantInOutputPosition.column).toBe(11);
 
             const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
@@ -252,8 +253,8 @@ export default class Test extends LightningElement {
                 column: 6,
             });
 
-            expect(myimportDefinitionOutputPosition.line).toBe(31);
-            expect(myimportDefinitionOutputPosition.column).toBe(10);
+            expect(myimportDefinitionOutputPosition.line).toBe(26);
+            expect(myimportDefinitionOutputPosition.column).toBe(8);
 
             const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
@@ -261,8 +262,8 @@ export default class Test extends LightningElement {
                 column: 11,
             });
 
-            expect(mainInvocationInOutputPosition.line).toBe(32);
-            expect(mainInvocationInOutputPosition.column).toBe(15);
+            expect(mainInvocationInOutputPosition.line).toBe(27);
+            expect(mainInvocationInOutputPosition.column).toBe(13);
         });
     });
 });

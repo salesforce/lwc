@@ -15,10 +15,12 @@ export interface CompilerOutput {
 
 export interface BundleResult {
     code: string;
-    map: any | null;
+    map: SourceMap | null;
     metadata: BundleMetadata;
     outputConfig: NormalizedOutputConfig;
 }
+
+export type SourceMap = any;
 
 export async function compile(
     options: CompilerOptions

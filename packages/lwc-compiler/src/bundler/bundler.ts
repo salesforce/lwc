@@ -15,11 +15,12 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
+import { SourceMap } from "../compiler/compiler";
 
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
-    map: any | null;
+    map: SourceMap | null;
     metadata: BundleMetadata;
 }
 
