@@ -1,5 +1,6 @@
+// TODO: Revisit all of this exports figure out a better separation
 export { createElement } from "./upgrade";
-export { getComponentDef } from "./def";
+export { getComponentDef, isElementComponent } from "./def";
 export { LightningElement } from "./html-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";

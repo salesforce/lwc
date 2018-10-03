@@ -139,7 +139,7 @@ function assertValidForceTagName(Ctor: ComponentConstructor) {
     }
 }
 
-function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
+export function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
