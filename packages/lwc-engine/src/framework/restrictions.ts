@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase } from "../shared/language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf } from "../shared/language";
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -17,6 +17,7 @@ import {
     removeAttribute,
     removeAttributeNS,
 } from "./dom-api";
+import { create } from "./../shared/language";
 
 function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
@@ -335,7 +336,9 @@ export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
 }
 
 export function patchCustomElementWithRestrictions(elm: HTMLElement) {
-    defineProperties(elm, getCustomElementRestrictionsDescriptors(elm));
+    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
+    const elmProto = getPrototypeOf(elm);
+    setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
 export function patchComponentWithRestrictions(cmp: ComponentInterface) {
