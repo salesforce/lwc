@@ -2,6 +2,7 @@ import * as babel from '@babel/core';
 import * as presetCompat from 'babel-preset-compat';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
+import { NormalizedOutputConfig } from "../compiler/options";
 
 const BABEL_CONFIG_CONFIG = {
     ...BABEL_CONFIG_BASE,
@@ -10,12 +11,8 @@ const BABEL_CONFIG_CONFIG = {
     ],
 };
 
-export default function(sourcemaps?: boolean) {
-    const config = Object.assign(
-        {},
-        BABEL_CONFIG_CONFIG,
-        sourcemaps !== undefined ? { sourceMaps: sourcemaps } : {}
-    );
+export default function({ sourcemap }: NormalizedOutputConfig) {
+    const config = Object.assign({}, BABEL_CONFIG_CONFIG, { sourceMaps: sourcemap });
 
     return {
         name: "lwc-compat",

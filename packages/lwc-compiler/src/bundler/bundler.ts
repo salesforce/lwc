@@ -54,7 +54,6 @@ export async function bundle(
     validateNormalizedOptions(options);
 
     const { outputConfig, name, namespace } = options;
-    const { sourcemap } = outputConfig;
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
@@ -86,7 +85,7 @@ export async function bundle(
     );
 
     if (outputConfig.compat) {
-        plugins.push(rollupCompat(sourcemap));
+        plugins.push(rollupCompat(outputConfig));
     }
 
     if (outputConfig.minify) {
@@ -106,7 +105,7 @@ export async function bundle(
             amd: { id: namespace + "/" + name },
             interop: false,
             strict: false,
-            sourcemap,
+            sourcemap: outputConfig.sourcemap,
             format
         });
         code = result.code;
