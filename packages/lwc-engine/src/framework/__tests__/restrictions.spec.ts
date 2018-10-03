@@ -24,5 +24,18 @@ describe('restrictions', () => {
                 template.querySelector('p').childNodes;
             }).toLogWarning('Discouraged access to property \'childNodes\' on \'Node\': It returns a live NodeList and should not be relied upon. Instead, use \'querySelectorAll\' which returns a static NodeList.');
         });
+
+        it('should not restrict host', () => {
+            const html = compileTemplate(`
+                <template></template>
+            `);
+            class Parent extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-parent', { is: Parent });
+            expect(elm.shadowRoot.host).toBe(elm);
+        });
     });
 });
