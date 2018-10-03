@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
-import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
+import { ComponentInterface, ComponentConstructor, getWrappedComponentsListener, getComponentAsString } from "./component";
+import { isObject, getOwnPropertyNames, getPrototypeOf, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
 import { setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -17,6 +17,24 @@ const GlobalEvent = Event; // caching global reference to avoid poisoning
 export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(elm);
     return vm.mode === 'open' ? vm.cmpRoot : null;
+}
+
+/**
+ * Returns the component constructor for a given HTMLElement if it can be found
+ * @param {HTMLElement} element
+ * @return {ComponentConstructor | null}
+ */
+export function getComponentConstructor(element: HTMLElement): ComponentConstructor | null {
+    let ctor: ComponentConstructor | null = null;
+    try {
+        if (element instanceof HTMLElement) {
+            const vm = getCustomElementVM(element);
+            ctor = vm.component ? getPrototypeOf(vm.component).constructor : null;
+        }
+    } catch (e) {
+        // element was invalid, or no VM was found for the specified element
+    }
+    return ctor;
 }
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
