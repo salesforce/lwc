@@ -15,12 +15,11 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
-import { SourceMap } from "../compiler/compiler";
 
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
-    map: SourceMap | null;
+    map: any | null;
     metadata: BundleMetadata;
 }
 
@@ -93,7 +92,7 @@ export async function bundle(
     }
 
     let code;
-    let map;
+    let map = null;
     try {
         const rollupBundler = await rollup({
             input: name,
@@ -113,7 +112,6 @@ export async function bundle(
     } catch (e) {
         // populate diagnostics
         const {  message, filename } = e;
-        map = null;
 
         diagnostics.push({
             filename,

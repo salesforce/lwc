@@ -1,7 +1,7 @@
+import { SourceMapConsumer } from "source-map";
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
-import { RawSourceMap, SourceMapConsumer } from "source-map";
 
 const VALID_CONFIG = {
     outputConfig: {
@@ -226,50 +226,43 @@ export default class Test extends LightningElement {
                 sourcemap: true
             }
         });
-        // @ts-ignore
-        await SourceMapConsumer.with(result!.map as RawSourceMap, null, sourceMapConsumer => {
 
-            let gp;
-
-            // m in main from utils;
-            gp = sourceMapConsumer.generatedPositionFor({
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const mainDefMappedToOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'utils/util.js',
                 line: 1,
                 column: 16,
             });
 
-            expect(gp.line).toBe(26);
-            expect(gp.column).toBe(13);
+            expect(mainDefMappedToOutputPosition.line).toBe(26);
+            expect(mainDefMappedToOutputPosition.column).toBe(13);
 
-            // ' in return 'here ....
-            gp = sourceMapConsumer.generatedPositionFor({
+            const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'utils/util.js',
                 line: 2,
                 column: 9,
             });
 
-            expect(gp.line).toBe(27);
-            expect(gp.column).toBe(13);
+            expect(stringConstantInOutputPosition.line).toBe(27);
+            expect(stringConstantInOutputPosition.column).toBe(13);
 
-            // m in myimport()
-            gp = sourceMapConsumer.generatedPositionFor({
+            const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
                 line: 4,
                 column: 6,
             });
 
-            expect(gp.line).toBe(31);
-            expect(gp.column).toBe(10);
+            expect(myimportDefinitionOutputPosition.line).toBe(31);
+            expect(myimportDefinitionOutputPosition.column).toBe(10);
 
-            // m in main()
-            gp = sourceMapConsumer.generatedPositionFor({
+            const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
                 line: 5,
                 column: 11,
             });
 
-            expect(gp.line).toBe(32);
-            expect(gp.column).toBe(15);
+            expect(mainInvocationInOutputPosition.line).toBe(32);
+            expect(mainInvocationInOutputPosition.column).toBe(15);
         });
     });
 });

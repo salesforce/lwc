@@ -1,6 +1,5 @@
+import { SourceMapConsumer } from "source-map";
 import lwcCompatFactory from '../compat';
-import { NormalizedOutputConfig } from "../../compiler/options";
-import { RawSourceMap, SourceMapConsumer } from "source-map";
 
 const codeFixture = `
 const a = 1;
@@ -13,45 +12,35 @@ __callKey1(console, "log", a);`;
 
 describe('rollup plugin lwc-compat', () => {
     test('output without sourcemap', () => {
-        const lwcCompat = lwcCompatFactory({ sourcemap: false } as NormalizedOutputConfig);
+        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
+        const lwcCompat = lwcCompatFactory({ sourcemap: false });
         const result = lwcCompat.transform(codeFixture);
 
         expect(result.code).toBe(compatCode);
         expect(result.map).toBeNull();
     });
     test('outputs a correct sourcemap', async () => {
-        const lwcCompat = lwcCompatFactory({ sourcemap: true } as NormalizedOutputConfig);
+        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
+        const lwcCompat = lwcCompatFactory({ sourcemap: true });
         const result = lwcCompat.transform(codeFixture);
 
         expect(result.map).not.toBeNull();
 
-        // @ts-ignore
-        await SourceMapConsumer.with(result!.map as RawSourceMap, null, sourceMapConsumer => {
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const varMappedToConstPosition = sourceMapConsumer.originalPositionFor({line: 2, column: 0});
 
-            let gp;
+            expect(varMappedToConstPosition.line).toBe(2);
+            expect(varMappedToConstPosition.column).toBe(0);
 
-            // @ts-ignore
-            gp = sourceMapConsumer.allGeneratedPositionsFor({ line: 2, source: "unknown" });
+            const aDeclarationPosition = sourceMapConsumer.originalPositionFor({line: 2, column: 4});
 
-            // const -> var;
-            expect(gp[0].line).toBe(2);
-            expect(gp[0].column).toBe(0);
-            expect(gp[0].lastColumn).toBe(3);
+            expect(aDeclarationPosition.line).toBe(2);
+            expect(aDeclarationPosition.column).toBe(6);
+            expect(aDeclarationPosition.name).toBe('a');
 
-            // a -> a; *Note: gp[1] is the semicolon mapping.
-            expect(gp[2].line).toBe(2);
-            expect(gp[2].column).toBe(4);
-            expect(gp[2].lastColumn).toBe(4);
-
-            // mappings for the console.log
-            // @ts-ignore
-            gp = sourceMapConsumer.allGeneratedPositionsFor({ line: 3, source: "unknown" });
-
-            // console -> __callKey1(console
-            expect(gp[0].line).toBe(4);
-            expect(gp[0].column).toBe(0);
-            expect(gp[0].lastColumn).toBe(10);
-
+            const setKeyMappedToConsolePosition = sourceMapConsumer.originalPositionFor({line: 4, column: 0});
+            expect(setKeyMappedToConsolePosition.line).toBe(3);
+            expect(setKeyMappedToConsolePosition.column).toBe(0);
         });
     });
 });

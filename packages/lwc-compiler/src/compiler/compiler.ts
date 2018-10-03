@@ -15,18 +15,9 @@ export interface CompilerOutput {
 
 export interface BundleResult {
     code: string;
-    map: SourceMap | null;
+    map: any | null;
     metadata: BundleMetadata;
     outputConfig: NormalizedOutputConfig;
-}
-
-export interface SourceMap {
-    version?: string;
-    file?: string;
-    sourceRoot?: string;
-    sources?: string[];
-    names?: string[];
-    mappings: string;
 }
 
 export async function compile(

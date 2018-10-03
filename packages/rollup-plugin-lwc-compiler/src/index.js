@@ -11,7 +11,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
     const { resolveFromPackages, resolveFromSource } = mergedPluginOptions;
-    const { sourcemap = false } = pluginOptions;
 
     // Closure to store the resolved modules
     let modulePaths = {};
@@ -65,7 +64,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 name: moduleRegistry.moduleName,
                 namespace: moduleRegistry.moduleNamespace,
                 moduleSpecifier: moduleRegistry.moduleSpecifier,
-                outputConfig: { sourcemap }
+                outputConfig: { sourcemap: mergedPluginOptions.sourcemap }
             });
 
             return { code, map };

@@ -3,6 +3,7 @@ const DEFAULT_OPTIONS = {
     mode: DEFAULT_MODE,
     resolveFromSource: true,
     resolveFromPackages: true,
+    sourcemap: false,
 };
 
 module.exports = {

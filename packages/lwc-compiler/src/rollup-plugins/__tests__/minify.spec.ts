@@ -1,5 +1,5 @@
+import { SourceMapConsumer } from "source-map";
 import lwcMinifierFactory from '../minify';
-import { RawSourceMap, SourceMapConsumer } from "source-map";
 
 const codeFixture = `
     /*some comment*/
@@ -10,7 +10,7 @@ const minifiedCode = "var a=1;console.log(a);";
 
 describe('rollup plugin lwc-minify', () => {
     test('lwc-minify should not output sourcemaps', () => {
-        // @ts-ignore
+        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcMinifier = lwcMinifierFactory({ sourcemap: false });
         const result = lwcMinifier.transformBundle(codeFixture);
 
@@ -18,36 +18,30 @@ describe('rollup plugin lwc-minify', () => {
         expect(result.map).toBeNull();
     });
     test('should output a correct sourcemap', async () => {
-        // @ts-ignore
+        // @ts-ignore: test only cares about the sourcemap prop in the NormalizedOutputConfig
         const lwcMinifier = lwcMinifierFactory({ sourcemap: true });
         const result = lwcMinifier.transformBundle(codeFixture);
 
         expect(result.map).not.toBeNull();
 
-        // @ts-ignore
-        await SourceMapConsumer.with(result!.map as RawSourceMap, null, sourceMapConsumer => {
-            let gp;
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const commentInOutputPosition = sourceMapConsumer.generatedPositionFor({ line: 2, column: 0, source: "unknown" });
+            expect(commentInOutputPosition.line).toBeNull();
 
-            gp = sourceMapConsumer.generatedPositionFor({ line: 2, column: 0, source: "unknown" });
-            // the comment...
-            expect(gp.line).toBeNull();
+            const varPosition = sourceMapConsumer.originalPositionFor({ line: 1, column: 0 });
+            expect(varPosition.line).toBe(3);
+            expect(varPosition.column).toBe(4);
 
-            // var
-            gp = sourceMapConsumer.originalPositionFor({ line: 1, column: 0 });
-            expect(gp.line).toBe(3);
-            expect(gp.column).toBe(4);
-
-            // a
-            gp = sourceMapConsumer.originalPositionFor({ line: 1, column: 4 });
-            expect(gp.line).toBe(3);
-            expect(gp.column).toBe(8);
-            expect(gp.name).toBe('a');
+            const variableNamePosition = sourceMapConsumer.originalPositionFor({ line: 1, column: 4 });
+            expect(variableNamePosition.line).toBe(3);
+            expect(variableNamePosition.column).toBe(8);
+            expect(variableNamePosition.name).toBe('a');
 
             // the console
-            gp = sourceMapConsumer.originalPositionFor({ line: 1, column: 8 });
-            expect(gp.line).toBe(4);
-            expect(gp.column).toBe(4);
-            expect(gp.name).toBe('console');
+            const consolePosition = sourceMapConsumer.originalPositionFor({ line: 1, column: 8 });
+            expect(consolePosition.line).toBe(4);
+            expect(consolePosition.column).toBe(4);
+            expect(consolePosition.name).toBe('console');
         });
     });
 });
