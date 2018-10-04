@@ -10,7 +10,7 @@ import { ResolvedConfig } from '../../config';
 
 import {
     TEMPLATE_FUNCTION_NAME,
-    SECURE_IMPORT_NAME, SECURE_REGISTER_TEMPLATE_METHOD_NAME,
+    SECURE_REGISTER_TEMPLATE_METHOD_NAME,
     LWC_MODULE_NAME
 } from '../../shared/constants';
 
@@ -25,7 +25,7 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
 
 function generateSecureImport(): t.ImportDeclaration {
     return t.importDeclaration(
-        [t.importSpecifier(t.identifier(SECURE_IMPORT_NAME), t.identifier(SECURE_IMPORT_NAME))],
+        [t.importSpecifier(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME))],
         t.stringLiteral(LWC_MODULE_NAME)
     );
 }
@@ -49,10 +49,7 @@ export function format(
             templateFn,
             t.exportDefaultDeclaration(
                 t.callExpression(
-                    t.memberExpression(
-                        t.identifier(SECURE_IMPORT_NAME),
-                        t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME)
-                    ),
+                    t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
                     [t.identifier(TEMPLATE_FUNCTION_NAME)]
                 )
             )

@@ -1,5 +1,5 @@
 import _xTest from "x/test";
-import { secure } from "lwc";
+import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
 const {
@@ -11,4 +11,4 @@ return [api_custom_element("x-test", _xTest, {
 }, [])];
 }
 
-export default secure.registerTemplate(tmpl);
+export default registerTemplate(tmpl);

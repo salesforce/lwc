@@ -1,4 +1,3 @@
-export const SECURE_IMPORT_NAME = 'secure';
 export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
 export const LWC_MODULE_NAME = 'lwc';
 export const TEMPLATE_MODULES_PARAMETER: string = 'modules';

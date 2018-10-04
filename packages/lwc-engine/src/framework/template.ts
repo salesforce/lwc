@@ -1,5 +1,4 @@
 import assert from "../shared/assert";
-import { secure } from "./secure";
 import * as api from "./api";
 import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
@@ -26,6 +25,7 @@ export interface Template {
     shadowToken?: string;
 }
 
+const VERIFIED_TEMPLATE_SET = new Set();
 const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
@@ -83,6 +83,17 @@ function applyTokenToHost(vm: VM, html: Template): void {
     context.shadowToken = html.shadowToken;
 }
 
+export function registerTemplate(tmpl: Template) {
+    VERIFIED_TEMPLATE_SET.add(tmpl);
+}
+
+function verifyTemplate(tmpl: Template) {
+    if (!VERIFIED_TEMPLATE_SET.has(tmpl)) {
+        throw new TypeError('Unknown template');
+    }
+    return tmpl;
+}
+
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
@@ -100,7 +111,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         }
 
         // Check that the template is built by the compiler
-        secure.verifyTemplate(html);
+        verifyTemplate(html);
 
         vm.cmpTemplate = html;
 

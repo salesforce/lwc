@@ -1,5 +1,8 @@
 {
   "metadata": {
-    "templateDependencies": ["x/test"]
+    "templateDependencies": [{
+      "moduleName": "x/test",
+      "tagName": "x-test"
+      }]
   }
 }
