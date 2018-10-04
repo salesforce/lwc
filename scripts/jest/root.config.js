@@ -2,6 +2,7 @@ module.exports = {
     rootDir: '../..',
 
     projects: [
+        '<rootDir>/packages/lwc-errors',
         '<rootDir>/packages/babel-plugin-transform-lwc-class',
         '<rootDir>/packages/lwc-compiler',
         '<rootDir>/packages/lwc-engine',

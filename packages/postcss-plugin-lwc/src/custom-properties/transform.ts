@@ -1,5 +1,6 @@
 import { Declaration } from 'postcss';
 import balanced from 'balanced-match';
+import { normalizeErrorMessage, PostCSSErrors, invariant } from 'lwc-errors';
 
 import { VarTransformer } from '../config';
 
@@ -23,23 +24,26 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     const prefixWhitespace = varMatch[1];
     const start = varMatch.index;
 
+    // TODO: normalize error object structure
     const parenthesisMatch = balanced('(', ')', value.slice(start));
     if (!parenthesisMatch) {
-        throw decl.error(`Missing closing ")" for "${value}"`);
+        throw decl.error(normalizeErrorMessage(PostCSSErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, [value]));
     }
 
     // Extract the `var()` function arguments
     const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(parenthesisMatch.body);
     if (varArgumentsMatch === null) {
-        throw decl.error(`Invalid var function signature for "${value}"`);
+        throw decl.error(normalizeErrorMessage(PostCSSErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, [value]));
     }
 
     const [, name, fallback] = varArgumentsMatch;
     const res = transformer(name, fallback);
 
+    invariant(typeof res === 'string', PostCSSErrors.CUSTOM_PROPERTY_STRING_EXPECTED, [typeof res]);
+    /*
     if (typeof res !== 'string') {
         throw new TypeError(`Expected a string, but received instead "${typeof res}"`);
-    }
+    } */
 
     // Recursively calling transform to processed the remaining `var` function calls.
     const head = value.slice(0, varMatch.index);

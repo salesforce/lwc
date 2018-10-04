@@ -1,4 +1,5 @@
 import { Declaration } from 'postcss';
+import { normalizeErrorMessage, PostCSSErrors } from 'lwc-errors';
 
 const CUSTOM_PROPERTY_IDENTIFIER = '--';
 
@@ -7,7 +8,7 @@ export default function validate(decl: Declaration): void {
 
     if (prop.startsWith(CUSTOM_PROPERTY_IDENTIFIER)) {
         throw decl.error(
-            `Invalid definition of custom property "${prop}".`,
+            normalizeErrorMessage(PostCSSErrors.CUSTOM_PROPERTY_INVALID_DEFINITION, [prop])
         );
     }
 }

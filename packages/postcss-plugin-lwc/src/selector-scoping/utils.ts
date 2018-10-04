@@ -1,4 +1,5 @@
 import { Node, Container, Pseudo, isPseudoClass } from 'postcss-selector-parser';
+import { invariant, PostCSSErrors } from 'lwc-errors';
 
 export function isHostPseudoClass(node: Node): node is Pseudo {
     return isPseudoClass(node) && node.value === ':host';
@@ -15,12 +16,9 @@ export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]) {
     if (newNodes.length) {
         const { parent } = oldNode;
 
-        if (!parent) {
-            throw new Error(`Impossible to replace root node.`);
-        }
-
+        invariant(!!parent, PostCSSErrors.SELECTOR_SCOPE_PARENT_NODE_MISSING);
         newNodes.forEach(node => {
-            parent.insertBefore(oldNode, node);
+            parent!.insertBefore(oldNode, node);
         });
 
         oldNode.remove();
