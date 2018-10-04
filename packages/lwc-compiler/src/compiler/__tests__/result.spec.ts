@@ -368,8 +368,12 @@ describe("compiler metadata", () => {
                     }
                 ],
                 templatePath: "foo.html"
-            }
-        ],
+            }],
+            exports: [
+                "Metadata",
+                "HELLOWORLD",
+                "ohai"
+            ]
         });
     });
 
