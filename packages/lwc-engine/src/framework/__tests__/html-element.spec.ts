@@ -1361,7 +1361,7 @@ describe('html-element', () => {
             });
         });
 
-        describe('#ariaLabel', () => {
+        describe.only('#ariaLabel', () => {
             it('should reflect attribute by default', () => {
                 class MyComponent extends LightningElement {
 

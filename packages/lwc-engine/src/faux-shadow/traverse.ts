@@ -63,7 +63,7 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
 }
 
-function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
+function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): SyntheticShadowRoot | HTMLElement | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
@@ -86,7 +86,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
     return null;
 }
 
-function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
+function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | SyntheticShadowRoot | null {
     const value = nativeParentNodeGetter.call(this);
     if (isNull(value)) {
         return value;
@@ -105,7 +105,7 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
     return parentNode;
 }
 
-export function shadowRootChildNodes(root: ShadowRoot) {
+export function shadowRootChildNodes(root: SyntheticShadowRoot) {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
