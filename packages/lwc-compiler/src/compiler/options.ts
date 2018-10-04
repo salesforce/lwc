@@ -14,7 +14,8 @@ const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
 const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
     env: {},
     minify: false,
-    compat: false
+    compat: false,
+    sourcemap: false
 };
 
 const KNOWN_ENV = new Set([
@@ -37,6 +38,7 @@ export interface StylesheetConfig {
 export interface OutputConfig {
     compat?: boolean;
     minify?: boolean;
+    sourcemap?: boolean;
     env?: {
         NODE_ENV?: string;
     };
@@ -74,6 +76,7 @@ export interface NormalizedStylesheetConfig extends StylesheetConfig {
 export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
     minify: boolean;
+    sourcemap: boolean;
     env: {
         NODE_ENV?: string;
     };
@@ -171,6 +174,13 @@ function validateOutputConfig(config: OutputConfig) {
         );
     }
 
+    if (!isUndefined(config.sourcemap) && !isBoolean(config.sourcemap)) {
+        throw new TypeError(
+            `Expected a boolean value for outputConfig.sourcemap, received "${
+                config.sourcemap
+                }".`
+        );
+    }
     if (!isUndefined(config.env)) {
         if (!isObject(config.env)) {
             throw new TypeError(

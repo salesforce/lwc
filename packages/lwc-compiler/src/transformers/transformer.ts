@@ -1,6 +1,5 @@
 import * as path from "path";
 import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
-import { CompilerError } from "../common-interfaces/compiler-error";
 
 import {
     NormalizedCompilerOptions,
@@ -11,10 +10,10 @@ import {
 import styleTransform from "./style";
 import templateTransformer, { TemplateMetadata } from "./template";
 import javascriptTransformer from "./javascript";
-import compatPluginFactory from "../rollup-plugins/compat";
 
-import { isString, isUndefined } from "../utils";
+import { isString } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
+import { SourceMap } from "../compiler/compiler";
 
 // TODO: Improve on metadata type by providing consistent interface. Currently
 // javascript transformer output differs from css and html in that later return a promise
@@ -23,7 +22,7 @@ export interface FileTransformerResult {
     metadata?:
         | TemplateMetadata
         | lwcClassTransformPlugin.Metadata;
-    map: null;
+    map: SourceMap | null;
 }
 
 export type FileTransformer = (
@@ -68,28 +67,5 @@ export async function transformFile(
     metadataCollector?: MetadataCollector
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
-    const result = await transformer(src, id, options, metadataCollector);
-
-    let compatResult;
-    if (options.outputConfig.compat) {
-        try {
-            const compatPlugin = compatPluginFactory();
-            compatResult = compatPlugin.transform(result.code);
-            if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
-                throw new CompilerError(
-                    "babel transform failed to produce code in compat mode",
-                    id
-                );
-            }
-        } catch (e) {
-            throw new CompilerError(
-                e.message,
-                id,
-                e.loc
-            );
-        }
-        return { code: compatResult.code, map: null };
-    }
-
-    return result;
+    return await transformer(src, id, options, metadataCollector);
 }

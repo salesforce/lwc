@@ -15,11 +15,12 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
+import { SourceMap } from "../compiler/compiler";
 
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
-    map: null;
+    map: SourceMap | null;
     metadata: BundleMetadata;
 }
 
@@ -84,14 +85,15 @@ export async function bundle(
     );
 
     if (outputConfig.compat) {
-        plugins.push(rollupCompat());
+        plugins.push(rollupCompat(outputConfig));
     }
 
     if (outputConfig.minify) {
-        plugins.push(rollupMinify());
+        plugins.push(rollupMinify(outputConfig));
     }
 
     let code;
+    let map = null;
     try {
         const rollupBundler = await rollup({
             input: name,
@@ -103,10 +105,11 @@ export async function bundle(
             amd: { id: namespace + "/" + name },
             interop: false,
             strict: false,
+            sourcemap: outputConfig.sourcemap,
             format
         });
         code = result.code;
-
+        map = result.map;
     } catch (e) {
         // populate diagnostics
         const {  message, filename } = e;
@@ -125,7 +128,7 @@ export async function bundle(
     return {
         diagnostics,
         code,
-        map: null,
+        map,
         metadata: metadataCollector.getMetadata()
     };
 }

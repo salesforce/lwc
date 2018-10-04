@@ -16,6 +16,7 @@ export default function(
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
         filename,
+        sourceMaps: options.outputConfig.sourcemap
     });
 
     let result;
@@ -39,7 +40,7 @@ export default function(
 
     return {
         code: result.code,
-        map: null,
+        map: result.map,
         metadata,
     };
 }

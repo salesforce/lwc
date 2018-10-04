@@ -1,3 +1,4 @@
+import { SourceMapConsumer } from "source-map";
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
@@ -199,6 +200,71 @@ describe("compiler result", () => {
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
         expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
+    });
+
+    test("sourcemaps correctness", async () => {
+        const tplCode = '<template></template>';
+        const cmpCode = `import { LightningElement } from 'lwc';
+import { main } from './utils/util.js';
+export default class Test extends LightningElement {
+  get myimport() {
+    return main();
+  }
+}
+`;
+        const utilsCode = `export function main() {
+  return 'here is your import';
+}`;
+        const { result } = await compile({
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": cmpCode,
+                "foo.html": tplCode,
+                "utils/util.js": utilsCode,
+            },
+            outputConfig: {
+                sourcemap: true
+            }
+        });
+
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const mainDefMappedToOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 1,
+                column: 16,
+            });
+
+            expect(mainDefMappedToOutputPosition.line).toBe(21);
+            expect(mainDefMappedToOutputPosition.column).toBe(11);
+
+            const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 2,
+                column: 9,
+            });
+
+            expect(stringConstantInOutputPosition.line).toBe(22);
+            expect(stringConstantInOutputPosition.column).toBe(11);
+
+            const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 4,
+                column: 6,
+            });
+
+            expect(myimportDefinitionOutputPosition.line).toBe(26);
+            expect(myimportDefinitionOutputPosition.column).toBe(8);
+
+            const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 5,
+                column: 11,
+            });
+
+            expect(mainInvocationInOutputPosition.line).toBe(27);
+            expect(mainInvocationInOutputPosition.column).toBe(13);
+        });
     });
 });
 
