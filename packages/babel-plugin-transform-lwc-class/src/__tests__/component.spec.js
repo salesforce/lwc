@@ -146,6 +146,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: '* Foo doc',
+                exports: ["Foo"],
             }
         }
     });
@@ -164,6 +165,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
                 doc: "*\n* Foo doc",
+                exports: ["Foo"],
             }
         }
     });
@@ -183,6 +185,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
                 doc: '*\n* multi\n* line',
+                exports: ["Foo"],
             }
         }
     });
@@ -200,6 +203,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
                 doc: "* last",
+                exports: ["Foo"],
             },
         }
     });
@@ -219,6 +223,7 @@ describe('metadata', () => {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
                 },
+                exports: ["Foo"],
             }
         }
     });
@@ -236,7 +241,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: ["Foo"],
             }
         }
     });
@@ -254,7 +260,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: ["Foo"],
             }
         }
     });
@@ -274,6 +281,7 @@ describe('metadata', () => {
                     start: { column: 0, line: 3 }
                 },
                 doc: "* { one: \"1\", two: '2', array: [1, 2, 3]}",
+                exports: ["Foo"],
             }
         }
     });
@@ -373,7 +381,39 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 3, column: 0 },
                         end: { line: 13, column: 1 }
-                    }
+                    },
+                    exports: ["Foo"],
+                }
+            }
+        }
+    );
+
+    pluginTest(
+        "tooling metadata: exports",
+        `
+        import { LightningElement, api, track } from 'lwc';
+        let variable = '123';
+        export const exportedConstant = 'value';
+        export { variable as exportedVariableWithAs, variable };
+        export function exportedFunction() {};
+        export default class ExportedClass extends LightningElement {
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [],
+                    classMembers: [],
+                    declarationLoc: {
+                        start: { line: 6, column: 0 },
+                        end: { line: 7, column: 1 }
+                    },
+                    exports: [
+                        "exportedConstant",
+                        "exportedVariableWithAs",
+                        "variable",
+                        "exportedFunction",
+                        "ExportedClass"],
                 }
             }
         }
@@ -414,7 +454,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 6, column: 1 }
-                    }
+                    },
+                    exports: ["Foo"],
                 }
             }
         }
@@ -454,7 +495,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 5, column: 1 }
-                    }
+                    },
+                    exports: ["Foo"],
                 }
             }
         }
