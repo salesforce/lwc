@@ -16,7 +16,7 @@ const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
     minify: false,
     compat: false,
     sourcemap: false,
-    secure: false
+    secure: true
 };
 
 const KNOWN_ENV = new Set([

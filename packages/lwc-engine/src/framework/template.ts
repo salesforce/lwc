@@ -8,7 +8,9 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { removeAttribute, setAttribute } from "./dom-api";
+import { verifyTemplate, registerTemplate } from "./secure-template";
 
+export { registerTemplate };
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
 
@@ -24,8 +26,6 @@ export interface Template {
      */
     shadowToken?: string;
 }
-
-const VERIFIED_TEMPLATE_SET = new Set();
 const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
@@ -81,17 +81,6 @@ function applyTokenToHost(vm: VM, html: Template): void {
     }
     context.hostToken = html.hostToken;
     context.shadowToken = html.shadowToken;
-}
-
-export function registerTemplate(tmpl: Template) {
-    VERIFIED_TEMPLATE_SET.add(tmpl);
-}
-
-function verifyTemplate(tmpl: Template) {
-    if (!VERIFIED_TEMPLATE_SET.has(tmpl)) {
-        throw new TypeError('Unknown template');
-    }
-    return tmpl;
 }
 
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {

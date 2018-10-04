@@ -1,5 +1,10 @@
 import { compileTemplate } from 'test-utils';
 
+jest.mock('../secure-template', () => ({
+    verifyTemplate: () => true,
+    registerTemplate: (t) => t
+}));
+
 declare var global: Global;
 
 interface Global {

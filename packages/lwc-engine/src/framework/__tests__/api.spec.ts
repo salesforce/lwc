@@ -2,7 +2,11 @@ import * as api from '../api';
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
+jest.mock('../secure-template', () => ({ verifyTemplate: () => true }));
+
 describe('api', () => {
+    afterAll(() => jest.clearAllMocks());
+
     describe('#c()', () => {
         class Foo extends LightningElement {}
 
@@ -383,6 +387,7 @@ describe('api', () => {
             expect(k1).toEqual('123:345');
             expect(k2).toEqual('345:678');
         });
+
         it('should throw when key is an object', () => {
             function html($api) {
                 const k1 = $api.k(678, {});
