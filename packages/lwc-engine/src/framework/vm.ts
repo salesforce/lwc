@@ -17,7 +17,8 @@ import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "../faux-shadow/faux";
 
-const NativeShadowRoot: ShadowRoot = (window as any).ShadowRoot;
+// Object of type ShadowRoot for instance checks
+const NativeShadowRoot = (window as any).ShadowRoot;
 const isNativeShadowRootAvailable = typeof NativeShadowRoot !== "undefined";
 
 export interface SlotSet {
