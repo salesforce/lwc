@@ -1,8 +1,0 @@
-{
-  "warnings": [{
-    "level": "error",
-    "message": "<p> has no matching closing tag.",
-    "start": 15,
-    "length": 3
-  }]
-}

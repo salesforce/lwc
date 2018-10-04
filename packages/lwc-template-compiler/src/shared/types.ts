@@ -1,5 +1,10 @@
 import * as babelTypes from 'babel-types';
-import * as parse5 from 'parse5-with-errors';
+import {
+    DefaultTreeTextNode,
+    DefaultTreeElement,
+    Attribute,
+    Location,
+} from 'parse5';
 
 export type TemplateIdentifier = babelTypes.Identifier;
 export type TemplateExpression =
@@ -7,8 +12,8 @@ export type TemplateExpression =
     | babelTypes.Literal
     | babelTypes.Identifier;
 
-export type HTMLText = parse5.AST.TextNode;
-export type HTMLElement = parse5.AST.Element;
+export type HTMLText = DefaultTreeTextNode;
+export type HTMLElement = DefaultTreeElement;
 export type HTMLNode =
     | HTMLElement
     | HTMLText;
@@ -32,7 +37,7 @@ export interface IRElement {
     type: 'element';
     tag: string;
 
-    attrsList: parse5.AST.Default.Attribute[];
+    attrsList: Attribute[];
 
     parent?: IRElement;
     children: IRNode[];
@@ -84,7 +89,7 @@ export enum IRAttributeType {
 
 export interface IRBaseAttribute {
     name: string;
-    location: parse5.MarkupData.Location;
+    location: Location;
     type: IRAttributeType;
 }
 

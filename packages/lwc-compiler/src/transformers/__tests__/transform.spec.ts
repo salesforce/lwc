@@ -159,7 +159,7 @@ describe('HTML transform', () => {
             })
         ).rejects.toMatchObject({
             filename: 'foo.html',
-            message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
+            message: expect.stringContaining('foo.html: Missing root template tag')
         });
     });
 });

@@ -1,12 +1,24 @@
-import * as parse5 from 'parse5-with-errors';
+import {
+    DefaultTreeElement,
+    DefaultTreeTextNode,
+    Location,
+    DefaultTreeDocumentFragment,
+    ElementLocation,
+    DefaultTreeNode,
+} from 'parse5';
 
 import {
-    treeAdapter,
     parseHTML,
     traverseHTML,
     getSource,
     cleanTextNode,
     decodeTextContent,
+    Visitor,
+    isElementNode,
+    isTextNode,
+    getTextNodeContent,
+    getTagName,
+    getParentNode,
 } from './html';
 
 import {
@@ -128,12 +140,11 @@ export default function parse(source: string, state: State): {
     let parent: IRElement;
     const stack: IRElement[] = [];
 
-    traverseHTML(templateRoot, {
+    const nodeVisitor: Visitor = {
         Element: {
             enter(node) {
-                const elementNode = node as parse5.AST.Default.Element;
-
-                const element = createElement(elementNode.tagName, node);
+                const elementNode = node as DefaultTreeElement;
+                const element = createElement(elementNode.tagName, elementNode);
                 element.attrsList = elementNode.attrs;
 
                 if (!root) {
@@ -150,7 +161,7 @@ export default function parse(source: string, state: State): {
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
-                applyKey(element, elementNode.__location);
+                applyKey(element, elementNode.sourceCodeLocation);
 
                 parent = element;
                 stack.push(element);
@@ -167,9 +178,9 @@ export default function parse(source: string, state: State): {
         },
 
         Text: {
-            enter(node: parse5.AST.Default.TextNode) {
+            enter(node: DefaultTreeTextNode) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
-                const location = node.__location as parse5.MarkupData.Location;
+                const location = node.sourceCodeLocation as Location;
 
                 const { startOffset, endOffset } = location;
                 const rawText = cleanTextNode(source.slice(startOffset, endOffset));
@@ -203,18 +214,20 @@ export default function parse(source: string, state: State): {
                     textNode.parent = parent;
                     parent.children.push(textNode);
                 }
-
             },
         },
-    });
+    };
+
+    traverseHTML(templateRoot, nodeVisitor);
 
     function getTemplateRoot(
-        documentFragment: parse5.AST.Default.DocumentFragment,
-    ): parse5.AST.Default.Element | undefined {
+        documentFragment: DefaultTreeDocumentFragment,
+    ): DefaultTreeElement | undefined {
         // Filter all the empty text nodes
         const validRoots = documentFragment.childNodes.filter((child) => (
-            treeAdapter.isElementNode(child) ||
-            treeAdapter.isTextNode(child) && treeAdapter.getTextNodeContent(child).trim().length
+            isElementNode(child) ||
+            isTextNode(child) &&
+            getTextNodeContent(child).trim().length
         ));
 
         if (validRoots.length > 1) {
@@ -222,13 +235,13 @@ export default function parse(source: string, state: State): {
         }
 
         const templateTag = documentFragment.childNodes.find((child) => (
-            treeAdapter.isElementNode(child)
+            isElementNode(child)
         ));
 
         if (!templateTag) {
             warnAt(`Missing root template tag`);
         } else {
-            return templateTag as parse5.AST.Default.Element;
+            return templateTag as DefaultTreeElement;
         }
     }
 
@@ -384,7 +397,7 @@ export default function parse(source: string, state: State): {
 
     }
 
-    function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
+    function applyKey(element: IRElement, location: ElementLocation | undefined) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
@@ -509,7 +522,7 @@ export default function parse(source: string, state: State): {
 
     function validateElement(element: IRElement) {
         const { tag } = element;
-        const node = element.__original as parse5.AST.Default.Element;
+        const node = element.__original as DefaultTreeElement;
         const isRoot = !element.parent;
 
         if (isRoot) {
@@ -563,7 +576,7 @@ export default function parse(source: string, state: State): {
             if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
                 warnOnElement(
                     `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
-                    element.__original as parse5.AST.Default.Element,
+                    element.__original as DefaultTreeElement,
                     'warning'
                 );
             }
@@ -590,8 +603,8 @@ export default function parse(source: string, state: State): {
     }
 
     function getTemplateAttribute(el: IRElement, pattern: string | RegExp): IRAttribute | undefined {
-        const node = el.__original as parse5.AST.Default.Element;
-        const nodeLocation = node.__location!;
+        const node = el.__original as DefaultTreeElement;
+        const nodeLocation = node.sourceCodeLocation!;
 
         const matching = getAttribute(el, pattern);
         if (!matching) {
@@ -609,7 +622,7 @@ export default function parse(source: string, state: State): {
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
             const msg = [
-                `${rawAttribute} is not valid attribute for ${treeAdapter.getTagName(node)}.`,
+                `${rawAttribute} is not valid attribute for ${getTagName(node)}.`,
                 `All attributes name should be all lowercase.`,
             ].join(' ');
 
@@ -653,16 +666,16 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function warnOnElement(message: string, node: parse5.AST.Node, level: WarningLevel = 'error') {
-        const getLocation = (toLocate?: parse5.AST.Node): { start: number, length: number } => {
+    function warnOnElement(message: string, node: DefaultTreeNode, level: WarningLevel = 'error') {
+        const getLocation = (toLocate?: DefaultTreeNode): { start: number, length: number } => {
             if (!toLocate) {
                 return { start: 0, length: 0 };
             }
 
-            const location = (toLocate as parse5.AST.Default.Element).__location;
+            const location = (toLocate as DefaultTreeElement).sourceCodeLocation;
 
             if (!location) {
-                return getLocation(treeAdapter.getParentNode(toLocate));
+                return getLocation(getParentNode(toLocate as DefaultTreeElement));
             } else {
                 return {
                     start: location.startOffset,
@@ -675,7 +688,7 @@ export default function parse(source: string, state: State): {
         warnings.push({ message, start, length, level });
     }
 
-    function warnAt(message: string, location?: parse5.MarkupData.Location, level: WarningLevel = 'error') {
+    function warnAt(message: string, location?: Location, level: WarningLevel = 'error') {
         let start = 0;
         let length = 0;
 
