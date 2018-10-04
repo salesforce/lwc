@@ -2497,10 +2497,7 @@ describe('html-element', () => {
 
     describe('#getComponentConstructor()', () => {
         it('should be null when passed something other than an HTMLElement', function() {
-            class MyComponent extends LightningElement {}
-            const elm = createElement('x-element', { is: MyComponent });
-
-            expect(getHostShadowRoot(elm)).toBeNull();
+            expect(getComponentConstructor({} as any)).toBeNull();
         });
 
         it('should be null when passed an native HTMLElement with no VM', function() {

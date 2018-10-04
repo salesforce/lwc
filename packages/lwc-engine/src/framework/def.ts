@@ -79,6 +79,7 @@ export interface ComponentDef {
     props: PropsDef;
     methods: MethodDef;
     descriptors: PropertyDescriptorMap;
+    ctor: ComponentConstructor;
     elmProto: object;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
@@ -227,6 +228,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
+        ctor: Ctor,
         name,
         wire,
         track,

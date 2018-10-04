@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { ComponentInterface, ComponentConstructor, getWrappedComponentsListener, getComponentAsString } from "./component";
 import { isObject, getOwnPropertyNames, getPrototypeOf, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
-import { setInternalField } from "../shared/fields";
+import { getInternalField, setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM, setNodeKey } from "./vm";
@@ -24,15 +24,11 @@ export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
  * @param {HTMLElement} element
  * @return {ComponentConstructor | null}
  */
-export function getComponentConstructor(element: HTMLElement): ComponentConstructor | null {
+export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;
-    try {
-        if (element instanceof HTMLElement) {
-            const vm = getCustomElementVM(element);
-            ctor = vm.component ? getPrototypeOf(vm.component).constructor : null;
-        }
-    } catch (e) {
-        // element was invalid, or no VM was found for the specified element
+    if (elm instanceof HTMLElement) {
+        const vm = getInternalField(elm, ViewModelReflection) as VM;
+        ctor = vm ? vm.def.ctor as ComponentConstructor : null;
     }
     return ctor;
 }
