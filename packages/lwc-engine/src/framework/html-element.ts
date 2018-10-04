@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { ComponentInterface, ComponentConstructor, getWrappedComponentsListener, getComponentAsString } from "./component";
-import { isObject, getOwnPropertyNames, getPrototypeOf, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
 import { getInternalField, setInternalField } from "../shared/fields";
 import { ViewModelReflection, PatchedFlag } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
