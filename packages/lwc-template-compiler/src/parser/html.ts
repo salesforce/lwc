@@ -4,31 +4,26 @@ import {
     DefaultTreeNode,
     DefaultTreeTextNode,
     Location,
-    DefaultTreeDocumentFragment,
     DefaultTreeCommentNode,
+    DocumentFragment,
 } from 'parse5';
 import * as he from 'he';
 
 export interface NodeVisitor<T> {
-    enter: (element: T) => void;
+    enter?: (element: T) => void;
     exit?: (element: T) => void;
 }
 
 export interface Visitor {
-    Element: NodeVisitor<DefaultTreeNode>;
+    Element?: NodeVisitor<DefaultTreeElement>;
     Text?: NodeVisitor<DefaultTreeTextNode>;
     Comment?: NodeVisitor<DefaultTreeCommentNode>;
 }
 
-export function parseHTML(source: string) {
-    const fragment = parseFragment(source, {
+export function parseHTML(source: string): DocumentFragment {
+    return parseFragment(source, {
         sourceCodeLocationInfo: true,
-    }) as DefaultTreeDocumentFragment;
-
-    return {
-        fragment,
-        errors: [],
-    };
+    });
 }
 
 export function traverseHTML(
@@ -67,27 +62,27 @@ export function traverseHTML(
         }
 
 export function isElementNode(node: any): node is DefaultTreeElement {
-    return !!node.tagName;
+    return node && node.tagName;
     }
 
 export function isTextNode(node: any): node is DefaultTreeTextNode {
-    return node.nodeName === '#text';
+    return node && node.nodeName === '#text';
 }
 
 export function isCommentNode(node: any): node is DefaultTreeCommentNode {
-    return node.nodeName === '#comment';
+    return node && node.nodeName === '#comment';
 }
 
 export function getTextNodeContent(node: DefaultTreeTextNode): string {
-    return node.value;
-    }
+    return node && node.value;
+}
 
 export function getTagName(element: DefaultTreeElement): string {
-    return element.tagName;
+    return element && element.tagName;
 }
 
 export function getParentNode(node: DefaultTreeElement): DefaultTreeElement {
-    return node.parentNode as DefaultTreeElement;
+    return node && node.parentNode as DefaultTreeElement;
 }
 
 export function getSource(

@@ -1,8 +1,6 @@
 import {
     DefaultTreeElement,
-    DefaultTreeTextNode,
     Location,
-    DefaultTreeDocumentFragment,
     ElementLocation,
     DefaultTreeNode,
 } from 'parse5';
@@ -126,11 +124,7 @@ export default function parse(source: string, state: State): {
 } {
     const warnings: CompilationWarning[] = [];
 
-    const { fragment, errors: parsingErrors } = parseHTML(source);
-    if (parsingErrors.length) {
-        return { warnings: parsingErrors };
-    }
-
+    const fragment = parseHTML(source);
     const templateRoot = getTemplateRoot(fragment);
     if (!templateRoot) {
         return { warnings };
@@ -143,9 +137,8 @@ export default function parse(source: string, state: State): {
     const nodeVisitor: Visitor = {
         Element: {
             enter(node) {
-                const elementNode = node as DefaultTreeElement;
-                const element = createElement(elementNode.tagName, elementNode);
-                element.attrsList = elementNode.attrs;
+                const element = createElement(node.tagName, node);
+                element.attrsList = node.attrs;
 
                 if (!root) {
                     root = element;
@@ -161,7 +154,7 @@ export default function parse(source: string, state: State): {
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
-                applyKey(element, elementNode.sourceCodeLocation);
+                applyKey(element, node.sourceCodeLocation);
 
                 parent = element;
                 stack.push(element);
@@ -178,10 +171,9 @@ export default function parse(source: string, state: State): {
         },
 
         Text: {
-            enter(node: DefaultTreeTextNode) {
+            enter(node) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
-                const location = node.sourceCodeLocation as Location;
-
+                const location = node.sourceCodeLocation!;
                 const { startOffset, endOffset } = location;
                 const rawText = cleanTextNode(source.slice(startOffset, endOffset));
 
@@ -220,9 +212,7 @@ export default function parse(source: string, state: State): {
 
     traverseHTML(templateRoot, nodeVisitor);
 
-    function getTemplateRoot(
-        documentFragment: DefaultTreeDocumentFragment,
-    ): DefaultTreeElement | undefined {
+    function getTemplateRoot(documentFragment): DefaultTreeElement | undefined {
         // Filter all the empty text nodes
         const validRoots = documentFragment.childNodes.filter((child) => (
             isElementNode(child) ||
