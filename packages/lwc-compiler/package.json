@@ -21,7 +21,6 @@
     "babel-preset-minify": "0.5.0-alpha.5a128fd5",
     "cssnano": "^3.10.0",
     "lwc-template-compiler": "0.29.13",
-    "parse5": "^3.0.3",
     "postcss": "~6.0.19",
     "postcss-plugin-lwc": "0.29.13",
     "postcss-selector-parser": "^3.1.1",

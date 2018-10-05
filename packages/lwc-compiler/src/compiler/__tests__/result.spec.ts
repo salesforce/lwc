@@ -178,30 +178,6 @@ describe("compiler result", () => {
         expect(diagnostics[2].message).toContain('Unclosed block');
     });
 
-    test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
-        const config = {
-            name: "foo",
-            namespace: "x",
-            files: {
-                "foo.js": `import { LightningElement } from 'lwc';
-                export default class Test extends LightningElement {}
-                `,
-                "foo.html": `<template>`,
-            },
-        };
-        const { success, diagnostics }  = await compile(config);
-        expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
-
-        // check warning
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
-
-        // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
-    });
-
     test("sourcemaps correctness", async () => {
         const tplCode = '<template></template>';
         const cmpCode = `import { LightningElement } from 'lwc';
