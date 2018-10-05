@@ -11,49 +11,49 @@ function handleEvent(event: Event, vnode: VNode) {
     }
 }
 
-interface VNodeEventListener extends EventListener {
-    vnode?: VNode;
+interface VNodeEventListenerContext {
+    vnode: VNode;
+    listener: EventListener;
 }
 
-interface InteractiveVNode extends VNode {
-    listener: VNodeEventListener | undefined;
-}
-
-function createListener(): EventListener {
-    return function handler(event: Event) {
-        handleEvent(event, (handler as VNodeEventListener).vnode as VNode);
+function createListenerContext(vnode: VNode): VNodeEventListenerContext {
+    const context: VNodeEventListenerContext = {
+        vnode,
+        listener: function handler(event: Event) {
+            handleEvent(event, context.vnode);
+        }
     };
+    return context;
 }
 
-function removeAllEventListeners(vnode: InteractiveVNode) {
-    const { data: { on }, listener } = vnode;
-    if (on && listener) {
+function removeAllEventListeners(vnode: VNode) {
+    const { data: { on, listenerContext } } = vnode;
+    if (on && listenerContext) {
         const elm = vnode.elm as Element;
         let name;
         for (name in on) {
-            elm.removeEventListener(name, listener);
+            elm.removeEventListener(name, listenerContext.listener);
         }
-        vnode.listener = undefined;
+        vnode.data.listenerContext = undefined;
     }
 }
 
-function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveVNode) {
-    if (isUndefined(oldVnode.listener)) {
+function updateAllEventListeners(oldVnode: VNode, vnode: VNode) {
+    if (isUndefined(oldVnode.data.listenerContext)) {
         createAllEventListeners(oldVnode, vnode);
     } else {
-        vnode.listener = oldVnode.listener;
-        vnode.listener.vnode = vnode;
+        vnode.data.listenerContext = oldVnode.data.listenerContext;
+        vnode.data.listenerContext.vnode = vnode;
     }
 }
 
-function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveVNode) {
+function createAllEventListeners(oldVnode: VNode, vnode: VNode) {
     const { data: { on } } = vnode;
     if (isUndefined(on)) {
         return;
     }
     const elm = vnode.elm as Element;
-    const listener: VNodeEventListener = vnode.listener = createListener();
-    listener.vnode = vnode;
+    const { listener } = vnode.data.listenerContext = createListenerContext(vnode);
 
     let name;
     for (name in on) {
