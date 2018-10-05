@@ -15,8 +15,8 @@ export default class State {
     slots: string[] = [];
     extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
-    elementIds: AttributeItem[] = [];
-    referencedElementIds: AttributeItem[] = [];
+    elementIdAttrs: AttributeItem[] = [];
+    elementIdRefAttrs: AttributeItem[] = [];
 
     constructor(code: string, config: ResolvedConfig) {
         this.code = code;
