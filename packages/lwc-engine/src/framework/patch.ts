@@ -15,7 +15,7 @@ import {
     removeChild,
     appendChild,
 } from "./dom-api";
-import { VM, setNodeOwnerKey } from "./vm";
+import { VM, setNodeOwnerKey, setNodeLightDom } from "./vm";
 import { ViewModelReflection } from "./utils";
 import { patchSlotElementWithRestrictions } from "./restrictions";
 
@@ -45,9 +45,10 @@ const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
         return createDocumentFragment.call(document);
     },
-    createElement(tagName: string, uid: number): HTMLElement {
+    createElement(tagName: string, uid: number, lightDom: number[]): HTMLElement {
         const element = createElement.call(document, tagName);
         setNodeOwnerKey(element, uid);
+        setNodeLightDom(element, lightDom);
         if (process.env.NODE_ENV !== 'production') {
             if (tagName === 'slot') {
                 patchSlotElementWithRestrictions(element as HTMLSlotElement);
@@ -55,9 +56,10 @@ const htmlDomApi: DOMAPI = {
         }
         return element;
     },
-    createElementNS(namespaceURI: string, qualifiedName: string, uid: number): Element {
+    createElementNS(namespaceURI: string, qualifiedName: string, uid: number, lightDom: number[]): Element {
         const element = createElementNS.call(document, namespaceURI, qualifiedName);
         setNodeOwnerKey(element, uid);
+        setNodeLightDom(element, lightDom);
         return element;
     },
     createTextNode(text: string, uid: number): Text {

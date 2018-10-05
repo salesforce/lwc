@@ -11,6 +11,7 @@ import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, 
 import { patchShadowDomTraversalMethods } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
+import { getNodeLightDom } from "../framework/vm";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -105,6 +106,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             //   this.template.addEventListener('click', () => {});
             // }
             const myCurrentShadowKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeOwnerKey(currentTarget as Node);
+            if (myCurrentShadowKey && getNodeLightDom(originalTarget as HTMLElement).indexOf(myCurrentShadowKey) > -1) {
+                return patchShadowDomTraversalMethods(originalTarget as HTMLElement);
+            }
 
             // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:

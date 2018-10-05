@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, unwrap } from '../main';
 import { getHostShadowRoot, LightningElement } from '../html-element';
+import { getShadowRoot } from '../../faux-shadow/shadow-root';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -620,6 +621,132 @@ describe('Slotted element events', () => {
         document.body.appendChild(elm);
         elm.clickDiv();
 
+    });
+
+    it('should report correct target when slotted through multiple components', () => {
+        class Root extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-parent>
+                            <div></div>
+                        </x-parent>
+                    </template>
+                `, {
+                    modules: { 'x-parent': Parent },
+                });
+            }
+        }
+
+        class Parent extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <slot></slot>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child },
+                });
+            }
+        }
+
+        let target
+        class Child extends LightningElement {
+            handleClick(evt) {
+                target = evt.target
+            }
+
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <div onclick={handleClick}>
+                            <slot></slot>
+                        </div>
+                    </template>
+                `, {
+                    modules: {},
+                });
+            }
+        }
+
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+        const div = getShadowRoot(elm).querySelector('div');
+        div.click();
+        expect(div).toBe(target);
+    });
+
+    it('should report correct target when slotted through multiple components and rehydration happens', () => {
+        class Root extends LightningElement {
+            newTitle = 'bar';
+            changeSomething() {
+                this.newTitle = 'foo'
+            }
+
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-parent>
+                            <div title={newTitle}></div>
+                        </x-parent>
+                    </template>
+                `, {
+                    modules: { 'x-parent': Parent },
+                });
+            }
+        }
+
+        Root.track = {
+            newTitle: {
+                config: 3
+            }
+        }
+
+        Root.publicMethods = ['changeSomething'];
+
+        class Parent extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <slot></slot>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child },
+                });
+            }
+        }
+
+        let target
+        class Child extends LightningElement {
+            handleClick(evt) {
+                target = evt.target
+            }
+
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <div onclick={handleClick}>
+                            <slot></slot>
+                        </div>
+                    </template>
+                `, {
+                    modules: {},
+                });
+            }
+        }
+
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+        const div = getShadowRoot(elm).querySelector('div');
+        elm.changeSomething();
+        return Promise.resolve().then(() => {
+            div.click();
+            expect(div).toBe(target);
+        });
     });
 });
 

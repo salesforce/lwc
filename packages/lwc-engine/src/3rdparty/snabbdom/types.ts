@@ -9,8 +9,8 @@ https://github.com/snabbdom/snabbdom/
 
 export interface DOMAPI {
   createFragment: () => DocumentFragment;
-  createElement: (tagName: string, uid: number) => HTMLElement;
-  createElementNS: (namespaceURI: string, qualifiedName: string, uid: number) => Element;
+  createElement: (tagName: string, uid: number, lightDom: number[]) => HTMLElement;
+  createElementNS: (namespaceURI: string, qualifiedName: string, uid: number, lightDom: number[]) => Element;
   createTextNode: (text: string, uid: number) => Text;
   createComment: (text: string, uid: number) => Comment;
   insertBefore: (parentNode: Node, newNode: Node, referenceNode: Node | null) => void;
