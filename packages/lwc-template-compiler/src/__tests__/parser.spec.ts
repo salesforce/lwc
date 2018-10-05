@@ -367,6 +367,8 @@ describe('props and attributes', () => {
             const { warnings } = parseTemplate(`
                 <template>
                     <div id="foo"></div>
+                    <div id="bar"></div>
+                    <div id="baz"></div>
                     <label for="foo"></label>
                     <div aria-activedescendant="foo"></div>
                     <div aria-controls="foo"></div>
