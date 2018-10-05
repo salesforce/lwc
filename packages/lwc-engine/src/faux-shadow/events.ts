@@ -51,6 +51,12 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
 
+            if (isFalse(compareDocumentPosition.call(originalTarget, currentTarget) & DOCUMENT_POSITION_CONTAINS)) {
+                // In this case, the original target is in a detached root, making it
+                // impossible to retarget (unless we figure out something clever).
+                return originalTarget;
+            }
+
             // Handle cases where the currentTarget is null (for async events)
             // and when currentTarget is window.
             if (!(currentTarget instanceof Node)) {
