@@ -110,6 +110,7 @@ function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttrib
 
     return index.name === value.name;
 }
+
 export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
     warnings: CompilationWarning[],
