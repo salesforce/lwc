@@ -26,4 +26,8 @@ module.exports = {
 
     // temp workaround until this is released - https://github.com/facebook/jest/pull/6792
     testURL: "http://localhost/",
+    coveragePathIgnorePatterns: [
+        '\.css$',
+        '\.html$',
+    ],
 };
