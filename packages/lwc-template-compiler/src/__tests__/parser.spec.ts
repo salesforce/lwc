@@ -353,9 +353,11 @@ describe('props and attributes', () => {
                     <div aria-flowto={foo}></div>
                     <div aria-labelledby={foo}></div>
                     <div aria-owns={foo}></div>
+                    <x-foo id={foo}></x-foo>
+                    <x-foo aria-owns={foo}></x-foo>
                 </template>
             `);
-            expect(warnings.length).toBe(10);
+            expect(warnings.length).toBe(12);
 
             const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
             for (const { message } of warnings) {
@@ -378,6 +380,8 @@ describe('props and attributes', () => {
                     <div aria-flowto="foo"></div>
                     <div aria-labelledby="foo bar baz"></div>
                     <div aria-owns="foo"></div>
+                    <x-foo id="boof"></x-foo>
+                    <x-foo aria-owns="boof"></x-foo>
                 </template>
             `);
             expect(warnings.length).toBe(0);

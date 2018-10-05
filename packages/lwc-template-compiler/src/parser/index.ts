@@ -17,10 +17,10 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
-    isRestrictedStaticAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
     isIdReferencingAttribute,
+    isRestrictedStaticAttribute,
 } from './attribute';
 
 import {
@@ -491,7 +491,7 @@ export default function parse(source: string, state: State): {
                 return;
             }
 
-            const { name, location, type, value } = attr;
+            const { name, location, type } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 const msg = [
                     `${name} is not valid attribute for ${tag}. For more information refer to`,
@@ -610,6 +610,13 @@ export default function parse(source: string, state: State): {
                             element.__original as parse5.AST.Default.Element
                         );
                     }
+                }
+                if (isRestrictedStaticAttribute(attrName) && prop.type === IRAttributeType.Expression) {
+                    warnOnElement(
+                        `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
+                        element.__original as parse5.AST.Default.Element,
+                        'warning'
+                    );
                 }
             }
         }
