@@ -8,8 +8,7 @@ jest.mock('globalLib', () => {
 });
 
 describe('example-foo-inner', () => {
-    it.only('default snapshot', () => {
-        debugger;
+    it('default snapshot', () => {
         const element = createElement('example-foo-inner', { is: FooInner });
         document.body.appendChild(element);
         expect(element).toMatchSnapshot();

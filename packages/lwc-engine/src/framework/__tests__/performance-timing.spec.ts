@@ -1,7 +1,7 @@
 import { compileTemplate } from 'test-utils';
 
 jest.mock('../secure-template', () => ({
-    verifyTemplate: () => true,
+    isTemplateRegistered: () => true,
     registerTemplate: (t) => t
 }));
 

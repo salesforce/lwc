@@ -8,7 +8,7 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { removeAttribute, setAttribute } from "./dom-api";
-import { verifyTemplate, registerTemplate } from "./secure-template";
+import { isTemplateRegistered, registerTemplate } from "./secure-template";
 
 export { registerTemplate };
 export interface Template {
@@ -100,7 +100,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         }
 
         // Check that the template is built by the compiler
-        verifyTemplate(html);
+        isTemplateRegistered(html);
 
         vm.cmpTemplate = html;
 

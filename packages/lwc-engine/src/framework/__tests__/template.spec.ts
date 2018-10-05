@@ -14,7 +14,7 @@ function createCustomComponent(html) {
 }
 
 jest.mock('../secure-template', () => ({
-    verifyTemplate: () => true,
+    isTemplateRegistered: () => true,
     registerTemplate: (t) => t
 }));
 

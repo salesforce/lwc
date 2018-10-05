@@ -5,7 +5,7 @@ import { getHostShadowRoot, LightningElement } from '../html-element';
 import assertLogger from '../../shared/assert';
 
 jest.mock('../secure-template', () => ({
-    verifyTemplate: () => true,
+    isTemplateRegistered: () => true,
     registerTemplate: (t) => t
 }));
 

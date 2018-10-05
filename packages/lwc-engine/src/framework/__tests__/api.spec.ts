@@ -2,7 +2,7 @@ import * as api from '../api';
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
-jest.mock('../secure-template', () => ({ verifyTemplate: () => true }));
+jest.mock('../secure-template', () => ({ isTemplateRegistered: () => true }));
 
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
