@@ -15,10 +15,12 @@ import {
     SVG_TAG_WHITELIST,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
-    STATIC_ATTRIBUTE_SET,
+    STATIC_ATTRIBUTES,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
+    ID_REFERENCING_ATTRIBUTES,
+    ID_REFERENCING_PROPERTIES,
 } from './constants';
 
 import {
@@ -55,7 +57,15 @@ const booleanAttributes = new Set<string>([
 ]);
 
 export function isRestrictedStaticAttribute(attrName: string): boolean {
-    return STATIC_ATTRIBUTE_SET.has(attrName);
+    return STATIC_ATTRIBUTES.includes(attrName);
+}
+
+export function isIdReferencingAttribute(attrName: string): boolean {
+    return ID_REFERENCING_ATTRIBUTES.includes(attrName);
+}
+
+export function isIdReferencingProperty(propName: string): boolean {
+    return ID_REFERENCING_PROPERTIES.includes(propName);
 }
 
 export function normalizeAttributeValue(

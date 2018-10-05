@@ -12,22 +12,6 @@ export const ITERATOR_RE = /^iterator\:.*$/;
 export const EVENT_HANDLER_RE = /^on/;
 export const EVENT_HANDLER_NAME_RE = /^on[a-z]+$/;
 
-// These attributes take either an ID or a list of IDs as values.
-const ID_REFERENCING_ATTRIBUTES = [
-    'aria-activedescendant',
-    'aria-controls',
-    'aria-describedby',
-    'aria-details',
-    'aria-errormessage',
-    'aria-flowto',
-    'aria-labelledby',
-    'aria-owns',
-    'for',
-];
-export const STATIC_ATTRIBUTE_SET = new Set([
-    'id', ...ID_REFERENCING_ATTRIBUTES
-]);
-
 const ATTRIBUTE_NAME_CHAR = [
     ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-',
     '\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD',
@@ -178,6 +162,26 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-valuenow': 'ariaValueNow',
     'aria-valuetext': 'ariaValueText',
 };
+
+// These attributes take either an ID or a list of IDs as values.
+export const ID_REFERENCING_ATTRIBUTES: string[] = [
+    'aria-activedescendant',
+    'aria-controls',
+    'aria-describedby',
+    'aria-details',
+    'aria-errormessage',
+    'aria-flowto',
+    'aria-labelledby',
+    'aria-owns',
+    'for',
+];
+
+export const ID_REFERENCING_PROPERTIES: string[] =
+    ID_REFERENCING_ATTRIBUTES.map(attr => ATTRS_PROPS_TRANFORMS[attr]);
+
+export const STATIC_ATTRIBUTES: string[] = [
+    'id', ...ID_REFERENCING_ATTRIBUTES
+];
 
 export const HTML_TAG_BLACKLIST = new Set([
     'base',
