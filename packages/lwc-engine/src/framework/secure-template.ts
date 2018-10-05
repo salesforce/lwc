@@ -6,6 +6,7 @@ export function verifyTemplate(tmpl: Template): Template {
     if (!VERIFIED_TEMPLATE_SET.has(tmpl)) {
         throw new TypeError('Unknown template');
     }
+
     return tmpl;
 }
 
