@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.12...v) (2018-10-03)
+# [](https://github.com/salesforce/lwc/compare/v0.29.13...v) (2018-10-05)
+
+
+### Bug Fixes
+
+* **engine:** fix traversal for error boundaries in native shadow DOM ([#686](https://github.com/salesforce/lwc/issues/686)) ([b4b29a1](https://github.com/salesforce/lwc/commit/b4b29a1))
+
+
+### Features
+
+* **compiler:** add sourcemap to options and result ([#696](https://github.com/salesforce/lwc/issues/696)) ([2a3ce0f](https://github.com/salesforce/lwc/commit/2a3ce0f))
+* introduce secure API for template verification ([#693](https://github.com/salesforce/lwc/issues/693)) ([3b4a63e](https://github.com/salesforce/lwc/commit/3b4a63e))
+* **jest-transformer:** generate jest tests sourcemaps ([#706](https://github.com/salesforce/lwc/issues/706)) ([2b3b28d](https://github.com/salesforce/lwc/commit/2b3b28d))
+* **parse5:** update parse5, usage, tests ([#707](https://github.com/salesforce/lwc/issues/707)) ([64206dc](https://github.com/salesforce/lwc/commit/64206dc))
+
+
+
+<a name="0.29.13"></a>
+## [0.29.13](https://github.com/salesforce/lwc/compare/v0.29.12...v0.29.13) (2018-10-03)
 
 
 ### Features
