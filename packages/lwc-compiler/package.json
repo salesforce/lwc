@@ -24,7 +24,7 @@
     "postcss": "~6.0.19",
     "postcss-plugin-lwc": "0.29.13",
     "postcss-selector-parser": "^3.1.1",
-    "rollup": "0.60.1",
+    "rollup": "0.66.2",
     "rollup-plugin-replace": "^2.0.0"
   },
   "devDependencies": {

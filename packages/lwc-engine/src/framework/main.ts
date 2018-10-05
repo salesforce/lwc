@@ -4,6 +4,7 @@ export { getComponentDef, isComponentConstructor } from "./def";
 export { LightningElement } from "./html-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
+export { registerTemplate } from "./template";
 
 // TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/129
 export { dangerousObjectMutation } from "./membrane";

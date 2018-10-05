@@ -1,31 +1,35 @@
-export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { h: api_element } = $api;
+import { registerTemplate } from "lwc";
 
-    return [
+function tmpl($api, $cmp, $slotset, $ctx) {
+  const { h: api_element } = $api;
+
+  return [
+    api_element(
+      "svg",
+      {
+        classMap: {
+          "slds-button__icon": true
+        },
+        attrs: {
+          viewBox: "0 0 5 5",
+          "aria-hidden": "true"
+        },
+        key: 2
+      },
+      [
         api_element(
-            'svg',
-            {
-                classMap: {
-                    'slds-button__icon': true
-                },
-                attrs: {
-                    viewBox: '0 0 5 5',
-                    'aria-hidden': 'true'
-                },
-                key: 2
+          "use",
+          {
+            attrs: {
+              "xlink:href": "/x"
             },
-            [
-                api_element(
-                    'use',
-                    {
-                        attrs: {
-                            'xlink:href': '/x'
-                        },
-                        key: 1
-                    },
-                    []
-                )
-            ]
+            key: 1
+          },
+          []
         )
-    ];
+      ]
+    )
+  ];
 }
+
+export default registerTemplate(tmpl);

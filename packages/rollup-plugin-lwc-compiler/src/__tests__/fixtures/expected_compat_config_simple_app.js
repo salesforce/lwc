@@ -125,6 +125,8 @@
       ];
     }
 
+    var html = lwc.registerTemplate(tmpl)
+
     if (style$1) {
       __setKey(tmpl, "hostToken", "x-foo_foo-host");
 
@@ -180,7 +182,7 @@
           {
             key: "render",
             value: function render() {
-              return tmpl;
+              return html;
             }
           }
         ]);
@@ -224,6 +226,8 @@
       ];
     }
 
+    var html$1 = lwc.registerTemplate(tmpl$1);
+
     if (style) {
       __setKey(tmpl$1, "hostToken", "x-app_app-host");
 
@@ -264,7 +268,7 @@
           {
             key: "render",
             value: function render() {
-              return tmpl$1;
+              return html$1;
             }
           }
         ]);

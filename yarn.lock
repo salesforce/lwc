@@ -10508,15 +10508,7 @@ rollup-pluginutils@^2.0.1, rollup-pluginutils@~2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@0.60.1:
-  version "0.60.1"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.60.1/07cb66153f1541d5f7e82b8393b405c31647dae9.tgz#07cb66153f1541d5f7e82b8393b405c31647dae9"
-  integrity sha512-LujiS7PH8DwKAphB2ldaSEF1EX9hWY9w+mct2b4DczC8tvn7qwmr9ZFLtM9IT7gPFYlmS8O1JdiLT/aEiBEcsA==
-  dependencies:
-    "@types/estree" "0.0.39"
-    "@types/node" "*"
-
-rollup@~0.66.2:
+rollup@0.66.2, rollup@~0.66.2:
   version "0.66.2"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.66.2/77acdb9f4093f5f035ce75480577c40a81ea7999.tgz#77acdb9f4093f5f035ce75480577c40a81ea7999"
   integrity sha512-+rOLjWO170M3Y2jyyGU4ZJuTu1T1KuKNyH+RszHRzQdsuI5TulRbkSM4vlaMnwcxHm4XdgBNZ1mmNzhQIImbiQ==

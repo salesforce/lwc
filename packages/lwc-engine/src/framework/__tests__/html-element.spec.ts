@@ -4,6 +4,11 @@ import { createElement, register, unwrap } from '../main';
 import { getHostShadowRoot, LightningElement } from '../html-element';
 import assertLogger from '../../shared/assert';
 
+jest.mock('../secure-template', () => ({
+    isTemplateRegistered: () => true,
+    registerTemplate: (t) => t
+}));
+
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
         it('should set attribute on host element when element is nested in template', () => {

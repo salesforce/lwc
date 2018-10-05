@@ -13,6 +13,11 @@ function createCustomComponent(html) {
     return elm;
 }
 
+jest.mock('../secure-template', () => ({
+    isTemplateRegistered: () => true,
+    registerTemplate: (t) => t
+}));
+
 describe('template', () => {
     describe('integration', () => {
         it('should render arrays correctly', function() {

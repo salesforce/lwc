@@ -1,9 +1,9 @@
 import generate from 'babel-generator';
 import * as t from 'babel-types';
-
 import template = require('babel-template');
 
 import State from '../state';
+import { ResolvedConfig } from '../config';
 
 import {
     TEMPLATE_PARAMS,
@@ -518,11 +518,10 @@ function format({ config }: State) {
     }
 }
 
-export default function(templateRoot: IRElement, state: State): CompilationOutput {
+export default function(templateRoot: IRElement, state: State, options: ResolvedConfig): CompilationOutput {
     const templateFunction = generateTemplateFunction(templateRoot, state);
-
     const formatter = format(state);
-    const program = formatter(templateFunction, state);
+    const program = formatter(templateFunction, state, options);
 
     const { code } = generate(program);
     return {
