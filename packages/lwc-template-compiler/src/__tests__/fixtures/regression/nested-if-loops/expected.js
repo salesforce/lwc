@@ -1,26 +1,28 @@
-export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const {
-        t: api_text,
-        k: api_key,
-        h: api_element,
-        i: api_iterator,
-        f: api_flatten
-    } = $api;
+import { registerTemplate } from "lwc";
 
-    return $cmp.isTrue
-        ? api_flatten([
-              api_text('Outer'),
-              api_iterator($cmp.items, function(item) {
-                  return api_element(
-                        'p',
-                        {
-                            key: api_key(1, item.id)
-                        },
-                        [
-                          api_text('Inner')
-                        ]
-                    );
-                })
-          ])
-        : [];
+function tmpl($api, $cmp, $slotset, $ctx) {
+  const {
+    t: api_text,
+    k: api_key,
+    h: api_element,
+    i: api_iterator,
+    f: api_flatten
+  } = $api;
+
+  return $cmp.isTrue
+    ? api_flatten([
+        api_text("Outer"),
+        api_iterator($cmp.items, function(item) {
+          return api_element(
+            "p",
+            {
+              key: api_key(1, item.id)
+            },
+            [api_text("Inner")]
+          );
+        })
+      ])
+    : [];
 }
+
+export default registerTemplate(tmpl);

@@ -35,28 +35,22 @@ export function format(
     state: State,
     options: ResolvedConfig
 ): t.Program {
-    const { secure } = options;
     const imports = state.dependencies.map(cmpClassName =>
         moduleNameToImport(cmpClassName),
     );
 
     const metadata = generateTemplateMetadata(state);
-    let templateBody: Array<t.FunctionDeclaration | t.ExportDefaultDeclaration>;
 
-    if (secure) {
-        imports.push(generateSecureImport());
-        templateBody = [
-            templateFn,
-            t.exportDefaultDeclaration(
-                t.callExpression(
-                    t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
-                    [t.identifier(TEMPLATE_FUNCTION_NAME)]
-                )
+    imports.push(generateSecureImport());
+    const templateBody = [
+        templateFn,
+        t.exportDefaultDeclaration(
+            t.callExpression(
+                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
+                [t.identifier(TEMPLATE_FUNCTION_NAME)]
             )
-        ];
-    } else {
-        templateBody = [t.exportDefaultDeclaration(templateFn)];
-    }
+        )
+    ];
 
     return t.program([
         ...imports,

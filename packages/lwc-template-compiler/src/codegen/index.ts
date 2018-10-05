@@ -520,7 +520,6 @@ function format({ config }: State) {
 
 export default function(templateRoot: IRElement, state: State, options: ResolvedConfig): CompilationOutput {
     const templateFunction = generateTemplateFunction(templateRoot, state);
-
     const formatter = format(state);
     const program = formatter(templateFunction, state, options);
 

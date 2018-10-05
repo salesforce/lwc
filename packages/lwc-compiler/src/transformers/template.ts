@@ -68,12 +68,11 @@ const transform: FileTransformer = function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ) {
-    const { outputConfig: { secure } } = options;
     let code;
     let metadata;
 
     try {
-        const result = compile(src, { secure });
+        const result = compile(src, {});
         const warnings = result.warnings;
 
         code = result.code;

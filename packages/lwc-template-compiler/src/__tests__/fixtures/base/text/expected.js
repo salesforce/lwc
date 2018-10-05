@@ -1,5 +1,9 @@
-export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { t: api_text } = $api;
+import { registerTemplate } from "lwc";
 
-    return [api_text('foo')];
+function tmpl($api, $cmp, $slotset, $ctx) {
+  const { t: api_text } = $api;
+
+  return [api_text("foo")];
 }
+
+export default registerTemplate(tmpl);
