@@ -504,9 +504,9 @@ export default function parse(source: string, state: State): {
             if (type === IRAttributeType.String) {
                 const stringAttr = attr as IRStringAttribute;
                 if (name === 'id') {
-                    state.elementIds.push({ attr: stringAttr, element });
+                    state.elementIdAttrs.push({ attr: stringAttr, element });
                 } else if (isIdReferencingAttribute(name)) {
-                    state.referencedElementIds.push({ attr: stringAttr, element });
+                    state.elementIdRefAttrs.push({ attr: stringAttr, element });
                 }
             }
 
@@ -742,7 +742,7 @@ export default function parse(source: string, state: State): {
 
     function validateState(parseState: State) {
         const seenIds: string[] = [];
-        parseState.elementIds.forEach(elementId => {
+        parseState.elementIdAttrs.forEach(elementId => {
             const { value } = elementId.attr;
             if (seenIds.includes(value)) {
                 warnAt(`Duplicate id value "${value}" detected. Id values must be unique within a template.`, elementId.attr.location);
@@ -750,19 +750,19 @@ export default function parse(source: string, state: State): {
                 seenIds.push(value);
             }
         });
-        const seenReferencedIds: string[] = [];
-        parseState.referencedElementIds.forEach(referenced => {
+        const seenIdRefs: string[] = [];
+        parseState.elementIdRefAttrs.forEach(referenced => {
             const { name, value } = referenced.attr;
             const ids = value.split(/\s+/);
-            seenReferencedIds.push(...ids);
+            seenIdRefs.push(...ids);
             ids.forEach(id => {
                 if (!seenIds.includes(id)) {
                     warnAt(`Attribute "${name}" references a non-existant id "${id}".`, referenced.attr.location);
                 }
             });
         });
-        parseState.elementIds.forEach(({ attr: { location, value }}) => {
-            if (!seenReferencedIds.some(id => id === value)) {
+        parseState.elementIdAttrs.forEach(({ attr: { location, value }}) => {
+            if (!seenIdRefs.some(id => id === value)) {
                 warnAt(`Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`, location);
             }
         });
