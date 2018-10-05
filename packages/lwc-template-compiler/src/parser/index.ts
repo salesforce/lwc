@@ -20,6 +20,7 @@ import {
     isRestrictedStaticAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
+    isIdReferencingAttribute,
 } from './attribute';
 
 import {
@@ -504,7 +505,7 @@ export default function parse(source: string, state: State): {
                 const stringAttr = attr as IRStringAttribute;
                 if (name === 'id') {
                     state.elementIds.push({ attr: stringAttr, element });
-                } else if (isRestrictedStaticAttribute(name)) {
+                } else if (isIdReferencingAttribute(name)) {
                     state.referencedElementIds.push({ attr: stringAttr, element });
                 }
             }
