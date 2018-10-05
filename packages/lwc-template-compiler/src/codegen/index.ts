@@ -101,7 +101,7 @@ function transform(
             exit(element: IRElement) {
                 let children = stack.pop();
 
-                // Apply children flatening
+                // Apply children flattening
                 if (shouldFlatten(element) && t.isArrayExpression(children)) {
                     children = element.children.length === 1 ?
                         children.elements[0] as t.Expression :
@@ -355,13 +355,13 @@ function transform(
             data.push(t.objectProperty(t.identifier('className'), classExpression));
         }
 
-        // Class attibute defined via an object
+        // Class attribute defined via object
         if (classMap) {
             const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
             data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
         }
 
-        // Style attibute defined via an object
+        // Style attribute defined via object
         if (styleMap) {
             const styleObj = objectToAST(
                 styleMap,
@@ -374,7 +374,7 @@ function transform(
             data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
         }
 
-        // Style attibute defined via a string
+        // Style attribute defined via string
         if (style) {
             const { expression: styleExpression } = bindExpression(style, element);
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
