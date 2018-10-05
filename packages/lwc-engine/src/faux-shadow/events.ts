@@ -6,9 +6,10 @@ import {
 import {
     getRootNode,
     parentNodeGetter,
+    DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { patchShadowDomTraversalMethods } from "./traverse";
+import { patchShadowDomTraversalMethods, isNodeSlotted } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
 
@@ -50,11 +51,17 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
 
+            if (isFalse(compareDocumentPosition.call(originalTarget, currentTarget) & DOCUMENT_POSITION_CONTAINS)) {
+                // In this case, the original target is in a detached root, making it
+                // impossible to retarget (unless we figure out something clever).
+                return originalTarget;
+            }
+
             // Handle cases where the currentTarget is null (for async events)
             // and when currentTarget is window.
             if (!(currentTarget instanceof Node)) {
                 // the event was inspected asynchronously, in which case we need to return the
-                // top custom element the belongs to the body.
+                // top custom element that belongs to the body.
                 let outerMostElement = originalTarget;
                 let parentNode;
                 while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(getNodeOwnerKey(outerMostElement as Node))) {
@@ -75,12 +82,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 return patchShadowDomTraversalMethods(currentTarget as Element);
             }
 
-            const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
-
-            // We need to determine three things in order to retarget correctly:
+            // We need to determine 2 things in order to retarget correctly:
             // 1) What VM context was the listener added? (e.g. in what VM context was addEventListener called in).
-            // 2) What VM owns the context where the listener was added? (e.g. who rendered the VM context from step 1).
-            // 3) What is the event's original target's relationship to 1 and 2?
+            // 2) What is the event's original target's relationship to 1, is it owned by the vm, or was it slotted?
 
             // Determining Number 1:
             // In most cases, the VM context maps to the currentTarget's owner VM. This will correspond to the custom element:
@@ -106,18 +110,20 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // }
             const myCurrentShadowKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeOwnerKey(currentTarget as Node);
 
-            // Determine Number 2:
-            // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
-            // NOTE: if the current target is the shadow root, the way we collect the Context owner's key is different because
-            //       currentTargetRootNode is both: shadow root and custom element.
-            const myOwnerKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTargetRootNode) : getNodeOwnerKey(currentTargetRootNode);
+            // Resolving the host of the shadow that is being retargeted (which is based on the current target)
+            // with this value, we can check if any element in the path was slotted (directly or indirectly).
+            // Directly means: it is a slotted element
+            // Indirectly means: it is a qualifying child of a slotted element
 
-            // Determining Number 3:
+            const host = eventContext === EventListenerContext.SHADOW_ROOT_LISTENER ?
+            currentTarget : getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
+
+            // Determining Number 2:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
-            // is an ancestor of the currentTarget. The key here, is that we have to determine if the event is coming from an
-            // element inside of the attached shadow context (#1 above) or from the owner context (#2).
+            // is a child of the currentTarget. The key here, is that we have to determine if the event is coming from an
+            // element inside of the attached shadow context (#1 above) or was slotted (#2).
             // We determine this by traversing up the DOM until either 1) We come across an element that has the same VM as #1
-            // Or we come across an element that has the same VM as #2.
+            // Or we come across an element that was slotted inside a shadow's slot element from #1.
             //
             // If we come across an element that has the same VM as #1, we have an element that was rendered inside #1 template:
             //
@@ -129,18 +135,20 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // </template>
             //
             //
-            // If we come across an element that has the same VM as #2, we have an element that was rendered inside #1 slot:
+            // If we come across an element that was slotted inside #1 template, we have an element that was rendered inside #1 slot:
             // <template>
             //  <div onClick={handleClick}>
             //    <slot>
-            //      <x-bar> <-- VM is equal to #2, this is our target
+            //      <x-bar> <-- it is a valid slotted element (it is not owned by VM #1, but slotted into it)
             //        # x-bar shadow
-            //          <div> <-- VM is not equal to #1 or #2, keep going
-            //            <x-baz>  <-- VM is not equal to #1 or #2, keep going
+            //          <div> <-- VM is not equal to #1, and does not qualify as slotted for VM #1, keep going
+            //            <x-baz>  <-- VM is not equal to #1, and does not qualify as slotted for VM #1, keep going
             //              # x-baz shadow
             //                <span></span>  <-- click event happened
             //            </x-baz>
             //          </div>
+            //        # x-bar light shadow
+            //          <button></button>  <-- this qualified as an indirected slotted element, which meas it is visible to the handleClick
             //      </x-bar>
             //    </slot>
             //  </div>
@@ -148,13 +156,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             //
             let closestTarget = originalTarget;
             let nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
-            while (nodeOwnerKey !== myCurrentShadowKey && nodeOwnerKey !== myOwnerKey) {
+
+            while (nodeOwnerKey !== myCurrentShadowKey && !isNodeSlotted(host, closestTarget as Node)) {
                 closestTarget = parentNodeGetter.call(closestTarget);
-                // In this case, the original target is in a detached root, making it
-                // impossible to retarget (unless we figure out something clever).
-                if (closestTarget === null) {
-                    return originalTarget;
-                }
                 nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
             }
 

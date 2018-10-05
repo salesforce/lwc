@@ -1,5 +1,6 @@
 import { createElement, LightningElement } from '../../framework/main';
 import { compileTemplate } from 'test-utils';
+import { getShadowRoot } from '../../faux-shadow/shadow-root';
 
 describe('events', () => {
     describe('log messages', () => {
@@ -144,6 +145,128 @@ describe('events', () => {
             elm.addEventListener('click', a);
             elm.triggerInternalClick();
             expect(dispatched).toHaveLength(0);
+        });
+    });
+    describe('retargeting', () => {
+        it('should report correct target when slotted through multiple components', () => {
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            let target;
+            class Child extends LightningElement {
+                handleClick(evt) {
+                    target = evt.target
+                }
+                 render() {
+                    return childHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <div></div>
+                    </x-parent>
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
+            const parentHTML = compileTemplate(`
+                <template>
+                    <x-child>
+                        <slot></slot>
+                    </x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            const childHTML = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}>
+                        <slot></slot>
+                    </div>
+                </template>
+            `, {
+                modules: {},
+            });
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+            const div = getShadowRoot(elm).querySelector('div');
+            div.click();
+            expect(target).toBe(div);
+        });
+        it('should report correct target when slotted through multiple components and rehydration happens', () => {
+            class Root extends LightningElement {
+                newTitle = 'bar';
+                changeSomething() {
+                    this.newTitle = 'foo';
+                }
+                 render() {
+                    return rootHTML;
+                }
+            }
+            Root.track = {
+                newTitle: {
+                    config: 3
+                }
+            };
+            Root.publicMethods = ['changeSomething'];
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            let target;
+            class Child extends LightningElement {
+                handleClick(evt) {
+                    target = evt.target;
+                }
+                 render() {
+                    return childHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <div title={newTitle}></div>
+                    </x-parent>
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
+            const parentHTML = compileTemplate(`
+                <template>
+                    <x-child>
+                        <slot></slot>
+                    </x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            const childHTML = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}>
+                        <slot></slot>
+                    </div>
+                </template>
+            `, {
+                modules: {},
+            });
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+            const div = getShadowRoot(elm).querySelector('div');
+            elm.changeSomething();
+            return Promise.resolve().then(() => {
+                div.click();
+                expect(getShadowRoot(elm).querySelector('div')).toBe(div); // making sure that the dom is reused
+                expect(target).toBe(div);
+            });
         });
     });
 });

@@ -32,6 +32,7 @@ import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot } from "./shadow-root";
+import { parentElementGetter } from "../framework/dom-api";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -59,13 +60,51 @@ function getNodeOwner(node: Node): HTMLElement | null {
     return node as HTMLElement;
 }
 
+function isSlotElement(elm: Element): boolean {
+    return tagNameGetter.call(elm) === 'SLOT';
+}
+
 export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(node instanceof Node && owner instanceof HTMLElement, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
-        assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${owner}`);
+        assert.invariant(owner instanceof HTMLElement, `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`);
+        assert.invariant(node instanceof Node, `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`);
+        assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`);
     }
     const ownerKey = getNodeOwnerKey(node);
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
+}
+
+export function isNodeSlotted(host: Element, node: Node): boolean {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(host instanceof HTMLElement, `isNodeSlotted() should be called with a host as the first argument instead of ${host}`);
+        assert.invariant(node instanceof Node, `isNodeSlotted() should be called with a node as the second argument instead of ${node}`);
+        assert.isTrue(compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS, `isNodeSlotted() should never be called with a node that is not a child node of ${host}`);
+    }
+    const hostKey = getNodeKey(host);
+    // just in case the provided node is not an element
+    let currentElement: Element = node instanceof HTMLElement ? node : parentElementGetter.call(node);
+    while (!isNull(currentElement) && currentElement !== host) {
+        const elmOwnerKey = getNodeOwnerKey(currentElement);
+        const parent: Element = parentElementGetter.call(currentElement);
+        // this condition is used to fold up elements without owner key (which are manually inserted nodes)
+        // in favor of picking up the key from the first element in that path up with a key
+        if (!isUndefined(elmOwnerKey)) {
+            if (elmOwnerKey === hostKey) {
+                // we have reached a host's node element, and only if
+                // that element is an slot, then the node is considered slotted
+                return isSlotElement(currentElement);
+            } else if (parent !== host && getNodeOwnerKey(parent) !== elmOwnerKey) {
+                // we are crossing a boundary of some sort since the elm and its parent
+                // have different owner key. for slotted elements, this is only possible
+                // if the parent happens to be a slot that is not owned by the host
+                if (!isSlotElement(parent)) {
+                    return false;
+                }
+            }
+        }
+        currentElement = parent;
+    }
+    return false;
 }
 
 function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
@@ -77,7 +116,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
         if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
             return patchShadowDomTraversalMethods(value);
-        } else if (!isNull(owner) && tagNameGetter.call(value) === 'SLOT') {
+        } else if (!isNull(owner) && isSlotElement(value)) {
             // slotted elements must be top level childNodes of the slot element
             // where they slotted into, but its shadowed parent is always the
             // owner of the slot.
@@ -138,22 +177,56 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
+function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Element[] {
+    const filteredAndPatched = [];
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        const node = nodeList[i];
+        if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
+            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node));
+        }
+    }
+    return filteredAndPatched;
+}
+
+function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | null {
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        const node = nodeList[i] as Element;
+        if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
+            return patchShadowDomTraversalMethods(node);
+        }
+    }
+    return null;
+}
+
 export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return [];
     }
-    const matches = nativeQuerySelectorAll.call(elm, selector);
-    return getAllMatches(owner, matches);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    if (getNodeKey(elm)) {
+        // it is a custom element, and we should then filter by slotted elements
+        return getAllSlottedMatches(elm as HTMLElement, nodeList);
+    } else {
+        // regular element, we should then filter by ownership
+        return getAllMatches(owner, nodeList);
+    }
 }
 
 export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
+        // the it is a root, and those can't have a lightdom
         return null;
     }
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
-    return getFirstMatch(owner, nodeList);
+    if (getNodeKey(elm)) {
+        // it is a custom element, and we should then filter by slotted elements
+        return getFirstSlottedMatch(elm as HTMLElement, nodeList);
+    } else {
+        // regular element, we should then filter by ownership
+        return getFirstMatch(owner, nodeList);
+    }
 }
 
 function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
@@ -191,7 +264,7 @@ function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (child instanceof Element && tagNameGetter.call(child) === 'SLOT') {
+        if (child instanceof Element && isSlotElement(child)) {
             ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
         } else {
             ArrayPush.call(seed, child);
@@ -263,7 +336,7 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
      * or they both belong to the same template (default content)
      * we should assume that it is not slotted
      */
-    if (isNull(parentNode) || tagNameGetter.call(parentNode) !== 'SLOT' || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
+    if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
         return null;
     }
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);
