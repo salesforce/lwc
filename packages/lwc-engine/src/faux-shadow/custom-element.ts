@@ -1,5 +1,5 @@
 import { defineProperties } from "../shared/language";
-import { attachShadow, getShadowRoot } from "./shadow-root";
+import { attachShadow, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 
 function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
@@ -10,7 +10,7 @@ function removeEventListenerPatchedValue(this: EventTarget, type: string, listen
     removeCustomElementEventListener(this as HTMLElement, type, listener, options);
 }
 
-function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowRoot {
+function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): SyntheticShadowRoot {
     return attachShadow(this, options);
 }
 

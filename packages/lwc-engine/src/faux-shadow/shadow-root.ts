@@ -12,9 +12,9 @@ import { DocumentPrototypeActiveElement } from "./document";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
-const isNativeShadowRootAvailable = false
+const isNativeShadowRootAvailable = false;
 
-export function getHost(root: ShadowRoot): HTMLElement {
+export function getHost(root: SyntheticShadowRoot): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(root[HostKey], `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`);
     }
@@ -49,7 +49,7 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode } = options;
-    const sr = new SyntheticShadowRoot(mode)
+    const sr = new SyntheticShadowRoot(mode);
     setInternalField(sr, HostKey, elm);
     setInternalField(elm, ShadowRootKey, sr);
     // expose the shadow via a hidden symbol for testing purposes
@@ -103,38 +103,38 @@ function activeElementGetter(this: SyntheticShadowRoot): Element | null {
         isNodeOwnedBy(host, activeElement) ? activeElement : null;
 }
 
-function hostGetter(this: ShadowRoot): HTMLElement {
+function hostGetter(this: SyntheticShadowRoot): HTMLElement {
     return getHost(this);
 }
 
 export class SyntheticShadowRoot {
     mode: string;
     constructor(mode: string) {
-        this.mode = mode
+        this.mode = mode;
     }
     get host() {
-        return hostGetter.call(this)
+        return hostGetter.call(this);
     }
     get activeElement() {
-        return activeElementGetter.call(this)
+        return activeElementGetter.call(this);
     }
     get firstChild() {
-        return patchedShadowRootFirstChildGetter.call(this)
+        return patchedShadowRootFirstChildGetter.call(this);
     }
     get lastChild() {
-        return patchedShadowRootLastChildGetter.call(this)
+        return patchedShadowRootLastChildGetter.call(this);
     }
     get innerHTML() {
-        return patchedShadowRootInnerHTMLGetter.call(this)
+        return patchedShadowRootInnerHTMLGetter.call(this);
     }
     get textContent() {
-        return patchedShadowRootTextContentGetter.call(this)
+        return patchedShadowRootTextContentGetter.call(this);
     }
     get childNodes() {
         return patchedShadowRootChildNodesGetter.call(this);
     }
     get delegatesFocus() {
-        return false
+        return false;
     }
     hasChildNodes() {
         return this.childNodes.length > 0;
@@ -153,14 +153,14 @@ export class SyntheticShadowRoot {
     removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         removeShadowRootEventListener(this, type, listener, options);
     }
-    compareDocumentPosition(otherNode: Node) {
+    compareDocumentPosition(otherNode: Node | SyntheticShadowRoot) {
         // this API might be called with proxies
         const host = getHost(this);
         if (this === otherNode) {
             // it is the root itself
             return 0;
         }
-        if (this.contains(otherNode)) {
+        if (this.contains(otherNode as Node)) {
             // it belongs to the shadow root instance
             return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
         } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
@@ -192,4 +192,4 @@ export class SyntheticShadowRoot {
     }
 }
 
-assign(ShadowRoot.prototype, createShadowRootAOMDescriptorMap());
+assign(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());

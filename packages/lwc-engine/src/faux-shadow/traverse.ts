@@ -26,7 +26,7 @@ import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
-import { getHost, getShadowRoot } from "./shadow-root";
+import { getHost, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -159,13 +159,13 @@ function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Elemen
     return lightDomQuerySelector(this, selector);
 }
 
-export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
+export function shadowRootQuerySelector(root: SyntheticShadowRoot, selector: string): Element | null {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRoot, selector: string): Element[] {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);

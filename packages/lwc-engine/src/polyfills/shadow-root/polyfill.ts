@@ -1,5 +1,5 @@
-import { ShadowRoot } from "../../faux-shadow/shadow-root"
+import { SyntheticShadowRoot } from "../../faux-shadow/shadow-root";
 
 export default function apply() {
-    (window as any).ShadowRoot = ShadowRoot;
+    (window as any).ShadowRoot = SyntheticShadowRoot;
 }
