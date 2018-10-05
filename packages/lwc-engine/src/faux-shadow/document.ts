@@ -7,7 +7,8 @@ const {
     createElementNS,
     createTextNode,
     createComment,
-} = document;
+    elementsFromPoint,
+} = Document.prototype;
 
 export {
     createElement,
@@ -15,4 +16,5 @@ export {
     createTextNode,
     createComment,
     DocumentPrototypeActiveElement,
+    elementsFromPoint,
 };

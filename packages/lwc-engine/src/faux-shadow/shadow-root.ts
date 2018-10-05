@@ -5,10 +5,11 @@ import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNod
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey } from "./node";
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
-import { DocumentPrototypeActiveElement } from "./document";
+import { DocumentPrototypeActiveElement, elementsFromPoint } from "./document";
+import { getNodeKey } from "../framework/vm";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -193,8 +194,25 @@ export class SyntheticShadowRoot {
     toString() {
         return `[object ShadowRoot]`;
     }
+
+    // Same functionality as document.elementFromPoint
+    // but we should only return elements that the shadow owns,
+    // or are ancestors of the shadow
     elementFromPoint(left: number, top: number) {
-        const rect = getHost(this).getBoundingClientRect();
-        return document.elementFromPoint(rect.left + left, rect.top + top);
+        const elements = elementsFromPoint.call(document, left, top);
+        const hostKey = getNodeKey(this.host);
+        let topElement = null;
+        for(let i = elements.length - 1; i >= 0; i -= 1) {
+            const el = elements[i];
+            const elementOwnerKey = getNodeOwnerKey(el);
+            if (elementOwnerKey === hostKey) {
+                topElement = el;
+            } else if(topElement === null && isUndefined(elementOwnerKey)) {
+                // This should handle any global elements that are ancestors
+                // of our current shadow
+                topElement = el;
+            }
+        }
+        return topElement;
     }
 }
