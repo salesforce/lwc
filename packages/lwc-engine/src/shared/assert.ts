@@ -1,9 +1,10 @@
-import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
+import { isUndefined, ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
 
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 const nativeShadowRootHostGetter: (this: ShadowRoot) => Element = (function() {
-    if (typeof (window as any).ShadowRoot !== "undefined") {
+    const nativeShadowRootIsAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
+    if (nativeShadowRootIsAvailable) {
         return getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!;
     } else {
         return () => {

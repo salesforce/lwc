@@ -1,6 +1,7 @@
 // This is only needed in this polyfill because we closed the ability
 // to access the host from a shadow root instance in LWC.
 import { getShadowRootHost, getNodeKey } from '../../framework/vm';
+import { isUndefined } from "../../shared/language";
 
 // this regular expression is used to transform aria props into aria attributes because
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
@@ -66,7 +67,7 @@ interface AriaPropMap {
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement | ShadowRoot, AriaPropMap> = new WeakMap();
 const { hasOwnProperty } = Object.prototype;
 const { setAttribute, removeAttribute, getAttribute } = Element.prototype;
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
+const isNativeShadowRootAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
 const {
     replace: StringReplace,
     toLowerCase: StringToLowerCase,

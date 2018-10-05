@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { create, assign, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull } from "../shared/language";
+import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -12,7 +12,7 @@ import { DocumentPrototypeActiveElement } from "./document";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
-const isNativeShadowRootAvailable = false;
+const isNativeShadowRootAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
 
 export function getHost(root: SyntheticShadowRoot): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
@@ -44,11 +44,20 @@ function createShadowRootAOMDescriptorMap(): PropertyDescriptorMap {
     }, create(null));
 }
 
+let ShadowRootPrototypePatched = false;
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRoot {
     if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode } = options;
+
+    // These cannot be patched when module is loaded because
+    // Element.prototype needs to be patched first, which happens
+    // after this module is executed
+    if (isFalse(ShadowRootPrototypePatched)) {
+        ShadowRootPrototypePatched = true;
+        defineProperties(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());
+    }
     const sr = new SyntheticShadowRoot(mode);
     setInternalField(sr, HostKey, elm);
     setInternalField(elm, ShadowRootKey, sr);
@@ -111,6 +120,9 @@ export class SyntheticShadowRoot {
     mode: string;
     constructor(mode: string) {
         this.mode = mode;
+    }
+    get nodeType() {
+        return 11;
     }
     get host() {
         return hostGetter.call(this);
@@ -181,15 +193,8 @@ export class SyntheticShadowRoot {
     toString() {
         return `[object ShadowRoot]`;
     }
-    get nodeType() {
-        return 11;
-    }
-
     elementFromPoint(left: number, top: number) {
         const rect = getHost(this).getBoundingClientRect();
         return document.elementFromPoint(rect.left + left, rect.top + top);
-
     }
 }
-
-assign(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());
