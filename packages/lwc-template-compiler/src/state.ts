@@ -1,5 +1,11 @@
 import { ResolvedConfig } from './config';
 import { ModuleDependency } from "./shared/types";
+import { IRElement, IRStringAttribute } from './shared/types';
+
+interface AttributeItem {
+    attr: IRStringAttribute;
+    element: IRElement;
+}
 
 export default class State {
     code: string;
@@ -9,6 +15,8 @@ export default class State {
     slots: string[] = [];
     extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
+    elementIds: AttributeItem[] = [];
+    referencedElementIds: AttributeItem[] = [];
 
     constructor(code: string, config: ResolvedConfig) {
         this.code = code;

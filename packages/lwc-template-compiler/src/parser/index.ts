@@ -52,6 +52,7 @@ import {
     WarningLevel,
     ForIterator,
     IRExpressionAttribute,
+    IRStringAttribute,
     ForEach,
 } from '../shared/types';
 
@@ -489,7 +490,7 @@ export default function parse(source: string, state: State): {
                 return;
             }
 
-            const { name, location } = attr;
+            const { name, location, type, value } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 const msg = [
                     `${name} is not valid attribute for ${tag}. For more information refer to`,
@@ -497,6 +498,15 @@ export default function parse(source: string, state: State): {
                 ].join(' ');
 
                 warnAt(msg, location);
+            }
+
+            if (type === IRAttributeType.String) {
+                const stringAttr = attr as IRStringAttribute;
+                if (name === 'id') {
+                    state.elementIds.push({ attr: stringAttr, element });
+                } else if (isRestrictedStaticAttribute(name)) {
+                    state.referencedElementIds.push({ attr: stringAttr, element });
+                }
             }
 
             if (isAttribute(element, name)) {
@@ -721,6 +731,36 @@ export default function parse(source: string, state: State): {
 
         warnings.push({ message, start, length, level });
     }
+
+    function validateState(parseState: State) {
+        const seenIds: string[] = [];
+        parseState.elementIds.forEach(elementId => {
+            const { value } = elementId.attr;
+            if (seenIds.includes(value)) {
+                warnAt(`Duplicate id value "${value}" detected. Id values must be unique within a template.`, elementId.attr.location);
+            } else {
+                seenIds.push(value);
+            }
+        });
+        const seenReferencedIds: string[] = [];
+        parseState.referencedElementIds.forEach(referenced => {
+            const { name, value } = referenced.attr;
+            const ids = value.split(/\s+/);
+            seenReferencedIds.push(...ids);
+            ids.forEach(id => {
+                if (!seenIds.includes(id)) {
+                    warnAt(`Attribute "${name}" references a non-existant id "${id}".`, referenced.attr.location);
+                }
+            });
+        });
+        parseState.elementIds.forEach(({ attr: { location, value }}) => {
+            if (!seenReferencedIds.some(id => id === value)) {
+                warnAt(`Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`, location);
+            }
+        });
+    }
+
+    validateState(state);
 
     return { root, warnings };
 }

@@ -14,7 +14,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsFoo,
       {
         props: {
-          d: $cmp.p.foo
+          d: $cmp.p.foo,
+          id: "ns-foo"
         },
         key: 1
       },
@@ -49,7 +50,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "data-xx": "foo"
         },
         props: {
-          ariaDescribedBy: "describedby",
+          ariaDescribedBy: "ns-foo",
           ariaHidden: "hidden",
           fooBar: "x",
           foo: "bar",
