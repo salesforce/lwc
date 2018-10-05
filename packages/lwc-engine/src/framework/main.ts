@@ -1,6 +1,6 @@
 export { createElement } from "./upgrade";
-export { getComponentDef } from "./def";
-export { LightningElement, getComponentConstructor } from "./html-element";
+export { getComponentDef, getComponentConstructor } from "./def";
+export { LightningElement } from "./html-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
 

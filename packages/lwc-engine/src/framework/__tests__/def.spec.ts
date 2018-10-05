@@ -1,5 +1,5 @@
-import { LightningElement } from '../main';
-import { getComponentDef } from '../def';
+import { LightningElement, createElement } from '../main';
+import { getComponentDef, getComponentConstructor } from '../def';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
@@ -327,6 +327,22 @@ describe('def', () => {
             expect(() => {
                 getComponentDef(MyComponent);
             }).toThrow();
+        });
+    });
+    describe('#getComponentConstructor()', () => {
+        it('should be null when passed something other than an HTMLElement', function() {
+            expect(getComponentConstructor({} as any)).toBeNull();
+        });
+
+        it('should be null when passed an native HTMLElement with no VM', function() {
+            const div = document.createElement('div');
+            expect(getComponentConstructor(div)).toBeNull();
+        });
+
+        it('should return the constructor when passed an LWC custom element', function() {
+            class MyComponent extends LightningElement {}
+            const elm = createElement('x-element', { is: MyComponent });
+            expect(getComponentConstructor(elm)).toEqual(MyComponent);
         });
     });
     describe('circular references', () => {

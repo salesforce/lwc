@@ -30,6 +30,7 @@ import {
     getPropertyDescriptor,
     StringIndexOf,
 } from "../shared/language";
+import { getInternalField } from "../shared/fields";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
@@ -45,7 +46,8 @@ import {
     EmptyObject,
     PatchedFlag,
     resolveCircularModuleDependency,
-    isCircularModuleDependency
+    isCircularModuleDependency,
+    ViewModelReflection,
 } from "./utils";
 import { getCustomElementVM } from "./vm";
 import { BaseCustomElementProto } from "./dom-api";
@@ -395,6 +397,22 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
+}
+
+/**
+ * Returns the component constructor for a given HTMLElement if it can be found
+ * @param {HTMLElement} element
+ * @return {ComponentConstructor | null}
+ */
+export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
+    let ctor: ComponentConstructor | null = null;
+    if (elm instanceof HTMLElement) {
+        const vm = getInternalField(elm, ViewModelReflection);
+        if (!isUndefined(vm)) {
+            ctor = vm.def.ctor;
+        }
+    }
+    return ctor;
 }
 
 // Initialization Routines

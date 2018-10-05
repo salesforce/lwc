@@ -1,7 +1,7 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, register, unwrap } from '../main';
-import { getHostShadowRoot, getComponentConstructor, LightningElement } from '../html-element';
+import { getHostShadowRoot, LightningElement } from '../html-element';
 import assertLogger from '../../shared/assert';
 
 describe('html-element', () => {
@@ -2494,22 +2494,4 @@ describe('html-element', () => {
             });
         });
     });
-
-    describe('#getComponentConstructor()', () => {
-        it('should be null when passed something other than an HTMLElement', function() {
-            expect(getComponentConstructor({} as any)).toBeNull();
-        });
-
-        it('should be null when passed an native HTMLElement with no VM', function() {
-            const div = document.createElement('div');
-            expect(getComponentConstructor(div)).toBeNull();
-        });
-
-        it('should return the constructor when passed an LWC custom element', function() {
-            class MyComponent extends LightningElement {}
-            const elm = createElement('x-element', { is: MyComponent });
-            expect(getComponentConstructor(elm)).toEqual(MyComponent);
-        });
-    });
-
 });
