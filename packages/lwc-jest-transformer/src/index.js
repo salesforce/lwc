@@ -48,7 +48,7 @@ module.exports = {
         // **Note: .html and .css don't return valid sourcemaps cause they are used for rollup
         const config = map && map.version ? { inputSourceMap: map } : {};
 
-        return babelCore.transform(code, { ...BABEL_CONFIG, ...{ filename }, ...config });
+        return babelCore.transform(code, { ...BABEL_CONFIG, ...config, filename });
     },
     getCacheKey(fileData, filePath, configStr, options) {
         const { NODE_ENV } = process.env;
