@@ -202,12 +202,12 @@ export class SyntheticShadowRoot {
         const elements = elementsFromPoint.call(document, left, top);
         const hostKey = getNodeKey(this.host);
         let topElement = null;
-        for(let i = elements.length - 1; i >= 0; i -= 1) {
+        for (let i = elements.length - 1; i >= 0; i -= 1) {
             const el = elements[i];
             const elementOwnerKey = getNodeOwnerKey(el);
             if (elementOwnerKey === hostKey) {
                 topElement = el;
-            } else if(topElement === null && isUndefined(elementOwnerKey)) {
+            } else if (topElement === null && isUndefined(elementOwnerKey)) {
                 // This should handle any global elements that are ancestors
                 // of our current shadow
                 topElement = el;
