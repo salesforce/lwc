@@ -26,7 +26,6 @@
     "lwc-compiler": "0.29.13",
     "lwc-engine": "0.29.13",
     "lwc-jest-transformer": "0.17.15",
-    "rollup": "0.60.1",
     "rollup-plugin-lwc-compiler": "0.29.13"
   },
   "lwc": {

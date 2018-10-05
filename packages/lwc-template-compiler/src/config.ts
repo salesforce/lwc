@@ -8,10 +8,12 @@ export interface Config {
      *    </template>
      */
     computedMemberExpression?: boolean;
+    secure?: boolean;
 }
 
 export interface ResolvedConfig {
     computedMemberExpression: boolean;
+    secure: boolean;
 
     /**
      * Internal configuration for the output format of the template. Accepts:
@@ -24,12 +26,14 @@ export interface ResolvedConfig {
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
+    secure: false,
     computedMemberExpression: false,
     format: 'module',
 };
 
 const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
+    'secure',
     'computedMemberExpression',
 ]);
 

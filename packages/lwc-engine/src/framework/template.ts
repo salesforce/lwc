@@ -8,7 +8,9 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { removeAttribute, setAttribute } from "./dom-api";
+import { isTemplateRegistered, registerTemplate } from "./secure-template";
 
+export { registerTemplate };
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
 
@@ -24,7 +26,6 @@ export interface Template {
      */
     shadowToken?: string;
 }
-
 const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
@@ -97,6 +98,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
             // template, because they could have similar IDs, and snabbdom just rely on the IDs.
             resetShadowRoot(vm);
         }
+
+        // Check that the template is built by the compiler
+        isTemplateRegistered(html);
+
         vm.cmpTemplate = html;
 
         // Populate context with template information

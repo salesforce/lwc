@@ -7,6 +7,11 @@ function resetServices() {
     });
 }
 
+jest.mock('../secure-template', () => ({
+    isTemplateRegistered: () => true,
+    registerTemplate: (t) => t
+}));
+
 describe('services', () => {
 
     describe('register()', () => {

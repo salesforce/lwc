@@ -167,15 +167,15 @@ describe("compiler result", () => {
         };
         const { success, diagnostics }  = await compile(config);
         expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
+        expect(diagnostics.length).toBe(3);
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
         expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('Unclosed block');
+        expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[2].message).toContain('Unclosed block');
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
@@ -235,7 +235,7 @@ export default class Test extends LightningElement {
                 column: 16,
             });
 
-            expect(mainDefMappedToOutputPosition.line).toBe(21);
+            expect(mainDefMappedToOutputPosition.line).toBe(23);
             expect(mainDefMappedToOutputPosition.column).toBe(11);
 
             const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
@@ -244,7 +244,7 @@ export default class Test extends LightningElement {
                 column: 9,
             });
 
-            expect(stringConstantInOutputPosition.line).toBe(22);
+            expect(stringConstantInOutputPosition.line).toBe(24);
             expect(stringConstantInOutputPosition.column).toBe(11);
 
             const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
@@ -253,7 +253,7 @@ export default class Test extends LightningElement {
                 column: 6,
             });
 
-            expect(myimportDefinitionOutputPosition.line).toBe(26);
+            expect(myimportDefinitionOutputPosition.line).toBe(28);
             expect(myimportDefinitionOutputPosition.column).toBe(8);
 
             const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
@@ -262,7 +262,7 @@ export default class Test extends LightningElement {
                 column: 11,
             });
 
-            expect(mainInvocationInOutputPosition.line).toBe(27);
+            expect(mainInvocationInOutputPosition.line).toBe(29);
             expect(mainInvocationInOutputPosition.column).toBe(13);
         });
     });

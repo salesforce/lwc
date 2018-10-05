@@ -1,13 +1,14 @@
+import _xTest from "x/test";
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+  const { c: api_custom_element } = $api;
 
   return [
-    api_element(
-      "section",
+    api_custom_element(
+      "x-test",
+      _xTest,
       {
-        style: $cmp.customStyle,
         key: 1
       },
       []

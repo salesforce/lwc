@@ -1,3 +1,5 @@
+export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
+export const LWC_MODULE_NAME = 'lwc';
 export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
 
 export const TEMPLATE_FUNCTION_NAME: string = 'tmpl';

@@ -123,7 +123,8 @@ describe('HTML transform', () => {
 
         const expected = `
             import stylesheet from './foo.css'
-            export default function tmpl($api, $cmp, $slotset, $ctx) {
+            import { registerTemplate } from "lwc";
+            function tmpl($api, $cmp, $slotset, $ctx) {
             const {
             t: api_text,
             h: api_element
@@ -132,6 +133,7 @@ describe('HTML transform', () => {
             key: 1
             }, [api_text(\"Hello\")])];
             }
+            export default registerTemplate(tmpl);
             if (stylesheet) {
             tmpl.hostToken = 'x-foo_foo-host';
             tmpl.shadowToken = 'x-foo_foo';
@@ -161,6 +163,23 @@ describe('HTML transform', () => {
             filename: 'foo.html',
             message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
         });
+    });
+
+    it('should compile with secure option', async () => {
+        const actual = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+
+        const { code } = await transform(actual, 'foo.html', {
+            namespace: 'x',
+            name: 'foo'
+        });
+
+        expect(code).toContain('import { registerTemplate } from \"lwc\";');
+        expect(code).toContain('export default registerTemplate(tmpl);');
+
     });
 });
 

@@ -68,7 +68,6 @@ const transform: FileTransformer = function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ) {
-
     let code;
     let metadata;
 

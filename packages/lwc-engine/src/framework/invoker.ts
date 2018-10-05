@@ -3,6 +3,7 @@ import {
     currentContext,
     establishContext,
 } from "./context";
+
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "../shared/language";
 import { getErrorComponentStack, VM } from "./vm";
