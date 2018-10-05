@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getHostShadowRoot } from "../../framework/html-element";
+import { getHostShadowRoot, } from "../../framework/html-element";
+import { getShadowRoot } from "../../faux-shadow/shadow-root"
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -122,6 +123,60 @@ describe('#LightDom querySelectorAll()', () => {
 });
 
 describe('#LightDom querySelector()', () => {
+    it.only('should allow searching for the passed element multiple levels up', () => {
+        class Root extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-parent>
+                            <div></div>
+                        </x-parent>
+                    </template>
+                `, {
+                    modules: { 'x-parent': Parent },
+                });
+            }
+        }
+
+        class Parent extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <slot></slot>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child },
+                });
+            }
+        }
+
+        let target
+        class Child extends LightningElement {
+            renderedCallback() {
+                target = this.querySelector('div');
+            }
+
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <div onclick={handleClick}>
+                            <slot></slot>
+                        </div>
+                    </template>
+                `, {
+                    modules: {},
+                });
+            }
+        }
+
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+        const div = getShadowRoot(elm).querySelector('div');
+        expect(div).toBe(target);
+    });
+
     it('should allow searching for the passed element', () => {
         const parentTmpl = compileTemplate(`
             <template>

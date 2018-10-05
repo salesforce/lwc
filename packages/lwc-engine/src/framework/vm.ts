@@ -9,7 +9,7 @@ import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
 
-import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import { VNodeData, VNodes, VNode } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
@@ -69,6 +69,7 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
 // these two values are used by the faux-shadow implementation to traverse the DOM
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
+const LightDomKey = '$$LightDom$$';
 
 function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -199,7 +200,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         component: undefined,
         children: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
-        deps: [],
+        deps: []
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -483,6 +484,25 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
     return wcStack.reverse().join('\n\t');
 }
 
+export function getNodeLightDom(node: Node): number[] {
+    return node[LightDomKey];
+}
+
+export function setNodeLightDom(node: Node, value: []) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the owner key
+        defineProperty(node, LightDomKey, {
+            value,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[LightDomKey] = value;
+    }
+}
+
 export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
 }
@@ -563,7 +583,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(isObject(vm.cmpSlots), `When doing manual allocation, there must be a cmpSlots object available.`);
     }
-    const { cmpSlots: oldSlots } = vm;
+    const { cmpSlots: oldSlots, uid } = vm;
     const cmpSlots = vm.cmpSlots = create(null) as SlotSet;
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
@@ -578,6 +598,13 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         // starts with a numeric character from compiler. In this case, we add a unique
         // notation for slotted vnodes keys, e.g.: `@foo:1:1`
         vnode.key = `@${slotName}:${vnode.key}`;
+        vnode.data.lightDom.push(uid);
+        const { children: vnodeChildren } = vnode;
+        if (vnodeChildren) {
+            vnodeChildren.forEach((child: VNode) => {
+                child.data.lightDom.push(uid)
+            })
+        }
         ArrayPush.call(vnodes, vnode);
     }
     if (!vm.isDirty) {

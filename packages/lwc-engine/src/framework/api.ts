@@ -195,6 +195,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
+    data.lightDom = []
     let text, elm; // tslint:disable-line
     const vnode: VElement = {
         nt: ELEMENT_NODE,
@@ -282,6 +283,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
     data.uid = getCurrentOwnerId();
     data.fallback = getCurrentFallback();
     data.mode = 'open'; // TODO: this should be defined in Ctor
+    data.lightDom = []
     children = arguments.length === 3 ? EmptyArray : children;
     const vnode: VElement = {
         nt: ELEMENT_NODE,
@@ -391,7 +393,7 @@ export function f(items: any[]): any[] {
 
 // [t]ext node
 export function t(text: string): VText {
-    let sel, data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
+    let sel, data = { uid: getCurrentOwnerId(), lightDom: [] }, children, key, elm; // tslint:disable-line
     return {
         nt: TEXT_NODE,
         sel,
@@ -404,7 +406,7 @@ export function t(text: string): VText {
 }
 
 export function p(text: string): VComment {
-    let sel = '!', data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
+    let sel = '!', data = { uid: getCurrentOwnerId(), lightDom: [] }, children, key, elm; // tslint:disable-line
     return {
         nt: COMMENT_NODE,
         sel,
