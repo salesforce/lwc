@@ -20,7 +20,6 @@ import {
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES,
-    ID_REFERENCING_PROPERTIES,
 } from './constants';
 
 import {
@@ -62,10 +61,6 @@ export function isRestrictedStaticAttribute(attrName: string): boolean {
 
 export function isIdReferencingAttribute(attrName: string): boolean {
     return ID_REFERENCING_ATTRIBUTES.includes(attrName);
-}
-
-export function isIdReferencingProperty(propName: string): boolean {
-    return ID_REFERENCING_PROPERTIES.includes(propName);
 }
 
 export function normalizeAttributeValue(

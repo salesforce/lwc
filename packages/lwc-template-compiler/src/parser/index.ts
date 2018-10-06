@@ -611,7 +611,10 @@ export default function parse(source: string, state: State): {
                         );
                     }
                 }
-                if (isRestrictedStaticAttribute(attrName) && prop.type === IRAttributeType.Expression) {
+                if (
+                    isRestrictedStaticAttribute(attrName) &&
+                    prop.type === IRAttributeType.Expression
+                ) {
                     warnOnElement(
                         `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
                         element.__original as parse5.AST.Default.Element,

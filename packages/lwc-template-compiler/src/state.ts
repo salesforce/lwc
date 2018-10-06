@@ -2,7 +2,7 @@ import { ResolvedConfig } from './config';
 import { ModuleDependency } from "./shared/types";
 import { IRElement, IRStringAttribute } from './shared/types';
 
-interface AttributeItem {
+export interface AttributeItem {
     attr: IRStringAttribute;
     element: IRElement;
 }
