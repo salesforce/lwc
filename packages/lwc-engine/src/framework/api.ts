@@ -452,3 +452,7 @@ export function k(compilerKey: number, obj: any): number | string | void {
             }
     }
 }
+
+export function gid(key: number | string, id: string): string {
+    return `${id}-${getCurrentOwnerId()}-${key}`;
+}
