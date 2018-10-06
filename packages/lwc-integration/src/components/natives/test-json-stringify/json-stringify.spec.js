@@ -8,17 +8,17 @@ describe('JSON.stringify on proxies', () => {
     });
 
     it('should return proper value for simple object', function() {
-        const element = browser.element('#object-stringify');
+        const element = browser.element('.object-stringify');
         assert.strictEqual(element.getText(), '{"x":"x","y":"y"}');
     });
 
     it('should return proper value for simple array', function() {
-        const element = browser.element('#array-stringify');
+        const element = browser.element('.array-stringify');
         assert.strictEqual(element.getText(), '[1,2]');
     });
 
     it('should return proper value for complex object', function() {
-        const element = browser.element('#complex-object-stringify');
+        const element = browser.element('.complex-object-stringify');
         assert.strictEqual(
             element.getText(),
             '{"string":"x","number":1,"boolean":true,"null":null,"object":{"x":"x"}}',
@@ -26,7 +26,7 @@ describe('JSON.stringify on proxies', () => {
     });
 
     it('should return proper value for nested proxies', function() {
-        const element = browser.element('#nested-object-stringify');
+        const element = browser.element('.nested-object-stringify');
         assert.strictEqual(element.getText(), '{"x":{"y":true},"z":[false]}');
     });
 });
