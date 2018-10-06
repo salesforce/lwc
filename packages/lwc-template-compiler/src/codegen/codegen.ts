@@ -11,7 +11,8 @@ type RenderPrimitive =
     | 'bind'
     | 'text'
     | 'dynamic'
-    | 'key';
+    | 'key'
+    | 'scopedId';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -30,6 +31,7 @@ const RENDER_APIS: {
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
     key: { name: 'k', alias: 'api_key' },
+    scopedId: { name: 'gid', alias: 'api_scoped_id' },
 };
 
 const SLOT_ID_PREFIX = 'slot';
@@ -91,6 +93,15 @@ export default class CodeGen {
 
     genKey(compilerKey: t.NumericLiteral, value: t.Expression) {
         return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
+    }
+
+    genScopedId(compilerKey: t.NumericLiteral | t.Expression, value: string) {
+        return this._renderApiCall(
+            RENDER_APIS.scopedId, [
+                compilerKey,
+                t.stringLiteral(value)
+            ]
+        );
     }
 
     getSlotId(name: string) {

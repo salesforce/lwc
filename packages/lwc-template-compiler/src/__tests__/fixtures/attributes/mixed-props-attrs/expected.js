@@ -6,7 +6,7 @@ import _nsInput from "ns/input";
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element, h: api_element } = $api;
+  const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
 
   return [
     api_custom_element(
@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       {
         props: {
           d: $cmp.p.foo,
-          id: "ns-foo"
+          id: api_scoped_id(1, "ns-foo")
         },
         key: 1
       },
@@ -50,7 +50,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "data-xx": "foo"
         },
         props: {
-          ariaDescribedBy: "ns-foo",
+          ariaDescribedBy: api_scoped_id(1, "ns-foo"),
           ariaHidden: "hidden",
           fooBar: "x",
           foo: "bar",

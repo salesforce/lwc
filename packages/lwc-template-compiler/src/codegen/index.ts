@@ -47,6 +47,7 @@ import CodeGen from './codegen';
 
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
+import { isIdReferencingAttribute } from '../parser/attribute';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
@@ -74,6 +75,29 @@ function transform(
     stack.push(
         t.arrayExpression([]),
     );
+
+    const keyForId = Object.create(null);
+
+    // Initial traversal to understand the state of the tree as a whole.
+    traverse(root, {
+        element: {
+            exit(element: IRElement) {
+                if (isTemplate(element)) {
+                    return;
+                }
+
+                element.key = t.numericLiteral(generateKey());
+
+                const { attrs, props, key } = element;
+                if (attrs && attrs.id) {
+                    keyForId[attrs.id.value as string] = key;
+                }
+                if (props && props.id) {
+                    keyForId[props.id.value as string] = key;
+                }
+            }
+        }
+    });
 
     traverse(root, {
         text: {
@@ -380,37 +404,78 @@ function transform(
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
         }
 
+        function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
+            const key = keyForId[id];
+            if (forKey) {
+                const generatedKey = codeGen.genKey(
+                    key,
+                    bindExpression(forKey, element).expression
+                );
+                return codeGen.genScopedId(generatedKey, id);
+            } else {
+                return codeGen.genScopedId(key, id);
+            }
+        }
+
+        function generateScopedIdFunctionForIdRefAttr(idRef: string): t.CallExpression | t.TemplateLiteral {
+            const expressions = idRef
+                .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
+                .map(generateScopedIdFunctionForIdAttr);
+
+            if (expressions.length === 1) {
+                return expressions[0];
+            } else {
+                // Combine each computed scoped id via template literal (e.g., `${api_scoped_id()} ${api_scoped_id()}`)
+                const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
+                const quasis = ['', ...spacesBetweenIdRefs, '']
+                    .map(str => t.templateElement({ raw: str }));
+                return t.templateLiteral(quasis, expressions);
+            }
+        }
+
         // Attributes
         if (attrs) {
-            const attrsObj = objectToAST(attrs, key =>
-                computeAttrValue(attrs[key], element),
-            );
+            const attrsObj = objectToAST(attrs, key => {
+                if (key === 'id') {
+                    return generateScopedIdFunctionForIdAttr(attrs[key].value as string);
+                }
+                if (isIdReferencingAttribute(key)) {
+                    return generateScopedIdFunctionForIdRefAttr(attrs[key].value as string);
+                }
+                return computeAttrValue(attrs[key], element);
+            });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
         }
 
         // Properties
         if (props) {
-            const propsObj = objectToAST(props, key =>
-                computeAttrValue(props[key], element),
-            );
+            const propsObj = objectToAST(props, key => {
+                const attrName = props[key].name as string;
+                if (attrName === 'id') {
+                    return generateScopedIdFunctionForIdAttr(props[key].value as string);
+                }
+                if (isIdReferencingAttribute(attrName)) {
+                    return generateScopedIdFunctionForIdRefAttr(props[key].value as string);
+                }
+                return computeAttrValue(props[key], element);
+            });
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
         // Key property on VNode
-        const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
             const { expression: forKeyExpression } = bindExpression(forKey, element);
             data.push(
                 t.objectProperty(
                     t.identifier('key'),
-                    codeGen.genKey(compilerKey, forKeyExpression),
+                    codeGen.genKey(element.key!, forKeyExpression),
                 ),
             );
         } else {
             // If stand alone element with no user-defined key
             // member expression id
-            data.push(t.objectProperty(t.identifier('key'), compilerKey));
+            data.push(t.objectProperty(t.identifier('key'), element.key!));
         }
 
         // Event handler
