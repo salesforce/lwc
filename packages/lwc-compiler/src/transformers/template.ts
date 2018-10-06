@@ -68,7 +68,6 @@ const transform: FileTransformer = function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ) {
-
     let code;
     let metadata;
 
@@ -91,10 +90,12 @@ const transform: FileTransformer = function(
         throw new CompilerError(e.message, filename, e.loc);
     }
 
+    // Rollup only cares about the mappings property on the map. Since producing a source map for
+    // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: attachStyleToTemplate(code, filename, options),
         metadata,
-        map: null
+        map: { mappings: '' }
     };
 };
 

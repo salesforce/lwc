@@ -127,5 +127,7 @@ export default async function transformStyle(
         code = EMPTY_CSS_OUTPUT;
     }
 
-    return { code, map: null };
+    // Rollup only cares about the mappings property on the map. Since producing a source map for
+    // the styles doesn't make sense, the transform returns an empty mappings.
+    return { code, map: { mappings: '' } };
 }

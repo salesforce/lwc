@@ -1,3 +1,4 @@
+import { SourceMapConsumer } from "source-map";
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
@@ -166,39 +167,80 @@ describe("compiler result", () => {
         };
         const { success, diagnostics }  = await compile(config);
         expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
+        expect(diagnostics.length).toBe(3);
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
         expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('Unclosed block');
+        expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[2].message).toContain('Unclosed block');
     });
 
-    test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
-        const config = {
+    test("sourcemaps correctness", async () => {
+        const tplCode = '<template></template>';
+        const cmpCode = `import { LightningElement } from 'lwc';
+import { main } from './utils/util.js';
+export default class Test extends LightningElement {
+  get myimport() {
+    return main();
+  }
+}
+`;
+        const utilsCode = `export function main() {
+  return 'here is your import';
+}`;
+        const { result } = await compile({
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `import { LightningElement } from 'lwc';
-                export default class Test extends LightningElement {}
-                `,
-                "foo.html": `<template>`,
+                "foo.js": cmpCode,
+                "foo.html": tplCode,
+                "utils/util.js": utilsCode,
             },
-        };
-        const { success, diagnostics }  = await compile(config);
-        expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
+            outputConfig: {
+                sourcemap: true
+            }
+        });
 
-        // check warning
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const mainDefMappedToOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 1,
+                column: 16,
+            });
 
-        // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
+            expect(mainDefMappedToOutputPosition.line).toBe(23);
+            expect(mainDefMappedToOutputPosition.column).toBe(11);
+
+            const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 2,
+                column: 9,
+            });
+
+            expect(stringConstantInOutputPosition.line).toBe(24);
+            expect(stringConstantInOutputPosition.column).toBe(11);
+
+            const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 4,
+                column: 6,
+            });
+
+            expect(myimportDefinitionOutputPosition.line).toBe(28);
+            expect(myimportDefinitionOutputPosition.column).toBe(8);
+
+            const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 5,
+                column: 11,
+            });
+
+            expect(mainInvocationInOutputPosition.line).toBe(29);
+            expect(mainInvocationInOutputPosition.column).toBe(13);
+        });
     });
 });
 

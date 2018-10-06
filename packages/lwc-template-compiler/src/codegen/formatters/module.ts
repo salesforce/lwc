@@ -6,6 +6,13 @@ import {
     generateTemplateMetadata,
     kebabcaseToCamelcase
 } from '../helpers';
+import { ResolvedConfig } from '../../config';
+
+import {
+    TEMPLATE_FUNCTION_NAME,
+    SECURE_REGISTER_TEMPLATE_METHOD_NAME,
+    LWC_MODULE_NAME
+} from '../../shared/constants';
 
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);
@@ -16,18 +23,38 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
     );
 }
 
+function generateSecureImport(): t.ImportDeclaration {
+    return t.importDeclaration(
+        [t.importSpecifier(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME))],
+        t.stringLiteral(LWC_MODULE_NAME)
+    );
+}
+
 export function format(
     templateFn: t.FunctionDeclaration,
     state: State,
+    options: ResolvedConfig
 ): t.Program {
     const imports = state.dependencies.map(cmpClassName =>
         moduleNameToImport(cmpClassName),
     );
+
     const metadata = generateTemplateMetadata(state);
+
+    imports.push(generateSecureImport());
+    const templateBody = [
+        templateFn,
+        t.exportDefaultDeclaration(
+            t.callExpression(
+                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
+                [t.identifier(TEMPLATE_FUNCTION_NAME)]
+            )
+        )
+    ];
 
     return t.program([
         ...imports,
-        t.exportDefaultDeclaration(templateFn),
+        ...templateBody,
         ...metadata,
     ]);
 }

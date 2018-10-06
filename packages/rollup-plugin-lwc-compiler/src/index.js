@@ -3,7 +3,7 @@ const path = require("path");
 const compiler = require("lwc-compiler");
 const pluginUtils = require("rollup-pluginutils");
 const lwcResolver = require("lwc-module-resolver");
-const { getModuleQualifiedName, getLwcEnginePath } = require('./utils');
+const { getModuleQualifiedName } = require('./utils');
 const { DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
@@ -63,7 +63,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
                 name: moduleRegistry.moduleName,
                 namespace: moduleRegistry.moduleNamespace,
-                moduleSpecifier: moduleRegistry.moduleSpecifier
+                moduleSpecifier: moduleRegistry.moduleSpecifier,
+                outputConfig: { sourcemap: mergedPluginOptions.sourcemap }
             });
 
             return { code, map };

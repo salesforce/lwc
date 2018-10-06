@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter } from "./dom-api";
+import { parentElementGetter, parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter, ShadowRootHostGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -17,7 +17,9 @@ import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "../faux-shadow/faux";
 
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
+// Object of type ShadowRoot for instance checks
+const NativeShadowRoot = (window as any).ShadowRoot;
+const isNativeShadowRootAvailable = typeof NativeShadowRoot !== "undefined";
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -430,9 +432,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm } = vm;
-    // TODO: bug #435 - shadowDOM will preventing this walking process, we
-    // need to find a different way to find the right boundary
-    const parentElm = elm && parentElementGetter.call(elm);
+    const parentElm = elm && getParentOrHostElement(elm);
     return getErrorBoundaryVM(parentElm);
 }
 
@@ -444,8 +444,8 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
-function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
-    let elm: Element | null = startingElement;
+function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined {
+    let elm: HTMLElement | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
@@ -453,9 +453,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        // TODO: bug #435 - shadowDOM will preventing this walking process, we
-        // need to find a different way to find the right boundary
-        elm = parentElementGetter.call(elm);
+        elm = getParentOrHostElement(elm);
     }
 }
 
@@ -476,11 +474,37 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
             const is = elm.getAttribute('is');
             ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
         }
-        // TODO: bug #435 - shadowDOM will preventing this walking process, we
-        // need to find a different way to find the right boundary
-        elm = parentElementGetter.call(elm);
+        elm = getParentOrHostElement(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
+}
+
+/**
+ * Finds the parent of the specified element. If shadow DOM is enabled, finds
+ * the host of the shadow root to escape the shadow boundary.
+ * @param {HTMLElement} elm
+ * @return {HTMLElement | null} the parent element, escaping any shadow root boundaries, if it exists
+ */
+function getParentOrHostElement(elm: HTMLElement): HTMLElement | null {
+    const parentElement = parentElementGetter.call(elm);
+    // If this is a shadow root, find the host instead
+    return (isNull(parentElement) &&  isNativeShadowRootAvailable) ? getHostElement(elm) : parentElement;
+}
+
+/**
+ * Finds the host element, if it exists.
+ * @param {HTMLElement} elm
+ * @return {HTMLElement | null} the host element if it exists
+ */
+function getHostElement(elm: HTMLElement): HTMLElement | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isNativeShadowRootAvailable, 'getHostElement should only be called if native shadow root is available');
+        assert.isTrue(isNull(parentElementGetter.call(elm)), `getHostElement should only be called if the parent element of ${elm} is null`);
+    }
+    const parentNode = parentNodeGetter.call(elm);
+    return parentNode instanceof NativeShadowRoot
+        ? ShadowRootHostGetter.call(parentNode)
+        : null;
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {

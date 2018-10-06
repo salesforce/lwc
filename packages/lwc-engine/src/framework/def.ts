@@ -389,6 +389,10 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     }, create(null));
 }
 
+export function isComponentConstructor(Ctor: any): boolean {
+   return isElementComponent(Ctor);
+}
+
 export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {

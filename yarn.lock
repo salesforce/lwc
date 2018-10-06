@@ -1514,10 +1514,10 @@
   resolved "http://npm.lwcjs.org/@types/node/-/node-8.9.4/dfd327582a06c114eb6e0441fa3d6fab35edad48.tgz#dfd327582a06c114eb6e0441fa3d6fab35edad48"
   integrity sha512-dSvD36qnQs78G1BPsrZFdPpvLgMW/dnvr5+nTW2csMs5TiP9MOXrjUbnMZOEwnIuBklXtn7b6TPA2Cuq07bDHA==
 
-"@types/node@^6.0.46":
-  version "6.0.101"
-  resolved "http://npm.lwcjs.org/@types/node/-/node-6.0.101/0c5911cfb434af4a51c0a499931fe6423207d921.tgz#0c5911cfb434af4a51c0a499931fe6423207d921"
-  integrity sha512-IQ7V3D6+kK1DArTqTBrnl3M+YgJZLw8ta8w3Q9xjR79HaJzMAoTbZ8TNzUTztrkCKPTqIstE2exdbs1FzsYLUw==
+"@types/parse5@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/parse5/-/parse5-5.0.0.tgz#9ae2106efc443d7c1e26570aa8247828c9c80f11"
+  integrity sha512-J5D3z703XTDIGQFYXsnU9uRCW9e9mMEFO0Kpe6kykyiboqziru/RlZ0hM2P+PKTG4NHG1SjLrqae/NrV2iJApQ==
 
 "@webassemblyjs/ast@1.5.10":
   version "1.5.10"
@@ -2182,10 +2182,10 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.20.5/5d4a6ec225b7db75b6f03c81393d941341929a36.tgz#5d4a6ec225b7db75b6f03c81393d941341929a36"
-  integrity sha1-XUpuwiW323W28DyBOT2UE0GSmjY=
+babel-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.20.6/c955a48669310eca83e51f8fb01ef9653dc690bd.tgz#c955a48669310eca83e51f8fb01ef9653dc690bd"
+  integrity sha1-yVWkhmkxDsqD5R+PsB75ZT3GkL0=
 
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
@@ -2759,10 +2759,10 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.5a128fd5:
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-transform-proxy-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.20.5/80558bdec639bdff10600945c8e4c4d4a70370e2.tgz#80558bdec639bdff10600945c8e4c4d4a70370e2"
-  integrity sha1-gFWL3sY5vf8QYAlFyOTE1KcDcOI=
+babel-plugin-transform-proxy-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.20.6/c8cd43034c7a99db14f3d6a1b405479d790b6d8f.tgz#c8cd43034c7a99db14f3d6a1b405479d790b6d8f"
+  integrity sha1-yM1DA0x6mdsU89ahtAVHnXkLbY8=
   dependencies:
     "@babel/types" "7.0.0"
 
@@ -2822,10 +2822,10 @@ babel-polyfill@6.26.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
-babel-preset-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.20.5/2b07a31873e6bcbde6b3bfd508df0e63c964c303.tgz#2b07a31873e6bcbde6b3bfd508df0e63c964c303"
-  integrity sha1-KwejGHPmvL3ms7/VCN8OY8lkwwM=
+babel-preset-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.20.6/08116e4e5f1797d82e224f9e9d4b1dd9dcf471e2.tgz#08116e4e5f1797d82e224f9e9d4b1dd9dcf471e2"
+  integrity sha1-CBFuTl8Xl9guIk+enUsd2dz0ceI=
   dependencies:
     "@babel/plugin-proposal-class-properties" "7.1.0"
     "@babel/plugin-proposal-object-rest-spread" "7.0.0"
@@ -2856,7 +2856,7 @@ babel-preset-compat@0.20.5:
     "@babel/plugin-transform-template-literals" "7.0.0"
     "@babel/plugin-transform-typeof-symbol" "7.0.0"
     "@babel/plugin-transform-unicode-regex" "7.0.0"
-    babel-plugin-transform-proxy-compat "0.20.5"
+    babel-plugin-transform-proxy-compat "0.20.6"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -3889,10 +3889,10 @@ compare-versions@^3.1.0:
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-3.3.0/af93ea705a96943f622ab309578b9b90586f39c3.tgz#af93ea705a96943f622ab309578b9b90586f39c3"
   integrity sha512-MAAAIOdi2s4Gl6rZ76PNcUa9IOYB+5ICdT41o5uMRf09aEu/F9RK+qhe8RjXNPwcTjGV7KU7h2P/fljThFVqyQ==
 
-compat-polyfills@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.20.5/f6ca0dcfa54def645ece06923d4c70f3bfc41c9f.tgz#f6ca0dcfa54def645ece06923d4c70f3bfc41c9f"
-  integrity sha1-9soNz6VN72RezgaSPUxw87/EHJ8=
+compat-polyfills@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.20.6/01f3fdba9d3d0a649eeb0f6c1eec51bf953d9f91.tgz#01f3fdba9d3d0a649eeb0f6c1eec51bf953d9f91"
+  integrity sha1-AfP9up09CmSe6w9sHuxRv5U9n5E=
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -5004,16 +5004,16 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
 
-es5-proxy-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.20.5/55ec281936f42f193a03735116f9506282ad6e05.tgz#55ec281936f42f193a03735116f9506282ad6e05"
-  integrity sha1-VewoGTb0Lxk6A3NRFvlQYoKtbgU=
+es5-proxy-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.20.6/6d08a572e60b7676fddada69f6296f2a3ced9101.tgz#6d08a572e60b7676fddada69f6296f2a3ced9101"
+  integrity sha1-bQilcuYLdnb92tpp9ilvKjztkQE=
   dependencies:
-    babel-compat "0.20.5"
-    babel-plugin-transform-proxy-compat "0.20.5"
-    babel-preset-compat "0.20.5"
-    compat-polyfills "0.20.5"
-    proxy-compat "0.20.5"
+    babel-compat "0.20.6"
+    babel-plugin-transform-proxy-compat "0.20.6"
+    babel-preset-compat "0.20.6"
+    compat-polyfills "0.20.6"
+    proxy-compat "0.20.6"
 
 es6-promise@^4.0.3:
   version "4.2.4"
@@ -8126,6 +8126,13 @@ magic-string@^0.22.4:
   dependencies:
     vlq "^0.2.1"
 
+magic-string@~0.25.1:
+  version "0.25.1"
+  resolved "http://npm.lwcjs.org/magic-string/-/magic-string-0.25.1/b1c248b399cd7485da0fe7385c2fc7011843266e.tgz#b1c248b399cd7485da0fe7385c2fc7011843266e"
+  integrity sha512-sCuTz6pYom8Rlt4ISPFn6wuFodbKMIHUMv4Qko9P17dpxb7s52KJTmRuZZqHdGmLCK9AOcDare039nRIcfdkEg==
+  dependencies:
+    sourcemap-codec "^1.4.1"
+
 make-dir@^1.0.0:
   version "1.2.0"
   resolved "http://npm.lwcjs.org/make-dir/-/make-dir-1.2.0/6d6a49eead4aae296c53bbf3a1a008bd6c89469b.tgz#6d6a49eead4aae296c53bbf3a1a008bd6c89469b"
@@ -9141,24 +9148,15 @@ parse-passwd@^1.0.0:
   resolved "http://npm.lwcjs.org/parse-passwd/-/parse-passwd-1.0.0/6d5b934a456993b23d37f40a382d6f1666a8e5c6.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
   integrity sha1-bVuTSkVpk7I9N/QKOC1vFmao5cY=
 
-parse5-with-errors@^4.0.1:
-  version "4.0.1"
-  resolved "http://npm.lwcjs.org/parse5-with-errors/-/parse5-with-errors-4.0.1/3a99709acba0e495d3d0cf79542386c362e7e6a3.tgz#3a99709acba0e495d3d0cf79542386c362e7e6a3"
-  integrity sha1-Oplwmsug5JXT0M95VCOGw2Ln5qM=
-  dependencies:
-    "@types/node" "^6.0.46"
-
 parse5@4.0.0:
   version "4.0.0"
   resolved "http://npm.lwcjs.org/parse5/-/parse5-4.0.0/6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608.tgz#6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608"
   integrity sha512-VrZ7eOd3T1Fk4XWNXMgiGBK/z0MG48BWG2uQNU4I72fkQuKUTZpl+u9k+CxEG0twMVzSmXEEz12z5Fnw1jIQFA==
 
-parse5@^3.0.3:
-  version "3.0.3"
-  resolved "http://npm.lwcjs.org/parse5/-/parse5-3.0.3/042f792ffdd36851551cf4e9e066b3874ab45b5c.tgz#042f792ffdd36851551cf4e9e066b3874ab45b5c"
-  integrity sha512-rgO9Zg5LLLkfJF9E6CCmXlSE4UVceloys8JrFqCcHloC3usd/kJCyPDwH2SOlzix2j3xaP9sUX3e8+kvkuleAA==
-  dependencies:
-    "@types/node" "*"
+parse5@^5.1.0:
+  version "5.1.0"
+  resolved "http://npm.lwcjs.org/parse5/-/parse5-5.1.0/c59341c9723f414c452975564c7c00a68d58acd2.tgz#c59341c9723f414c452975564c7c00a68d58acd2"
+  integrity sha512-fxNG2sQjHvlVAYmzBZS9YlDp6PTSSDwa98vkD4QgVDDCAo84z5X1t5XyJQ62ImdLXx5NdIIfihey6xpum9/gRQ==
 
 parseqs@0.0.5:
   version "0.0.5"
@@ -9679,10 +9677,10 @@ proxy-addr@~2.0.2:
     forwarded "~0.1.2"
     ipaddr.js "1.6.0"
 
-proxy-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.20.5/a36712ddcea7b8381d22ea0c1241b423e7b34321.tgz#a36712ddcea7b8381d22ea0c1241b423e7b34321"
-  integrity sha1-o2cS3c6nuDgdIuoMEkG0I+ezQyE=
+proxy-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.20.6/e97c0bcebeeecb3fa709b80cfe863cd7a93b3d93.tgz#e97c0bcebeeecb3fa709b80cfe863cd7a93b3d93"
+  integrity sha1-6XwLzr7uyz+nCbgM/oY816k7PZM=
 
 proxy-from-env@^1.0.0:
   version "1.0.0"
@@ -10453,13 +10451,14 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-compat@0.20.5:
-  version "0.20.5"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.5/613dc7b9030cae33272f80e83b961df5e51ce0c6.tgz#613dc7b9030cae33272f80e83b961df5e51ce0c6"
-  integrity sha1-YT3HuQMMrjMnL4DoO5Yd9eUc4MY=
+rollup-plugin-compat@0.20.6:
+  version "0.20.6"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.6/f36fe6f1a343619da1f2e521d62c1fea54978892.tgz#f36fe6f1a343619da1f2e521d62c1fea54978892"
+  integrity sha1-82/m8aNDYZ2h8uUh1iwf6lSXiJI=
   dependencies:
     "@babel/core" "7.1.0"
-    es5-proxy-compat "0.20.5"
+    es5-proxy-compat "0.20.6"
+    magic-string "~0.25.1"
     rollup-pluginutils "~2.0.1"
 
 rollup-plugin-inject@^1.4.1:
@@ -10517,15 +10516,7 @@ rollup-pluginutils@^2.0.1, rollup-pluginutils@~2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@0.60.1:
-  version "0.60.1"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.60.1/07cb66153f1541d5f7e82b8393b405c31647dae9.tgz#07cb66153f1541d5f7e82b8393b405c31647dae9"
-  integrity sha512-LujiS7PH8DwKAphB2ldaSEF1EX9hWY9w+mct2b4DczC8tvn7qwmr9ZFLtM9IT7gPFYlmS8O1JdiLT/aEiBEcsA==
-  dependencies:
-    "@types/estree" "0.0.39"
-    "@types/node" "*"
-
-rollup@~0.66.2:
+rollup@0.66.2, rollup@~0.66.2:
   version "0.66.2"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.66.2/77acdb9f4093f5f035ce75480577c40a81ea7999.tgz#77acdb9f4093f5f035ce75480577c40a81ea7999"
   integrity sha512-+rOLjWO170M3Y2jyyGU4ZJuTu1T1KuKNyH+RszHRzQdsuI5TulRbkSM4vlaMnwcxHm4XdgBNZ1mmNzhQIImbiQ==
@@ -11011,6 +11002,16 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "http://npm.lwcjs.org/source-map/-/source-map-0.6.1/74722af32e9614e9c287a8d0bbde48b5e2f1a263.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+source-map@^0.7.3:
+  version "0.7.3"
+  resolved "http://npm.lwcjs.org/source-map/-/source-map-0.7.3/5302f8169031735226544092e64981f751750383.tgz#5302f8169031735226544092e64981f751750383"
+  integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
+
+sourcemap-codec@^1.4.1:
+  version "1.4.3"
+  resolved "http://npm.lwcjs.org/sourcemap-codec/-/sourcemap-codec-1.4.3/0ba615b73ec35112f63c2f2d9e7c3f87282b0e33.tgz#0ba615b73ec35112f63c2f2d9e7c3f87282b0e33"
+  integrity sha512-vFrY/x/NdsD7Yc8mpTJXuao9S8lq08Z/kOITHz6b7YbfI9xL8Spe5EvSQUHOI7SbpY8bRPr0U3kKSsPuqEGSfA==
 
 spawn-command@^0.0.2-1:
   version "0.0.2-1"
