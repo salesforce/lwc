@@ -6,7 +6,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child throws in renderedCallback()', () => {
-        browser.element('#boundary-child-rendered-throw').click();
+        browser.element('.boundary-child-rendered-throw').click();
         const altenativeView = browser.element('.rendered-calback-altenative');
         assert.equal(altenativeView.getText(), "renderedCallback alternative view");
 
@@ -15,7 +15,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should render alternative view if child throws in render()', () => {
-        browser.element('#boundary-child-render-throw').click();
+        browser.element('.boundary-child-render-throw').click();
         const altenativeView = browser.element('.render-altenative');
         assert.equal(altenativeView.getText(), "render alternative view");
 
@@ -24,7 +24,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should render alternative view if child throws in constructor()', () => {
-        browser.element('#boundary-child-constructor-throw').click();
+        browser.element('.boundary-child-constructor-throw').click();
         const altenativeView = browser.element('.constructor-altenative');
 
         assert.equal(altenativeView.getText(), "constructor alternative view");
@@ -34,7 +34,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should render alternative view if child throws in connectedCallback()', () => {
-        browser.element('#boundary-child-connected-throw').click();
+        browser.element('.boundary-child-connected-throw').click();
         const altenativeView = browser.element('.connected-callback-altenative');
 
         assert.equal(altenativeView.getText(), "connectedCallback alternative view");
@@ -43,7 +43,7 @@ describe('error boundary integration', () => {
     })
 
     it('should render alternative view if child slot throws in render()', () => {
-        browser.element('#boundary-child-slot-throw').click();
+        browser.element('.boundary-child-slot-throw').click();
         const altenativeView = browser.element('.slot-altenative');
 
         assert.equal(altenativeView.getText(), 'slot alternative view');
@@ -51,7 +51,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should render alternative view if child throws during self rehydration cycle', () => {
-        browser.element('#boundary-child-self-rehydrate-throw').click();
+        browser.element('.boundary-child-self-rehydrate-throw').click();
         browser.element('.self-rehydrate-trigger').click();
         const altenativeView = browser.element('.self-rehydrate-altenative');
 
@@ -61,7 +61,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
-        browser.element('#nested-boundary-child-alt-view-throw').click();
+        browser.element('.nested-boundary-child-alt-view-throw').click();
 
         assert.equal(browser.isVisible('.boundary-alt-view'), true);
         // ensure offender has been unmounted
@@ -69,7 +69,7 @@ describe('error boundary integration', () => {
     }),
 
     it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
-        browser.element('#boundary-alternative-view-throw').click();
+        browser.element('.boundary-alternative-view-throw').click();
         // ensure offender still exists since boundary failed to recover
         assert.equal(browser.isExisting('integration-post-error-child-view'), true);
     })

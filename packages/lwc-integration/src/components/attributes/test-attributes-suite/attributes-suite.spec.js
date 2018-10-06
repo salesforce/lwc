@@ -13,7 +13,7 @@ describe('test pre dom-insertion setAttribute and removeAttribute functionality'
         assert.equal(childElm.getAttribute('title'), 'im child title');
 
         // verify via element
-        const titleAttrDivElm = browser.element('#titleattr');
+        const titleAttrDivElm = browser.element('.titleattr');
         assert.equal(titleAttrDivElm.getText(), 'im child title');
     }),
 
@@ -22,7 +22,7 @@ describe('test pre dom-insertion setAttribute and removeAttribute functionality'
         assert.notEqual(childElm.getAttribute('tabindex'), '4');
 
         // verify via element
-        const tabAttrElm = browser.element('#tabindexattr');
+        const tabAttrElm = browser.element('.tabindexattr');
         assert.notEqual(tabAttrElm.getText(), '4');
     })
 })
