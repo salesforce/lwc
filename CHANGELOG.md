@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.13...v) (2018-10-05)
+# [](https://github.com/salesforce/lwc/compare/v0.29.14...v) (2018-10-07)
+
+
+### Bug Fixes
+
+* **engine:** integration flapper - async-event-target ([#715](https://github.com/salesforce/lwc/issues/715)) ([6a7de86](https://github.com/salesforce/lwc/commit/6a7de86))
+
+
+
+<a name="0.29.14"></a>
+## [0.29.14](https://github.com/salesforce/lwc/compare/v0.29.13...v0.29.14) (2018-10-05)
 
 
 ### Bug Fixes
