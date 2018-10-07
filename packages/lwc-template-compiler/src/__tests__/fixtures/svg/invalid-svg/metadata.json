@@ -1,182 +1,134 @@
 {
     "warnings": [
         {
-            "message": "Forbidden svg namespace tag found in template: '<altGlyph>' tag is not allowed within <svg>",
-            "start": 29,
-            "length": 10,
-            "level": "error"
-        },
-        {
-            "message": "Forbidden svg namespace tag found in template: '<altGlyphDef>' tag is not allowed within <svg>",
-            "start": 59,
-            "length": 13,
-            "level": "error"
-        },
-        {
-            "message": "Forbidden svg namespace tag found in template: '<altGlyphItem>' tag is not allowed within <svg>",
-            "start": 95,
-            "length": 14,
-            "level": "error"
-        },
-        {
             "message": "Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
-            "start": 133,
+            "start": 160,
             "length": 19,
             "level": "error"
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<animateColor>' tag is not allowed within <svg>",
-            "start": 161,
-            "length": 14,
-            "level": "error"
-        },
-        {
-            "message": "Forbidden svg namespace tag found in template: '<animateMotion>' tag is not allowed within <svg>",
-            "start": 199,
-            "length": 15,
-            "level": "error"
-        },
-        {
-            "message": "Forbidden svg namespace tag found in template: '<animateTransform>' tag is not allowed within <svg>",
-            "start": 239,
-            "length": 18,
-            "level": "error"
-        },
-        {
             "message": "Forbidden svg namespace tag found in template: '<cursor>' tag is not allowed within <svg>",
-            "start": 285,
+            "start": 339,
             "length": 17,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<discard>' tag is not allowed within <svg>",
-            "start": 311,
+            "start": 365,
             "length": 19,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font>' tag is not allowed within <svg>",
-            "start": 339,
+            "start": 393,
             "length": 13,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font-face>' tag is not allowed within <svg>",
-            "start": 361,
+            "start": 415,
             "length": 23,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font-face-format>' tag is not allowed within <svg>",
-            "start": 393,
+            "start": 447,
             "length": 37,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font-face-name>' tag is not allowed within <svg>",
-            "start": 439,
+            "start": 493,
             "length": 33,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font-face-src>' tag is not allowed within <svg>",
-            "start": 481,
+            "start": 535,
             "length": 31,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<font-face-uri>' tag is not allowed within <svg>",
-            "start": 521,
+            "start": 575,
             "length": 31,
             "level": "error"
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<foreignObject>' tag is not allowed within <svg>",
-            "start": 561,
-            "length": 15,
-            "level": "error"
-        },
-        {
             "message": "Forbidden svg namespace tag found in template: '<glyph>' tag is not allowed within <svg>",
-            "start": 601,
+            "start": 664,
             "length": 15,
-            "level": "error"
-        },
-        {
-            "message": "Forbidden svg namespace tag found in template: '<glyphRef>' tag is not allowed within <svg>",
-            "start": 625,
-            "length": 10,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<hatch>' tag is not allowed within <svg>",
-            "start": 655,
+            "start": 727,
             "length": 15,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<hatchpath>' tag is not allowed within <svg>",
-            "start": 679,
+            "start": 751,
             "length": 23,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<hkern>' tag is not allowed within <svg>",
-            "start": 711,
+            "start": 783,
             "length": 15,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<metadata>' tag is not allowed within <svg>",
-            "start": 735,
+            "start": 807,
             "length": 21,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<missing-glyph>' tag is not allowed within <svg>",
-            "start": 765,
+            "start": 837,
             "length": 31,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<mpath>' tag is not allowed within <svg>",
-            "start": 805,
+            "start": 877,
             "length": 15,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
-            "start": 829,
+            "start": 901,
             "length": 17,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<set>' tag is not allowed within <svg>",
-            "start": 855,
+            "start": 927,
             "length": 11,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<solidcolor>' tag is not allowed within <svg>",
-            "start": 875,
+            "start": 947,
             "length": 25,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
-            "start": 909,
+            "start": 981,
             "length": 15,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<switch>' tag is not allowed within <svg>",
-            "start": 933,
+            "start": 1005,
             "length": 17,
             "level": "error"
         },
         {
             "message": "Forbidden svg namespace tag found in template: '<tref>' tag is not allowed within <svg>",
-            "start": 959,
+            "start": 1031,
             "length": 13,
             "level": "error"
         }

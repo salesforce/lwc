@@ -1,4 +1,4 @@
-import { Attribute } from 'parse5';
+import * as parse5 from 'parse5-with-errors';
 import camelcase from 'camelcase';
 
 import {
@@ -61,7 +61,7 @@ export function isRestrictedStaticAttribute(attrName: string): boolean {
 }
 
 export function normalizeAttributeValue(
-    attr: Attribute,
+    attr: parse5.AST.Default.Attribute,
     raw: string,
     tag: string,
 ): {
@@ -141,12 +141,12 @@ export function normalizeAttributeValue(
     return { value, escapedExpression: false };
 }
 
-export function attributeName(attr: Attribute): string {
+export function attributeName(attr: parse5.AST.Default.Attribute): string {
     const { prefix, name } = attr;
     return prefix ? `${prefix}:${name}` : name;
 }
 
-export function getAttribute(el: IRElement, pattern: string | RegExp): Attribute | undefined {
+export function getAttribute(el: IRElement, pattern: string | RegExp): parse5.AST.Default.Attribute | undefined {
     return el.attrsList.find((attr) => (
         typeof pattern === 'string' ?
             attributeName(attr) === pattern :

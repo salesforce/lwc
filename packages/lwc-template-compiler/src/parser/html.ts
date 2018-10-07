@@ -1,93 +1,122 @@
-import {
-    parseFragment,
-    DefaultTreeElement,
-    DefaultTreeNode,
-    DefaultTreeTextNode,
-    Location,
-    DefaultTreeCommentNode,
-    DocumentFragment,
-} from 'parse5';
+import * as parse5 from 'parse5-with-errors';
 import * as he from 'he';
 
-export interface NodeVisitor<T> {
-    enter?: (element: T) => void;
-    exit?: (element: T) => void;
+import { CompilationWarning } from '../shared/types';
+import { VOID_ELEMENT_SET } from './constants';
+
+export type VisitorFn = (element: parse5.AST.Node) => void;
+
+export interface NodeVisitor {
+    enter?: VisitorFn;
+    exit?: VisitorFn;
 }
 
 export interface Visitor {
-    Element?: NodeVisitor<DefaultTreeElement>;
-    Text?: NodeVisitor<DefaultTreeTextNode>;
-    Comment?: NodeVisitor<DefaultTreeCommentNode>;
+    [type: string]: NodeVisitor;
 }
 
-export function parseHTML(source: string): DocumentFragment {
-    return parseFragment(source, {
-        sourceCodeLocationInfo: true,
-    });
+export const treeAdapter = parse5.treeAdapters.default;
+
+export function parseHTML(source: string) {
+    const parsingErrors: CompilationWarning[] = [];
+
+    const onParseError = (err: parse5.Errors.ParsingError) => {
+        const { code, startOffset, endOffset } = err;
+        const message = [
+            `Invalid HTML syntax: ${code}. For more information,`,
+            `please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-${code}`,
+        ].join(' ');
+
+        parsingErrors.push({
+            level: 'error',
+            message,
+            start: startOffset,
+            length: endOffset - startOffset,
+        });
+    };
+
+    const validateClosingTag = (node: parse5.AST.Default.Element) => {
+        if (!node.__location) {
+            return;
+        }
+
+        const { startTag, endTag } = node.__location;
+        const isVoidElement = VOID_ELEMENT_SET.has(node.tagName);
+        const missingClosingTag = !!startTag && !endTag;
+
+        if (!isVoidElement && missingClosingTag) {
+            parsingErrors.push({
+                level: 'error',
+                message: `<${node.tagName}> has no matching closing tag.`,
+                start: startTag.startOffset,
+                length: startTag.endOffset - startTag.startOffset,
+            });
+        }
+    };
+
+    const fragment = parse5.parseFragment(source, {
+        locationInfo: true,
+        onParseError,
+    }) as parse5.AST.Default.DocumentFragment;
+
+    if (!parsingErrors.length) {
+        traverseHTML(fragment, {
+            Element: {
+                enter: validateClosingTag,
+            },
+        });
+    }
+
+    return {
+        fragment,
+        errors: parsingErrors,
+    };
 }
 
 export function traverseHTML(
-    node: DefaultTreeNode,
+    node: parse5.AST.Default.Node,
     visitor: Visitor,
 ): void {
-    let nodeVisitor: NodeVisitor<any> | undefined;
-    let children: DefaultTreeNode[] = [];
+    let nodeVisitor: NodeVisitor;
+    switch (node.nodeName) {
+        case '#comment':
+            nodeVisitor = visitor.Comment;
+            break;
 
-    if (isElementNode(node)) {
-        nodeVisitor = visitor.Element;
-            // Node children are accessed differently depending on the node type:
-            //  - standard elements have their children associated on the node itself
-            //  - while the template node children are present on the content property.
-        children = (node as any).content ? (node as any).content.childNodes : node.childNodes;
-    } else if (isTextNode(node)) {
-        nodeVisitor = visitor.Text;
-    } else if (isCommentNode(node)) {
-        nodeVisitor = visitor.Comment;
+        case '#text':
+            nodeVisitor = visitor.Text;
+            break;
+
+        default:
+            nodeVisitor = visitor.Element;
     }
 
-    // enter
     if (nodeVisitor && nodeVisitor.enter) {
         nodeVisitor.enter(node);
-        }
-
-    // traverse childen
-    for (const child of children) {
-        traverseHTML(child, visitor);
     }
 
-    // exit
+    // Node children are accessed differently depending on the node type:
+    //  - standard elements have their children associated on the node itself
+    //  - while the template node children are present on the content property.
+    const children = treeAdapter.getChildNodes(
+        treeAdapter.getTemplateContent(node) || node,
+    );
+
+    // Traverse the node children if necessary.
+    if (children !== undefined) {
+        for (const child of children) {
+            traverseHTML(child as parse5.AST.Default.Node, visitor);
+        }
+    }
+
     if (nodeVisitor && nodeVisitor.exit) {
         nodeVisitor.exit(node);
     }
-        }
-
-export function isElementNode(node: any): node is DefaultTreeElement {
-    return node && node.tagName;
-    }
-
-export function isTextNode(node: any): node is DefaultTreeTextNode {
-    return node && node.nodeName === '#text';
-}
-
-export function isCommentNode(node: any): node is DefaultTreeCommentNode {
-    return node && node.nodeName === '#comment';
-}
-
-export function getTextNodeContent(node: DefaultTreeTextNode): string {
-    return node && node.value;
-}
-
-export function getTagName(element: DefaultTreeElement): string {
-    return element && element.tagName;
-}
-
-export function getParentNode(node: DefaultTreeElement): DefaultTreeElement {
-    return node && node.parentNode as DefaultTreeElement;
 }
 
 export function getSource(
     source: string,
-    location: Location,
+    location: parse5.MarkupData.Location,
 ): string {
     const { startOffset, endOffset } = location;
     return source.slice(startOffset, endOffset);
