@@ -39,8 +39,7 @@ export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const SVG_TAG_WHITELIST = new Set([
     'a',
     'circle',
-    'clippath',
-    'clipPath',
+    // 'clippath', // '<clipPath> has no matching closing tag.' even with correct closing
     'defs',
     'desc',
     'ellipse',
@@ -58,8 +57,7 @@ export const SVG_TAG_WHITELIST = new Set([
     'svg',
     'symbol',
     'text',
-    'textpath',
-    'textPath',
+    // 'textpath', // '<textPath> has no matching closing tag.' even with correct closing
     'title',
     'tspan',
     'use',

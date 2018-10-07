@@ -10,6 +10,16 @@
     "build": "tsc",
     "test": "jest"
   },
+  "devDependencies": {
+    "@types/babel-generator": "^6.25.1",
+    "@types/babel-template": "^6.25.0",
+    "@types/babel-traverse": "^6.25.3",
+    "@types/babylon": "^6.16.2",
+    "@types/he": "^0.5.29",
+    "ast-pretty-print": "^1.1.5",
+    "esutils": "^2.0.2",
+    "glob": "^7.1.2"
+  },
   "dependencies": {
     "babel-generator": "^6.26.1",
     "babel-template": "^6.26.0",
@@ -18,17 +28,6 @@
     "babylon": "^6.17.0",
     "camelcase": "~5.0.0",
     "he": "^1.1.1",
-    "parse5": "^5.1.0"
-  },
-  "devDependencies": {
-    "@types/babel-generator": "^6.25.1",
-    "@types/babel-template": "^6.25.0",
-    "@types/babel-traverse": "^6.25.3",
-    "@types/babylon": "^6.16.2",
-    "@types/he": "^0.5.29",
-    "@types/parse5": "^5.0.0",
-    "ast-pretty-print": "^1.1.5",
-    "esutils": "^2.0.2",
-    "glob": "^7.1.2"
+    "parse5-with-errors": "^4.0.1"
   }
 }

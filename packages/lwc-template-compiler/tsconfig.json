@@ -5,7 +5,7 @@
     "allowJs": false,
     "declaration": true,
     "declarationDir": "dist/types",
-    "outDir": "dist/commonjs"
+    "outDir": "dist/commonjs",
   },
   "include": [
     "src/**/*",

@@ -209,6 +209,16 @@ describe('custom component', () => {
         expect(root.children[0].component).toBeUndefined();
     });
 
+    it('custom component self closing error', () => {
+        const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
+        expect(warnings).toContainEqual({
+            level: 'error',
+            message: `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+            start: 10,
+            length: 11,
+        });
+    });
+
     it('custom component via is attribute', () => {
         const { root } = parseTemplate(`<template><button is="x-button"></button></template>`);
         expect(root.children[0].tag).toBe('button');
