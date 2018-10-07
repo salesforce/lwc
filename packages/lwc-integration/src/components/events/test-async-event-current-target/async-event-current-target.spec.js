@@ -10,6 +10,6 @@ describe('Async event currentTarget', () => {
         browser.click('div');
         browser.waitUntil(() => {
             return browser.getText('.current-target-is-null') === 'Current Target is null';
-        }, 500, 'Expecd async current target to be null');
+        }, 0, 'Expecd async current target to be null');
     });
 });
