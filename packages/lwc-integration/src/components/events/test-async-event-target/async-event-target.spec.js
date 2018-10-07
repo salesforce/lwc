@@ -11,6 +11,6 @@ describe('Async event target', () => {
         assert.deepEqual(browser.getText('.correct-sync-target'), 'Correct sync target');
         browser.waitUntil(() => {
             return browser.getText('.correct-async-target') === 'Correct async target';
-        }, 0, 'Expected async target to be <async-event-target>');
+        }, 1000, 'Expected async target to be <async-event-target>');
     });
 });
