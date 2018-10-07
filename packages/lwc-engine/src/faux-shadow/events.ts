@@ -51,12 +51,6 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
 
-            if (isFalse(compareDocumentPosition.call(originalTarget, currentTarget) & DOCUMENT_POSITION_CONTAINS)) {
-                // In this case, the original target is in a detached root, making it
-                // impossible to retarget (unless we figure out something clever).
-                return originalTarget;
-            }
-
             // Handle cases where the currentTarget is null (for async events)
             // and when currentTarget is window.
             if (!(currentTarget instanceof Node)) {
@@ -75,6 +69,14 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 // inside the tree or outside the tree, we do not patch.
                 return outerMostElement;
             }
+
+            // Handle cases where the target is detached from the currentTarget node subtree
+            if (isFalse(compareDocumentPosition.call(originalTarget, currentTarget) & DOCUMENT_POSITION_CONTAINS)) {
+                // In this case, the original target is in a detached root, making it
+                // impossible to retarget (unless we figure out something clever).
+                return originalTarget;
+            }
+
             const eventContext = eventToContextMap.get(this);
 
             // Retarget to currentTarget if the listener was added to a custom element.
@@ -147,7 +149,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             //                <span></span>  <-- click event happened
             //            </x-baz>
             //          </div>
-            //        # x-bar light shadow
+            //        # x-bar light dom
             //          <button></button>  <-- this qualified as an indirected slotted element, which meas it is visible to the handleClick
             //      </x-bar>
             //    </slot>
