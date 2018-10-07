@@ -5,6 +5,6 @@ export default class AsyncEventCurrentTarget extends LightningElement {
     handleClick(evt) {
         setTimeout(() => {
             this.currentTargetIsNull = evt.currentTarget === null;
-        }, 10);
+        }, 0);
     }
 }
