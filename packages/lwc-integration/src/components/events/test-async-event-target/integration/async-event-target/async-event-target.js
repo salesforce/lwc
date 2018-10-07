@@ -9,6 +9,6 @@ export default class AsyncEventTarget extends LightningElement {
         this.syncTargetIsCorrect = evt.target === this.template.querySelector('integration-child');
         setTimeout(() => {
             this.asyncTargetIsCorrect = evt.target.tagName === 'INTEGRATION-ASYNC-EVENT-TARGET';
-        }, 10);
+        }, 0);
     }
 }
