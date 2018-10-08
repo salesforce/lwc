@@ -2,6 +2,10 @@
   "name": "lwc",
   "private": true,
   "description": "Lightning Web Components",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salesforce/lwc.git"
+  },
   "scripts": {
     "prepare": "yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
@@ -15,15 +19,6 @@
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release:ci:npm": "./scripts/release_npm.sh",
     "release:ci:changelog": "./scripts/release_changelog.sh"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -e $GIT_PARAMS"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/salesforce/lwc.git"
   },
   "devDependencies": {
     "@babel/core": "7.1.0",
@@ -56,7 +51,16 @@
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -e $GIT_PARAMS"
+    }
+  },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "engines": {
+    "node": ">=8.9.0",
+    "yarn": ">=1.10.1"
+  }
 }

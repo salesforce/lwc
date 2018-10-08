@@ -4,7 +4,7 @@ jobs:
     working_directory: ~/lwc
 
     docker:
-      - image: circleci/node:8.9.3-stretch-browsers
+      - image: circleci/node:8-stretch-browsers
 
     steps:
       - checkout
@@ -13,7 +13,8 @@ jobs:
           keys:
           - yarn-v4-{{ checksum "yarn.lock" }}
 
-      - run: yarn install --frozen-lockfile
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --frozen-lockfile --ignore-engines
 
       - save_cache:
           paths:
@@ -39,7 +40,7 @@ jobs:
     working_directory: ~/lwc
 
     docker:
-      - image: circleci/node:8.9.3-stretch-browsers
+      - image: circleci/node:8-stretch-browsers
 
     steps:
       - checkout
@@ -48,7 +49,9 @@ jobs:
           keys:
           - yarn-v4-{{ checksum "yarn.lock" }}
 
-      - run: yarn install
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
       - run:
           name: Integration Test - Headless Chrome
           command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
@@ -58,7 +61,7 @@ jobs:
     working_directory: ~/lwc
 
     docker:
-      - image: circleci/node:8.9.3-stretch-browsers
+      - image: circleci/node:8-stretch-browsers
 
     steps:
       - checkout
@@ -67,7 +70,8 @@ jobs:
           keys:
           - yarn-v4-{{ checksum "yarn.lock" }}
 
-      - run: yarn install
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
 
       - run:
           name: Install and start sauce connect
@@ -90,7 +94,7 @@ jobs:
     working_directory: ~/lwc
 
     docker:
-      - image: circleci/node:8.9.3-stretch-browsers
+      - image: circleci/node:8-stretch-browsers
 
     environment:
       - CUSTOM_BASH_ENV: ~/.bashrc
@@ -117,7 +121,9 @@ jobs:
           name: Decode PEM as environment variable
           command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
 
-      - run: yarn install
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
       - run:
           name: Preformance Test
           working_directory: packages/benchmark
@@ -138,7 +144,7 @@ jobs:
     working_directory: ~/lwc
 
     docker:
-      - image: circleci/node:8.9.3-stretch-browsers
+      - image: circleci/node:8-stretch-browsers
 
     environment:
       - CUSTOM_BASH_ENV: ~/.bashrc
@@ -165,7 +171,9 @@ jobs:
           name: Decode PEM as environment variable
           command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
 
-      - run: yarn install
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
       - run:
           name: Preformance Test
           working_directory: packages/benchmark
@@ -200,6 +208,7 @@ workflows:
       - perf_and_compare_chrome:
           requires:
             - build_and_test
+
       # uncomment this when IE11 agent stabilizes
       # - perf_and_compare_ie11:
       #     requires:
