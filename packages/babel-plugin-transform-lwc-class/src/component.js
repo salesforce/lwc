@@ -2,6 +2,7 @@ const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const { BabelLWCClassErrors, normalizeErrorMessage } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
@@ -24,7 +25,10 @@ module.exports = function ({ types: t }) {
                     return `"${propName}"`;
                 });
                 throw path.buildCodeFrameError(
-                    `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for ${observedAttributeNames.join(', ')} instead.`
+                    normalizeErrorMessage(
+                        BabelLWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
+                        [observedAttributeNames.join(', ')]
+                    )
                 );
             }
         },
@@ -34,9 +38,13 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    throw path.buildCodeFrameError(
-                        `LWC component class can't be an anonymous.`
+                    debugger;
+                    const error = path.buildCodeFrameError(
+                        normalizeErrorMessage(
+                            BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON
+                        )
                     );
+                    throw error;
                 }
 
                 if (isDefaultExport(path)) {

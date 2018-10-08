@@ -1,5 +1,4 @@
-import { templateString, LWCErrorInfo } from "../shared/utils";
-import { Location } from "../diagnostics/diagnostic";
+import { templateString, LWCErrorInfo, Location } from "../shared/utils";
 
 export class CompilerError extends Error {
     public filename?: string;
@@ -13,18 +12,23 @@ export class CompilerError extends Error {
     }
 }
 
-export function normalizeErrorMessage(error: LWCErrorInfo, args?: any[]): string {
-    const message = args ? templateString(error.message, args) : error.message;
-    return `LWC${error.code}: ${message}`;
+export function normalizeErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
+    const message = args ? templateString(errorInfo.message, args) : errorInfo.message;
+
+    if (errorInfo.url !== "") {
+        // TODO: Add url info into message
+    }
+
+    return `Error LWC${errorInfo.code}: ${message}`;
 }
 
-export function invariant(condition: boolean, error: LWCErrorInfo, args?: any[]) {
+export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
-        throwError(error.type, normalizeErrorMessage(error, args), '');
+        throwError(errorInfo.type, normalizeErrorMessage(errorInfo, args), '');
     }
 }
 
-function throwError(type: String, message: string, fileName?: string, location?: Location) {
+function throwError(type: String | undefined, message: string, fileName?: string, location?: Location) {
     switch (type) {
         case "TypeError":
             throw new TypeError(message);

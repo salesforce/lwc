@@ -1,4 +1,5 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
+const { BabelLWCClassErrors, normalizeErrorMessage } = require('lwc-errors');
 
 const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
@@ -143,11 +144,17 @@ function getEngineImportSpecifiers(path) {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
             throw specifier.buildCodeFrameError(
-                `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { ${LWC_PACKAGE_EXPORTS.BASE_COMPONENT} } from '${LWC_PACKAGE_ALIAS}'".`,
+                normalizeErrorMessage(
+                    BabelLWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
+                    [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS]
+                )
             );
         } else if (specifier.isImportDefaultSpecifier()) {
             throw specifier.buildCodeFrameError(
-                `Invalid import. "${LWC_PACKAGE_ALIAS}" doesn't have default export.`,
+                normalizeErrorMessage(
+                    BabelLWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
+                    [LWC_PACKAGE_ALIAS]
+                )
             );
         }
 

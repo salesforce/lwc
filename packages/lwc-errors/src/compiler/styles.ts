@@ -1,4 +1,4 @@
-
+import { Level } from "../shared/utils";
 /*
     Custom errors:
         root.error
@@ -12,7 +12,7 @@ export const PostCSSErrors = {
         code: 0,
         message: 'Expected options with tagName and token properties',
         type: 'TypeError',
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -20,7 +20,7 @@ export const PostCSSErrors = {
         code: 0,
         message: '{0} option must be a string but instead received {1}',
         type: 'TypeError',
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -28,7 +28,7 @@ export const PostCSSErrors = {
         code: 0,
         message: 'Invalid usage of deprecated selector "{0}"',
         type: 'Custom', // root.error
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -36,7 +36,7 @@ export const PostCSSErrors = {
         code: 0,
         message: 'Invalid usage of unsupported selector "{0}".',
         type: 'Custom', // root.error
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -47,7 +47,7 @@ export const PostCSSErrors = {
             'For validation purposes, attributes that are not global attributes must be associated ' +
             'with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")',
         type: 'Custom', // root.error
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -57,7 +57,7 @@ export const PostCSSErrors = {
             'Invalid usage of attribute selector "{0}". ' +
             'Attribute "{0}" is not a known attribute on <{1}> element.',
         type: 'Custom', // root.error
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
 
@@ -65,34 +65,34 @@ export const PostCSSErrors = {
         code: 0,
         message: 'Missing closing ")" for "{0}"',
         type: 'Custom', // decl.error
-        level: 'error'
+        level: Level.Error
     },
 
     CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE: {
         code: 0,
         message: 'Invalid var function signature for "{0}"',
         type: 'Custom', // decl.error
-        level: 'error'
+        level: Level.Error
     },
 
     CUSTOM_PROPERTY_STRING_EXPECTED: {
         code: 0,
         message: 'Expected a string, but received instead "{0}"',
         type: 'TypeError',
-        level: 'error'
+        level: Level.Error
     },
 
     CUSTOM_PROPERTY_INVALID_DEFINITION: {
         code: 0,
         message: 'Invalid definition of custom property "{0}".',
         type: 'Custom', // decl.error
-        level: 'error'
+        level: Level.Error
     },
 
     SELECTOR_SCOPE_PARENT_NODE_MISSING: {
         code: 0,
         message: 'Impossible to replace root node.',
         type: 'Error',
-        level: "error"
+        level: Level.Error
     }
 };

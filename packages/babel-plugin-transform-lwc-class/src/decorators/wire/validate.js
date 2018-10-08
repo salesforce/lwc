@@ -1,18 +1,19 @@
 const { isWireDecorator } = require('./shared');
 const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
+const { DecoratorErrors, normalizeErrorMessage } = require('lwc-errors');
 
 function validateWireParameters(path) {
     const [id, config] = path.get('expression.arguments');
 
     if (!id) {
         throw path.buildCodeFrameError(
-            `@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).`
+            normalizeErrorMessage(DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER)
         );
     }
 
     if (!id.isIdentifier()) {
         throw id.buildCodeFrameError(
-            `@wire expects a function identifier as first parameter.`
+            normalizeErrorMessage(DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER)
         );
     }
 
@@ -20,13 +21,13 @@ function validateWireParameters(path) {
         && !path.scope.getBinding(id.node.name).path.isImportSpecifier()
         && !path.scope.getBinding(id.node.name).path.isImportDefaultSpecifier()) {
         throw id.buildCodeFrameError(
-            `@wire expects a function identifier to be imported as first parameter.`
+            normalizeErrorMessage(DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER)
         );
     }
 
     if (config && !config.isObjectExpression()) {
         throw config.buildCodeFrameError(
-            `@wire expects a configuration object expression as second parameter.`
+            normalizeErrorMessage(DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER)
         );
     }
 }
@@ -36,11 +37,11 @@ function validateUsageWithOtherDecorators(path, decorators) {
         if (path !== decorator.path
             && decorator.name === WIRE_DECORATOR
             && decorator.path.parentPath.node === path.parentPath.node) {
-            throw path.buildCodeFrameError('Method or property can only have 1 @wire decorator');
+            throw path.buildCodeFrameError(normalizeErrorMessage(DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED));
         }
         if ((decorator.name === API_DECORATOR || decorator.name === TRACK_DECORATOR)
             && decorator.path.parentPath.node === path.parentPath.node) {
-            throw path.buildCodeFrameError(`@wire method or property cannot be used with @${decorator.name}`);
+            throw path.buildCodeFrameError(normalizeErrorMessage(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, [decorator.name]));
         }
     });
 }

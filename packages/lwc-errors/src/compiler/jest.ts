@@ -1,3 +1,4 @@
+import { Level } from "../shared/utils";
 /*
     Custom errors:
         path.buildCodeFrameError
@@ -9,14 +10,14 @@ export const JestTransformerErrors = {
         code: 0,
         message: 'Generic error in Jest transformer',
         type: 'Error',
-        level: 'error',
+        level: Level.Error,
         url: ''
     },
     INVALID_IMPORT: {
         code: 0,
         message: 'Invalid import from {0}. Only import the default using the following syntax: "import foo from \'@salesforce/label/c.foo\'"',
         type: 'Custom',
-        level: 'error',
+        level: Level.Error,
         url: ''
     }
 };

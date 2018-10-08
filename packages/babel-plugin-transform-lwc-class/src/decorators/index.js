@@ -4,6 +4,7 @@ const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const { getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
+const { DecoratorErrors, normalizeErrorMessage } = require('lwc-errors');
 
 const DECORATOR_TRANSFORMS = [
     api,
@@ -31,7 +32,9 @@ function getDecoratorType(propertyOrMethod) {
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw propertyOrMethod.buildCodeFrameError(`Invalid property of field type`);
+        throw propertyOrMethod.buildCodeFrameError(
+            normalizeErrorMessage(DecoratorErrors.INVALID_DECORATOR_TYPE)
+        );
     }
 }
 
@@ -56,12 +59,22 @@ function getLwcDecorators(importSpecifiers) {
             reference.parentPath.parentPath;
 
         if (!decorator.isDecorator()) {
-            throw decorator.buildCodeFrameError(`"${name}" can only be used as a class decorator`);
+            throw decorator.buildCodeFrameError(
+                normalizeErrorMessage(
+                    DecoratorErrors.IS_NOT_DECORATOR,
+                    [name]
+                )
+            );
         }
 
         const propertyOrMethod = decorator.parentPath;
         if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-            throw propertyOrMethod.buildCodeFrameError(`"@${name}" can only be applied on class properties`);
+            throw propertyOrMethod.buildCodeFrameError(
+                normalizeErrorMessage(
+                    DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
+                    [name]
+                )
+            );
         }
 
         return {
@@ -128,11 +141,10 @@ function invalidDecorators({t: types}) {
     return {
         Decorator(path) {
             throw path.parentPath.buildCodeFrameError(
-                `Invalid '${
-                    path.node.expression.name
-                }' decorator usage. Supported decorators (${LWC_DECORATORS.join(
-                    ', '
-                )}) should be imported from '${LWC_PACKAGE_ALIAS}'`
+                normalizeErrorMessage(
+                    DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
+                    [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
+                )
             );
         }
     }
@@ -175,7 +187,10 @@ function decorators({ types: t }) {
             const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map(transform => transform.name);
 
             throw path.parentPath.buildCodeFrameError(
-                `Invalid decorator usage. Supported decorators (${AVAILABLE_DECORATORS.join(', ')}) should be imported from "${LWC_PACKAGE_ALIAS}"`,
+                normalizeErrorMessage(
+                    DecoratorErrors.INVALID_DECORATOR,
+                    [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
+                )
             );
         }
     }
