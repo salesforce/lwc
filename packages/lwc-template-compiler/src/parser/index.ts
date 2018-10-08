@@ -53,7 +53,6 @@ import {
     WarningLevel,
     ForIterator,
     IRExpressionAttribute,
-    IRStringAttribute,
     ForEach,
 } from '../shared/types';
 
@@ -491,7 +490,7 @@ export default function parse(source: string, state: State): {
                 return;
             }
 
-            const { name, location, type } = attr;
+            const { name, location } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 const msg = [
                     `${name} is not valid attribute for ${tag}. For more information refer to`,
@@ -501,12 +500,11 @@ export default function parse(source: string, state: State): {
                 warnAt(msg, location);
             }
 
-            if (type === IRAttributeType.String) {
-                const stringAttr = attr as IRStringAttribute;
+            if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
-                    state.elementIdAttrs.push({ attr: stringAttr, element });
+                    state.elementIdAttrs.push({ attr, element });
                 } else if (isIdReferencingAttribute(name)) {
-                    state.elementIdRefAttrs.push({ attr: stringAttr, element });
+                    state.elementIdRefAttrs.push({ attr, element });
                 }
             }
 
