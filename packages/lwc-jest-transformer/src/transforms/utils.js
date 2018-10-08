@@ -1,3 +1,4 @@
+const { JestTransformerErrors, normalizeErrorMessage } = require('lwc-errors');
 const babelTemplate = require('@babel/template').default;
 
 const defaultTemplate = babelTemplate(`
@@ -108,7 +109,8 @@ function getImportInfo(path) {
     const importSpecifiers = path.get('specifiers');
 
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@salesforce/label/c.foo'"`);
+        const message = normalizeErrorMessage(JestTransformerErrors.INVALID_IMPORT, [importSource]);
+        throw path.buildCodeFrameError(message);
     }
 
     const resourceName = importSpecifiers[0].get('local').node.name;
