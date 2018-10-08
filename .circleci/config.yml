@@ -49,7 +49,9 @@ jobs:
           keys:
           - yarn-v4-{{ checksum "yarn.lock" }}
 
-      - run: yarn install
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
       - run:
           name: Integration Test - Headless Chrome
           command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
