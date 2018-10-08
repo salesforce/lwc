@@ -97,7 +97,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
             result = evaluateTemplate(vm, html);
         } else if (!isUndefined(html)) {
             if (process.env.NODE_ENV !== 'production') {
-                assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./mytemplate.html"\`) or undefined, instead, it has returned ${html}.`);
+                assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`) or undefined, instead, it has returned ${html}.`);
             }
         }
     } catch (e) {

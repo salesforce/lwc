@@ -1,14 +1,14 @@
 import { Template } from "./template";
 
-const VERIFIED_TEMPLATE_SET = new Set();
+const signedTemplateSet: Set<Template> = new Set();
 
-export function isTemplateRegistered(tmpl: Template) {
-    if (!VERIFIED_TEMPLATE_SET.has(tmpl)) {
-        throw new TypeError('Unknown template');
-    }
+export function isTemplateRegistered(tpl: Template): boolean {
+    return signedTemplateSet.has(tpl);
 }
 
-export function registerTemplate(tmpl: Template): Template {
-    VERIFIED_TEMPLATE_SET.add(tmpl);
-    return tmpl;
+// chaining this method as a way to wrap existing
+// assignment of templates easily, without too much transformation
+export function registerTemplate(tpl: Template): Template {
+    signedTemplateSet.add(tpl);
+    return tpl;
 }

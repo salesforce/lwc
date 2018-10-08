@@ -1,4 +1,4 @@
-import { secure, createElement, LightningElement } from '../main';
+import { createElement, LightningElement } from '../main';
 
 describe('secure', () => {
     it('forbidden access to template', () => {
@@ -14,9 +14,9 @@ describe('secure', () => {
                 return html;
             }
         }
-        const elmt = createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         expect(() => {
-            document.body.appendChild(elmt);
-        }).toThrowError('Unknown template');
+            document.body.appendChild(elm);
+        }).toThrowError('The template rendered by [object:vm Foo (1)] must return an imported template tag (e.g.: `import html from "./Foo.html"`) or undefined, instead, it has returned a function');
     });
 });
