@@ -67,7 +67,7 @@ interface AriaPropMap {
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement | ShadowRoot, AriaPropMap> = new WeakMap();
 const { hasOwnProperty } = Object.prototype;
 const { setAttribute, removeAttribute, getAttribute } = Element.prototype;
-const isNativeShadowRootAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 const {
     replace: StringReplace,
     toLowerCase: StringToLowerCase,

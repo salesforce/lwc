@@ -34,7 +34,7 @@ const ElementInnerHTMLSetter: (this: Element, s: string) => void = hasOwnPropert
     getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!;  // IE11
 
-const isNativeShadowRootAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = isNativeShadowRootAvailable ? getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'innerHTML')!.set! : () => {
     throw new Error('Internal Error: Missing ShadowRoot');

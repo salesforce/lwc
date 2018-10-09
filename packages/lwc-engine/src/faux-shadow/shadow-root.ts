@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties } from "../shared/language";
+import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperty, defineProperties, setPrototypeOf } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -13,7 +13,7 @@ import { getNodeKey } from "../framework/vm";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
-const isNativeShadowRootAvailable = !isUndefined((window as any).ShadowRoot) && (window as any).ShadowRoot.prototype instanceof DocumentFragment;
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export function getHost(root: SyntheticShadowRoot): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
@@ -113,20 +113,22 @@ function activeElementGetter(this: SyntheticShadowRoot): Element | null {
         isNodeOwnedBy(host, activeElement) ? activeElement : null;
 }
 
-function hostGetter(this: SyntheticShadowRoot): HTMLElement {
-    return getHost(this);
-}
 
 export class SyntheticShadowRoot {
-    mode: string;
     constructor(mode: string) {
-        this.mode = mode;
+        defineProperty(this, 'mode', {
+            get() {
+                return mode;
+            },
+            configurable: true,
+            enumerable: true,
+        });
     }
     get nodeType() {
         return 11;
     }
     get host() {
-        return hostGetter.call(this);
+        return getHost(this);
     }
     get activeElement() {
         return activeElementGetter.call(this);
@@ -148,6 +150,9 @@ export class SyntheticShadowRoot {
     }
     get delegatesFocus() {
         return false;
+    }
+    get parentNode() {
+        return null
     }
     hasChildNodes() {
         return this.childNodes.length > 0;
@@ -215,4 +220,12 @@ export class SyntheticShadowRoot {
         }
         return topElement;
     }
+}
+
+
+// Is native ShadowDom is available on window,
+// we need to make sure that our synthetic shadow dom
+// passed instanceof checks against window.ShadowDom
+if (isNativeShadowRootAvailable) {
+    setPrototypeOf(SyntheticShadowRoot.prototype, (window as any).ShadowRoot.prototype);
 }
