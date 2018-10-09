@@ -8,9 +8,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import {
-    IRElement, IRAttribute,
-} from '../shared/types';
+import { IRElement } from '../shared/types';
 
 import {
     DATA_RE,
@@ -269,10 +267,4 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
     }
 
     return camelcase(propName);
-}
-
-export function isPropFromAttrWithExpression(prop: IRAttribute): boolean {
-    // props derived from attributes with a parsed expression will
-    // always have the value to a Node object
-    return typeof prop.value === 'object';
 }
