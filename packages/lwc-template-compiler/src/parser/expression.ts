@@ -3,6 +3,8 @@ import * as types from 'babel-types';
 import * as babylon from 'babylon';
 import * as esutils from 'esutils';
 
+import { ParserErrors, invariant, throwError } from 'lwc-errors';
+
 import State from '../state';
 
 import {
@@ -43,15 +45,11 @@ export function parseExpression(source: string, element: IRNode, state: State): 
             enter(path) {
                 const isValidNode = path.isProgram() || path.isBlockStatement() || path.isExpressionStatement() ||
                                     path.isIdentifier() || path.isMemberExpression();
-                if (!isValidNode) {
-                    throw new Error(`Template expression doesn't allow ${path.type}`);
-                }
+                invariant(isValidNode, ParserErrors.INVALID_NODE, [path.type]);
 
                 // Ensure expression doesn't contain multiple expressions: {foo;bar}
                 const hasMultipleExpressions = path.isBlock() && (path.get('body') as any).length !== 1;
-                if (hasMultipleExpressions) {
-                    throw new Error(`Multiple expressions found`);
-                }
+                invariant(!hasMultipleExpressions, ParserErrors.MULTIPLE_EXPRESSIONS);
 
                 // Retrieve the first expression and set it as return value
                 if (path.isExpressionStatement() && !expression) {
@@ -61,35 +59,34 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
             MemberExpression: {
                 exit(path) {
-                    const shouldReportComputed = !state.config.computedMemberExpression
+                    const isComputed = !state.config.computedMemberExpression
                         && (path.node as types.MemberExpression).computed;
-
-                    if (shouldReportComputed) {
-                        throw new Error(`Template expression doesn't allow computed property access`);
-                    }
+                    invariant(!isComputed, ParserErrors.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED);
 
                     const memberExpression = path.node as types.MemberExpression;
                     const propertyIdentifier = memberExpression.property as TemplateIdentifier;
                     const objectIdentifier = memberExpression.object as TemplateIdentifier;
-                    if (isBoundToIterator(objectIdentifier, element) && propertyIdentifier.name === ITERATOR_NEXT_KEY) {
-                        throw new Error(`Template expression doesn't allow to modify iterators`);
-                    }
+                    invariant(
+                        !isBoundToIterator(objectIdentifier, element) || propertyIdentifier.name !== ITERATOR_NEXT_KEY,
+                        ParserErrors.MODIFYING_ITERATORS_NOT_ALLOWED
+                    );
                 },
             },
         });
 
         return expression;
     } catch (err) {
+        // TODO: normalize errors here
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
     }
 }
 
-export function parseIdentifier(source: string): TemplateIdentifier {
+export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
         return types.identifier(source);
     } else {
-        throw new Error(`Invalid identifier`);
+        return throwError(ParserErrors.INVALID_IDENTIFIER);
     }
 }
 

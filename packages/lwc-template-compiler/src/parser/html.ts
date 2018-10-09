@@ -1,6 +1,8 @@
 import * as parse5 from 'parse5-with-errors';
 import * as he from 'he';
 
+import { ParserErrors, normalizeErrorMessage } from 'lwc-errors';
+
 import { CompilationWarning } from '../shared/types';
 import { VOID_ELEMENT_SET } from './constants';
 
@@ -20,12 +22,10 @@ export const treeAdapter = parse5.treeAdapters.default;
 export function parseHTML(source: string) {
     const parsingErrors: CompilationWarning[] = [];
 
+// TODO: Implement system for collecting errors
     const onParseError = (err: parse5.Errors.ParsingError) => {
         const { code, startOffset, endOffset } = err;
-        const message = [
-            `Invalid HTML syntax: ${code}. For more information,`,
-            `please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-${code}`,
-        ].join(' ');
+        const message = normalizeErrorMessage(ParserErrors.INVALID_HTML_SYNTAX, [code]);
 
         parsingErrors.push({
             level: 'error',

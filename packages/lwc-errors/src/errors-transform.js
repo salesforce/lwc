@@ -7,7 +7,6 @@ module.exports = function ({ types: t }) {
             CallExpression(path, state) {
                 const node = path.node;
                 if ('invariant' === node.callee.name) {
-                    debugger;
                     path.parentPath.replaceWith(
                         generateInvariant(...path.node.arguments)
                     );

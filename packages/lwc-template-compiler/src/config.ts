@@ -1,3 +1,4 @@
+import { TemplateErrors, invariant, throwError } from 'lwc-errors';
 export type Format = 'module' | 'function';
 
 export interface Config {
@@ -38,16 +39,17 @@ const AVAILABLE_OPTION_NAMES = new Set([
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {
-    if (config === undefined && typeof config !== 'object') {
-        throw new Error('Compiler options must be an object');
-    }
+    invariant(
+        config !== undefined && typeof config === 'object',
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT
+    );
 
     REQUIRED_OPTION_NAMES.forEach((requiredProperty) => {
-        if (!config.hasOwnProperty(requiredProperty)) {
-            throw new Error(
-                `Missing required option property ${requiredProperty}`,
-            );
-        }
+        invariant(
+            config.hasOwnProperty(requiredProperty),
+            TemplateErrors.MISSING_REQUIRED_PROPERTY,
+            [requiredProperty]
+        );
     });
 
     for (const property in config) {
@@ -55,7 +57,7 @@ export function mergeConfig(config: Config): ResolvedConfig {
             !AVAILABLE_OPTION_NAMES.has(property) &&
             config.hasOwnProperty(property)
         ) {
-            throw new Error(`Unknown option property ${property}`);
+            throwError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, [property]);
         }
     }
 

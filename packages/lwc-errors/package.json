@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "echo 'Building errors...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": ""
+    "test": "jest"
   },
   "devDependencies": {
 

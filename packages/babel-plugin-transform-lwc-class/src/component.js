@@ -38,7 +38,6 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    debugger;
                     const error = path.buildCodeFrameError(
                         normalizeErrorMessage(
                             BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON

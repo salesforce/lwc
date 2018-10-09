@@ -124,6 +124,7 @@ export default function parse(source: string, state: State): {
     const warnings: CompilationWarning[] = [];
     const generateKey = getKeyGenerator();
 
+// TODO:
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
         return { warnings: parsingErrors };
@@ -801,7 +802,7 @@ export default function parse(source: string, state: State): {
     function warnAt(message: string, location?: parse5.MarkupData.Location, level: WarningLevel = 'error') {
         let start = 0;
         let length = 0;
-
+// store warnings on state?
         if (location) {
             const { startOffset, endOffset } = location;
             start = startOffset;

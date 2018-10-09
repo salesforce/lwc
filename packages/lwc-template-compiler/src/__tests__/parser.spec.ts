@@ -213,7 +213,7 @@ describe('custom component', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+            message: `Error LWC0: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             start: 10,
             length: 11,
         });
@@ -283,7 +283,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
-            message: `Invalid expression {this.title} - Template expression doesn't allow ThisExpression`,
+            message: `Invalid expression {this.title} - Error LWC0: Template expression doesn't allow ThisExpression`,
             start: 17,
             length: 18,
         });
@@ -293,7 +293,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
-            message: `Invalid expression {getTitle()} - Template expression doesn't allow CallExpression`,
+            message: `Invalid expression {getTitle()} - Error LWC0: Template expression doesn't allow CallExpression`,
             start: 17,
             length: 18,
         });
@@ -303,7 +303,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
-            message: `Invalid expression {foo;title} - Multiple expressions found`,
+            message: `Invalid expression {foo;title} - Error LWC0: Multiple expressions found`,
             start: 17,
             length: 17,
         });

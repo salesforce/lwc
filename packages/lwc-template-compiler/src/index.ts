@@ -25,7 +25,7 @@ export default function compiler(
 
     let code = '';
     const warnings: CompilationWarning[] = [];
-
+// TODO:
     try {
         const parsingResults = parse(source, state);
         warnings.push(...parsingResults.warnings);

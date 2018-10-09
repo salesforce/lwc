@@ -1,7 +1,7 @@
 {
   "warnings": [{
     "level": "error",
-    "message": "Invalid expression {val[state.foo]} - Template expression doesn't allow computed property access",
+    "message": "Invalid expression {val[state.foo]} - Error LWC0: Template expression doesn't allow computed property access",
     "start": 10,
     "length": 22
   }]
