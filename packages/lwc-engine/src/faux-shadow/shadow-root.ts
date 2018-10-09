@@ -113,7 +113,6 @@ function activeElementGetter(this: SyntheticShadowRoot): Element | null {
         isNodeOwnedBy(host, activeElement) ? activeElement : null;
 }
 
-
 export class SyntheticShadowRoot {
     constructor(mode: string) {
         defineProperty(this, 'mode', {
@@ -152,7 +151,7 @@ export class SyntheticShadowRoot {
         return false;
     }
     get parentNode() {
-        return null
+        return null;
     }
     hasChildNodes() {
         return this.childNodes.length > 0;
@@ -221,7 +220,6 @@ export class SyntheticShadowRoot {
         return topElement;
     }
 }
-
 
 // Is native ShadowDom is available on window,
 // we need to make sure that our synthetic shadow dom

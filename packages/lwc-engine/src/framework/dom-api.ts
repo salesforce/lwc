@@ -1,4 +1,4 @@
-import { getOwnPropertyDescriptor, hasOwnProperty, isUndefined } from "../shared/language";
+import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 
 const {
     setAttribute,

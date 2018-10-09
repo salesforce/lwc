@@ -1,7 +1,6 @@
 // This is only needed in this polyfill because we closed the ability
 // to access the host from a shadow root instance in LWC.
 import { getShadowRootHost, getNodeKey } from '../../framework/vm';
-import { isUndefined } from "../../shared/language";
 
 // this regular expression is used to transform aria props into aria attributes because
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`

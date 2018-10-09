@@ -1,4 +1,4 @@
-import { isUndefined, ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
+import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
 
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
