@@ -3,8 +3,7 @@ import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, String
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 const nativeShadowRootHostGetter: (this: ShadowRoot) => Element = (function() {
-    const nativeShadowRootIsAvailable = typeof (window as any).ShadowRoot !== "undefined";
-    if (nativeShadowRootIsAvailable) {
+    if (typeof (window as any).ShadowRoot !== "undefined") {
         return getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!;
     } else {
         return () => {
