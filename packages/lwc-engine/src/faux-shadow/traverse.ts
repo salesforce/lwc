@@ -26,7 +26,7 @@ import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
-import { getHost, getShadowRoot } from "./shadow-root";
+import { getHost, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -63,7 +63,7 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
 }
 
-function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
+function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): SyntheticShadowRoot | HTMLElement | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
@@ -86,7 +86,7 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Sha
     return null;
 }
 
-function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
+function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | SyntheticShadowRoot | null {
     const value = nativeParentNodeGetter.call(this);
     if (isNull(value)) {
         return value;
@@ -105,7 +105,7 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
     return parentNode;
 }
 
-export function shadowRootChildNodes(root: ShadowRoot) {
+export function shadowRootChildNodes(root: SyntheticShadowRoot) {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
@@ -159,13 +159,13 @@ function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Elemen
     return lightDomQuerySelector(this, selector);
 }
 
-export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
+export function shadowRootQuerySelector(root: SyntheticShadowRoot, selector: string): Element | null {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRoot, selector: string): Element[] {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);

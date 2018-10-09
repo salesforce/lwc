@@ -49,7 +49,8 @@ const compatBrowsers = [
         commonName: 'ie11',
         browserName: 'internet explorer',
         platform: 'Windows 10',
-        version: '11.103'
+        version: '11.103',
+        iedriverVersion: '3.4.0'
     },
     {
         // ideally this would be 10.1 (or latest 10.x available) but there is

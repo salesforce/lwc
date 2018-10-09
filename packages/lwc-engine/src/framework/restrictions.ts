@@ -84,11 +84,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalQuerySelectorAll.apply(this, arguments);
             }
         },
-        host: {
-            get() {
-                throw new Error(`Disallowed property "host" in ShadowRoot.`);
-            },
-        },
         ownerDocument: {
             get() {
                 throw new Error(`Disallowed property "ownerDocument" in ShadowRoot.`);
@@ -109,7 +104,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
         insertBefore: 0,
         getElementById: 0,
         getSelection: 0,
-        elementFromPoint: 0,
         elementsFromPoint: 0,
     };
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {

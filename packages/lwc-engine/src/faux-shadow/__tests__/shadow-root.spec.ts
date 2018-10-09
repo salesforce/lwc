@@ -4,7 +4,23 @@ import { getHostShadowRoot } from '../../framework/html-element';
 
 describe('root', () => {
     describe('integration', () => {
-        it.skip('should support this.template.host', () => {});
+        it('should support template.host', () => {
+            const html = compileTemplate(`
+                <template></template>
+            `);
+            class Parent extends LightningElement {
+                getHost() {
+                    return this.template.host;
+                }
+                render() {
+                    return html;
+                }
+            }
+            Parent.publicMethods = ['getHost'];
+            const elm = createElement('x-parent', { is: Parent });
+            expect(elm.getHost()).toBe(elm);
+            expect(elm.shadowRoot.host).toBe(elm);
+        });
 
         it('should support this.template.mode', () => {
             class MyComponent extends LightningElement {}
