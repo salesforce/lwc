@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from "../../framework/html-element";
+import { getShadowRoot } from "../../faux-shadow/shadow-root";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -122,6 +123,58 @@ describe('#LightDom querySelectorAll()', () => {
 });
 
 describe('#LightDom querySelector()', () => {
+    it('should allow searching for the passed element multiple levels up', () => {
+        class Root extends LightningElement {
+            render() {
+                return rootHTML;
+            }
+        }
+        class Parent extends LightningElement {
+            render() {
+                return parentHTML;
+            }
+        }
+        let target;
+        class Child extends LightningElement {
+            renderedCallback() {
+                target = this.querySelector('div');
+            }
+             render() {
+                return childHTML;
+            }
+        }
+        const parentHTML = compileTemplate(`
+            <template>
+                <x-child>
+                    <slot></slot>
+                </x-child>
+            </template>
+        `, {
+            modules: { 'x-child': Child },
+        });
+        const rootHTML = compileTemplate(`
+            <template>
+                <x-parent>
+                    <div></div>
+                </x-parent>
+            </template>
+        `, {
+            modules: { 'x-parent': Parent },
+        });
+        const childHTML = compileTemplate(`
+            <template>
+                <div onclick={handleClick}>
+                    <slot></slot>
+                </div>
+            </template>
+        `, {
+            modules: {},
+        });
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+        const div = getShadowRoot(elm).querySelector('div');
+        expect(div).toBe(target);
+    });
     it('should allow searching for the passed element', () => {
         const parentTmpl = compileTemplate(`
             <template>
