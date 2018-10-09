@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-describe.skip('test pre dom-insertion setAttribute and removeAttribute functionality', () => {
+describe('test pre dom-insertion setAttribute and removeAttribute functionality', () => {
     const URL = 'http://localhost:4567/attributes-suite';
 
     before(() => {
@@ -9,7 +9,7 @@ describe.skip('test pre dom-insertion setAttribute and removeAttribute functiona
 
     it('should set user defined attribute value', () => {
         const childElm = browser.element('my-child');
-        assert.equal(browser.getAttribute('my-child', 'title'), 'im child title');
+        assert.equal(childElm.getAttribute('title'), 'im child title');
 
         // verify via element
         const titleAttrDivElm = browser.element('#titleattr');
