@@ -3,6 +3,6 @@ import { LightningElement, api } from "lwc";
 export default class NestedSlots extends LightningElement {
 
     @api getRegisteredTabs() {
-        return this.root.querySelector('integration-tabset').getRegistered();
+        return this.template.querySelector('integration-tabset').getRegistered();
     }
 }
