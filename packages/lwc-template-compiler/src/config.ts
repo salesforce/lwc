@@ -8,22 +8,12 @@ export interface Config {
      *    </template>
      */
     computedMemberExpression?: boolean;
-
-    /**
-     * Internal configuration for namespace mapping component. Accepts:
-     *  * Map<previousNamespace, newNamespace>
-     *
-     * When specified, all custom components in the template with previous namespace
-     *  will be replaced by the namespace value
-     *
-     * ex: c-button -> namespace-button
-     */
-    namespaceMapping?: NamespaceMapping;
+    secure?: boolean;
 }
 
 export interface ResolvedConfig {
     computedMemberExpression: boolean;
-    namespaceMapping: NamespaceMapping;
+    secure: boolean;
 
     /**
      * Internal configuration for the output format of the template. Accepts:
@@ -35,20 +25,16 @@ export interface ResolvedConfig {
     format: Format;
 }
 
-export interface NamespaceMapping {
-    [name: string]: string;
-}
-
 const DEFAULT_CONFIG: ResolvedConfig = {
+    secure: false,
     computedMemberExpression: false,
-    namespaceMapping: {},
     format: 'module',
 };
 
 const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
+    'secure',
     'computedMemberExpression',
-    'namespaceMapping',
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {

@@ -1,5 +1,25 @@
 {
   "metadata": {
-    "templateDependencies": ["ns/foo", "x/foo", "ns/bar", "nested/cFoo", "ns/baz", "x/baz"]
+    "templateDependencies": [
+      {
+
+        "moduleName": "ns/foo",
+        "tagName": "ns-foo"
+      },
+      {
+
+        "moduleName": "x/foo",
+        "tagName": "x-foo"
+      },
+      {
+
+        "moduleName": "ns/bar",
+        "tagName": "ns-bar"
+      },
+      {
+        "moduleName": "nested/cFoo",
+        "tagName": "nested-c-foo"
+      }
+    ]
   }
 }

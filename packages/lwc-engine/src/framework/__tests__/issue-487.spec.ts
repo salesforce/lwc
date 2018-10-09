@@ -1,17 +1,19 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
 describe('issue 487', () => {
     it('should not throw when setting AOM property on anchor', () => {
+        const html = compileTemplate(`
+            <template>
+                <a></a>
+            </template>
+        `);
         class MyComponent extends LightningElement {
             setAriaSelected() {
                 this.template.querySelector('a').ariaSelected = 'true';
             }
             render() {
-                return function ($api, $cmp) {
-                    return [
-                        $api.h('a', { key: 0 }, []),
-                    ]
-                }
+                return html;
             }
         }
 

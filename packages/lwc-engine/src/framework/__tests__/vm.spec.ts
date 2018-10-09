@@ -1,7 +1,7 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
 import { getErrorComponentStack } from "../vm";
-import { compileTemplate } from 'test-utils';
 
 describe('vm', () => {
     describe('insertion index', () => {
@@ -28,15 +28,21 @@ describe('vm', () => {
 
         it('should assign bigger idx to children', () => {
             let vm1: VM, vm2: VM;
+
             class ChildComponent4 extends LightningElement {
                 constructor() {
                     super();
                     vm2 = this[ViewModelReflection];
                 }
             }
-            function html($api) {
-                return [$api.c('x-bar', ChildComponent4, {})];
-            }
+
+            const html  = compileTemplate(`
+                <template>
+                    <x-bar></x-bar>
+                </template>
+            `, {
+                modules: { 'x-bar': ChildComponent4 }
+            });
             class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
@@ -46,6 +52,7 @@ describe('vm', () => {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent4 });
             document.body.appendChild(elm);
             expect(vm1.idx).toBeGreaterThan(0);
@@ -65,9 +72,14 @@ describe('vm', () => {
                     counter++;
                 }
             }
-            function html($api) {
-                return [$api.c('x-bar', ChildComponent5, {})];
-            }
+
+            const html  = compileTemplate(`
+                <template>
+                    <x-bar></x-bar>
+                </template>
+            `, {
+                modules: { 'x-bar': ChildComponent5 }
+            });
             class MyComponent5 extends LightningElement {
                 constructor() {
                     super();
@@ -77,6 +89,7 @@ describe('vm', () => {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent5 });
             document.body.appendChild(elm);
             expect(vm1.idx).toBeGreaterThan(0);
@@ -103,9 +116,12 @@ describe('vm', () => {
                     vm = this[ViewModelReflection];
                 }
             }
-            const html  = compileTemplate(
-                `<template><x-child></x-child></template>`,
-                { modules: { 'x-child': ChildComponentCs }
+            const html  = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': ChildComponentCs }
             });
             class ParentComponentCs extends LightningElement {
                 constructor() {
@@ -122,5 +138,75 @@ describe('vm', () => {
             expect(getErrorComponentStack(vm.elm)).toBe('<x-parent>\n\t<x-child>');
         });
     });
+    describe('slotting for slowpath', () => {
+        it('should re-keyed slotted content to avoid reusing elements from default content', () => {
+            const childHTML = compileTemplate(`<template>
+                <slot>
+                    <h1>default slot default content</h1>
+                </slot>
+                <slot name="foo">
+                    <h2>foo slot default content</h2>
+                </slot>
+            </template>`);
+            class ChildComponent extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+                renderedCallback() {
+                    const h1 = this.template.querySelector('h1');
+                    const h2 = this.template.querySelector('h2');
+                    if (h1) {
+                        h1.setAttribute('def-1', 'internal');
+                    }
+                    if (h2) {
+                        h2.setAttribute('def-2', 'internal');
+                    }
+                }
+            }
+            const parentHTML = compileTemplate(`<template>
+                <c-child>
+                    <template if:true={h1}>
+                        <h1 slot="">slotted</h1>
+                    </template>
+                    <template if:true={h2}>
+                        <h2 slot="foo"></h2>
+                    </template>
+                </c-child>
+            </template>`, {
+                modules: {
+                    'c-child': ChildComponent
+                }
+            });
+            let parentTemplate;
+            class Parent extends LightningElement {
+                constructor() {
+                    super();
+                    this.h1 = false;
+                    this.h2 = false;
+                    parentTemplate = this.template;
+                }
+                render() {
+                    return parentHTML;
+                }
+                enable() {
+                    this.h1 = this.h2 = true;
+                }
+                disable() {
+                    this.h1 = this.h2 = true;
+                }
+            }
+            Parent.track = { h1: 1, h2: 1 };
+            Parent.publicMethods = ['enable', 'disable'];
 
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
+            elm.enable();
+            return Promise.resolve().then(() => {
+                // at this point, if we are reusing the h1 and h2 from the default content
+                // of the slots in c-child, they will have an extraneous attribute on them,
+                // which will be a problem.
+                expect(parentTemplate.querySelector('c-child').outerHTML).toBe(`<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`);
+            });
+        });
+    });
 });

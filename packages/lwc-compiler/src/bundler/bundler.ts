@@ -1,9 +1,9 @@
 import { rollup } from "rollup";
-import rollupPluginReplace from "rollup-plugin-replace";
 
 import { MetadataCollector, BundleMetadata } from "./meta-collector";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
+import rollupEnvReplacement from "../rollup-plugins/env-replacement";
 import rollupTransform from "../rollup-plugins/transform";
 import rollupCompat from "../rollup-plugins/compat";
 import rollupMinify from "../rollup-plugins/minify";
@@ -15,11 +15,12 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
+import { SourceMap } from "../compiler/compiler";
 
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
-    map: null;
+    map: SourceMap | null;
     metadata: BundleMetadata;
 }
 
@@ -48,45 +49,51 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
 }
 
 export async function bundle(
-    options: NormalizedCompilerOptions
+    options: NormalizedCompilerOptions,
 ): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
-    const { outputConfig, name, namespace: authoredNamespace, namespaceMapping } = options;
-
-    // Compute output namespace based on the original module namespace and the namespaceMapping.
-    const namespace = namespaceMapping[authoredNamespace] || authoredNamespace;
+    const { outputConfig, name, namespace } = options;
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: Diagnostic[] = [];
-
     const metadataCollector = new MetadataCollector();
 
-    const plugins = [
-        rollupPluginReplace({
-            "process.env.NODE_ENV": JSON.stringify(outputConfig.env.NODE_ENV)
-        }),
+    const plugins: any[] = [
         rollupModuleResolver({
-            metadataCollector,
-            options
+            options,
         }),
-        rollupTransform({
-            metadataCollector,
-            options
-        })
     ];
 
+    // Run environment variable replacement first. This ensures that the source code is still untouched
+    // at this point.
+    if (Object.keys(outputConfig.env).length) {
+        plugins.push(
+            rollupEnvReplacement({
+                options,
+            }),
+        );
+    }
+
+    plugins.push(
+        rollupTransform({
+            metadataCollector,
+            options,
+        }),
+    );
+
     if (outputConfig.compat) {
-        plugins.push(rollupCompat(outputConfig.resolveProxyCompat));
+        plugins.push(rollupCompat(outputConfig));
     }
 
     if (outputConfig.minify) {
-        plugins.push(rollupMinify());
+        plugins.push(rollupMinify(outputConfig));
     }
 
     let code;
+    let map = null;
     try {
         const rollupBundler = await rollup({
             input: name,
@@ -98,10 +105,11 @@ export async function bundle(
             amd: { id: namespace + "/" + name },
             interop: false,
             strict: false,
+            sourcemap: outputConfig.sourcemap,
             format
         });
         code = result.code;
-
+        map = result.map;
     } catch (e) {
         // populate diagnostics
         const {  message, filename } = e;
@@ -120,7 +128,7 @@ export async function bundle(
     return {
         diagnostics,
         code,
-        map: null,
+        map,
         metadata: metadataCollector.getMetadata()
     };
 }

@@ -4,7 +4,6 @@ import { pretify, readFixture } from "../../__tests__/utils";
 
 const VALID_CONFIG = {
     outputConfig: {
-        env: {},
         minify: false,
         compat: false,
         format: "amd"
@@ -32,6 +31,7 @@ describe("module resolver", () => {
         };
 
         const { success, result } = await compile(noOutputConfig);
+
         expect(success).toBe(true);
         expect(pretify(result.code)).toMatch(
             pretify(`define('x/class_and_template', ['lwc'], function (lwc) {
@@ -45,6 +45,7 @@ describe("module resolver", () => {
                 key: 1
                 }, [api_text(\"Manually Imported Template\")])];
                 }
+                var mytemplate = lwc.registerTemplate(tmpl);
                 if (style) {
                 tmpl.hostToken = 'x-class_and_template_class_and_template-host';
                 tmpl.shadowToken = 'x-class_and_template_class_and_template';
@@ -56,7 +57,7 @@ describe("module resolver", () => {
                 }
                 class Test extends lwc.LightningElement {
                 render() {
-                return tmpl;
+                return mytemplate;
                 }
                 }
                 return Test;
@@ -94,6 +95,7 @@ describe("module resolver", () => {
                 key: 1
                 }, [api_text(\"Another Template\")])];
                 }
+                var mytemplate = lwc.registerTemplate(tmpl);
                 if (style) {
                 tmpl.hostToken = 'x-class_and_template_anotherTemplate-host';
                 tmpl.shadowToken = 'x-class_and_template_anotherTemplate';
@@ -105,7 +107,7 @@ describe("module resolver", () => {
                 }
                 class Test extends lwc.LightningElement {
                 render() {
-                return tmpl;
+                return mytemplate;
                 }
                 }
                 return Test;

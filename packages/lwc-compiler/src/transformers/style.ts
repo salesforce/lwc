@@ -62,7 +62,7 @@ function replaceToken(src: string): string {
 export default async function transformStyle(
     src: string,
     filename: string,
-    { stylesheetConfig, outputConfig, namespaceMapping }: NormalizedCompilerOptions
+    { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
@@ -75,8 +75,15 @@ export default async function transformStyle(
     if (minify) {
         postcssPlugins.push(
             cssnano({
+                preset: ['default'],
+
+                // Disable SVG compression, since it prevent the compiler to be bundle by webpack since
+                // it dynamically require the svgo package: https://github.com/svg/svgo
                 svgo: false,
-                preset: ['default']
+
+                // Disable zindex normalization, since it only works when it works only if the rules
+                // css file contains all the selectors applied on the page.
+                zindex: false,
             })
         );
     }
@@ -84,7 +91,6 @@ export default async function transformStyle(
     postcssPlugins.push(
         postcssPluginLwc({
             token: TOKEN_PLACEHOLDER,
-            namespaceMapping,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),
@@ -121,5 +127,7 @@ export default async function transformStyle(
         code = EMPTY_CSS_OUTPUT;
     }
 
-    return { code, map: null };
+    // Rollup only cares about the mappings property on the map. Since producing a source map for
+    // the styles doesn't make sense, the transform returns an empty mappings.
+    return { code, map: { mappings: '' } };
 }

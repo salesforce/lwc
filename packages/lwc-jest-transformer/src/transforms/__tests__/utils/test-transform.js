@@ -7,7 +7,11 @@ const baseConfig = {
     babelrc: false,
     filename: 'test.js',
     parserOpts: {
-        plugins: ['*'],
+        plugins: [
+            ['decorators', { decoratorsBeforeExport: true }]
+            ['classProperties', {}],
+            ['dynamicImport', {}],
+        ],
     },
 };
 

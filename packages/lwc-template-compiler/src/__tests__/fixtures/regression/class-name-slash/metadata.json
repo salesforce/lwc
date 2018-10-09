@@ -1,5 +1,16 @@
 {
   "metadata": {
-    "templateDependencies": ["x/cmp"]
+    "templateDependencies": [
+      {
+        "properties": {
+          "xClass": {
+            "type": "literal",
+            "value": "bar"
+          }
+        },
+        "moduleName": "x/cmp",
+        "tagName": "x-cmp"
+      }
+    ]
   }
 }

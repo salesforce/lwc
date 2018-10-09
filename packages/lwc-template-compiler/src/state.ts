@@ -1,4 +1,5 @@
 import { ResolvedConfig } from './config';
+import { ModuleDependency } from "./shared/types";
 
 export default class State {
     code: string;
@@ -6,6 +7,7 @@ export default class State {
 
     ids: string[] = [];
     slots: string[] = [];
+    extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
 
     constructor(code: string, config: ResolvedConfig) {

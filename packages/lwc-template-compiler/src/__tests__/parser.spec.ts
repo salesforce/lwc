@@ -283,7 +283,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
-            message: `Invalid expression {this.title} - Template expression doens't allow ThisExpression`,
+            message: `Invalid expression {this.title} - Template expression doesn't allow ThisExpression`,
             start: 17,
             length: 18,
         });
@@ -293,7 +293,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
-            message: `Invalid expression {getTitle()} - Template expression doens't allow CallExpression`,
+            message: `Invalid expression {getTitle()} - Template expression doesn't allow CallExpression`,
             start: 17,
             length: 18,
         });
@@ -481,5 +481,99 @@ describe('metadata', () => {
         </template>`);
 
         expect(Array.from(state.slots)).toEqual(['', 'foo']);
+    });
+
+    describe('Alternative Template Dependencies', () => {
+        it('returns transformed parameters for special attributes', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo aria-describedby="label" readonly></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    properties: {
+                        ariaDescribedBy: {
+                            type: 'literal',
+                            value: 'label'
+                        },
+                        readOnly: {
+                            type: 'literal',
+                            value: true
+                        }
+                    },
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
+                }
+            ]);
+        });
+
+        it('ignores attributes such as class, data-*', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo class="foo" data-foo="data"></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
+                }
+            ]);
+        });
+
+        it('returns literals in parameters', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo my-string="123" my-boolean></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    properties: {
+                        myBoolean: {
+                            type: 'literal',
+                            value: true
+                        },
+                        myString: {
+                            type: 'literal',
+                            value: '123'
+                        }
+                    },
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo'
+                }
+            ]);
+        });
+
+        it('returns parameters for member expressions', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo parameter={p1.level1.level2}></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    properties: {
+                        parameter: {
+                            type: 'expression',
+                            value: 'p1.level1.level2'
+                        }
+                    },
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo',
+                }
+            ]);
+        });
+
+        it('returns parameters for statement expression', () => {
+            const { state } = parseTemplate(`<template>
+           <x-foo property={p1}></x-foo>
+       </template>`);
+            expect(state.extendedDependencies).toEqual([
+                {
+                    properties: {
+                        property: {
+                            type: 'expression',
+                            value: 'p1'
+                        }
+                    },
+                    moduleName: 'x/foo',
+                    tagName: 'x-foo'
+                }
+            ]);
+        });
     });
 });

@@ -8,7 +8,9 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { removeAttribute, setAttribute } from "./dom-api";
+import { isTemplateRegistered, registerTemplate } from "./secure-template";
 
+export { registerTemplate };
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
 
@@ -23,8 +25,13 @@ export interface Template {
      * This attribute is used for style encapsulation when the engine runs in fallback mode.
      */
     shadowToken?: string;
-}
 
+    /**
+     * List of property names that are accessed of the component instance
+     * from the template.
+     */
+    ids?: string[];
+}
 const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
@@ -43,7 +50,7 @@ function validateSlots(vm: VM, html: any) {
     }
 }
 
-function validateFields(vm: VM, html: any) {
+function validateFields(vm: VM, html: Template) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -97,6 +104,12 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
             // template, because they could have similar IDs, and snabbdom just rely on the IDs.
             resetShadowRoot(vm);
         }
+
+        // Check that the template was built by the compiler
+        if (!isTemplateRegistered(html)) {
+            throw new ReferenceError(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`) or undefined, instead, it has returned a function.`);
+        }
+
         vm.cmpTemplate = html;
 
         // Populate context with template information

@@ -124,7 +124,21 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-module.exports = function decoratorVisitor({ types: t }) {
+function invalidDecorators({t: types}) {
+    return {
+        Decorator(path) {
+            throw path.parentPath.buildCodeFrameError(
+                `Invalid '${
+                    path.node.expression.name
+                }' decorator usage. Supported decorators (${LWC_DECORATORS.join(
+                    ', '
+                )}) should be imported from '${LWC_PACKAGE_ALIAS}'`
+            );
+        }
+    }
+}
+
+function decorators({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
@@ -165,4 +179,9 @@ module.exports = function decoratorVisitor({ types: t }) {
             );
         }
     }
+}
+
+module.exports = {
+    decorators,
+    invalidDecorators,
 }

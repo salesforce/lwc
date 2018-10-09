@@ -6,7 +6,11 @@ import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 import { CompilationMetadata, CompilationWarning } from './shared/types';
-import { kebabcaseToCamelcase } from './shared/naming';
+
+export {
+    ModuleDependency as TemplateModuleDependency,
+    DependencyParameter as TemplateModuleDependencyParameter
+} from './shared/types';
 
 export default function compiler(
     source: string,
@@ -31,7 +35,7 @@ export default function compiler(
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const output = generate(parsingResults.root, state);
+            const output = generate(parsingResults.root, state, options);
             code = output.code;
         }
     } catch (error) {
@@ -49,13 +53,13 @@ export default function compiler(
         metadata: {
             definedSlots: state.slots,
             templateUsedIds: state.ids,
-            templateDependencies: state.dependencies.map(kebabcaseToCamelcase),
+            templateDependencies: state.extendedDependencies,
         },
     };
 }
 
-export function compileToFunction(source: string, config = {}): Function {
-    const options = mergeConfig(config);
+export function compileToFunction(source: string): Function {
+    const options = mergeConfig({});
     options.format = 'function';
 
     const state = new State(source, options);
@@ -78,6 +82,6 @@ export function compileToFunction(source: string, config = {}): Function {
         throw new Error(`Invalid template`);
     }
 
-    const { code } = generate(parsingResults.root, state);
+    const { code } = generate(parsingResults.root, state, options);
     return new Function(TEMPLATE_MODULES_PARAMETER, code);
 }

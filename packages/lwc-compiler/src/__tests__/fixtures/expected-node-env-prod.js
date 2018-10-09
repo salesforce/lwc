@@ -1,8 +1,9 @@
-import { LightningElement } from 'lwc';
+import { registerTemplate, LightningElement } from 'lwc';
 const style = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
+var _tmpl = registerTemplate(tmpl);
 if (style) {
     tmpl.hostToken = 'x-node_env_node_env-host';
     tmpl.shadowToken = 'x-node_env_node_env';
@@ -17,7 +18,7 @@ class ClassAndTemplate extends LightningElement {
         this.root.querySelector('outsideOfProductionCheck');
     }
     render() {
-        return tmpl;
+        return _tmpl;
     }
 }
 export default ClassAndTemplate;

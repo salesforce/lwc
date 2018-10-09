@@ -2,7 +2,11 @@ import * as api from '../api';
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
+jest.mock('../secure-template', () => ({ isTemplateRegistered: () => true }));
+
 describe('api', () => {
+    afterAll(() => jest.clearAllMocks());
+
     describe('#c()', () => {
         class Foo extends LightningElement {}
 
@@ -36,9 +40,6 @@ describe('api', () => {
 
         it('assign correct style value when styleMap is present', () => {
             const styleMap = { color: 'red' };
-            const factory = function() {
-                return Foo;
-            };
             const vnode = api.c('x-foo', Foo, { styleMap });
 
             expect(vnode.data.style).toEqual({ color: 'red' });
@@ -334,10 +335,6 @@ describe('api', () => {
         });
     });
 
-    describe('#f()', () => {
-        // TBD
-    });
-
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
@@ -372,14 +369,6 @@ describe('api', () => {
         });
     });
 
-    describe('#d()', () => {
-        // TBD
-    });
-
-    describe('#b()', () => {
-        // TBD
-    });
-
     describe('#k()', () => {
         it('should combine keys', () => {
             let k1, k2;
@@ -398,6 +387,7 @@ describe('api', () => {
             expect(k1).toEqual('123:345');
             expect(k2).toEqual('345:678');
         });
+
         it('should throw when key is an object', () => {
             function html($api) {
                 const k1 = $api.k(678, {});

@@ -94,26 +94,6 @@ describe('Javascript transform', () => {
         });
     });
 
-    it('should throw if invalid resolveProxyCompat value is specified in compat mode', async () => {
-        await expect(
-            transform(`debugger`, 'foo.js', {
-                namespace: 'x',
-                name: 'foo',
-                outputConfig: {
-                    compat: true,
-                    resolveProxyCompat: {
-                        badkey: 'hello',
-                    },
-                },
-            })
-        ).rejects.toMatchObject({
-            filename: 'foo.js',
-            message: expect.stringContaining(
-                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
-            )
-        });
-    });
-
     it('allows dynamic imports', async () => {
         const actual = `
             export function test() {
@@ -143,7 +123,8 @@ describe('HTML transform', () => {
 
         const expected = `
             import stylesheet from './foo.css'
-            export default function tmpl($api, $cmp, $slotset, $ctx) {
+            import { registerTemplate } from "lwc";
+            function tmpl($api, $cmp, $slotset, $ctx) {
             const {
             t: api_text,
             h: api_element
@@ -152,6 +133,7 @@ describe('HTML transform', () => {
             key: 1
             }, [api_text(\"Hello\")])];
             }
+            export default registerTemplate(tmpl);
             if (stylesheet) {
             tmpl.hostToken = 'x-foo_foo-host';
             tmpl.shadowToken = 'x-foo_foo';
@@ -181,6 +163,23 @@ describe('HTML transform', () => {
             filename: 'foo.html',
             message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
         });
+    });
+
+    it('should compile with secure option', async () => {
+        const actual = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+
+        const { code } = await transform(actual, 'foo.html', {
+            namespace: 'x',
+            name: 'foo'
+        });
+
+        expect(code).toContain('import { registerTemplate } from \"lwc\";');
+        expect(code).toContain('export default registerTemplate(tmpl);');
+
     });
 });
 
@@ -356,5 +355,20 @@ describe('CSS transform', () => {
         });
 
         expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('#689 - should not transform z-index in production', async () => {
+        const actual = 'h1 { z-index: 100; } h2 { z-index: 500; }';
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+            outputConfig: {
+                minify: true
+            }
+        });
+
+        expect(code).toContain('z-index:100');
+        expect(code).toContain('z-index:500');
     });
 });

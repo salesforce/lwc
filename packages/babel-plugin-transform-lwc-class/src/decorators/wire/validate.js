@@ -2,7 +2,7 @@ const { isWireDecorator } = require('./shared');
 const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
 
 function validateWireParameters(path) {
-    const [id, config] = path.get('arguments');
+    const [id, config] = path.get('expression.arguments');
 
     if (!id) {
         throw path.buildCodeFrameError(

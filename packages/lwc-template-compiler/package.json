@@ -1,14 +1,14 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.29.1",
+  "version": "0.29.16",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
+    "clean": "rm -rf dist/",
+    "build": "tsc",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.1",

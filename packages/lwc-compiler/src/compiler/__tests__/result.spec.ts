@@ -1,3 +1,4 @@
+import { SourceMapConsumer } from "source-map";
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
@@ -26,25 +27,7 @@ describe("compiler result", () => {
         const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
         const { result: { outputConfig } } = await compile(noOutputConfig);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
-            minify: false,
-            compat: false
-        });
-    });
-    test("compiler should return bundle result with normalized DEV output config", async () => {
-        const config = Object.assign({}, VALID_CONFIG, {
-            outputConfig: {
-                minify: false,
-                compat: false
-            }
-        });
-        const { result: { outputConfig } } = await compile(config);
-        expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: false
         });
@@ -77,9 +60,7 @@ describe("compiler result", () => {
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            env: {
-                NODE_ENV: "development"
-            },
+            env: {},
             minify: false,
             compat: true
         });
@@ -186,15 +167,15 @@ describe("compiler result", () => {
         };
         const { success, diagnostics }  = await compile(config);
         expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
+        expect(diagnostics.length).toBe(3);
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
         expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('Unclosed block');
+        expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[2].message).toContain('Unclosed block');
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
@@ -220,10 +201,75 @@ describe("compiler result", () => {
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
         expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
     });
+
+    test("sourcemaps correctness", async () => {
+        const tplCode = '<template></template>';
+        const cmpCode = `import { LightningElement } from 'lwc';
+import { main } from './utils/util.js';
+export default class Test extends LightningElement {
+  get myimport() {
+    return main();
+  }
+}
+`;
+        const utilsCode = `export function main() {
+  return 'here is your import';
+}`;
+        const { result } = await compile({
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": cmpCode,
+                "foo.html": tplCode,
+                "utils/util.js": utilsCode,
+            },
+            outputConfig: {
+                sourcemap: true
+            }
+        });
+
+        await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
+            const mainDefMappedToOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 1,
+                column: 16,
+            });
+
+            expect(mainDefMappedToOutputPosition.line).toBe(23);
+            expect(mainDefMappedToOutputPosition.column).toBe(11);
+
+            const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'utils/util.js',
+                line: 2,
+                column: 9,
+            });
+
+            expect(stringConstantInOutputPosition.line).toBe(24);
+            expect(stringConstantInOutputPosition.column).toBe(11);
+
+            const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 4,
+                column: 6,
+            });
+
+            expect(myimportDefinitionOutputPosition.line).toBe(28);
+            expect(myimportDefinitionOutputPosition.column).toBe(8);
+
+            const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
+                source: 'foo.js',
+                line: 5,
+                column: 11,
+            });
+
+            expect(mainInvocationInOutputPosition.line).toBe(29);
+            expect(mainInvocationInOutputPosition.column).toBe(13);
+        });
+    });
 });
 
 describe("compiler metadata", () => {
-    it("decorators and import locations", async () => {
+    it("decorators, import locations and template dependencies", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
             namespace: "x",
@@ -312,7 +358,18 @@ describe("compiler metadata", () => {
             declarationLoc: {
                 start: {column: 0, line: 5},
                 end: {column: 1, line: 20},
+            },
+            experimentalTemplateDependencies: [
+            {
+                moduleDependencies: [
+                    {
+                        moduleName: "x/bar",
+                        tagName: "x-bar"
+                    }
+                ],
+                templatePath: "foo.html"
             }
+        ],
         });
     });
 
@@ -393,6 +450,12 @@ describe("compiler metadata", () => {
                 end: {column: 17, line: 13},
             },
             doc: "* class jsdoc",
+            experimentalTemplateDependencies: [
+                {
+                    moduleDependencies: [],
+                    templatePath: "foo.html"
+                }
+            ],
         });
     });
 });

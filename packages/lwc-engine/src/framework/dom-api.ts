@@ -26,6 +26,12 @@ const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
 
 const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
+const ShadowRootHostGetter: (this: ShadowRoot) => Element | null = typeof (window as any).ShadowRoot !== "undefined" ?
+    getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get! :
+    () => {
+        throw new Error('Internal Error: Missing ShadowRoot');
+    };
+
 const dispatchEvent = 'EventTarget' in window ?
     EventTarget.prototype.dispatchEvent :
     Node.prototype.dispatchEvent; // IE11
@@ -51,6 +57,7 @@ export {
     parentNodeGetter,
     parentElementGetter,
     elementTagNameGetter,
+    ShadowRootHostGetter,
     addEventListener,
     removeEventListener,
     ElementInnerHTMLSetter,

@@ -1,3 +1,4 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
@@ -12,32 +13,32 @@ function createCustomComponent(html) {
     return elm;
 }
 
+jest.mock('../secure-template', () => ({
+    isTemplateRegistered: () => true,
+    registerTemplate: (t) => t
+}));
+
 describe('template', () => {
     describe('integration', () => {
-        it('should provide four arguments', () => {
-            let $api, $cmp, $slotset, $memoizer;
-            createCustomComponent(function html($a, $c, $s, $m) {
-                $api = $a;
-                $cmp = $c;
-                $slotset = $s;
-                $memoizer = $m;
-                return [];
-            });
-
-            expect($api && typeof $api === 'object').toBe(true);
-            expect($cmp && typeof $cmp === 'object').toBe(true);
-            expect($slotset && typeof $slotset === 'object').toBe(true);
-            expect($memoizer).toEqual({});
-        });
-
         it('should render arrays correctly', function() {
-            const elm = createCustomComponent(function($api, $cmp) {
-                return $api.i(['a', 'b'], function(value) {
-                    return $api.h('div', { key: 0 }, [
-                        $api.t(value)
-                    ]);
-                });
-            });
+            const html = compileTemplate(`
+                <template>
+                    <template for:each={arr} for:item="item">
+                        <div key={item}>{item}</div>
+                    </template>
+                </template>
+            `);
+            class Foo extends LightningElement {
+                arr = ['a', 'b'];
+
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+
             expect(
                 getHostShadowRoot(elm).querySelectorAll('div').length
             ).toBe(2);
@@ -50,16 +51,24 @@ describe('template', () => {
         });
 
         it('should render sets correctly', function() {
-            const set = new Set();
-            set.add('a');
-            set.add('b');
-            const elm = createCustomComponent(function($api, $cmp) {
-                return $api.i(set, function(value) {
-                    return $api.h('div', { key: 0 }, [
-                        $api.t(value)
-                    ]);
-                });
-            });
+            const html = compileTemplate(`
+                <template>
+                    <template for:each={arr} for:item="item">
+                        <div key={item}>{item}</div>
+                    </template>
+                </template>
+            `);
+            class Foo extends LightningElement {
+                arr = new Set(['a', 'b']);
+
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+
             expect(
                 getHostShadowRoot(elm).querySelectorAll('div').length
             ).toBe(2);
@@ -100,12 +109,12 @@ describe('template', () => {
 
         it('should not prevent or cache a getter calling another getter', () => {
             let counter = 0;
-            let vnode;
-            function html($api, $cmp) {
-                $cmp.x;
-                $cmp.y;
-                return [];
-            }
+
+            const html = compileTemplate(`
+                <template>
+                    {x} - {y}
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 get x() {
                     counter += 1;
@@ -120,8 +129,10 @@ describe('template', () => {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
+
             expect(counter).toBe(3);
         });
 
@@ -174,21 +185,6 @@ describe('template', () => {
             });
         });
 
-        it('should support array of vnode', () => {
-            let vnode;
-            function html($api) {
-                return [$api.t('some text')];
-            }
-            class MyComponent3 extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent3 });
-            document.body.appendChild(elm);
-            expect(elm.textContent).toBe('some text');
-        });
-
         it('should profixied default objects', () => {
             const x = [1, 2, 3];
 
@@ -229,8 +225,8 @@ describe('template', () => {
 
         it('should not create a proxy for methods used from tempalte', () => {
             let x, y;
-            function html($api, $cmp) {
-                y = $cmp.x;
+            function html(api, cmp) {
+                y = cmp.x;
                 return [];
             }
             class MyComponent extends LightningElement {
@@ -286,33 +282,30 @@ describe('template', () => {
 
     describe('style', () => {
         it('should not render empty style attribute to DOM', () => {
-            const tmpl = ($api, $cmp) => {
-                return [$api.h('div', {
-                    key: 1,
-                    style: $cmp.getStyle,
-                }, [])]
-            }
-
+            const html = compileTemplate(`
+                <template>
+                    <div style={computedStyle}></div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
-                get getStyle() {
+                get computedStyle() {
                     return '';
                 }
                 render() {
-                    return tmpl;
+                    return html;
                 }
             }
 
             const element = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(element);
 
-            // there should not be a style="" attribute in the DOM
-            expect(element.innerHTML).toBe('<div></div>');
+            expect(getHostShadowRoot(element).querySelector('div').hasAttribute('style')).toBe(false);
         });
-    })
+    });
 
     describe('token', () => {
         it('adds the host token to the host element if template has a token', () => {
-            const styledTmpl = () => [];
+            const styledTmpl = compileTemplate(`<template></template>`);
             styledTmpl.hostToken = 'token-host';
 
             class Component extends LightningElement {
@@ -329,15 +322,12 @@ describe('template', () => {
         });
 
         it('adds the token to all the rendered elements if the template has a token', () => {
-            const styledTmpl = ($api) => [
-                $api.h('div', {
-                    key: 1,
-                }, [
-                    $api.h('div', {
-                        key: 2,
-                    }, [])
-                ]),
-            ];
+            const styledTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    <div></div>
+                </template>
+            `);
             styledTmpl.shadowToken = 'token';
 
             class Component extends LightningElement {
@@ -354,7 +344,7 @@ describe('template', () => {
         });
 
         it('removes the host token from the host element when changing template', () => {
-            const styledTmpl = () => [];
+            const styledTmpl = compileTemplate(`<template></template>`);
             styledTmpl.hostToken = 'token-host';
 
             const unstyledTmpl = () => [];
@@ -382,10 +372,10 @@ describe('template', () => {
         });
 
         it('swaps the host token when replacing the template with a different token', () => {
-            const styledTmplA = () => [];
+            const styledTmplA = compileTemplate(`<template></template>`);
             styledTmplA.hostToken = 'tokenA-host';
 
-            const styledTmplB = () => [];
+            const styledTmplB = compileTemplate(`<template></template>`);
             styledTmplB.hostToken = 'tokenB-host';
 
             class Component extends LightningElement {
@@ -415,17 +405,16 @@ describe('template', () => {
 
     describe('recycling', () => {
         it('should only occur if the same template is rendered', () => {
-            function html($api, $cmp) {
-                $cmp.x; // reaction
-                return [$api.h('div', { key: 0 }, [])]
-            }
-            let div: HTMLElement;
+            let div;
             let counter = 0;
+
+            const html = compileTemplate(`
+                <template>
+                    <div>{x}</div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
-                constructor() {
-                    super();
-                    this.x = 0;
-                }
+                x = 0;
                 render() {
                     return html;
                 }
@@ -435,8 +424,12 @@ describe('template', () => {
                 }
             }
             MyComponent.publicProps = { x: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
+
+            expect(counter).toBe(1);
+
             div.id = 'miami';
             elm.x = 2;
             return Promise.resolve().then(() => {
@@ -446,21 +439,21 @@ describe('template', () => {
         });
 
         it('should not occur if the template is swapped', () => {
-            function html1($api, $cmp) {
-                $cmp.x; // reaction
-                return [$api.h('div', { key: 0 }, [])]
-            }
-            function html2($api, $cmp) {
-                $cmp.x; // reaction
-                return [$api.h('div', { key: 0 }, [])]
-            }
-            let div: HTMLElement;
+            let div;
             let counter = 0;
+
+            const html1 = compileTemplate(`
+                <template>
+                    <div>{x}</div>
+                </template>
+            `);
+            const html2 = compileTemplate(`
+                <template>
+                    <div>{x}</div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
-                constructor() {
-                    super();
-                    this.x = 0;
-                }
+                x = 0;
                 render() {
                     return this.x === 0 ? html1: html2;
                 }
@@ -470,8 +463,12 @@ describe('template', () => {
                 }
             }
             MyComponent.publicProps = { x: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
+
+            expect(counter).toBe(1);
+
             div.id = 'miami';
             elm.x = 2;
             return Promise.resolve().then(() => {
@@ -483,19 +480,14 @@ describe('template', () => {
 
     describe('Attributes', () => {
         it('should render attributes correctly', () => {
-            const tmpl = ($api, $cmp) => {
-                return [$api.h('div', {
-                    attrs: {
-                        title: 'foo',
-                    },
-                    key: 1,
-                    style: $cmp.getStyle,
-                }, [])]
-            }
-
+            const html = compileTemplate(`
+                <template>
+                    <div title="foo"></div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
                 render() {
-                    return tmpl;
+                    return html;
                 }
             }
 
@@ -507,23 +499,19 @@ describe('template', () => {
         });
 
         it('should remove attribute when value is null', () => {
-            const tmpl = ($api, $cmp) => {
-                return [$api.h('div', {
-                    attrs: {
-                        title: $cmp._inner,
-                    },
-                    key: 1,
-                    style: $cmp.getStyle,
-                }, [])]
-            }
-
+            const html = compileTemplate(`
+                <template>
+                    <div title={_inner}></div>
+                </template>
+            `);
             class MyComponent extends LightningElement {
-                _inner = 'initial',
+                _inner = 'initial';
+
                 setInner(value) {
                     this._inner = value;
                 }
                 render() {
-                    return tmpl;
+                    return html;
                 }
             }
 

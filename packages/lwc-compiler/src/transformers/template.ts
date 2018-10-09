@@ -4,13 +4,15 @@ import compile from "lwc-template-compiler";
 import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
+import { TemplateModuleDependency } from "lwc-template-compiler";
+import { MetadataCollector } from "../bundler/meta-collector";
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
 export interface TemplateMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
-    templateDependencies: string[];
+    templateDependencies: TemplateModuleDependency[];
 }
 
 function attachStyleToTemplate(
@@ -18,9 +20,7 @@ function attachStyleToTemplate(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-    // Derive component namespace from the authored namespace and the namespace mapping.
-    const { name, namespace: authoredNamespace, namespaceMapping } = options;
-    const namespace = namespaceMapping && namespaceMapping[authoredNamespace] || authoredNamespace;
+    const { name, namespace } = options;
 
     const templateFilename = path.basename(filename, path.extname(filename));
 
@@ -65,34 +65,37 @@ function attachStyleToTemplate(
 const transform: FileTransformer = function(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedCompilerOptions,
+    metadataCollector?: MetadataCollector
 ) {
     let code;
     let metadata;
 
     try {
-        const { namespaceMapping } = options;
-        const result = compile(src, { namespaceMapping });
+        const result = compile(src, {});
         const warnings = result.warnings;
 
         code = result.code;
         metadata = result.metadata;
 
+        if (metadataCollector) {
+            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
+        }
+
         const fatalError = warnings.find(warning => warning.level === "error");
         if (fatalError) {
-            throw new CompilerError(
-                `${filename}: ${fatalError.message}`,
-                filename
-            );
+            throw new CompilerError(`${filename}: ${fatalError.message}`, filename);
         }
     } catch (e) {
         throw new CompilerError(e.message, filename, e.loc);
     }
 
+    // Rollup only cares about the mappings property on the map. Since producing a source map for
+    // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: attachStyleToTemplate(code, filename, options),
         metadata,
-        map: null
+        map: { mappings: '' }
     };
 };
 

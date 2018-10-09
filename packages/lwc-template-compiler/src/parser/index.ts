@@ -20,7 +20,6 @@ import {
     isRestrictedStaticAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
-    isPropFromAttrWithExpression,
 } from './attribute';
 
 import {
@@ -40,7 +39,6 @@ import {
 import {
     createElement,
     isCustomElement,
-    isCustomElementTag,
     createText,
 } from '../shared/ir';
 
@@ -58,6 +56,10 @@ import {
 } from '../shared/types';
 
 import {
+    getModuleMetadata
+} from '../metadata/metadata';
+
+import {
     bindExpression,
 } from '../shared/scope';
 
@@ -71,8 +73,11 @@ import {
     EVENT_HANDLER_NAME_RE,
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
+    DASHED_TAGNAME_ELEMENT_SET,
+    SVG_TAG_WHITELIST,
+    SVG_NAMESPACE_URI,
+    HTML_NAMESPACE_URI,
 } from './constants';
-
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
@@ -131,7 +136,6 @@ export default function parse(source: string, state: State): {
                 const elementNode = node as parse5.AST.Default.Element;
 
                 const element = createElement(elementNode.tagName, node);
-
                 element.attrsList = elementNode.attrs;
 
                 if (!root) {
@@ -159,6 +163,7 @@ export default function parse(source: string, state: State): {
                 validateElement(element);
                 validateAttributes(element);
                 validateProperties(element);
+                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -409,26 +414,12 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function getNamespacedTagName(name: string): string {
-        for (const [original, target] of Object.entries(state.config.namespaceMapping)) {
-            if (name.startsWith(`${original}-`)) {
-                return name.replace(`${original}-`, `${target}-`);
-            }
-        }
-
-        return name;
-    }
-
     function applyComponent(element: IRElement) {
         const { tag } = element;
-        let componentName: string | undefined;
+        let component: string | undefined;
 
-        if (isCustomElementTag(tag)) {
-            componentName = getNamespacedTagName(tag);
-
-            // Update the original tag name with the namespaced name to get it reflected in the generated
-            // code.
-            element.tag = componentName;
+        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+            component = tag;
         }
 
         const isAttr = getTemplateAttribute(element, 'is');
@@ -437,19 +428,15 @@ export default function parse(source: string, state: State): {
                 return warnAt(`Is attribute value can't be an expression`, isAttr.location);
             }
 
-            componentName = getNamespacedTagName(isAttr.value);
-
-            // Update the original is attribute value with the namespaced name to get it reflected in the
-            // generated code.
-            const originalIsAttribute = getAttribute(element, 'is');
-            originalIsAttribute!.value = componentName;
+            // Don't remove the is, because passed as attribute
+            component = isAttr.value;
         }
 
-        if (componentName) {
-            element.component = componentName;
+        if (component) {
+            element.component = component;
 
-            if (!state.dependencies.includes(componentName)) {
-                state.dependencies.push(componentName);
+            if (!state.dependencies.includes(component)) {
+                state.dependencies.push(component);
             }
         }
     }
@@ -555,10 +542,19 @@ export default function parse(source: string, state: State): {
                 );
             }
         } else {
-            if (HTML_TAG_BLACKLIST[tag]) {
+            const namespace = node.namespaceURI;
+            const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
+            if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
                     `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
                     node,
+                );
+            }
+            const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
+            if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
+                return warnOnElement(
+                    `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
+                    node
                 );
             }
         }
@@ -579,8 +575,7 @@ export default function parse(source: string, state: State): {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
                         `The attribute "tabindex" can only be set to "0" or "-1".`,
-                        element.__original as parse5.AST.Default.Element,
-                        'error'
+                        element.__original as parse5.AST.Default.Element
                     );
                 }
             }
@@ -594,16 +589,23 @@ export default function parse(source: string, state: State): {
                 const prop = props[propName];
                 const attrName = prop.name;
                 if (isTabIndexAttribute(attrName)) {
-                    // tabindex becomes a prop for custom elements
-                    if (!isPropFromAttrWithExpression(prop) && !isValidTabIndexAttributeValue(prop.value)) {
+                    if (
+                        prop.type !== IRAttributeType.Expression &&
+                        !isValidTabIndexAttributeValue(prop.value)
+                    ) {
                         warnOnElement(
                             `The attribute "tabindex" can only be set to "0" or "-1".`,
-                            element.__original as parse5.AST.Default.Element,
-                            'error'
+                            element.__original as parse5.AST.Default.Element
                         );
                     }
                 }
             }
+        }
+    }
+
+    function collectMetadata(element: IRElement) {
+        if (isCustomElement(element)) {
+            state.extendedDependencies.push(getModuleMetadata(element));
         }
     }
 

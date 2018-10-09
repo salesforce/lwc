@@ -1,5 +1,10 @@
 {
   "metadata": {
-    "templateDependencies": ["x/cmp"]
+    "templateDependencies": [
+      {
+        "moduleName": "x/cmp",
+        "tagName": "x-cmp"
+      }
+    ]
   }
 }

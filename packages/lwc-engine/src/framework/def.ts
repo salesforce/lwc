@@ -30,6 +30,7 @@ import {
     getPropertyDescriptor,
     StringIndexOf,
 } from "../shared/language";
+import { getInternalField } from "../shared/fields";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
@@ -45,7 +46,8 @@ import {
     EmptyObject,
     PatchedFlag,
     resolveCircularModuleDependency,
-    isCircularModuleDependency
+    isCircularModuleDependency,
+    ViewModelReflection,
 } from "./utils";
 import { getCustomElementVM } from "./vm";
 import { BaseCustomElementProto } from "./dom-api";
@@ -79,6 +81,7 @@ export interface ComponentDef {
     props: PropsDef;
     methods: MethodDef;
     descriptors: PropertyDescriptorMap;
+    ctor: ComponentConstructor;
     elmProto: object;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
@@ -227,6 +230,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
+        ctor: Ctor,
         name,
         wire,
         track,
@@ -358,7 +362,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
                     msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
                     msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                 }
-                console.error(msg.join('\n')); // tslint:disable-line
+                assert.logError(msg.join('\n'));
             }
         }
 
@@ -385,6 +389,10 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     }, create(null));
 }
 
+export function isComponentConstructor(Ctor: any): boolean {
+   return isElementComponent(Ctor);
+}
+
 export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
@@ -393,6 +401,22 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
+}
+
+/**
+ * Returns the component constructor for a given HTMLElement if it can be found
+ * @param {HTMLElement} element
+ * @return {ComponentConstructor | null}
+ */
+export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
+    let ctor: ComponentConstructor | null = null;
+    if (elm instanceof HTMLElement) {
+        const vm = getInternalField(elm, ViewModelReflection);
+        if (!isUndefined(vm)) {
+            ctor = vm.def.ctor;
+        }
+    }
+    return ctor;
 }
 
 // Initialization Routines

@@ -78,6 +78,22 @@ describe('compiler options', () => {
         });
     });
 
+    it('should validate outputConfig.sourcemap', async () => {
+        await expect(
+            compile({
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
+                outputConfig: {
+                    sourcemap: 'true',
+                },
+            }),
+        ).rejects.toMatchObject({
+            message:
+                "Expected a boolean value for outputConfig.sourcemap, received \"true\".",
+        });
+    });
+
     it('should validate stylesheetConfig.customProperties.allowDefinition', async () => {
         await expect(
             compile({

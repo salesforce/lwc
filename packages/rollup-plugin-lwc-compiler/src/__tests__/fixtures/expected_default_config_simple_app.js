@@ -16,6 +16,8 @@
       }, [api_dynamic($cmp.x)])];
     }
 
+    var html = lwc.registerTemplate(tmpl);
+
     if (style$1) {
         tmpl.hostToken = 'x-foo_foo-host';
         tmpl.shadowToken = 'x-foo_foo';
@@ -29,13 +31,12 @@
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
-        var _temp;
-
-        return _temp = super(...args), this.x = void 0, _temp;
+        super(...args);
+        this.x = void 0;
       }
 
       render() {
-        return tmpl;
+        return html;
       }
 
     }
@@ -64,6 +65,8 @@
       }, [])])];
     }
 
+    var html$1 = lwc.registerTemplate(tmpl$1);
+
     if (style) {
         tmpl$1.hostToken = 'x-app_app-host';
         tmpl$1.shadowToken = 'x-app_app';
@@ -82,7 +85,7 @@
       }
 
       render() {
-        return tmpl$1;
+        return html$1;
       }
 
     }

@@ -26,6 +26,7 @@ const CONSOLE_WHITELIST = [
     'component public methods should allow calling getAttribute on child when referenced with querySelector',
     'component public methods should allow calling removeAttribute on child when referenced with querySelector',
     'component public methods should allow calling setAttribute on child when referenced with querySelector',
+    'html-element #removeAttribute() should remove attribute on host element when element is nested in template',
     'html-element global HTML Properties should correctly set child attribute',
     'html-element global HTML Properties should log console error when user land code changes attribute via querySelector',
     'html-element global HTML Properties should log console error when user land code removes attribute via querySelector',
@@ -43,12 +44,6 @@ const CONSOLE_WHITELIST = [
     'root .lastChild should return the last child',
     'root .parentElement should return null on child node',
     'root childNodes should return array of childnodes',
-    'template integration should render arrays correctly',
-    'template integration should render sets correctly',
-    'track.ts integration should not proxify exotic objects',
-    'track.ts integration should not proxify non-observable object',
-    'wire.ts integration should not proxify exotic objects',
-    'wire.ts integration should not proxify non-observable object',
 ];
 
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {

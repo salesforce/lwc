@@ -1,15 +1,18 @@
 module.exports = {
     projectName: 'lwc-engine-benchmark-ie11',
     plugins: [
-        ['rollup-plugin-lwc-compiler', {
-            rootDir: '<rootDir>/src/',
-            mode: 'compat',
-        }],
+        ['rollup-plugin-lwc-compiler', { rootDir: '<rootDir>/src/' }],
+        ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
+        ['rollup-plugin-compat', {}]
     ],
     benchmarkOnClient: false,
     benchmarkIterations: 60,
     testPathIgnorePatterns: ['**/__benchmarks__/benchmark-table-wc/*.benchmark.js'],
     runnerConfig: [
+        {
+            "runner": '@best/runner-headless',
+            "name": "default",
+        },
         {
             "runner": "@best/runner-remote",
             "name": "remote",

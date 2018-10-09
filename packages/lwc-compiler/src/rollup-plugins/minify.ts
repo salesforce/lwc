@@ -2,6 +2,7 @@ import * as babel from '@babel/core';
 import minify from 'babel-preset-minify';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
+import { NormalizedOutputConfig } from "../compiler/options";
 
 export const MINIFY_CONFIG: any = Object.assign({
     comments: false,
@@ -12,12 +13,14 @@ export const MINIFY_CONFIG: any = Object.assign({
 /**
  * Rollup plugin applying minification to the generated bundle.
  */
-export default function() {
+export default function({ sourcemap }: NormalizedOutputConfig) {
+    const config = Object.assign({}, MINIFY_CONFIG, { sourceMaps: sourcemap });
+
     return {
         name: 'lwc-minify',
 
         transformBundle(src: string) {
-            const { code, map } = babel.transform(src, MINIFY_CONFIG);
+            const { code, map } = babel.transform(src, config);
             return { code, map };
         },
     };

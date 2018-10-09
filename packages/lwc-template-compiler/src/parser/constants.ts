@@ -36,10 +36,31 @@ const ATTRIBUTE_NAME_CHAR = [
 export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
-export const SVG_TAG_SET = new Set([
-    'svg', 'animate', 'circle', 'clippath', 'color-profile', 'cursor', 'defs', 'desc', 'ellipse', 'filter',
-    'font-face', 'g', 'glyph', 'image', 'line', 'marker', 'mask', 'missing-glyph', 'path', 'pattern',
-    'polygon', 'polyline', 'rect', 'switch', 'symbol', 'text', 'textpath', 'tspan', 'use', 'view',
+export const SVG_TAG_WHITELIST = new Set([
+    'a',
+    'circle',
+    // 'clippath', // '<clipPath> has no matching closing tag.' even with correct closing
+    'defs',
+    'desc',
+    'ellipse',
+    'filter',
+    'g',
+    'line',
+    'marker',
+    'mask',
+    'path',
+    'pattern',
+    'polygon',
+    'polyline',
+    'rect',
+    'stop',
+    'svg',
+    'symbol',
+    'text',
+    // 'textpath', // '<textPath> has no matching closing tag.' even with correct closing
+    'title',
+    'tspan',
+    'use',
 ]);
 
 export const GLOBAL_ATTRIBUTE_SET = new Set([
@@ -137,14 +158,14 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-valuetext': 'ariaValueText',
 };
 
-export const HTML_TAG_BLACKLIST: { [tagname: string]: boolean } = {
-    base: true,
-    link: true,
-    meta: true,
-    script: true,
-    style: true,
-    title: true,
-};
+export const HTML_TAG_BLACKLIST = new Set([
+    'base',
+    'link',
+    'meta',
+    'script',
+    'style',
+    'title',
+]);
 
 export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   'xlink:href': [
@@ -663,3 +684,6 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
     'textarea',
   ],
 };
+
+export const HTML_NAMESPACE_URI = 'http://www.w3.org/1999/xhtml';
+export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';

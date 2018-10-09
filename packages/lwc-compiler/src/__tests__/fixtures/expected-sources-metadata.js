@@ -1,5 +1,5 @@
 import _xBar from 'x/bar';
-import { LightningElement } from 'lwc';
+import { registerTemplate, LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
 const style = undefined;
@@ -11,6 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
     }, [])];
 }
+var _tmpl = registerTemplate(tmpl);
 if (style) {
     tmpl.hostToken = 'x-foo_foo-host';
     tmpl.shadowToken = 'x-foo_foo';
@@ -22,15 +23,16 @@ if (style) {
 }
 class Metadata extends LightningElement {
     constructor(...args) {
-        var _temp;
-        return _temp = super(...args), this.publicProp = void 0, this.wiredProp = void 0, _temp;
+        super(...args);
+        this.publicProp = void 0;
+        this.wiredProp = void 0;
     }
     publicMethod(name) {
         return "hello" + name;
     }
     wiredMethod(result) {}
     render() {
-        return tmpl;
+        return _tmpl;
     }
 }
 Metadata.publicProps = {

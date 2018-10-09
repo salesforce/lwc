@@ -1,8 +1,12 @@
 import _xFoo from 'x/foo';
-import { LightningElement } from 'lwc';
+import { registerTemplate, LightningElement } from 'lwc';
 
 function style(token) {
-    return `[${token}-host] {
+    return `:host {
+    color: blue;
+}
+
+[${token}-host] {
     color: blue;
 }
 div[${token}] {
@@ -26,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 2
     }, [])];
 }
-
+var _tmpl = registerTemplate(tmpl);
 if (style) {
     tmpl.hostToken = 'x-styled_styled-host';
     tmpl.shadowToken = 'x-styled_styled';
@@ -39,7 +43,7 @@ if (style) {
 
 class Styled extends LightningElement {
   render() {
-    return tmpl;
+    return _tmpl;
   }
 
 }

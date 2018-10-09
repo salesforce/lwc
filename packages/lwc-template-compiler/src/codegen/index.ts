@@ -1,9 +1,9 @@
 import generate from 'babel-generator';
 import * as t from 'babel-types';
-
 import template = require('babel-template');
 
 import State from '../state';
+import { ResolvedConfig } from '../config';
 
 import {
     TEMPLATE_PARAMS,
@@ -124,6 +124,7 @@ function transform(
         if (isCustomElement(element)) {
             // Make sure to register the component
             const componentClassName = element.component!;
+
             babelElement = codeGen.genCustomElement(
                 element.tag,
                 identifierFromComponentName(componentClassName),
@@ -345,7 +346,7 @@ function transform(
             forKey,
         } = element;
 
-        // Class attribute defined via string
+        // Class attibute defined via string
         if (className) {
             const { expression: classExpression } = bindExpression(
                 className,
@@ -517,11 +518,10 @@ function format({ config }: State) {
     }
 }
 
-export default function(templateRoot: IRElement, state: State): CompilationOutput {
+export default function(templateRoot: IRElement, state: State, options: ResolvedConfig): CompilationOutput {
     const templateFunction = generateTemplateFunction(templateRoot, state);
-
     const formatter = format(state);
-    const program = formatter(templateFunction, state);
+    const program = formatter(templateFunction, state, options);
 
     const { code } = generate(program);
     return {
