@@ -99,13 +99,13 @@ describe('render method', () => {
 
     describe('does not insert render method when extending from legacy "engine" Element', () => {
         pluginTest('inject render method', `
-            import { LightningElement } from "engine";
-            export default class Test extends LightningElement {}
+            import { Element } from "engine";
+            export default class Test extends Element {}
         `, {
             output: {
                 code: `
-                import { LightningElement } from "engine";
-                export default class Test extends LightningElement {}`
+                import { Element } from "engine";
+                export default class Test extends Element {}`
             }
         });
 
