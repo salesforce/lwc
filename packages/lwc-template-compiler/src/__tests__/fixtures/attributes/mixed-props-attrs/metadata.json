@@ -42,7 +42,7 @@
           },
           "tabIndex": {
             "type": "literal",
-            "value": "bar"
+            "value": "0"
           }
         }
       },
@@ -78,7 +78,7 @@
           },
           "tabIndex": {
             "type": "literal",
-            "value": "2"
+            "value": "0"
           }
         }
       },
