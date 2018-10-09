@@ -48,14 +48,15 @@ describe('Element import', () => {
         export default class Test extends Component {}
     `, {
         output: {
-            code: `import _tmpl from "./test.html";
-import { LightningElement as Component } from 'lwc';
-export default class Test extends Component {
-  render() {
-    return _tmpl;
-  }
+            code: `
+            import _tmpl from "./test.html";
+            import { LightningElement as Component } from 'lwc';
+            export default class Test extends Component {
+                render() {
+                    return _tmpl;
+                }
 
-}`
+            }`
         }
     });
 });
@@ -84,16 +85,29 @@ describe('render method', () => {
         export default class Test extends LightningElement {}
     `, {
         output: {
-            code: `import _tmpl from "./test.html";
-import { LightningElement } from "lwc";
-export default class Test extends LightningElement {
-  render() {
-    return _tmpl;
-  }
+            code: `
+            import _tmpl from "./test.html";
+            import { LightningElement } from "lwc";
+            export default class Test extends LightningElement {
+                render() {
+                    return _tmpl;
+                }
 
-}`
+            }`
         }
     });
+
+    describe('does not insert render method when extending from legacy "engine" Element', () => {
+        pluginTest('inject render method', `
+            import { LightningElement } from "engine";
+            export default class Test extends LightningElement {}
+        `, {
+            output: {
+                code: `
+                import { LightningElement } from "engine";
+                export default class Test extends LightningElement {}`
+            }
+        });
 
     pluginTest(`keep the render method if present`, `
         import { LightningElement } from "lwc";
@@ -102,11 +116,12 @@ export default class Test extends LightningElement {
         }
     `, {
         output: {
-            code: `import { LightningElement } from "lwc";
-export default class Test extends LightningElement {
-  render() {}
+            code: `
+            import { LightningElement } from "lwc";
+            export default class Test extends LightningElement {
+                render() {}
 
-}`
+            }`
         }
     });
 
@@ -118,17 +133,18 @@ export default class Test extends LightningElement {
         export default class Test2 extends LightningElement {}
     `, {
         output: {
-            code: `import _tmpl from "./test.html";
-import { LightningElement } from 'lwc';
+            code: `
+            import _tmpl from "./test.html";
+            import { LightningElement } from 'lwc';
 
-class Test1 extends LightningElement {}
+            class Test1 extends LightningElement {}
 
-export default class Test2 extends LightningElement {
-  render() {
-    return _tmpl;
-  }
+            export default class Test2 extends LightningElement {
+                render() {
+                    return _tmpl;
+                }
 
-}`
+            }`
         }
     })
 });
@@ -459,5 +475,4 @@ describe('metadata', () => {
             }
         }
     );
-
 });
