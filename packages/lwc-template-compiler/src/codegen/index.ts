@@ -76,28 +76,11 @@ function transform(
         t.arrayExpression([]),
     );
 
-    const keyForId: { [key: string]: number } = Object.create(null);
-
-    // Initial traversal to understand the state of the tree as a whole.
-    traverse(root, {
-        element: {
-            exit(element: IRElement) {
-                if (isTemplate(element)) {
-                    return;
-                }
-
-                element.key = generateKey();
-
-                const { attrs, props, key } = element;
-                if (attrs && attrs.id) {
-                    keyForId[attrs.id.value as string] = key;
-                }
-                if (props && props.id) {
-                    keyForId[props.id.value as string] = key;
-                }
-            }
-        }
-    });
+    const keyForId: Map<string, number> = state.idAttrData
+        .reduce((map, data) => {
+            map.set(data.value, data.key);
+            return map;
+        }, new Map());
 
     traverse(root, {
         text: {
@@ -405,7 +388,7 @@ function transform(
         }
 
         function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
-            const key = keyForId[id];
+            const key = keyForId.get(id);
             if (forKey) {
                 const generatedKey = codeGen.genKey(
                     t.numericLiteral(key),
