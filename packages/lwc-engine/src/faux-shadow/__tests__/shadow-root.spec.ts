@@ -1,8 +1,16 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getHostShadowRoot } from '../../framework/html-element';
+import { SyntheticShadowRoot } from "../shadow-root";
 
 describe('root', () => {
+    describe('constructor', () => {
+        it('should throw when calling constructor', () => {
+            expect(() => {
+                new SyntheticShadowRoot();
+            }).toThrow('Illegal constructor');
+        });
+    });
     describe('integration', () => {
         it('should support template.host', () => {
             const html = compileTemplate(`
