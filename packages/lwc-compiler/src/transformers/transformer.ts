@@ -1,5 +1,6 @@
 import * as path from "path";
 import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
+import { TransformerErrors, generateCompilerError, invariant } from 'lwc-errors';
 
 import {
     NormalizedCompilerOptions,
@@ -33,13 +34,8 @@ export type FileTransformer = (
 ) => FileTransformerResult | Promise<FileTransformerResult>;
 
 export function transform(src: string, id: string, options: CompilerOptions) {
-    if (!isString(src)) {
-        throw new Error(`Expect a string for source. Received ${src}`);
-    }
-
-    if (!isString(id)) {
-        throw new Error(`Expect a string for id. Received ${id}`);
-    }
+    invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
+    invariant(isString(id), TransformerErrors.INVALID_ID, [id]);
 
     return transformFile(src, id, normalizeOptions(options));
 }
@@ -56,7 +52,7 @@ export function getTransformer(fileName: string): FileTransformer {
             return javascriptTransformer;
 
         default:
-            throw new TypeError(`No available transformer for "${fileName}"`);
+            throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, [fileName], {filename: fileName});
     }
 }
 

@@ -1,6 +1,6 @@
 import * as path from "path";
+import { RollupErrors, generateCompilerError } from 'lwc-errors';
 
-import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 
 const EMPTY_CSS_CONTENT = ``;
@@ -25,15 +25,15 @@ function fileExists(
 }
 
 function readFile(
-    fileName: string,
+    filename: string,
     options: NormalizedCompilerOptions
 ): string {
     const { files } = options;
 
-    if (fileExists(fileName, options)) {
-        return files[fileName];
+    if (fileExists(filename, options)) {
+        return files[filename];
     } else {
-        throw new Error(`No such file ${fileName}`);
+        throw generateCompilerError(RollupErrors.NONEXISTENT_FILE, [filename], {filename});
     }
 }
 
@@ -62,14 +62,15 @@ export default function({
                 !isTemplateCss(importee, importer)
             ) {
                 if (importer) {
-                    throw new CompilerError(
-                        `${importee} failed to be resolved from ${importer}`,
-                        importer,
-                    );
+                    throw generateCompilerError(
+                        RollupErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED,
+                        [ importee, importer ],
+                        { filename: importer });
                 }
-                throw new CompilerError(
-                    `Failed to resolve entry for module ${importee}`,
-                    importer,
+                throw generateCompilerError(
+                    RollupErrors.IMPORTEE_RESOLUTION_FAILED,
+                    [importee],
+                    { filename: importer }
                 );
             }
             return absPath;

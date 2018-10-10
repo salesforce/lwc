@@ -2,6 +2,15 @@ import { LWCErrorInfo } from "../shared/utils";
 // TODO: Remove circular dependency
 import { throwError } from "./normalizer";
 
+export interface Location {
+    line: number;
+    column: number;
+}
+export interface CompilerContext {
+    filename?: string;
+    location?: Location;
+}
+
 export interface CompilerDiagnostic {
     message: string;
     code: number;
@@ -32,12 +41,3 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
         throwError(errorInfo, args);
     }
 }
-
-/*function throwError(type: String | undefined, message: string, fileName?: string, location?: Location) {
-    switch (type) {
-        case "TypeError":
-            throw new TypeError(message);
-        default:
-            throw new CompilerError(message, fileName, location);
-    }
-}*/

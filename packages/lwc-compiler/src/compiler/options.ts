@@ -1,4 +1,5 @@
 import { isBoolean, isString, isUndefined, isObject } from "../utils";
+import { CompilerErrors, invariant } from "lwc-errors";
 
 const DEFAULT_OPTIONS = {
     baseDir: "",
@@ -89,33 +90,22 @@ export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
 }
 
 export function validateOptions(options: CompilerOptions) {
-    if (isUndefined(options)) {
-        throw new TypeError(`Expected options object, received "${options}".`);
-    }
+    invariant(!isUndefined(options), CompilerErrors.MISSING_OPTIONS_OBJECT, [options]);
+    invariant(isString(options.name), CompilerErrors.INVALID_NAME_PROPERTY, [options.name]);
+    invariant(isString(options.namespace), CompilerErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
 
-    if (!isString(options.name)) {
-        throw new TypeError(
-            `Expected a string for name, received "${options.name}".`
-        );
-    }
-
-    if (!isString(options.namespace)) {
-        throw new TypeError(
-            `Expected a string for namespace, received "${options.namespace}".`
-        );
-    }
-
-    if (isUndefined(options.files) || !Object.keys(options.files).length) {
-        throw new TypeError(`Expected an object with files to be compiled.`);
-    }
+    invariant(
+        !isUndefined(options.files) && !!Object.keys(options.files).length,
+        CompilerErrors.INVALID_FILES_PROPERTY
+    );
 
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
-        if (isUndefined(value) || !isString(value)) {
-            throw new TypeError(
-                `Unexpected file content for "${key}". Expected a string, received "${value}".`
-            );
-        }
+        invariant(
+            !isUndefined(value) && isString(value),
+            CompilerErrors.UNEXPECTED_FILE_CONTENT,
+            [key, value]
+        );
     }
 
     if (!isUndefined(options.stylesheetConfig)) {
@@ -133,77 +123,71 @@ function validateStylesheetConfig(config: StylesheetConfig) {
     if (!isUndefined(customProperties)) {
         const { allowDefinition, resolution } = customProperties;
 
-        if (!isUndefined(allowDefinition) && !isBoolean(allowDefinition)) {
-            throw new TypeError(`Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "${
-                allowDefinition
-            }".`);
-        }
+        invariant(
+            isUndefined(allowDefinition) || isBoolean(allowDefinition),
+            CompilerErrors.INVALID_ALLOWDEFINITION_PROPERTY,
+            [allowDefinition]
+        );
 
         if (!isUndefined(resolution)) {
-            if (!isObject(resolution)) {
-                throw new TypeError(`Expected an object for stylesheetConfig.customProperties.resolution, received "${
-                    resolution
-                }".`);
-            }
+            invariant(
+                isObject(resolution),
+                CompilerErrors.INVALID_RESOLUTION_PROPERTY,
+                [resolution]
+            );
 
             const { type } = resolution;
-
-            if (type !== 'native' && type !== 'module') {
-                throw new TypeError(`Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "${
-                    type
-                }".`);
-            }
+            invariant(
+                type === 'native' || type === 'module',
+                CompilerErrors.INVALID_TYPE_PROPERTY,
+                [type]
+            );
         }
     }
 }
 
+function isUndefinedOrBoolean(property: any): boolean {
+    return isUndefined(property) || isBoolean(property);
+}
+
 function validateOutputConfig(config: OutputConfig) {
-    if (!isUndefined(config.minify) && !isBoolean(config.minify)) {
-        throw new TypeError(
-            `Expected a boolean for outputConfig.minify, received "${
-                config.minify
-            }".`
-        );
-    }
+    invariant(
+        isUndefinedOrBoolean(config.minify),
+        CompilerErrors.INVALID_MINIFY_PROPERTY,
+        [config.minify]
+    );
 
-    if (!isUndefined(config.compat) && !isBoolean(config.compat)) {
-        throw new TypeError(
-            `Expected a boolean for outputConfig.compat, received "${
-                config.compat
-            }".`
-        );
-    }
+    invariant(
+        isUndefinedOrBoolean(config.compat),
+        CompilerErrors.INVALID_COMPAT_PROPERTY,
+        [config.compat]
+    );
 
-    if (!isUndefined(config.sourcemap) && !isBoolean(config.sourcemap)) {
-        throw new TypeError(
-            `Expected a boolean value for outputConfig.sourcemap, received "${
-                config.sourcemap
-                }".`
-        );
-    }
+    invariant(
+        isUndefinedOrBoolean(config.sourcemap),
+        CompilerErrors.INVALID_SOURCEMAP_PROPERTY,
+        [config.sourcemap]
+    );
+
     if (!isUndefined(config.env)) {
-        if (!isObject(config.env)) {
-            throw new TypeError(
-                `Expected an object for outputConfig.env, received "${
-                    config.env
-                }".`
-            );
-        }
+        invariant(
+            isObject(config.env),
+            CompilerErrors.INVALID_ENV_PROPERTY,
+            [config.env]
+        );
 
         for (const [key, value] of Object.entries(config.env)) {
-            if (!KNOWN_ENV.has(key)) {
-                throw new TypeError(
-                    `Unknown entry "${key}" in outputConfig.env.`
-                );
-            }
+            invariant(
+                KNOWN_ENV.has(key),
+                CompilerErrors.UNKNOWN_ENV_ENTRY_KEY,
+                [key]
+            );
 
-            if (!isString(value)) {
-                throw new TypeError(
-                    `Expected a string for outputConfig.env["${key}"], received "${
-                        value
-                    }".`
-                );
-            }
+            invariant(
+                isString(value),
+                CompilerErrors.INVALID_ENV_ENTRY_VALUE,
+                [key, value]
+            );
         }
     }
 }

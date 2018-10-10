@@ -1,4 +1,5 @@
 import * as path from "path";
+import { TransformerErrors, generateCompilerError, normalizeCompilerError } from "lwc-errors";
 import compile from "lwc-template-compiler";
 import { TemplateModuleDependency } from "lwc-template-compiler";
 
@@ -52,10 +53,11 @@ const transform: FileTransformer = function(
 
         const fatalError = result.warnings.find(warning => warning.level === "error");
         if (fatalError) {
-            throw new CompilerError(`${filename}: ${fatalError.message}`, filename);
+            throw generateCompilerError(TransformerErrors.FATAL_TRANSFORMER_ERROR, [filename, fatalError.message], { filename });
         }
     } catch (e) {
-        throw new CompilerError(e.message, filename, e.loc);
+        // TODO: Do we want to transfer the stacktrace over to the CompilerError object?
+        throw normalizeCompilerError(e, { filename, location: e.loc });
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for

@@ -1,9 +1,9 @@
 import * as path from "path";
 import postcss from "postcss";
 import cssnano from "cssnano";
+import { normalizeCompilerError } from "lwc-errors";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
-import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
@@ -117,7 +117,8 @@ export default async function transformStyle(
             from: filename,
         });
     } catch (e) {
-        throw new CompilerError(e.message, filename, e.loc);
+        // TODO: Do we want to transfer the stacktrace over to the CompilerError object?
+        throw normalizeCompilerError(e, { filename, location: e.loc });
     }
 
     let code: string = '';

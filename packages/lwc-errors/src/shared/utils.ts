@@ -7,11 +7,6 @@ export interface LWCErrorInfo {
     url?: string;
 }
 
-export interface Location {
-    line: number;
-    column: number;
-}
-
 export enum Level {
     /** Unexpected error, parsing error, bundling error */
     Fatal = 0,

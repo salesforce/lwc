@@ -5,3 +5,4 @@ export * from "./compiler/jest";
 export * from "./compiler/babel-plugin-lwc-class";
 export * from "./compiler/template";
 export * from "./compiler/normalizer";
+export * from "./compiler/compiler";
