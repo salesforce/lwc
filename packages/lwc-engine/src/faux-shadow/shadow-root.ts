@@ -1,15 +1,14 @@
 import assert from "../shared/assert";
-import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperty, defineProperties, setPrototypeOf } from "../shared/language";
+import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
+import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
-import { DocumentPrototypeActiveElement, elementsFromPoint } from "./document";
-import { getNodeKey } from "../framework/vm";
+import { DocumentPrototypeActiveElement } from "./document";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -59,7 +58,13 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
         ShadowRootPrototypePatched = true;
         defineProperties(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());
     }
-    const sr = new SyntheticShadowRoot(mode);
+    const sr = create(SyntheticShadowRoot.prototype, {
+        mode: {
+            value: mode,
+            configurable: true,
+            enumerable: true,
+        },
+    });
     setInternalField(sr, HostKey, elm);
     setInternalField(elm, ShadowRootKey, sr);
     // expose the shadow via a hidden symbol for testing purposes
@@ -113,15 +118,15 @@ function activeElementGetter(this: SyntheticShadowRoot): Element | null {
         isNodeOwnedBy(host, activeElement) ? activeElement : null;
 }
 
+export enum ShadowRootMode {
+    CLOSED = "closed",
+    OPEN = "open",
+}
+
 export class SyntheticShadowRoot {
-    constructor(mode: string) {
-        defineProperty(this, 'mode', {
-            get() {
-                return mode;
-            },
-            configurable: true,
-            enumerable: true,
-        });
+    mode: ShadowRootMode;
+    constructor(mode: ShadowRootMode) {
+        throw new TypeError('Illegal constructor');
     }
     get nodeType() {
         return 11;
@@ -171,7 +176,6 @@ export class SyntheticShadowRoot {
         removeShadowRootEventListener(this, type, listener, options);
     }
     compareDocumentPosition(otherNode: Node | SyntheticShadowRoot) {
-        // this API might be called with proxies
         const host = getHost(this);
         if (this === otherNode) {
             // it is the root itself
@@ -189,7 +193,6 @@ export class SyntheticShadowRoot {
         }
     }
     contains(otherNode: Node) {
-        // this API might be called with proxies
         const host = getHost(this);
         // must be child of the host and owned by it.
         return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
@@ -203,21 +206,7 @@ export class SyntheticShadowRoot {
     // but we should only return elements that the shadow owns,
     // or are ancestors of the shadow
     elementFromPoint(left: number, top: number) {
-        const elements = elementsFromPoint.call(document, left, top);
-        const hostKey = getNodeKey(this.host);
-        let topElement = null;
-        for (let i = elements.length - 1; i >= 0; i -= 1) {
-            const el = elements[i];
-            const elementOwnerKey = getNodeOwnerKey(el);
-            if (elementOwnerKey === hostKey) {
-                topElement = el;
-            } else if (topElement === null && isUndefined(elementOwnerKey)) {
-                // This should handle any global elements that are ancestors
-                // of our current shadow
-                topElement = el;
-            }
-        }
-        return topElement;
+        return shadowDomElementFromPoint(getHost(this), left, top);
     }
 }
 

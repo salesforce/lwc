@@ -26,7 +26,7 @@ describe('root', () => {
             class MyComponent extends LightningElement {}
 
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(getHostShadowRoot(elm).mode).toBe('closed');
+            expect(getHostShadowRoot(elm).mode).toBe('open');
         });
 
         it('should allow searching for elements from template', () => {

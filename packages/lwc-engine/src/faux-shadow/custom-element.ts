@@ -1,5 +1,5 @@
 import { defineProperties } from "../shared/language";
-import { attachShadow, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
+import { attachShadow, getShadowRoot, SyntheticShadowRoot, ShadowRootMode } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 
 function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
@@ -14,8 +14,14 @@ function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): Synthet
     return attachShadow(this, options);
 }
 
-function shadowRootGetter(this: HTMLElement) {
-    return getShadowRoot(this);
+const { OPEN: ShadowRootModeOpen } = ShadowRootMode;
+
+function shadowRootGetter(this: HTMLElement): SyntheticShadowRoot | null {
+    const shadow = getShadowRoot(this);
+    if (shadow.mode === ShadowRootModeOpen) {
+        return shadow;
+    }
+    return null;
 }
 
 const CustomElementPatchDescriptors: PropertyDescriptorMap = {

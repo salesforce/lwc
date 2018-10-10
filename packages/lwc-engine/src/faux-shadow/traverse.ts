@@ -12,6 +12,7 @@ import {
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
 } from "./element";
+import { elementsFromPoint } from "./document";
 import { wrapIframeWindow } from "./iframe";
 import {
     ArrayReduce,
@@ -131,6 +132,10 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
         }
     }
     return null;
+}
+
+export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: number) {
+    return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
 export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {

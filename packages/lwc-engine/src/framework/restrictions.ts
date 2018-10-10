@@ -89,12 +89,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 throw new Error(`Disallowed property "ownerDocument" in ShadowRoot.`);
             },
         },
-        mode: {
-            // from within, the shadow root is always seen as closed
-            value: 'closed',
-            enumerable: true,
-            configurable: true,
-        },
     });
     const BlackListedShadowRootMethods = {
         appendChild: 0,
