@@ -503,9 +503,18 @@ export default function parse(source: string, state: State): {
 
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
-                    state.elementIdAttrs.push({ attr, element });
+                    state.idAttrData.push({
+                        key: element.key!,
+                        location: attr.location,
+                        value: attr.value,
+                    });
                 } else if (isIdReferencingAttribute(name)) {
-                    state.elementIdRefAttrs.push({ attr, element });
+                    state.idrefAttrData.push({
+                        key: element.key!,
+                        location: attr.location,
+                        name: attr.name,
+                        values: attr.value.split(/\s+/),
+                    });
                 }
             }
 
@@ -620,6 +629,32 @@ export default function parse(source: string, state: State): {
                         'warning'
                     );
                 }
+            }
+        }
+    }
+
+    function validateState(parseState) {
+        const seenIds = new Set();
+        for (const { location, value } of parseState.idAttrData) {
+            if (seenIds.has(value)) {
+                warnAt(`Duplicate id value "${value}" detected. Id values must be unique within a template.`, location);
+            } else {
+                seenIds.add(value);
+            }
+        }
+        const seenIdrefs = new Set();
+        for (const { location, name, values } of parseState.idrefAttrData) {
+            for (const value of values) {
+                if (!seenIds.has(value)) {
+                    warnAt(`Attribute "${name}" references a non-existant id "${value}".`, location);
+                } else {
+                    seenIdrefs.add(value);
+                }
+            }
+        }
+        for (const { location, value } of parseState.idAttrData) {
+            if (!seenIdrefs.has(value)) {
+                warnAt(`Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`, location);
             }
         }
     }
@@ -740,34 +775,6 @@ export default function parse(source: string, state: State): {
         }
 
         warnings.push({ message, start, length, level });
-    }
-
-    function validateState(parseState: State) {
-        const seenIds = new Set();
-        for (const elementId of parseState.elementIdAttrs) {
-            const { value } = elementId.attr;
-            if (seenIds.has(value)) {
-                warnAt(`Duplicate id value "${value}" detected. Id values must be unique within a template.`, elementId.attr.location);
-            } else {
-                seenIds.add(value);
-            }
-        }
-        const seenIdRefs = new Set();
-        for (const referenced of parseState.elementIdRefAttrs) {
-            const { name, value } = referenced.attr;
-            for (const id of value.split(/\s+/)) {
-                if (!seenIds.has(id)) {
-                    warnAt(`Attribute "${name}" references a non-existant id "${id}".`, referenced.attr.location);
-                }
-                seenIdRefs.add(id);
-            }
-        }
-        for (const elementId of parseState.elementIdAttrs) {
-            const { attr: { location, value: id } } = elementId;
-            if (!seenIdRefs.has(id)) {
-                warnAt(`Id "${id}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`, location);
-            }
-        }
     }
 
     return { root, warnings };
