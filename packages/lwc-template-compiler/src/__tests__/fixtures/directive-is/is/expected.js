@@ -8,13 +8,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "table",
       {
-        key: 3
+        key: 2
       },
       [
         api_element(
           "tbody",
           {
-            key: 2
+            key: 3
           },
           [
             api_custom_element(
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                   is: "ns-row"
                 },
-                key: 1
+                key: 4
               },
               []
             )

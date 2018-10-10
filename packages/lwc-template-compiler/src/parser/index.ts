@@ -81,6 +81,11 @@ import {
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
 
+function getKeyGenerator() {
+    let count = 1;
+    return () => count++;
+}
+
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
@@ -117,6 +122,7 @@ export default function parse(source: string, state: State): {
     warnings: CompilationWarning[],
 } {
     const warnings: CompilationWarning[] = [];
+    const generateKey = getKeyGenerator();
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
@@ -139,6 +145,7 @@ export default function parse(source: string, state: State): {
 
                 const element = createElement(elementNode.tagName, node);
                 element.attrsList = elementNode.attrs;
+                element.key = generateKey();
 
                 if (!root) {
                     root = element;

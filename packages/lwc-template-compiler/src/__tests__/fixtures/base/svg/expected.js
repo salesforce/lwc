@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               "xlink:href": "/x"
             },
-            key: 1
+            key: 3
           },
           []
         )
