@@ -60,7 +60,7 @@ These are the restrictions that we are imposing up top of the standard set of re
 * [ ] enable `this.template.getElementByTagName`.
 * [ ] `this.template.firstChild` and `this.template.lastChild` are disallowed to support auto-insertion of styles when needed.
 
-LWC components will not allow users to manually create or attach shadow roots, that's done by the engine. And as part of the process, we will create the shadow root with `open` mode unless otherwise specified. As a result or disallowing manual creation, the following APIs cannot be used by consumers:
+LWC components will not allow users to manually create or attach shadow roots, that's done by the engine. And as part of the process, we will create the shadow root with `open` mode unless otherwise specified. As a result of disallowing manual creation, the following APIs cannot be used by consumers:
 
  * [x] Element.attachShadowRoot
  * [ ] Event.composedPath()
