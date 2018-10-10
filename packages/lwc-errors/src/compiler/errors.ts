@@ -14,6 +14,18 @@ const GENERIC_COMPILER_ERROR = {
     code: 0,
 };
 
+/**
+ * Generates a compiler error. This function is used to look up the specified errorInfo
+ * and generate a friendly and consistent error object from that info.
+ *
+ * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
+ * @param {Array} messageArgs Any arguments needed to construct the error message
+ * @param {CompilerContext} context Provides explicit context on where (file name, Location) the error happened
+ * @param {(message: string) => Error} customErrorConstructor Hook for creating an intermediate error object before generating
+ * the final CompilerError. Expects a pre-formatted error message string and returns an Error object. This is often useful for
+ * getting extra error data from library errors while still passing a correctly formatted error message to the library.
+ * @return {CompilerError}
+ */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
     messageArgs?: any[],
@@ -23,14 +35,21 @@ export function generateCompilerError(
     const message = normalizeErrorMessage(errorInfo, messageArgs);
     const customError = customErrorConstructor && customErrorConstructor(message);
 
-    const fullMessage = customError ? customError.message : message;
-
-    const filename = getFilename(context || {}, customError);
-    const location = getLocation(context || {}, customError);
-
-    return new CompilerError(errorInfo.code, fullMessage, filename, location);
+    return new CompilerError(
+        errorInfo.code,
+        customError ? customError.message : message,
+        getFilename(context || {}, customError),
+        getLocation(context || {}, customError)
+    );
 }
 
+/**
+ * Normalizes a received error with additional context and converts it into a CompilerError if necessary
+ * @param error
+ * @param newContext
+ *
+ * @return {CompilerError}
+ */
 export function normalizeCompilerError(error: any, newContext?: CompilerContext): CompilerError {
     if (error instanceof CompilerError) {
         if (newContext) {
@@ -40,11 +59,12 @@ export function normalizeCompilerError(error: any, newContext?: CompilerContext)
         return error;
     }
 
-    const code = GENERIC_COMPILER_ERROR.code;
-    const message = error.message;
-    const filename = getFilename(newContext || {}, error);
-    const location = getLocation(newContext || {}, error);
-    const compilerError = new CompilerError(code, message, filename, location);
+    const compilerError = new CompilerError(
+        GENERIC_COMPILER_ERROR.code,
+        error.message,
+        getFilename(newContext || {}, error),
+        getLocation(newContext || {}, error)
+    );
 
     // Move stack over?
     compilerError.stack = error.stack;
