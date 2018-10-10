@@ -134,7 +134,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: number) {
+export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: number): Element | null {
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
