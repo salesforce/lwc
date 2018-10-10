@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.14...v) (2018-10-07)
+# [](https://github.com/salesforce/lwc/compare/v0.29.16...v) (2018-10-10)
+
+
+### Bug Fixes
+
+* **engine:** fixes issue [#710](https://github.com/salesforce/lwc/issues/710) - add better error for invalid template ([#718](https://github.com/salesforce/lwc/issues/718)) ([7c6009f](https://github.com/salesforce/lwc/commit/7c6009f)), closes [#693](https://github.com/salesforce/lwc/issues/693)
+* **engine:** support multi-level slotting when retargeting and querying ([#712](https://github.com/salesforce/lwc/issues/712)) ([7a22a8b](https://github.com/salesforce/lwc/commit/7a22a8b))
+
+
+### Features
+
+* **engine:** add API for finding the constructor of a custom element ([#704](https://github.com/salesforce/lwc/issues/704)) ([f08d689](https://github.com/salesforce/lwc/commit/f08d689))
+
+
+
+<a name="0.29.16"></a>
+## [0.29.16](https://github.com/salesforce/lwc/compare/v0.29.14...v0.29.16) (2018-10-07)
 
 
 ### Bug Fixes
