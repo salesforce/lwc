@@ -14,11 +14,9 @@ function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): Synthet
     return attachShadow(this, options);
 }
 
-const { OPEN: ShadowRootModeOpen } = ShadowRootMode;
-
 function shadowRootGetter(this: HTMLElement): SyntheticShadowRoot | null {
     const shadow = getShadowRoot(this);
-    if (shadow.mode === ShadowRootModeOpen) {
+    if (shadow.mode === ShadowRootMode.OPEN) {
         return shadow;
     }
     return null;
