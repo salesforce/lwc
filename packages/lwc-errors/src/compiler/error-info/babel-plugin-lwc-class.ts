@@ -1,4 +1,4 @@
-import { Level } from "../shared/utils";
+import { Level } from "../../shared/utils";
 
 // component.js
 export const BabelLWCClassErrors = {

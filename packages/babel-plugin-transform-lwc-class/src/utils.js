@@ -1,5 +1,5 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
-const { BabelLWCClassErrors, normalizeErrorMessage } = require('lwc-errors');
+const { BabelLWCClassErrors, generateCompilerError } = require('lwc-errors');
 
 const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
@@ -143,18 +143,18 @@ function getEngineImportSpecifiers(path) {
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
-            throw specifier.buildCodeFrameError(
-                normalizeErrorMessage(
-                    BabelLWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
-                    [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS]
-                )
+            throw generateCompilerError(
+                BabelLWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
+                [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS],
+                {},
+                specifier.buildCodeFrameError.bind(specifier)
             );
         } else if (specifier.isImportDefaultSpecifier()) {
-            throw specifier.buildCodeFrameError(
-                normalizeErrorMessage(
-                    BabelLWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
-                    [LWC_PACKAGE_ALIAS]
-                )
+            throw generateCompilerError(
+                BabelLWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
+                [LWC_PACKAGE_ALIAS],
+                {},
+                specifier.buildCodeFrameError.bind(specifier)
             );
         }
 

@@ -1,4 +1,4 @@
-const { JestTransformerErrors, normalizeErrorMessage } = require('lwc-errors');
+const { JestTransformerErrors, generateCompilerError } = require('lwc-errors');
 const babelTemplate = require('@babel/template').default;
 
 const defaultTemplate = babelTemplate(`
@@ -109,8 +109,7 @@ function getImportInfo(path) {
     const importSpecifiers = path.get('specifiers');
 
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        const message = normalizeErrorMessage(JestTransformerErrors.INVALID_IMPORT, [importSource]);
-        throw path.buildCodeFrameError(message);
+        throw generateCompilerError(JestTransformerErrors.INVALID_IMPORT, [importSource], {}, path.buildCodeFrameError.bind(path));
     }
 
     const resourceName = importSpecifiers[0].get('local').node.name;

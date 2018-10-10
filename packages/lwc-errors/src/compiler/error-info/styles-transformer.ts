@@ -1,4 +1,4 @@
-import { Level } from "../shared/utils";
+import { Level } from "../../shared/utils";
 /*
     Custom errors:
         root.error

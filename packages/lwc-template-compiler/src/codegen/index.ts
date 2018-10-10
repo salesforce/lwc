@@ -48,7 +48,7 @@ import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import { isIdReferencingAttribute } from '../parser/attribute';
 
-import { TemplateErrors, throwError } from 'lwc-errors';
+import { TemplateErrors, generateCompilerError } from 'lwc-errors';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
@@ -201,7 +201,7 @@ function transform(
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
         } else {
-            throwError(TemplateErrors.UNKNOWN_IF_MODIFIER, [modifier]);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, [modifier]);
         }
 
         return t.conditionalExpression(

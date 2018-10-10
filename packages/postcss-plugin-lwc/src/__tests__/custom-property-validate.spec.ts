@@ -15,9 +15,11 @@ it('should prevent definition of standard custom properties', () => {
         message: expect.stringContaining(
             `Invalid definition of custom property "--bg-color"`,
         ),
-        file: FILE_NAME,
-        line: 1,
-        column: 7,
+        filename: FILE_NAME,
+        location: {
+            line: 1,
+            column: 7,
+        }
     });
 });
 
@@ -28,8 +30,10 @@ it('should prevent definition of lwc-prefixed custom properties', () => {
         message: expect.stringContaining(
             `Invalid definition of custom property "--lwc-bg-color"`,
         ),
-        file: FILE_NAME,
-        line: 1,
-        column: 7,
+        filename: FILE_NAME,
+        location: {
+            line: 1,
+            column: 7,
+        }
     });
 });

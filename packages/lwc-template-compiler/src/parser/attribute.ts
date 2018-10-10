@@ -1,7 +1,7 @@
 import * as parse5 from 'parse5-with-errors';
 import camelcase from 'camelcase';
 
-import { ParserErrors, throwError } from 'lwc-errors';
+import { ParserErrors, generateCompilerError } from 'lwc-errors';
 
 import {
     EXPRESSION_SYMBOL_END,
@@ -76,9 +76,9 @@ export function normalizeAttributeValue(
     const { name, value } = attr;
     if (booleanAttributes.has(name)) {
         if (value === 'true') {
-            throwError(ParserErrors.BOOLEAN_ATTRIBUTE_TRUE, [tag, name, value]);
+            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_TRUE, [tag, name, value]);
         } else if (value === 'false') {
-            throwError(ParserErrors.BOOLEAN_ATTRIBUTE_FALSE, [tag, name, value]);
+            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_FALSE, [tag, name, value]);
         }
     }
 
@@ -92,7 +92,7 @@ export function normalizeAttributeValue(
             const unquoted = raw.replace(/"/g, '');
             const escaped = raw.replace('"{', '"\\{');
 
-            throwError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE, [raw, unquoted, escaped]);
+            throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE, [raw, unquoted, escaped]);
         }
 
         // <input value={myValue} />
@@ -122,7 +122,7 @@ export function normalizeAttributeValue(
         escaped += escaped.endsWith('"') ? '' : '"';
 
         // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
-        throwError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, [raw, escaped]);
+        throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, [raw, escaped]);
     }
 
     // <input value="myValue"/>

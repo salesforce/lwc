@@ -2,7 +2,7 @@ const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
-const { BabelLWCClassErrors, normalizeErrorMessage } = require('lwc-errors');
+const { BabelLWCClassErrors, generateCompilerError } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
@@ -24,11 +24,11 @@ module.exports = function ({ types: t }) {
                     const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
                     return `"${propName}"`;
                 });
-                throw path.buildCodeFrameError(
-                    normalizeErrorMessage(
-                        BabelLWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
-                        [observedAttributeNames.join(', ')]
-                    )
+                throw generateCompilerError(
+                    BabelLWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
+                    [observedAttributeNames.join(', ')],
+                    {},
+                    path.buildCodeFrameError.bind(path)
                 );
             }
         },
@@ -38,12 +38,11 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    const error = path.buildCodeFrameError(
-                        normalizeErrorMessage(
-                            BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON
-                        )
+                    throw generateCompilerError(
+                        BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON,
+                        [], {},
+                        path.buildCodeFrameError.bind(path)
                     );
-                    throw error;
                 }
 
                 if (isDefaultExport(path)) {

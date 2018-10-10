@@ -124,7 +124,7 @@ export default function parse(source: string, state: State): {
     const warnings: CompilationWarning[] = [];
     const generateKey = getKeyGenerator();
 
-// TODO:
+// TODO ERROR CODES:
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
         return { warnings: parsingErrors };

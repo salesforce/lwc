@@ -1,4 +1,4 @@
-import { TemplateErrors, invariant, throwError } from 'lwc-errors';
+import { TemplateErrors, invariant, generateCompilerError } from 'lwc-errors';
 export type Format = 'module' | 'function';
 
 export interface Config {
@@ -57,7 +57,7 @@ export function mergeConfig(config: Config): ResolvedConfig {
             !AVAILABLE_OPTION_NAMES.has(property) &&
             config.hasOwnProperty(property)
         ) {
-            throwError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, [property]);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, [property]);
         }
     }
 

@@ -3,7 +3,7 @@ import * as types from 'babel-types';
 import * as babylon from 'babylon';
 import * as esutils from 'esutils';
 
-import { ParserErrors, invariant, throwError } from 'lwc-errors';
+import { ParserErrors, invariant, generateCompilerError } from 'lwc-errors';
 
 import State from '../state';
 
@@ -76,7 +76,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
         return expression;
     } catch (err) {
-        // TODO: normalize errors here
+        // TODO: ERROR CODES: normalize errors here
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
     }
@@ -86,7 +86,7 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
         return types.identifier(source);
     } else {
-        return throwError(ParserErrors.INVALID_IDENTIFIER);
+        throw generateCompilerError(ParserErrors.INVALID_IDENTIFIER);
     }
 }
 

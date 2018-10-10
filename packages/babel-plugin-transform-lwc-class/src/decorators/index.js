@@ -4,7 +4,7 @@ const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const { getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
-const { DecoratorErrors, normalizeErrorMessage } = require('lwc-errors');
+const { DecoratorErrors, generateCompilerError } = require('lwc-errors');
 
 const DECORATOR_TRANSFORMS = [
     api,
@@ -32,8 +32,10 @@ function getDecoratorType(propertyOrMethod) {
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw propertyOrMethod.buildCodeFrameError(
-            normalizeErrorMessage(DecoratorErrors.INVALID_DECORATOR_TYPE)
+        throw generateCompilerError(
+            DecoratorErrors.INVALID_DECORATOR_TYPE,
+            [], {},
+            propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
         );
     }
 }
@@ -59,21 +61,19 @@ function getLwcDecorators(importSpecifiers) {
             reference.parentPath.parentPath;
 
         if (!decorator.isDecorator()) {
-            throw decorator.buildCodeFrameError(
-                normalizeErrorMessage(
-                    DecoratorErrors.IS_NOT_DECORATOR,
-                    [name]
-                )
+            throw generateCompilerError(
+                DecoratorErrors.IS_NOT_DECORATOR,
+                [name], {},
+                decorator.buildCodeFrameError.bind(decorator)
             );
         }
 
         const propertyOrMethod = decorator.parentPath;
         if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-            throw propertyOrMethod.buildCodeFrameError(
-                normalizeErrorMessage(
-                    DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
-                    [name]
-                )
+            throw generateCompilerError(
+                DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
+                [name], {},
+                propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
             );
         }
 
@@ -140,11 +140,11 @@ function removeImportSpecifiers(specifiers) {
 function invalidDecorators({t: types}) {
     return {
         Decorator(path) {
-            throw path.parentPath.buildCodeFrameError(
-                normalizeErrorMessage(
-                    DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                    [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
-                )
+            throw generateCompilerError(
+                DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
+                [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                {},
+                path.parentPath.buildCodeFrameError.bind(path.parentPath)
             );
         }
     }
@@ -186,11 +186,11 @@ function decorators({ types: t }) {
         Decorator(path) {
             const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map(transform => transform.name);
 
-            throw path.parentPath.buildCodeFrameError(
-                normalizeErrorMessage(
-                    DecoratorErrors.INVALID_DECORATOR,
-                    [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
-                )
+            throw generateCompilerError(
+                DecoratorErrors.INVALID_DECORATOR,
+                [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                {},
+                path.parentPath.buildCodeFrameError.bind(path.parentPath)
             );
         }
     }
