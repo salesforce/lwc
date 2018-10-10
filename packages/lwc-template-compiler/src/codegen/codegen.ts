@@ -95,11 +95,11 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
-    genScopedId(compilerKey: t.NumericLiteral | t.Expression, value: string) {
+    genScopedId(id: string, compilerKey: t.NumericLiteral | t.Expression) {
         return this._renderApiCall(
             RENDER_APIS.scopedId, [
-                compilerKey,
-                t.stringLiteral(value)
+                t.stringLiteral(id),
+                compilerKey
             ]
         );
     }

@@ -59,7 +59,7 @@ export interface IRElement {
     forOf?: ForIterator;
     forKey?: TemplateExpression;
 
-    key?: babelTypes.NumericLiteral;
+    key?: number;
 
     slotName?: string;
     slotSet?: SlotDefinition;

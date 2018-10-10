@@ -76,7 +76,7 @@ function transform(
         t.arrayExpression([]),
     );
 
-    const keyForId = Object.create(null);
+    const keyForId: { [key: string]: number } = Object.create(null);
 
     // Initial traversal to understand the state of the tree as a whole.
     traverse(root, {
@@ -86,7 +86,7 @@ function transform(
                     return;
                 }
 
-                element.key = t.numericLiteral(generateKey());
+                element.key = generateKey();
 
                 const { attrs, props, key } = element;
                 if (attrs && attrs.id) {
@@ -408,12 +408,12 @@ function transform(
             const key = keyForId[id];
             if (forKey) {
                 const generatedKey = codeGen.genKey(
-                    key,
+                    t.numericLiteral(key),
                     bindExpression(forKey, element).expression
                 );
-                return codeGen.genScopedId(generatedKey, id);
+                return codeGen.genScopedId(id, generatedKey);
             } else {
-                return codeGen.genScopedId(key, id);
+                return codeGen.genScopedId(id, t.numericLiteral(key));
             }
         }
 
@@ -466,16 +466,12 @@ function transform(
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
             const { expression: forKeyExpression } = bindExpression(forKey, element);
-            data.push(
-                t.objectProperty(
-                    t.identifier('key'),
-                    codeGen.genKey(element.key!, forKeyExpression),
-                ),
-            );
+            const generatedKey = codeGen.genKey(t.numericLiteral(element.key!), forKeyExpression);
+            data.push(t.objectProperty(t.identifier('key'), generatedKey));
         } else {
             // If stand alone element with no user-defined key
             // member expression id
-            data.push(t.objectProperty(t.identifier('key'), element.key!));
+            data.push(t.objectProperty(t.identifier('key'), t.numericLiteral(element.key!)));
         }
 
         // Event handler
