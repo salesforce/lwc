@@ -18,7 +18,8 @@
     "build": "lerna run build --ignore benchmark --ignore lwc-integration",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release:ci:npm": "./scripts/release_npm.sh",
-    "release:ci:changelog": "./scripts/release_changelog.sh"
+    "release:ci:changelog": "./scripts/release_changelog.sh",
+    "release:ci:dist-tags": "./scripts/release_dist-tags.sh"
   },
   "devDependencies": {
     "@babel/core": "7.1.0",
