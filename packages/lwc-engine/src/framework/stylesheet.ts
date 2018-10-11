@@ -128,7 +128,6 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
     const { fallback } = vm;
     const { factory, hostAttribute, shadowAttribute } = stylesheet;
 
-
     if (fallback) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
