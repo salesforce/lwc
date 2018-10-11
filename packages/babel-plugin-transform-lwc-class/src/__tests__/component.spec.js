@@ -97,17 +97,16 @@ describe('render method', () => {
         }
     });
 
-    describe('does not insert render method when extending from legacy "engine" Element', () => {
-        pluginTest('inject render method', `
+    pluginTest('does not insert render method when extending from legacy "engine" Element', `
+        import { Element } from "engine";
+        export default class Test extends Element {}
+    `, {
+        output: {
+            code: `
             import { Element } from "engine";
-            export default class Test extends Element {}
-        `, {
-            output: {
-                code: `
-                import { Element } from "engine";
-                export default class Test extends Element {}`
-            }
-        });
+            export default class Test extends Element {}`
+        }
+    });
 
     pluginTest(`keep the render method if present`, `
         import { LightningElement } from "lwc";
@@ -146,7 +145,7 @@ describe('render method', () => {
 
             }`
         }
-    })
+    });
 });
 
 describe('metadata', () => {
