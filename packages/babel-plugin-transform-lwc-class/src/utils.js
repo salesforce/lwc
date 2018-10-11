@@ -1,4 +1,4 @@
-const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_ALIAS_LEGACY, LWC_PACKAGE_EXPORTS } = require('./constants');
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 
 function findClassMethod(path, name, properties = {}) {
     path.assertClassBody();
@@ -46,7 +46,7 @@ function getEngineImportsStatements(path) {
 
     return programPath.get('body').filter(node => {
         const source = node.get('source');
-        return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }) || source.isStringLiteral({ value: LWC_PACKAGE_ALIAS_LEGACY }))
+        return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }))
     });
 }
 
