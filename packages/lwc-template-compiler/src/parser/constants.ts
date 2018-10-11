@@ -42,7 +42,7 @@ export const SVG_TAG_WHITELIST = new Set([
     'audio',
     'canvas',
     'circle',
-    'clippath',
+    // 'clippath', // '<clipPath> has no matching closing tag.' even with correct closing
     'defs',
     'desc',
     'ellipse',
@@ -68,7 +68,7 @@ export const SVG_TAG_WHITELIST = new Set([
     'switch',
     'symbol',
     'text',
-    'textpath',
+    // 'textpath', // '<textPath> has no matching closing tag.' even with correct closing
     'title',
     'tref',
     'tspan',
