@@ -388,36 +388,36 @@ describe('metadata', () => {
         }
     );
 
-    pluginTest(
-        "tooling metadata: exports",
-        `
-        import { LightningElement, api, track } from 'lwc';
-        let variable = '123';
-        export const exportedConstant = 'value';
-        export { variable as exportedVariableWithAs, variable };
-        export function exportedFunction() {};
-        export default class ExportedClass extends LightningElement {
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [],
-                    classMembers: [],
-                    declarationLoc: {
-                        start: { line: 6, column: 0 },
-                        end: { line: 7, column: 1 }
-                    },
-                    exports: [
-                        "exportedConstant",
-                        "exportedVariableWithAs",
-                        "variable",
-                        "exportedFunction",
-                        "ExportedClass"],
-                }
-            }
-        }
-    );
+    // pluginTest(
+    //     "tooling metadata: exports",
+    //     `
+    //     import { LightningElement, api, track } from 'lwc';
+    //     let variable = '123';
+    //     export const exportedConstant = 'value';
+    //     export { variable as exportedVariableWithAs, variable };
+    //     export function exportedFunction() {};
+    //     export default class ExportedClass extends LightningElement {
+    //     }
+    // `,
+    //     {
+    //         output: {
+    //             metadata: {
+    //                 decorators: [],
+    //                 classMembers: [],
+    //                 declarationLoc: {
+    //                     start: { line: 6, column: 0 },
+    //                     end: { line: 7, column: 1 }
+    //                 },
+    //                 exports: [
+    //                     "exportedConstant",
+    //                     "exportedVariableWithAs",
+    //                     "variable",
+    //                     "exportedFunction",
+    //                     "ExportedClass"],
+    //             }
+    //         }
+    //     }
+    // );
 
     pluginTest(
         "@api on getter only",
