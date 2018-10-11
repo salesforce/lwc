@@ -1,5 +1,22 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.17...v) (2018-10-10)
+# [](https://github.com/salesforce/lwc/compare/v0.29.18...v) (2018-10-11)
+
+
+### Bug Fixes
+
+* **docs:** updating restrictions ([#725](https://github.com/salesforce/lwc/issues/725)) ([81e8c2b](https://github.com/salesforce/lwc/commit/81e8c2b))
+* better svg whitelisting (from domPurify) ([#728](https://github.com/salesforce/lwc/issues/728)) ([92a1b5e](https://github.com/salesforce/lwc/commit/92a1b5e))
+
+
+### Features
+
+* remove backwards compatibility support for "engine" ([#721](https://github.com/salesforce/lwc/issues/721)) ([e312f54](https://github.com/salesforce/lwc/commit/e312f54))
+* **engine:** inline styles to support native shadow ([#540](https://github.com/salesforce/lwc/issues/540)) ([cecd751](https://github.com/salesforce/lwc/commit/cecd751)), closes [#691](https://github.com/salesforce/lwc/issues/691)
+
+
+
+<a name="0.29.18"></a>
+## [0.29.18](https://github.com/salesforce/lwc/compare/v0.29.17...v0.29.18) (2018-10-10)
 
 
 
