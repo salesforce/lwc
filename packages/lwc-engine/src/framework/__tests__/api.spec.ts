@@ -171,7 +171,7 @@ describe('api', () => {
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
-                return [$api.t('miami')];
+                return [$api.h('span', { key: 0 }, [$api.t('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -181,14 +181,14 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.textContent).toEqual('miami');
+            expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
     });
 
     describe('#p()', () => {
         it('should produce a comment', () => {
             function html($api) {
-                return [$api.p('miami')];
+                return [$api.h('span', { key: 0 }, [api.p('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -198,7 +198,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.innerHTML).toEqual('<!--miami-->');
+            expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
         });
     });
 

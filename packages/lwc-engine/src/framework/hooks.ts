@@ -19,7 +19,7 @@ import modStaticClassName from "./modules/static-class-attr";
 import modStaticStyle from "./modules/static-style-attr";
 import { hasDynamicChildren } from "./patch";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { patchElementWithRestrictions } from "./restrictions";
+import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 
@@ -150,6 +150,9 @@ export function createCustomElmHook(vnode: VCustomElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
     }
 }
 

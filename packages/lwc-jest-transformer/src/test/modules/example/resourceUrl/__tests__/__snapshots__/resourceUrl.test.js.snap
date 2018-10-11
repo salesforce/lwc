@@ -2,15 +2,16 @@
 
 exports[`example-resource-url default snapshot 1`] = `
 <example-resource-url>
-  <p
-    class="mockedResource"
-  >
-    value set in test
-  </p>
-  <p
-    class="unmockedResource"
-  >
-    unmocked
-  </p>
+  #shadow-root(open)
+    <p
+      class="mockedResource"
+    >
+      value set in test
+    </p>
+    <p
+      class="unmockedResource"
+    >
+      unmocked
+    </p>
 </example-resource-url>
 `;
