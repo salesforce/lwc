@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase } from "../shared/language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf } from "../shared/language";
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -17,6 +17,7 @@ import {
     removeAttribute,
     removeAttributeNS,
 } from "./dom-api";
+import { create } from "./../shared/language";
 
 function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
@@ -36,7 +37,18 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
             enumerable: true,
             configurable: true,
         },
+        // TODO: add restrictions for getRootNode() method
     };
+}
+
+function getElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    assign(descriptors, {});
+    return descriptors;
 }
 
 function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
@@ -72,21 +84,10 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalQuerySelectorAll.apply(this, arguments);
             }
         },
-        host: {
-            get() {
-                throw new Error(`Disallowed property "host" in ShadowRoot.`);
-            },
-        },
         ownerDocument: {
             get() {
                 throw new Error(`Disallowed property "ownerDocument" in ShadowRoot.`);
             },
-        },
-        mode: {
-            // from within, the shadow root is always seen as closed
-            value: 'closed',
-            enumerable: true,
-            configurable: true,
         },
     });
     const BlackListedShadowRootMethods = {
@@ -97,7 +98,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
         insertBefore: 0,
         getElementById: 0,
         getSelection: 0,
-        elementFromPoint: 0,
         elementsFromPoint: 0,
     };
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
@@ -268,6 +268,10 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
 }
 
 function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
     const info = getGlobalHTMLPropertiesInfo();
     const descriptors = {};
     forEach.call(getOwnPropertyNames(info), (propName: string) => {
@@ -305,16 +309,12 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
     return descriptors;
 }
 
-function getSlotElementRestrictionsDescriptors(slot: HTMLSlotElement): PropertyDescriptorMap {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return {};
-}
-
 export function patchNodeWithRestrictions(node: Node) {
     defineProperties(node, getNodeRestrictionsDescriptors(node));
+}
+
+export function patchElementWithRestrictions(elm: HTMLElement) {
+    defineProperties(elm, getElementRestrictionsDescriptors(elm));
 }
 
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
@@ -324,7 +324,9 @@ export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
 }
 
 export function patchCustomElementWithRestrictions(elm: HTMLElement) {
-    defineProperties(elm, getCustomElementRestrictionsDescriptors(elm));
+    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
+    const elmProto = getPrototypeOf(elm);
+    setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
 export function patchComponentWithRestrictions(cmp: ComponentInterface) {
@@ -333,8 +335,4 @@ export function patchComponentWithRestrictions(cmp: ComponentInterface) {
 
 export function patchLightningElementPrototypeWithRestrictions(proto: object) {
     defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
-}
-
-export function patchSlotElementWithRestrictions(slot: HTMLSlotElement) {
-    defineProperties(slot, getSlotElementRestrictionsDescriptors(slot));
 }

@@ -2,15 +2,16 @@
 
 exports[`example-labels default snapshot 1`] = `
 <example-labels>
-  <p
-    class="mockedLabel"
-  >
-    value set in test
-  </p>
-  <p
-    class="unmockedLabel"
-  >
-    c.unmocked
-  </p>
+  #shadow-root(open)
+    <p
+      class="mockedLabel"
+    >
+      value set in test
+    </p>
+    <p
+      class="unmockedLabel"
+    >
+      c.unmocked
+    </p>
 </example-labels>
 `;

@@ -1,9 +1,13 @@
 import assert from "../shared/assert";
-import { isUndefined, assign, isNull, isObject } from "../shared/language";
+import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
+import { isNativeShadowRootAvailable } from "./dom-api";
+import { patchCustomElementProto } from "./patch";
+import { getComponentDef, setElementProto } from "./def";
+import { patchCustomElementWithRestrictions } from "./restrictions";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = createFieldName('connecting');
@@ -68,7 +72,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }
     // TODO: for now, we default to true, but eventually it should default to false
-    if (fallback !== false) { fallback = true; }
+    fallback = isUndefined(fallback) || isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -78,7 +82,14 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         // to do here.
         return element;
     }
-
+    const def = getComponentDef(Ctor);
+    setElementProto(element, def);
+    if (isTrue(fallback)) {
+        patchCustomElementProto(element, sel, def);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(element);
+    }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
     // Handle insertion and removal from the DOM manually

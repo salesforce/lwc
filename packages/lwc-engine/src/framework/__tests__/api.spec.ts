@@ -26,16 +26,6 @@ describe('api', () => {
             expect(elm.xyz()).toBe(1);
         });
 
-        it('should convert className to a classMap property', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo' });
-            expect(vnode.data.class).toEqual({ foo: true });
-        });
-
-        it('should split classNames on white spaces', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' });
-            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
-        });
-
         it('should throw if the vnode contains both a computed className and a classMap', () => {
             expect(() => {
                 api.c('x-foo', Foo, {
@@ -43,44 +33,6 @@ describe('api', () => {
                     classMap: { foo: true }
                 });
             }).toThrowError(/className/);
-        });
-
-        it('assign correct style value when styleMap is present', () => {
-            const styleMap = { color: 'red' };
-            const vnode = api.c('x-foo', Foo, { styleMap });
-
-            expect(vnode.data.style).toEqual({ color: 'red' });
-        });
-
-        it('assign correct style value when style is present', () => {
-            const style = 'color:red';
-            const factory = function() { return Foo; };
-            const vnode = api.c('x-foo', factory, { style });
-
-            expect(vnode.data.style).toBe('color:red');
-        });
-
-        it('should coerce style to string when is object', () => {
-            const style = {
-                color: 'red'
-            };
-            const factory = function() { return Foo; };
-            let vnode;
-
-            // just to have a vm being rendered.
-            class VmRendering extends LightningElement {
-                render() {
-                    vnode = api.c('x-foo', factory, { style });
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`);
-
-            expect(vnode.data.style).toBe('[object Object]');
         });
 
         it('should throw an error when createElement is called without Ctor', function() {
@@ -111,19 +63,9 @@ describe('api', () => {
     });
 
     describe('#h()', () => {
-        it('should convert className to a classMap property', () => {
-            const vnode = api.h('p', { key: 0, className: 'foo' }, []);
-            expect(vnode.data.class).toEqual({ foo: true });
-        });
-
         it('should allow null entries in children', () => {
             const vnode = api.h('p', { key: 0 }, [null]);
             expect(vnode.children).toEqual([null]);
-        });
-
-        it('should split classNames on white spaces', () => {
-            const vnode = api.h('p', { key: 0, className: 'foo bar   baz' }, []);
-            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
@@ -146,61 +88,6 @@ describe('api', () => {
             });
         });
 
-        it('assign correct style value when styleMap is present', () => {
-            const styleMap = {
-                color: 'red'
-            };
-            const vnode = api.h('p', { key: 0, styleMap }, []);
-
-            expect(vnode.data.style).toEqual({
-                color: 'red'
-            });
-        });
-
-        it('assign correct style value when style is present', () => {
-            const style = 'color:red';
-            const vnode = api.h('p', { key: 0, style }, []);
-
-            expect(vnode.data.style).toBe('color:red');
-        });
-
-        it('should coerce style to string when is object', () => {
-            const style = {
-                color: 'red'
-            };
-            let vnode;
-            class VmRendering extends LightningElement {
-                render() {
-                    vnode = api.h('p', { key: 0, style }, []);
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
-
-            expect(vnode.data.style).toBe('[object Object]');
-        });
-
-        it('should logWarning when passing style attribute as object', () => {
-            const style = {
-                color: 'red'
-            };
-
-            class VmRendering extends LightningElement {
-                render() {
-                    api.h('p', { key: 0, style }, []);
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
-        });
     });
 
     describe('#i()', () => {
@@ -277,14 +164,14 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (7)], it should be an Array or an iterable Object.`);
+            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`);
         });
     });
 
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
-                return [$api.t('miami')];
+                return [$api.h('span', { key: 0 }, [$api.t('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -294,14 +181,14 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.textContent).toEqual('miami');
+            expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
     });
 
     describe('#p()', () => {
         it('should produce a comment', () => {
             function html($api) {
-                return [$api.p('miami')];
+                return [$api.h('span', { key: 0 }, [api.p('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -311,7 +198,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.innerHTML).toEqual('<!--miami-->');
+            expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
         });
     });
 
@@ -347,7 +234,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (11)]. Key must be a string or number.');
+            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.');
         });
     });
 });
