@@ -78,7 +78,7 @@ describe('synthetic shadow', () => {
         expect(firstChild.tagName).toBe('SECTION');
     });
 
-    it('should insert a style tag if the template has a stylesheet', () => {
+    it('should not insert a style tag if the template has a stylesheet (synthetic shadow)', () => {
         class Component extends LightningElement {
             render() {
                 return styledTemplate;
@@ -96,7 +96,7 @@ describe('synthetic shadow', () => {
             `Discouraged access to property 'childNodes' on 'Node'`
         );
 
-        expect(firstChild.tagName).toBe('STYLE');
+        expect(firstChild.tagName).toBe('SECTION');
     });
 
     it('should remove the attribute if a styled template is replace with an unstyled template', () => {
@@ -162,12 +162,12 @@ describe('synthetic shadow', () => {
 
         const shadowRoot = getHostShadowRoot(elm);
         expect(elm.hasAttribute('tmpl1-host')).toBe(true);
-        expect(shadowRoot.querySelectorAll('[tmpl1]').length).toBeGreaterThan(1);
+        expect(shadowRoot.querySelectorAll('[tmpl1]').length).toBeGreaterThan(0);
 
         elm.tmpl = tmpl2;
         return Promise.resolve().then(() => {
             expect(elm.hasAttribute('tmpl2-host')).toBe(true);
-            expect(shadowRoot.querySelectorAll('[tmpl2]').length).toBeGreaterThan(1);
+            expect(shadowRoot.querySelectorAll('[tmpl2]').length).toBeGreaterThan(0);
         });
     });
 });

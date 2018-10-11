@@ -128,7 +128,7 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
     const { fallback } = vm;
     const { factory, hostAttribute, shadowAttribute } = stylesheet;
 
-    let styleElement: HTMLStyleElement;
+
     if (fallback) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
@@ -136,15 +136,10 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
         const textContent = factory(hostSelector, shadowSelector);
         insertGlobalStyle(textContent);
 
-        // Inserting a placeholder for <style> to guarantee that native and synthetic shadow markup
-        // are identical.
-        styleElement = getCachedStyleElement(process.env.NODE_ENV !== 'production' ? `/* synthetic style for component ${shadowSelector} */` : '');
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
         const textContent = factory(':host', '');
-        styleElement = getCachedStyleElement(textContent);
+        return createStyleVNode(getCachedStyleElement(textContent));
     }
-
-    return createStyleVNode(styleElement);
 }

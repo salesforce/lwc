@@ -114,8 +114,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     const vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
 
     const { styleVNode } = context;
-    // inserting the style tag at the top always
-    ArrayUnshift.call(vnodes, isUndefined(styleVNode) ? null : styleVNode);
+    if (!isUndefined(context.styleVNode)) {
+        ArrayUnshift.call(vnodes, styleVNode);
+    }
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
