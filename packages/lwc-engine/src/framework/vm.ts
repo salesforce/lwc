@@ -479,6 +479,31 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
     return wcStack.reverse().join('\n\t');
 }
 
+export function getNodeOwner(node: Node): HTMLElement | null {
+    let vm: VM | undefined = undefined;
+
+    if (!(node instanceof Node)) {
+        // special case when the argument may be a faux shadow
+        vm = getInternalField(node, ViewModelReflection);
+        return vm ? vm.elm : null;
+    }
+
+    let elm: HTMLElement | null = parentElementGetter.call(node);
+
+    // node may be a native shadow
+    if ((isNull(elm) && isNativeShadowRootAvailable)) {
+        const parentNode = parentNodeGetter.call(node);
+        elm = parentNode instanceof NativeShadowRoot ? ShadowRootHostGetter.call(parentNode) : null;
+    }
+
+    while (!isNull(elm) && isUndefined(vm)) {
+        vm = getInternalField(elm, ViewModelReflection);
+        elm = getParentOrHostElement(elm);
+    }
+
+    return vm ? vm.elm : null;
+}
+
 /**
  * Finds the parent of the specified element. If shadow DOM is enabled, finds
  * the host of the shadow root to escape the shadow boundary.
