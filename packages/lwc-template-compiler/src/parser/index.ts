@@ -651,7 +651,7 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function validateState(parseState) {
+    function validateState(parseState: State) {
         const seenIds = new Set();
         for (const { location, value } of parseState.idAttrData) {
             if (seenIds.has(value)) {
