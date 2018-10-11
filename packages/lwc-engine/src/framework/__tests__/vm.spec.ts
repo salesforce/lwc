@@ -1,9 +1,124 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
-import { getErrorComponentStack } from "../vm";
+import { getErrorComponentStack, getNodeOwner } from "../vm";
 
 describe('vm', () => {
+    describe('getNodeOwner', () => {
+        afterEach(() => {
+            while (document.body.childNodes.length > 0) {
+                document.body.removeChild(document.body.childNodes[0]);
+            }
+        });
+        const childHtml = compileTemplate(`<template><span id="child-cmp-span">txt</span></template>`);
+
+        class ChildComponent extends LightningElement {
+            render() {
+                return childHtml;
+            }
+        }
+
+        const containerHtml  = compileTemplate(`
+            <template>
+            hello world
+                <div id="container">
+                    <div id="child-div">some text node</div>
+                    <x-child></x-child>
+                </div>
+            </template>
+        `, {
+            modules: { 'x-child': ChildComponent }
+        });
+
+        it('should return null when node is the root custom element', () => {
+            class ContainerComponent extends LightningElement {
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const owner = getNodeOwner(elm);
+                expect(owner).toBeNull();
+            });
+        });
+
+        it('should return host element when node is the shadow', () => {
+            let cmpShadow;
+            class ContainerComponent extends LightningElement {
+                constructor() {
+                    super();
+                    cmpShadow = this.template;
+                }
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const owner = getNodeOwner(cmpShadow);
+                expect(owner).toBe(elm);
+            });
+        });
+
+        it('should return host element when has to traverse multiple elements', () => {
+            class ContainerComponent extends LightningElement {
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const owner = getNodeOwner(document.getElementById('child-div')!);
+                expect(owner).toBe(elm);
+            });
+        });
+
+        it('should return host element when node is a component custom element', () => {
+            class ContainerComponent extends LightningElement {
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const owner = getNodeOwner(document.getElementsByTagName('x-child')[0]);
+                expect(owner).toBe(elm);
+            });
+        });
+
+        it('should return first host element found in the hierarchy', () => {
+            class ContainerComponent extends LightningElement {
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const owner = getNodeOwner(document.getElementById('child-cmp-span')!);
+                expect(owner).toBe(document.getElementsByTagName('x-child')[0]);
+            });
+        });
+
+        it('should return null when node is not contained in lwc component', () => {
+            const div = document.createElement("div");
+            div.innerHTML = 'some text';
+            document.body.appendChild(div);
+            const owner = getNodeOwner(div.childNodes[0]);
+            expect(owner).toBeNull();
+        });
+    });
+
     describe('insertion index', () => {
         it('should assign idx=0 (insertion index) during construction', () => {
             class MyComponent1 extends LightningElement {}
