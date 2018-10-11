@@ -55,8 +55,6 @@ function addEventListenerPatchedValue(this: EventTarget, type: string, listener:
 }
 
 function initSlotObserver() {
-    const slotchangeEventConfig: CustomEventInit = { bubbles: true };
-
     return new MutationObserver(mutations => {
         const slots: Node[] = [];
         forEach.call(mutations, mutation => {
@@ -71,7 +69,7 @@ function initSlotObserver() {
             const { target: slot } = mutation;
             if (ArrayIndexOf.call(slots, slot) === -1) {
                 ArrayPush.call(slots, slot);
-                dispatchEvent.call(slot, new CustomEvent('slotchange', slotchangeEventConfig));
+                dispatchEvent.call(slot, new CustomEvent('slotchange'));
             }
         });
     });
