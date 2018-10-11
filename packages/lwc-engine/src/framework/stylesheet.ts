@@ -134,6 +134,7 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
 
         const textContent = factory(hostSelector, shadowSelector);
         insertGlobalStyle(textContent);
+        return null;
 
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an

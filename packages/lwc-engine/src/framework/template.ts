@@ -89,13 +89,12 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         resetStyleAttributes(vm);
 
         const { stylesheet } = html;
-        if (!isUndefined(stylesheet)) {
+        if (isUndefined(stylesheet)) {
+            context.styleVNode = undefined;
+        } else {
             applyStyleAttributes(vm, stylesheet);
-
             // Caching style vnode so it can be reused on every render
             context.styleVNode = evaluateCSS(vm, stylesheet);
-        } else {
-            context.styleVNode = undefined;
         }
 
         if (process.env.NODE_ENV !== 'production') {
