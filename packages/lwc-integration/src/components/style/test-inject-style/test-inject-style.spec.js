@@ -55,9 +55,7 @@ function testStyles(nativeShadow) {
 
     it(`apply :host selector to the host element`, () => {
         const rootElement = browser.element('integration-inject-style');
-        const rootElementBackground = rootElement.getCssProperty(
-            'background-color',
-        );
+        const rootElementBackground = rootElement.getCssProperty('background-color');
         assert.equal(rootElementBackground.parsed.hex, '#ff0000');
     });
 
