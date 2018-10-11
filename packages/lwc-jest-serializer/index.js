@@ -45,32 +45,31 @@ function printChildren(children, config, indentation, depth, refs, printer) {
 
 function serialize(node, config, indentation, depth, refs, printer) {
     const oldDescriptor = getOwnPropertyDescriptor(node, 'childNodes');
+    const lightChildren = Array.prototype.slice.call(node.childNodes);
+    defineProperty(node, 'childNodes', {
+        get() {
+            if (node.shadowRoot) {
+                const textNode = document.createTextNode('#shadow-root(open)');
+                defineProperty(textNode, 'children', {
+                    value: Array.prototype.slice.call(node.shadowRoot.childNodes),
+                });
+                lightChildren.unshift(textNode);
+            }
+            return lightChildren;
+        },
+        configurable: true,
+    });
 
-    if (oldDescriptor) {
-        defineProperty(node, 'childNodes', {
-            get() {
-                return childNodesGetter.call(this);
-            },
-            configurable: true,
-        });
-    }
-
-    let result;
-    if (node.tagName === 'SLOT') {
-        const children = Array.prototype.slice.call(node.childNodes);
-        result = printNoopElement(
-            printChildren(children, config, indentation, depth, refs, printer),
-            config,
-            indentation
-        );
-
-    } else {
-        result = DOMElement.serialize(node, config, indentation, depth, refs, printer);
-    }
-
-    if (oldDescriptor) {
-        defineProperty(node, 'childNodes', oldDescriptor);
-    }
+    const result = DOMElement.serialize(node, config, indentation, depth, refs, (currentNode, currentConfig, currentIndentation, currentDepth, currentRefs) => {
+        if (currentNode.textContent === '#shadow-root(open)') {
+            return [
+                '#shadow-root(open)',
+                printChildren(currentNode.children, currentConfig, currentIndentation + config.indent, currentDepth + 1, currentRefs, printer)
+            ].join('');
+        }
+        return printer(currentNode, currentConfig, currentIndentation, currentDepth, currentRefs);
+    });
+    delete node.childNodes;
 
     return result;
 }

@@ -7,6 +7,7 @@ import { setInternalField, getInternalField, createFieldName } from "../shared/f
 import { isNativeShadowRootAvailable } from "./dom-api";
 import { patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
+import { patchCustomElementWithRestrictions } from "./restrictions";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = createFieldName('connecting');
@@ -85,6 +86,9 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     setElementProto(element, def);
     if (isTrue(fallback)) {
         patchCustomElementProto(element, sel, def);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(element);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });

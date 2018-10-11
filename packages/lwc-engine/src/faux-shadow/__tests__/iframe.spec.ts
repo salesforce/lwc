@@ -111,27 +111,4 @@ describe('wrapped iframe window', () => {
             expect(contentWindow.blur).toHaveBeenCalled();
         });
     });
-
-    describe('unwrapping', () => {
-        it('should return original object', () => {
-            const myComponentTmpl = compileTemplate(`
-                <template>
-                    <iframe src="https://salesforce.com"></iframe>
-                </template>
-            `);
-            class MyComponent extends LightningElement {
-                render() {
-                    return myComponentTmpl;
-                }
-            }
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-
-            const nativeIframeContentWindow = document.querySelector('iframe').contentWindow;
-            const wrappedIframe = getHostShadowRoot(elm).querySelector('iframe'); // will return monkey patched contentWindow
-            const contentWindowGetter = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
-            expect(nativeIframeContentWindow === contentWindowGetter.call(wrappedIframe)).toBe(true);
-        });
-    });
 });

@@ -177,16 +177,20 @@ describe('template', () => {
         it('should support array of vnode', () => {
             let vnode;
             function html($api) {
-                return [$api.t('some text')];
+                return [$api.h('span', { key: 0 }, [$api.t('some text')]];
             }
             class MyComponent3 extends LightningElement {
+                getTextContent() {
+                    return this.template.querySelector('span').textContent;
+                }
                 render() {
                     return html;
                 }
             }
+            MyComponent3.publicMethods = ['getTextContent']
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
-            expect(elm.textContent).toBe('some text');
+            expect(elm.getTextContent()).toBe('some text');
         });
 
         it('should profixied default objects', () => {
@@ -297,16 +301,22 @@ describe('template', () => {
                 get getStyle() {
                     return '';
                 }
+
+                getInnerHTML() {
+                    return this.template.querySelector('div').outerHTML;
+                }
+
                 render() {
                     return tmpl;
                 }
             }
+            MyComponent.publicMethods = ['getInnerHTML'];
 
             const element = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(element);
 
             // there should not be a style="" attribute in the DOM
-            expect(element.innerHTML).toBe('<div></div>');
+            expect(element.getInnerHTML()).toBe('<div></div>');
         });
     })
 

@@ -7,6 +7,7 @@ import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
 import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
 import { HTMLElementConstructor } from "./base-bridge-element";
+import { patchCustomElementWithRestrictions } from "./restrictions";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
     if (isCircularModuleDependency(Ctor)) {
@@ -30,6 +31,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
                 patchCustomElementProto(this, tagName, def);
             }
             createVM(tagName, this, Ctor, normalizedOptions);
+            if (process.env.NODE_ENV !== 'production') {
+                patchCustomElementWithRestrictions(this);
+            }
         }
         connectedCallback() {
             const vm = getCustomElementVM(this);

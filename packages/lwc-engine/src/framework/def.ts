@@ -289,6 +289,8 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     return def;
 }
 
+// Only set prototype for public methods and properties
+// No DOM Patching occurs here
 export function setElementProto(elm: HTMLElement, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }

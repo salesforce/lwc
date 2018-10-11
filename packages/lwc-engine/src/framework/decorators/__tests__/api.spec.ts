@@ -92,11 +92,16 @@ describe('decorators/api.ts', () => {
                 return [$api.h('div', { key: 0 }, [$api.d($cmp.x)])];
             }
             class MyComponent extends LightningElement  {
+                getTextContent() {
+                    return this.template.querySelector('div').textContent;
+                }
+
                 render() {
                     return html;
                 }
             }
 
+            MyComponent.publicMethods = ['getTextContent'];
             MyComponent.publicProps = {
                 x: {
                     config: 0
@@ -107,7 +112,8 @@ describe('decorators/api.ts', () => {
             elm.x = 'foo';
             document.body.appendChild(elm);
             expect(elm.x).toBe('foo');
-            expect(elm.textContent).toBe('foo');
+            expect(elm.getTextContent()).toBe('foo');
+
         });
     });
 
@@ -217,6 +223,10 @@ describe('decorators/api.ts', () => {
                 return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
             }
             class MyComponent extends LightningElement  {
+                getTextContent() {
+                    return this.template.querySelector('div').textContent;
+                }
+
                 get validity() {
                     return 'foo';
                 }
@@ -232,10 +242,12 @@ describe('decorators/api.ts', () => {
                 }
             };
 
+            MyComponent.publicMethods = ['getTextContent'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.validity).toBe('foo');
-            expect(elm.textContent).toBe('foo');
+            expect(elm.getTextContent()).toBe('foo');
         });
 
         it('should allow calling the getter during construction', function() {

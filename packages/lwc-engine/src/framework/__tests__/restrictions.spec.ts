@@ -22,7 +22,7 @@ describe('restrictions', () => {
             document.body.appendChild(parentElm);
             expect(() => {
                 template.querySelector('p').childNodes;
-            }).toLogWarning('childNodes on [object HTMLParagraphElement] returns a live NodeList which is not stable. Use querySelectorAll instead.');
+            }).toLogWarning('Discouraged access to property \'childNodes\' on \'Node\': It returns a live NodeList and should not be relied upon. Instead, use \'querySelectorAll\' which returns a static NodeList.');
         });
     });
 });

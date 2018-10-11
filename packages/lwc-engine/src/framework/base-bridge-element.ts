@@ -15,7 +15,6 @@ import { getCustomElementVM } from "./vm";
 import {
     ComponentInterface
  } from './component';
-import { patchCustomElementWithRestrictions } from "./restrictions";
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
@@ -87,10 +86,6 @@ export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, pro
 }
 
 export const BaseBridgeElement = HTMLBridgeElementFactory(HTMLElement, getOwnPropertyNames(HTMLElementOriginalDescriptors), []);
-
-if (process.env.NODE_ENV !== 'production') {
-    patchCustomElementWithRestrictions(BaseBridgeElement.prototype);
-}
 
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);
