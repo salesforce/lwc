@@ -74,11 +74,19 @@ describe('slotchange', () => {
             browser.url(URL);
         });
 
-        it('should bubble up to the parent slot', () => {
+        // Enable this test when we're ready to support nested slots.
+        it.skip('should bubble up to the parent slot', () => {
             browser.click('.update-name');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
             assert.strictEqual(event.slotName, 'full');
+        });
+        // Delete this test when we're ready to support nested slots.
+        it('should not bubble up to the parent slot', () => {
+            browser.click('.update-name');
+            const events = browser.execute(getEvents).value;
+            const event = events.pop();
+            assert.notStrictEqual(event.slotName, 'full');
         });
     });
 
