@@ -591,18 +591,25 @@ export default function parse(source: string, state: State): {
         const { attrsList } = element;
         attrsList.forEach(attr => {
             const attrName = attr.name;
-            if (isRestrictedStaticAttribute(attrName) && isExpression(attr.value as any)) {
-                warnOnElement(
-                    `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
-                    element.__original as parse5.AST.Default.Element,
-                    'warning'
-                );
-            } else if (isTabIndexAttribute(attrName)) {
-                // tabindex remains an attribute for regular elements
+            if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
                         `The attribute "tabindex" can only be set to "0" or "-1".`,
                         element.__original as parse5.AST.Default.Element
+                    );
+                }
+            }
+            if (isRestrictedStaticAttribute(attr.name)) {
+                if (isExpression(attr.value)) {
+                    warnOnElement(
+                        `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
+                        element.__original,
+                        'warning'
+                    );
+                } else if (attr.value === '') {
+                    warnOnElement(
+                        `The attribute "${attr.name}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
+                        element.__original
                     );
                 }
             }
@@ -613,12 +620,11 @@ export default function parse(source: string, state: State): {
         const { props } = element;
         if (props !== undefined) {
             for (const propName in props) {
-                const prop = props[propName];
-                const attrName = prop.name;
+                const { name: attrName, type, value } = props[propName];
                 if (isTabIndexAttribute(attrName)) {
                     if (
-                        prop.type !== IRAttributeType.Expression &&
-                        !isValidTabIndexAttributeValue(prop.value)
+                        type !== IRAttributeType.Expression &&
+                        !isValidTabIndexAttributeValue(value)
                     ) {
                         warnOnElement(
                             `The attribute "tabindex" can only be set to "0" or "-1".`,
@@ -626,15 +632,20 @@ export default function parse(source: string, state: State): {
                         );
                     }
                 }
-                if (
-                    isRestrictedStaticAttribute(attrName) &&
-                    prop.type === IRAttributeType.Expression
-                ) {
-                    warnOnElement(
-                        `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
-                        element.__original as parse5.AST.Default.Element,
-                        'warning'
-                    );
+                if (isRestrictedStaticAttribute(attrName)) {
+                    if (type === IRAttributeType.Expression) {
+                        warnOnElement(
+                            `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
+                            element.__original,
+                            'warning'
+                        );
+                    }
+                    if (value === '') {
+                        warnOnElement(
+                            `The attribute "${attrName}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
+                            element.__original
+                        );
+                    }
                 }
             }
         }

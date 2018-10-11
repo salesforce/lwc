@@ -365,6 +365,30 @@ describe('props and attributes', () => {
             }
         });
 
+        it('should restrict usage of dynamic attributes', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <div id=""></div>
+                    <label for=""></label>
+                    <div aria-activedescendant=""></div>
+                    <div aria-controls=""></div>
+                    <div aria-describedby=""></div>
+                    <div aria-details=""></div>
+                    <div aria-errormessage=""></div>
+                    <div aria-flowto=""></div>
+                    <div aria-labelledby=""></div>
+                    <div aria-owns=""></div>
+                    <x-foo aria-owns=""></x-foo>
+                </template>
+            `);
+            expect(warnings.length).toBe(11);
+
+            const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
+            for (const { message } of warnings) {
+                expect(message).toMatch(MESSAGE_RE);
+            }
+        });
+
         it('should not restrict usage of static values', () => {
             const { warnings } = parseTemplate(`
                 <template>
