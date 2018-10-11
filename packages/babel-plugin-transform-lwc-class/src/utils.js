@@ -54,24 +54,48 @@ function getExportedNames(path) {
     const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
 
     return exports = programPath.get('body').reduce((names, node) => {
-        if (node.isExportDeclaration()) {
+        let exportType;
+        let exportValue;
+
+        // TODO: secondary exports are not detected!
+        if (node.isExportDefaultDeclaration()) {
+            exportType = 'ExportDefaultDeclaration';
+        } else if (node.isExportDeclaration() && node.type === 'ExportAllDeclaration') {
+            exportType = 'ExportAllDeclaration';
+        } else if (node.isExportDeclaration() && node.type === 'ExportNamedDeclaration') {
+            exportType = 'ExportNamedDeclaration';
             if (node.node.specifiers) {
                 node.node.specifiers.forEach(specifier => {
-                    names.push(specifier.exported.name);
+
+                    // TODO: here create objects instead
+                    exportValue = specifier.exported.name;
                 });
             }
             if (node.node.declaration) {
                 const declaration = node.node.declaration;
                 if (declaration.type === 'VariableDeclaration') {
                     declaration.declarations.forEach(nameDeclaration => {
-                        names.push(nameDeclaration.id.name);
+                        exportValue = nameDeclaration.id.name;
                     });
                 } else if (declaration.type === 'ClassDeclaration'
                     || declaration.type === 'FunctionDeclaration') {
-                    names.push(declaration.id.name);
+                        exportValue = declaration.id.name;
                 }
             }
         }
+
+        console.log('-----> value: ', exportValue);
+        console.log('-----> type: ', exportType);
+
+
+        if (exportType) {
+            const exportMeta = { type: exportType };
+            if (exportValue) {
+                exportMeta.value = exportValue;
+            }
+            names.push(exportMeta);
+        }
+
         return names;
     }, []);
 
