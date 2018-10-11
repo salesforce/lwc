@@ -2,6 +2,7 @@
 
 import {
     attribute,
+    tag,
     isTag,
     isPseudoElement,
     isCombinator,
@@ -29,18 +30,15 @@ export interface SelectorScopingConfig {
 
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
-/** Generate a scoping attribute based on the passed token */
-function scopeAttribute({ token }: PluginConfig, { host } = { host: false }) {
-    let value = token;
+function createShadowScopeSelector({ shadowSelector }: PluginConfig) {
+    return tag({
+        value: shadowSelector,
+    });
+}
 
-    if (host) {
-        value += '-host';
-    }
-
-    return attribute({
-        attribute: value,
-        value: undefined,
-        raws: {},
+function createHostScopeSelector({ hostSelector }: PluginConfig) {
+    return tag({
+        value: hostSelector,
     });
 }
 
@@ -136,14 +134,14 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
                 }
             }
 
-            const scopeAttributeNode = scopeAttribute(config);
+            const scopeSelectorNode = createShadowScopeSelector(config);
             if (nodeToScope) {
                 // Add the scoping attribute right after the node scope
-                selector.insertAfter(nodeToScope, scopeAttributeNode);
+                selector.insertAfter(nodeToScope, scopeSelectorNode);
             } else {
                 // Add the scoping token in the first position of the compound selector as a fallback
                 // when there is no node to scope. For example: ::after {}
-                selector.insertBefore(compoundSelector[0], scopeAttributeNode);
+                selector.insertBefore(compoundSelector[0], scopeSelectorNode);
             }
         }
     }
@@ -166,8 +164,9 @@ function transformHost(selector: Selector, config: PluginConfig) {
         const hostIndex = selector.index(hostNode);
 
         // Swap the :host pseudo-class with the host scoping token
-        const hostScopeAttr = scopeAttribute(config, { host: true });
-        hostNode.replaceWith(hostScopeAttr);
+        hostNode.replaceWith(
+            createHostScopeSelector(config)
+        );
 
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
@@ -198,6 +197,8 @@ export default function transformSelector(
 ) {
     validateSelectors(root);
 
+    customElementSelector(root);
+
     root.each((selector: Selector) => {
         scopeSelector(selector, pluginConfig);
     });
@@ -207,6 +208,4 @@ export default function transformSelector(
             transformHost(selector, pluginConfig);
         });
     }
-
-    customElementSelector(root);
 }

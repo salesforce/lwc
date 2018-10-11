@@ -235,8 +235,10 @@ export default class Test extends LightningElement {
                 column: 16,
             });
 
-            expect(mainDefMappedToOutputPosition.line).toBe(23);
-            expect(mainDefMappedToOutputPosition.column).toBe(11);
+            expect(mainDefMappedToOutputPosition).toMatchObject({
+                line: 10,
+                column: 11,
+            });
 
             const stringConstantInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'utils/util.js',
@@ -244,8 +246,10 @@ export default class Test extends LightningElement {
                 column: 9,
             });
 
-            expect(stringConstantInOutputPosition.line).toBe(24);
-            expect(stringConstantInOutputPosition.column).toBe(11);
+            expect(stringConstantInOutputPosition).toMatchObject({
+                line: 11,
+                column: 11,
+            });
 
             const myimportDefinitionOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
@@ -253,8 +257,10 @@ export default class Test extends LightningElement {
                 column: 6,
             });
 
-            expect(myimportDefinitionOutputPosition.line).toBe(28);
-            expect(myimportDefinitionOutputPosition.column).toBe(8);
+            expect(myimportDefinitionOutputPosition).toMatchObject({
+                line: 15,
+                column: 8,
+            });
 
             const mainInvocationInOutputPosition = sourceMapConsumer.generatedPositionFor({
                 source: 'foo.js',
@@ -262,8 +268,10 @@ export default class Test extends LightningElement {
                 column: 11,
             });
 
-            expect(mainInvocationInOutputPosition.line).toBe(29);
-            expect(mainInvocationInOutputPosition.column).toBe(13);
+            expect(mainInvocationInOutputPosition).toMatchObject({
+                line: 16,
+                column: 13,
+            });
         });
     });
 });

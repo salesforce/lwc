@@ -6,7 +6,7 @@ import attrs from "./modules/attrs";
 import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
-import token from "./modules/token";
+import shadowAttribute from "./modules/shadow-attribute";
 import { isUndefined, isFalse, isTrue } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
@@ -105,7 +105,7 @@ const patchVNode = init([
     classes,
     styles,
     events,
-    token,
+    shadowAttribute,
 ], htmlDomApi);
 
 const patchChildren = patchVNode.children;

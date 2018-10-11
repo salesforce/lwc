@@ -102,13 +102,9 @@
       if (superClass) _setPrototypeOf(subClass, superClass);
     }
 
-    var style = undefined;
-
     var __callKey2 = Proxy.callKey2;
 
     var __concat = Proxy.concat;
-
-    var style$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       var api_dynamic = __getKey($api, "d"),
@@ -125,23 +121,7 @@
       ];
     }
 
-    var html = lwc.registerTemplate(tmpl)
-
-    if (style$1) {
-      __setKey(tmpl, "hostToken", "x-foo_foo-host");
-
-      __setKey(tmpl, "shadowToken", "x-foo_foo");
-
-      var style$2 = __callKey1(document, "createElement", "style");
-
-      __setKey(style$2, "type", "text/css");
-
-      __setKey(__getKey(style$2, "dataset"), "token", "x-foo_foo");
-
-      __setKey(style$2, "textContent", style$1("x-foo_foo"));
-
-      __callKey1(__getKey(document, "head"), "appendChild", style$2);
-    }
+    var html = lwc.registerTemplate(tmpl);
 
     var Foo =
       /*#__PURE__*/
@@ -227,22 +207,6 @@
     }
 
     var html$1 = lwc.registerTemplate(tmpl$1);
-
-    if (style) {
-      __setKey(tmpl$1, "hostToken", "x-app_app-host");
-
-      __setKey(tmpl$1, "shadowToken", "x-app_app");
-
-      var style$3 = __callKey1(document, "createElement", "style");
-
-      __setKey(style$3, "type", "text/css");
-
-      __setKey(__getKey(style$3, "dataset"), "token", "x-app_app");
-
-      __setKey(style$3, "textContent", style("x-app_app"));
-
-      __callKey1(__getKey(document, "head"), "appendChild", style$3);
-    }
 
     var App =
       /*#__PURE__*/

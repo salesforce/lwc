@@ -317,9 +317,9 @@ export function patchNodeWithRestrictions(node: Node) {
     defineProperties(node, getNodeRestrictionsDescriptors(node));
 }
 
+// This routine will prevent access to certain properties on a shadow root instance to guarantee
+// that all components will work fine in IE11 and other browsers without shadow dom support.
 export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
-    // This routine will prevent access to certain properties on a shadow root instance to guarantee
-    // that all components will work fine in IE11 and other browsers without shadow dom support
     defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
 }
 

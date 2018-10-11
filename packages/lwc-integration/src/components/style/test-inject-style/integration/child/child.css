@@ -1,0 +1,7 @@
+p {
+    color: blue;
+}
+
+:host([data-title-yellow]) h1 {
+    color: yellow;
+}
