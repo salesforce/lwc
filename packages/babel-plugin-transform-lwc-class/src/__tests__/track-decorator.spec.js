@@ -134,7 +134,12 @@ describe('Metadata', () => {
                     declarationLoc: {
                         end: { column: 1, line: 4 },
                         start: { column: 0, line: 2 }
-                    }
+                    },
+                    exports: [
+                        {
+                            type: 'ExportDefaultDeclaration',
+                        }
+                    ],
                 }
             }
         }
