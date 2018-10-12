@@ -13,7 +13,7 @@ export const EVENT_HANDLER_RE = /^on/;
 export const EVENT_HANDLER_NAME_RE = /^on[a-z]+$/;
 
 // These attributes take either an ID or a list of IDs as values.
-const idReferencingAttributes: string[] = [
+export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
     'aria-activedescendant',
     'aria-controls',
     'aria-describedby',
@@ -23,11 +23,10 @@ const idReferencingAttributes: string[] = [
     'aria-labelledby',
     'aria-owns',
     'for',
-];
-export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set(idReferencingAttributes);
+]);
 
 export const STATIC_ATTRIBUTES_SET: Set<string> = new Set([
-    'id', ...idReferencingAttributes
+    'id', ...ID_REFERENCING_ATTRIBUTES_SET.values()
 ]);
 
 const ATTRIBUTE_NAME_CHAR = [
