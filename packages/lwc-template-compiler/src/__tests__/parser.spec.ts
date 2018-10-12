@@ -365,7 +365,7 @@ describe('props and attributes', () => {
             }
         });
 
-        it('should restrict usage of dynamic attributes', () => {
+        it('should restrict usage of empty string values', () => {
             const { warnings } = parseTemplate(`
                 <template>
                     <div id=""></div>

@@ -39,7 +39,6 @@ import {
     isTemplate,
     shouldFlatten,
     destructuringAssignmentFromObject,
-    getKeyGenerator,
     isSlot,
 } from './helpers';
 
@@ -68,7 +67,6 @@ function transform(
     root: IRNode,
     codeGen: CodeGen,
     state: State,
-    generateKey: () => number = getKeyGenerator(),
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
