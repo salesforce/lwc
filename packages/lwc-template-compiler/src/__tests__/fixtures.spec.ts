@@ -63,15 +63,14 @@ describe('fixtures', () => {
                 writeFixtureFile(expectedMetaFile, JSON.stringify(metadata, null, 4));
             }
 
+            // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
-
-            if (expectedCode && expectedCode.length) {
-                expect(
-                    prettier.format(actual.code),
-                ).toEqual(
-                    prettier.format(expectedCode),
-                );
-            }
+            // check compiled code
+            expect(
+                prettier.format(actual.code),
+            ).toEqual(
+                prettier.format(expectedCode),
+            );
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
