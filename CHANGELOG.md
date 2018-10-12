@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.18...v) (2018-10-11)
+# [](https://github.com/salesforce/lwc/compare/v0.29.19...v) (2018-10-12)
+
+
+### Bug Fixes
+
+* **compiler:** static tabindex attr can only be 0 or -1 in templates ([#660](https://github.com/salesforce/lwc/issues/660)) ([7a2f3f4](https://github.com/salesforce/lwc/commit/7a2f3f4))
+
+
+
+<a name="0.29.19"></a>
+## [0.29.19](https://github.com/salesforce/lwc/compare/v0.29.18...v0.29.19) (2018-10-11)
 
 
 ### Bug Fixes
