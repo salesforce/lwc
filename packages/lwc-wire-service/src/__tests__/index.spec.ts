@@ -9,8 +9,14 @@ import {
 } from '../engine';
 
 import {
-    Context,
+    Context, ConfigContext,
 } from '../wiring';
+import {
+    CONTEXT_ID,
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED,
+    CONTEXT_UPDATED
+} from '../constants';
 
 describe('wire service', () => {
     describe('registers the service with engine', () => {
@@ -42,7 +48,7 @@ describe('wire service', () => {
             registerWireService((svc) => {
                 wireService = svc;
             });
-            const adapterId = () => {};
+            const adapterId = () => { /**/ };
             const adapterFactory = jest.fn();
             register(adapterId, adapterFactory);
             const mockDef: ElementDef = {
@@ -83,12 +89,60 @@ describe('wire service', () => {
             const mockDef = {
                 wire: {
                     target: {
-                        adapter: () => {},
+                        adapter: () => { /**/ },
                         method: 1
                     }
                 }
             };
             expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": unknown adapter id: ');
+        });
+    });
+    describe('connected handling', () => {
+        const def: ElementDef = {
+            wire: {
+                target: { adapter: true }
+            }
+        };
+        it('invokes connected listeners', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const listener = jest.fn();
+            const context: Context = {
+                [CONTEXT_ID]: {
+                    [CONTEXT_CONNECTED]: [listener],
+                    [CONTEXT_DISCONNECTED]: [],
+                    [CONTEXT_UPDATED]: {} as ConfigContext
+                }
+            };
+
+            wireService.connected({} as Element, {}, def, context);
+            expect(listener).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe('disconnected handling', () => {
+        const def: ElementDef = {
+            wire: {
+                target: { adapter: true }
+            }
+        };
+        it('invokes connected listeners', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const listener = jest.fn();
+            const context: Context = {
+                [CONTEXT_ID]: {
+                    [CONTEXT_CONNECTED]: [],
+                    [CONTEXT_DISCONNECTED]: [listener],
+                    [CONTEXT_UPDATED]: {} as ConfigContext
+                }
+            };
+
+            wireService.disconnected({} as Element, {}, def, context);
+            expect(listener).toHaveBeenCalledTimes(1);
         });
     });
 });
