@@ -18,6 +18,8 @@ import {
     isValidHTMLAttribute,
     attributeToPropertyName,
     isRestrictedStaticAttribute,
+    isTabIndexAttribute,
+    isValidTabIndexAttributeValue,
 } from './attribute';
 
 import {
@@ -160,6 +162,7 @@ export default function parse(source: string, state: State): {
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
+                validateProperties(element);
                 collectMetadata(element);
 
                 parent = stack[stack.length - 1];
@@ -560,14 +563,44 @@ export default function parse(source: string, state: State): {
     function validateAttributes(element: IRElement) {
         const { attrsList } = element;
         attrsList.forEach(attr => {
-            if (isRestrictedStaticAttribute(attr.name) && isExpression(attr.value)) {
+            const attrName = attr.name;
+            if (isRestrictedStaticAttribute(attrName) && isExpression(attr.value as any)) {
                 warnOnElement(
-                    `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
+                    `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
                     element.__original as parse5.AST.Default.Element,
                     'warning'
                 );
+            } else if (isTabIndexAttribute(attrName)) {
+                // tabindex remains an attribute for regular elements
+                if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
+                    warnOnElement(
+                        `The attribute "tabindex" can only be set to "0" or "-1".`,
+                        element.__original as parse5.AST.Default.Element
+                    );
+                }
             }
         });
+    }
+
+    function validateProperties(element: IRElement) {
+        const { props } = element;
+        if (props !== undefined) {
+            for (const propName in props) {
+                const prop = props[propName];
+                const attrName = prop.name;
+                if (isTabIndexAttribute(attrName)) {
+                    if (
+                        prop.type !== IRAttributeType.Expression &&
+                        !isValidTabIndexAttributeValue(prop.value)
+                    ) {
+                        warnOnElement(
+                            `The attribute "tabindex" can only be set to "0" or "-1".`,
+                            element.__original as parse5.AST.Default.Element
+                        );
+                    }
+                }
+            }
+        }
     }
 
     function collectMetadata(element: IRElement) {

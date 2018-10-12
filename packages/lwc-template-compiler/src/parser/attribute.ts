@@ -8,9 +8,7 @@ import {
     isPotentialExpression,
 } from './expression';
 
-import {
-    IRElement,
-} from '../shared/types';
+import { IRElement } from '../shared/types';
 
 import {
     DATA_RE,
@@ -164,6 +162,15 @@ export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
 
 function isAriaAttribute(attrName: string): boolean {
     return attrName === 'role' || ARIA_RE.test(attrName);
+}
+
+export function isTabIndexAttribute(attrName: string): boolean {
+    return attrName === 'tabindex';
+}
+
+export function isValidTabIndexAttributeValue(value: any): boolean {
+    // object means it is a Node representing the expression
+    return value === '0' || value === '-1';
 }
 
 export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {

@@ -7,7 +7,7 @@
         role="presentation"
         href="/foo"
         title="test"
-        tabindex="test"
+        tabindex="-1"
     ></a>
     <ns-bar
         class="r"
@@ -17,7 +17,7 @@
         foo-bar="x"
         foo="bar"
         role="xx"
-        tabindex="bar"
+        tabindex="0"
         bgcolor="blue"
     ></ns-bar>
 
@@ -26,7 +26,7 @@
     </svg>
     <div is="ns-buzz" bgcolor="x" aria-hidden="hidden" ></div>
     <table bgcolor="x"></table>
-    <table bgcolor="x" is="ns-table" tabindex="2" bar="test" min="3"></table>
+    <table bgcolor="x" is="ns-table" tabindex="0" bar="test" min="3"></table>
     <input minlength="3" maxlength="10" is="ns-input" />
     <div class={foo} aria-hidden="hidden"></div>
 </template>

@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           role: "presentation",
           href: "/foo",
           title: "test",
-          tabindex: "test"
+          tabindex: "-1"
         },
         key: 2
       },
@@ -54,7 +54,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           fooBar: "x",
           foo: "bar",
           role: "xx",
-          tabIndex: "bar",
+          tabIndex: "0",
           bgColor: "blue"
         },
         key: 3
@@ -119,7 +119,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         },
         props: {
           bgColor: "x",
-          tabIndex: "2",
+          tabIndex: "0",
           bar: "test",
           min: "3"
         },
