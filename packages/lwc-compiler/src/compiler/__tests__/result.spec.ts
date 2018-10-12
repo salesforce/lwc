@@ -378,10 +378,10 @@ describe("compiler metadata", () => {
                 templatePath: "foo.html"
             }],
             exports: [
-                "Metadata",
-                "HELLOWORLD",
-                "ohai"
-            ]
+                { type: "ExportDefaultDeclaration" },
+                { type: "ExportNamedDeclaration", value: "HELLOWORLD" },
+                { type: "ExportNamedDeclaration", value: "ohai" },
+            ],
         });
     });
 
@@ -468,6 +468,7 @@ describe("compiler metadata", () => {
                     templatePath: "foo.html"
                 }
             ],
+            exports: [{ type: 'ExportDefaultDeclaration' }],
         });
     });
 });
