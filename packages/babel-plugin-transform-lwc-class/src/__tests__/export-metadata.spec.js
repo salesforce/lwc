@@ -3,23 +3,16 @@ const pluginTest = require('./utils/test-transform').pluginTest(
 );
 
 describe('export metadata', () => {
-    describe.only('ExportNamedDeclaration', () => {
-        pluginTest.only(
+    describe('ExportNamedDeclaration', () => {
+        pluginTest(
             'export references',
             `
-                import { LightningElement } from 'lwc';
                 export { namedExportOne, namedExportTwo };
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 3, column: 0 },
-                            end: { line: 3, column: 62 }
-                        },
                         exports: [
                             {
                                 type: 'ExportNamedDeclaration',
@@ -28,7 +21,7 @@ describe('export metadata', () => {
                             {
                                 type: 'ExportNamedDeclaration',
                                 value: 'namedExportTwo',
-                            }
+                            },
                         ]
                     }
                 }
@@ -38,64 +31,20 @@ describe('export metadata', () => {
         pluginTest(
             'export references as',
             `
-                import { LightningElement } from 'lwc';
                 export { variable1 as exportedAsOne, variable2 as exportedAsTwo };
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'exportedAsOne'
                             },
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'exportedAsTwo',
-                            }
-                        ]
-                    }
-                }
-            }
-        );
-
-        pluginTest(
-            'export let, var, const declaration without value',
-            `
-                import { LightningElement } from 'lwc';
-                export const nameConst;
-                export let nameLet;
-                export var nameVar;
-                export default class ExportedClass extends LightningElement {}
-            `,
-            {
-                output: {
-                    metadata: {
-                        decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
-                        exports: [
-                            {
-                                type: 'named',
-                                value: 'nameConst'
-                            },
-                            {
-                                type: 'named',
-                                value: 'nameLet',
-                            },
-                            {
-                                type: 'named',
-                                value: 'nameVar',
                             }
                         ]
                     }
@@ -106,32 +55,25 @@ describe('export metadata', () => {
         pluginTest(
             'export let, var, const declaration with assigned value',
             `
-                import { LightningElement } from 'lwc';
                 export const nameConst = "constValue";
                 export let nameLet = "letValue";
                 export var nameVar = "varValue";
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'nameConst'
                             },
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'nameLet',
                             },
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'nameVar',
                             }
                         ]
@@ -143,22 +85,15 @@ describe('export metadata', () => {
         pluginTest(
             'export named function',
             `
-                import { LightningElement } from 'lwc';
                 export function FunctionName(){}
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: "FunctionName",
                             }
                         ]
@@ -170,22 +105,15 @@ describe('export metadata', () => {
         pluginTest(
             'export class',
             `
-                import { LightningElement } from 'lwc';
-                export function ClassName {}
-                export default class ExportedClass extends LightningElement {}
+                export class ClassName {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'ClassName',
                             }
                         ]
@@ -197,26 +125,19 @@ describe('export metadata', () => {
         pluginTest(
             'export references from an import',
             `
-                import { LightningElement } from 'lwc';
                 export { namedExportOne, namedExportTwo } from 'bar';
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'namedExportOne'
                             },
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'namedExportTwo',
                             }
                         ]
@@ -226,28 +147,21 @@ describe('export metadata', () => {
         );
 
         pluginTest(
-            'export reference as from an import',
+            'export reference "as" from an import',
             `
-                import { LightningElement } from 'lwc';
                 export { name1 as exportedAsOne, name2 as exportedAsTwo } from 'bar';
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'exportedAsOne'
                             },
                             {
-                                type: 'named',
+                                type: 'ExportNamedDeclaration',
                                 value: 'exportedAsTwo',
                             }
                         ]
@@ -257,28 +171,19 @@ describe('export metadata', () => {
         );
     });
 
-
-
     describe('ExportDefaultDeclaration', () => {
         pluginTest(
             'export class',
             `
-                import { LightningElement } from 'lwc';
                 export default 1 + 2;
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'default',
+                                type: 'ExportDefaultDeclaration',
                             }
                         ]
                     }
@@ -291,22 +196,15 @@ describe('export metadata', () => {
         pluginTest(
             'export all from the import',
             `
-                import { LightningElement } from 'lwc';
                 export * from 'foo';
-                export default class ExportedClass extends LightningElement {}
             `,
             {
                 output: {
                     metadata: {
                         decorators: [],
-                        classMembers: [],
-                        declarationLoc: {
-                            start: { line: 6, column: 0 },
-                            end: { line: 7, column: 1 }
-                        },
                         exports: [
                             {
-                                type: 'all',
+                                type: 'ExportAllDeclaration',
                             }
                         ]
                     }

@@ -57,20 +57,28 @@ function getExportedNames(path) {
         let exportType;
         let exportValue;
 
-        // TODO: secondary exports are not detected!
         if (node.isExportDefaultDeclaration()) {
             exportType = 'ExportDefaultDeclaration';
+            names.push({
+                type: 'ExportDefaultDeclaration',
+            })
         } else if (node.isExportDeclaration() && node.type === 'ExportAllDeclaration') {
-            exportType = 'ExportAllDeclaration';
+            names.push({
+                type: 'ExportAllDeclaration',
+            })
         } else if (node.isExportDeclaration() && node.type === 'ExportNamedDeclaration') {
             exportType = 'ExportNamedDeclaration';
+
             if (node.node.specifiers) {
                 node.node.specifiers.forEach(specifier => {
-
-                    // TODO: here create objects instead
-                    exportValue = specifier.exported.name;
+                    names.push({
+                        type: exportType,
+                        value:  specifier.exported.name,
+                    })
                 });
             }
+
+            // TODO: should this be else if?
             if (node.node.declaration) {
                 const declaration = node.node.declaration;
                 if (declaration.type === 'VariableDeclaration') {
@@ -81,19 +89,12 @@ function getExportedNames(path) {
                     || declaration.type === 'FunctionDeclaration') {
                         exportValue = declaration.id.name;
                 }
+
+                names.push({
+                    type: 'ExportNamedDeclaration',
+                    value:  exportValue,
+                });
             }
-        }
-
-        console.log('-----> value: ', exportValue);
-        console.log('-----> type: ', exportType);
-
-
-        if (exportType) {
-            const exportMeta = { type: exportType };
-            if (exportValue) {
-                exportMeta.value = exportValue;
-            }
-            names.push(exportMeta);
         }
 
         return names;
