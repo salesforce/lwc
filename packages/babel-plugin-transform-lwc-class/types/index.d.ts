@@ -3,6 +3,7 @@ export interface Metadata {
     classMembers?: Array<ClassMember>;
     declarationLoc?: Location;
     doc?: string;
+    exports?: string[];
 }
 
 export interface ApiDecorator {

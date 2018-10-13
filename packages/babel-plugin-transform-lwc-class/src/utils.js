@@ -50,6 +50,33 @@ function getEngineImportsStatements(path) {
     });
 }
 
+function getExportedNames(path) {
+    const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
+
+    return exports = programPath.get('body').reduce((names, node) => {
+        if (node.isExportDeclaration()) {
+            if (node.node.specifiers) {
+                node.node.specifiers.forEach(specifier => {
+                    names.push(specifier.exported.name);
+                });
+            }
+            if (node.node.declaration) {
+                const declaration = node.node.declaration;
+                if (declaration.type === 'VariableDeclaration') {
+                    declaration.declarations.forEach(nameDeclaration => {
+                        names.push(nameDeclaration.id.name);
+                    });
+                } else if (declaration.type === 'ClassDeclaration'
+                    || declaration.type === 'FunctionDeclaration') {
+                    names.push(declaration.id.name);
+                }
+            }
+        }
+        return names;
+    }, []);
+
+}
+
 function getEngineImportSpecifiers(path) {
     const imports = getEngineImportsStatements(path);
 
@@ -99,4 +126,5 @@ module.exports = {
     getEngineImportSpecifiers,
     isComponentClass,
     isDefaultExport,
+    getExportedNames,
 };
