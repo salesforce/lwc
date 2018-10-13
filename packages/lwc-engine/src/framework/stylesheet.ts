@@ -74,16 +74,19 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
+function noop() {
+    /** do nothing */
+}
+
 function createStyleVNode(elm: HTMLStyleElement) {
-    return api.h('style', {
+    const vnode = api.h('style', {
         key: 'style', // special key
-        hook: {
-            // Force the diffing algo to pickup the generated VNode.
-            create(_oldVnode: VNode, vnode: VNode) {
-                vnode.elm = elm;
-            }
-        }
+        create: noop,
+        update: noop,
     }, EmptyArray);
+    // Force the diffing algo to use the cloned style.
+    vnode.elm = elm;
+    return vnode;
 }
 
 /**

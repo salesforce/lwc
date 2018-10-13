@@ -72,7 +72,11 @@ function noop() { /* do nothing */ }
 
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
-        vnode.elm = createTextNode.call(document, vnode.text);
+        if (isUndefined(vnode.elm)) {
+            // supporting the ability to inject an element via a vnode
+            // this is used mostly for caching in compiler
+            vnode.elm = createTextNode.call(document, vnode.text);
+        }
         createTextHook(vnode);
     },
     update: updateNodeHook,
@@ -83,7 +87,11 @@ const TextHook: Hooks = {
 
 const CommentHook: Hooks = {
     create: (vnode: VComment) => {
-        vnode.elm = createComment.call(document, vnode.text);
+        if (isUndefined(vnode.elm)) {
+            // supporting the ability to inject an element via a vnode
+            // this is used mostly for caching in compiler
+            vnode.elm = createComment.call(document, vnode.text);
+        }
         createCommentHook(vnode);
     },
     update: updateNodeHook,
@@ -99,11 +107,15 @@ const CommentHook: Hooks = {
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks = {
     create: (vnode: VElement) => {
-        const { data, sel } = vnode;
+        const { data, sel, elm } = vnode;
         const { ns, create } = data;
-        vnode.elm = isUndefined(ns)
-            ? createElement.call(document, sel)
-            : createElementNS.call(document, ns, sel);
+        if (isUndefined(elm)) {
+            // supporting the ability to inject an element via a vnode
+            // this is used mostly for caching in compiler and style tags
+            vnode.elm = isUndefined(ns)
+                ? createElement.call(document, sel)
+                : createElementNS.call(document, ns, sel);
+        }
         createElmHook(vnode);
         create(vnode);
     },
@@ -125,8 +137,12 @@ const ElementHook: Hooks = {
 
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
-        const { sel, data: { create } } = vnode;
-        vnode.elm = createElement.call(document, sel);
+        const { sel, data: { create }, elm } = vnode;
+        if (isUndefined(elm)) {
+            // supporting the ability to inject an element via a vnode
+            // this is used mostly for caching in compiler and style tags
+            vnode.elm = createElement.call(document, sel);
+        }
         createElmHook(vnode);
         createCustomElmHook(vnode);
         allocateChildrenHook(vnode);
