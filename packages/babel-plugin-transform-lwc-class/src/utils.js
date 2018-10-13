@@ -78,7 +78,6 @@ function getExportedNames(path) {
                 });
             }
 
-            // TODO: should this be else if?
             if (node.node.declaration) {
                 const declaration = node.node.declaration;
                 if (declaration.type === 'VariableDeclaration') {
