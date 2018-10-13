@@ -595,7 +595,8 @@ export default function parse(source: string, state: State): {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
                         `The attribute "tabindex" can only be set to "0" or "-1".`,
-                        element.__original as parse5.AST.Default.Element
+                        element.__original,
+                        'error',
                     );
                 }
             }
@@ -604,12 +605,13 @@ export default function parse(source: string, state: State): {
                     warnOnElement(
                         `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
                         element.__original,
-                        'warning'
+                        'warning',
                     );
                 } else if (attr.value === '') {
                     warnOnElement(
                         `The attribute "${attr.name}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
-                        element.__original
+                        element.__original,
+                        'warning',
                     );
                 }
             }
@@ -628,7 +630,8 @@ export default function parse(source: string, state: State): {
                     ) {
                         warnOnElement(
                             `The attribute "tabindex" can only be set to "0" or "-1".`,
-                            element.__original as parse5.AST.Default.Element
+                            element.__original,
+                            'error',
                         );
                     }
                 }
@@ -637,13 +640,14 @@ export default function parse(source: string, state: State): {
                         warnOnElement(
                             `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
                             element.__original,
-                            'warning'
+                            'warning',
                         );
                     }
                     if (value === '') {
                         warnOnElement(
                             `The attribute "${attrName}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
-                            element.__original
+                            element.__original,
+                            'warning',
                         );
                     }
                 }
@@ -655,7 +659,11 @@ export default function parse(source: string, state: State): {
         const seenIds = new Set();
         for (const { location, value } of parseState.idAttrData) {
             if (seenIds.has(value)) {
-                warnAt(`Duplicate id value "${value}" detected. Id values must be unique within a template.`, location);
+                warnAt(
+                    `Duplicate id value "${value}" detected. Id values must be unique within a template.`,
+                    location,
+                    'error',
+                );
             } else {
                 seenIds.add(value);
             }
@@ -664,7 +672,11 @@ export default function parse(source: string, state: State): {
         for (const { location, name, values } of parseState.idrefAttrData) {
             for (const value of values) {
                 if (!seenIds.has(value)) {
-                    warnAt(`Attribute "${name}" references a non-existant id "${value}".`, location);
+                    warnAt(
+                        `Attribute "${name}" references a non-existant id "${value}".`,
+                        location,
+                        'error',
+                    );
                 } else {
                     seenIdrefs.add(value);
                 }
@@ -672,7 +684,11 @@ export default function parse(source: string, state: State): {
         }
         for (const { location, value } of parseState.idAttrData) {
             if (!seenIdrefs.has(value)) {
-                warnAt(`Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`, location);
+                warnAt(
+                    `Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`,
+                    location,
+                    'warning',
+                );
             }
         }
     }

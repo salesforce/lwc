@@ -417,11 +417,14 @@ function transform(
         // Attributes
         if (attrs) {
             const attrsObj = objectToAST(attrs, key => {
-                if (key === 'id') {
-                    return generateScopedIdFunctionForIdAttr(attrs[key].value as string);
-                }
-                if (isIdReferencingAttribute(key)) {
-                    return generateScopedIdFunctionForIdRefAttr(attrs[key].value as string);
+                const value = attrs[key].value;
+                if (typeof value === 'string') {
+                    if (key === 'id') {
+                        return generateScopedIdFunctionForIdAttr(value);
+                    }
+                    if (isIdReferencingAttribute(key)) {
+                        return generateScopedIdFunctionForIdRefAttr(value);
+                    }
                 }
                 return computeAttrValue(attrs[key], element);
             });
@@ -431,12 +434,14 @@ function transform(
         // Properties
         if (props) {
             const propsObj = objectToAST(props, key => {
-                const attrName = props[key].name as string;
-                if (attrName === 'id') {
-                    return generateScopedIdFunctionForIdAttr(props[key].value as string);
-                }
-                if (isIdReferencingAttribute(attrName)) {
-                    return generateScopedIdFunctionForIdRefAttr(props[key].value as string);
+                const { name: attrName, value } = props[key];
+                if (typeof value === 'string') {
+                    if (attrName === 'id') {
+                        return generateScopedIdFunctionForIdAttr(value);
+                    }
+                    if (isIdReferencingAttribute(attrName)) {
+                        return generateScopedIdFunctionForIdRefAttr(value);
+                    }
                 }
                 return computeAttrValue(props[key], element);
             });
