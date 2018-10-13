@@ -1,5 +1,6 @@
 import {
     ApiDecorator,
+    ModuleExports,
     TrackDecorator,
     WireDecorator,
     Location,
@@ -26,7 +27,7 @@ export interface BundleMetadata {
     declarationLoc?: Location;
     doc?: string;
     experimentalTemplateDependencies?: TemplateModuleDependencies[];
-    exports?: string[];
+    exports?: ModuleExports[];
 }
 
 export class MetadataCollector {
@@ -38,7 +39,7 @@ export class MetadataCollector {
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
     private doc?: string;
-    private exports?: string[];
+    private exports?: ModuleExports[];
 
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
@@ -62,7 +63,7 @@ export class MetadataCollector {
         this.doc = doc;
     }
 
-    public collectExports(exports: string[]) {
+    public collectExports(exports: ModuleExports[]) {
         if (!this.exports) {
             this.exports = [];
         }
