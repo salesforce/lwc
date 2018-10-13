@@ -14,7 +14,7 @@
     },
     {
       "length": 8,
-      "level": "error",
+      "level": "warning",
       "message": "Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
       "start": 22
     }
