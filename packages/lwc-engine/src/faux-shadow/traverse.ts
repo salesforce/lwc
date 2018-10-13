@@ -135,11 +135,17 @@ function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | SyntheticSh
 }
 
 function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
-    const parentNode = parentNodeDescriptorValue.call(this);
-    const ownerShadow = getShadowRoot(getNodeOwner(this) as HTMLElement);
+    const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
+    if (isNull(parentNode)) {
+        return null;
+    }
+    const nodeOwner = getNodeOwner(this);
+    if (isNull(nodeOwner)) {
+        return parentNode;
+    }
     // If we have traversed to the host element,
     // we need to return null
-    if (ownerShadow === parentNode) {
+    if (nodeOwner === parentNode) {
         return null;
     }
     return parentNode;
