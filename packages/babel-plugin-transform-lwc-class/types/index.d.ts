@@ -3,7 +3,7 @@ export interface Metadata {
     classMembers?: Array<ClassMember>;
     declarationLoc?: Location;
     doc?: string;
-    exports?: string[];
+    exports?: ModuleExports[];
 }
 
 export interface ApiDecorator {
@@ -58,4 +58,8 @@ export interface Location {
 export interface Position {
     line: number;
     column: number;
+}
+export interface ModuleExports {
+    type: 'ExportNamedDeclaration' | 'ExportDefaultDeclaration' | 'ExportAllDeclaration';
+    value?: string;
 }
