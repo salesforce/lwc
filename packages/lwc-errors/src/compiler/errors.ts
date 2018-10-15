@@ -9,6 +9,12 @@ export * from "./error-info/template-compiler";
 
 export * from "./utils";
 
+export interface ErrorConfig {
+    messageArgs?: any[];
+    context?: CompilerContext;
+    errorConstructor?: (message: string) => Error;
+}
+
 // TODO ERROR CODES: Move somewhere else
 const GENERIC_COMPILER_ERROR = {
     code: 0,
@@ -28,18 +34,16 @@ const GENERIC_COMPILER_ERROR = {
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
-    messageArgs?: any[],
-    context?: CompilerContext,
-    customErrorConstructor?: (message: string) => Error,
+    config?: ErrorConfig
 ): CompilerError {
-    const message = normalizeErrorMessage(errorInfo, messageArgs);
-    const customError = customErrorConstructor && customErrorConstructor(message);
+    const message = normalizeErrorMessage(errorInfo, config && config.messageArgs);
+    const customError = config && config.errorConstructor && config.errorConstructor(message);
 
     return new CompilerError(
         errorInfo.code,
         customError ? customError.message : message,
-        getFilename(context || {}, customError),
-        getLocation(context || {}, customError)
+        getFilename(config && config.context || {}, customError),
+        getLocation(config && config.context || {}, customError)
     );
 }
 
@@ -73,7 +77,9 @@ export function normalizeCompilerError(error: any, newContext?: CompilerContext)
 
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
-        throw generateCompilerError(errorInfo, args);
+        throw generateCompilerError(errorInfo, {
+            messageArgs: args
+        });
     }
 }
 

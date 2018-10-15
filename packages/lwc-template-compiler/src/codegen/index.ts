@@ -201,7 +201,9 @@ function transform(
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
         } else {
-            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, [modifier]);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
+                messageArgs: [modifier]
+            });
         }
 
         return t.conditionalExpression(

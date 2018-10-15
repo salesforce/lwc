@@ -32,11 +32,9 @@ function getDecoratorType(propertyOrMethod) {
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw generateCompilerError(
-            DecoratorErrors.INVALID_DECORATOR_TYPE,
-            [], {},
-            propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
-        );
+        throw generateCompilerError(DecoratorErrors.INVALID_DECORATOR_TYPE, {
+            errorConstructor: propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
+        });
     }
 }
 
@@ -61,20 +59,18 @@ function getLwcDecorators(importSpecifiers) {
             reference.parentPath.parentPath;
 
         if (!decorator.isDecorator()) {
-            throw generateCompilerError(
-                DecoratorErrors.IS_NOT_DECORATOR,
-                [name], {},
-                decorator.buildCodeFrameError.bind(decorator)
-            );
+            throw generateCompilerError(DecoratorErrors.IS_NOT_DECORATOR, {
+                messageArgs: [name],
+                errorConstructor: decorator.buildCodeFrameError.bind(decorator)
+            });
         }
 
         const propertyOrMethod = decorator.parentPath;
         if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-            throw generateCompilerError(
-                DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
-                [name], {},
-                propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
-            );
+            throw generateCompilerError(DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD, {
+                messageArgs: [name],
+                errorConstructor: propertyOrMethod.buildCodeFrameError.bind(propertyOrMethod)
+            });
         }
 
         return {
@@ -140,14 +136,12 @@ function removeImportSpecifiers(specifiers) {
 function invalidDecorators({t: types}) {
     return {
         Decorator(path) {
-            throw generateCompilerError(
-                DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
-                {},
-                path.parentPath.buildCodeFrameError.bind(path.parentPath)
-            );
+            throw generateCompilerError(DecoratorErrors.INVALID_DECORATOR_WITH_NAME, {
+                messageArgs: [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                errorConstructor: path.parentPath.buildCodeFrameError.bind(path.parentPath)
+            });
         }
-    }
+    };
 }
 
 function decorators({ types: t }) {
@@ -186,14 +180,12 @@ function decorators({ types: t }) {
         Decorator(path) {
             const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map(transform => transform.name);
 
-            throw generateCompilerError(
-                DecoratorErrors.INVALID_DECORATOR,
-                [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
-                {},
-                path.parentPath.buildCodeFrameError.bind(path.parentPath)
-            );
+            throw generateCompilerError(DecoratorErrors.INVALID_DECORATOR, {
+                messageArgs: [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                errorConstructor: path.parentPath.buildCodeFrameError.bind(path.parentPath)
+            });
         }
-    }
+    };
 }
 
 module.exports = {

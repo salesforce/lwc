@@ -57,7 +57,9 @@ export function mergeConfig(config: Config): ResolvedConfig {
             !AVAILABLE_OPTION_NAMES.has(property) &&
             config.hasOwnProperty(property)
         ) {
-            throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, [property]);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
+                messageArgs: [property]
+            });
         }
     }
 

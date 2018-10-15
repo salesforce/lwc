@@ -143,19 +143,15 @@ function getEngineImportSpecifiers(path) {
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
-            throw generateCompilerError(
-                BabelLWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
-                [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS],
-                {},
-                specifier.buildCodeFrameError.bind(specifier)
-            );
+            throw generateCompilerError(BabelLWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED, {
+                messageArgs: [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS],
+                errorConstructor: specifier.buildCodeFrameError.bind(specifier)
+            });
         } else if (specifier.isImportDefaultSpecifier()) {
-            throw generateCompilerError(
-                BabelLWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
-                [LWC_PACKAGE_ALIAS],
-                {},
-                specifier.buildCodeFrameError.bind(specifier)
-            );
+            throw generateCompilerError(BabelLWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT, {
+                messageArgs: [LWC_PACKAGE_ALIAS],
+                errorConstructor: specifier.buildCodeFrameError.bind(specifier)
+            });
         }
 
         // Get the list of specifiers with their name

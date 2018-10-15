@@ -109,7 +109,10 @@ function getImportInfo(path) {
     const importSpecifiers = path.get('specifiers');
 
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw generateCompilerError(JestTransformerErrors.INVALID_IMPORT, [importSource], {}, path.buildCodeFrameError.bind(path));
+        throw generateCompilerError(JestTransformerErrors.INVALID_IMPORT, {
+            messageArgs: [importSource],
+            errorConstructor: path.buildCodeFrameError.bind(path)
+        });
     }
 
     const resourceName = importSpecifiers[0].get('local').node.name;

@@ -76,9 +76,13 @@ export function normalizeAttributeValue(
     const { name, value } = attr;
     if (booleanAttributes.has(name)) {
         if (value === 'true') {
-            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_TRUE, [tag, name, value]);
+            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_TRUE, {
+                messageArgs: [tag, name, value]
+            });
         } else if (value === 'false') {
-            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_FALSE, [tag, name, value]);
+            throw generateCompilerError(ParserErrors.BOOLEAN_ATTRIBUTE_FALSE, {
+                messageArgs: [tag, name, value]
+            });
         }
     }
 
@@ -92,7 +96,9 @@ export function normalizeAttributeValue(
             const unquoted = raw.replace(/"/g, '');
             const escaped = raw.replace('"{', '"\\{');
 
-            throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE, [raw, unquoted, escaped]);
+            throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE, {
+                messageArgs: [raw, unquoted, escaped]
+            });
         }
 
         // <input value={myValue} />
@@ -122,7 +128,9 @@ export function normalizeAttributeValue(
         escaped += escaped.endsWith('"') ? '' : '"';
 
         // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
-        throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, [raw, escaped]);
+        throw generateCompilerError(ParserErrors.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
+            messageArgs: [raw, escaped]
+        });
     }
 
     // <input value="myValue"/>

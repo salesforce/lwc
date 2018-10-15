@@ -26,24 +26,24 @@ function validateSelectors(root: Root) {
             // Ensure the selector doesn't use a deprecated CSS selector.
             if (DEPRECATED_SELECTORS.has(value)) {
                 // TODO ERROR CODES: Normalize compiler errors to a standard pattern
-                throw generateCompilerError(
-                    PostCSSErrors.SELECTOR_SCOPE_DEPRECATED_SELECTOR,
-                    [value],
-                    {},
-                    (message: string) => {
+                throw generateCompilerError(PostCSSErrors.SELECTOR_SCOPE_DEPRECATED_SELECTOR, {
+                    messageArgs: [value],
+
+                    errorConstructor: (message: string) => {
                         return root.error(message, { index: sourceIndex, word: value });
-                    });
+                    }
+                });
             }
 
             // Ensure the selector doesn't use an unsupported selector.
             if (UNSUPPORTED_SELECTORS.has(value)) {
-                throw generateCompilerError(
-                    PostCSSErrors.SELECTOR_SCOPE_UNSUPPORTED_SELECTOR,
-                    [value],
-                    {},
-                    (message: string) => {
+                throw generateCompilerError(PostCSSErrors.SELECTOR_SCOPE_UNSUPPORTED_SELECTOR, {
+                    messageArgs: [value],
+
+                    errorConstructor: (message: string) => {
                         return root.error(message, { index: sourceIndex, word: value });
-                    });
+                    }
+                });
             }
         }
     });
@@ -81,26 +81,26 @@ function validateAttribute(root: Root) {
             // If the tag selector is not present in the compound selector, we need to warn the user that
             // the compound selector need to be more specific.
             if (tagSelector === undefined) {
-                throw generateCompilerError(
-                    PostCSSErrors.SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR,
-                    [attributeName],
-                    {},
-                    (message: string) => {
+                throw generateCompilerError(PostCSSErrors.SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR, {
+                    messageArgs: [attributeName],
+
+                    errorConstructor: (message: string) => {
                         return root.error(message, { index: sourceIndex, word: attributeName });
-                    });
+                    }
+                });
             }
 
             // If compound selector is associated with a tag selector, we can validate the usage of the
             // attribute against the specific tag.
             const { value: tagName } = tagSelector;
             if (!isKnowAttributeOnElement(tagName, attributeName)) {
-                throw generateCompilerError(
-                    PostCSSErrors.SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG,
-                    [attributeName, tagName],
-                    {},
-                    (message: string) => {
+                throw generateCompilerError(PostCSSErrors.SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG, {
+                    messageArgs: [attributeName, tagName],
+
+                    errorConstructor: (message: string) => {
                         return root.error(message, { index: sourceIndex, word: attributeName });
-                    });
+                    }
+                });
             }
         }
     });

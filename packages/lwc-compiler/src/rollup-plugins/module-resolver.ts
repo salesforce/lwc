@@ -33,7 +33,10 @@ function readFile(
     if (fileExists(filename, options)) {
         return files[filename];
     } else {
-        throw generateCompilerError(RollupErrors.NONEXISTENT_FILE, [filename], {filename});
+        throw generateCompilerError(RollupErrors.NONEXISTENT_FILE, {
+            messageArgs: [filename],
+            context: {filename}
+        });
     }
 }
 
@@ -62,16 +65,15 @@ export default function({
                 !isTemplateCss(importee, importer)
             ) {
                 if (importer) {
-                    throw generateCompilerError(
-                        RollupErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED,
-                        [ importee, importer ],
-                        { filename: importer });
+                    throw generateCompilerError(RollupErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
+                        messageArgs: [ importee, importer ],
+                        context: { filename: importer }
+                    });
                 }
-                throw generateCompilerError(
-                    RollupErrors.IMPORTEE_RESOLUTION_FAILED,
-                    [importee],
-                    { filename: importer }
-                );
+                throw generateCompilerError(RollupErrors.IMPORTEE_RESOLUTION_FAILED, {
+                    messageArgs: [importee],
+                    context: { filename: importer }
+                });
             }
             return absPath;
         },

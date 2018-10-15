@@ -24,12 +24,10 @@ module.exports = function ({ types: t }) {
                     const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
                     return `"${propName}"`;
                 });
-                throw generateCompilerError(
-                    BabelLWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
-                    [observedAttributeNames.join(', ')],
-                    {},
-                    path.buildCodeFrameError.bind(path)
-                );
+                throw generateCompilerError(BabelLWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES, {
+                    messageArgs: [observedAttributeNames.join(', ')],
+                    errorConstructor: path.buildCodeFrameError.bind(path)
+                });
             }
         },
         Class(path, state) {
@@ -38,11 +36,9 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    throw generateCompilerError(
-                        BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON,
-                        [], {},
-                        path.buildCodeFrameError.bind(path)
-                    );
+                    throw generateCompilerError(BabelLWCClassErrors.LWC_CLASS_CANNOT_BE_ANON, {
+                        errorConstructor: path.buildCodeFrameError.bind(path)
+                    });
                 }
 
                 if (isDefaultExport(path)) {

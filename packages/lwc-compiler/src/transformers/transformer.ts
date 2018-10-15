@@ -52,7 +52,10 @@ export function getTransformer(fileName: string): FileTransformer {
             return javascriptTransformer;
 
         default:
-            throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, [fileName], {filename: fileName});
+            throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
+                messageArgs: [fileName],
+                context: {filename: fileName}
+            });
     }
 }
 

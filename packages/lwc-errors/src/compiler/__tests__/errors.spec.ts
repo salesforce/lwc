@@ -28,16 +28,25 @@ class CustomError extends Error {
 
 describe('error handling', () => {
     describe('generate compiler error', () => {
+        it('generates a compiler error when config is null', () => {
+            const target = new CompilerError(4, "Error LWC4: Test Error {0} with message {1}");
+
+            expect(generateCompilerError(ERROR_INFO)).toEqual(target);
+        });
         it('generates a compiler error based on the provided error info', () => {
             const args = ['arg1', 10];
             const target = new CompilerError(4, "Error LWC4: Test Error arg1 with message 10");
 
-            expect(generateCompilerError(ERROR_INFO, args)).toEqual(target);
+            expect(generateCompilerError(ERROR_INFO, {
+                messageArgs: args
+            })).toEqual(target);
         });
 
         it('formats an error string properly', () => {
             const args = ['arg1', 10];
-            const error = generateCompilerError(ERROR_INFO, args);
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args
+            });
 
             expect(error.message).toEqual("Error LWC4: Test Error arg1 with message 10");
         });
@@ -46,7 +55,10 @@ describe('error handling', () => {
             const args = ['arg1', 10];
             const filename = "filename";
 
-            const error = generateCompilerError(ERROR_INFO, args, { filename });
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                context: { filename }
+            });
             expect(error.filename).toEqual(filename);
         });
 
@@ -54,7 +66,10 @@ describe('error handling', () => {
             const args = ['arg1', 10];
             const location = { line: 4, column: 27 };
 
-            const error = generateCompilerError(ERROR_INFO, args, { location });
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                context: { location }
+            });
             expect(error.location).toEqual(location);
         });
     });
@@ -68,7 +83,10 @@ describe('error handling', () => {
                 );
             };
 
-            const error = generateCompilerError(ERROR_INFO, args, {}, generateCustomError);
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                errorConstructor: generateCustomError
+            });
             expect(error.message).toEqual("Error message prefix from custom error: [Error LWC4: Test Error errorName with message 10] with suffix");
         });
 
@@ -79,7 +97,10 @@ describe('error handling', () => {
                 return new CustomError(`test prefix ${message} suffix`, filename);
             };
 
-            const error = generateCompilerError(ERROR_INFO, args, {}, generateCustomError);
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                errorConstructor: generateCustomError
+            });
             expect(error.filename).toEqual(filename);
         });
 
@@ -90,7 +111,10 @@ describe('error handling', () => {
                 return new CustomError(`test prefix ${message} suffix`, "", location);
             };
 
-            const error = generateCompilerError(ERROR_INFO, args, {}, generateCustomError);
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                errorConstructor: generateCustomError
+            });
             expect(error.location).toEqual(location);
         });
 
@@ -101,7 +125,10 @@ describe('error handling', () => {
                 return new CustomError(`test prefix ${message} suffix`, undefined, undefined, location.line, location.column);
             };
 
-            const error = generateCompilerError(ERROR_INFO, args, {}, generateCustomError);
+            const error = generateCompilerError(ERROR_INFO, {
+                messageArgs: args,
+                errorConstructor: generateCustomError
+            });
             expect(error.location).toEqual(location);
         });
     });

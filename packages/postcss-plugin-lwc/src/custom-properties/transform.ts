@@ -27,13 +27,19 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     // TODO ERROR CODES: normalize error object structure
     const parenthesisMatch = balanced('(', ')', value.slice(start));
     if (!parenthesisMatch) {
-        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, [value], {}, decl.error.bind(decl));
+        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, {
+            messageArgs: [value],
+            errorConstructor: decl.error.bind(decl)
+        });
     }
 
     // Extract the `var()` function arguments
     const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(parenthesisMatch.body);
     if (varArgumentsMatch === null) {
-        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, [value], {}, decl.error.bind(decl));
+        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, {
+            messageArgs: [value],
+            errorConstructor: decl.error.bind(decl)
+        });
     }
 
     const [, name, fallback] = varArgumentsMatch;

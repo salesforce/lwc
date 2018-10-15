@@ -25,7 +25,9 @@ export function parseHTML(source: string) {
 // TODO ERROR CODES: Implement system for collecting errors
     const onParseError = (err: parse5.Errors.ParsingError) => {
         const { code, startOffset, endOffset } = err;
-        const message = generateCompilerError(ParserErrors.INVALID_HTML_SYNTAX, [code]).message;
+        const message = generateCompilerError(ParserErrors.INVALID_HTML_SYNTAX, {
+            messageArgs: [code]
+        }).message;
 
         parsingErrors.push({
             level: 'error',

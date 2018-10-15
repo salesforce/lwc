@@ -53,7 +53,10 @@ const transform: FileTransformer = function(
 
         const fatalError = result.warnings.find(warning => warning.level === "error");
         if (fatalError) {
-            throw generateCompilerError(TransformerErrors.FATAL_TRANSFORMER_ERROR, [filename, fatalError.message], { filename });
+            throw generateCompilerError(TransformerErrors.FATAL_TRANSFORMER_ERROR, {
+                messageArgs: [filename, fatalError.message],
+                context: { filename }
+            });
         }
     } catch (e) {
         // TODO: Do we want to transfer the stacktrace over to the CompilerError object?

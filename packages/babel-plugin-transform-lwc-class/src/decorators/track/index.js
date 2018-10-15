@@ -11,11 +11,9 @@ function isTrackDecorator(decorator) {
 function validate(klass, decorators) {
     decorators.filter(isTrackDecorator).forEach(({ path }) => {
         if (!path.parentPath.isClassProperty()) {
-            throw generateCompilerError(
-                DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES,
-                [], {},
-                path.buildCodeFrameError.bind(path)
-            );
+            throw generateCompilerError(DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES, {
+                errorConstructor: path.buildCodeFrameError.bind(path)
+            });
         }
     });
 }
