@@ -37,7 +37,7 @@
     "glob": "^7.1.2",
     "husky": "^1.0.0-rc.4",
     "jest": "^23.6.0",
-    "lerna": "3.0.4",
+    "lerna": "3.4.3",
     "prettier": "~1.10.2",
     "rollup": "0.66.2",
     "rollup-plugin-compat": "0.20.6",
