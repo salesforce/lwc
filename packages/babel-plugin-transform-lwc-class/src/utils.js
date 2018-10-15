@@ -57,24 +57,19 @@ function getExportedNames(path) {
         let exportType;
         let exportValue;
 
+        const source = getExportSrc(node && node.node.source);
+
         if (node.isExportDefaultDeclaration()) {
-            exportType = 'ExportDefaultDeclaration';
-            names.push({
-                type: 'ExportDefaultDeclaration',
-            })
+            names.push(createExportInfo('ExportDefaultDeclaration', null, source));
         } else if (node.isExportDeclaration() && node.type === 'ExportAllDeclaration') {
-            names.push({
-                type: 'ExportAllDeclaration',
-            })
+            names.push(createExportInfo('ExportAllDeclaration', null, source));
         } else if (node.isExportDeclaration() && node.type === 'ExportNamedDeclaration') {
             exportType = 'ExportNamedDeclaration';
 
             if (Array.isArray(node.node.specifiers)) {
                 node.node.specifiers.forEach(specifier => {
-                    names.push({
-                        type: exportType,
-                        value:  specifier.exported.name,
-                    })
+                    const exportValue = specifier.exported.name;
+                    names.push(createExportInfo(exportType, exportValue, source));
                 });
             }
 
@@ -89,16 +84,35 @@ function getExportedNames(path) {
                         exportValue = declaration.id.name;
                 }
 
-                names.push({
-                    type: 'ExportNamedDeclaration',
-                    value:  exportValue,
-                });
+                names.push(createExportInfo(exportType, exportValue, source));
             }
         }
 
         return names;
     }, []);
 
+}
+
+function getExportSrc(src) {
+    if (!src || !src.value) {
+        return null;
+    }
+    const value = src.value;
+
+    // only return source value for non-relative imports
+    return  (!value.startsWith('./') && !value.startsWith('../')) ? value : null;
+}
+
+function createExportInfo(type, value, source) {
+    const moduleExport = { type };
+    if (value) {
+        moduleExport.value = value;
+    }
+    if (source) {
+        moduleExport.source = source;
+    }
+
+    return moduleExport;
 }
 
 function getEngineImportSpecifiers(path) {

@@ -123,6 +123,26 @@ describe('export metadata', () => {
         );
 
         pluginTest(
+            'export references from a relative import',
+            `
+                export { namedExportOne } from './bar';
+            `,
+            {
+                output: {
+                    metadata: {
+                        decorators: [],
+                        exports: [
+                            {
+                                type: 'ExportNamedDeclaration',
+                                value: 'namedExportOne',
+                            }
+                        ]
+                    }
+                }
+            }
+        );
+
+        pluginTest(
             'export references from an import',
             `
                 export { namedExportOne, namedExportTwo } from 'bar';
@@ -133,10 +153,12 @@ describe('export metadata', () => {
                         decorators: [],
                         exports: [
                             {
+                                source: "bar",
                                 type: 'ExportNamedDeclaration',
                                 value: 'namedExportOne'
                             },
                             {
+                                source: "bar",
                                 type: 'ExportNamedDeclaration',
                                 value: 'namedExportTwo',
                             }
@@ -157,10 +179,12 @@ describe('export metadata', () => {
                         decorators: [],
                         exports: [
                             {
+                                source: "bar",
                                 type: 'ExportNamedDeclaration',
                                 value: 'exportedAsOne'
                             },
                             {
+                                source: "bar",
                                 type: 'ExportNamedDeclaration',
                                 value: 'exportedAsTwo',
                             }
@@ -196,7 +220,7 @@ describe('export metadata', () => {
         pluginTest(
             'export all from the import',
             `
-                export * from 'foo';
+                export * from 'bar';
             `,
             {
                 output: {
@@ -204,6 +228,7 @@ describe('export metadata', () => {
                         decorators: [],
                         exports: [
                             {
+                                source: "bar",
                                 type: 'ExportAllDeclaration',
                             }
                         ]

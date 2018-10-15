@@ -61,5 +61,6 @@ export interface Position {
 }
 export interface ModuleExports {
     type: 'ExportNamedDeclaration' | 'ExportDefaultDeclaration' | 'ExportAllDeclaration';
+    source?: string;
     value?: string;
 }
