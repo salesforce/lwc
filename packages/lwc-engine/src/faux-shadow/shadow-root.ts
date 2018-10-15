@@ -1,11 +1,11 @@
 import assert from "../shared/assert";
 import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
+import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "./node";
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { DocumentPrototypeActiveElement } from "./document";
@@ -112,10 +112,24 @@ function activeElementGetter(this: SyntheticShadowRoot): Element | null {
         return activeElement;
     }
     const host = getHost(this);
+
+    if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
+        return null;
+    }
+
     // activeElement must be child of the host and owned by it
-    // TODO: what happen with delegatesFocus is true for a child component?
-    return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
-        isNodeOwnedBy(host, activeElement) ? activeElement : null;
+    let node = activeElement;
+    while (!isNodeOwnedBy(host, node)) {
+        node = parentElementGetter.call(node);
+    }
+
+    // If we have a slot element here
+    // That means that we were dealing with an element that was passed to one of our slots
+    // In this case, activeElement returns null
+    if (isSlotElement(node)) {
+        return null;
+    }
+    return node;
 }
 
 export enum ShadowRootMode {

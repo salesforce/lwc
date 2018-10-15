@@ -56,7 +56,7 @@ function getNodeOwner(node: Node): HTMLElement | null {
     return node as HTMLElement;
 }
 
-function isSlotElement(elm: Element): boolean {
+export function isSlotElement(elm: Element): boolean {
     return tagNameGetter.call(elm) === 'SLOT';
 }
 
