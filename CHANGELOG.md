@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.20...v) (2018-10-13)
+# [](https://github.com/salesforce/lwc/compare/v0.29.21...v) (2018-10-15)
+
+
+### Features
+
+* scoped ids ([#714](https://github.com/salesforce/lwc/issues/714)) ([4f48fc7](https://github.com/salesforce/lwc/commit/4f48fc7))
+
+
+
+<a name="0.29.21"></a>
+## [0.29.21](https://github.com/salesforce/lwc/compare/v0.29.20...v0.29.21) (2018-10-13)
 
 
 
