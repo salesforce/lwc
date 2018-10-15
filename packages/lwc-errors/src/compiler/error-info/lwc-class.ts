@@ -1,7 +1,7 @@
 import { Level } from "../../shared/utils";
 
 // component.js
-export const BabelLWCClassErrors = {
+export const LWCClassErrors = {
     INVALID_STATIC_OBSERVEDATTRIBUTES: {
         code: 0,
         message: "Invalid static property \"observedAttributes\". \"observedAttributes\" cannot be used to track attribute changes. Define setters for {0} instead.",
@@ -10,7 +10,7 @@ export const BabelLWCClassErrors = {
         url: ""
     },
 
-    LWC_CLASS_CANNOT_BE_ANON: {
+    LWC_CLASS_CANNOT_BE_ANONYMOUS: {
         code: 0,
         message: "LWC component class can't be an anonymous.",
         type: "error",

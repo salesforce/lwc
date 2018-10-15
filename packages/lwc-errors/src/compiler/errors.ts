@@ -1,7 +1,7 @@
 import { LWCErrorInfo, templateString } from "../shared/utils";
 import { CompilerContext, CompilerError, Location } from "./utils";
 
-export * from "./error-info/babel-plugin-lwc-class";
+export * from "./error-info/lwc-class";
 export * from "./error-info/compiler";
 export * from "./error-info/jest-transformer";
 export * from "./error-info/styles-transformer";
