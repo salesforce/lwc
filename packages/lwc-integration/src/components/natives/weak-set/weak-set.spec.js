@@ -8,7 +8,7 @@ describe('Object keys', () => {
     });
 
     it('should have the right value', function () {
-        const element = browser.element('#weak-set');
+        const element = browser.element('.weak-set');
         assert.ok(element);
         assert.deepEqual(element.getText(), 'Weak set');
     });

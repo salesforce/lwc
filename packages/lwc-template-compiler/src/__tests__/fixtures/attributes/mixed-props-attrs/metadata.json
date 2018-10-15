@@ -9,6 +9,10 @@
           "d": {
             "type": "expression",
             "value": "p.foo"
+          },
+          "id": {
+            "type": "literal",
+            "value": "ns-foo"
           }
         }
       },
@@ -18,7 +22,7 @@
         "properties": {
           "ariaDescribedBy": {
             "type": "literal",
-            "value": "describedby"
+            "value": "ns-foo"
           },
           "ariaHidden": {
             "type": "literal",

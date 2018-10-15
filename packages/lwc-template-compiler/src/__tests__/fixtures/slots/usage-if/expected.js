@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 4
+        key: 2
       },
       [
         api_custom_element(
@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       slot: true
                     },
-                    key: 1
+                    key: 5
                   },
                   [api_text("S1")]
                 )
@@ -36,7 +36,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                   slot: true
                 },
-                key: 2
+                key: 6
               },
               [api_text("S2")]
             )

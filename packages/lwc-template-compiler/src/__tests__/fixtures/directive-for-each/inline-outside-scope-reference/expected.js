@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 4
+        key: 2
       },
       api_iterator($cmp.items, function(item) {
         return api_element(
@@ -22,14 +22,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             api_element(
               "p",
               {
-                key: 1
+                key: 4
               },
               [api_dynamic(item)]
             ),
             api_element(
               "p",
               {
-                key: 2
+                key: 5
               },
               [api_dynamic($cmp.item2)]
             )

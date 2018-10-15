@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           xClass: "bar"
         },
-        key: 1
+        key: 2
       },
       []
     )

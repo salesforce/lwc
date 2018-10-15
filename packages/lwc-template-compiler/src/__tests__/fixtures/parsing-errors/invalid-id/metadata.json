@@ -1,0 +1,22 @@
+{
+  "warnings": [
+    {
+      "length": 8,
+      "level": "error",
+      "message": "Duplicate id value \"bar\" detected. Id values must be unique within a template.",
+      "start": 98
+    },
+    {
+      "length": 21,
+      "level": "error",
+      "message": "Attribute \"aria-labelledby\" references a non-existant id \"baz\".",
+      "start": 120
+    },
+    {
+      "length": 8,
+      "level": "warning",
+      "message": "Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
+      "start": 22
+    }
+  ]
+}

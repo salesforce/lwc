@@ -10,10 +10,6 @@ import { kebabcaseToCamelcase } from "../shared/naming";
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
 }
-export function getKeyGenerator() {
-    let counter = 1;
-    return () => counter++;
-}
 
 export { kebabcaseToCamelcase };
 

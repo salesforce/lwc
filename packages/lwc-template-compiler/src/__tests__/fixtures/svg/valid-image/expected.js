@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "200",
               width: "200"
             },
-            key: 1
+            key: 3
           },
           []
         )

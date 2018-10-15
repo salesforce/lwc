@@ -15,7 +15,7 @@ export default class AttributesSuite extends LightningElement {
         childElm.setAttribute('title', 'im child title');
         childElm.removeAttribute('tabindex');
 
-        const hostElm = document.querySelector('#childhost');
+        const hostElm = document.querySelector('.childhost');
         hostElm.appendChild(childElm);
     }
 }

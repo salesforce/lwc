@@ -8,7 +8,7 @@ describe('Issue 828 - Object assign', () => {
     });
 
     it('should return proper value', function () {
-        const element = browser.element('#assign');
+        const element = browser.element('.assign');
         assert.strictEqual(element.getText(), 'foo');
     });
 });
