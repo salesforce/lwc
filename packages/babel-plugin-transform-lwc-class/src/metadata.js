@@ -3,8 +3,10 @@ const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } 
 
 module.exports = function () {
     return {
-        Program(path, state) {
-            state.file.metadata.exports = getExportedNames(path);
+        Program: {
+            exit(path, state) {
+                state.file.metadata.exports = getExportedNames(path);
+            }
         },
         Class(path, state) {
             if (isComponentClass(path, state.componentBaseClassImports) && isDefaultExport(path)) {

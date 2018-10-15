@@ -69,7 +69,7 @@ function getExportedNames(path) {
         } else if (node.isExportDeclaration() && node.type === 'ExportNamedDeclaration') {
             exportType = 'ExportNamedDeclaration';
 
-            if (node.node.specifiers) {
+            if (Array.isArray(node.node.specifiers)) {
                 node.node.specifiers.forEach(specifier => {
                     names.push({
                         type: exportType,
