@@ -1,6 +1,6 @@
 {
   "name": "lwc-wire-service",
-  "version": "0.29.21",
+  "version": "0.30.0-rc5",
   "description": "@wire service",
   "main": "dist/commonjs/es2017/wire.js",
   "module": "dist/modules/es2017/wire.js",
@@ -23,10 +23,10 @@
     "eslint": "~4.13.0",
     "eslint-plugin-lwc": "^0.2.4",
     "express": "^4.15.2",
-    "lwc-compiler": "0.29.21",
-    "lwc-engine": "0.29.21",
+    "lwc-compiler": "0.30.0-rc5",
+    "lwc-engine": "0.30.0-rc5",
     "lwc-jest-transformer": "0.17.15",
-    "rollup-plugin-lwc-compiler": "0.29.21"
+    "rollup-plugin-lwc-compiler": "0.30.0-rc5"
   },
   "lwc": {
     "modules": {
