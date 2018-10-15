@@ -1,5 +1,9 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 
+const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
+const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
+const EXPORT_NAMED_DECLARATION = 'ExportNamedDeclaration';
+
 function findClassMethod(path, name, properties = {}) {
     path.assertClassBody();
 
@@ -54,28 +58,24 @@ function getExportedNames(path) {
     const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
 
     return exports = programPath.get('body').reduce((names, node) => {
-        let exportType;
-        let exportValue;
-
-        const source = getExportSrc(node && node.node.source);
+        const exportSource = getExportSrc(node && node.node.source);
 
         if (node.isExportDefaultDeclaration()) {
-            names.push(createExportInfo('ExportDefaultDeclaration', null, source));
-        } else if (node.isExportDeclaration() && node.type === 'ExportAllDeclaration') {
-            names.push(createExportInfo('ExportAllDeclaration', null, source));
-        } else if (node.isExportDeclaration() && node.type === 'ExportNamedDeclaration') {
-            exportType = 'ExportNamedDeclaration';
-
-            if (Array.isArray(node.node.specifiers)) {
-                node.node.specifiers.forEach(specifier => {
+            names.push(createModuleExportInfo(EXPORT_DEFAULT_DECLARATION, null, exportSource));
+        } else if (node.isExportDeclaration() && node.type === EXPORT_ALL_DECLARATION) {
+            names.push(createModuleExportInfo(EXPORT_ALL_DECLARATION, null, exportSource));
+        } else if (node.isExportDeclaration() && node.type === EXPORT_NAMED_DECLARATION) {
+            const specifiers = node.node.specifiers;
+            if (Array.isArray(specifiers)) {
+                specifiers.forEach(specifier => {
                     const exportValue = specifier.exported.name;
-                    names.push(createExportInfo(exportType, exportValue, source));
+                    names.push(createModuleExportInfo(EXPORT_NAMED_DECLARATION, exportValue, exportSource));
                 });
             }
 
-            if (node.node.declaration) {
-                const declaration = node.node.declaration;
-                if (declaration.type === 'VariableDeclaration') {
+            const declaration = node.node.declaration;
+            if (declaration) {
+                if (declaration.type === 'VariableDeclaration' && Array.isArray(declaration.declarations)) {
                     declaration.declarations.forEach(nameDeclaration => {
                         exportValue = nameDeclaration.id.name;
                     });
@@ -84,10 +84,9 @@ function getExportedNames(path) {
                         exportValue = declaration.id.name;
                 }
 
-                names.push(createExportInfo(exportType, exportValue, source));
+                names.push(createModuleExportInfo(EXPORT_NAMED_DECLARATION, exportValue, exportSource));
             }
         }
-
         return names;
     }, []);
 
@@ -103,7 +102,7 @@ function getExportSrc(src) {
     return  (!value.startsWith('./') && !value.startsWith('../')) ? value : null;
 }
 
-function createExportInfo(type, value, source) {
+function createModuleExportInfo(type, value, source) {
     const moduleExport = { type };
     if (value) {
         moduleExport.value = value;
