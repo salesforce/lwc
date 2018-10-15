@@ -201,6 +201,7 @@ describe('events', () => {
             div.click();
             expect(target).toBe(div);
         });
+
         it('should report correct target when slotted through multiple components and rehydration happens', () => {
             class Root extends LightningElement {
                 newTitle = 'bar';
@@ -266,6 +267,37 @@ describe('events', () => {
                 div.click();
                 expect(getShadowRoot(elm).querySelector('div')).toBe(div); // making sure that the dom is reused
                 expect(target).toBe(div);
+            });
+        });
+
+        it('should report correct target when elements are added via innerHTML', () => {
+            let target;
+
+            class Root extends LightningElement {
+                renderedCallback() {
+                    this.template.addEventListener('click', event => {
+                        target = event.target;
+                    });
+                    this.template.querySelector('.container').innerHTML = `<span><a></a></span>`;
+                }
+                render() {
+                    return rootHTML;
+                }
+            }
+
+            const rootHTML = compileTemplate(`
+                <template>
+                    <div class="container"></div>
+                </template>
+            `);
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const anchor = getShadowRoot(elm).querySelector('a');
+                anchor.click();
+                expect(target).toBe(anchor);
             });
         });
     });
