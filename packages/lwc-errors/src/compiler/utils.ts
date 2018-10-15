@@ -1,7 +1,5 @@
-export interface Location {
-    line: number;
-    column: number;
-}
+import { Location } from "../shared/types";
+
 export interface CompilerContext {
     filename?: string;
     location?: Location;
@@ -21,7 +19,7 @@ export interface CompilerWarnings {
 export class CompilerError extends Error implements CompilerDiagnostic {
     public code: number;
     public filename?: string;
-    public location?: { line: number, column: number };
+    public location?: Location;
 
     constructor(code: number, message: string, filename?: string, location?: Location) {
         super(message);

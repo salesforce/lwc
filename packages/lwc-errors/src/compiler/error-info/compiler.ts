@@ -1,7 +1,7 @@
 import { Level } from "../../shared/utils";
 
 // compiler/options.js
-export const CompilerErrors = {
+export const CompilerValidationErrors = {
     MISSING_OPTIONS_OBJECT: {
         code: 0,
         message: "Expected options object, received \"{0}\".",
@@ -115,7 +115,7 @@ export const CompilerErrors = {
     },
 };
 
-export const RollupErrors = {
+export const ModuleResolutionErrors = {
 // rollup-plugins/module-resolver.js
     NONEXISTENT_FILE: {
         code: 0,

@@ -1,6 +1,6 @@
 import { Declaration } from 'postcss';
 import balanced from 'balanced-match';
-import { generateCompilerError, PostCSSErrors, invariant } from 'lwc-errors';
+import { generateCompilerError, CSSTransformErrors, invariant } from 'lwc-errors';
 
 import { VarTransformer } from '../config';
 
@@ -27,7 +27,7 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     // TODO ERROR CODES: normalize error object structure
     const parenthesisMatch = balanced('(', ')', value.slice(start));
     if (!parenthesisMatch) {
-        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, {
+        throw generateCompilerError(CSSTransformErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, {
             messageArgs: [value],
             errorConstructor: decl.error.bind(decl)
         });
@@ -36,7 +36,7 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     // Extract the `var()` function arguments
     const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(parenthesisMatch.body);
     if (varArgumentsMatch === null) {
-        throw generateCompilerError(PostCSSErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, {
+        throw generateCompilerError(CSSTransformErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, {
             messageArgs: [value],
             errorConstructor: decl.error.bind(decl)
         });
@@ -45,7 +45,7 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     const [, name, fallback] = varArgumentsMatch;
     const res = transformer(name, fallback);
 
-    invariant(typeof res === 'string', PostCSSErrors.CUSTOM_PROPERTY_STRING_EXPECTED, [typeof res]);
+    invariant(typeof res === 'string', CSSTransformErrors.CUSTOM_PROPERTY_STRING_EXPECTED, [typeof res]);
     /*
     if (typeof res !== 'string') {
         throw new TypeError(`Expected a string, but received instead "${typeof res}"`);

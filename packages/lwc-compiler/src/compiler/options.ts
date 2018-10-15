@@ -1,5 +1,5 @@
 import { isBoolean, isString, isUndefined, isObject } from "../utils";
-import { CompilerErrors, invariant } from "lwc-errors";
+import { CompilerValidationErrors, invariant } from "lwc-errors";
 
 const DEFAULT_OPTIONS = {
     baseDir: "",
@@ -90,20 +90,20 @@ export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
 }
 
 export function validateOptions(options: CompilerOptions) {
-    invariant(!isUndefined(options), CompilerErrors.MISSING_OPTIONS_OBJECT, [options]);
-    invariant(isString(options.name), CompilerErrors.INVALID_NAME_PROPERTY, [options.name]);
-    invariant(isString(options.namespace), CompilerErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
+    invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
+    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [options.name]);
+    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
-        CompilerErrors.INVALID_FILES_PROPERTY
+        CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
         invariant(
             !isUndefined(value) && isString(value),
-            CompilerErrors.UNEXPECTED_FILE_CONTENT,
+            CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
             [key, value]
         );
     }
@@ -125,21 +125,21 @@ function validateStylesheetConfig(config: StylesheetConfig) {
 
         invariant(
             isUndefined(allowDefinition) || isBoolean(allowDefinition),
-            CompilerErrors.INVALID_ALLOWDEFINITION_PROPERTY,
+            CompilerValidationErrors.INVALID_ALLOWDEFINITION_PROPERTY,
             [allowDefinition]
         );
 
         if (!isUndefined(resolution)) {
             invariant(
                 isObject(resolution),
-                CompilerErrors.INVALID_RESOLUTION_PROPERTY,
+                CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY,
                 [resolution]
             );
 
             const { type } = resolution;
             invariant(
                 type === 'native' || type === 'module',
-                CompilerErrors.INVALID_TYPE_PROPERTY,
+                CompilerValidationErrors.INVALID_TYPE_PROPERTY,
                 [type]
             );
         }
@@ -153,39 +153,39 @@ function isUndefinedOrBoolean(property: any): boolean {
 function validateOutputConfig(config: OutputConfig) {
     invariant(
         isUndefinedOrBoolean(config.minify),
-        CompilerErrors.INVALID_MINIFY_PROPERTY,
+        CompilerValidationErrors.INVALID_MINIFY_PROPERTY,
         [config.minify]
     );
 
     invariant(
         isUndefinedOrBoolean(config.compat),
-        CompilerErrors.INVALID_COMPAT_PROPERTY,
+        CompilerValidationErrors.INVALID_COMPAT_PROPERTY,
         [config.compat]
     );
 
     invariant(
         isUndefinedOrBoolean(config.sourcemap),
-        CompilerErrors.INVALID_SOURCEMAP_PROPERTY,
+        CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
         [config.sourcemap]
     );
 
     if (!isUndefined(config.env)) {
         invariant(
             isObject(config.env),
-            CompilerErrors.INVALID_ENV_PROPERTY,
+            CompilerValidationErrors.INVALID_ENV_PROPERTY,
             [config.env]
         );
 
         for (const [key, value] of Object.entries(config.env)) {
             invariant(
                 KNOWN_ENV.has(key),
-                CompilerErrors.UNKNOWN_ENV_ENTRY_KEY,
+                CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY,
                 [key]
             );
 
             invariant(
                 isString(value),
-                CompilerErrors.INVALID_ENV_ENTRY_VALUE,
+                CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE,
                 [key, value]
             );
         }

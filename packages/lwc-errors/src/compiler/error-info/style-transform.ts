@@ -7,7 +7,7 @@ import { Level } from "../../shared/utils";
             -- file, line and col info as properties
 */
 
-export const PostCSSErrors = {
+export const CSSTransformErrors = {
     CONFIG_MISSING_EXPECTED_OPTIONS: {
         code: 0,
         message: 'Expected options with tagName and token properties',

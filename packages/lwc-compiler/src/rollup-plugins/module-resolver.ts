@@ -1,5 +1,5 @@
 import * as path from "path";
-import { RollupErrors, generateCompilerError } from 'lwc-errors';
+import { ModuleResolutionErrors, generateCompilerError } from 'lwc-errors';
 
 import { NormalizedCompilerOptions } from "../compiler/options";
 
@@ -33,7 +33,7 @@ function readFile(
     if (fileExists(filename, options)) {
         return files[filename];
     } else {
-        throw generateCompilerError(RollupErrors.NONEXISTENT_FILE, {
+        throw generateCompilerError(ModuleResolutionErrors.NONEXISTENT_FILE, {
             messageArgs: [filename],
             context: {filename}
         });
@@ -65,12 +65,12 @@ export default function({
                 !isTemplateCss(importee, importer)
             ) {
                 if (importer) {
-                    throw generateCompilerError(RollupErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
+                    throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
                         messageArgs: [ importee, importer ],
                         context: { filename: importer }
                     });
                 }
-                throw generateCompilerError(RollupErrors.IMPORTEE_RESOLUTION_FAILED, {
+                throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
                     messageArgs: [importee],
                     context: { filename: importer }
                 });

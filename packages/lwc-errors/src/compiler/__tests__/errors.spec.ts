@@ -1,9 +1,9 @@
 import {
     CompilerError,
     generateCompilerError,
-    Location,
-    normalizeCompilerError,
 } from "../errors";
+
+import { Location } from "../../shared/types";
 
 const ERROR_INFO = {
     code: 4,

@@ -1,11 +1,12 @@
-import { LWCErrorInfo, templateString } from "../shared/utils";
-import { CompilerContext, CompilerError, Location } from "./utils";
+import { templateString } from "../shared/utils";
+import { Location, LWCErrorInfo } from "../shared/types";
+import { CompilerContext, CompilerError } from "./utils";
 
 export * from "./error-info/lwc-class";
 export * from "./error-info/compiler";
 export * from "./error-info/jest-transformer";
-export * from "./error-info/styles-transformer";
-export * from "./error-info/template-compiler";
+export * from "./error-info/style-transform";
+export * from "./error-info/template-transform";
 
 export * from "./utils";
 
@@ -57,8 +58,13 @@ export function generateCompilerError(
 export function normalizeCompilerError(error: any, newContext?: CompilerContext): CompilerError {
     if (error instanceof CompilerError) {
         if (newContext) {
-            error.filename = newContext.filename;
-            error.location = newContext.location;
+            if (newContext.filename) {
+                error.filename = newContext.filename;
+            }
+
+            if (newContext.location) {
+                error.location = newContext.location;
+            }
         }
         return error;
     }
@@ -66,11 +72,10 @@ export function normalizeCompilerError(error: any, newContext?: CompilerContext)
     const compilerError = new CompilerError(
         GENERIC_COMPILER_ERROR.code,
         error.message,
-        getFilename(newContext || {}, error),
-        getLocation(newContext || {}, error)
+        getFilename(newContext, error),
+        getLocation(newContext, error)
     );
 
-    // Move stack over?
     compilerError.stack = error.stack;
     return compilerError;
 }
@@ -84,7 +89,7 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
 }
 
 function normalizeErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
-    const message = args ? templateString(errorInfo.message, args) : errorInfo.message;
+    const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;
 
     if (errorInfo.url !== "") {
         // TODO: Add url info into message
@@ -93,24 +98,34 @@ function normalizeErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
     return `Error LWC${errorInfo.code}: ${message}`;
 }
 
-function getFilename(context: CompilerContext, error: any): string {
+function getFilename(context: CompilerContext | undefined, error: any): string {
     // Give priority to explicit context
-    return context.filename || (error ? error.filename || error.file : '');
+    if (context && context.filename) {
+        return context.filename;
+    } else if (error) {
+        return error.filename || error.fileName || error.file;
+    }
+    return '';
 }
 
-function getLocation(context: CompilerContext, error: any): Location {
+function getLocation(context: CompilerContext | undefined, error: any): Location | undefined {
     // Give priority to explicit context
-    return context.location || getLocationFromError(error);
+    if (context && context.location) {
+        return context.location;
+    }
+    return getLocationFromError(error);
 }
 
-function getLocationFromError(error: any): Location {
+function getLocationFromError(error: any): Location | undefined {
     if (error) {
         if (error.location) {
             return error.location;
+        } else if (error.loc) {
+            return error.loc;
         } else if (error.line && error.column) {
             return { line: error.line, column: error.column };
         }
     }
 
-    return { line: 0, column: 0};
+    return undefined;
 }

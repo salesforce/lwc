@@ -1,5 +1,5 @@
 import { Node, Container, Pseudo, isPseudoClass } from 'postcss-selector-parser';
-import { invariant, PostCSSErrors } from 'lwc-errors';
+import { invariant, CSSTransformErrors } from 'lwc-errors';
 
 export function isHostPseudoClass(node: Node): node is Pseudo {
     return isPseudoClass(node) && node.value === ':host';
@@ -16,7 +16,7 @@ export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]) {
     if (newNodes.length) {
         const { parent } = oldNode;
 
-        invariant(!!parent, PostCSSErrors.SELECTOR_SCOPE_PARENT_NODE_MISSING);
+        invariant(!!parent, CSSTransformErrors.SELECTOR_SCOPE_PARENT_NODE_MISSING);
         newNodes.forEach(node => {
             parent!.insertBefore(oldNode, node);
         });
