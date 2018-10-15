@@ -1,6 +1,6 @@
 {
   "name": "lwc-jest-preset",
-  "version": "0.29.21",
+  "version": "0.30.0-rc6",
   "description": "Jest preset configuration and stubs to help test LWC",
   "scripts": {
     "test": "jest"
@@ -14,9 +14,9 @@
     "jest": ">= 23.0.0"
   },
   "dependencies": {
-    "lwc-jest-resolver": "0.29.21",
-    "lwc-jest-serializer": "0.29.21",
-    "lwc-jest-transformer": "0.29.21",
-    "lwc-test-utils": "0.29.21"
+    "lwc-jest-resolver": "0.30.0-rc6",
+    "lwc-jest-serializer": "0.30.0-rc6",
+    "lwc-jest-transformer": "0.30.0-rc6",
+    "lwc-test-utils": "0.30.0-rc6"
   }
 }

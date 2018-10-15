@@ -1,6 +1,6 @@
 {
   "name": "lwc-jest-serializer",
-  "version": "0.29.21",
+  "version": "0.30.0-rc6",
   "description": "Custom Jest snapshot serializer",
   "main": "index.js",
   "keywords": [
