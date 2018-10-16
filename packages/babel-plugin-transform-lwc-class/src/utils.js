@@ -60,31 +60,50 @@ function getExportedNames(path) {
     return exports = programPath.get('body').reduce((names, node) => {
         const exportSource = getExportSrc(node && node.node.source);
 
+        // export default class App {}
         if (node.isExportDefaultDeclaration()) {
-            names.push(createModuleExportInfo(EXPORT_DEFAULT_DECLARATION, null, exportSource));
+            names.push(createModuleExportInfo({ type: EXPORT_DEFAULT_DECLARATION, source: exportSource }));
+
+        // export * from 'external-module'
         } else if (node.isExportDeclaration() && node.type === EXPORT_ALL_DECLARATION) {
-            names.push(createModuleExportInfo(EXPORT_ALL_DECLARATION, null, exportSource));
+            names.push(createModuleExportInfo({ type: EXPORT_ALL_DECLARATION, source: exportSource }));
+
         } else if (node.isExportDeclaration() && node.type === EXPORT_NAMED_DECLARATION) {
+
+            // export { method } from 'utils'
             const specifiers = node.node.specifiers;
+
             if (Array.isArray(specifiers)) {
                 specifiers.forEach(specifier => {
                     const exportValue = specifier.exported.name;
-                    names.push(createModuleExportInfo(EXPORT_NAMED_DECLARATION, exportValue, exportSource));
+                    names.push(createModuleExportInfo({
+                        type: EXPORT_NAMED_DECLARATION,
+                        value: exportValue,
+                        source: exportSource
+                    }));
                 });
             }
 
             const declaration = node.node.declaration;
             if (declaration) {
+
+                // export const version = 0;
                 if (declaration.type === 'VariableDeclaration' && Array.isArray(declaration.declarations)) {
                     declaration.declarations.forEach(nameDeclaration => {
                         exportValue = nameDeclaration.id.name;
                     });
+
+                // export class Inner {};
                 } else if (declaration.type === 'ClassDeclaration'
                     || declaration.type === 'FunctionDeclaration') {
                         exportValue = declaration.id.name;
                 }
 
-                names.push(createModuleExportInfo(EXPORT_NAMED_DECLARATION, exportValue, exportSource));
+                names.push(createModuleExportInfo({
+                    type: EXPORT_NAMED_DECLARATION,
+                    value: exportValue,
+                    source: exportSource
+                }));
             }
         }
         return names;
@@ -102,7 +121,7 @@ function getExportSrc(src) {
     return  (!value.startsWith('./') && !value.startsWith('../')) ? value : null;
 }
 
-function createModuleExportInfo(type, value, source) {
+function createModuleExportInfo({ type, value, source }) {
     const moduleExport = { type };
     if (value) {
         moduleExport.value = value;
