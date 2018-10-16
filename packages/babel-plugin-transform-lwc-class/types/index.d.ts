@@ -3,7 +3,7 @@ export interface Metadata {
     classMembers?: Array<ClassMember>;
     declarationLoc?: Location;
     doc?: string;
-    exports?: ModuleExports[];
+    exports: ModuleExports[];
 }
 
 export interface ApiDecorator {

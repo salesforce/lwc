@@ -37,9 +37,7 @@ export default function(
         metadataCollector.setDeclarationLoc(metadata.declarationLoc);
         metadataCollector.setDoc(metadata.doc);
 
-        if (metadata.exports) {
-            metadataCollector.collectExports(metadata.exports);
-        }
+        metadataCollector.collectExports(metadata.exports);
     }
 
     return {
