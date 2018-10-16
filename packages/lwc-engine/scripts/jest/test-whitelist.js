@@ -21,6 +21,7 @@ const CONSOLE_WHITELIST = [
     '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements',
     '#shadowRootQuerySelector should return null if querySelector does not match any elements',
     'api #i() should support various types',
+    'api #ti() should set tabIndex to -1 when value is not 0',
     'assignedSlot should return correct slot when text is slotted',
     'component public computed props should call setter function when used directly from DOM',
     'component public methods should allow calling getAttribute on child when referenced with querySelector',
@@ -43,7 +44,7 @@ const CONSOLE_WHITELIST = [
     'root .lastChild could be a text node',
     'root .lastChild should return the last child',
     'root .parentElement should return null on child node',
-    'root childNodes should return array of childnodes',
+    'root childNodes should return array of childnodes'
 ];
 
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {

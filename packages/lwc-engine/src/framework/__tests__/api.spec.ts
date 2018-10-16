@@ -237,4 +237,54 @@ describe('api', () => {
             }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.');
         });
     });
+
+    describe('#ti()', () => {
+        it('should set tabIndex to -1 when value is not 0', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(2);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-1);
+        });
+
+        it('should set tabIndex to 0 when value is 0', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(0);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(0);
+        });
+
+        it('should set tabIndex to -1 when value is -1', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-1);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-1);
+        });
+    });
 });

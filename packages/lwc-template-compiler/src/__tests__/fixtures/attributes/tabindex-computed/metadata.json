@@ -1,0 +1,15 @@
+{
+    "metadata": {
+        "templateUsedIds": ["computed"],
+        "templateDependencies": [{
+            "moduleName": "x/foo",
+            "properties": {
+                "tabIndex": {
+                    "type": "expression",
+                    "value": "computed"
+                }
+            },
+            "tagName": "x-foo"
+        }]
+    }
+}

@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener } from "./invoker";
-import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue } from "../shared/language";
+import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, toString } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { VM, SlotSet } from "./vm";
 import { ComponentConstructor } from "./component";
@@ -273,6 +273,16 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         addNS(vnode);
     }
     return vnode;
+}
+
+// [t]ab[i]ndex function
+export function ti(value: any): number {
+    if (process.env.NODE_ENV !== 'production') {
+        if (value !== 0 && value !== '0' && value !== -1 && value !== '-1') {
+            assert.logWarning(`Invalid tabindex value \`${toString(value)}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`);
+        }
+    }
+    return (value === 0 || value === '0') ? 0 : -1;
 }
 
 // [s]lot element node
