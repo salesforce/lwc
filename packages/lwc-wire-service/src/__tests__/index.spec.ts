@@ -111,7 +111,7 @@ describe('wire service', () => {
                     }
                 }
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" refers to non-@wire property');
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" must refer to a @wire property');
         });
         it('throws when dot-separated parameter refers to @wired method', () => {
             let wireService;
@@ -132,7 +132,7 @@ describe('wire service', () => {
                     }
                 }
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" refers to non-@wire property');
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" must refer to a @wire property');
         });
         it('throws when parameter refers to own wire target', () => {
             let wireService;
@@ -149,7 +149,7 @@ describe('wire service', () => {
                     }
                 }
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": parameter "target" refers to self');
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": parameter "target" must not refer to self');
         });
     });
     describe('connected handling', () => {

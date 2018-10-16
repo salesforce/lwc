@@ -88,7 +88,7 @@ describe('WireEventTarget', () => {
                 wireEventTarget.addEventListener(CONFIG, listener);
                 expect(listener).toHaveBeenCalledTimes(1);
             });
-            it('multiple listeners from one adapter creates only one trap per property', () => {
+            it('creates one trap per property for multiple listeners', () => {
                 const wireContext = Object.create(null);
                 wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext = Object.create(null);
@@ -110,7 +110,7 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
-            it('multiple listeners and multiple dot-separated separated parameters creates only one trap on the root property', () => {
+            it('creates one trap for root property for multiple listeners to dot-separated separated parameters', () => {
                 const wireContext = Object.create(null);
                 wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext = Object.create(null);
@@ -133,7 +133,7 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
-            it('multiple components from one adapter create multiple traps', () => {
+            it('creates one trap per property per component', () => {
                 const wireContext1 = Object.create(null);
                 wireContext1[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext1 = Object.create(null);
@@ -172,7 +172,7 @@ describe('WireEventTarget', () => {
     });
 
     describe('removeEventListener', () => {
-        it('remove listener from the queue for connect event', () => {
+        it('removes listener from the queue for connect event', () => {
             function listener() { /**/ }
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
@@ -181,7 +181,7 @@ describe('WireEventTarget', () => {
             wireEventTarget.removeEventListener(CONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_CONNECTED]).toHaveLength(0);
         });
-        it('remove listener from the queue for disconnect event', () => {
+        it('removes listener from the queue for disconnect event', () => {
             function listener() { /**/ }
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
@@ -190,7 +190,7 @@ describe('WireEventTarget', () => {
             wireEventTarget.removeEventListener(DISCONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED]).toHaveLength(0);
         });
-        it('remove listenerMetadata from the queue for config event', () => {
+        it('removes listenerMetadata from the queue for config event', () => {
             function listener() { /**/ }
             const mockConfigListenerMetadata = { listener };
             const mockContext = Object.create(null);
@@ -214,7 +214,7 @@ describe('WireEventTarget', () => {
     });
 
     describe('dispatchEvent', () => {
-        it('ValueChangedEvent updates wired property', () => {
+        it('updates wired property when ValueChangeEvent received', () => {
             const mockCmp = {
                 test: undefined
             };
@@ -222,7 +222,7 @@ describe('WireEventTarget', () => {
             wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
             expect(mockCmp.test).toBe('value');
         });
-        it('ValueChangedEvent invokes wired method', () => {
+        it('invokes wired method when ValueChangedEvent received', () => {
             let actual;
             const mockCmp = {
                 test: (value) => { actual = value; }
