@@ -8,8 +8,8 @@ export const CONTEXT_CONNECTED = 'connected';
 export const CONTEXT_DISCONNECTED = 'disconnected';
 
 // wire event target life cycle connectedCallback hook event type
-export const CONNECT = "connect";
+export const CONNECT = 'connect';
 // wire event target life cycle disconnectedCallback hook event type
-export const DISCONNECT = "disconnect";
+export const DISCONNECT = 'disconnect';
 // wire event target life cycle config changed hook event type
-export const CONFIG = "config";
+export const CONFIG = 'config';

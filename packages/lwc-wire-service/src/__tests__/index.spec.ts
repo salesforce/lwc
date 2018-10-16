@@ -86,7 +86,7 @@ describe('wire service', () => {
             registerWireService((svc) => {
                 wireService = svc;
             });
-            const mockDef = {
+            const mockDef: ElementDef = {
                 wire: {
                     target: {
                         adapter: () => { /**/ },
@@ -95,6 +95,61 @@ describe('wire service', () => {
                 }
             };
             expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": unknown adapter id: ');
+        });
+        it('throws when dot-separated parameter refers to non-@wire target', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'x.y' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" refers to non-@wire property');
+        });
+        it('throws when dot-separated parameter refers to @wired method', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    x: {
+                        adapter: adapterId,
+                        method: 1,
+                    },
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'x.y' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-separated parameter "x.y" refers to non-@wire property');
+        });
+        it('throws when parameter refers to own wire target', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'target' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": parameter "target" refers to self');
         });
     });
     describe('connected handling', () => {

@@ -12,6 +12,7 @@ import {
 import {
     ConfigListenerMetadata,
     ConfigContext,
+    ParamDefinition,
 } from './wiring';
 
 /**
@@ -39,28 +40,28 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
     });
 }
 
-function updated(cmp: Element, prop: string, configContext: ConfigContext) {
+function updated(cmp: Element, paramDefn: ParamDefinition, configContext: ConfigContext) {
     if (!configContext.mutated) {
-        configContext.mutated = new Set<string>();
+        configContext.mutated = new Set<ParamDefinition>();
         // collect all prop changes via a microtask
         Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
     }
-    configContext.mutated.add(prop);
+    configContext.mutated.add(paramDefn);
 }
 
 function updatedFuture(cmp: Element, configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
 
     // configContext.mutated must be set prior to invoking this function
-    const mutated = configContext.mutated as Set<string>;
+    const mutated = configContext.mutated as Set<ParamDefinition>;
     delete configContext.mutated;
-    mutated.forEach(prop => {
-        const value = cmp[prop];
-        if (configContext.values[prop] === value) {
+    mutated.forEach(paramDefn => {
+        const value = getParamValue(cmp, paramDefn);
+        if (configContext.values[paramDefn.full] === value) {
             return;
         }
-        configContext.values[prop] = value;
-        const listeners = configContext.listeners[prop];
+        configContext.values[paramDefn.full] = value;
+        const listeners = configContext.listeners[paramDefn.root];
         for (let i = 0, len = listeners.length; i < len; i++) {
             uniqueListeners.add(listeners[i]);
         }
@@ -69,15 +70,37 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
 }
 
 /**
+ * Gets the value of a wire parameter.
+ * @param cmp The component
+ * @param paramDefn The parameter to get
+ */
+export function getParamValue(cmp: Element, paramDefn: ParamDefinition): any {
+    let value: any = cmp[paramDefn.root];
+    if (!paramDefn.remainder) {
+        return value;
+    }
+
+    const segments = paramDefn.remainder;
+    for (let i = 0, len = segments.length; i < len && value != null; i++) {
+        const segment = segments[i];
+        if (typeof value !== 'object' || !(segment in value)) {
+            return undefined;
+        }
+        value = value[segment];
+    }
+    return value;
+}
+
+/**
  * Installs setter override to trap changes to a property, triggering the config listeners.
  * @param cmp The component
- * @param prop The name of the property to be monitored
+ * @param paramDefn Parameter defining the property to be monitored
  * @param context The service context
  */
-export function installTrap(cmp: Object, prop: string, configContext: ConfigContext) {
-    const callback = updated.bind(undefined, cmp, prop, configContext);
-    const newDescriptor = getOverrideDescriptor(cmp, prop, callback);
-    Object.defineProperty(cmp, prop, newDescriptor);
+export function installTrap(cmp: Object, paramDefn: ParamDefinition, configContext: ConfigContext) {
+    const callback = updated.bind(undefined, cmp, paramDefn, configContext);
+    const newDescriptor = getOverrideDescriptor(cmp, paramDefn.root, callback);
+    Object.defineProperty(cmp, paramDefn.root, newDescriptor);
 }
 
 /**

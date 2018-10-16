@@ -23,6 +23,14 @@ export interface ConfigListenerArgument {
     [key: string]: any;
 }
 export type ConfigListener = (ConfigListenerArgument) => void;
+
+// config params (WireDef.params.key) may be dot-separated strings to traverse into @api and @wire properties
+export interface ParamDefinition {
+    full: string; // the original WireDef.params.key
+    root: string; // first segment of the key
+    remainder?: string[]; // remaining segments of the key, if it's dot-separated
+}
+
 export interface ConfigListenerMetadata {
     listener: ConfigListener;
     statics?: {
@@ -43,7 +51,7 @@ export interface ConfigContext {
         [prop: string]: any
     };
     // mutated props (debounced then cleared)
-    mutated?: Set<string>;
+    mutated?: Set<ParamDefinition>;
 }
 
 export interface WireContext {
@@ -72,6 +80,21 @@ function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[],
             return;
         }
     }
+}
+
+function buildParamDefinition(prop: string): ParamDefinition {
+    if (!prop.includes('.')) {
+        return {
+            full: prop,
+            root: prop
+        };
+    }
+    const segments = prop.split('.');
+    return {
+        full: prop,
+        root: segments.shift() as string,
+        remainder: segments
+    };
 }
 
 export class WireEventTarget {
@@ -132,12 +155,12 @@ export class WireEventTarget {
 
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 paramsKeys.forEach(param => {
-                    const prop = params[param];
-                    let configListenerMetadatas = configContext.listeners[prop];
+                    const paramDefn = buildParamDefinition(params[param]);
+                    let configListenerMetadatas = configContext.listeners[paramDefn.root];
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
-                        configContext.listeners[prop] = configListenerMetadatas;
-                        installTrap(this._cmp, prop, configContext);
+                        configContext.listeners[paramDefn.root] = configListenerMetadatas;
+                        installTrap(this._cmp, paramDefn, configContext);
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }

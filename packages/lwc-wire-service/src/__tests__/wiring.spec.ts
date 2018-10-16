@@ -110,6 +110,29 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
+            it('multiple listeners and multiple dot-separated separated parameters creates only one trap on the root property', () => {
+                const wireContext = Object.create(null);
+                wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
+                const mockContext = Object.create(null);
+                mockContext[CONTEXT_ID] = wireContext;
+                const mockWireDef: WireDef = {
+                    adapter: {},
+                    params: {
+                        key: "a.b.c.d",
+                        other: "a.x.y"
+                    }
+                };
+                const mockInstallTrap = jest.fn();
+                const originalInstallTrap = dependency.installTrap;
+                (dependency as any).installTrap = mockInstallTrap;
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
+                wireEventTarget.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalledTimes(1);
+                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test1");
+                wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalledTimes(1);
+                (dependency as any).installTrap = originalInstallTrap;
+            });
             it('multiple components from one adapter create multiple traps', () => {
                 const wireContext1 = Object.create(null);
                 wireContext1[CONTEXT_UPDATED] = { listeners: {}, values: {} };

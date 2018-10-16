@@ -70,6 +70,17 @@ const wireService = {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(wireDef.adapter, `@wire on "${wireTarget}": adapter id must be truthy`);
                 assert.isTrue(adapterFactory, `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`);
+                // verify all dot-separated params refer to other @wire'd values because we trap changes only to the root property
+                if (wireDef.params) {
+                    Object.keys(wireDef.params).forEach(param => {
+                        const prop = wireDef.params![param];
+                        const segments = prop.split('.');
+                        assert.isTrue(segments[0] !== wireTarget, `@wire on "${wireTarget}": parameter "${segments[0]}" refers to self`);
+                        if (segments.length > 1) {
+                            assert.isTrue(wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1, `@wire on "${wireTarget}": dot-separated parameter "${prop}" refers to non-@wire property`);
+                        }
+                    });
+                }
             }
 
             if (adapterFactory) {
