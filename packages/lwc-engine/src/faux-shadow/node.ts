@@ -112,13 +112,12 @@ const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    let ownerKey;
+    let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
         node = parentNodeGetter.call(node);
     }
-    // either we hit the wall, or the node is root element (which does not have an owner key)
-    return (isUndefined(ownerKey) || isNull(node)) ? undefined : ownerKey;
+    return ownerKey;
 }
 
 export function getNodeKey(node: Node): number | undefined {
