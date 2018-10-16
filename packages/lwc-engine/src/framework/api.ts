@@ -143,7 +143,6 @@ const CustomElementHook: Hooks = {
             // this is used mostly for caching in compiler and style tags
             vnode.elm = createElement.call(document, sel);
         }
-        createElmHook(vnode);
         createCustomElmHook(vnode);
         allocateChildrenHook(vnode);
         create(vnode);
