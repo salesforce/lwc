@@ -8,6 +8,8 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     getNodeKey,
     getNodeOwnerKey,
+    GetRootNodeOptions,
+    getShadowIncludingRoot,
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
@@ -149,6 +151,24 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
         return null;
     }
     return parentNode;
+}
+
+function getRoot(node: Node): Node {
+    const ownerNode = getNodeOwner(node);
+
+    if (isNull(ownerNode)) {
+        // we hit a wall, is not in lwc boundary.
+        return getShadowIncludingRoot(node);
+    }
+
+    // @ts-ignore: Attributes property is removed from Node (https://developer.mozilla.org/en-US/docs/Web/API/Node)
+    return getShadowRoot(ownerNode) as Node;
+}
+
+function getRootNodeDescriptorValue(this: Node, options?: GetRootNodeOptions): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+
+    return isTrue(composed) ? getShadowIncludingRoot(this) : getRoot(this);
 }
 
 export function shadowRootChildNodes(root: SyntheticShadowRoot) {
@@ -387,6 +407,11 @@ export const NodePatchDescriptors: PropertyDescriptorMap = {
         get: parentElementDescriptorValue,
         configurable: true,
     },
+    getRootNode: {
+        value: getRootNodeDescriptorValue,
+        configurable: true,
+        enumerable: true,
+    }
 };
 
 export const ElementPatchDescriptors: PropertyDescriptorMap = assign(create(null), NodePatchDescriptors, {
