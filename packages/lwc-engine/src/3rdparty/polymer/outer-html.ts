@@ -16,6 +16,7 @@ import { getInnerHTML } from "./inner-html";
 const escapeAttrRegExp = /[&\u00A0"]/g;
 const escapeDataRegExp = /[&\u00A0<>]/g;
 const { replace, toLowerCase } = String.prototype;
+const tagNameGetter: (this: Element) => string = Object.getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
 function escapeReplace(c) {
     switch (c) {
@@ -74,7 +75,8 @@ const plaintextParents = new Set([
 export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
         case Node.ELEMENT_NODE: {
-            const { tagName, attributes: attrs } = node as Element;
+            const { attributes: attrs } = node as Element;
+            const tagName = tagNameGetter.call(node);
             let s = '<' + toLowerCase.call(tagName);
             for (let i = 0, attr; (attr = attrs[i]); i++) {
                 s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
@@ -87,7 +89,7 @@ export function getOuterHTML(node: Node): string {
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
-            if (parentNode !== null && plaintextParents.has((parentNode as Element).tagName)) {
+            if (parentNode !== null && plaintextParents.has(tagNameGetter.call(parentNode as Element))) {
                 return data;
             }
             return escapeData(data);
