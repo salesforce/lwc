@@ -251,7 +251,9 @@ describe('api', () => {
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.');
             expect(normalized).toBe(-1);
         });
 
