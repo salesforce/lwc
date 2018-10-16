@@ -5,7 +5,7 @@ import { elementTagNameGetter } from "./dom-api";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
-import { HTMLElementConstructor } from "lwc-engine/src/framework/base-bridge-element";
+import { HTMLElementConstructor } from "./base-bridge-element";
 import { ElementPatchDescriptors, SlotPatchDescriptors, NodePatchDescriptors, IframeDescriptors } from "../faux-shadow/traverse";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
