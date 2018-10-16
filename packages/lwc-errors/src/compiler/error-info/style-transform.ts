@@ -1,11 +1,4 @@
 import { Level } from "../../shared/types";
-/*
-    Custom errors:
-        root.error
-            -- file, line and col info as properties
-        decl.error
-            -- file, line and col info as properties
-*/
 
 export const CSSTransformErrors = {
     CONFIG_MISSING_EXPECTED_OPTIONS: {

@@ -1,31 +1,6 @@
 import { Level } from "../../shared/types";
 
-// config.js
 export const TemplateErrors = {
-    OPTIONS_MUST_BE_OBJECT: {
-        code: 0,
-        message: 'Compiler options must be an object',
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-
-    MISSING_REQUIRED_PROPERTY: {
-        code: 0,
-        message: "Missing required option property {0}",
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-
-    UNKNOWN_OPTION_PROPERTY: {
-        code: 0,
-        message: "Unknown option property {0}",
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-// index.js
     GENERIC_ERROR: {
         code: 0,
         message: '',
@@ -41,10 +16,34 @@ export const TemplateErrors = {
         level: Level.Error,
         url: ""
     },
-// codegen/index.js
+
+    MISSING_REQUIRED_PROPERTY: {
+        code: 0,
+        message: "Missing required option property {0}",
+        type: "Error",
+        level: Level.Error,
+        url: ""
+    },
+
+    OPTIONS_MUST_BE_OBJECT: {
+        code: 0,
+        message: 'Compiler options must be an object',
+        type: "Error",
+        level: Level.Error,
+        url: ""
+    },
+
     UNKNOWN_IF_MODIFIER: {
         code: 0,
         message: "Unknown if modifier {0}",
+        type: "Error",
+        level: Level.Error,
+        url: ""
+    },
+
+    UNKNOWN_OPTION_PROPERTY: {
+        code: 0,
+        message: "Unknown option property {0}",
         type: "Error",
         level: Level.Error,
         url: ""
@@ -52,29 +51,6 @@ export const TemplateErrors = {
 };
 
 export const ParserErrors = {
-// parser/attribute.js
-    BOOLEAN_ATTRIBUTE_TRUE: {
-        code: 0,
-        message:
-            "To set a boolean attributes, try <{0} {1}> instead of <{0} {1}=\"{2}\">." +
-            "If the attribute is present, its value must either be the empty string" +
-            "or a value that is an ASCII case -insensitive match for the attribute's canonical name" +
-            "with no leading or trailing whitespace.",
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-
-    BOOLEAN_ATTRIBUTE_FALSE: {
-        code: 0,
-        message:
-            "To not set a boolean attribute, try <{0}> instead of <{0} {1}=\"{2}\">. " +
-            "To represent a false value, the attribute has to be omitted altogether.",
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-
     AMBIGUOUS_ATTRIBUTE_VALUE: {
         code: 0,
         message: "Ambiguous attribute value {0}. " +
@@ -92,23 +68,29 @@ export const ParserErrors = {
         level: Level.Error,
         url: ""
     },
-// parser/expression.js
-    INVALID_NODE: {
+
+    BOOLEAN_ATTRIBUTE_FALSE: {
         code: 0,
-        message: "Template expression doesn't allow {0}",
+        message:
+            "To not set a boolean attribute, try <{0}> instead of <{0} {1}=\"{2}\">. " +
+            "To represent a false value, the attribute has to be omitted altogether.",
         type: "Error",
         level: Level.Error,
         url: ""
     },
 
-    MULTIPLE_EXPRESSIONS: {
+    // parser/attribute.js
+    BOOLEAN_ATTRIBUTE_TRUE: {
         code: 0,
-        message: "Multiple expressions found",
+        message:
+            "To set a boolean attributes, try <{0} {1}> instead of <{0} {1}=\"{2}\">." +
+            "If the attribute is present, its value must either be the empty string" +
+            "or a value that is an ASCII case -insensitive match for the attribute's canonical name" +
+            "with no leading or trailing whitespace.",
         type: "Error",
         level: Level.Error,
         url: ""
     },
-
     COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED: {
         code: 0,
         message: "Template expression doesn't allow computed property access",
@@ -117,17 +99,10 @@ export const ParserErrors = {
         url: ""
     },
 
-    MODIFYING_ITERATORS_NOT_ALLOWED: {
+    INVALID_HTML_SYNTAX: {
         code: 0,
-        message: "Template expression doesn't allow to modify iterators",
-        type: "Error",
-        level: Level.Error,
-        url: ""
-    },
-
-    LINE_73: {
-        code: 0,
-        type: "err",
+        message: "Invalid HTML syntax: {0}. For more information, " +
+        "please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}",
         level: Level.Error,
         url: ""
     },
@@ -140,10 +115,34 @@ export const ParserErrors = {
         url: ""
     },
 
-    INVALID_HTML_SYNTAX: {
+    // parser/expression.js
+    INVALID_NODE: {
         code: 0,
-        message: "Invalid HTML syntax: {0}. For more information, " +
-        "please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}",
+        message: "Template expression doesn't allow {0}",
+        type: "Error",
+        level: Level.Error,
+        url: ""
+    },
+
+    LINE_73: {
+        code: 0,
+        type: "err",
+        level: Level.Error,
+        url: ""
+    },
+
+    MODIFYING_ITERATORS_NOT_ALLOWED: {
+        code: 0,
+        message: "Template expression doesn't allow to modify iterators",
+        type: "Error",
+        level: Level.Error,
+        url: ""
+    },
+
+    MULTIPLE_EXPRESSIONS: {
+        code: 0,
+        message: "Multiple expressions found",
+        type: "Error",
         level: Level.Error,
         url: ""
     },

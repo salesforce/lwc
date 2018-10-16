@@ -1,9 +1,4 @@
 import { Level } from "../../shared/types";
-/*
-    Custom errors:
-        path.buildCodeFrameError
-            --
-*/
 
 export const JestTransformerErrors = {
     GENERIC_JEST_TRANSFORMER_ERROR: {
