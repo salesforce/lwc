@@ -1,6 +1,6 @@
 {
   "name": "lwc-test-utils",
-  "version": "0.29.25",
+  "version": "0.29.26",
   "description": "Test utilities for LWC",
   "main": "index.js",
   "keywords": [

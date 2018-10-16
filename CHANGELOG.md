@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.24...v) (2018-10-15)
+# [](https://github.com/salesforce/lwc/compare/v0.29.25...v) (2018-10-16)
+
+
+### Bug Fixes
+
+* retargeting works as expected for innerHTML template modifications ([#739](https://github.com/salesforce/lwc/issues/739)) ([efa6a66](https://github.com/salesforce/lwc/commit/efa6a66))
+
+
+
+<a name="0.29.25"></a>
+## [0.29.25](https://github.com/salesforce/lwc/compare/v0.29.24...v0.29.25) (2018-10-15)
 
 
 
