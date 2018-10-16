@@ -26,8 +26,8 @@ export default function apply() {
         get() {
             const active = DocumentPrototypeActiveElement.call(this);
             let node = active;
-            while(!isUndefined(getNodeOwnerKey(node))) {
-                node = parentElementGetter.call(node)
+            while (!isUndefined(getNodeOwnerKey(node))) {
+                node = parentElementGetter.call(node);
             }
             return node;
         },
