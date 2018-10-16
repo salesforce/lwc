@@ -2,7 +2,7 @@
 
 # Normalize params
 PACKAGE_VERSION="$1"
-[ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--canary=beta" || CANARY="";
+[ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--npm-tag next" || CANARY="";
 
 if [ -z "${PACKAGE_VERSION}" ]; then
         echo "You must specify a version to release"
@@ -20,17 +20,9 @@ fi
 
 # Command to push the packages
 CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
-CMD_PREPARE="yarn prepare"
-CMD_PUBLISH_PACKAGES="lerna publish --repo-version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org ${CANARY} --no-verify-access --no-verify-registry"
+CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${CANARY} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org --no-verify-access --no-verify-registry"
 
-# Update package versions before preparing the dist files
-echo $CMD_UPDATE_VERSION;
-$CMD_UPDATE_VERSION;
-
-echo $CMD_PREPARE;
-$CMD_PREPARE;
-
-# Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4:
+# Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4, so we need to reapply version
 # https://github.com/lerna/lerna/blob/3cbeeabcb443d9415bb86c4539652b85cd7b4025/commands/publish/index.js#L354-L363
 echo $CMD_PUBLISH_PACKAGES;
 $CMD_PUBLISH_PACKAGES;
