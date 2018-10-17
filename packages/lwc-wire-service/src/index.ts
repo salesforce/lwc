@@ -80,6 +80,7 @@ const wireService = {
                             assert.isTrue(segment.length > 0, `@wire on "${wireTarget}": reactive parameters must not be empty`);
                         });
                         assert.isTrue(segments[0] !== wireTarget, `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`);
+                        // restriction for dot-notation reactive parameters
                         if (segments.length > 1) {
                             // @wire emits a stream of immutable values. an emit sets the target property; it does not mutate a previously emitted value.
                             // restricting dot-notation reactive parameters to reference other @wire targets makes trapping the 'head' of the parameter

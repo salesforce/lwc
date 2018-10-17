@@ -110,7 +110,7 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
-            it('creates one trap for root property for multiple listeners to dot-separated separated parameters', () => {
+            it('creates one trap for root property for multiple listeners to dot-notation parameters', () => {
                 const wireContext = Object.create(null);
                 wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext = Object.create(null);
