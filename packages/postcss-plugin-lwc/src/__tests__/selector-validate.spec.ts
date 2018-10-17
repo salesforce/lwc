@@ -6,11 +6,9 @@ describe('selector validation', () => {
             message: expect.stringMatching(
                 /Invalid usage of deprecated selector "\/deep\/"/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 7,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 7
         });
     });
 
@@ -19,11 +17,9 @@ describe('selector validation', () => {
             message: expect.stringMatching(
                 /Invalid usage of deprecated selector "::shadow"/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 6,
-            },
+            file: FILE_NAME,
+            line: 1,
+            column: 6
         });
     });
 
@@ -32,11 +28,9 @@ describe('selector validation', () => {
             message: expect.stringMatching(
                 /Invalid usage of unsupported selector "::slotted"/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 1,
-            },
+            file: FILE_NAME,
+            line: 1,
+            column: 1
         });
     });
 
@@ -45,11 +39,9 @@ describe('selector validation', () => {
             message: expect.stringMatching(
                 /Invalid usage of unsupported selector ":root"/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 1,
-            },
+            file: FILE_NAME,
+            line: 1,
+            column: 1
         });
     });
 
@@ -58,11 +50,9 @@ describe('selector validation', () => {
             message: expect.stringMatching(
                 /Invalid usage of unsupported selector ":host-context"/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 1,
-            },
+            file: FILE_NAME,
+            line: 1,
+            column: 1
         });
     });
 });
@@ -81,11 +71,9 @@ describe('attribute validation', () => {
             message: expect.stringMatching(
                 /Attribute \"min\" is not a known attribute on <div> element\./,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 4,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 4
         });
     });
 
@@ -95,11 +83,9 @@ describe('attribute validation', () => {
             message: expect.stringMatching(
                 /Attribute \"custom-attribute\" is not a known attribute on <x-foo> element./,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 6,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 6
         });
     });
 
@@ -108,21 +94,17 @@ describe('attribute validation', () => {
             message: expect.stringMatching(
                 /attributes that are not global attributes must be associated with a tag name/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 2,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 2
         });
         await expect(process('[my-lang="fr"] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
                 /attributes that are not global attributes must be associated with a tag name/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 2,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 2
         });
     });
 
@@ -136,21 +118,17 @@ describe('attribute validation', () => {
             message: expect.stringMatching(
                 /attributes that are not global attributes must be associated with a tag name/,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 2,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 2
         });
         await expect(process('div[data] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
                 /Attribute \"data\" is not a known attribute on <div> element./,
             ),
-            filename: FILE_NAME,
-            location: {
-                line: 1,
-                column: 4,
-            }
+            file: FILE_NAME,
+            line: 1,
+            column: 4
         });
     });
 

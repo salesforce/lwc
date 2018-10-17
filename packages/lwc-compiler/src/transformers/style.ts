@@ -117,7 +117,6 @@ export default async function transformStyle(
             from: filename,
         });
     } catch (e) {
-        // TODO ERROR CODE
         throw normalizeCompilerError(e, { filename, location: e.loc });
     }
 

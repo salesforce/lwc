@@ -13,7 +13,11 @@ import {
     isKnowAttributeOnElement,
 } from '../helpers/html-attributes';
 
-import { generateCompilerError, CSSTransformErrors } from 'lwc-errors';
+import { generateErrorFromRoot } from '../helpers/errors';
+
+import {
+    CSSTransformErrors,
+} from 'lwc-errors';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
@@ -25,25 +29,24 @@ function validateSelectors(root: Root) {
         if (value) {
             // Ensure the selector doesn't use a deprecated CSS selector.
             if (DEPRECATED_SELECTORS.has(value)) {
-                // TODO ERROR CODES: Normalize compiler errors to a standard pattern
-                throw generateCompilerError(CSSTransformErrors.SELECTOR_SCOPE_DEPRECATED_SELECTOR, {
-                    messageArgs: [value],
-
-                    errorConstructor: (message: string) => {
-                        return root.error(message, { index: sourceIndex, word: value });
+                throw generateErrorFromRoot(
+                    root, {
+                        errorInfo: CSSTransformErrors.SELECTOR_SCOPE_DEPRECATED_SELECTOR,
+                        messageArgs: [value],
+                        options: { index: sourceIndex, word: value }
                     }
-                });
+                );
             }
 
             // Ensure the selector doesn't use an unsupported selector.
             if (UNSUPPORTED_SELECTORS.has(value)) {
-                throw generateCompilerError(CSSTransformErrors.SELECTOR_SCOPE_UNSUPPORTED_SELECTOR, {
-                    messageArgs: [value],
-
-                    errorConstructor: (message: string) => {
-                        return root.error(message, { index: sourceIndex, word: value });
+                throw generateErrorFromRoot(
+                    root, {
+                        errorInfo: CSSTransformErrors.SELECTOR_SCOPE_UNSUPPORTED_SELECTOR,
+                        messageArgs: [value],
+                        options: { index: sourceIndex, word: value }
                     }
-                });
+                );
             }
         }
     });
@@ -81,26 +84,26 @@ function validateAttribute(root: Root) {
             // If the tag selector is not present in the compound selector, we need to warn the user that
             // the compound selector need to be more specific.
             if (tagSelector === undefined) {
-                throw generateCompilerError(CSSTransformErrors.SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR, {
-                    messageArgs: [attributeName],
-
-                    errorConstructor: (message: string) => {
-                        return root.error(message, { index: sourceIndex, word: attributeName });
+                throw generateErrorFromRoot(
+                    root, {
+                        errorInfo: CSSTransformErrors.SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR,
+                        messageArgs: [attributeName],
+                        options: { index: sourceIndex, word: attributeName }
                     }
-                });
+                );
             }
 
             // If compound selector is associated with a tag selector, we can validate the usage of the
             // attribute against the specific tag.
             const { value: tagName } = tagSelector;
             if (!isKnowAttributeOnElement(tagName, attributeName)) {
-                throw generateCompilerError(CSSTransformErrors.SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG, {
-                    messageArgs: [attributeName, tagName],
-
-                    errorConstructor: (message: string) => {
-                        return root.error(message, { index: sourceIndex, word: attributeName });
+                throw generateErrorFromRoot(
+                    root, {
+                        errorInfo: CSSTransformErrors.SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG,
+                        messageArgs: [attributeName, tagName],
+                        options: { index: sourceIndex, word: attributeName }
                     }
-                });
+                );
             }
         }
     });

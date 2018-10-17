@@ -221,7 +221,7 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             code: undefined,// TODO ERROR CODE expect.any(Number),
             level: Level.Error,
-            message: `LWC0: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+            message: `LWC1: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             location: EXPECTED_LOCATION
         });
     });
@@ -290,7 +290,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: Level.Error,
-            message: `Invalid expression {this.title} - LWC0: Template expression doesn't allow ThisExpression`,
+            message: `Invalid expression {this.title} - LWC1: Template expression doesn't allow ThisExpression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -299,7 +299,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: Level.Error,
-            message: `Invalid expression {getTitle()} - LWC0: Template expression doesn't allow CallExpression`,
+            message: `Invalid expression {getTitle()} - LWC1: Template expression doesn't allow CallExpression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -308,7 +308,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: Level.Error,
-            message: `Invalid expression {foo;title} - LWC0: Multiple expressions found`,
+            message: `Invalid expression {foo;title} - LWC1: Multiple expressions found`,
             location: EXPECTED_LOCATION
         });
     });

@@ -1,8 +1,9 @@
 import { Declaration } from 'postcss';
 import balanced from 'balanced-match';
-import { generateCompilerError, CSSTransformErrors, invariant } from 'lwc-errors';
+import { CSSTransformErrors, invariant } from 'lwc-errors';
 
 import { VarTransformer } from '../config';
+import { generateErrorFromDeclaration } from '../helpers/errors';
 
 // Match on " var("
 const VAR_FUNC_REGEX = /(^|[^\w-])var\(/;
@@ -24,21 +25,20 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     const prefixWhitespace = varMatch[1];
     const start = varMatch.index;
 
-    // TODO ERROR CODES: normalize error object structure
     const parenthesisMatch = balanced('(', ')', value.slice(start));
     if (!parenthesisMatch) {
-        throw generateCompilerError(CSSTransformErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS, {
-            messageArgs: [value],
-            errorConstructor: decl.error.bind(decl)
+        throw generateErrorFromDeclaration(decl, {
+            errorInfo: CSSTransformErrors.CUSTOM_PROPERTY_MISSING_CLOSING_PARENS,
+            messageArgs: [value]
         });
     }
 
     // Extract the `var()` function arguments
     const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(parenthesisMatch.body);
     if (varArgumentsMatch === null) {
-        throw generateCompilerError(CSSTransformErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE, {
-            messageArgs: [value],
-            errorConstructor: decl.error.bind(decl)
+        throw generateErrorFromDeclaration(decl, {
+            errorInfo: CSSTransformErrors.CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE,
+            messageArgs: [value]
         });
     }
 

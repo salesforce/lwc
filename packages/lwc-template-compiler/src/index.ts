@@ -73,7 +73,6 @@ export function compileToFunction(source: string): Function {
 
     for (const warning of parsingResults.warnings) {
         if (warning.level === Level.Error) {
-            // TODO ERROR CODE: Convert to compiler error
             throw convertDiagnosticToError(warning);
         } else if (warning.level === Level.Warning) {
             /* tslint:disable-next-line:no-console */

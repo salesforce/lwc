@@ -18,7 +18,7 @@ export interface ErrorConfig {
 
 // TODO ERROR CODES: Move somewhere else
 const GENERIC_COMPILER_ERROR = {
-    code: 0,
+    code: 1,
     message: "Unexpected compilation error: {0}"
 };
 
@@ -38,7 +38,7 @@ export function generateCompilerError(
     errorInfo: LWCErrorInfo,
     config?: ErrorConfig
 ): CompilerError {
-    const message = generateCompilerErrorMessage(errorInfo, config && config.messageArgs);
+    const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const customError = config && config.errorConstructor && config.errorConstructor(message);
 
     return new CompilerError(
@@ -70,9 +70,14 @@ export function normalizeCompilerError(error: any, newContext?: CompilerContext)
         return error;
     }
 
+    const code = error.lwcCode || GENERIC_COMPILER_ERROR.code;
+    const message = error.lwcCode
+        ? error.message
+        : generateErrorMessage(GENERIC_COMPILER_ERROR, [error.message]);
+
     const compilerError = new CompilerError(
-        GENERIC_COMPILER_ERROR.code,
-        generateCompilerErrorMessage(GENERIC_COMPILER_ERROR, [error.message]),
+        code,
+        message,
         getFilename(newContext, error),
         getLocation(newContext, error)
     );
@@ -114,7 +119,7 @@ export function convertDiagnosticToError(diagnostic: CompilerDiagnostic, additio
     return new CompilerError(code, `${filename}: ${message}`, filename, location);
 }
 
-export function generateCompilerErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
+export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
     const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;
 
     if (errorInfo.url !== "") {

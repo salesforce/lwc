@@ -3,7 +3,7 @@ import * as he from 'he';
 
 import {
     CompilerDiagnostic,
-    generateCompilerErrorMessage,
+    generateErrorMessage,
     Level,
     ParserErrors
 } from 'lwc-errors';
@@ -28,7 +28,7 @@ export function parseHTML(source: string) {
 
     const onParseError = (err: parse5.Errors.ParsingError) => {
         const { code, lwcCode, startLine, startCol } = err;
-        const message = generateCompilerErrorMessage(ParserErrors.INVALID_HTML_SYNTAX, [code]);
+        const message = generateErrorMessage(ParserErrors.INVALID_HTML_SYNTAX, [code]);
 
         parsingErrors.push({
             code: lwcCode,
@@ -49,7 +49,7 @@ export function parseHTML(source: string) {
 
         if (!isVoidElement && missingClosingTag) {
             parsingErrors.push({
-                code: 0,
+                code: 1,
                 level: Level.Error,
                 message: `<${node.tagName}> has no matching closing tag.`,
                 location: { line: startTag.startLine || startTag.line, column: startTag.startCol || startTag.col }

@@ -2,7 +2,7 @@ import { Level } from "../../shared/types";
 
 export const TemplateErrors = {
     GENERIC_ERROR: {
-        code: 0,
+        code: 1,
         message: '',
         type: "Error",
         level: Level.Error,
@@ -10,7 +10,7 @@ export const TemplateErrors = {
     },
 
     INVALID_TEMPLATE: {
-        code: 0,
+        code: 1,
         message: "Invalid template",
         type: "Error",
         level: Level.Error,
@@ -18,7 +18,7 @@ export const TemplateErrors = {
     },
 
     MISSING_REQUIRED_PROPERTY: {
-        code: 0,
+        code: 1,
         message: "Missing required option property {0}",
         type: "Error",
         level: Level.Error,
@@ -26,7 +26,7 @@ export const TemplateErrors = {
     },
 
     OPTIONS_MUST_BE_OBJECT: {
-        code: 0,
+        code: 1,
         message: 'Compiler options must be an object',
         type: "Error",
         level: Level.Error,
@@ -34,7 +34,7 @@ export const TemplateErrors = {
     },
 
     UNKNOWN_IF_MODIFIER: {
-        code: 0,
+        code: 1,
         message: "Unknown if modifier {0}",
         type: "Error",
         level: Level.Error,
@@ -42,7 +42,7 @@ export const TemplateErrors = {
     },
 
     UNKNOWN_OPTION_PROPERTY: {
-        code: 0,
+        code: 1,
         message: "Unknown option property {0}",
         type: "Error",
         level: Level.Error,
@@ -52,7 +52,7 @@ export const TemplateErrors = {
 
 export const ParserErrors = {
     AMBIGUOUS_ATTRIBUTE_VALUE: {
-        code: 0,
+        code: 1,
         message: "Ambiguous attribute value {0}. " +
         "If you want to make it a valid identifier you should remove the surrounding quotes {1}. " +
         "If you want to make it a string you should escape it {2}.",
@@ -62,7 +62,7 @@ export const ParserErrors = {
     },
 
     AMBIGUOUS_ATTRIBUTE_VALUE_STRING: {
-        code: 0,
+        code: 1,
         message: "Ambiguous attribute value {0}. If you want to make it a string you should escape it {1}",
         type: "Error",
         level: Level.Error,
@@ -70,7 +70,7 @@ export const ParserErrors = {
     },
 
     BOOLEAN_ATTRIBUTE_FALSE: {
-        code: 0,
+        code: 1,
         message:
             "To not set a boolean attribute, try <{0}> instead of <{0} {1}=\"{2}\">. " +
             "To represent a false value, the attribute has to be omitted altogether.",
@@ -81,7 +81,7 @@ export const ParserErrors = {
 
     // parser/attribute.js
     BOOLEAN_ATTRIBUTE_TRUE: {
-        code: 0,
+        code: 1,
         message:
             "To set a boolean attributes, try <{0} {1}> instead of <{0} {1}=\"{2}\">." +
             "If the attribute is present, its value must either be the empty string" +
@@ -92,7 +92,7 @@ export const ParserErrors = {
         url: ""
     },
     COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED: {
-        code: 0,
+        code: 1,
         message: "Template expression doesn't allow computed property access",
         type: "Error",
         level: Level.Error,
@@ -100,7 +100,7 @@ export const ParserErrors = {
     },
 
     INVALID_HTML_SYNTAX: {
-        code: 0,
+        code: 1,
         message: "Invalid HTML syntax: {0}. For more information, " +
         "please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}",
         level: Level.Error,
@@ -108,7 +108,7 @@ export const ParserErrors = {
     },
 
     INVALID_IDENTIFIER: {
-        code: 0,
+        code: 1,
         message: "Invalid identifier",
         type: "Error",
         level: Level.Error,
@@ -117,7 +117,7 @@ export const ParserErrors = {
 
     // parser/expression.js
     INVALID_NODE: {
-        code: 0,
+        code: 1,
         message: "Template expression doesn't allow {0}",
         type: "Error",
         level: Level.Error,
@@ -125,7 +125,7 @@ export const ParserErrors = {
     },
 
     INVALID_EXPRESSION: {
-        code: 0,
+        code: 1,
         message: "Invalid expression {0} - {1}",
         type: "err",
         level: Level.Error,
@@ -133,7 +133,7 @@ export const ParserErrors = {
     },
 
     MODIFYING_ITERATORS_NOT_ALLOWED: {
-        code: 0,
+        code: 1,
         message: "Template expression doesn't allow to modify iterators",
         type: "Error",
         level: Level.Error,
@@ -141,7 +141,7 @@ export const ParserErrors = {
     },
 
     MULTIPLE_EXPRESSIONS: {
-        code: 0,
+        code: 1,
         message: "Multiple expressions found",
         type: "Error",
         level: Level.Error,
@@ -149,7 +149,7 @@ export const ParserErrors = {
     },
 
     NO_MATCHING_CLOSING_TAGS: {
-        code: 0,
+        code: 1,
         message: "<{0}> has no matching closing tag.",
         type: "Error",
         level: Level.Error,

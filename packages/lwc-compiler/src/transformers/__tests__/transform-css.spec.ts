@@ -82,7 +82,7 @@ describe('custom properties', () => {
         ).rejects.toMatchObject({
             filename: 'foo.css',
             message: expect.stringContaining(
-                'Invalid definition of custom property "--bg-color".',
+                'Invalid definition of custom property "--bg-color"',
             ),
         });
     });
