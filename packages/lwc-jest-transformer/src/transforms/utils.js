@@ -1,4 +1,4 @@
-const { JestTransformerErrors, generateCompilerError } = require('lwc-errors');
+const { generateErrorMessage, JestTransformerErrors } = require('lwc-errors');
 const babelTemplate = require('@babel/template').default;
 
 const defaultTemplate = babelTemplate(`
@@ -109,9 +109,9 @@ function getImportInfo(path) {
     const importSpecifiers = path.get('specifiers');
 
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw generateCompilerError(JestTransformerErrors.INVALID_IMPORT, {
-            messageArgs: [importSource],
-            errorConstructor: path.buildCodeFrameError.bind(path)
+        throw generateError(path, {
+            errorInfo: JestTransformerErrors.INVALID_IMPORT,
+            messageArgs: [importSource]
         });
     }
 
@@ -121,6 +121,23 @@ function getImportInfo(path) {
         importSource,
         resourceName,
     };
+}
+
+/**
+ * Helper function for throwing a consistent error
+ * @param {*} path
+ * @param {*} config {
+ *      errorInfo: Reference to the error info object,
+ *      messageArgs: Array of arguments for the error message
+ * }
+ */
+function generateError(path, config) {
+    const message = generateErrorMessage(config.errorInfo, config.messageArgs);
+    const error = path.buildCodeFrameError(message);
+
+    error.lwcCode = config.errorInfo.code;
+
+    return error;
 }
 
 module.exports = {
