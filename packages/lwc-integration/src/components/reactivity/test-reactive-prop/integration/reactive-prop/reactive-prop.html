@@ -1,18 +1,18 @@
 <template>
         <!-- add new value to tracked object: object.newprop = value -->
-        <span id='s_ownprop'>{hasOwnProp}</span>
-        <button id='b_ownprop' onclick={handleTrackHasOwnProp}>Add new prop</button>
+        <span class='s_ownprop'>{hasOwnProp}</span>
+        <button class='b_ownprop' onclick={handleTrackHasOwnProp}>Add new prop</button>
 
         <!-- define new property on tracked object: Object.definedProperty -->
-        <button id='b_defprop' onclick={handleTrackDefinePropClick}>Define new prop</button>
-        <span id='s_defprop'>{hasDefinedProp}</span>
+        <button class='b_defprop' onclick={handleTrackDefinePropClick}>Define new prop</button>
+        <span class='s_defprop'>{hasDefinedProp}</span>
 
         <!-- delete property from tracked object: delete object['inner'] -->
-        <button id='b_deleteprop' onclick={handleTrackDeletePropClick}>Define new prop</button>
-        <span id='s_deleteprop'>{hasDeletedProp}</span>
+        <button class='b_deleteprop' onclick={handleTrackDeletePropClick}>Define new prop</button>
+        <span class='s_deleteprop'>{hasDeletedProp}</span>
 
         <!-- change enumerable attribute of one of the tracked object properties -->
-        <button id='b_enumerable' onclick={handleTrackEnumerableClick}>Define new prop</button>
-        <span id='s_enumerable'>{hasEnumerable}</span>
+        <button class='b_enumerable' onclick={handleTrackEnumerableClick}>Define new prop</button>
+        <span class='s_enumerable'>{hasEnumerable}</span>
 
 </template>

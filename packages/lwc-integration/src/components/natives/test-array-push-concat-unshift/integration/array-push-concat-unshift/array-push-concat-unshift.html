@@ -1,7 +1,7 @@
 <template>
     <div>
         <span>Unshift</span>
-        <ul id="unshift-list" onclick={handleClick}>
+        <ul class="unshift-list" onclick={handleClick}>
             <li key={item.title} for:each={items} for:item="item">
                 {item.title}
             </li>
@@ -9,7 +9,7 @@
     </div>
     <div>
         <span>Push</span>
-        <ul id="push-list" onclick={handlePushClick}>
+        <ul class="push-list" onclick={handlePushClick}>
             <li key={item.title} for:each={pushItems} for:item="item">
                 {item.title}
             </li>
@@ -17,7 +17,7 @@
     </div>
     <div>
         <span>Concat</span>
-        <ul id="concat-list" onclick={handleConcatClick}>
+        <ul class="concat-list" onclick={handleConcatClick}>
             <li key={item.title} for:each={concatItems} for:item="item">
                 {item.title}
             </li>
@@ -25,7 +25,7 @@
     </div>
     <div>
         <span>Prop Concat</span>
-        <ul id="prop-concat-list" onclick={handlePropConcatClick}>
+        <ul class="prop-concat-list" onclick={handlePropConcatClick}>
             <li key={item.title} for:each={propConcatItem} for:item="item">
                 {item.title}
             </li>

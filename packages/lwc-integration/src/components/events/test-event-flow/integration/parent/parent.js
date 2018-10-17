@@ -59,7 +59,7 @@ export default class Parent extends LightningElement {
             });
 
             // Buttons
-            this.template.querySelector('button#slotted').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('button.slotted').addEventListener('slottedbuttonclick', event => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON);
             });
 

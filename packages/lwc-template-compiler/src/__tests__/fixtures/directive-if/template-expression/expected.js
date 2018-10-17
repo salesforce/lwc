@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 1
+        key: 2
       },
       [
         $cmp.state.isTrue ? api_dynamic($cmp.foo) : null,

@@ -1,5 +1,6 @@
 import {
     ApiDecorator,
+    ModuleExports,
     TrackDecorator,
     WireDecorator,
     Location,
@@ -26,6 +27,7 @@ export interface BundleMetadata {
     declarationLoc?: Location;
     doc?: string;
     experimentalTemplateDependencies?: TemplateModuleDependencies[];
+    exports: ModuleExports[];
 }
 
 export class MetadataCollector {
@@ -37,6 +39,7 @@ export class MetadataCollector {
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
     private doc?: string;
+    private exports: ModuleExports[] = [];
 
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
@@ -60,6 +63,10 @@ export class MetadataCollector {
         this.doc = doc;
     }
 
+    public collectExports(exports: ModuleExports[]) {
+        this.exports.push(...exports);
+    }
+
     public collectExperimentalTemplateDependencies(
         templatePath: string, templateDependencies: TemplateModuleDependency[]) {
         if (!this.experimentalTemplateDependencies) {
@@ -78,7 +85,8 @@ export class MetadataCollector {
             classMembers: this.classMembers,
             declarationLoc: this.declarationLoc,
             doc: this.doc,
-            experimentalTemplateDependencies: this.experimentalTemplateDependencies
+            experimentalTemplateDependencies: this.experimentalTemplateDependencies,
+            exports: this.exports
         };
     }
 }

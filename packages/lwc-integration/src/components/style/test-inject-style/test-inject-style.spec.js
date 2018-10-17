@@ -46,7 +46,7 @@ function testStyles(nativeShadow) {
     it(`injects the style before the component is rendered`, () => {
         const dimensionElm = shadowDomQuerySelector(browser, [
             'integration-inject-style',
-            '#dimensions',
+            '.dimensions',
         ]);
         const dimensions = dimensionElm.getText();
 

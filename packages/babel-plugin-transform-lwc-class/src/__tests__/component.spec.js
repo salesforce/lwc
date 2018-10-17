@@ -161,6 +161,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: '* Foo doc',
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -179,6 +180,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
                 doc: "*\n* Foo doc",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -198,6 +200,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
                 doc: '*\n* multi\n* line',
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -215,6 +218,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
                 doc: "* last",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             },
         }
     });
@@ -234,6 +238,7 @@ describe('metadata', () => {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
                 },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -251,7 +256,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -269,7 +275,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -289,6 +296,7 @@ describe('metadata', () => {
                     start: { column: 0, line: 3 }
                 },
                 doc: "* { one: \"1\", two: '2', array: [1, 2, 3]}",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -388,7 +396,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 3, column: 0 },
                         end: { line: 13, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }
@@ -429,7 +438,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 6, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }
@@ -469,7 +479,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 5, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }
