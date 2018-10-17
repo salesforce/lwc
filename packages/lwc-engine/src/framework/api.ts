@@ -278,11 +278,11 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
 // [t]ab[i]ndex function
 export function ti(value: any): number {
     if (process.env.NODE_ENV !== 'production') {
-        if (value !== 0 && value !== '0' && value !== -1 && value !== '-1') {
+        if (value > 0) {
             assert.logWarning(`Invalid tabindex value \`${toString(value)}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`, vmBeingRendered!.elm);
         }
     }
-    return (value === 0 || value === '0') ? 0 : -1;
+    return (value > 0) ? 0 : value;
 }
 
 // [s]lot element node

@@ -239,7 +239,7 @@ describe('api', () => {
     });
 
     describe('#ti()', () => {
-        it('should set tabIndex to -1 when value is not 0', () => {
+        it('should set tabIndex to 0 when value is not 0 or -1', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(2);
@@ -254,7 +254,73 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarning('Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.');
-            expect(normalized).toBe(-1);
+            expect(normalized).toBe(0);
+        });
+
+        it('should set tabIndex to null when value is null', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(null);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(null);
+        });
+
+        it('should set tabIndex to undefined when value is undefined', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(undefined);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(undefined);
+        });
+
+        it('should set tabIndex to 0 when value is "3"', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('3');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.');
+            expect(normalized).toBe(0);
+        });
+
+        it('should set tabIndex to -3 when value is -3', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-3);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-3);
         });
 
         it('should set tabIndex to 0 when value is 0', () => {
