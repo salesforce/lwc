@@ -1,0 +1,52 @@
+<html>
+    <body>
+    </body>
+<script src="./dist/umd/es2017/engine_debug.js">
+</script>
+<script>
+const { LightningElement, createElement, buildCustomElementConstructor, getHostShadowRoot, registerTemplate } = Engine;
+</script>
+
+<script>
+const html = registerTemplate(function tmpl($api, $cmp, $slotset, $ctx) {
+      const {
+        t: api_text,
+        h: api_element,
+        s: api_slot
+      } = $api;
+
+      return [api_element("div", {
+        key: 1,
+        classMap: {
+          'container': true,
+        }
+      }, [api_text($cmp.lang)])];
+    });
+
+let target;
+let template;
+
+let renderCount = 0;
+class MyComponent extends LightningElement {
+    render() {
+        template = this.template;
+        return html;
+    }
+    renderedCallback() {
+        renderCount++;
+    }
+}
+const element = createElement('prop-lang-reactive', { is: MyComponent });
+document.body.appendChild(element);
+
+element.lang = 'en';
+Promise.resolve().then(() => {
+    console.log(renderCount, 2);
+    const div = template.querySelector('div');
+    console.log(div.textContent, 'en');
+});
+
+
+</script>
+
+</html>
