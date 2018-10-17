@@ -70,14 +70,21 @@ const wireService = {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(wireDef.adapter, `@wire on "${wireTarget}": adapter id must be truthy`);
                 assert.isTrue(adapterFactory, `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`);
-                // verify all dot-separated params refer to other @wired properties because we trap changes only on the root property
+
+                // enforce restrictions of reactive parameters
                 if (wireDef.params) {
                     Object.keys(wireDef.params).forEach(param => {
                         const prop = wireDef.params![param];
                         const segments = prop.split('.');
-                        assert.isTrue(segments[0] !== wireTarget, `@wire on "${wireTarget}": parameter "${segments[0]}" must not refer to self`);
+                        segments.forEach(segment => {
+                            assert.isTrue(segment.length > 0, `@wire on "${wireTarget}": reactive parameters must not be empty`);
+                        });
+                        assert.isTrue(segments[0] !== wireTarget, `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`);
                         if (segments.length > 1) {
-                            assert.isTrue(wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1, `@wire on "${wireTarget}": dot-separated parameter "${prop}" must refer to a @wire property`);
+                            // @wire emits a stream of immutable values. an emit sets the target property; it does not mutate a previously emitted value.
+                            // restricting dot-notation reactive parameters to reference other @wire targets makes trapping the 'head' of the parameter
+                            // sufficient to observe the value change.
+                            assert.isTrue(wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1, `@wire on "${wireTarget}": dot-notation reactive parameter "${prop}" must refer to a @wire property`);
                         }
                     });
                 }

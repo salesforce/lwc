@@ -24,11 +24,11 @@ export interface ConfigListenerArgument {
 }
 export type ConfigListener = (ConfigListenerArgument) => void;
 
-// config params (WireDef.params.key) may be dot-separated strings to traverse into @api and @wire properties
-export interface ParamDefinition {
-    full: string; // the original WireDef.params.key
-    root: string; // first segment of the key
-    remainder?: string[]; // remaining segments of the key, if it's dot-separated
+// a reactive parameter (WireDef.params.key) may be a dot-notation string to traverse into another @wire's target
+export interface ReactiveParameter {
+    reference: string; // the complete parameter (aka original WireDef.params.key)
+    head: string; // head of the parameter
+    tail?: string[]; // remaining tail of the parameter, present if it's dot-notation
 }
 
 export interface ConfigListenerMetadata {
@@ -36,22 +36,22 @@ export interface ConfigListenerMetadata {
     statics?: {
         [key: string]: any;
     };
-    params?: {
+    reactives?: {
         [key: string]: string;
     };
 }
 export interface ConfigContext {
-    // map of param to list of config listeners
-    // when a param changes O(1) lookup to list of config listeners to notify
+    // map of reactive parameters to list of config listeners
+    // when a reactive parameter changes it's a O(1) lookup to the list of config listeners to notify
     listeners: {
-        [prop: string]: ConfigListenerMetadata[];
+        [key: string]: ConfigListenerMetadata[];
     };
     // map of param values
     values: {
-        [prop: string]: any
+        [key: string]: any
     };
-    // mutated props (debounced then cleared)
-    mutated?: Set<ParamDefinition>;
+    // mutated reactive parameters (debounced then cleared)
+    mutated?: Set<ReactiveParameter>;
 }
 
 export interface WireContext {
@@ -82,18 +82,18 @@ function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[],
     }
 }
 
-function buildParamDefinition(prop: string): ParamDefinition {
-    if (!prop.includes('.')) {
+function buildReactiveParameter(reference: string): ReactiveParameter {
+    if (!reference.includes('.')) {
         return {
-            full: prop,
-            root: prop
+            reference,
+            head: reference
         };
     }
-    const segments = prop.split('.');
+    const segments = reference.split('.');
     return {
-        full: prop,
-        root: segments.shift() as string,
-        remainder: segments
+        reference,
+        head: segments.shift() as string,
+        tail: segments
     };
 }
 
@@ -136,13 +136,13 @@ export class WireEventTarget {
                 break;
 
             case CONFIG:
-                const params = this._wireDef.params;
+                const reactives = this._wireDef.params;
                 const statics = this._wireDef.static;
-                let paramsKeys: string[];
+                let reactiveKeys: string[];
 
-                // no dynamic params. fire config once with static params (if present).
-                if (!params || (paramsKeys = Object.keys(params)).length === 0) {
-                    const config = statics || {};
+                // no reactive parameters. fire config once with static parameters (if present).
+                if (!reactives || (reactiveKeys = Object.keys(reactives)).length === 0) {
+                    const config = statics || Object.create(null);
                     listener.call(undefined, config);
                     return;
                 }
@@ -150,17 +150,17 @@ export class WireEventTarget {
                 const configListenerMetadata: ConfigListenerMetadata = {
                     listener,
                     statics,
-                    params
+                    reactives
                 };
 
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
-                paramsKeys.forEach(param => {
-                    const paramDefn = buildParamDefinition(params[param]);
-                    let configListenerMetadatas = configContext.listeners[paramDefn.root];
+                reactiveKeys.forEach(key => {
+                    const reactiveParameter = buildReactiveParameter(reactives[key]);
+                    let configListenerMetadatas = configContext.listeners[reactiveParameter.head];
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
-                        configContext.listeners[paramDefn.root] = configListenerMetadatas;
-                        installTrap(this._cmp, paramDefn, configContext);
+                        configContext.listeners[reactiveParameter.head] = configListenerMetadatas;
+                        installTrap(this._cmp, reactiveParameter, configContext);
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
@@ -186,11 +186,11 @@ export class WireEventTarget {
 
             case CONFIG:
                 const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED].listeners;
-                const { params } = this._wireDef;
-                if (params) {
-                    Object.keys(params).forEach(param => {
-                        const prop = params[param];
-                        const configListenerMetadatas = paramToConfigListenerMetadata[prop];
+                const reactives = this._wireDef.params;
+                if (reactives) {
+                    Object.keys(reactives).forEach(key => {
+                        const reactiveParameter = buildReactiveParameter(reactives[key]);
+                        const configListenerMetadatas = paramToConfigListenerMetadata[reactiveParameter.head];
                         if (configListenerMetadatas) {
                             removeConfigListener(configListenerMetadatas, listener);
                         }
@@ -216,7 +216,7 @@ export class WireEventTarget {
             // NOTE: kill this hack
             // we should only allow ValueChangedEvent
             // however, doing so would require adapter to implement machinery
-            // that fire the intended event as DOM event and wrap inside ValueChagnedEvent
+            // that fire the intended event as DOM event and wrap inside ValueChangedEvent
             return this._cmp.dispatchEvent(evt);
         } else {
             throw new Error(`Invalid event ${evt}.`);

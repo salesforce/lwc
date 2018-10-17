@@ -1,9 +1,9 @@
 import {
     installTrap,
     findDescriptor,
-    getParamValue
+    getReactiveParameterValue
 } from '../property-trap';
-import { ConfigContext, ParamDefinition } from '../wiring';
+import { ConfigContext, ReactiveParameter } from '../wiring';
 
 describe('findDescriptor', () => {
     it('detects circular prototype chains', () => {
@@ -46,9 +46,9 @@ describe('installTrap', () => {
             prop1: ''
         }
     };
-    const prop1Defn: ParamDefinition = {
-        full: 'prop1',
-        root: 'prop1'
+    const prop1Defn: ReactiveParameter = {
+        reference: 'prop1',
+        head: 'prop1'
     };
 
     it('defaults to original value when setter installed', () => {
@@ -98,10 +98,10 @@ describe('installTrap', () => {
         expect(setter).toHaveBeenCalledWith(expected);
     });
 
-    it('installs setter on cmp for paramDefn.root', () => {
-        const propDefn: ParamDefinition = {
-            full: 'prop1.x.y',
-            root: 'prop1'
+    it('installs setter on cmp only for reactiveParameter.root', () => {
+        const propDefn: ReactiveParameter = {
+            reference: 'prop1.x.y',
+            head: 'prop1'
         };
         class Target {
             set prop1(value) { /**/ }
@@ -116,9 +116,9 @@ describe('installTrap', () => {
 });
 
 describe('invokeConfigListeners', () => {
-    const prop1Defn: ParamDefinition = {
-        full: 'prop1',
-        root: 'prop1'
+    const prop1Defn: ReactiveParameter = {
+        reference: 'prop1',
+        head: 'prop1'
     };
 
     it('invokes listener with new value', () => {
@@ -126,7 +126,7 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, params: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }]
             },
             values: {
                 prop1: ''
@@ -149,7 +149,7 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, params: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }]
             },
             values: {
                 prop1: 'expected'
@@ -171,7 +171,7 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, params: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }]
             },
             values: {
                 prop1: ''
@@ -191,80 +191,66 @@ describe('invokeConfigListeners', () => {
     });
 });
 
-describe('getParamValue', () => {
+describe('getReactiveParameterValue', () => {
     it('returns leaf in object graph', () => {
         const expected = 'expected';
-        const paramDefn: ParamDefinition = {
-            full: 'a.b.c.d',
-            root: 'a',
-            remainder: ['b', 'c', 'd']
+        const reactiveParameter: ReactiveParameter = {
+            reference: 'a.b.c.d',
+            head: 'a',
+            tail: ['b', 'c', 'd']
         };
         class Target {
             a = { b: { c: { d: expected }}};
         }
-        expect(getParamValue(new Target(), paramDefn)).toBe(expected);
+        expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBe(expected);
     });
 
     it('returns tree in object graph', () => {
         const expected = { e: { f: 'expected' }};
-        const paramDefn: ParamDefinition = {
-            full: 'a.b.c.d',
-            root: 'a',
-            remainder: ['b', 'c', 'd']
+        const reactiveParameter: ReactiveParameter = {
+            reference: 'a.b.c.d',
+            head: 'a',
+            tail: ['b', 'c', 'd']
         };
         class Target {
             a = { b: { c: { d: expected }}};
         }
-        expect(getParamValue(new Target(), paramDefn)).toBe(expected);
+        expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBe(expected);
     });
 
     it('returns undefined if root is undefined', () => {
-        const paramDefn: ParamDefinition = {
-            full: 'a.b.c.d',
-            root: 'a',
-            remainder: ['b', 'c', 'd']
+        const reactiveParameter: ReactiveParameter = {
+            reference: 'a.b.c.d',
+            head: 'a',
+            tail: ['b', 'c', 'd']
         };
         class Target {
             // a does not exist
         }
-        expect(getParamValue(new Target(), paramDefn)).toBeUndefined();
+        expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBeUndefined();
     });
 
     it('returns undefined if a segment is undefined', () => {
-        const paramDefn: ParamDefinition = {
-            full: 'a.b.c.d',
-            root: 'a',
-            remainder: ['b', 'c', 'd']
+        const reactiveParameter: ReactiveParameter = {
+            reference: 'a.b.c.d',
+            head: 'a',
+            tail: ['b', 'c', 'd']
         };
         class Target {
             a = { b: undefined };
         }
-        expect(getParamValue(new Target(), paramDefn)).toBeUndefined();
+        expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBeUndefined();
     });
 
     it('returns undefined if a segment is not found', () => {
-        const paramDefn: ParamDefinition = {
-            full: 'a.b.c.d',
-            root: 'a',
-            remainder: ['b', 'c', 'd']
+        const reactiveParameter: ReactiveParameter = {
+            reference: 'a.b.c.d',
+            head: 'a',
+            tail: ['b', 'c', 'd']
         };
         class Target {
             a = { b: {} };
         }
-        expect(getParamValue(new Target(), paramDefn)).toBeUndefined();
+        expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBeUndefined();
     });
-
-    it('supports pathing with returns value in object graph', () => {
-        const expected = 'expected';
-        const paramDefn: ParamDefinition = {
-            full: 'a..b.c.d',
-            root: 'a',
-            remainder: ['', 'b', 'c', 'd']
-        };
-        class Target {
-            a = { ['']: {b: { c: { d: expected }}}};
-        }
-        expect(getParamValue(new Target(), paramDefn)).toBe(expected);
-    });
-
 });

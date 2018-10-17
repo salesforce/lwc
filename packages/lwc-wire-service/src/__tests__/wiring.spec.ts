@@ -190,21 +190,37 @@ describe('WireEventTarget', () => {
             wireEventTarget.removeEventListener(DISCONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED]).toHaveLength(0);
         });
-        it('removes listenerMetadata from the queue for config event', () => {
+        it('removes listenerMetadata from the queue for config event for non-dot-notation reactive parameter', () => {
             function listener() { /**/ }
             const mockConfigListenerMetadata = { listener };
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
-            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { test: [mockConfigListenerMetadata] } };
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { prop: [mockConfigListenerMetadata] } };
             const mockWireDef: WireDef = {
                 adapter: {},
                 params: {
-                    test: 'test'
+                    test: 'prop'
                 }
             };
             const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
             wireEventTarget.removeEventListener(CONFIG, listener);
-            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.test).toHaveLength(0);
+            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.prop).toHaveLength(0);
+        });
+        it('removes listenerMetadata from the queue for config event for dot-notation reactive parameter', () => {
+            function listener() { /**/ }
+            const mockConfigListenerMetadata = { listener };
+            const mockContext = Object.create(null);
+            mockContext[CONTEXT_ID] = Object.create(null);
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { x: [mockConfigListenerMetadata] } };
+            const mockWireDef: WireDef = {
+                adapter: {},
+                params: {
+                    test: 'x.y.z'
+                }
+            };
+            const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
+            wireEventTarget.removeEventListener(CONFIG, listener);
+            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.x).toHaveLength(0);
         });
         it('throws when event type is not supported', () => {
             const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, {} as WireDef, "test");

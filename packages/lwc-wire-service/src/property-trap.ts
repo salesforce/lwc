@@ -12,7 +12,7 @@ import {
 import {
     ConfigListenerMetadata,
     ConfigContext,
-    ParamDefinition,
+    ReactiveParameter,
 } from './wiring';
 
 /**
@@ -22,46 +22,46 @@ import {
  */
 function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
     configListenerMetadatas.forEach((metadata) => {
-        const { listener, statics, params } = metadata;
+        const { listener, statics, reactives } = metadata;
 
-        const resolvedParams = Object.create(null);
-        if (params) {
-            const keys = Object.keys(params);
+        const reactiveValues = Object.create(null);
+        if (reactives) {
+            const keys = Object.keys(reactives);
             for (let j = 0, jlen = keys.length; j < jlen; j++) {
                 const key = keys[j];
-                const value = paramValues[params[key]];
-                resolvedParams[key] = value;
+                const value = paramValues[reactives[key]];
+                reactiveValues[key] = value;
             }
         }
 
         // TODO - consider read-only membrane to enforce invariant of immutable config
-        const config = Object.assign({}, statics, resolvedParams);
+        const config = Object.assign({}, statics, reactiveValues);
         listener.call(undefined, config);
     });
 }
 
-function updated(cmp: Element, paramDefn: ParamDefinition, configContext: ConfigContext) {
+function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     if (!configContext.mutated) {
-        configContext.mutated = new Set<ParamDefinition>();
+        configContext.mutated = new Set<ReactiveParameter>();
         // collect all prop changes via a microtask
         Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
     }
-    configContext.mutated.add(paramDefn);
+    configContext.mutated.add(reactiveParameter);
 }
 
 function updatedFuture(cmp: Element, configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
 
     // configContext.mutated must be set prior to invoking this function
-    const mutated = configContext.mutated as Set<ParamDefinition>;
+    const mutated = configContext.mutated as Set<ReactiveParameter>;
     delete configContext.mutated;
-    mutated.forEach(paramDefn => {
-        const value = getParamValue(cmp, paramDefn);
-        if (configContext.values[paramDefn.full] === value) {
+    mutated.forEach(reactiveParameter => {
+        const value = getReactiveParameterValue(cmp, reactiveParameter);
+        if (configContext.values[reactiveParameter.reference] === value) {
             return;
         }
-        configContext.values[paramDefn.full] = value;
-        const listeners = configContext.listeners[paramDefn.root];
+        configContext.values[reactiveParameter.reference] = value;
+        const listeners = configContext.listeners[reactiveParameter.head];
         for (let i = 0, len = listeners.length; i < len; i++) {
             uniqueListeners.add(listeners[i]);
         }
@@ -70,17 +70,17 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
 }
 
 /**
- * Gets the value of a wire parameter.
+ * Gets the value of an @wire reactive parameter.
  * @param cmp The component
- * @param paramDefn The parameter to get
+ * @param reactiveParameter The parameter to get
  */
-export function getParamValue(cmp: Element, paramDefn: ParamDefinition): any {
-    let value: any = cmp[paramDefn.root];
-    if (!paramDefn.remainder) {
+export function getReactiveParameterValue(cmp: Element, reactiveParameter: ReactiveParameter): any {
+    let value: any = cmp[reactiveParameter.head];
+    if (!reactiveParameter.tail) {
         return value;
     }
 
-    const segments = paramDefn.remainder;
+    const segments = reactiveParameter.tail;
     for (let i = 0, len = segments.length; i < len && value != null; i++) {
         const segment = segments[i];
         if (typeof value !== 'object' || !(segment in value)) {
@@ -94,13 +94,13 @@ export function getParamValue(cmp: Element, paramDefn: ParamDefinition): any {
 /**
  * Installs setter override to trap changes to a property, triggering the config listeners.
  * @param cmp The component
- * @param paramDefn Parameter defining the property to be monitored
+ * @param reactiveParameter Reactive parameter that defines the property to monitor
  * @param context The service context
  */
-export function installTrap(cmp: Object, paramDefn: ParamDefinition, configContext: ConfigContext) {
-    const callback = updated.bind(undefined, cmp, paramDefn, configContext);
-    const newDescriptor = getOverrideDescriptor(cmp, paramDefn.root, callback);
-    Object.defineProperty(cmp, paramDefn.root, newDescriptor);
+export function installTrap(cmp: Object, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+    const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);
+    const newDescriptor = getOverrideDescriptor(cmp, reactiveParameter.head, callback);
+    Object.defineProperty(cmp, reactiveParameter.head, newDescriptor);
 }
 
 /**
