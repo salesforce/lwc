@@ -11,6 +11,7 @@ const {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
+    getBoundingClientRect,
 } = Element.prototype;
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
@@ -32,4 +33,5 @@ export {
     querySelectorAll,
     innerHTMLSetter,
     tagNameGetter,
+    getBoundingClientRect,
 };
