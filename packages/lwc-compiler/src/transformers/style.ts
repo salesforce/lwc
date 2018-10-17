@@ -117,7 +117,7 @@ export default async function transformStyle(
             from: filename,
         });
     } catch (e) {
-        // TODO: Do we want to transfer the stacktrace over to the CompilerError object?
+        // TODO ERROR CODE
         throw normalizeCompilerError(e, { filename, location: e.loc });
     }
 

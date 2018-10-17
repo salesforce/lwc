@@ -151,7 +151,7 @@ export const TransformerErrors = {
         level: Level.Error,
         url: ""
     },
-    NVALID_ID: {
+    INVALID_ID: {
         code: 0,
         message: "Expect a string for id. Received {0}",
         type: "Error",

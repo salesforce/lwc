@@ -1,4 +1,4 @@
-import { Location } from "../shared/types";
+import { Location, Level } from "../shared/types";
 
 export interface CompilerContext {
     filename?: string;
@@ -9,17 +9,15 @@ export interface CompilerDiagnostic {
     message: string;
     code: number;
     filename?: string;
-    location?: { line: number, column: number };
-}
-
-export interface CompilerWarnings {
-    [index: number]: CompilerDiagnostic;
+    location?: Location;
+    level: Level;
 }
 
 export class CompilerError extends Error implements CompilerDiagnostic {
     public code: number;
     public filename?: string;
     public location?: Location;
+    public level = Level.Error;
 
     constructor(code: number, message: string, filename?: string, location?: Location) {
         super(message);

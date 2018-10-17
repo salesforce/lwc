@@ -111,6 +111,7 @@ export async function bundle(
         code = result.code;
         map = result.map;
     } catch (e) {
+        // TODO ERROR CODE
         // populate diagnostics
         const {  message, filename } = e;
 

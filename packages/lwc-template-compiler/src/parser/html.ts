@@ -1,9 +1,13 @@
 import * as parse5 from 'parse5-with-errors';
 import * as he from 'he';
 
-import { ParserErrors, generateCompilerError } from 'lwc-errors';
+import {
+    CompilerDiagnostic,
+    generateCompilerErrorMessage,
+    Level,
+    ParserErrors
+} from 'lwc-errors';
 
-import { CompilationWarning } from '../shared/types';
 import { VOID_ELEMENT_SET } from './constants';
 
 export type VisitorFn = (element: parse5.AST.Node) => void;
@@ -20,20 +24,17 @@ export interface Visitor {
 export const treeAdapter = parse5.treeAdapters.default;
 
 export function parseHTML(source: string) {
-    const parsingErrors: CompilationWarning[] = [];
+    const parsingErrors: CompilerDiagnostic[] = [];
 
-// TODO ERROR CODES: Implement system for collecting errors
     const onParseError = (err: parse5.Errors.ParsingError) => {
-        const { code, startOffset, endOffset } = err;
-        const message = generateCompilerError(ParserErrors.INVALID_HTML_SYNTAX, {
-            messageArgs: [code]
-        }).message;
+        const { code, lwcCode, startLine, startCol } = err;
+        const message = generateCompilerErrorMessage(ParserErrors.INVALID_HTML_SYNTAX, [code]);
 
         parsingErrors.push({
-            level: 'error',
+            code: lwcCode,
+            level: Level.Error,
             message,
-            start: startOffset,
-            length: endOffset - startOffset,
+            location: { line: startLine, column: startCol},
         });
     };
 
@@ -48,10 +49,10 @@ export function parseHTML(source: string) {
 
         if (!isVoidElement && missingClosingTag) {
             parsingErrors.push({
-                level: 'error',
+                code: 0,
+                level: Level.Error,
                 message: `<${node.tagName}> has no matching closing tag.`,
-                start: startTag.startOffset,
-                length: startTag.endOffset - startTag.startOffset,
+                location: { line: startTag.startLine || startTag.line, column: startTag.startCol || startTag.col }
             });
         }
     };

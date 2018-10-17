@@ -49,8 +49,6 @@ import {
     IRAttribute,
     IRAttributeType,
     TemplateIdentifier,
-    CompilationWarning,
-    WarningLevel,
     ForIterator,
     IRExpressionAttribute,
     ForEach,
@@ -80,6 +78,7 @@ import {
     HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
+import { CompilerDiagnostic, Level } from 'lwc-errors';
 
 function getKeyGenerator() {
     let count = 1;
@@ -119,12 +118,11 @@ function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttrib
 
 export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
-    warnings: CompilationWarning[],
+    warnings: CompilerDiagnostic[],
 } {
-    const warnings: CompilationWarning[] = [];
+    const warnings: CompilerDiagnostic[] = [];
     const generateKey = getKeyGenerator();
 
-// TODO ERROR CODES:
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
         return { warnings: parsingErrors };
@@ -182,6 +180,7 @@ export default function parse(source: string, state: State): {
         Text: {
             enter(node: parse5.AST.Default.TextNode) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
+                // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
                 const location = node.__location as parse5.MarkupData.Location;
 
                 const { startOffset, endOffset } = location;
@@ -597,7 +596,7 @@ export default function parse(source: string, state: State): {
                     warnOnElement(
                         `The attribute "tabindex" can only be set to "0" or "-1".`,
                         element.__original,
-                        'error',
+                        Level.Error,
                     );
                 }
             }
@@ -606,13 +605,13 @@ export default function parse(source: string, state: State): {
                     warnOnElement(
                         `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
                         element.__original,
-                        'warning',
+                        Level.Warning,
                     );
                 } else if (attr.value === '') {
                     warnOnElement(
                         `The attribute "${attr.name}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
                         element.__original,
-                        'warning',
+                        Level.Warning,
                     );
                 }
             }
@@ -632,7 +631,7 @@ export default function parse(source: string, state: State): {
                         warnOnElement(
                             `The attribute "tabindex" can only be set to "0" or "-1".`,
                             element.__original,
-                            'error',
+                            Level.Error,
                         );
                     }
                 }
@@ -641,14 +640,14 @@ export default function parse(source: string, state: State): {
                         warnOnElement(
                             `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
                             element.__original,
-                            'warning',
+                            Level.Warning,
                         );
                     }
                     if (value === '') {
                         warnOnElement(
                             `The attribute "${attrName}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
                             element.__original,
-                            'warning',
+                            Level.Warning,
                         );
                     }
                 }
@@ -663,7 +662,7 @@ export default function parse(source: string, state: State): {
                 warnAt(
                     `Duplicate id value "${value}" detected. Id values must be unique within a template.`,
                     location,
-                    'error',
+                    Level.Error,
                 );
             } else {
                 seenIds.add(value);
@@ -676,7 +675,7 @@ export default function parse(source: string, state: State): {
                     warnAt(
                         `Attribute "${name}" references a non-existant id "${value}".`,
                         location,
-                        'error',
+                        Level.Error,
                     );
                 } else {
                     seenIdrefs.add(value);
@@ -688,7 +687,7 @@ export default function parse(source: string, state: State): {
                 warnAt(
                     `Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`,
                     location,
-                    'warning',
+                    Level.Warning,
                 );
             }
         }
@@ -777,10 +776,11 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function warnOnElement(message: string, node: parse5.AST.Node, level: WarningLevel = 'error') {
-        const getLocation = (toLocate?: parse5.AST.Node): { start: number, length: number } => {
+    // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+    function warnOnElement(message: string, node: parse5.AST.Node, level: Level = Level.Error) {
+        const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number } => {
             if (!toLocate) {
-                return { start: 0, length: 0 };
+                return { line: 0, column: 0 };
             }
 
             const location = (toLocate as parse5.AST.Default.Element).__location;
@@ -789,27 +789,27 @@ export default function parse(source: string, state: State): {
                 return getLocation(treeAdapter.getParentNode(toLocate));
             } else {
                 return {
-                    start: location.startOffset,
-                    length: location.endOffset - location.startOffset,
+                    line: location.line || location.startLine,
+                    column: location.col || location.startCol,
                 };
             }
         };
 
-        const { start, length } = getLocation(node);
-        warnings.push({ message, start, length, level });
+        const code = 0;
+        warnings.push({ code, message, level, location: getLocation(node) });
     }
 
-    function warnAt(message: string, location?: parse5.MarkupData.Location, level: WarningLevel = 'error') {
-        let start = 0;
-        let length = 0;
+    function warnAt(message: string, location?: parse5.MarkupData.Location, level: Level = Level.Error) {
+        let line = 0;
+        let column = 0;
 // store warnings on state?
         if (location) {
-            const { startOffset, endOffset } = location;
-            start = startOffset;
-            length = endOffset - startOffset;
+            line = location.line || location.startLine;
+            column = location.col || location.startCol;
         }
 
-        warnings.push({ message, start, length, level });
+        const code = 0;
+        warnings.push({ code, message, level, location: { line, column } });
     }
 
     return { root, warnings };

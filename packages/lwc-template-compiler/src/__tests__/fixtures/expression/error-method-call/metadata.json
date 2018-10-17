@@ -1,7 +1,7 @@
 {
   "warnings": [{
     "level": "error",
-    "message": "Invalid expression { Math.random() } - Error LWC0: Template expression doesn't allow CallExpression",
+    "message": "Invalid expression { Math.random() } - LWC0: Template expression doesn't allow CallExpression",
     "start": 18,
     "length": 17
   }]

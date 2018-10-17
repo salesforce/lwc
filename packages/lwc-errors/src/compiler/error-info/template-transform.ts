@@ -124,8 +124,9 @@ export const ParserErrors = {
         url: ""
     },
 
-    LINE_73: {
+    INVALID_EXPRESSION: {
         code: 0,
+        message: "Invalid expression {0} - {1}",
         type: "err",
         level: Level.Error,
         url: ""

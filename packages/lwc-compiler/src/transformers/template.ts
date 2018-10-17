@@ -1,12 +1,11 @@
 import * as path from "path";
-import { TransformerErrors, generateCompilerError, normalizeCompilerError } from "lwc-errors";
+import { convertDiagnosticToError, normalizeCompilerError, Level } from "lwc-errors";
 import compile from "lwc-template-compiler";
 import { TemplateModuleDependency } from "lwc-template-compiler";
 
 import { FileTransformer } from "./transformer";
 import { MetadataCollector } from "../bundler/meta-collector";
 import { NormalizedCompilerOptions } from "../compiler/options";
-import { CompilerError } from "../common-interfaces/compiler-error";
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
@@ -51,15 +50,11 @@ const transform: FileTransformer = function(
             metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
         }
 
-        const fatalError = result.warnings.find(warning => warning.level === "error");
+        const fatalError = result.warnings.find(warning => warning.level === Level.Error);
         if (fatalError) {
-            throw generateCompilerError(TransformerErrors.FATAL_TRANSFORMER_ERROR, {
-                messageArgs: [filename, fatalError.message],
-                context: { filename }
-            });
+            throw convertDiagnosticToError(fatalError, { filename });
         }
     } catch (e) {
-        // TODO: Do we want to transfer the stacktrace over to the CompilerError object?
         throw normalizeCompilerError(e, { filename, location: e.loc });
     }
 

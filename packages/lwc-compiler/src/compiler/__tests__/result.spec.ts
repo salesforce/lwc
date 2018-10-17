@@ -199,7 +199,8 @@ describe("compiler result", () => {
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
+        expect(diagnostics[1].filename).toBe('foo.html');
+        expect(diagnostics[1].message).toContain('<template> has no matching closing tag.');
     });
 
     test("sourcemaps correctness", async () => {

@@ -29,13 +29,13 @@ class CustomError extends Error {
 describe('error handling', () => {
     describe('generate compiler error', () => {
         it('generates a compiler error when config is null', () => {
-            const target = new CompilerError(4, "Error LWC4: Test Error {0} with message {1}");
+            const target = new CompilerError(4, "LWC4: Test Error {0} with message {1}");
 
             expect(generateCompilerError(ERROR_INFO)).toEqual(target);
         });
         it('generates a compiler error based on the provided error info', () => {
             const args = ['arg1', 10];
-            const target = new CompilerError(4, "Error LWC4: Test Error arg1 with message 10");
+            const target = new CompilerError(4, "LWC4: Test Error arg1 with message 10");
 
             expect(generateCompilerError(ERROR_INFO, {
                 messageArgs: args
@@ -48,7 +48,7 @@ describe('error handling', () => {
                 messageArgs: args
             });
 
-            expect(error.message).toEqual("Error LWC4: Test Error arg1 with message 10");
+            expect(error.message).toEqual("LWC4: Test Error arg1 with message 10");
         });
 
         it('adds the filename to the compiler error if it exists as context', () => {
@@ -87,7 +87,7 @@ describe('error handling', () => {
                 messageArgs: args,
                 errorConstructor: generateCustomError
             });
-            expect(error.message).toEqual("Error message prefix from custom error: [Error LWC4: Test Error errorName with message 10] with suffix");
+            expect(error.message).toEqual("Error message prefix from custom error: [LWC4: Test Error errorName with message 10] with suffix");
         });
 
         it('adds the filename to the compiler error if it exists on the custom error', () => {

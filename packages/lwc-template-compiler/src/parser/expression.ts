@@ -76,7 +76,6 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
         return expression;
     } catch (err) {
-        // TODO: ERROR CODES: normalize errors here
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
     }

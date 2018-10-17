@@ -1,12 +1,12 @@
 export enum Level {
     /** Unexpected error, parsing error, bundling error */
-    Fatal = 0,
+    Fatal = "fatal",
     /** Linting error with error level, invalid external reference, invalid import, invalid transform */
-    Error = 1,
+    Error = "error",
     /** Linting error with warning level, usage of an API to be deprecated */
-    Warning = 2,
+    Warning = "warning",
     /** Logging messages */
-    Log = 3,
+    Log = "log",
 }
 
 export interface LWCErrorInfo {
