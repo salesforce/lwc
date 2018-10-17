@@ -7,7 +7,8 @@ function generateTodo(id, completed) {
     return {
         id,
         title: 'task ' + id,
-        completed
+        completed,
+        nextId: id + 1
     };
 }
 

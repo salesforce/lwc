@@ -88,7 +88,7 @@ describe('WireEventTarget', () => {
                 wireEventTarget.addEventListener(CONFIG, listener);
                 expect(listener).toHaveBeenCalledTimes(1);
             });
-            it('multiple listeners from one adapter creates only one trap per property', () => {
+            it('creates one trap per property for multiple listeners', () => {
                 const wireContext = Object.create(null);
                 wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext = Object.create(null);
@@ -110,7 +110,30 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
-            it('multiple components from one adapter create multiple traps', () => {
+            it('creates one trap for root property for multiple listeners to dot-notation parameters', () => {
+                const wireContext = Object.create(null);
+                wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
+                const mockContext = Object.create(null);
+                mockContext[CONTEXT_ID] = wireContext;
+                const mockWireDef: WireDef = {
+                    adapter: {},
+                    params: {
+                        key: "a.b.c.d",
+                        other: "a.x.y"
+                    }
+                };
+                const mockInstallTrap = jest.fn();
+                const originalInstallTrap = dependency.installTrap;
+                (dependency as any).installTrap = mockInstallTrap;
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
+                wireEventTarget.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalledTimes(1);
+                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test1");
+                wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalledTimes(1);
+                (dependency as any).installTrap = originalInstallTrap;
+            });
+            it('creates one trap per property per component', () => {
                 const wireContext1 = Object.create(null);
                 wireContext1[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext1 = Object.create(null);
@@ -149,7 +172,7 @@ describe('WireEventTarget', () => {
     });
 
     describe('removeEventListener', () => {
-        it('remove listener from the queue for connect event', () => {
+        it('removes listener from the queue for connect event', () => {
             function listener() { /**/ }
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
@@ -158,7 +181,7 @@ describe('WireEventTarget', () => {
             wireEventTarget.removeEventListener(CONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_CONNECTED]).toHaveLength(0);
         });
-        it('remove listener from the queue for disconnect event', () => {
+        it('removes listener from the queue for disconnect event', () => {
             function listener() { /**/ }
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
@@ -167,21 +190,37 @@ describe('WireEventTarget', () => {
             wireEventTarget.removeEventListener(DISCONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED]).toHaveLength(0);
         });
-        it('remove listenerMetadata from the queue for config event', () => {
+        it('removes listenerMetadata from the queue for config event for non-dot-notation reactive parameter', () => {
             function listener() { /**/ }
             const mockConfigListenerMetadata = { listener };
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
-            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { test: [mockConfigListenerMetadata] } };
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { prop: [mockConfigListenerMetadata] } };
             const mockWireDef: WireDef = {
                 adapter: {},
                 params: {
-                    test: 'test'
+                    test: 'prop'
                 }
             };
             const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
             wireEventTarget.removeEventListener(CONFIG, listener);
-            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.test).toHaveLength(0);
+            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.prop).toHaveLength(0);
+        });
+        it('removes listenerMetadata from the queue for config event for dot-notation reactive parameter', () => {
+            function listener() { /**/ }
+            const mockConfigListenerMetadata = { listener };
+            const mockContext = Object.create(null);
+            mockContext[CONTEXT_ID] = Object.create(null);
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { x: [mockConfigListenerMetadata] } };
+            const mockWireDef: WireDef = {
+                adapter: {},
+                params: {
+                    test: 'x.y.z'
+                }
+            };
+            const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
+            wireEventTarget.removeEventListener(CONFIG, listener);
+            expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.x).toHaveLength(0);
         });
         it('throws when event type is not supported', () => {
             const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, {} as WireDef, "test");
@@ -191,7 +230,7 @@ describe('WireEventTarget', () => {
     });
 
     describe('dispatchEvent', () => {
-        it('ValueChangedEvent updates wired property', () => {
+        it('updates wired property when ValueChangeEvent received', () => {
             const mockCmp = {
                 test: undefined
             };
@@ -199,7 +238,7 @@ describe('WireEventTarget', () => {
             wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
             expect(mockCmp.test).toBe('value');
         });
-        it('ValueChangedEvent invokes wired method', () => {
+        it('invokes wired method when ValueChangedEvent received', () => {
             let actual;
             const mockCmp = {
                 test: (value) => { actual = value; }

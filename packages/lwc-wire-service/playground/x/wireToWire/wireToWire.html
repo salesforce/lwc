@@ -1,0 +1,14 @@
+<template>
+    Todo:
+    <template if:true={todo.data}>
+        <span>{todo.data.title}</span> ({todo.data.completed})
+    </template>
+    <br>
+
+    Dependent Todo:
+    <template if:true={todoDependent.data}>
+        <span>{todoDependent.data.title}</span> ({todoDependent.data.completed})
+    </template>
+    <br>
+</template>
+
