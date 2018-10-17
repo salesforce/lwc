@@ -10,7 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           value: "{value}"
         },
-        key: 1
+        key: 2
       },
       []
     )

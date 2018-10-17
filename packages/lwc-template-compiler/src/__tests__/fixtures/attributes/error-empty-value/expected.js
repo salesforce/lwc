@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           title: ""
         },
-        key: 1
+        key: 2
       },
       []
     ),
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           content: "",
           visible: true
         },
-        key: 2
+        key: 3
       },
       []
     )

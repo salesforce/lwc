@@ -1,8 +1,13 @@
-const { isComponentClass, isDefaultExport } = require('./utils');
+const { isComponentClass, isDefaultExport, getExportedNames } = require('./utils');
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('./constants');
 
 module.exports = function () {
     return {
+        Program: {
+            exit(path, state) {
+                state.file.metadata.exports = getExportedNames(path);
+            }
+        },
         Class(path, state) {
             if (isComponentClass(path, state.componentBaseClassImports) && isDefaultExport(path)) {
                 const declaration = path.parentPath.node;

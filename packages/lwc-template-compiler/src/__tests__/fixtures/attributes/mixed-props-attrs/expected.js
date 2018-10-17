@@ -6,7 +6,7 @@ import _nsInput from "ns/input";
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { c: api_custom_element, h: api_element } = $api;
+  const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
 
   return [
     api_custom_element(
@@ -14,9 +14,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsFoo,
       {
         props: {
-          d: $cmp.p.foo
+          d: $cmp.p.foo,
+          id: api_scoped_id("ns-foo", 2)
         },
-        key: 1
+        key: 2
       },
       []
     ),
@@ -34,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           title: "test",
           tabindex: "-1"
         },
-        key: 2
+        key: 3
       },
       []
     ),
@@ -49,7 +50,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "data-xx": "foo"
         },
         props: {
-          ariaDescribedBy: "describedby",
+          ariaDescribedBy: api_scoped_id("ns-foo", 2),
           ariaHidden: "hidden",
           fooBar: "x",
           foo: "bar",
@@ -57,7 +58,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           tabIndex: "0",
           bgColor: "blue"
         },
-        key: 3
+        key: 4
       },
       []
     ),
@@ -79,7 +80,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               "xlink:href": "xx"
             },
-            key: 4
+            key: 6
           },
           []
         )
@@ -96,7 +97,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bgColor: "x",
           ariaHidden: "hidden"
         },
-        key: 6
+        key: 7
       },
       []
     ),
@@ -106,7 +107,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           bgcolor: "x"
         },
-        key: 7
+        key: 8
       },
       []
     ),
@@ -123,7 +124,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bar: "test",
           min: "3"
         },
-        key: 8
+        key: 9
       },
       []
     ),
@@ -138,7 +139,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           minLength: "3",
           maxLength: "10"
         },
-        key: 9
+        key: 10
       },
       []
     ),
@@ -149,7 +150,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           "aria-hidden": "hidden"
         },
-        key: 10
+        key: 11
       },
       []
     )

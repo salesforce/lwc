@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "p",
           {
             className: $cmp.bar.foo.baz,
-            key: 1
+            key: 3
           },
           []
         )

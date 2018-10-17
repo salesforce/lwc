@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               local: "x"
             },
-            key: 1
+            key: 3
           },
           []
         )
