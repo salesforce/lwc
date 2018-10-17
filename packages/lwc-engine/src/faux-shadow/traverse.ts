@@ -22,6 +22,7 @@ import {
     ArrayFilter,
     isTrue,
     create,
+    getPrototypeOf,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
@@ -353,88 +354,73 @@ function slotNameGetter(this: HTMLElement): string {
     return isNull(name) ? '' : name;
 }
 
-export const NodePatchDescriptors: PropertyDescriptorMap = {
-    childNodes: {
-        get: lightDomChildNodesGetter,
-        configurable: true,
-        enumerable: true,
-    },
-    assignedSlot: {
-        get: assignedSlotGetter,
-        configurable: true,
-        enumerable: true,
-    },
-    textContent: {
-        get: lightDomTextContentGetter,
-        set: textContextSetter,
-        configurable: true,
-        enumerable: true,
-    },
-    parentNode: {
-        get: parentNodeDescriptorValue,
-        configurable: true,
-    },
-    parentElement: {
-        get: parentElementDescriptorValue,
-        configurable: true,
-    },
-};
+export function PatchedNode(node: Node) {
+    const Ctor = getPrototypeOf(node).constructor;
+    return class Node extends Ctor {
+        get childNodes(this: HTMLElement) {
+            return lightDomChildNodesGetter.call(this);
+        }
+        get assignedSlot(this: HTMLElement) {
+            return assignedSlotGetter.call(this);
+        }
+        get textContent(this: HTMLElement) {
+            return lightDomTextContentGetter.call(this);
+        }
+        set textContent(this: HTMLElement, value: any) {
+            textContextSetter.call(this, value);
+        }
+        get parentNode(this: HTMLElement) {
+            return parentNodeDescriptorValue.call(this);
+        }
+        get parentElement(this: HTMLElement) {
+            return parentElementDescriptorValue.call(this);
+        }
+    };
+}
 
-export const ElementPatchDescriptors: PropertyDescriptorMap = assign(create(null), NodePatchDescriptors, {
-    querySelector: {
-        value: lightDomQuerySelectorValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    querySelectorAll: {
-        value: lightDomQuerySelectorAllValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    innerHTML: {
-        get: lightDomInnerHTMLGetter,
-        set: innerHTMLSetter,
-        configurable: true,
-        enumerable: true,
-    },
-    outerHTML: {
-        get: lightDomOuterHTMLGetter,
-        configurable: true,
-        enumerable: true,
-    },
-});
-
-export const SlotPatchDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
-    assignedElements: {
-        value: slotAssignedElementsValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    assignedNodes: {
-        value: slotAssignedNodesValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    name: {
-        // in browsers that do not support shadow dom, slot's name attribute is not reflective
-        get: slotNameGetter,
-        configurable: true,
-        enumerable: true,
-    },
-});
-
-export const IframeDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
-    contentWindow: {
-        get(this: HTMLIFrameElement) {
-            const original = iFrameContentWindowGetter.call(this);
-            if (original) {
-                return wrapIframeWindow(original);
-            }
-            return original;
-        },
+export function PatchedElement(elm: HTMLElement) {
+    return class extends PatchedNode(elm) {
+        get querySelector() {
+            return lightDomQuerySelectorValue;
+        }
+        get querySelectorAll() {
+            return lightDomQuerySelectorAllValue;
+        }
+        get innerHTML(this: HTMLElement) {
+            return lightDomInnerHTMLGetter.call(this);
+        }
+        set innerHTML(this: HTMLElement, value: any) {
+            innerHTMLSetter.call(this, value);
+        }
+        get outerHTML() {
+            return lightDomOuterHTMLGetter.call(this);
+        }
     }
-});
+}
+
+export function PatchedSlotElement(elm: HTMLElement) {
+    return class extends PatchedElement(elm) {
+        get assignedElements(this: HTMLElement) {
+            return slotAssignedElementsValue;
+        }
+        get assignedNodes(this: HTMLElement) {
+            return slotAssignedNodesValue;
+        }
+        get name(this: HTMLElement) {
+            // in browsers that do not support shadow dom, slot's name attribute is not reflective
+            return slotNameGetter.call(this);
+        }
+    }
+}
+
+export function PatchedIframeElement(elm: HTMLElement) {
+    return class extends PatchedElement(elm) {
+        get contentWindow(this: HTMLIFrameElement) {
+            const original = iFrameContentWindowGetter.call(this);
+                if (original) {
+                    return wrapIframeWindow(original);
+                }
+                return original;
+        }
+    }
+}

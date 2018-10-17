@@ -2,7 +2,7 @@ export { patchNode } from "./node";
 export { patchEvent } from "./events";
 export { patchSlotElement } from "./slot";
 
-export { patchCustomElement } from "./custom-element";
+export { PatchedCustomElement } from "./custom-element";
 
 export {
     lightDomQuerySelectorAll,

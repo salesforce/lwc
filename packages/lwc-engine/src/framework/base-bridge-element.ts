@@ -57,7 +57,9 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
     };
 }
 
-export type HTMLElementConstructor = new () => HTMLElement;
+export interface HTMLElementConstructor {
+     new(): HTMLElement;
+}
 
 export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {
     class HTMLBridgeElement extends SuperClass {}
