@@ -1,8 +1,8 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
-const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
+const { findClassMethod, generateError, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
-const { LWCClassErrors, generateCompilerError } = require('lwc-errors');
+const { LWCClassErrors } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
@@ -24,9 +24,9 @@ module.exports = function ({ types: t }) {
                     const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
                     return `"${propName}"`;
                 });
-                throw generateCompilerError(LWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES, {
-                    messageArgs: [observedAttributeNames.join(', ')],
-                    errorConstructor: path.buildCodeFrameError.bind(path)
+                throw generateError(path, {
+                    errorInfo: LWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
+                    messageArgs: [observedAttributeNames.join(', ')]
                 });
             }
         },
@@ -36,8 +36,8 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    throw generateCompilerError(LWCClassErrors.LWC_CLASS_CANNOT_BE_ANONYMOUS, {
-                        errorConstructor: path.buildCodeFrameError.bind(path)
+                    throw generateError(path, {
+                        errorInfo: LWCClassErrors.LWC_CLASS_CANNOT_BE_ANONYMOUS
                     });
                 }
 

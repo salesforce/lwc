@@ -1,4 +1,4 @@
-const { DecoratorErrors, generateCompilerError } = require('lwc-errors');
+const { DecoratorErrors } = require('lwc-errors');
 const { isApiDecorator } = require('./shared');
 const {
     AMBIGUOUS_PROP_SET,
@@ -7,6 +7,8 @@ const {
     DECORATOR_TYPES
 } = require('../../constants');
 
+const { generateError } = require('../../utils');
+
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(decorator => (
         decorator.name === TRACK_DECORATOR
@@ -14,8 +16,8 @@ function validateConflict(path, decorators) {
     ));
 
     if (isPublicFieldTracked) {
-        throw generateCompilerError(DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT, {
-            errorConstructor: path.buildCodeFrameError.bind(path)
+        throw generateError(path, {
+            errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT
         });
     }
 }
@@ -27,46 +29,46 @@ function isBooleanPropDefaultTrue(property) {
 
 function validatePropertyValue(property) {
     if (isBooleanPropDefaultTrue(property)) {
-        throw generateCompilerError(DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY, {
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY
         });
     }
 }
 
 function validatePropertyName(property) {
     if (property.node.computed) {
-        throw generateCompilerError(DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED, {
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED
         });
     }
 
     const propertyName = property.get('key.name').node;
 
     if (propertyName === 'part') {
-        throw generateCompilerError(DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED, {
-            messageArgs: [propertyName],
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
+            messageArgs: [propertyName]
         });
     } else if (propertyName.startsWith('on')) {
-        throw generateCompilerError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON, {
-            messageArgs: [propertyName],
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
+            messageArgs: [propertyName]
         });
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
-        throw generateCompilerError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA, {
-            messageArgs: [propertyName],
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
+            messageArgs: [propertyName]
         });
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
-        throw generateCompilerError(DecoratorErrors.PROPERTY_NAME_IS_RESERVED, {
-            messageArgs: [propertyName],
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
+            messageArgs: [propertyName]
         });
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
-        throw generateCompilerError(DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS, {
-            messageArgs: [propertyName, camelCased],
-            errorConstructor: property.buildCodeFrameError.bind(property)
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
+            messageArgs: [propertyName, camelCased]
         });
     }
 }
@@ -83,9 +85,9 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
         ));
 
         if (associatedGetter) {
-            throw generateCompilerError(DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR, {
-                messageArgs: [name],
-                errorConstructor: parentPath.buildCodeFrameError.bind(parentPath)
+            throw generateError(parentPath, {
+                errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                messageArgs: [name]
             });
         }
     });
@@ -112,9 +114,9 @@ function validateUniqueness(decorators) {
             );
 
             if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
-                throw generateCompilerError(DecoratorErrors.DUPLICATE_API_PROPERTY, {
-                    messageArgs: [currentPropertyName],
-                    errorConstructor: comparePath.buildCodeFrameError.bind(comparePath)
+                throw generateError(comparePath, {
+                    errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
+                    messageArgs: [currentPropertyName]
                 });
             }
         }

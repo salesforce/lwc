@@ -1,5 +1,5 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
-const { LWCClassErrors, generateCompilerError } = require('lwc-errors');
+const { LWCClassErrors, generateErrorMessage } = require('lwc-errors');
 
 const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
@@ -143,14 +143,14 @@ function getEngineImportSpecifiers(path) {
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
-            throw generateCompilerError(LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED, {
-                messageArgs: [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS],
-                errorConstructor: specifier.buildCodeFrameError.bind(specifier)
+            throw generateError(specifier, {
+                errorInfo: LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
+                messageArgs: [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS]
             });
         } else if (specifier.isImportDefaultSpecifier()) {
-            throw generateCompilerError(LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT, {
-                messageArgs: [LWC_PACKAGE_ALIAS],
-                errorConstructor: specifier.buildCodeFrameError.bind(specifier)
+            throw generateError(specifier, {
+                errorInfo: LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
+                messageArgs: [LWC_PACKAGE_ALIAS]
             });
         }
 
@@ -176,6 +176,14 @@ function isDefaultExport(path) {
     return path.parentPath.isExportDefaultDeclaration();
 }
 
+function generateError(source, config) {
+    const message = generateErrorMessage(config.errorInfo, config.messageArgs);
+    const error = source.buildCodeFrameError(message);
+
+    error.lwcCode = config.errorInfo.code;
+    return error;
+}
+
 module.exports = {
     findClassMethod,
     isClassMethod,
@@ -183,6 +191,7 @@ module.exports = {
     isSetterClassMethod,
     staticClassProperty,
     getEngineImportSpecifiers,
+    generateError,
     isComponentClass,
     isDefaultExport,
     getExportedNames,
