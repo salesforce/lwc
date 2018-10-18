@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener } from "./invoker";
-import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue } from "../shared/language";
+import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { VM, SlotSet } from "./vm";
 import { ComponentConstructor } from "./component";
@@ -273,6 +273,20 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         addNS(vnode);
     }
     return vnode;
+}
+
+// [t]ab[i]ndex function
+export function ti(value: any): number {
+    // if value is greater than 0, we normalize to 0
+    // If value is an invalid tabIndex value (null, undefined, string, etc), we let that value pass through
+    // If value is less than -1, we don't care
+    const shouldNormalize = (value > 0 && !(isTrue(value) || isFalse(value)));
+    if (process.env.NODE_ENV !== 'production') {
+        if (shouldNormalize) {
+            assert.logWarning(`Invalid tabindex value \`${toString(value)}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`, vmBeingRendered!.elm);
+        }
+    }
+    return shouldNormalize ? 0 : value;
 }
 
 // [s]lot element node

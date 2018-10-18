@@ -237,4 +237,186 @@ describe('api', () => {
             }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.');
         });
     });
+
+    describe('#ti()', () => {
+        it('should return 0 when value is not 0 or -1', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(2);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.');
+            expect(normalized).toBe(0);
+        });
+
+        it('should return null when value is null', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(null);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(null);
+        });
+
+        it('should return undefined when value is undefined', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(undefined);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(undefined);
+        });
+
+        it('should return 0 when value is "3"', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('3');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.');
+            expect(normalized).toBe(0);
+        });
+
+        it('should return -3 when value is -3', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-3);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-3);
+        });
+
+        it('should return 0 when value is 0', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(0);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(0);
+        });
+
+        it('should return -1 when value is -1', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-1);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-1);
+        });
+
+        it('should return NaN when value is NaN', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(NaN);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(NaN);
+        });
+
+        it('should return empty string when value is empty string', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe('');
+        });
+
+        it('should return true when value is true', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(true);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(true);
+        });
+
+        it('should return false when value is false', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(false);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(false);
+        });
+    });
 });

@@ -12,6 +12,7 @@ type RenderPrimitive =
     | 'text'
     | 'dynamic'
     | 'key'
+    | 'tabindex'
     | 'scopedId';
 
 interface RenderPrimitiveDefinition {
@@ -31,6 +32,7 @@ const RENDER_APIS: {
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
     key: { name: 'k', alias: 'api_key' },
+    tabindex: { name: 'ti', alias: 'api_tab_index' },
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
 };
 
@@ -128,6 +130,10 @@ export default class CodeGen {
             children,
             t.identifier('$slotset')
         ]);
+    }
+
+    genTabIndex(children: [t.Expression]) {
+        return this._renderApiCall(RENDER_APIS.tabindex, children);
     }
 
     getMemorizationId() {
