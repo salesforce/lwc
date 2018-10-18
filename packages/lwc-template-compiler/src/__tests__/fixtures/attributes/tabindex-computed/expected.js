@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           tabindex: api_tab_index($cmp.computed)
         },
-        key: 1
+        key: 2
       },
       [api_text("valid")]
     ),
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           tabIndex: api_tab_index($cmp.computed)
         },
-        key: 2
+        key: 3
       },
       []
     )
