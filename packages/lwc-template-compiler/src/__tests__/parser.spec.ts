@@ -135,7 +135,7 @@ describe('for:each directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `for:each and for:item directives should be associated together.`,
+            message: `LWC1: for:each and for:item directives should be associated together.`,
             location: EXPECTED_LOCATION
         });
     });
@@ -259,7 +259,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: 'Multiple roots found',
+            message: 'LWC1: Multiple roots found',
             location: EXPECTED_LOCATION
         });
     });
@@ -269,7 +269,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: 'Expected root tag to be template, found section',
+            message: 'LWC1: Expected root tag to be template, found section',
             location: EXPECTED_LOCATION
         });
     });
@@ -279,7 +279,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `Root template doesn't allow attributes`,
+            message: `LWC1: Root template doesn't allow attributes`,
             location: EXPECTED_LOCATION
         });
     });
@@ -361,7 +361,7 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(12);
 
-            const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
+            const MESSAGE_RE = /^LWC1: The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
             for (const { message } of warnings) {
                 expect(message).toMatch(MESSAGE_RE);
             }
@@ -385,7 +385,7 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(11);
 
-            const MESSAGE_RE = /^The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
+            const MESSAGE_RE = /^LWC1: The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
             for (const { message } of warnings) {
                 expect(message).toMatch(MESSAGE_RE);
             }

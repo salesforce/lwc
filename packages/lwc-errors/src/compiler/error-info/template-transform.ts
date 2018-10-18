@@ -310,7 +310,7 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    TAG_SHOULD_BE_TEMPLATE: {
+    ROOT_TAG_SHOULD_BE_TEMPLATE: {
         code: 1,
         message: "Expected root tag to be template, found {0}",
         level: Level.Error,

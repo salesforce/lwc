@@ -78,7 +78,7 @@ import {
     HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
-import { CompilerDiagnostic, generateCompilerDiagnostic, LWCErrorInfo, Level, ParserDiagnostics, normalizeToDiagnostic } from 'lwc-errors';
+import { CompilerDiagnostic, generateCompilerDiagnostic, LWCErrorInfo, ParserDiagnostics, normalizeToDiagnostic } from 'lwc-errors';
 
 function getKeyGenerator() {
     let count = 1;
@@ -234,7 +234,7 @@ export default function parse(source: string, state: State): {
         ));
 
         if (validRoots.length > 1) {
-            warnOnElement(`Multiple roots found`, documentFragment.childNodes[1]);
+            warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
         const templateTag = documentFragment.childNodes.find((child) => (
@@ -360,7 +360,7 @@ export default function parse(source: string, state: State): {
             };
         } else {
             return warnOnElement(
-                `for:each and for:item directives should be associated together.`,
+                ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
                 element.__original,
             );
         }
@@ -465,7 +465,7 @@ export default function parse(source: string, state: State): {
         }
 
         if (element.forEach || element.forOf || element.if) {
-            return warnOnElement(`Slot tag can't be associated with directives`, element.__original);
+            return warnOnElement(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, element.__original);
         }
 
         // Default slot have empty string name
@@ -537,12 +537,12 @@ export default function parse(source: string, state: State): {
 
         if (isRoot) {
             if (tag !== 'template') {
-                return warnOnElement(`Expected root tag to be template, found ${tag}`, node);
+                return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
             }
 
             const hasAttributes = node.attrs.length !== 0;
             if (hasAttributes) {
-                return warnOnElement(`Root template doesn't allow attributes`, node);
+                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
             }
         }
 
@@ -557,7 +557,7 @@ export default function parse(source: string, state: State): {
             const hasAttributes = node.attrs.length !== 0;
             if (!isRoot && !hasAttributes) {
                 warnOnElement(
-                    'Invalid template tag. A directive is expected to be associated with the template tag.',
+                    ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE,
                     node,
                 );
             }
@@ -566,15 +566,17 @@ export default function parse(source: string, state: State): {
             const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
             if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
-                    `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
+                    ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE,
                     node,
+                    [tag]
                 );
             }
             const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
                 return warnOnElement(
-                    `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
-                    node
+                    ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE,
+                    node,
+                    [tag]
                 );
             }
         }
@@ -587,24 +589,23 @@ export default function parse(source: string, state: State): {
             if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
-                        `The attribute "tabindex" can only be set to "0" or "-1".`,
-                        element.__original,
-                        Level.Error,
+                        ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
+                        element.__original
                     );
                 }
             }
             if (isRestrictedStaticAttribute(attr.name)) {
                 if (isExpression(attr.value)) {
                     warnOnElement(
-                        `The attribute "${attr.name}" cannot be an expression. It must be a static string value.`,
+                        ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
                         element.__original,
-                        Level.Warning,
+                        [attr.name]
                     );
                 } else if (attr.value === '') {
                     warnOnElement(
-                        `The attribute "${attr.name}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
+                        ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
                         element.__original,
-                        Level.Warning,
+                        [attr.name]
                     );
                 }
             }
@@ -622,25 +623,24 @@ export default function parse(source: string, state: State): {
                         !isValidTabIndexAttributeValue(value)
                     ) {
                         warnOnElement(
-                            `The attribute "tabindex" can only be set to "0" or "-1".`,
+                            ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
                             element.__original,
-                            Level.Error,
                         );
                     }
                 }
                 if (isRestrictedStaticAttribute(attrName)) {
                     if (type === IRAttributeType.Expression) {
                         warnOnElement(
-                            `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
+                            ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
                             element.__original,
-                            Level.Warning,
+                            [attrName]
                         );
                     }
                     if (value === '') {
                         warnOnElement(
-                            `The attribute "${attrName}" cannot be an empty string. Remove the attribute if it is unnecessary.`,
+                            ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
                             element.__original,
-                            Level.Warning,
+                            [attrName]
                         );
                     }
                 }
@@ -655,8 +655,7 @@ export default function parse(source: string, state: State): {
                 warnAt(
                     ParserDiagnostics.DUPLICATE_ID_FOUND,
                     [value],
-                    location,
-                    Level.Error,
+                    location
                 );
             } else {
                 seenIds.add(value);
@@ -669,8 +668,7 @@ export default function parse(source: string, state: State): {
                     warnAt(
                         ParserDiagnostics.ATTRIBUTE_REFERENCES_NONEXISTENT_ID,
                         [name, value],
-                        location,
-                        Level.Error,
+                        location
                     );
                 } else {
                     seenIdrefs.add(value);
@@ -682,8 +680,7 @@ export default function parse(source: string, state: State): {
                 warnAt(
                     ParserDiagnostics.INVALID_ID_REFERENCE,
                     [value],
-                    location,
-                    Level.Warning,
+                    location
                 );
             }
         }
@@ -771,7 +768,7 @@ export default function parse(source: string, state: State): {
     }
 
     // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
-    function warnOnElement(message: string, node: parse5.AST.Node, level: Level = Level.Error) {
+    function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
         const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number } => {
             if (!toLocate) {
                 return { line: 0, column: 0 };
@@ -789,11 +786,15 @@ export default function parse(source: string, state: State): {
             }
         };
 
-        const code = 0;
-        warnings.push({ code, message, level, location: getLocation(node) });
+        warnings.push(generateCompilerDiagnostic(errorInfo, {
+            messageArgs,
+            context: {
+                location: getLocation(node)
+            }
+        }));
     }
 
-    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location, level: Level = Level.Error) {
+    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location) {
         warnings.push(generateCompilerDiagnostic(errorInfo, {
             messageArgs,
             context: {
