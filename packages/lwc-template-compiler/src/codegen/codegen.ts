@@ -12,7 +12,7 @@ type RenderPrimitive =
     | 'text'
     | 'dynamic'
     | 'key'
-    | 'tabindex',
+    | 'tabindex'
     | 'scopedId';
 
 interface RenderPrimitiveDefinition {
