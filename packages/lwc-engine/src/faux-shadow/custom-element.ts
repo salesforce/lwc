@@ -2,8 +2,7 @@ import { attachShadow, getShadowRoot, ShadowRootMode } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
 import { hasAttribute } from "./element";
-import { getOwnPropertyDescriptor } from "../shared/language";
-import { isNull } from "util";
+import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
