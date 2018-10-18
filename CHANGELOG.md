@@ -1,5 +1,40 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.20...v) (2018-10-13)
+# [](https://github.com/salesforce/lwc/compare/v0.29.25...v) (2018-10-16)
+
+
+### Bug Fixes
+
+* retargeting works as expected for innerHTML template modifications ([#739](https://github.com/salesforce/lwc/issues/739)) ([efa6a66](https://github.com/salesforce/lwc/commit/efa6a66))
+
+
+
+<a name="0.29.25"></a>
+## [0.29.25](https://github.com/salesforce/lwc/compare/v0.29.24...v0.29.25) (2018-10-15)
+
+
+
+<a name="0.29.24"></a>
+## [0.29.24](https://github.com/salesforce/lwc/compare/v0.29.23...v0.29.24) (2018-10-15)
+
+
+
+<a name="0.29.23"></a>
+## [0.29.23](https://github.com/salesforce/lwc/compare/v0.29.22...v0.29.23) (2018-10-15)
+
+
+
+<a name="0.29.22"></a>
+## [0.29.22](https://github.com/salesforce/lwc/compare/v0.29.21...v0.29.22) (2018-10-15)
+
+
+### Features
+
+* scoped ids ([#714](https://github.com/salesforce/lwc/issues/714)) ([4f48fc7](https://github.com/salesforce/lwc/commit/4f48fc7))
+
+
+
+<a name="0.29.21"></a>
+## [0.29.21](https://github.com/salesforce/lwc/compare/v0.29.20...v0.29.21) (2018-10-13)
 
 
 

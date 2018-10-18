@@ -7,12 +7,12 @@ describe('Array prototype methods', () => {
     });
 
     it('should not leak any properties on Object', () => {
-        const el = browser.element('#object-enumerable-properties');
+        const el = browser.element('.object-enumerable-properties');
         assert.strictEqual(el.getText(), 'x,y');
     });
 
     it('should not leak any properties on Array', () => {
-        const el = browser.element('#array-enumerable-properties');
+        const el = browser.element('.array-enumerable-properties');
         assert.strictEqual(el.getText(), '0,1');
     });
 });

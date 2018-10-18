@@ -36,13 +36,8 @@ function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
         return null;
     }
-    let ownerKey;
-    // search for the first element with owner identity (just in case of manually inserted elements)
-    while (!isNull(node) && isUndefined((ownerKey = getNodeOwnerKey(node)))) {
-        node = parentNodeGetter.call(node);
-    }
-    // either we hit the wall, or we node is root element (which does not have an owner key)
-    if (isUndefined(ownerKey) || isNull(node)) {
+    const ownerKey = getNodeOwnerKey(node);
+    if (isUndefined(ownerKey)) {
         return null;
     }
     // At this point, node is a valid node with owner identity, now we need to find the owner node
@@ -82,20 +77,16 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     while (!isNull(currentElement) && currentElement !== host) {
         const elmOwnerKey = getNodeOwnerKey(currentElement);
         const parent: Element = parentElementGetter.call(currentElement);
-        // this condition is used to fold up elements without owner key (which are manually inserted nodes)
-        // in favor of picking up the key from the first element in that path up with a key
-        if (!isUndefined(elmOwnerKey)) {
-            if (elmOwnerKey === hostKey) {
-                // we have reached a host's node element, and only if
-                // that element is an slot, then the node is considered slotted
-                return isSlotElement(currentElement);
-            } else if (parent !== host && getNodeOwnerKey(parent) !== elmOwnerKey) {
-                // we are crossing a boundary of some sort since the elm and its parent
-                // have different owner key. for slotted elements, this is only possible
-                // if the parent happens to be a slot that is not owned by the host
-                if (!isSlotElement(parent)) {
-                    return false;
-                }
+        if (elmOwnerKey === hostKey) {
+            // we have reached a host's node element, and only if
+            // that element is an slot, then the node is considered slotted
+            return isSlotElement(currentElement);
+        } else if (parent !== host && getNodeOwnerKey(parent) !== elmOwnerKey) {
+            // we are crossing a boundary of some sort since the elm and its parent
+            // have different owner key. for slotted elements, this is only possible
+            // if the parent happens to be a slot that is not owned by the host
+            if (!isSlotElement(parent)) {
+                return false;
             }
         }
         currentElement = parent;

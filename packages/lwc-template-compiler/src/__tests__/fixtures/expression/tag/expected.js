@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "p",
       {
-        key: 1
+        key: 2
       },
       [api_dynamic($cmp.text)]
     )

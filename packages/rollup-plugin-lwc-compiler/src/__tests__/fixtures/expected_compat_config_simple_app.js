@@ -114,7 +114,7 @@
         api_element(
           "div",
           {
-            key: 1
+            key: 2
           },
           [api_dynamic(__getKey($cmp, "x"))]
         )
@@ -197,7 +197,7 @@
                 props: {
                   x: "1"
                 },
-                key: 1
+                key: 3
               },
               []
             )

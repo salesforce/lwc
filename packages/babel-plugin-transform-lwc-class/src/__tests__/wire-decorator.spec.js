@@ -27,7 +27,12 @@ const wireMetadataParameterTest =
                                     type: 'property',
                                 }
                             ],
-                        }]
+                        }],
+                        exports: [
+                            {
+                                type: 'ExportDefaultDeclaration',
+                            }
+                        ],
                     },
                 },
             },
@@ -396,7 +401,12 @@ describe('Metadata', () => {
                             static: { key2: { value: ['fixed'], type: 'array' } },
                             type: 'method',
                         }],
-                    }]
+                    }],
+                    exports: [
+                        {
+                            type: 'ExportDefaultDeclaration',
+                        }
+                    ],
                 },
             },
         },

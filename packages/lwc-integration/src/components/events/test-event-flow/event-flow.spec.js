@@ -44,12 +44,12 @@ function assertValidGuid(guid) {
 
 function clickSlottedButton() {
     browser.execute(function () {
-        document.querySelector('button#slotted').click()
+        document.querySelector('button.slotted').click()
     });
 }
 function clickChildButton() {
     browser.execute(function () {
-        document.querySelector('button#child').click()
+        document.querySelector('button.child').click()
     });
 }
 
@@ -72,7 +72,7 @@ describe('event flow:', () => {
     });
 
     beforeEach(() => {
-        browser.click('button#clear');
+        browser.click('button.clear');
         // Reset log cache
         LOGGED_GUIDS = null;
     });
