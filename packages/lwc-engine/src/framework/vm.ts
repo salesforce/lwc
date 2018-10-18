@@ -496,7 +496,6 @@ function getHostElement(elm: HTMLElement): HTMLElement | null {
         : null;
 }
 
-
 export function isNodeFromTemplate(node: Node): boolean {
     return !isUndefined(getNodeOwnerKey(node));
 }
