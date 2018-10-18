@@ -137,9 +137,10 @@ export enum ShadowRootMode {
     OPEN = "open",
 }
 
-export class SyntheticShadowRoot {
+export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
     mode: ShadowRootMode;
-    constructor(mode: ShadowRootMode) {
+    constructor() {
+        super();
         throw new TypeError('Illegal constructor');
     }
     get nodeType() {
@@ -175,13 +176,24 @@ export class SyntheticShadowRoot {
     hasChildNodes() {
         return this.childNodes.length > 0;
     }
-    querySelector(selector: string) {
-        const node = shadowRootQuerySelector(this, selector);
-        return node as Element;
+
+    /**
+     * Returns the first element that is a descendant of node that
+     * matches selectors.
+     */
+    // querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null;
+    // querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K] | null;
+    querySelector<E extends Element = Element>(selectors: string): E | null {
+        return shadowRootQuerySelector(this, selectors);
     }
-    querySelectorAll(selector: string) {
-        const nodeList = shadowRootQuerySelectorAll(this, selector);
-        return nodeList;
+    /**
+     * Returns all element descendants of node that
+     * match selectors.
+     */
+    // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
+    // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
+    querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
+        return shadowRootQuerySelectorAll(this, selectors);
     }
     addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         addShadowRootEventListener(this, type, listener, options);
