@@ -17,11 +17,9 @@ import { wrapIframeWindow } from "./iframe";
 import {
     ArrayReduce,
     ArrayPush,
-    assign,
     isUndefined,
     ArrayFilter,
     isTrue,
-    create,
     getPrototypeOf,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
@@ -117,23 +115,6 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & Pa
         }
     }
     return null;
-}
-
-function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
-    const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
-    if (isNull(parentNode)) {
-        return null;
-    }
-    const nodeOwner = getNodeOwner(this);
-    if (isNull(nodeOwner)) {
-        return parentNode;
-    }
-    // If we have traversed to the host element,
-    // we need to return null
-    if (nodeOwner === parentNode) {
-        return null;
-    }
-    return parentNode;
 }
 
 export function shadowRootChildNodes(root: SyntheticShadowRoot) {
@@ -287,47 +268,8 @@ export function getFilteredChildNodes(node: Node): Element[] {
     }, []);
 }
 
-function lightDomChildNodesGetter(this: HTMLElement): Node[] {
-    const owner = getNodeOwner(this);
-    if (isNull(owner)) {
-        return [];
-    }
-    return getAllMatches(owner, getFilteredChildNodes(this));
-}
-
-function lightDomInnerHTMLGetter(this: Element): string {
-    return getInnerHTML(this);
-}
-
-function lightDomOuterHTMLGetter(this: Element): string {
-    return getOuterHTML(this);
-}
-
-function lightDomTextContentGetter(this: Node): string {
-    return getTextContent(this);
-}
-
-function assignedSlotGetter(this: Node): HTMLElement | null {
-    const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
-    /**
-     * if it doesn't have a parent node,
-     * or the parent is not an slot element
-     * or they both belong to the same template (default content)
-     * we should assume that it is not slotted
-     */
-    if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
-        return null;
-    }
-    return parentNode as HTMLElement;
-}
-
 interface AssignedNodesOptions {
     flatten?: boolean;
-}
-
-function slotNameGetter(this: HTMLElement): string {
-    const name = getAttribute.call(this, 'name');
-    return isNull(name) ? '' : name;
 }
 
 export function PatchedNode(node: Node): NodeConstructor {
@@ -396,14 +338,14 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
             return lightDomQuerySelectorAll(this as Element, selectors);
         }
-        get innerHTML() {
-            return lightDomInnerHTMLGetter.call(this);
+        get innerHTML(): string {
+            return getInnerHTML(this);
         }
-        set innerHTML(value: any) {
+        set innerHTML(value: string) {
             innerHTMLSetter.call(this, value);
         }
         get outerHTML() {
-            return lightDomOuterHTMLGetter.call(this);
+            return getOuterHTML(this);
         }
     };
 }
@@ -420,9 +362,10 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
             const flatten = !isUndefined(options) && isTrue(options.flatten);
             return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
         }
-        get name(this: HTMLSlotElement) {
+        get name(this: HTMLSlotElement): string {
             // in browsers that do not support shadow dom, slot's name attribute is not reflective
-            return slotNameGetter.call(this);
+            const name = getAttribute.call(this, 'name');
+            return isNull(name) ? '' : name;
         }
     };
 }
