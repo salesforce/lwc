@@ -239,7 +239,7 @@ describe('api', () => {
     });
 
     describe('#ti()', () => {
-        it('should set tabIndex to 0 when value is not 0 or -1', () => {
+        it('should return 0 when value is not 0 or -1', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(2);
@@ -257,7 +257,7 @@ describe('api', () => {
             expect(normalized).toBe(0);
         });
 
-        it('should set tabIndex to null when value is null', () => {
+        it('should return null when value is null', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(null);
@@ -273,7 +273,7 @@ describe('api', () => {
             expect(normalized).toBe(null);
         });
 
-        it('should set tabIndex to undefined when value is undefined', () => {
+        it('should return undefined when value is undefined', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(undefined);
@@ -289,7 +289,7 @@ describe('api', () => {
             expect(normalized).toBe(undefined);
         });
 
-        it('should set tabIndex to 0 when value is "3"', () => {
+        it('should return 0 when value is "3"', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti('3');
@@ -307,7 +307,7 @@ describe('api', () => {
             expect(normalized).toBe(0);
         });
 
-        it('should set tabIndex to -3 when value is -3', () => {
+        it('should return -3 when value is -3', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(-3);
@@ -323,7 +323,7 @@ describe('api', () => {
             expect(normalized).toBe(-3);
         });
 
-        it('should set tabIndex to 0 when value is 0', () => {
+        it('should return 0 when value is 0', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(0);
@@ -339,7 +339,7 @@ describe('api', () => {
             expect(normalized).toBe(0);
         });
 
-        it('should set tabIndex to -1 when value is -1', () => {
+        it('should return -1 when value is -1', () => {
             let normalized;
             function html($api) {
                 normalized = $api.ti(-1);
@@ -353,6 +353,70 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             expect(normalized).toBe(-1);
+        });
+
+        it('should return NaN when value is NaN', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(NaN);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(NaN);
+        });
+
+        it('should return empty string when value is empty string', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe('');
+        });
+
+        it('should return true when value is true', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(true);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(true);
+        });
+
+        it('should return false when value is false', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(false);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(false);
         });
     });
 });
