@@ -176,6 +176,10 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
     get parentNode() {
         return null;
     }
+    get styleSheets(): StyleSheetList {
+        // TODO: implement
+        throw new Error();
+    }
     hasChildNodes() {
         return this.childNodes.length > 0;
     }
@@ -234,8 +238,17 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
     // Same functionality as document.elementFromPoint
     // but we should only return elements that the shadow owns,
     // or are ancestors of the shadow
-    elementFromPoint(left: number, top: number) {
+    elementFromPoint(left: number, top: number): Element | null {
         return shadowDomElementFromPoint(getHost(this), left, top);
+    }
+
+    elementsFromPoint(left: number, top: number): Element[] {
+        // TODO: implement
+        throw new Error();
+    }
+
+    getSelection(): Selection | null {
+        throw new Error();
     }
 }
 
