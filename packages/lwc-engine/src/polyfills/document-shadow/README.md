@@ -1,4 +1,4 @@
-# document.elementFromPoint polyfill
+# document Shadow DOM polyfills
 
 This polyfill contains all the patched methods we need to work with our Synthetic Shadow.
 
