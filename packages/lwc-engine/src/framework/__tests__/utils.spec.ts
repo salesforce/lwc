@@ -4,40 +4,6 @@ import { LightningElement } from './../html-element';
 import { compileTemplate } from 'test-utils';
 
 describe('utils', () => {
-    describe('#isNodeCreatedByLWC', () => {
-        it('should return false when element is created externally', () => {
-            expect(target.isNodeCreatedByLWC(document.createElement('div'))).toBe(false);
-        });
-
-        it('should return false when text node is created externally', () => {
-            expect(target.isNodeCreatedByLWC(document.createTextNode('text'))).toBe(false);
-        });
-
-        it('should return true when element is created with LWC', () => {
-            class Foo extends LightningElement {
-
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            expect(target.isNodeCreatedByLWC(elm)).toBe(true);
-        });
-
-        it('should return true when element is created within LWC template', () => {
-            const template = compileTemplate(`
-                <template>
-                    <div>inside</div>
-                </template>
-            `);
-            class Foo extends LightningElement {
-                render() {
-                    return template;
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(target.isNodeCreatedByLWC(elm.shadowRoot.querySelector('div'))).toBe(true);
-        });
-    });
-
     describe('#addCallbackToNextTick()', () => {
 
         it('should throw for non-callable values', () => {

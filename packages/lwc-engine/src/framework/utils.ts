@@ -1,6 +1,5 @@
-import { create, seal, ArrayPush, isFunction, hasOwnProperty, isUndefined, isNull } from "../shared/language";
+import { create, seal, ArrayPush, isFunction, hasOwnProperty } from "../shared/language";
 import { createFieldName } from "../shared/fields";
-import { getNodeKey, getNodeOwnerKey } from './vm';
 
 type Callback = () => void;
 
@@ -44,13 +43,6 @@ interface CircularModuleDependency {
 
 export function isCircularModuleDependency(value: any): value is CircularModuleDependency {
     return hasOwnProperty.call(value, '__circular__');
-}
-
-export function isNodeCreatedByLWC(node: Node) {
-    if (isNull(node) || isUndefined(node)) {
-        return false;
-    }
-    return !isUndefined(getNodeKey(node)) || !isUndefined(getNodeOwnerKey(node));
 }
 
 /**
