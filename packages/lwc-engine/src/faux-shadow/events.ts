@@ -11,7 +11,7 @@ import {
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { isNodeSlotted } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
-import { getHost, SyntheticShadowRoot } from "./shadow-root";
+import { getHost, SyntheticShadowRootInterface } from "./shadow-root";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -194,7 +194,7 @@ function getEventMap(elm: HTMLElement): ListenerMap {
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedShadowRootListener(sr: SyntheticShadowRoot, listener: EventListener): WrappedListener {
+function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -373,7 +373,7 @@ export function removeCustomElementEventListener(elm: HTMLElement, type: string,
     detachDOMListener(elm, type, wrappedListener);
 }
 
-export function addShadowRootEventListener(sr: SyntheticShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function addShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(sr)} for event "${type}". Expected an EventListener but received ${listener}.`);
         // TODO: issue #420
@@ -390,7 +390,7 @@ export function addShadowRootEventListener(sr: SyntheticShadowRoot, type: string
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeShadowRootEventListener(sr: SyntheticShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);

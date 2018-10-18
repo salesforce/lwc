@@ -26,7 +26,7 @@ import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
-import { getHost, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
+import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
 import { parentElementGetter } from "../framework/dom-api";
 import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
 
@@ -94,11 +94,11 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & ParentNode) | null {
+function getShadowParent(node: Node, value: undefined | HTMLElement): Node | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner) as ParentNode;
+        return getShadowRoot(owner) as Node;
     } else if (value instanceof Element) {
         if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -117,7 +117,7 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & Pa
     return null;
 }
 
-export function shadowRootChildNodes(root: SyntheticShadowRoot) {
+export function shadowRootChildNodes(root: SyntheticShadowRootInterface) {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
@@ -203,13 +203,13 @@ export function lightDomQuerySelector(elm: Element, selector: string): Element |
     }
 }
 
-export function shadowRootQuerySelector(root: SyntheticShadowRoot, selector: string): Element | null {
+export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, selector: string): Element | null {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRoot, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): Element[] {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
@@ -275,14 +275,14 @@ interface AssignedNodesOptions {
 export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
     return class extends Ctor {
-        get childNodes(): NodeListOf<ChildNode> {
+        get childNodes(this: Node): NodeListOf<ChildNode> {
             const owner = getNodeOwner(this);
             if (isNull(owner)) {
                 return [];
             }
             return getAllMatches(owner, getFilteredChildNodes(this));
         }
-        get assignedSlot(): HTMLElement | null {
+        get assignedSlot(this: Node): HTMLElement | null {
             const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
             /**
              * if it doesn't have a parent node,
@@ -295,20 +295,20 @@ export function PatchedNode(node: Node): NodeConstructor {
             }
             return parentNode as HTMLElement;
         }
-        get textContent(): string {
+        get textContent(this: Node): string {
             return getTextContent(this);
         }
-        set textContent(value: string) {
+        set textContent(this: Node, value: string) {
             textContextSetter.call(this, value);
         }
-        get parentNode(): (Node & ParentNode) | null {
+        get parentNode(this: Node): (Node & ParentNode) | null {
             const value = nativeParentNodeGetter.call(this);
             if (isNull(value)) {
                 return value;
             }
             return getShadowParent(this, value);
         }
-        get parentElement(): HTMLElement | null {
+        get parentElement(this: Node): HTMLElement | null {
             const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
             if (isNull(parentNode)) {
                 return null;
