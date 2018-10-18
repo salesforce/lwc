@@ -214,6 +214,80 @@ describe('Events on Custom Elements', () => {
         expect(result[1]).toBeInstanceOf(Event);
     });
 
+    it('should not execute native events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('click', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not execute composed: true events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('custom', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const event = new CustomEvent('custom', {
+            bubbles: true,
+            composed: true,
+        });
+        elm.dispatchEvent(event);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not execute composed: false events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('custom', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const event = new CustomEvent('custom', {
+            bubbles: true,
+            composed: false,
+        });
+        elm.dispatchEvent(event);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
     it('should add event listeners in constructor when created via createElement', function() {
         let count = 0;
 
