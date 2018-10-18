@@ -1,6 +1,6 @@
 import * as babel from "@babel/core";
 import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
-import { normalizeCompilerError } from "lwc-errors";
+import { normalizeToCompilerError } from "lwc-errors";
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from "../babel-plugins";
 import { NormalizedCompilerOptions } from "../compiler/options";
@@ -23,8 +23,7 @@ export default function(
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        // TODO: Do we want to transfer the stacktrace over to the CompilerError object?
-        throw normalizeCompilerError(e, { filename, location: e.loc });
+        throw normalizeToCompilerError(e, { filename, location: e.loc });
     }
 
     const metadata: lwcClassTransformPlugin.Metadata = (result as any)

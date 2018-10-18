@@ -3,9 +3,8 @@ import * as he from 'he';
 
 import {
     CompilerDiagnostic,
-    generateErrorMessage,
-    Level,
-    ParserErrors
+    generateCompilerDiagnostic,
+    ParserDiagnostics
 } from 'lwc-errors';
 
 import { VOID_ELEMENT_SET } from './constants';
@@ -27,15 +26,16 @@ export function parseHTML(source: string) {
     const parsingErrors: CompilerDiagnostic[] = [];
 
     const onParseError = (err: parse5.Errors.ParsingError) => {
-        const { code, lwcCode, startLine, startCol } = err;
-        const message = generateErrorMessage(ParserErrors.INVALID_HTML_SYNTAX, [code]);
+        const { code, startLine, startCol } = err;
 
-        parsingErrors.push({
-            code: lwcCode,
-            level: Level.Error,
-            message,
-            location: { line: startLine, column: startCol},
-        });
+        parsingErrors.push(
+            generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
+                messageArgs: [code],
+                context: {
+                    location: { line: startLine, column: startCol }
+                }
+            })
+        );
     };
 
     const validateClosingTag = (node: parse5.AST.Default.Element) => {
@@ -48,12 +48,17 @@ export function parseHTML(source: string) {
         const missingClosingTag = !!startTag && !endTag;
 
         if (!isVoidElement && missingClosingTag) {
-            parsingErrors.push({
-                code: 1,
-                level: Level.Error,
-                message: `<${node.tagName}> has no matching closing tag.`,
-                location: { line: startTag.startLine || startTag.line, column: startTag.startCol || startTag.col }
-            });
+            parsingErrors.push(
+                generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
+                    messageArgs: [node.tagName],
+                    context: {
+                        location: {
+                            line: startTag.startLine || startTag.line,
+                            column: startTag.startCol || startTag.col
+                        }
+                    }
+                })
+            );
         }
     };
 

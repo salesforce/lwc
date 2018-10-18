@@ -119,7 +119,7 @@ export const ModuleResolutionErrors = {
     IMPORTEE_RESOLUTION_FAILED: {
         code: 1,
         message: "Failed to resolve entry for module {0}",
-        type: "compiler_error_1.CompilerError",
+        type: "CompilerError",
         level: Level.Error,
         url: ""
     },
@@ -127,7 +127,7 @@ export const ModuleResolutionErrors = {
     IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED: {
         code: 1,
         message: "{0} failed to be resolved from {1}",
-        type: "compiler_error_1.CompilerError",
+        type: "CompilerError",
         level: Level.Error,
         url: ""
     },
@@ -147,7 +147,7 @@ export const TransformerErrors = {
     FATAL_TRANSFORMER_ERROR: {
         code: 1,
         message: "{0}: {1}",
-        type: "compiler_error_1.CompilerError",
+        type: "CompilerError",
         level: Level.Error,
         url: ""
     },

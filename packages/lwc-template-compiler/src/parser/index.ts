@@ -78,7 +78,7 @@ import {
     HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
-import { CompilerDiagnostic, Level } from 'lwc-errors';
+import { CompilerDiagnostic, generateCompilerDiagnostic, LWCErrorInfo, Level, ParserDiagnostics, normalizeToDiagnostic } from 'lwc-errors';
 
 function getKeyGenerator() {
     let count = 1;
@@ -204,7 +204,10 @@ export default function parse(source: string, state: State): {
                         try {
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
-                            return warnAt(error.message, location);
+                            warnings.push(normalizeToDiagnostic(error, {
+                                location: normalizeLocation(location)
+                            }));
+                            return;
                         }
                     } else {
                         value = decodeTextContent(token);
@@ -239,7 +242,7 @@ export default function parse(source: string, state: State): {
         ));
 
         if (!templateTag) {
-            warnAt(`Missing root template tag`);
+            warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
             return templateTag as parse5.AST.Default.Element;
         }
@@ -275,16 +278,12 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, eventHandlerAttribute.name);
 
             if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`Event handler should be an expression`, eventHandlerAttribute.location);
+                return warnAt(ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION, [], eventHandlerAttribute.location);
             }
 
             let eventName = eventHandlerAttribute.name;
             if (!eventName.match(EVENT_HANDLER_NAME_RE)) {
-                const msg = [
-                    `Invalid event name ${eventName}.`,
-                    `Event name can only contain lower-case alphabetic characters`,
-                ].join(' ');
-                return warnAt(msg, eventHandlerAttribute.location);
+                return warnAt(ParserDiagnostics.INVALID_EVENT_NAME, [eventName], eventHandlerAttribute.location);
             }
 
             // Strip the `on` prefix from the event handler name
@@ -303,12 +302,12 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, IF_RE);
 
             if (ifAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`If directive should be an expression`, ifAttribute.location);
+                return warnAt(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, [], ifAttribute.location);
             }
 
             const [, modifier] = ifAttribute.name.split(':');
             if (!VALID_IF_MODIFIER.has(modifier)) {
-                return warnAt(`Unexpected if modifier ${modifier}`, ifAttribute.location);
+                return warnAt(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, [modifier], ifAttribute.location);
             }
 
             element.if = ifAttribute.value;
@@ -328,29 +327,29 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, forItemAttribute.name);
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
-                return warnAt('for:each directive is expected to be a expression.', forEachAttribute.location);
+                return warnAt(ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION, [], forEachAttribute.location);
             } else if (forItemAttribute.type !== IRAttributeType.String) {
-                return warnAt('for:item directive is expected to be a string.', forItemAttribute.location);
+                return warnAt(ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING, [], forItemAttribute.location);
             }
 
             let item: TemplateIdentifier;
             try {
                 item = parseIdentifier(forItemAttribute.value);
             } catch (error) {
-                return warnAt(`${forItemAttribute.value} is not a valid identifier`, forItemAttribute.location);
+                return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [forItemAttribute.value], forItemAttribute.location);
             }
 
             let index: TemplateIdentifier | undefined;
             if (forIndex) {
                 removeAttribute(element, forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
-                    return warnAt(`for:index directive is expected to be a string.`, forIndex.location);
+                    return warnAt(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, [], forIndex.location);
                 }
 
                 try {
                     index = parseIdentifier(forIndex.value);
                 } catch (error) {
-                    return warnAt(`${forIndex.value} is not a valid identifier`, forIndex.location);
+                    return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [forIndex.value], forIndex.location);
                 }
             }
 
@@ -379,15 +378,14 @@ export default function parse(source: string, state: State): {
         const [, iteratorName] = iteratorAttributeName.split(':');
 
         if (iteratorExpression.type !== IRAttributeType.Expression) {
-            const message = `${iteratorExpression.name} directive is expected to be an expression.`;
-            return warnAt(message, iteratorExpression.location);
+            return warnAt(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, [iteratorExpression.name], iteratorExpression.location);
         }
 
         let iterator: TemplateIdentifier;
         try {
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
-            return warnAt(`${iteratorName} is not a valid identifier`, iteratorExpression.location);
+            return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [iteratorName], iteratorExpression.location);
         }
 
         element.forOf = {
@@ -401,26 +399,26 @@ export default function parse(source: string, state: State): {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
+                return warnAt(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, [], keyAttribute.location);
             }
 
             const forOfParent = getForOfParent(element);
             const forEachParent = getForEachParent(element);
             if (forOfParent) {
                 if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
+                    return warnAt(ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX, [element.tag], keyAttribute.location);
                 }
             } else if (forEachParent) {
                 if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
                     const name = ('name' in keyAttribute.value) && keyAttribute.value.name;
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${name}`, keyAttribute.location);
+                    return warnAt(ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX, [element.tag, name], keyAttribute.location);
                 }
             }
             removeAttribute(element, 'key');
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element) && element.tag !== 'template') {
-            return warnAt(`Missing key for element <${element.tag}> inside of iterator. Elements within iterators must have a unique, computed key value.`, location);
+            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, [element.tag], location);
         }
     }
 
@@ -435,7 +433,7 @@ export default function parse(source: string, state: State): {
         const isAttr = getTemplateAttribute(element, 'is');
         if (isAttr) {
             if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(`Is attribute value can't be an expression`, isAttr.location);
+                return warnAt(ParserDiagnostics.IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
             }
 
             // Don't remove the is, because passed as attribute
@@ -457,7 +455,7 @@ export default function parse(source: string, state: State): {
         const slotAttribute = getTemplateAttribute(element, 'slot');
         if (slotAttribute) {
             if (slotAttribute.type === IRAttributeType.Expression) {
-                return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
+                return warnAt(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], slotAttribute.location);
             }
         }
 
@@ -476,7 +474,7 @@ export default function parse(source: string, state: State): {
         const nameAttribute = getTemplateAttribute(element, 'name');
         if (nameAttribute) {
             if (nameAttribute.type === IRAttributeType.Expression) {
-                return warnAt(`Name attribute on slot tag can't be an expression.`, nameAttribute.location);
+                return warnAt(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, [], nameAttribute.location);
             } else if (nameAttribute.type === IRAttributeType.String) {
                 name = nameAttribute.value;
             }
@@ -500,12 +498,7 @@ export default function parse(source: string, state: State): {
 
             const { name, location } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
-                const msg = [
-                    `${name} is not valid attribute for ${tag}. For more information refer to`,
-                    `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
-                ].join(' ');
-
-                warnAt(msg, location);
+                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
             }
 
             if (attr.type === IRAttributeType.String) {
@@ -660,7 +653,8 @@ export default function parse(source: string, state: State): {
         for (const { location, value } of parseState.idAttrData) {
             if (seenIds.has(value)) {
                 warnAt(
-                    `Duplicate id value "${value}" detected. Id values must be unique within a template.`,
+                    ParserDiagnostics.DUPLICATE_ID_FOUND,
+                    [value],
                     location,
                     Level.Error,
                 );
@@ -673,7 +667,8 @@ export default function parse(source: string, state: State): {
             for (const value of values) {
                 if (!seenIds.has(value)) {
                     warnAt(
-                        `Attribute "${name}" references a non-existant id "${value}".`,
+                        ParserDiagnostics.ATTRIBUTE_REFERENCES_NONEXISTENT_ID,
+                        [name, value],
                         location,
                         Level.Error,
                     );
@@ -685,7 +680,8 @@ export default function parse(source: string, state: State): {
         for (const { location, value } of parseState.idAttrData) {
             if (!seenIdrefs.has(value)) {
                 warnAt(
-                    `Id "${value}" must be referenced in the template by an id-referencing attribute such as "for" or "aria-describedby".`,
+                    ParserDiagnostics.INVALID_ID_REFERENCE,
+                    [value],
                     location,
                     Level.Warning,
                 );
@@ -731,12 +727,7 @@ export default function parse(source: string, state: State): {
         // parse5 do automatically the convertion from camelcase to all lowercase. If the attributes names
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
-            const msg = [
-                `${rawAttribute} is not valid attribute for ${treeAdapter.getTagName(node)}.`,
-                `All attributes name should be all lowercase.`,
-            ].join(' ');
-
-            warnAt(msg, location);
+            warnAt(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, [rawAttribute, treeAdapter.getTagName(node)], location);
             return;
         }
 
@@ -771,7 +762,10 @@ export default function parse(source: string, state: State): {
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
 
-            warnAt(error.message, location);
+            warnings.push(normalizeToDiagnostic(error, {
+                location: normalizeLocation(location)
+            }));
+
             return;
         }
     }
@@ -799,17 +793,24 @@ export default function parse(source: string, state: State): {
         warnings.push({ code, message, level, location: getLocation(node) });
     }
 
-    function warnAt(message: string, location?: parse5.MarkupData.Location, level: Level = Level.Error) {
+    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location, level: Level = Level.Error) {
+        warnings.push(generateCompilerDiagnostic(errorInfo, {
+            messageArgs,
+            context: {
+                location: normalizeLocation(location)
+            }
+        }));
+    }
+
+    function normalizeLocation(location?: parse5.MarkupData.Location): { line: number, column: number } {
         let line = 0;
         let column = 0;
-// store warnings on state?
+
         if (location) {
             line = location.line || location.startLine;
             column = location.col || location.startCol;
         }
-
-        const code = 0;
-        warnings.push({ code, message, level, location: { line, column } });
+        return { line, column };
     }
 
     return { root, warnings };

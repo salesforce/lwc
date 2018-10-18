@@ -1,13 +1,14 @@
 import {
     CompilerError,
-    generateCompilerError,
+    generateCompilerError
 } from "../errors";
 
-import { Location } from "../../shared/types";
+import { Location, Level } from "../../shared/types";
 
 const ERROR_INFO = {
     code: 4,
-    message: "Test Error {0} with message {1}"
+    message: "Test Error {0} with message {1}",
+    level: Level.Error
 };
 
 class CustomError extends Error {
@@ -69,65 +70,6 @@ describe('error handling', () => {
             const error = generateCompilerError(ERROR_INFO, {
                 messageArgs: args,
                 context: { location }
-            });
-            expect(error.location).toEqual(location);
-        });
-    });
-
-    describe('custom error constructor', () => {
-        it('generates a compiler error based on the result of a custom error constructor', () => {
-            const args = ['errorName', 10];
-            const generateCustomError = (message) => {
-                return new CustomError(
-                    `Error message prefix from custom error: [${message}] with suffix`,
-                );
-            };
-
-            const error = generateCompilerError(ERROR_INFO, {
-                messageArgs: args,
-                errorConstructor: generateCustomError
-            });
-            expect(error.message).toEqual("Error message prefix from custom error: [LWC4: Test Error errorName with message 10] with suffix");
-        });
-
-        it('adds the filename to the compiler error if it exists on the custom error', () => {
-            const args = ['errorName', 10];
-            const filename = "filename";
-            const generateCustomError = (message) => {
-                return new CustomError(`test prefix ${message} suffix`, filename);
-            };
-
-            const error = generateCompilerError(ERROR_INFO, {
-                messageArgs: args,
-                errorConstructor: generateCustomError
-            });
-            expect(error.filename).toEqual(filename);
-        });
-
-        it('adds the location to the compiler error if it exists on the custom error', () => {
-            const args = ['errorName', 10];
-            const location = { line: 7, column: 42 };
-            const generateCustomError = (message) => {
-                return new CustomError(`test prefix ${message} suffix`, "", location);
-            };
-
-            const error = generateCompilerError(ERROR_INFO, {
-                messageArgs: args,
-                errorConstructor: generateCustomError
-            });
-            expect(error.location).toEqual(location);
-        });
-
-        it('adds the line and column info to the compiler error if it exists on the custom error', () => {
-            const args = ['errorName', 10];
-            const location = { line: 7, column: 42 };
-            const generateCustomError = (message) => {
-                return new CustomError(`test prefix ${message} suffix`, undefined, undefined, location.line, location.column);
-            };
-
-            const error = generateCompilerError(ERROR_INFO, {
-                messageArgs: args,
-                errorConstructor: generateCustomError
             });
             expect(error.location).toEqual(location);
         });

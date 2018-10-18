@@ -1,7 +1,7 @@
 import * as path from "path";
 import postcss from "postcss";
 import cssnano from "cssnano";
-import { normalizeCompilerError } from "lwc-errors";
+import { normalizeToCompilerError } from "lwc-errors";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
 import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
@@ -117,7 +117,7 @@ export default async function transformStyle(
             from: filename,
         });
     } catch (e) {
-        throw normalizeCompilerError(e, { filename, location: e.loc });
+        throw normalizeToCompilerError(e, { filename, location: e.loc });
     }
 
     let code: string = '';

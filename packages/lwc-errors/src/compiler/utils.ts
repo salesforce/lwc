@@ -26,4 +26,14 @@ export class CompilerError extends Error implements CompilerDiagnostic {
         this.filename = filename;
         this.location = location;
     }
+
+    toDiagnostic(): CompilerDiagnostic {
+        return {
+            code: this.code,
+            message: this.message,
+            level: this.level,
+            filename: this.filename,
+            location: this.location
+        };
+    }
 }

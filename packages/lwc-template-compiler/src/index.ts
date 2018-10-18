@@ -2,9 +2,9 @@ import {
     CompilerDiagnostic,
     TemplateErrors,
     Level,
-    convertDiagnosticToError,
-    convertErrorToDiagnostic,
-    generateCompilerError
+    convertDiagnosticToCompilerError,
+    generateCompilerError,
+    normalizeToDiagnostic
 } from 'lwc-errors';
 
 import State from './state';
@@ -47,7 +47,7 @@ export default function compiler(
             code = output.code;
         }
     } catch (error) {
-        const diagnostic = convertErrorToDiagnostic(error);
+        const diagnostic = normalizeToDiagnostic(error);
         diagnostic.message = `Unexpected compilation error: ${diagnostic.message}`;
         warnings.push(diagnostic);
     }
@@ -73,7 +73,7 @@ export function compileToFunction(source: string): Function {
 
     for (const warning of parsingResults.warnings) {
         if (warning.level === Level.Error) {
-            throw convertDiagnosticToError(warning);
+            throw convertDiagnosticToCompilerError(warning);
         } else if (warning.level === Level.Warning) {
             /* tslint:disable-next-line:no-console */
             console.warn(warning.message);

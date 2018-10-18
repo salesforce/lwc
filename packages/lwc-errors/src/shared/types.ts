@@ -12,7 +12,7 @@ export enum Level {
 export interface LWCErrorInfo {
     code: number;
     message: string;
-    level?: Level;
+    level: Level;
     type?: string;
     arguments?: any[];
     url?: string;

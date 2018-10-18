@@ -65,10 +65,14 @@ describe('fixtures', () => {
 
             // check warnings
             // TODO ERROR CODES: Update new location info
-            const tempFilter = element => {
+            const actualFilter = element => {
                 return { message: element.message, level: element.level };
             };
-            expect(actual.warnings && actual.warnings.map(tempFilter)).toEqual(expectedMetaData.warnings && expectedMetaData.warnings.map(tempFilter) || []);
+
+            const expectedFilter = element => {
+                return { message: expect.stringContaining(element.message), level: element.level };
+            };
+            expect(actual.warnings && actual.warnings.map(actualFilter)).toEqual(expectedMetaData.warnings && expectedMetaData.warnings.map(expectedFilter) || []);
             // check compiled code
             expect(
                 prettier.format(actual.code),

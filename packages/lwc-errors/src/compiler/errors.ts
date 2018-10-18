@@ -10,28 +10,54 @@ export * from "./error-info/template-transform";
 
 export * from "./utils";
 
+// TODO: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
     messageArgs?: any[];
     context?: CompilerContext;
-    errorConstructor?: (message: string) => Error;
 }
 
 // TODO ERROR CODES: Move somewhere else
 const GENERIC_COMPILER_ERROR = {
     code: 1,
-    message: "Unexpected compilation error: {0}"
+    message: "Unexpected compilation error: {0}",
+    level: Level.Error
 };
+
+export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
+    const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;
+
+    if (errorInfo.url !== "") {
+        // TODO: Add url info into message
+    }
+
+    return `LWC${errorInfo.code}: ${message}`;
+}
+
+export function generateCompilerDiagnostic(
+    errorInfo: LWCErrorInfo,
+    config?: ErrorConfig
+): CompilerDiagnostic {
+    const message = generateErrorMessage(errorInfo, config && config.messageArgs);
+    const diagnostic: CompilerDiagnostic = {
+        code: errorInfo.code,
+        message,
+        level: errorInfo.level
+    };
+
+    if (config && config.context) {
+        diagnostic.filename = config.context.filename;
+        diagnostic.location = config.context.location;
+    }
+
+    return diagnostic;
+}
 
 /**
  * Generates a compiler error. This function is used to look up the specified errorInfo
  * and generate a friendly and consistent error object from that info.
  *
  * @param {LWCErrorInfo} errorInfo The object holding the error metadata.
- * @param {Array} messageArgs Any arguments needed to construct the error message
- * @param {CompilerContext} context Provides explicit context on where (file name, Location) the error happened
- * @param {(message: string) => Error} customErrorConstructor Hook for creating an intermediate error object before generating
- * the final CompilerError. Expects a pre-formatted error message string and returns an Error object. This is often useful for
- * getting extra error data from library errors while still passing a correctly formatted error message to the library.
+ * @param {ErrorConfig} config A config object providing any message arguments or context needed to create the error
  * @return {CompilerError}
  */
 export function generateCompilerError(
@@ -39,14 +65,22 @@ export function generateCompilerError(
     config?: ErrorConfig
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
-    const customError = config && config.errorConstructor && config.errorConstructor(message);
+    const error = new CompilerError(errorInfo.code, message);
 
-    return new CompilerError(
-        errorInfo.code,
-        customError ? customError.message : message,
-        getFilename(config && config.context || {}, customError),
-        getLocation(config && config.context || {}, customError)
-    );
+    if (config && config.context) {
+        error.filename = config.context.filename;
+        error.location = config.context.location;
+    }
+
+    return error;
+}
+
+export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
+    if (!condition) {
+        throw generateCompilerError(errorInfo, {
+            messageArgs: args
+        });
+    }
 }
 
 /**
@@ -56,7 +90,7 @@ export function generateCompilerError(
  *
  * @return {CompilerError}
  */
-export function normalizeCompilerError(error: any, newContext?: CompilerContext): CompilerError {
+export function normalizeToCompilerError(error: any, newContext?: CompilerContext): CompilerError {
     if (error instanceof CompilerError) {
         if (newContext) {
             if (newContext.filename) {
@@ -70,63 +104,66 @@ export function normalizeCompilerError(error: any, newContext?: CompilerContext)
         return error;
     }
 
-    const code = error.lwcCode || GENERIC_COMPILER_ERROR.code;
-    const message = error.lwcCode
-        ? error.message
-        : generateErrorMessage(GENERIC_COMPILER_ERROR, [error.message]);
+    const { code, message, filename, location } =
+        convertErrorToDiagnostic(error, newContext);
 
     const compilerError = new CompilerError(
         code,
         message,
-        getFilename(newContext, error),
-        getLocation(newContext, error)
+        filename,
+        location
     );
-
     compilerError.stack = error.stack;
     return compilerError;
 }
 
-export function convertErrorToDiagnostic(error: any, newContext?: CompilerContext): CompilerDiagnostic {
-    const code = error.code || GENERIC_COMPILER_ERROR.code;
-    const message = error.message;
-    const level = error.level || Level.Error;
-    const filename = getFilename(newContext, error);
-    const location = getLocation(newContext, error);
+export function normalizeToDiagnostic(error: any, newContext?: CompilerContext): CompilerDiagnostic {
+    if (error instanceof CompilerError) {
+        const diagnostic = error.toDiagnostic();
+        if (newContext) {
+            if (newContext.filename) {
+                diagnostic.filename = newContext.filename;
+            }
 
-    return {
-        code,
-        message,
-        level,
-        filename,
-        location
-    };
-}
-
-export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
-    if (!condition) {
-        throw generateCompilerError(errorInfo, {
-            messageArgs: args
-        });
+            if (newContext.location) {
+                diagnostic.location = newContext.location;
+            }
+        }
+        return diagnostic;
     }
+
+    return convertErrorToDiagnostic(error, newContext);
 }
 
-export function convertDiagnosticToError(diagnostic: CompilerDiagnostic, additionalContext?: CompilerContext): CompilerError {
+export function convertDiagnosticToCompilerError(diagnostic: CompilerDiagnostic, newContext?: CompilerContext): CompilerError {
     const { code, message } = diagnostic;
 
-    const filename = getFilename(additionalContext, diagnostic);
-    const location = getLocation(additionalContext, diagnostic);
+    const filename = getFilename(newContext, diagnostic);
+    const location = getLocation(newContext, diagnostic);
 
     return new CompilerError(code, `${filename}: ${message}`, filename, location);
 }
 
-export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
-    const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;
+function convertErrorToDiagnostic(error: any, newContext?: CompilerContext): CompilerDiagnostic {
+    const code = getCode(error) || GENERIC_COMPILER_ERROR.code;
+    const message = error.lwcCode
+        ? error.message
+        : generateErrorMessage(GENERIC_COMPILER_ERROR, [error.message]);
 
-    if (errorInfo.url !== "") {
-        // TODO: Add url info into message
+    const level = error.level || Level.Error;
+    const filename = getFilename(newContext, error);
+    const location = getLocation(newContext, error);
+
+    return { code, message, level, filename, location };
+}
+
+function getCode(error: any): number | undefined {
+    if (error.lwcCode && typeof error.lwcCode === 'number') {
+        return error.lwcCode;
+    } else if (error.code && typeof error.code === 'number') {
+        return error.code;
     }
-
-    return `LWC${errorInfo.code}: ${message}`;
+    return undefined;
 }
 
 function getFilename(context: CompilerContext | undefined, obj: any): string {

@@ -109,7 +109,7 @@ describe('event handlers', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `Event handler should be an expression`,
+            message: `LWC1: Event handler should be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -145,7 +145,7 @@ describe('for:each directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `for:item directive is expected to be a string.`,
+            message: `LWC1: for:item directive is expected to be a string.`,
             location: EXPECTED_LOCATION
         });
     });
@@ -163,7 +163,7 @@ describe('for:of directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `iterator:it directive is expected to be an expression.`,
+            message: `LWC1: iterator:it directive is expected to be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -187,7 +187,7 @@ describe('if directive', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `Unexpected if modifier is-true`,
+            message: `LWC1: Unexpected if modifier is-true`,
             location: EXPECTED_LOCATION
         });
     });
@@ -197,7 +197,7 @@ describe('if directive', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `If directive should be an expression`,
+            message: `LWC1: If directive should be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -219,7 +219,7 @@ describe('custom component', () => {
     it('custom component self closing error', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
-            code: undefined,// TODO ERROR CODE expect.any(Number),
+            code: expect.any(Number),
             level: Level.Error,
             message: `LWC1: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             location: EXPECTED_LOCATION
@@ -237,7 +237,7 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: `Is attribute value can't be an expression`,
+            message: `LWC1: Is attribute value can't be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -249,7 +249,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: Level.Error,
-            message: 'Missing root template tag',
+            message: 'LWC1: Missing root template tag',
             location: EXPECTED_LOCATION
         });
     });

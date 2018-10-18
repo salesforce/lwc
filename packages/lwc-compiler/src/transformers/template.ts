@@ -1,5 +1,5 @@
 import * as path from "path";
-import { convertDiagnosticToError, normalizeCompilerError, Level } from "lwc-errors";
+import { convertDiagnosticToCompilerError, normalizeToCompilerError, Level } from "lwc-errors";
 import compile from "lwc-template-compiler";
 import { TemplateModuleDependency } from "lwc-template-compiler";
 
@@ -52,10 +52,10 @@ const transform: FileTransformer = function(
 
         const fatalError = result.warnings.find(warning => warning.level === Level.Error);
         if (fatalError) {
-            throw convertDiagnosticToError(fatalError, { filename });
+            throw convertDiagnosticToCompilerError(fatalError, { filename });
         }
     } catch (e) {
-        throw normalizeCompilerError(e, { filename, location: e.loc });
+        throw normalizeToCompilerError(e, { filename, location: e.loc });
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
