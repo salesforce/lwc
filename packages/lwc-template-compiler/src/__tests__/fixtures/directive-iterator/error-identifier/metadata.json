@@ -1,11 +1,19 @@
 {
-  "warnings": [{
-    "length": 28,
-    "level": "error",
-    "message": "my-iterator is not a valid identifier",
-    "start": 19
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: my-iterator is not a valid identifier",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 2,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

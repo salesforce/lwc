@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Expected root tag to be template, found section",
-    "start": 0,
-    "length": 42
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Expected root tag to be template, found section",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 1,
+                "column": 1
+            }
+        }
+    ]
 }

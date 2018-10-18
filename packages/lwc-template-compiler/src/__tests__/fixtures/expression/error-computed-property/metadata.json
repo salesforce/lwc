@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression {val[state.foo]} - LWC1: Template expression doesn't allow computed property access",
-    "start": 10,
-    "length": 22
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "Invalid expression {val[state.foo]} - LWC1: Template expression doesn't allow computed property access",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 1,
+                "column": 11
+            }
+        }
+    ]
 }

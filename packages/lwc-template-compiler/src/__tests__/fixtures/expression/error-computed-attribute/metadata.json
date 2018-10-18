@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression {classNames[0]} - LWC1: Template expression doesn't allow NumericLiteral",
-    "start": 36,
-    "length": 21
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "Invalid expression {classNames[0]} - LWC1: Template expression doesn't allow NumericLiteral",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 3,
+                "column": 12
+            }
+        }
+    ]
 }

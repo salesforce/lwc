@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Missing root template tag",
-    "start": 0,
-    "length": 0
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Missing root template tag",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 0,
+                "column": 0
+            }
+        }
+    ]
 }

@@ -85,7 +85,9 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
     if (esutils.keyword.isIdentifierES6(source)) {
         return types.identifier(source);
     } else {
-        throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER);
+        throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
+            messageArgs: [source]
+        });
     }
 }
 

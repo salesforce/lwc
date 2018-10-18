@@ -17,54 +17,24 @@ export const CSSTransformErrors = {
         url: ''
     },
 
-    SELECTOR_SCOPE_DEPRECATED_SELECTOR: {
+    CUSTOM_PROPERTY_INVALID_DEFINITION: {
         code: 1,
-        message: 'Invalid usage of deprecated selector "{0}"',
-        type: 'Custom', // root.error
-        level: Level.Error,
-        url: ''
-    },
-
-    SELECTOR_SCOPE_UNSUPPORTED_SELECTOR: {
-        code: 1,
-        message: 'Invalid usage of unsupported selector "{0}".',
-        type: 'Custom', // root.error
-        level: Level.Error,
-        url: ''
-    },
-
-    SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR: {
-        code: 1,
-        message:
-            'Invalid usage of attribute selector "{0}". ' +
-            'For validation purposes, attributes that are not global attributes must be associated ' +
-            'with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")',
-        type: 'Custom', // root.error
-        level: Level.Error,
-        url: ''
-    },
-
-    SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG: {
-        code: 1,
-        message:
-            'Invalid usage of attribute selector "{0}". ' +
-            'Attribute "{0}" is not a known attribute on <{1}> element.',
-        type: 'Custom', // root.error
-        level: Level.Error,
-        url: ''
-    },
-
-    CUSTOM_PROPERTY_MISSING_CLOSING_PARENS: {
-        code: 1,
-        message: 'Missing closing ")" for "{0}"',
-        type: 'Custom', // decl.error
+        message: 'Invalid definition of custom property "{0}"',
+        type: 'Custom',
         level: Level.Error
     },
 
     CUSTOM_PROPERTY_INVALID_VAR_FUNC_SIGNATURE: {
         code: 1,
         message: 'Invalid var function signature for "{0}"',
-        type: 'Custom', // decl.error
+        type: 'Custom',
+        level: Level.Error
+    },
+
+    CUSTOM_PROPERTY_MISSING_CLOSING_PARENS: {
+        code: 1,
+        message: 'Missing closing ")" for "{0}"',
+        type: 'Custom',
         level: Level.Error
     },
 
@@ -75,11 +45,33 @@ export const CSSTransformErrors = {
         level: Level.Error
     },
 
-    CUSTOM_PROPERTY_INVALID_DEFINITION: {
+    SELECTOR_SCOPE_ATTR_SELECTOR_MISSING_TAG_SELECTOR: {
         code: 1,
-        message: 'Invalid definition of custom property "{0}"',
-        type: 'Custom', // decl.error
-        level: Level.Error
+        message:
+            'Invalid usage of attribute selector "{0}". ' +
+            'For validation purposes, attributes that are not global attributes must be associated ' +
+            'with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")',
+        type: 'Custom',
+        level: Level.Error,
+        url: ''
+    },
+
+    SELECTOR_SCOPE_ATTR_SELECTOR_NOT_KNOWN_ON_TAG: {
+        code: 1,
+        message:
+            'Invalid usage of attribute selector "{0}". ' +
+            'Attribute "{0}" is not a known attribute on <{1}> element.',
+        type: 'Custom',
+        level: Level.Error,
+        url: ''
+    },
+
+    SELECTOR_SCOPE_DEPRECATED_SELECTOR: {
+        code: 1,
+        message: 'Invalid usage of deprecated selector "{0}"',
+        type: 'Custom',
+        level: Level.Error,
+        url: ''
     },
 
     SELECTOR_SCOPE_PARENT_NODE_MISSING: {
@@ -87,5 +79,13 @@ export const CSSTransformErrors = {
         message: 'Impossible to replace root node.',
         type: 'Error',
         level: Level.Error
+    },
+
+    SELECTOR_SCOPE_UNSUPPORTED_SELECTOR: {
+        code: 1,
+        message: 'Invalid usage of unsupported selector "{0}".',
+        type: 'Custom',
+        level: Level.Error,
+        url: ''
     }
 };

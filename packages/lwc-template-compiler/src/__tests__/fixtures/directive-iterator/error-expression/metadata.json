@@ -1,11 +1,19 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression {x.next} - LWC1: Template expression doesn't allow to modify iterators",
-    "start": 97,
-    "length": 14
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "Invalid expression {x.next} - LWC1: Template expression doesn't allow to modify iterators",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 4,
+                "column": 35
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

@@ -1,11 +1,19 @@
 {
-  "warnings": [{
-    "length": 15,
-    "level": "error",
-    "message": "Name attribute on slot tag can't be an expression.",
-    "start": 21
-  }],
-  "metadata": {
-    "templateUsedIds": ["slotName"]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Name attribute on slot tag can't be an expression.",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 2,
+                "column": 11
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "slotName"
+        ]
+    }
 }

@@ -1,11 +1,19 @@
 {
-    "warnings": [{
-      "level": "error",
-      "message": "Invalid key value for element <p>. Key cannot reference iterator index",
-      "start": 78,
-      "length": 13
-    }],
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Invalid key value for element <p>. Key cannot reference iterator index",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 4,
+                "column": 16
+            }
+        }
+    ],
     "metadata": {
-      "templateUsedIds": ["items"]
+        "templateUsedIds": [
+            "items"
+        ]
     }
-  }
+}

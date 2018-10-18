@@ -1,11 +1,19 @@
 {
-    "warnings": [{
-      "level": "error",
-      "message": "Invalid key value for element <div>. Key cannot reference for:each index index",
-      "start": 38,
-      "length": 11
-    }],
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Invalid key value for element <div>. Key cannot reference for:each index index",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 3,
+                "column": 14
+            }
+        }
+    ],
     "metadata": {
-      "templateUsedIds": ["items"]
+        "templateUsedIds": [
+            "items"
+        ]
     }
-  }
+}

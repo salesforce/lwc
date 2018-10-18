@@ -1,6 +1,5 @@
 import { Level } from "../../shared/types";
 
-// component.js
 export const LWCClassErrors = {
     INVALID_IMPORT_MISSING_DEFAULT_EXPORT: {
         code: 1,
@@ -10,7 +9,6 @@ export const LWCClassErrors = {
         url: ""
     },
 
-    // utils.js
     INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED: {
         code: 1,
         message: "Invalid import. Namespace imports are not allowed on \"{0}\", instead use named imports \"import { {1} } from '{2}'\".",
@@ -18,6 +16,7 @@ export const LWCClassErrors = {
         level: Level.Error,
         url: ""
     },
+
     INVALID_STATIC_OBSERVEDATTRIBUTES: {
         code: 1,
         message: "Invalid static property \"observedAttributes\". \"observedAttributes\" cannot be used to track attribute changes. Define setters for {0} instead.",
@@ -36,7 +35,6 @@ export const LWCClassErrors = {
 };
 
 export const DecoratorErrors = {
-// decorators/wire/validate.js
     ADAPTER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1,
         message: "@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).",
@@ -45,7 +43,6 @@ export const DecoratorErrors = {
         url: ""
     },
 
-    // decorators/api/validate.js
     API_AND_TRACK_DECORATOR_CONFLICT: {
         code: 1,
         message: '@api method or property cannot be used with @track',
@@ -77,6 +74,7 @@ export const DecoratorErrors = {
         level: Level.Error,
         url: ""
     },
+
     FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1,
         message: "@wire expects a function identifier as first parameter.",
@@ -109,7 +107,6 @@ export const DecoratorErrors = {
         url: ""
     },
 
-    // decorators/index.js
     INVALID_DECORATOR_TYPE: {
         code: 1,
         message: "Invalid property of field type",
@@ -157,6 +154,7 @@ export const DecoratorErrors = {
         level: Level.Error,
         url: ""
     },
+
     PROPERTY_NAME_CANNOT_START_WITH_DATA: {
         code: 1,
         message: "Invalid property name {0}. Properties starting with \"data\" are reserved attributes.",
@@ -164,6 +162,7 @@ export const DecoratorErrors = {
         level: Level.Error,
         url: ""
     },
+
     PROPERTY_NAME_CANNOT_START_WITH_ON: {
         code: 1,
         message: "Invalid property name {0}. Properties starting with \"on\" are reserved for event handlers.",
@@ -204,7 +203,6 @@ export const DecoratorErrors = {
         url: ""
     },
 
-    // decorators/track/index.js
     TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES: {
         code: 1,
         message: "@track decorator can only be applied to class properties.",

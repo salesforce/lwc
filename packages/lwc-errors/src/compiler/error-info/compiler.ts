@@ -1,6 +1,5 @@
 import { Level } from "../../shared/types";
 
-// compiler/options.js
 export const CompilerValidationErrors = {
     INVALID_ALLOWDEFINITION_PROPERTY: {
         code: 1,
@@ -132,7 +131,6 @@ export const ModuleResolutionErrors = {
         url: ""
     },
 
-    // rollup-plugins/module-resolver.js
     NONEXISTENT_FILE: {
         code: 1,
         message: "No such file {0}",
@@ -143,7 +141,6 @@ export const ModuleResolutionErrors = {
 };
 
 export const TransformerErrors = {
-// transformers/template.js
     FATAL_TRANSFORMER_ERROR: {
         code: 1,
         message: "{0}: {1}",
@@ -151,6 +148,7 @@ export const TransformerErrors = {
         level: Level.Error,
         url: ""
     },
+
     INVALID_ID: {
         code: 1,
         message: "Expect a string for id. Received {0}",
@@ -159,7 +157,6 @@ export const TransformerErrors = {
         url: ""
     },
 
-    // transformers/transformer.js
     INVALID_SOURCE: {
         code: 1,
         message: "Expect a string for source. Received {0}",

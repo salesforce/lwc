@@ -1,100 +1,164 @@
 {
     "warnings": [
         {
-            "message": "Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
-            "start": 160,
-            "length": 19,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 6,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<cursor>' tag is not allowed within <svg>",
-            "start": 339,
-            "length": 17,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<cursor>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 10,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<discard>' tag is not allowed within <svg>",
-            "start": 365,
-            "length": 19,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<discard>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 11,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<font-face>' tag is not allowed within <svg>",
-            "start": 415,
-            "length": 23,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<font-face>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 13,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<font-face-format>' tag is not allowed within <svg>",
-            "start": 447,
-            "length": 37,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<font-face-format>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 14,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<font-face-name>' tag is not allowed within <svg>",
-            "start": 493,
-            "length": 33,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<font-face-name>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 15,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<font-face-src>' tag is not allowed within <svg>",
-            "start": 535,
-            "length": 31,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<font-face-src>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 16,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<font-face-uri>' tag is not allowed within <svg>",
-            "start": 575,
-            "length": 31,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<font-face-uri>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 17,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<hatch>' tag is not allowed within <svg>",
-            "start": 727,
-            "length": 15,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<hatch>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 21,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<hatchpath>' tag is not allowed within <svg>",
-            "start": 751,
-            "length": 23,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<hatchpath>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 22,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<metadata>' tag is not allowed within <svg>",
-            "start": 807,
-            "length": 21,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<metadata>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 24,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<missing-glyph>' tag is not allowed within <svg>",
-            "start": 837,
-            "length": 31,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<missing-glyph>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 25,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
-            "start": 901,
-            "length": 17,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 27,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<set>' tag is not allowed within <svg>",
-            "start": 927,
-            "length": 11,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<set>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 28,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<solidcolor>' tag is not allowed within <svg>",
-            "start": 947,
-            "length": 25,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<solidcolor>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 29,
+                "column": 9
+            }
         },
         {
-            "message": "Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
-            "start": 981,
-            "length": 15,
-            "level": "error"
+            "code": 1,
+            "message": "LWC1: Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 30,
+                "column": 9
+            }
         }
     ],
     "definedSlots": [],

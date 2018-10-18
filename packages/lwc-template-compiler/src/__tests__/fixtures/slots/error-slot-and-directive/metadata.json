@@ -1,11 +1,19 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Slot tag can't be associated with directives",
-    "start": 32,
-    "length": 31
-  }],
-  "metadata": {
-    "templateUsedIds": ["isTrue"]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Slot tag can't be associated with directives",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 3,
+                "column": 8
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "isTrue"
+        ]
+    }
 }

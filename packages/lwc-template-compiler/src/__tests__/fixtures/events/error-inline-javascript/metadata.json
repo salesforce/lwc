@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Event handler should be an expression",
-    "start": 19,
-    "length": 24
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Event handler should be an expression",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 2,
+                "column": 9
+            }
+        }
+    ]
 }

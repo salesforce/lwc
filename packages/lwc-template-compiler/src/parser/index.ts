@@ -78,7 +78,13 @@ import {
     HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
-import { CompilerDiagnostic, generateCompilerDiagnostic, LWCErrorInfo, ParserDiagnostics, normalizeToDiagnostic } from 'lwc-errors';
+import {
+    CompilerDiagnostic,
+    generateCompilerDiagnostic,
+    LWCErrorInfo,
+    normalizeToDiagnostic,
+    ParserDiagnostics
+} from 'lwc-errors';
 
 function getKeyGenerator() {
     let count = 1;
@@ -204,7 +210,7 @@ export default function parse(source: string, state: State): {
                         try {
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
-                            warnings.push(normalizeToDiagnostic(error, {
+                            addDiagnostic(normalizeToDiagnostic(error, {
                                 location: normalizeLocation(location)
                             }));
                             return;
@@ -336,7 +342,11 @@ export default function parse(source: string, state: State): {
             try {
                 item = parseIdentifier(forItemAttribute.value);
             } catch (error) {
-                return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [forItemAttribute.value], forItemAttribute.location);
+                return addDiagnostic(
+                    normalizeToDiagnostic(error, {
+                        location: normalizeLocation(forItemAttribute.location)
+                    })
+                );
             }
 
             let index: TemplateIdentifier | undefined;
@@ -349,7 +359,11 @@ export default function parse(source: string, state: State): {
                 try {
                     index = parseIdentifier(forIndex.value);
                 } catch (error) {
-                    return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [forIndex.value], forIndex.location);
+                    return addDiagnostic(
+                        normalizeToDiagnostic(error, {
+                            location: normalizeLocation(forIndex.location)
+                        })
+                    );
                 }
             }
 
@@ -385,7 +399,11 @@ export default function parse(source: string, state: State): {
         try {
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
-            return warnAt(ParserDiagnostics.INVALID_IDENTIFIER_TWO, [iteratorName], iteratorExpression.location);
+            return addDiagnostic(
+                normalizeToDiagnostic(error, {
+                    location: normalizeLocation(iteratorExpression.location)
+                })
+            );
         }
 
         element.forOf = {
@@ -759,7 +777,7 @@ export default function parse(source: string, state: State): {
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
 
-            warnings.push(normalizeToDiagnostic(error, {
+            addDiagnostic(normalizeToDiagnostic(error, {
                 location: normalizeLocation(location)
             }));
 
@@ -767,7 +785,6 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
     function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
         const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number } => {
             if (!toLocate) {
@@ -786,7 +803,7 @@ export default function parse(source: string, state: State): {
             }
         };
 
-        warnings.push(generateCompilerDiagnostic(errorInfo, {
+        addDiagnostic(generateCompilerDiagnostic(errorInfo, {
             messageArgs,
             context: {
                 location: getLocation(node)
@@ -795,7 +812,7 @@ export default function parse(source: string, state: State): {
     }
 
     function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location) {
-        warnings.push(generateCompilerDiagnostic(errorInfo, {
+        addDiagnostic(generateCompilerDiagnostic(errorInfo, {
             messageArgs,
             context: {
                 location: normalizeLocation(location)
@@ -803,6 +820,7 @@ export default function parse(source: string, state: State): {
         }));
     }
 
+    // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
     function normalizeLocation(location?: parse5.MarkupData.Location): { line: number, column: number } {
         let line = 0;
         let column = 0;
@@ -812,6 +830,10 @@ export default function parse(source: string, state: State): {
             column = location.col || location.startCol;
         }
         return { line, column };
+    }
+
+    function addDiagnostic(diagnostic: CompilerDiagnostic) {
+        warnings.push(diagnostic);
     }
 
     return { root, warnings };

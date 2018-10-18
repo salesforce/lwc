@@ -8,6 +8,7 @@ export const JestTransformerErrors = {
         level: Level.Error,
         url: ''
     },
+
     INVALID_IMPORT: {
         code: 1,
         message: 'Invalid import from {0}. Only import the default using the following syntax: "import foo from \'@salesforce/label/c.foo\'"',

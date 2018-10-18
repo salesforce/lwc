@@ -1,17 +1,25 @@
 {
-  "warnings": [{
-    "length": 13,
-    "level": "error",
-    "message": "Slot attribute value can't be an expression.",
-    "start": 35
-  }],
-  "metadata": {
-    "templateUsedIds": ["mySlot"],
-    "templateDependencies": [
-      {
-        "moduleName": "ns/cmp",
-        "tagName": "ns-cmp"
-      }
-    ]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: Slot attribute value can't be an expression.",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 3,
+                "column": 12
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "mySlot"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "ns/cmp",
+                "tagName": "ns-cmp"
+            }
+        ]
+    }
 }

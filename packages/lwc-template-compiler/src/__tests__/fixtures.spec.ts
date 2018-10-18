@@ -64,15 +64,7 @@ describe('fixtures', () => {
             }
 
             // check warnings
-            // TODO ERROR CODES: Update new location info
-            const actualFilter = element => {
-                return { message: element.message, level: element.level };
-            };
-
-            const expectedFilter = element => {
-                return { message: expect.stringContaining(element.message), level: element.level };
-            };
-            expect(actual.warnings && actual.warnings.map(actualFilter)).toEqual(expectedMetaData.warnings && expectedMetaData.warnings.map(expectedFilter) || []);
+            expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
             expect(
                 prettier.format(actual.code),

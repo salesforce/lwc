@@ -1,11 +1,20 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "If directive should be an expression",
-    "start": 43,
-    "length": 16
-  }],
-  "metadata": {
-    "templateUsedIds": ["foo", "bar"]
-  }
+    "warnings": [
+        {
+            "code": 1,
+            "message": "LWC1: If directive should be an expression",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 3,
+                "column": 19
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "foo",
+            "bar"
+        ]
+    }
 }

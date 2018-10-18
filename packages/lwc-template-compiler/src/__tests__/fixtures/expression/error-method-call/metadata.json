@@ -1,8 +1,14 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression { Math.random() } - LWC1: Template expression doesn't allow CallExpression",
-    "start": 18,
-    "length": 17
-  }]
+    "warnings": [
+        {
+            "code": 1,
+            "message": "Invalid expression { Math.random() } - LWC1: Template expression doesn't allow CallExpression",
+            "level": "error",
+            "filename": "",
+            "location": {
+                "line": 2,
+                "column": 8
+            }
+        }
+    ]
 }
