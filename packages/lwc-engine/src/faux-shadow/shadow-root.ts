@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf } from "../shared/language";
+import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf, defineProperty } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -13,6 +13,7 @@ import { DocumentPrototypeActiveElement } from "./document";
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
+const { createDocumentFragment } = document;
 
 export function getHost(root: SyntheticShadowRoot): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
@@ -58,13 +59,15 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
         ShadowRootPrototypePatched = true;
         defineProperties(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());
     }
-    const sr = create(SyntheticShadowRoot.prototype, {
-        mode: {
-            value: mode,
-            configurable: true,
-            enumerable: true,
-        },
+    // creating a real fragment for shadowRoot instance
+    const sr = createDocumentFragment.call(document);
+    defineProperty(sr, 'mode', {
+        value: mode,
+        configurable: true,
+        enumerable: true,
     });
+    // correcting the proto chain
+    setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     setInternalField(sr, HostKey, elm);
     setInternalField(elm, ShadowRootKey, sr);
     // expose the shadow via a hidden symbol for testing purposes
