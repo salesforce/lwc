@@ -3,7 +3,7 @@ import { patchEvent } from "../faux-shadow/faux";
 import { patchCustomElement } from "../faux-shadow/faux";
 import { elementTagNameGetter } from "./dom-api";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { setPrototypeOf, getPrototypeOf, create, isUndefined } from "../shared/language";
+import { setPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "./base-bridge-element";
 import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement } from "../faux-shadow/traverse";
@@ -54,12 +54,12 @@ export function patchCommentNodeProto(comment: Comment) {
 
 const TagToProtoCache: Record<string, object> = create(null);
 
-function getPatchedElementClass(elm: HTMLElement) {
+function getPatchedElementClass(elm: HTMLElement): HTMLElementConstructor {
     switch (elementTagNameGetter.call(elm)) {
         case 'SLOT':
-            return PatchedSlotElement(elm);
+            return PatchedSlotElement(elm as HTMLSlotElement);
         case 'IFRAME':
-            return PatchedIframeElement(elm);
+            return PatchedIframeElement(elm as HTMLIFrameElement);
     }
     return PatchedElement(elm);
 }
@@ -77,16 +77,16 @@ export function patchElementProto(elm: HTMLElement, tag: string) {
 // since the proto chain is unique per constructor,
 // we can just store it inside the `def`
 interface PatchedComponentDef extends ComponentDef {
-    patchedBridge: HTMLElementConstructor;
+    patchedBridge?: HTMLElementConstructor;
 }
 
 export function patchCustomElementProto(elm: HTMLElement, tag: string, def: ComponentDef) {
-    let bridge = (def as PatchedComponentDef).patchedBridge;
-    if (isUndefined(bridge)) {
-        bridge = (def as PatchedComponentDef).patchedBridge = PatchedCustomElement(elm);
+    let patchedBridge = (def as PatchedComponentDef).patchedBridge;
+    if (isUndefined(patchedBridge)) {
+        patchedBridge = (def as PatchedComponentDef).patchedBridge = PatchedCustomElement(elm);
     }
     // temporary patching the proto, eventually this should be just more nodes in the proto chain
-    setPrototypeOf(elm, bridge.prototype)
+    setPrototypeOf(elm, patchedBridge.prototype);
 }
 
 export {

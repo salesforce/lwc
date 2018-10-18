@@ -30,6 +30,7 @@ import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
 import { parentElementGetter } from "../framework/dom-api";
+import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -95,11 +96,11 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): SyntheticShadowRoot | HTMLElement | null {
+function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & ParentNode) | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner);
+        return getShadowRoot(owner) as ParentNode;
     } else if (value instanceof Element) {
         if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -116,14 +117,6 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Syn
         }
     }
     return null;
-}
-
-function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | SyntheticShadowRoot | null {
-    const value = nativeParentNodeGetter.call(this);
-    if (isNull(value)) {
-        return value;
-    }
-    return getShadowParent(this, value);
 }
 
 function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
@@ -196,12 +189,14 @@ export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: 
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
-export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
+export function lightDomQuerySelectorAll<K extends keyof HTMLElementTagNameMap>(elm: Element, selectors: K): NodeListOf<HTMLElementTagNameMap[K]>;
+export function lightDomQuerySelectorAll<K extends keyof SVGElementTagNameMap>(elm: Element, selectors: K): NodeListOf<SVGElementTagNameMap[K]>;
+export function lightDomQuerySelectorAll<E extends Element = Element>(elm: Element, selectors: string): NodeListOf<E> {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return [];
     }
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selectors);
     if (getNodeKey(elm)) {
         // it is a custom element, and we should then filter by slotted elements
         return getAllSlottedMatches(elm as HTMLElement, nodeList);
@@ -225,14 +220,6 @@ export function lightDomQuerySelector(elm: Element, selector: string): Element |
         // regular element, we should then filter by ownership
         return getFirstMatch(owner, nodeList);
     }
-}
-
-function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
-    return lightDomQuerySelectorAll(this, selector);
-}
-
-function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
-    return lightDomQuerySelector(this, selector);
 }
 
 export function shadowRootQuerySelector(root: SyntheticShadowRoot, selector: string): Element | null {
@@ -338,89 +325,117 @@ interface AssignedNodesOptions {
     flatten?: boolean;
 }
 
-function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
-    const flatten = !isUndefined(options) && isTrue(options.flatten);
-    return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-}
-
-function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
-    const flatten = !isUndefined(options) && isTrue(options.flatten);
-    const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-    return ArrayFilter.call(nodes, node => node instanceof Element);
-}
-
 function slotNameGetter(this: HTMLElement): string {
     const name = getAttribute.call(this, 'name');
     return isNull(name) ? '' : name;
 }
 
-export function PatchedNode(node: Node) {
-    const Ctor = getPrototypeOf(node).constructor;
-    return class Node extends Ctor {
-        get childNodes(this: HTMLElement) {
-            return lightDomChildNodesGetter.call(this);
+export function PatchedNode(node: Node): NodeConstructor {
+    const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
+    return class extends Ctor {
+        get childNodes(): NodeListOf<ChildNode> {
+            const owner = getNodeOwner(this);
+            if (isNull(owner)) {
+                return [];
+            }
+            return getAllMatches(owner, getFilteredChildNodes(this));
         }
-        get assignedSlot(this: HTMLElement) {
-            return assignedSlotGetter.call(this);
+        get assignedSlot(): HTMLElement | null {
+            const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
+            /**
+             * if it doesn't have a parent node,
+             * or the parent is not an slot element
+             * or they both belong to the same template (default content)
+             * we should assume that it is not slotted
+             */
+            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
+                return null;
+            }
+            return parentNode as HTMLElement;
         }
-        get textContent(this: HTMLElement) {
-            return lightDomTextContentGetter.call(this);
+        get textContent(): string {
+            return getTextContent(this);
         }
-        set textContent(this: HTMLElement, value: any) {
+        set textContent(value: string) {
             textContextSetter.call(this, value);
         }
-        get parentNode(this: HTMLElement) {
-            return parentNodeDescriptorValue.call(this);
+        get parentNode(): (Node & ParentNode) | null {
+            const value = nativeParentNodeGetter.call(this);
+            if (isNull(value)) {
+                return value;
+            }
+            return getShadowParent(this, value);
         }
-        get parentElement(this: HTMLElement) {
-            return parentElementDescriptorValue.call(this);
+        get parentElement(): HTMLElement | null {
+            const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
+            if (isNull(parentNode)) {
+                return null;
+            }
+            const nodeOwner = getNodeOwner(this);
+            if (isNull(nodeOwner)) {
+                return parentNode;
+            }
+            // If we have traversed to the host element,
+            // we need to return null
+            if (nodeOwner === parentNode) {
+                return null;
+            }
+            return parentNode;
         }
     };
 }
 
-export function PatchedElement(elm: HTMLElement) {
-    return class extends PatchedNode(elm) {
-        get querySelector() {
-            return lightDomQuerySelectorValue;
+export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
+    const Ctor = PatchedNode(elm) as HTMLElementConstructor;
+    return class PatchedHTMLElement extends Ctor {
+        querySelector(selector: string): Element | null {
+            return lightDomQuerySelector(this, selector);
         }
-        get querySelectorAll() {
-            return lightDomQuerySelectorAllValue;
+        querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>;
+        querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>;
+        querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
+            return lightDomQuerySelectorAll(this as Element, selectors);
         }
-        get innerHTML(this: HTMLElement) {
+        get innerHTML() {
             return lightDomInnerHTMLGetter.call(this);
         }
-        set innerHTML(this: HTMLElement, value: any) {
+        set innerHTML(value: any) {
             innerHTMLSetter.call(this, value);
         }
         get outerHTML() {
             return lightDomOuterHTMLGetter.call(this);
         }
-    }
+    };
 }
 
-export function PatchedSlotElement(elm: HTMLElement) {
-    return class extends PatchedElement(elm) {
-        get assignedElements(this: HTMLElement) {
-            return slotAssignedElementsValue;
+export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstructor {
+    const Ctor = PatchedNode(elm) as HTMLSlotElementConstructor;
+    return class PatchedHTMLSlotElement extends Ctor {
+        assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            return ArrayFilter.call(nodes, node => node instanceof Element);
         }
-        get assignedNodes(this: HTMLElement) {
-            return slotAssignedNodesValue;
+        assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
         }
-        get name(this: HTMLElement) {
+        get name(this: HTMLSlotElement) {
             // in browsers that do not support shadow dom, slot's name attribute is not reflective
             return slotNameGetter.call(this);
         }
-    }
+    };
 }
 
-export function PatchedIframeElement(elm: HTMLElement) {
-    return class extends PatchedElement(elm) {
+export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementConstructor {
+    const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
+    return class PatchedHTMLIframeElement extends Ctor {
         get contentWindow(this: HTMLIFrameElement) {
             const original = iFrameContentWindowGetter.call(this);
-                if (original) {
-                    return wrapIframeWindow(original);
-                }
-                return original;
+            if (original) {
+                return wrapIframeWindow(original);
+            }
+            return original;
         }
-    }
+    };
 }

@@ -57,8 +57,23 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
     };
 }
 
+export interface NodeConstructor {
+    prototype: Node;
+    new(): Node;
+}
 export interface HTMLElementConstructor {
-     new(): HTMLElement;
+    prototype: HTMLElement;
+    new(): HTMLElement;
+}
+
+export interface HTMLSlotElementConstructor {
+    prototype: HTMLSlotElement;
+    new(): HTMLSlotElement;
+}
+
+export interface HTMLIFrameElementConstructor {
+    prototype: HTMLIFrameElement;
+    new(): HTMLIFrameElement;
 }
 
 export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {

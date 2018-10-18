@@ -1,47 +1,78 @@
-import { attachShadow, getShadowRoot, SyntheticShadowRoot, ShadowRootMode } from "./shadow-root";
+import { attachShadow, getShadowRoot, ShadowRootMode } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
-import { patchedTabIndexGetter, patchedTabIndexSetter } from "./focus";
 import { PatchedElement } from './traverse';
+import { hasAttribute } from "./element";
+import { getOwnPropertyDescriptor } from "../shared/language";
+import { isNull } from "util";
+import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
+import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
-function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    addCustomElementEventListener(this as HTMLElement, type, listener, options);
-}
+const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
 
-function removeEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    removeCustomElementEventListener(this as HTMLElement, type, listener, options);
-}
-
-function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): SyntheticShadowRoot {
-    return attachShadow(this, options);
-}
-
-function shadowRootGetter(this: HTMLElement): SyntheticShadowRoot | null {
-    const shadow = getShadowRoot(this);
-    if (shadow.mode === ShadowRootMode.OPEN) {
-        return shadow;
-    }
-    return null;
-}
-
-export function PatchedCustomElement(Base) {
-    return class extends PatchedElement(Base) {
-        get attachShadow() {
-            return attachShadowGetter;
+export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
+    const Ctor = PatchedElement(Base) as HTMLElementConstructor;
+    return class PatchedHTMLElement extends Ctor {
+        attachShadow(options: ShadowRootInit): ShadowRoot {
+            return attachShadow(this, options) as ShadowRoot;
         }
-        get addEventListener() {
-            return addEventListenerPatchedValue;
+        addEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            addCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
-        get removeEventListener() {
-            return removeEventListenerPatchedValue;
+        removeEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
-        get shadowRoot(this: HTMLElement): ShadowRoot {
-            return shadowRootGetter.call(this);
+        get shadowRoot(this: HTMLElement): ShadowRoot | null {
+            const shadow = getShadowRoot(this);
+            if (shadow.mode === ShadowRootMode.OPEN) {
+                return shadow as ShadowRoot;
+            }
+            return null;
         }
         get tabIndex(this: HTMLElement) {
-            return patchedTabIndexGetter.call(this);
+            return super.tabIndex;
         }
         set tabIndex(this: HTMLElement, value: any) {
-            patchedTabIndexSetter.call(this, value);
+            // get the original value from the element before changing it, just in case
+            // the custom element is doing something funky. we only really care about
+            // the actual changes in the DOM.
+            const hasAttr = hasAttribute.call(this, 'tabindex');
+            const originalValue = tabIndexGetter.call(this);
+            // run the super logic, which bridges the setter to the component
+            super.tabIndex = value;
+            // Check if the value from the dom has changed
+            const newValue = tabIndexGetter.call(this);
+            if ((!hasAttr || originalValue !== newValue) && newValue === -1) {
+                // add the magic to skip this element
+                handleFocusIn(this);
+            } else if (originalValue === -1) {
+                // remove the magic
+                ignoreFocusIn(this);
+            }
         }
-    }
+        focus(this: HTMLElement) {
+            if (isDelegatingFocus(this)) {
+                const currentActiveElement = getActiveElement(this);
+                // when an active element is found, focus does nothing
+                if (isNull(currentActiveElement)) {
+                    const firstNode = getFirstFocusableElement(this);
+                    if (!isNull(firstNode)) {
+                        firstNode.focus();
+                    }
+                }
+                return;
+            }
+            super.focus();
+        }
+        blur(this: HTMLElement) {
+            if (isDelegatingFocus(this)) {
+                const currentActiveElement = getActiveElement(this);
+                // if there is no active element, blur does nothing
+                if (!isNull(currentActiveElement)) {
+                    currentActiveElement.focus();
+                }
+                return;
+            }
+            super.blur();
+        }
+    };
 }
