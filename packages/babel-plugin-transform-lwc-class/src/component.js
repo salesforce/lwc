@@ -1,7 +1,8 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
+
 const { findClassMethod, generateError, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
-const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES, LWC_WHITE_LISTED_INTERNAL_APIS } = require('./constants');
 const { LWCClassErrors } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
@@ -9,6 +10,19 @@ module.exports = function ({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
+
+            // validate internal api imports
+            const validLwcImports = new Set([
+                ...Object.values(LWC_PACKAGE_EXPORTS),
+                ...Object.values(LWC_WHITE_LISTED_INTERNAL_APIS),
+            ]);
+
+            engineImportSpecifiers.forEach(({name}) => {
+                if (!validLwcImports.has(name)) {
+                    throw path.buildCodeFrameError(`Invalid import. "${name}" is not part of the lwc api.`);
+                }
+            })
+
 
             // Store on state local identifiers referencing engine base component
             state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (

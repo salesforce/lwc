@@ -59,6 +59,28 @@ describe('Element import', () => {
             }`
         }
     });
+
+    pluginTest('throws if importing private api', `
+        import { registerTemplate } from "lwc";
+        import tmpl from './localTemplate.html';
+        registerTemplate(tmpl);
+    `, {
+        error: {
+            message: `test.js: Invalid import. "registerTemplate" is not part of the lwc api.`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+
+    pluginTest('allows importing "createElement" from "lwc"', `
+        import { createElement } from "lwc";
+    `, {
+        output: {
+            code: `import { createElement } from "lwc";`
+        }
+    });
 });
 
 describe('observedAttributes array', () => {

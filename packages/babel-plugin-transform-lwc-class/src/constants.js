@@ -49,6 +49,11 @@ const DISALLOWED_PROP_SET = new Set([
 
 const LWC_PACKAGE_ALIAS = 'lwc';
 
+
+const LWC_WHITE_LISTED_INTERNAL_APIS = {
+    CREATE_ELEMENT: 'createElement',
+}
+
 const LWC_PACKAGE_EXPORTS = {
     BASE_COMPONENT: 'LightningElement',
     API_DECORATOR: 'api',
@@ -85,8 +90,8 @@ module.exports = {
     LWC_DECORATORS,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
+    LWC_WHITE_LISTED_INTERNAL_APIS,
 
     LWC_COMPONENT_PROPERTIES,
-
     DECORATOR_TYPES,
 };
