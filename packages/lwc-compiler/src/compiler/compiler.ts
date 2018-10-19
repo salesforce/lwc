@@ -1,6 +1,7 @@
+import { CompilerDiagnostic, DiagnosticLevel } from "lwc-errors";
+
 import { bundle } from "../bundler/bundler";
 import { BundleMetadata } from "../bundler/meta-collector";
-import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
 import { version } from '../index';
 
@@ -8,7 +9,7 @@ export { default as templateCompiler } from "lwc-template-compiler";
 
 export interface CompilerOutput {
     success: boolean;
-    diagnostics: Diagnostic[];
+    diagnostics: CompilerDiagnostic[];
     result?: BundleResult;
     version: string;
 }
@@ -29,7 +30,7 @@ export async function compile(
     const normalizedOptions = normalizeOptions(options);
 
     let result: BundleResult | undefined;
-    const diagnostics: Diagnostic[] = [];
+    const diagnostics: CompilerDiagnostic[] = [];
 
     const {
         diagnostics: bundleDiagnostics,
@@ -56,8 +57,8 @@ export async function compile(
     };
 }
 
-function hasError(diagnostics: Diagnostic[]) {
+function hasError(diagnostics: CompilerDiagnostic[]) {
     return diagnostics.some(d => {
-        return d.level <= DiagnosticLevel.Error;
+        return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
     });
 }

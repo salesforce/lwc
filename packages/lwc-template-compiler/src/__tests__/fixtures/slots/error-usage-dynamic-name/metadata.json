@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Slot attribute value can't be an expression.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,

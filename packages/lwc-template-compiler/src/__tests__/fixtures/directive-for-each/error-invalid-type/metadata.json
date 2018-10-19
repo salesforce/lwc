@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: for:item directive is expected to be a string.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,
@@ -13,7 +13,7 @@
         {
             "code": 1,
             "message": "LWC1: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,
@@ -23,7 +23,7 @@
         {
             "code": 1,
             "message": "LWC1: for:each directive is expected to be a expression.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,
@@ -33,7 +33,7 @@
         {
             "code": 1,
             "message": "LWC1: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,
@@ -43,7 +43,7 @@
         {
             "code": 1,
             "message": "LWC1: for:index directive is expected to be a string.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 4,

@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: raptor is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,

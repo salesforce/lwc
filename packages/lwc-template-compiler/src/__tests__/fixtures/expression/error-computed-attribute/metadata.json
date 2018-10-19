@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "Invalid expression {classNames[0]} - LWC1: Template expression doesn't allow NumericLiteral",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,

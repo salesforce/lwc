@@ -14,12 +14,12 @@ import {
 } from "../compiler/options";
 
 import { collectImportLocations } from "./import-location-collector";
-import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 import { SourceMap } from "../compiler/compiler";
+import { CompilerDiagnostic, generateCompilerDiagnostic, DiagnosticLevel, ModuleResolutionErrors, normalizeToDiagnostic } from "lwc-errors";
 
 export interface BundleReport {
     code: string;
-    diagnostics: Diagnostic[];
+    diagnostics: CompilerDiagnostic[];
     map: SourceMap | null;
     metadata: BundleMetadata;
 }
@@ -36,15 +36,21 @@ interface RollupWarning {
 
 const DEFAULT_FORMAT = "amd";
 
-function handleRollupWarning(diagnostics: Diagnostic[]) {
+function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
-        const filename = loc && loc.file;
+        const context = loc
+            ? {
+                filename: loc.file,
+                location: {
+                    line: loc.line,
+                    column: loc.column
+                }
+            } : {};
 
-        diagnostics.push({
-            level: DiagnosticLevel.Warning,
-            message,
-            filename
-        });
+        diagnostics.push(generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
+            messageArgs: [message],
+            context,
+        }));
     };
 }
 
@@ -58,7 +64,7 @@ export async function bundle(
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
-    const diagnostics: Diagnostic[] = [];
+    const diagnostics: CompilerDiagnostic[] = [];
     const metadataCollector = new MetadataCollector();
 
     const plugins: any[] = [
@@ -111,15 +117,9 @@ export async function bundle(
         code = result.code;
         map = result.map;
     } catch (e) {
-        // TODO ERROR CODE
-        // populate diagnostics
-        const {  message, filename } = e;
-
-        diagnostics.push({
-            filename,
-            level: DiagnosticLevel.Fatal,
-            message,
-        });
+        const diagnostic = normalizeToDiagnostic(e);
+        diagnostic.level = DiagnosticLevel.Fatal;
+        diagnostics.push(diagnostic);
     }
 
     metadataCollector.collectImportLocations(

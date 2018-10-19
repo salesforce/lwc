@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,

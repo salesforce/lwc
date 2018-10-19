@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Missing root template tag",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 0,

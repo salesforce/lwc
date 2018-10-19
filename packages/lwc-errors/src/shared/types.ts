@@ -1,18 +1,18 @@
-export enum Level {
+export enum DiagnosticLevel {
     /** Unexpected error, parsing error, bundling error */
-    Fatal = "fatal",
+    Fatal = 0,
     /** Linting error with error level, invalid external reference, invalid import, invalid transform */
-    Error = "error",
+    Error = 1,
     /** Linting error with warning level, usage of an API to be deprecated */
-    Warning = "warning",
+    Warning = 2,
     /** Logging messages */
-    Log = "log",
+    Log = 3,
 }
 
 export interface LWCErrorInfo {
     code: number;
     message: string;
-    level: Level;
+    level: DiagnosticLevel;
     type?: string;
     arguments?: any[];
     url?: string;

@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: <p> has no matching closing tag.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,

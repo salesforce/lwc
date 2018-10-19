@@ -1,7 +1,7 @@
 import {
     CompilerDiagnostic,
     TemplateErrors,
-    Level,
+    DiagnosticLevel,
     convertDiagnosticToCompilerError,
     generateCompilerError,
     normalizeToDiagnostic
@@ -39,7 +39,7 @@ export default function compiler(
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
-            warning => warning.level === Level.Error,
+            warning => warning.level === DiagnosticLevel.Error,
         );
 
         if (!hasParsingError && parsingResults.root) {
@@ -72,9 +72,9 @@ export function compileToFunction(source: string): Function {
     const parsingResults = parse(source, state);
 
     for (const warning of parsingResults.warnings) {
-        if (warning.level === Level.Error) {
+        if (warning.level === DiagnosticLevel.Error) {
             throw convertDiagnosticToCompilerError(warning);
-        } else if (warning.level === Level.Warning) {
+        } else if (warning.level === DiagnosticLevel.Warning) {
             /* tslint:disable-next-line:no-console */
             console.warn(warning.message);
         } else {

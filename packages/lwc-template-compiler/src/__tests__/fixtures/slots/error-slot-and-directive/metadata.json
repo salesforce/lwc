@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Slot tag can't be associated with directives",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,

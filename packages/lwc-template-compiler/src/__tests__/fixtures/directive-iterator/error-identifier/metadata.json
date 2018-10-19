@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: my-iterator is not a valid identifier",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,

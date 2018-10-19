@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,
@@ -13,7 +13,7 @@
         {
             "code": 1,
             "message": "LWC1: To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,
@@ -23,7 +23,7 @@
         {
             "code": 1,
             "message": "LWC1: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 4,
@@ -33,7 +33,7 @@
         {
             "code": 1,
             "message": "LWC1: To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 5,

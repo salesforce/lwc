@@ -46,10 +46,6 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
     const res = transformer(name, fallback);
 
     invariant(typeof res === 'string', CSSTransformErrors.CUSTOM_PROPERTY_STRING_EXPECTED, [typeof res]);
-    /*
-    if (typeof res !== 'string') {
-        throw new TypeError(`Expected a string, but received instead "${typeof res}"`);
-    } */
 
     // Recursively calling transform to processed the remaining `var` function calls.
     const head = value.slice(0, varMatch.index);

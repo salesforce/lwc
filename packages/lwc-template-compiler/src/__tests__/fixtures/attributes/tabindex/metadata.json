@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,
@@ -13,7 +13,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 3,
@@ -23,7 +23,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 4,
@@ -33,7 +33,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 5,
@@ -43,7 +43,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 10,
@@ -53,7 +53,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 11,
@@ -63,7 +63,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 12,
@@ -73,7 +73,7 @@
         {
             "code": 1,
             "message": "LWC1: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 13,

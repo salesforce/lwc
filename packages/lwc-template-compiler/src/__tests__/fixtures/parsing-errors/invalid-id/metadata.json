@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Duplicate id value \"bar\" detected. Id values must be unique within a template.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 6,
@@ -13,7 +13,7 @@
         {
             "code": 1,
             "message": "LWC1: Attribute \"aria-labelledby\" references a non-existant id \"baz\".",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 8,
@@ -23,7 +23,7 @@
         {
             "code": 1,
             "message": "LWC1: Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-            "level": "warning",
+            "level": 2,
             "filename": "",
             "location": {
                 "line": 2,

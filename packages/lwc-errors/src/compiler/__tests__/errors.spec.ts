@@ -3,12 +3,12 @@ import {
     generateCompilerError
 } from "../errors";
 
-import { Location, Level } from "../../shared/types";
+import { Location, DiagnosticLevel } from "../../shared/types";
 
 const ERROR_INFO = {
     code: 4,
     message: "Test Error {0} with message {1}",
-    level: Level.Error
+    level: DiagnosticLevel.Error
 };
 
 class CustomError extends Error {

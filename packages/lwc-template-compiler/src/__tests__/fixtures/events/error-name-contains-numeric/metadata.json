@@ -8,7 +8,7 @@
         {
             "code": 1,
             "message": "LWC1: Invalid event name on123. Event name can only contain lower-case alphabetic characters",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,

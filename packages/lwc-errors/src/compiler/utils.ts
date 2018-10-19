@@ -1,4 +1,4 @@
-import { Location, Level } from "../shared/types";
+import { Location, DiagnosticLevel } from "../shared/types";
 
 export interface CompilerContext {
     filename?: string;
@@ -10,14 +10,14 @@ export interface CompilerDiagnostic {
     code: number;
     filename?: string;
     location?: Location;
-    level: Level;
+    level: DiagnosticLevel;
 }
 
 export class CompilerError extends Error implements CompilerDiagnostic {
     public code: number;
     public filename?: string;
     public location?: Location;
-    public level = Level.Error;
+    public level = DiagnosticLevel.Error;
 
     constructor(code: number, message: string, filename?: string, location?: Location) {
         super(message);

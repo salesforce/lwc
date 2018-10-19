@@ -1,5 +1,5 @@
 import { templateString } from "../shared/utils";
-import { Location, LWCErrorInfo, Level } from "../shared/types";
+import { Location, LWCErrorInfo, DiagnosticLevel } from "../shared/types";
 import { CompilerContext, CompilerDiagnostic, CompilerError } from "./utils";
 
 export * from "./error-info/lwc-class";
@@ -19,7 +19,7 @@ export interface ErrorConfig {
 const GENERIC_COMPILER_ERROR = {
     code: 1,
     message: "Unexpected compilation error: {0}",
-    level: Level.Error
+    level: DiagnosticLevel.Error
 };
 
 export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
@@ -92,12 +92,13 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
 
 /**
  * Normalizes a received error with additional context and converts it into a CompilerError if necessary
+ * @param errorInfo
  * @param error
  * @param newContext
  *
  * @return {CompilerError}
  */
-export function normalizeToCompilerError(error: any, newContext?: CompilerContext): CompilerError {
+export function normalizeToCompilerError(errorInfo: LWCErrorInfo, error: any, newContext?: CompilerContext): CompilerError {
     if (error instanceof CompilerError) {
         if (newContext) {
             error.filename = getFilename(newContext);
@@ -107,11 +108,11 @@ export function normalizeToCompilerError(error: any, newContext?: CompilerContex
     }
 
     const { code, message, filename, location } =
-        convertErrorToDiagnostic(error, newContext);
+        convertErrorToDiagnostic(error, errorInfo || GENERIC_COMPILER_ERROR, newContext);
 
     const compilerError = new CompilerError(
         code,
-        message,
+        `${error.name}: ${message}`,
         filename,
         location
     );
@@ -136,7 +137,7 @@ export function normalizeToDiagnostic(error: any, newContext?: CompilerContext):
         return diagnostic;
     }
 
-    return convertErrorToDiagnostic(error, newContext);
+    return convertErrorToDiagnostic(error, GENERIC_COMPILER_ERROR, newContext);
 }
 
 /**
@@ -154,13 +155,13 @@ export function convertDiagnosticToCompilerError(diagnostic: CompilerDiagnostic,
     return new CompilerError(code, `${filename}: ${message}`, filename, location);
 }
 
-function convertErrorToDiagnostic(error: any, newContext?: CompilerContext): CompilerDiagnostic {
-    const code = getCodeFromError(error) || GENERIC_COMPILER_ERROR.code;
+function convertErrorToDiagnostic(error: any, fallbackErrorInfo: LWCErrorInfo, newContext?: CompilerContext): CompilerDiagnostic {
+    const code = getCodeFromError(error) || fallbackErrorInfo.code;
     const message = error.lwcCode
         ? error.message
-        : generateErrorMessage(GENERIC_COMPILER_ERROR, [error.message]);
+        : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const level = error.level || Level.Error;
+    const level = error.level || DiagnosticLevel.Error;
     const filename = getFilename(newContext, error);
     const location = getLocation(newContext, error);
 

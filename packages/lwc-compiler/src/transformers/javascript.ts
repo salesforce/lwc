@@ -1,6 +1,6 @@
 import * as babel from "@babel/core";
 import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
-import { normalizeToCompilerError } from "lwc-errors";
+import { normalizeToCompilerError, TransformerErrors } from "lwc-errors";
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from "../babel-plugins";
 import { NormalizedCompilerOptions } from "../compiler/options";
@@ -23,7 +23,8 @@ export default function(
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        throw normalizeToCompilerError(e, { filename, location: e.loc });
+        debugger;;
+        throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
     }
 
     const metadata: lwcClassTransformPlugin.Metadata = (result as any)

@@ -4,7 +4,7 @@ import { mergeConfig } from '../config';
 import State from '../state';
 import parse from '../parser';
 
-import { Level } from 'lwc-errors';
+import { DiagnosticLevel } from 'lwc-errors';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
@@ -108,7 +108,7 @@ describe('event handlers', () => {
         const { warnings } = parseTemplate(`<template><h1 onclick="handleClick"></h1></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: Event handler should be an expression`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -135,7 +135,7 @@ describe('for:each directives', () => {
         const { warnings } = parseTemplate(`<template><section for:each={items}></section></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: for:each and for:item directives should be associated together.`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -146,7 +146,7 @@ describe('for:each directives', () => {
         const { warnings } = parseTemplate(`<template><section for:each={items} for:item={item}></section></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: for:item directive is expected to be a string.`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -165,7 +165,7 @@ describe('for:of directives', () => {
         const { warnings } = parseTemplate(`<template><section iterator:it="items"></section></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: iterator:it directive is expected to be an expression`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -190,7 +190,7 @@ describe('if directive', () => {
         const { warnings } = parseTemplate(`<template><h1 if:is-true={visible}></h1></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: Unexpected if modifier is-true`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -201,7 +201,7 @@ describe('if directive', () => {
         const { warnings } = parseTemplate(`<template><h1 if:is-true="visible"></h1></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: If directive should be an expression`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -226,7 +226,7 @@ describe('custom component', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -243,7 +243,7 @@ describe('custom component', () => {
         const { warnings } = parseTemplate(`<template><button is={dynamicCmp}></button></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: Is attribute value can't be an expression`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -256,7 +256,7 @@ describe('root errors', () => {
         const { warnings } = parseTemplate('');
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: 'LWC1: Missing root template tag',
             location: EXPECTED_LOCATION,
             filename: ''
@@ -267,7 +267,7 @@ describe('root errors', () => {
         const { warnings } = parseTemplate(`<template>Root1</template><template>Root2</template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: 'LWC1: Multiple roots found',
             location: EXPECTED_LOCATION,
             filename: ''
@@ -278,7 +278,7 @@ describe('root errors', () => {
         const { warnings } = parseTemplate(`<section>Root1</section>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: 'LWC1: Expected root tag to be template, found section',
             location: EXPECTED_LOCATION,
             filename: ''
@@ -289,7 +289,7 @@ describe('root errors', () => {
         const { warnings } = parseTemplate(`<template if:true={show}>visible</template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `LWC1: Root template doesn't allow attributes`,
             location: EXPECTED_LOCATION,
             filename: ''
@@ -301,7 +301,7 @@ describe('expression', () => {
     it('forbid reference to this', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `Invalid expression {this.title} - LWC1: Template expression doesn't allow ThisExpression`,
             location: EXPECTED_LOCATION
         });
@@ -310,7 +310,7 @@ describe('expression', () => {
     it('forbid function calls', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `Invalid expression {getTitle()} - LWC1: Template expression doesn't allow CallExpression`,
             location: EXPECTED_LOCATION
         });
@@ -319,7 +319,7 @@ describe('expression', () => {
     it('forbid multiple expressions', () => {
         const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
-            level: Level.Error,
+            level: DiagnosticLevel.Error,
             message: `Invalid expression {foo;title} - LWC1: Multiple expressions found`,
             location: EXPECTED_LOCATION
         });

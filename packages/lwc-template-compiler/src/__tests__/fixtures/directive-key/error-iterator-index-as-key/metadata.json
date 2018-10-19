@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Invalid key value for element <p>. Key cannot reference iterator index",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 4,

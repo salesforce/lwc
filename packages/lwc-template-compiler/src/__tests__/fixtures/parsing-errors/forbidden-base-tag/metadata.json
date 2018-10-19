@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Forbidden tag found in template: '<base>' tag is not allowed.",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,

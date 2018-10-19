@@ -3,7 +3,7 @@
         {
             "code": 1,
             "message": "LWC1: Event handler should be an expression",
-            "level": "error",
+            "level": 1,
             "filename": "",
             "location": {
                 "line": 2,
