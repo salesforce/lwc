@@ -209,11 +209,14 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRoot, listener: EventLi
             const currentTarget = eventCurrentTargetGetter.call(event);
             if (
                 // it is composed and was not dispatched onto the custom element directly
-                (composed === true && target !== currentTarget) ||
-                // it is coming from a slotted element
-                isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
-                // it is not composed and its is coming from from shadow
-                (composed === false && getRootNode.call(target) === currentTarget)) {
+                (target !== currentTarget) &&
+                (
+                    // it is coming from a slotted element
+                    isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
+                    // it is not composed and its is coming from from shadow
+                    (composed === false && getRootNode.call(target) === currentTarget)
+                )
+            ) {
                     // TODO: we should figure why `undefined` makes sense here
                     // and how this is going to work for native shadow root?
                     listener.call(undefined, event);
