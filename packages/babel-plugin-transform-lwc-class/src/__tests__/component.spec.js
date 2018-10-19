@@ -60,7 +60,7 @@ describe('Element import', () => {
         }
     });
 
-    pluginTest('throws if importing private api', `
+    pluginTest('throws if non-whitelisted lwc exports are being imported', `
         import { registerTemplate } from "lwc";
         import tmpl from './localTemplate.html';
         registerTemplate(tmpl);
@@ -74,11 +74,11 @@ describe('Element import', () => {
         }
     });
 
-    pluginTest('allows importing "createElement" from "lwc"', `
-        import { createElement } from "lwc";
+    pluginTest('allows importing api, track, wire, createElement, and LightningElement from "lwc"', `
+        import { api, track, wire, createElement, LightningElement } from "lwc";
     `, {
         output: {
-            code: `import { createElement } from "lwc";`
+            code: `import { api, track, wire, createElement, LightningElement } from "lwc";`
         }
     });
 });
