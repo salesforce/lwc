@@ -158,7 +158,6 @@ export function removeVM(vm: VM) {
 }
 
 export interface CreateVMInit {
-    delegatesFocus?: boolean;
     mode: "open" | "closed";
     // custom settings for now
     fallback: boolean;
@@ -171,6 +170,10 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode, fallback } = options;
+    const shadowRootOptions: ShadowRootInit = {
+        mode,
+        delegatesFocus: !!Ctor.delegatesFocus,
+    };
     uid += 1;
     const vm: VM = {
         uid,
@@ -189,7 +192,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
         cmpTemplate: undefined,
-        cmpRoot: elm.attachShadow(options),
+        cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
         setHook,
         getHook,

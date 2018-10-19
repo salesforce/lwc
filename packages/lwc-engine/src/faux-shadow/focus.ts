@@ -3,6 +3,7 @@ import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSIT
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor } from '../shared/language';
 import { DocumentPrototypeActiveElement } from './document';
 import { eventCurrentTargetGetter } from './events';
+import { getHost, getShadowRoot } from './shadow-root';
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -67,9 +68,9 @@ export function getActiveElement(host: HTMLElement): HTMLElement | null {
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 ? activeElement : null;
 }
 
-export function isDelegatingFocus(elm: HTMLElement): boolean {
-    // TODO: implement this
-    return false;
+export function isDelegatingFocus(host: HTMLElement): boolean {
+    const shadowRoot = getShadowRoot(host);
+    return shadowRoot.delegatesFocus;
 }
 
 function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): number {

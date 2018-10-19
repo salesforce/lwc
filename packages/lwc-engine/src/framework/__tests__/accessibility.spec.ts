@@ -1,0 +1,180 @@
+import { compileTemplate } from 'test-utils';
+import { createElement } from '../main';
+import { LightningElement } from '../html-element';
+
+describe('accessibility', () => {
+    describe('focus()', () => {
+        describe('for delegatesFocus=true', () => {
+            it('should place the focus on the first focusable child', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <input />
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                elm.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('input'));
+                });
+            });
+
+            it('should place the focus on the first focusable child even if it is multiple levels down', () => {
+                const childHTML = compileTemplate(`
+                    <template>
+                        <input />
+                    </template>
+                `);
+                class Child extends LightningElement {
+                    render() {
+                        return childHTML;
+                    }
+                }
+                const parentHTML = compileTemplate(`
+                    <template>
+                        <x-child></x-child>
+                    </template>
+                `, {
+                    modules: {
+                        'x-child': Child
+                    }
+                });
+                class Parent extends LightningElement {
+                    render() {
+                        return parentHTML;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Parent });
+                document.body.appendChild(elm);
+                elm.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child'));
+                    expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input'));
+                });
+            });
+
+            it('should do nothing if it already have a activeElement selected', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <input class="uno" />
+                        <input class="dos" />
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                const dos = elm.shadowRoot.querySelector('input.dos');
+                // focussing on the second input before attempting to set the focus on the host
+                dos.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    elm.focus();
+                    return Promise.resolve(() => {
+                        // jsdom has some timing issues with the manual focusing process
+                        expect(elm.shadowRoot.activeElement).toBe(dos);
+                    });
+                });
+            });
+
+            it('should blur the activeElement child', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <input />
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                const input = elm.shadowRoot.querySelector('input');
+                // focussing on the input before attempting to blur the host
+                input.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    elm.blur();
+                    return Promise.resolve(() => {
+                        // jsdom has some timing issues with the manual focusing process
+                        expect(elm.shadowRoot.activeElement).toBe(null);
+                    });
+                });
+            });
+            it('should do nothing when tabindex is -1 and the focus is set programmatically', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <input />
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                elm.tabIndex = -1;
+                document.body.appendChild(elm);
+                elm.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    expect(elm.shadowRoot.activeElement).toBe(null);
+                });
+            });
+        });
+
+        describe('for delegatesFocus=false', () => {
+            it('should not delegate the focus to the first focusable child', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <input />
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    // static delegatesFocus = false;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                elm.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    expect(elm.shadowRoot.activeElement).toBe(null);
+                });
+            });
+        });
+    });
+});

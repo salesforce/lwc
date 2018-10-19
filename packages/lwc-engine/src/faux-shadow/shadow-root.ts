@@ -51,7 +51,7 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
-    const { mode } = options;
+    const { mode, delegatesFocus } = options;
 
     // These cannot be patched when module is loaded because
     // Element.prototype needs to be patched first, which happens
@@ -62,8 +62,13 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     }
     // creating a real fragment for shadowRoot instance
     const sr = createDocumentFragment.call(document);
-    defineProperty(sr, '_mode', {
-        value: mode,
+    defineProperty(sr, 'mode', {
+        get() { return mode; },
+        configurable: true,
+        enumerable: true,
+    });
+    defineProperty(sr, 'delegatesFocus', {
+        get() { return !!delegatesFocus; },
         configurable: true,
         enumerable: true,
     });
@@ -85,17 +90,16 @@ export enum ShadowRootMode {
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {
     mode: ShadowRootMode;
+    delegatesFocus: boolean;
 }
 
 // @ts-ignore: TODO: remove after TS 3.x upgrade
 export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
-    _mode: ShadowRootMode;
+    mode: ShadowRootMode = ShadowRootMode.OPEN;
+    delegatesFocus: boolean = false;
     constructor() {
         super();
         throw new TypeError('Illegal constructor');
-    }
-    get mode() {
-        return this._mode;
     }
     get nodeType() {
         return 11;
@@ -158,9 +162,6 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
     }
     get childNodes(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
         return shadowRootChildNodes(this);
-    }
-    get delegatesFocus() {
-        return false;
     }
     get parentNode() {
         return null;

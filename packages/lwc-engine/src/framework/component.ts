@@ -29,6 +29,7 @@ export interface ComponentConstructor {
     readonly wire?: WireHash;
     readonly labels?: string[];
     readonly templateUsedProps?: string[];
+    readonly delegatesFocus?: boolean;
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {
