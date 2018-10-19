@@ -21,7 +21,6 @@ import {
     ArrayFilter,
     isTrue,
     getPrototypeOf,
-    defineProperty,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
@@ -30,6 +29,7 @@ import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
 import { parentElementGetter } from "../framework/dom-api";
 import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
+import { SyntheticNodeList } from "./node-list";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -95,41 +95,6 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-export class SyntheticNodeList<T extends Node> implements NodeListOf<T> {
-    [key: number]: T;
-    items: T[];
-    constructor(items: T[]) {
-        // Array backed nodelist
-        defineProperty(this, 'items', {
-            value: items,
-            enumerable: false,
-            configurable: false,
-            writable: false,
-        });
-
-        items.forEach((item, index) => {
-            defineProperty(this, index, {
-                value: items,
-                enumerable: true,
-                configurable: true,
-                writable: false,
-            });
-        });
-    }
-
-    item(index: number): T {
-        return this[index];
-    }
-
-    get length() {
-        return this.items.length;
-    }
-
-    forEach(cb, thisArg) {
-        this.items.forEach(cb, thisArg);
-    }
-}
-
 function getShadowParent(node: Node, value: undefined | HTMLElement): Node | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
@@ -181,7 +146,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Node & Element>{
+function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];

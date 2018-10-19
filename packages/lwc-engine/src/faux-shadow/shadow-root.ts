@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf, defineProperty } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, SyntheticNodeList } from "./traverse";
+import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
@@ -9,6 +9,7 @@ import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementG
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { DocumentPrototypeActiveElement } from "./document";
+import { SyntheticNodeList } from "./node-list";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -77,74 +78,17 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     return sr;
 }
 
-function patchedShadowRootChildNodesGetter(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
-    return shadowRootChildNodes(this);
-}
-
-function patchedShadowRootFirstChildGetter(this: SyntheticShadowRootInterface): Node | null {
-    const { childNodes } = this;
-    return childNodes[0] || null;
-}
-
-function patchedShadowRootLastChildGetter(this: SyntheticShadowRootInterface): Node | null {
-    const { childNodes } = this;
-    return childNodes[childNodes.length - 1] || null;
-}
-
-function patchedShadowRootInnerHTMLGetter(this: SyntheticShadowRootInterface): string {
-    const { childNodes } = this;
-    let innerHTML = '';
-    for (let i = 0, len = childNodes.length; i < len; i += 1) {
-        innerHTML += getInnerHTML(childNodes[i]);
-    }
-    return innerHTML;
-}
-
-function patchedShadowRootTextContentGetter(this: SyntheticShadowRootInterface): string {
-    const { childNodes } = this;
-    let textContent = '';
-    for (let i = 0, len = childNodes.length; i < len; i += 1) {
-        textContent += getTextContent(childNodes[i]);
-    }
-    return textContent;
-}
-
-function activeElementGetter(this: SyntheticShadowRootInterface): Element | null {
-    const activeElement = DocumentPrototypeActiveElement.call(document);
-    if (isNull(activeElement)) {
-        return activeElement;
-    }
-    const host = getHost(this);
-
-    if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
-        return null;
-    }
-
-    // activeElement must be child of the host and owned by it
-    let node = activeElement;
-    while (!isNodeOwnedBy(host, node)) {
-        node = parentElementGetter.call(node);
-    }
-
-    // If we have a slot element here
-    // That means that we were dealing with an element that was passed to one of our slots
-    // In this case, activeElement returns null
-    if (isSlotElement(node)) {
-        return null;
-    }
-    return node;
-}
-
 export enum ShadowRootMode {
     CLOSED = "closed",
     OPEN = "open",
 }
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {
-    mode: string;
+    mode: ShadowRootMode;
 }
 
-export class SyntheticShadowRoot extends DocumentFragment implements SyntheticShadowRootInterface {
+// @ts-ignore: TODO: remove after TS 3.x upgrade
+export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
     _mode: ShadowRootMode;
     constructor() {
         super();
@@ -159,23 +103,61 @@ export class SyntheticShadowRoot extends DocumentFragment implements SyntheticSh
     get host(this: SyntheticShadowRootInterface) {
         return getHost(this);
     }
-    get activeElement(this: SyntheticShadowRootInterface) {
-        return activeElementGetter.call(this);
+    get activeElement(this: SyntheticShadowRootInterface): Element | null {
+        const activeElement = DocumentPrototypeActiveElement.call(document);
+        if (isNull(activeElement)) {
+            return activeElement;
+        }
+        const host = getHost(this);
+
+        if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
+            return null;
+        }
+
+        // activeElement must be child of the host and owned by it
+        let node = activeElement;
+        while (!isNodeOwnedBy(host, node)) {
+            node = parentElementGetter.call(node);
+        }
+
+        // If we have a slot element here
+        // That means that we were dealing with an element that was passed to one of our slots
+        // In this case, activeElement returns null
+        if (isSlotElement(node)) {
+            return null;
+        }
+        return node;
     }
-    get firstChild(this: SyntheticShadowRootInterface) {
-        return patchedShadowRootFirstChildGetter.call(this);
+    // @ts-ignore: TODO: remove after TS 3.x upgrade
+    get firstChild(this: SyntheticShadowRootInterface): ChildNode | null {
+        const { childNodes } = this;
+        // @ts-ignore: TODO: remove after TS 3.x upgrade
+        return childNodes[0] || null;
     }
-    get lastChild(this: SyntheticShadowRootInterface) {
-        return patchedShadowRootLastChildGetter.call(this);
+    // @ts-ignore: TODO: remove after TS 3.x upgrade
+    get lastChild(this: SyntheticShadowRootInterface): ChildNode | null {
+        const { childNodes } = this;
+        // @ts-ignore: TODO: remove after TS 3.x upgrade
+        return childNodes[childNodes.length - 1] || null;
     }
-    get innerHTML(this: SyntheticShadowRootInterface) {
-        return patchedShadowRootInnerHTMLGetter.call(this);
+    get innerHTML(this: SyntheticShadowRootInterface): string {
+        const { childNodes } = this;
+        let innerHTML = '';
+        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+            innerHTML += getInnerHTML(childNodes[i]);
+        }
+        return innerHTML;
     }
-    get textContent(this: SyntheticShadowRootInterface) {
-        return patchedShadowRootTextContentGetter.call(this);
+    get textContent(this: SyntheticShadowRootInterface): string {
+        const { childNodes } = this;
+        let textContent = '';
+        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+            textContent += getTextContent(childNodes[i]);
+        }
+        return textContent;
     }
-    get childNodes(this: SyntheticShadowRootInterface) {
-        return patchedShadowRootChildNodesGetter.call(this);
+    get childNodes(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
+        return shadowRootChildNodes(this);
     }
     get delegatesFocus() {
         return false;
@@ -183,11 +165,12 @@ export class SyntheticShadowRoot extends DocumentFragment implements SyntheticSh
     get parentNode() {
         return null;
     }
+    // TODO: remove this after upgrading TS 3.x (issue #748)
+    stylesheets: StyleSheetList;
     get styleSheets(): StyleSheetList {
         // TODO: implement
         throw new Error();
     }
-    stylesheets: StyleSheetList;
     hasChildNodes(this: SyntheticShadowRootInterface, ) {
         return this.childNodes.length > 0;
     }
