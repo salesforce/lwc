@@ -55,7 +55,6 @@ const transform: FileTransformer = function(
             throw convertDiagnosticToCompilerError(fatalError, { filename });
         }
     } catch (e) {
-        debugger;
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
 

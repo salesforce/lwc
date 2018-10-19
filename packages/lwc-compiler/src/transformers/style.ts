@@ -117,7 +117,6 @@ export default async function transformStyle(
             from: filename,
         });
     } catch (e) {
-        debugger;
         throw normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, e, { filename });
     }
 

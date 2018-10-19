@@ -23,7 +23,6 @@ export default function(
     try {
         result = babel.transform(code, config);
     } catch (e) {
-        debugger;;
         throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
     }
 
