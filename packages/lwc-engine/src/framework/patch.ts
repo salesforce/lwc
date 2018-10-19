@@ -1,6 +1,5 @@
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { patchEvent } from "../faux-shadow/faux";
-import { patchCustomElement } from "../faux-shadow/faux";
 import { elementTagNameGetter } from "./dom-api";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, create, isUndefined } from "../shared/language";
