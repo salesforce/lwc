@@ -152,6 +152,7 @@ export function convertDiagnosticToCompilerError(diagnostic: CompilerDiagnostic,
     const filename = getFilename(newContext, diagnostic);
     const location = getLocation(newContext, diagnostic);
 
+    // TODO: Preserve stack information
     return new CompilerError(code, `${filename}: ${message}`, filename, location);
 }
 
@@ -165,6 +166,7 @@ function convertErrorToDiagnostic(error: any, fallbackErrorInfo: LWCErrorInfo, n
     const filename = getFilename(newContext, error);
     const location = getLocation(newContext, error);
 
+    // TODO: Preserve stack information
     return { code, message, level, filename, location };
 }
 

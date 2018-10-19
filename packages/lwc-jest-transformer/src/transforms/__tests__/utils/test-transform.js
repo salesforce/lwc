@@ -9,7 +9,7 @@ const baseConfig = {
     parserOpts: {
         plugins: [
             ['decorators', { decoratorsBeforeExport: true }]
-            [('classProperties', {})],
+            ['classProperties', {}],
             ['dynamicImport', {}],
         ],
     },

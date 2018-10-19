@@ -207,7 +207,7 @@ function transform(
         }
 
         return t.conditionalExpression(
-            leftExpression!,
+            leftExpression,
             babelNode,
             falseValue,
         );
