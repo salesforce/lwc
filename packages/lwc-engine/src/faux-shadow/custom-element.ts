@@ -2,7 +2,7 @@ import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterfa
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
 import { hasAttribute } from "./element";
-import { getOwnPropertyDescriptor, isNull } from "../shared/language";
+import { getOwnPropertyDescriptor, isNull, isFalse } from "../shared/language";
 import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
@@ -28,6 +28,11 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             return null;
         }
         get tabIndex(this: HTMLElement) {
+            if (isDelegatingFocus(this) && isFalse(hasAttribute.call(this, 'tabindex'))) {
+                // this cover the case where the default tabindex should be 0 because the
+                // custom element is delegating its focus
+                return 0;
+            }
             return super.tabIndex;
         }
         set tabIndex(this: HTMLElement, value: any) {
@@ -51,25 +56,28 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         focus(this: HTMLElement) {
             if (isDelegatingFocus(this)) {
                 const currentActiveElement = getActiveElement(this);
-                // when an active element is found, focus does nothing
                 if (isNull(currentActiveElement)) {
                     const firstNode = getFirstFocusableElement(this);
                     if (!isNull(firstNode)) {
+                        // when there is a focusable element, focus should be delegated
                         firstNode.focus();
+                        return;
                     }
+                } else {
+                    // when an already active element is found, focus does nothing
+                    return;
                 }
-                return;
             }
             super.focus();
         }
         blur(this: HTMLElement) {
             if (isDelegatingFocus(this)) {
                 const currentActiveElement = getActiveElement(this);
-                // if there is no active element, blur does nothing
                 if (!isNull(currentActiveElement)) {
+                    // if there is an active element, blur it
                     currentActiveElement.focus();
+                    return;
                 }
-                return;
             }
             super.blur();
         }

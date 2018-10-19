@@ -3,7 +3,7 @@ import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSIT
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor } from '../shared/language';
 import { DocumentPrototypeActiveElement } from './document';
 import { eventCurrentTargetGetter } from './events';
-import { getHost, getShadowRoot } from './shadow-root';
+import { getShadowRoot } from './shadow-root';
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 

@@ -146,8 +146,51 @@ describe('accessibility', () => {
                 elm.focus();
                 return Promise.resolve(() => {
                     // jsdom has some timing issues with the manual focusing process
+                    expect(elm.tabIndex).toBe(-1);
                     expect(elm.shadowRoot.activeElement).toBe(null);
                 });
+            });
+            it('should focus on itself when there is no focusable child', () => {
+                const html = compileTemplate(`
+                    <template>
+                        <div></div>
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                elm.focus();
+                return Promise.resolve(() => {
+                    // jsdom has some timing issues with the manual focusing process
+                    expect(elm.shadowRoot.activeElement).toBe(null);
+                    expect(document.activeElement).toBe(elm);
+                });
+            });
+            it('should return tabIndex=0 as the default value for custom element', () => {
+                const html = compileTemplate(`
+                    <template>
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                    static delegatesFocus = true;
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                expect(elm.tabIndex).toBe(0);
             });
         });
 
@@ -174,6 +217,23 @@ describe('accessibility', () => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(null);
                 });
+            });
+            it('should return tabIndex=-1 as the default value for custom element', () => {
+                const html = compileTemplate(`
+                    <template>
+                    </template>
+                `);
+                class Foo extends LightningElement {
+                    constructor() {
+                        super();
+                    }
+                    render() {
+                        return html;
+                    }
+                }
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+                expect(elm.tabIndex).toBe(-1);
             });
         });
     });
