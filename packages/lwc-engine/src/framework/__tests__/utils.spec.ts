@@ -1,7 +1,4 @@
 import * as target from '../utils';
-import { createElement } from './../upgrade';
-import { LightningElement } from './../html-element';
-import { compileTemplate } from 'test-utils';
 
 describe('utils', () => {
     describe('#addCallbackToNextTick()', () => {
