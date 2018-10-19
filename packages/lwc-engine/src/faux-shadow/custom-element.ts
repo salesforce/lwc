@@ -1,4 +1,4 @@
-import { attachShadow, getShadowRoot, ShadowRootMode } from "./shadow-root";
+import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
 import { hasAttribute } from "./element";
@@ -11,8 +11,8 @@ const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
     return class PatchedHTMLElement extends Ctor {
-        attachShadow(options: ShadowRootInit): ShadowRoot {
-            return attachShadow(this, options) as ShadowRoot;
+        attachShadow(options: ShadowRootInit): SyntheticShadowRootInterface {
+            return attachShadow(this, options) as SyntheticShadowRootInterface;
         }
         addEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
             addCustomElementEventListener(this as HTMLElement, type, listener, options);
@@ -20,8 +20,8 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         removeEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
             removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
-        get shadowRoot(this: HTMLElement): ShadowRoot | null {
-            const shadow = getShadowRoot(this) as ShadowRoot;
+        get shadowRoot(this: HTMLElement): SyntheticShadowRootInterface | null {
+            const shadow = getShadowRoot(this) as SyntheticShadowRootInterface;
             if (shadow.mode === ShadowRootMode.OPEN) {
                 return shadow;
             }

@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf, defineProperty } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement } from "./traverse";
+import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, SyntheticNodeList } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
@@ -77,7 +77,7 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     return sr;
 }
 
-function patchedShadowRootChildNodesGetter(this: SyntheticShadowRootInterface): Element[] {
+function patchedShadowRootChildNodesGetter(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
     return shadowRootChildNodes(this);
 }
 
@@ -141,7 +141,7 @@ export enum ShadowRootMode {
 }
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {
-    _mode: string;
+    mode: string;
 }
 
 export class SyntheticShadowRoot extends DocumentFragment implements SyntheticShadowRootInterface {
@@ -187,6 +187,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements SyntheticSh
         // TODO: implement
         throw new Error();
     }
+    stylesheets: StyleSheetList;
     hasChildNodes(this: SyntheticShadowRootInterface, ) {
         return this.childNodes.length > 0;
     }
@@ -195,9 +196,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements SyntheticSh
      * Returns the first element that is a descendant of node that
      * matches selectors.
      */
-    // querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null;
-    // querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K] | null;
-    querySelector<E extends Element = Element>(this: SyntheticShadowRootInterface, selectors: string): E | null {
+    querySelector(this: SyntheticShadowRootInterface, selectors: string): Element | null {
         return shadowRootQuerySelector(this, selectors);
     }
     /**
@@ -206,7 +205,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements SyntheticSh
      */
     // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
     // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
-    querySelectorAll<E extends Element = Element>(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<E> {
+    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): SyntheticNodeList<Element> {
         return shadowRootQuerySelectorAll(this, selectors);
     }
     addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {

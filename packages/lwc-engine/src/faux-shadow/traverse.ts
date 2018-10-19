@@ -21,6 +21,7 @@ import {
     ArrayFilter,
     isTrue,
     getPrototypeOf,
+    defineProperty,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
@@ -94,6 +95,41 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
+export class SyntheticNodeList<T extends Node> implements NodeListOf<T> {
+    [key: number]: T;
+    items: T[];
+    constructor(items: T[]) {
+        // Array backed nodelist
+        defineProperty(this, 'items', {
+            value: items,
+            enumerable: false,
+            configurable: false,
+            writable: false,
+        });
+
+        items.forEach((item, index) => {
+            defineProperty(this, index, {
+                value: items,
+                enumerable: true,
+                configurable: true,
+                writable: false,
+            });
+        });
+    }
+
+    item(index: number): T {
+        return this[index];
+    }
+
+    get length() {
+        return this.items.length;
+    }
+
+    forEach(cb, thisArg) {
+        this.items.forEach(cb, thisArg);
+    }
+}
+
 function getShadowParent(node: Node, value: undefined | HTMLElement): Node | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
@@ -117,12 +153,12 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): Node | nul
     return null;
 }
 
-export function shadowRootChildNodes(root: SyntheticShadowRootInterface) {
+export function shadowRootChildNodes(root: SyntheticShadowRootInterface): SyntheticNodeList<Element & Node> {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element[] {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -133,7 +169,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return filteredAndPatched;
+    return new SyntheticNodeList(filteredAndPatched);
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
@@ -145,7 +181,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Element[] {
+function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Node & Element>{
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -153,7 +189,7 @@ function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): E
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return filteredAndPatched;
+    return new SyntheticNodeList(filteredAndPatched);
 }
 
 function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | null {
@@ -170,12 +206,10 @@ export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: 
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
-export function lightDomQuerySelectorAll<K extends keyof HTMLElementTagNameMap>(elm: Element, selectors: K): NodeListOf<HTMLElementTagNameMap[K]>;
-export function lightDomQuerySelectorAll<K extends keyof SVGElementTagNameMap>(elm: Element, selectors: K): NodeListOf<SVGElementTagNameMap[K]>;
-export function lightDomQuerySelectorAll<E extends Element = Element>(elm: Element, selectors: string): NodeListOf<E> {
+export function lightDomQuerySelectorAll(elm: Element, selectors: string): SyntheticNodeList<Element> {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
-        return [];
+        return new SyntheticNodeList([]);
     }
     const nodeList = nativeQuerySelectorAll.call(elm, selectors);
     if (getNodeKey(elm)) {
@@ -209,7 +243,7 @@ export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, sele
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): SyntheticNodeList<Element> {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
@@ -275,10 +309,10 @@ interface AssignedNodesOptions {
 export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
     return class extends Ctor {
-        get childNodes(this: Node): NodeListOf<ChildNode> {
+        get childNodes(this: Node): SyntheticNodeList<Node & Element> {
             const owner = getNodeOwner(this);
             if (isNull(owner)) {
-                return [];
+                return new SyntheticNodeList([]);
             }
             return getAllMatches(owner, getFilteredChildNodes(this));
         }
@@ -301,7 +335,7 @@ export function PatchedNode(node: Node): NodeConstructor {
         set textContent(this: Node, value: string) {
             textContextSetter.call(this, value);
         }
-        get parentNode(this: Node): (Node & ParentNode) | null {
+        get parentNode(this: Node): Node | null {
             const value = nativeParentNodeGetter.call(this);
             if (isNull(value)) {
                 return value;
@@ -333,9 +367,7 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         querySelector(selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
         }
-        querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>;
-        querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>;
-        querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
+        querySelectorAll(selectors: string): SyntheticNodeList<Element> {
             return lightDomQuerySelectorAll(this as Element, selectors);
         }
         get innerHTML(): string {
