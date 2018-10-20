@@ -13,12 +13,10 @@ import {
     create,
     getOwnPropertyNames,
     isFunction,
-    ArraySlice,
     isNull,
     defineProperties,
     seal,
     ArrayReduce,
-    isTrue,
     isObject,
 } from "../shared/language";
 import { HTMLElementOriginalDescriptors } from "./html-properties";
@@ -31,7 +29,6 @@ import { getComponentVM, VM, setNodeKey } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
-import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { unlockAttribute, lockAttribute } from "./attributes";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
@@ -240,33 +237,34 @@ BaseLightningElement.prototype = {
         }
         return elm.getBoundingClientRect();
     },
-    querySelector(selector: string): Element | null {
+    /**
+     * Returns the first element that is a descendant of node that
+     * matches selectors.
+     */
+    // querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K] | null;
+    // querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K] | null;
+    querySelector<E extends Element = Element>(selectors: string): E | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
         }
         const { elm } = vm;
-        // fallback to a patched querySelector to respect
-        // shadow semantics
-        if (isTrue(vm.fallback)) {
-            return lightDomQuerySelector(elm, selector);
-        }
-        // Delegate to custom element querySelector.
-        return elm.querySelector(selector);
+        return elm.querySelector(selectors);
     },
-    querySelectorAll(selector: string): Element[] {
+
+    /**
+     * Returns all element descendants of node that
+     * match selectors.
+     */
+    // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
+    // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
+    querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
         }
         const { elm } = vm;
-        // fallback to a patched querySelectorAll to respect
-        // shadow semantics
-        if (isTrue(vm.fallback)) {
-            return lightDomQuerySelectorAll(elm, selector);
-        }
-        // Delegate to custom element querySelectorAll.
-        return ArraySlice.call(elm.querySelectorAll(selector));
+        return elm.querySelectorAll(selectors);
     },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {

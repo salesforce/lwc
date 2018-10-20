@@ -17,18 +17,19 @@ import { wrapIframeWindow } from "./iframe";
 import {
     ArrayReduce,
     ArrayPush,
-    assign,
     isUndefined,
     ArrayFilter,
     isTrue,
-    create,
+    getPrototypeOf,
 } from "../shared/language";
 import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
-import { getHost, getShadowRoot, SyntheticShadowRoot } from "./shadow-root";
+import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
 import { parentElementGetter } from "../framework/dom-api";
+import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
+import { SyntheticNodeList } from "./node-list";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -94,11 +95,11 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): SyntheticShadowRoot | HTMLElement | null {
+function getShadowParent(node: Node, value: undefined | HTMLElement): Node | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner);
+        return getShadowRoot(owner) as Node;
     } else if (value instanceof Element) {
         if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -117,37 +118,12 @@ function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): Syn
     return null;
 }
 
-function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | SyntheticShadowRoot | null {
-    const value = nativeParentNodeGetter.call(this);
-    if (isNull(value)) {
-        return value;
-    }
-    return getShadowParent(this, value);
-}
-
-function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
-    const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
-    if (isNull(parentNode)) {
-        return null;
-    }
-    const nodeOwner = getNodeOwner(this);
-    if (isNull(nodeOwner)) {
-        return parentNode;
-    }
-    // If we have traversed to the host element,
-    // we need to return null
-    if (nodeOwner === parentNode) {
-        return null;
-    }
-    return parentNode;
-}
-
-export function shadowRootChildNodes(root: SyntheticShadowRoot) {
+export function shadowRootChildNodes(root: SyntheticShadowRootInterface): SyntheticNodeList<Element & Node> {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element[] {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -158,7 +134,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return filteredAndPatched;
+    return new SyntheticNodeList(filteredAndPatched);
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
@@ -170,7 +146,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Element[] {
+function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -178,7 +154,7 @@ function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): E
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return filteredAndPatched;
+    return new SyntheticNodeList(filteredAndPatched);
 }
 
 function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | null {
@@ -195,12 +171,12 @@ export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: 
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
-export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
+export function lightDomQuerySelectorAll(elm: Element, selectors: string): SyntheticNodeList<Element> {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
-        return [];
+        return new SyntheticNodeList([]);
     }
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selectors);
     if (getNodeKey(elm)) {
         // it is a custom element, and we should then filter by slotted elements
         return getAllSlottedMatches(elm as HTMLElement, nodeList);
@@ -226,21 +202,13 @@ export function lightDomQuerySelector(elm: Element, selector: string): Element |
     }
 }
 
-function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
-    return lightDomQuerySelectorAll(this, selector);
-}
-
-function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
-    return lightDomQuerySelector(this, selector);
-}
-
-export function shadowRootQuerySelector(root: SyntheticShadowRoot, selector: string): Element | null {
+export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, selector: string): Element | null {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRoot, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): SyntheticNodeList<Element> {
     const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
@@ -299,142 +267,115 @@ export function getFilteredChildNodes(node: Node): Element[] {
     }, []);
 }
 
-function lightDomChildNodesGetter(this: HTMLElement): Node[] {
-    const owner = getNodeOwner(this);
-    if (isNull(owner)) {
-        return [];
-    }
-    return getAllMatches(owner, getFilteredChildNodes(this));
-}
-
-function lightDomInnerHTMLGetter(this: Element): string {
-    return getInnerHTML(this);
-}
-
-function lightDomOuterHTMLGetter(this: Element): string {
-    return getOuterHTML(this);
-}
-
-function lightDomTextContentGetter(this: Node): string {
-    return getTextContent(this);
-}
-
-function assignedSlotGetter(this: Node): HTMLElement | null {
-    const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
-    /**
-     * if it doesn't have a parent node,
-     * or the parent is not an slot element
-     * or they both belong to the same template (default content)
-     * we should assume that it is not slotted
-     */
-    if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
-        return null;
-    }
-    return parentNode as HTMLElement;
-}
-
 interface AssignedNodesOptions {
     flatten?: boolean;
 }
 
-function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
-    const flatten = !isUndefined(options) && isTrue(options.flatten);
-    return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+export function PatchedNode(node: Node): NodeConstructor {
+    const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
+    return class extends Ctor {
+        get childNodes(this: Node): SyntheticNodeList<Node & Element> {
+            const owner = getNodeOwner(this);
+            if (isNull(owner)) {
+                return new SyntheticNodeList([]);
+            }
+            return getAllMatches(owner, getFilteredChildNodes(this));
+        }
+        get assignedSlot(this: Node): HTMLElement | null {
+            const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
+            /**
+             * if it doesn't have a parent node,
+             * or the parent is not an slot element
+             * or they both belong to the same template (default content)
+             * we should assume that it is not slotted
+             */
+            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
+                return null;
+            }
+            return parentNode as HTMLElement;
+        }
+        get textContent(this: Node): string {
+            return getTextContent(this);
+        }
+        set textContent(this: Node, value: string) {
+            textContextSetter.call(this, value);
+        }
+        get parentNode(this: Node): Node | null {
+            const value = nativeParentNodeGetter.call(this);
+            if (isNull(value)) {
+                return value;
+            }
+            return getShadowParent(this, value);
+        }
+        get parentElement(this: Node): HTMLElement | null {
+            const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
+            if (isNull(parentNode)) {
+                return null;
+            }
+            const nodeOwner = getNodeOwner(this);
+            if (isNull(nodeOwner)) {
+                return parentNode;
+            }
+            // If we have traversed to the host element,
+            // we need to return null
+            if (nodeOwner === parentNode) {
+                return null;
+            }
+            return parentNode;
+        }
+    };
 }
 
-function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
-    const flatten = !isUndefined(options) && isTrue(options.flatten);
-    const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-    return ArrayFilter.call(nodes, node => node instanceof Element);
+export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
+    const Ctor = PatchedNode(elm) as HTMLElementConstructor;
+    return class PatchedHTMLElement extends Ctor {
+        querySelector(selector: string): Element | null {
+            return lightDomQuerySelector(this, selector);
+        }
+        querySelectorAll(selectors: string): SyntheticNodeList<Element> {
+            return lightDomQuerySelectorAll(this as Element, selectors);
+        }
+        get innerHTML(): string {
+            return getInnerHTML(this);
+        }
+        set innerHTML(value: string) {
+            innerHTMLSetter.call(this, value);
+        }
+        get outerHTML() {
+            return getOuterHTML(this);
+        }
+    };
 }
 
-function slotNameGetter(this: HTMLElement): string {
-    const name = getAttribute.call(this, 'name');
-    return isNull(name) ? '' : name;
+export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstructor {
+    const Ctor = PatchedNode(elm) as HTMLSlotElementConstructor;
+    return class PatchedHTMLSlotElement extends Ctor {
+        assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            return ArrayFilter.call(nodes, node => node instanceof Element);
+        }
+        assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+        }
+        get name(this: HTMLSlotElement): string {
+            // in browsers that do not support shadow dom, slot's name attribute is not reflective
+            const name = getAttribute.call(this, 'name');
+            return isNull(name) ? '' : name;
+        }
+    };
 }
 
-export const NodePatchDescriptors: PropertyDescriptorMap = {
-    childNodes: {
-        get: lightDomChildNodesGetter,
-        configurable: true,
-        enumerable: true,
-    },
-    assignedSlot: {
-        get: assignedSlotGetter,
-        configurable: true,
-        enumerable: true,
-    },
-    textContent: {
-        get: lightDomTextContentGetter,
-        set: textContextSetter,
-        configurable: true,
-        enumerable: true,
-    },
-    parentNode: {
-        get: parentNodeDescriptorValue,
-        configurable: true,
-    },
-    parentElement: {
-        get: parentElementDescriptorValue,
-        configurable: true,
-    },
-};
-
-export const ElementPatchDescriptors: PropertyDescriptorMap = assign(create(null), NodePatchDescriptors, {
-    querySelector: {
-        value: lightDomQuerySelectorValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    querySelectorAll: {
-        value: lightDomQuerySelectorAllValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    innerHTML: {
-        get: lightDomInnerHTMLGetter,
-        set: innerHTMLSetter,
-        configurable: true,
-        enumerable: true,
-    },
-    outerHTML: {
-        get: lightDomOuterHTMLGetter,
-        configurable: true,
-        enumerable: true,
-    },
-});
-
-export const SlotPatchDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
-    assignedElements: {
-        value: slotAssignedElementsValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    assignedNodes: {
-        value: slotAssignedNodesValue,
-        configurable: true,
-        enumerable: true,
-        writable: true,
-    },
-    name: {
-        // in browsers that do not support shadow dom, slot's name attribute is not reflective
-        get: slotNameGetter,
-        configurable: true,
-        enumerable: true,
-    },
-});
-
-export const IframeDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
-    contentWindow: {
-        get(this: HTMLIFrameElement) {
+export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementConstructor {
+    const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
+    return class PatchedHTMLIframeElement extends Ctor {
+        get contentWindow(this: HTMLIFrameElement) {
             const original = iFrameContentWindowGetter.call(this);
             if (original) {
                 return wrapIframeWindow(original);
             }
             return original;
-        },
-    }
-});
+        }
+    };
+}
