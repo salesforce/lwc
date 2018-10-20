@@ -9,7 +9,7 @@ import {
     insertBefore,
     removeChild,
 } from "./dom-api";
-import { patchSlotElement } from "../faux-shadow/slot";
+import { patchSlotElement } from "../faux-shadow/faux";
 import modEvents from "./modules/events";
 import modAttrs from "./modules/attrs";
 import modProps from "./modules/props";

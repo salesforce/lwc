@@ -7,4 +7,7 @@ export { PatchedCustomElement } from "./custom-element";
 export {
     lightDomQuerySelectorAll,
     lightDomQuerySelector,
+    PatchedElement, PatchedSlotElement,
+    PatchedNode,
+    PatchedIframeElement
 } from "./traverse";

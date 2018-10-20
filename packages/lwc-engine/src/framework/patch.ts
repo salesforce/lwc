@@ -5,8 +5,7 @@ import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdo
 import { setPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "./base-bridge-element";
-import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement } from "../faux-shadow/traverse";
-import { PatchedCustomElement } from '../faux-shadow/custom-element';
+import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement, PatchedCustomElement } from '../faux-shadow/faux';
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
