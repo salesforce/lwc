@@ -14,11 +14,11 @@ describe('Tabbing into custom element with delegates focus', () => {
         browser.keys(['Tab']);
         browser.keys(['Shift', 'Tab']);
 
-        const activeFromDocument = browser.execute(() => {
+        const activeFromDocument = browser.execute(function () {
             return document.activeElement;
         });
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-from-previous-sibling');
-        const activeFromShadow = browser.execute(() => {
+        const activeFromShadow = browser.execute(function () {
             return document.querySelector('integration-delegates-focus-from-previous-sibling').shadowRoot.activeElement;
         });
         assert.equal(activeFromShadow.getTagName(), 'integration-child');
