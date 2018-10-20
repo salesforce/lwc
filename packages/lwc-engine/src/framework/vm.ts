@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase } from "../shared/language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase, isFalse } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
@@ -494,6 +494,13 @@ function getHostElement(elm: HTMLElement): HTMLElement | null {
     return parentNode instanceof NativeShadowRoot
         ? ShadowRootHostGetter.call(parentNode)
         : null;
+}
+
+export function isNodeFromTemplate(node: Node): boolean {
+    if (isFalse(node instanceof Node)) {
+        return false;
+    }
+    return !isUndefined(getNodeOwnerKey(node));
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {

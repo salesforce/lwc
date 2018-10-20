@@ -1,9 +1,43 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
-import { getErrorComponentStack } from "../vm";
+import { getErrorComponentStack, isNodeFromTemplate } from "../vm";
 
 describe('vm', () => {
+    describe('#isNodeFromTemplate', () => {
+        it('should return false when element is created externally', () => {
+            expect(isNodeFromTemplate(document.createElement('div'))).toBe(false);
+        });
+
+        it('should return false when text node is created externally', () => {
+            expect(isNodeFromTemplate(document.createTextNode('text'))).toBe(false);
+        });
+
+        it('should return false when element is created with LWC', () => {
+            class Foo extends LightningElement {
+
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(isNodeFromTemplate(elm)).toBe(false);
+        });
+
+        it('should return true when element is created within LWC template', () => {
+            const template = compileTemplate(`
+                <template>
+                    <div>inside</div>
+                </template>
+            `);
+            class Foo extends LightningElement {
+                render() {
+                    return template;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(isNodeFromTemplate(elm.shadowRoot.querySelector('div'))).toBe(true);
+        });
+    });
+
     describe('insertion index', () => {
         it('should assign idx=0 (insertion index) during construction', () => {
             class MyComponent1 extends LightningElement {}
