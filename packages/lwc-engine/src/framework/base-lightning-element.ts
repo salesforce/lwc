@@ -281,17 +281,9 @@ BaseLightningElement.prototype = {
         }
         return vm.cmpRoot;
     },
-    get root(): ShadowRoot {
-        // TODO: issue #418
-        const vm = getComponentVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-            assert.logWarning(`"this.root" access in ${getComponentAsString(this)} has been deprecated and will be removed. Use "this.template" instead.`, vm.elm);
-        }
-        return vm.cmpRoot;
-    },
     get shadowRoot(): ShadowRoot | null {
-        // from within, the shadowRoot is always in "closed" mode
+        // From within the component instance, the shadowRoot is always
+        // reported as "closed". Authors should rely on this.template instead.
         return null;
     },
     toString(): string {
