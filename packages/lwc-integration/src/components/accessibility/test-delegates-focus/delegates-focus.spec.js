@@ -26,7 +26,9 @@ describe('Tabbing into custom element with delegates focus', () => {
         const activeFromDocument = browser.execute(function () {
             return document.activeElement;
         });
-        assert.equal(activeFromDocument.getTagName(), 'body');
+        const tabName = activeFromDocument.getTagName();
+        const isTopElement = tabName === 'body' || tabName === 'html';
+        assert.ok(isTopElement);
         const activeFromShadow = browser.execute(function () {
             return document.querySelector('integration-delegates-focus').shadowRoot.activeElement;
         });
