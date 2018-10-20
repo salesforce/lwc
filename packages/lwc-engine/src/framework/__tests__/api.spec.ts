@@ -11,22 +11,19 @@ describe('api', () => {
         class Foo extends LightningElement {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function() { return class extends LightningElement {
-                static forceTagName = 'input';
-            }; };
+            const factory = function() {
+                class Foo extends LightningElement {
+                    xyz() {
+                        return 1;
+                    }
+                }
+                Foo.publicMethods = ['xyz'];
+                return Foo;
+            };
             factory.__circular__ = true;
-            const vnode = api.c('x-foo', factory, { className: 'foo' });
-            expect(vnode.tag).toBe('input');
-        });
-
-        it('should convert className to a classMap property', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo' });
-            expect(vnode.data.class).toEqual({ foo: true });
-        });
-
-        it('should split classNames on white spaces', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' });
-            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
+            const elm = createElement('x-foo', { is: factory });
+            document.body.appendChild(elm);
+            expect(elm.xyz()).toBe(1);
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
@@ -38,109 +35,10 @@ describe('api', () => {
             }).toThrowError(/className/);
         });
 
-        it('assign correct style value when styleMap is present', () => {
-            const styleMap = { color: 'red' };
-            const vnode = api.c('x-foo', Foo, { styleMap });
-
-            expect(vnode.data.style).toEqual({ color: 'red' });
-        });
-
-        it('assign correct style value when style is present', () => {
-            const style = 'color:red';
-            const factory = function() { return Foo; };
-            const vnode = api.c('x-foo', factory, { style });
-
-            expect(vnode.data.style).toBe('color:red');
-        });
-
-        it('should coerce style to string when is object', () => {
-            const style = {
-                color: 'red'
-            };
-            const factory = function() { return Foo; };
-            let vnode;
-
-            // just to have a vm being rendered.
-            class VmRendering extends LightningElement {
-                render() {
-                    vnode = api.c('x-foo', factory, { style });
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`);
-
-            expect(vnode.data.style).toBe('[object Object]');
-        });
-
         it('should throw an error when createElement is called without Ctor', function() {
             expect(() => {
                 createElement('x-foo');
             }).toThrow();
-        });
-
-        it('should support forceTagName static definition to force tagname on root node', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'input';
-            }
-            const element = createElement('x-foo', { is: Bar });
-            document.body.appendChild(element);
-            expect(element.tagName).toBe('INPUT');
-            // the "is" attribute is only inserted after the element is connected
-            expect(element.getAttribute('is')).toBe('x-foo');
-        });
-
-        it('should not include is attribute when forceTagName is not present on root', () => {
-            class Bar extends LightningElement {}
-            const element = createElement('x-foo', { is: Bar });
-            expect(element.hasAttribute('is')).toBe(false);
-        });
-
-        it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
-            function html($api) {
-                return [$api.c('button', Bar, { attrs: { is: "x-bar" } })];
-            }
-            class Foo extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-            class Bar extends LightningElement {
-                static forceTagName = 'input';
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-
-            const span = getHostShadowRoot(elm).querySelector('button');
-            expect(span.tagName).toEqual('BUTTON');
-            expect(span.getAttribute('is')).toEqual('x-bar');
-        });
-
-        it('should throw if the forceTagName value is a reserved standard element name', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'div';
-            }
-
-            expect(() => {
-                createElement('x-foo', { is: Bar });
-            }).toThrow(
-                /Invalid static forceTagName property set to "div"/
-            );
-        });
-
-        it('should throw if the forceTagName is a custom element name', () => {
-            class Bar extends LightningElement {
-                static forceTagName = 'x-bar';
-            }
-
-            expect(() => {
-                createElement('x-foo', { is: Bar });
-            }).toThrow(
-                /Invalid static forceTagName property set to "x-bar"/
-            );
         });
 
         it('should log warning if passed style is not a string', () => {
@@ -165,19 +63,9 @@ describe('api', () => {
     });
 
     describe('#h()', () => {
-        it('should convert className to a classMap property', () => {
-            const vnode = api.h('p', { key: 0, className: 'foo' }, []);
-            expect(vnode.data.class).toEqual({ foo: true });
-        });
-
         it('should allow null entries in children', () => {
             const vnode = api.h('p', { key: 0 }, [null]);
             expect(vnode.children).toEqual([null]);
-        });
-
-        it('should split classNames on white spaces', () => {
-            const vnode = api.h('p', { key: 0, className: 'foo bar   baz' }, []);
-            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
@@ -200,61 +88,6 @@ describe('api', () => {
             });
         });
 
-        it('assign correct style value when styleMap is present', () => {
-            const styleMap = {
-                color: 'red'
-            };
-            const vnode = api.h('p', { key: 0, styleMap }, []);
-
-            expect(vnode.data.style).toEqual({
-                color: 'red'
-            });
-        });
-
-        it('assign correct style value when style is present', () => {
-            const style = 'color:red';
-            const vnode = api.h('p', { key: 0, style }, []);
-
-            expect(vnode.data.style).toBe('color:red');
-        });
-
-        it('should coerce style to string when is object', () => {
-            const style = {
-                color: 'red'
-            };
-            let vnode;
-            class VmRendering extends LightningElement {
-                render() {
-                    vnode = api.h('p', { key: 0, style }, []);
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
-
-            expect(vnode.data.style).toBe('[object Object]');
-        });
-
-        it('should logWarning when passing style attribute as object', () => {
-            const style = {
-                color: 'red'
-            };
-
-            class VmRendering extends LightningElement {
-                render() {
-                    api.h('p', { key: 0, style }, []);
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <p> should be a string value, and will be ignored.`);
-        });
     });
 
     describe('#i()', () => {
@@ -331,14 +164,14 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (9)], it should be an Array or an iterable Object.`);
+            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`);
         });
     });
 
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
-                return [$api.t('miami')];
+                return [$api.h('span', { key: 0 }, [$api.t('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -348,14 +181,14 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.textContent).toEqual('miami');
+            expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
     });
 
     describe('#p()', () => {
         it('should produce a comment', () => {
             function html($api) {
-                return [$api.p('miami')];
+                return [$api.h('span', { key: 0 }, [api.p('miami')]];
             }
             class Foo extends LightningElement {
                 render() {
@@ -365,7 +198,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             // TODO: once we switch to shadow DOM this test will have to be adjusted
-            expect(elm.innerHTML).toEqual('<!--miami-->');
+            expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
         });
     });
 
@@ -401,7 +234,189 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (13)]. Key must be a string or number.');
+            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.');
+        });
+    });
+
+    describe('#ti()', () => {
+        it('should return 0 when value is not 0 or -1', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(2);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.');
+            expect(normalized).toBe(0);
+        });
+
+        it('should return null when value is null', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(null);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(null);
+        });
+
+        it('should return undefined when value is undefined', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(undefined);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(undefined);
+        });
+
+        it('should return 0 when value is "3"', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('3');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toLogWarning('Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.');
+            expect(normalized).toBe(0);
+        });
+
+        it('should return -3 when value is -3', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-3);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-3);
+        });
+
+        it('should return 0 when value is 0', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(0);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(0);
+        });
+
+        it('should return -1 when value is -1', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(-1);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(-1);
+        });
+
+        it('should return NaN when value is NaN', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(NaN);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(NaN);
+        });
+
+        it('should return empty string when value is empty string', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti('');
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe('');
+        });
+
+        it('should return true when value is true', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(true);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(true);
+        });
+
+        it('should return false when value is false', () => {
+            let normalized;
+            function html($api) {
+                normalized = $api.ti(false);
+                return [];
+            }
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(normalized).toBe(false);
         });
     });
 });

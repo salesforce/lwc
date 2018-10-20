@@ -118,7 +118,7 @@ function transform(
                     transformTemplate(element, children) :
                     transformElement(element, children);
             },
-        },
+        }
     });
 
     /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
@@ -325,7 +325,10 @@ function transform(
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
         switch (attr.type) {
             case IRAttributeType.Expression:
-                const { expression } = bindExpression(attr.value, element);
+                let { expression } = bindExpression(attr.value, element);
+                if (attr.name === 'tabindex') {
+                    expression = codeGen.genTabIndex([expression]);
+                }
                 return expression;
 
             case IRAttributeType.String:

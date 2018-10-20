@@ -3,6 +3,7 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 const {
     addEventListener,
     removeEventListener,
+    hasAttribute,
     getAttribute,
     getAttributeNS,
     setAttribute,
@@ -11,6 +12,7 @@ const {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
+    getBoundingClientRect,
 } = Element.prototype;
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
@@ -22,6 +24,7 @@ const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Elemen
 export {
     addEventListener,
     removeEventListener,
+    hasAttribute,
     getAttribute,
     getAttributeNS,
     setAttribute,
@@ -32,4 +35,5 @@ export {
     querySelectorAll,
     innerHTMLSetter,
     tagNameGetter,
+    getBoundingClientRect,
 };

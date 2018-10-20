@@ -43,7 +43,7 @@ const CONSOLE_WHITELIST = [
     'root .lastChild could be a text node',
     'root .lastChild should return the last child',
     'root .parentElement should return null on child node',
-    'root childNodes should return array of childnodes',
+    'root childNodes should return array of childnodes'
 ];
 
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {

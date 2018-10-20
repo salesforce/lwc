@@ -6,7 +6,7 @@ export default class IframeCompat extends LightningElement {
 
     @api
     sendMessage() {
-        let frame = this.root.querySelector('iframe');
+        let frame = this.template.querySelector('iframe');
         try {
             frame.contentWindow.postMessage('foo', '*');
         } catch (e) {

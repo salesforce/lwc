@@ -76,7 +76,7 @@ describe('#LightDom querySelectorAll()', () => {
 
             const elm = createElement('x-test', { is: Test });
             document.body.appendChild(elm);
-            expect(getHostShadowRoot(elm).querySelectorAll('div')).toEqual([]);
+            expect(getHostShadowRoot(elm).querySelectorAll('div').length).toEqual(0);
         });
     });
 
@@ -699,7 +699,7 @@ describe('#childNodes', () => {
         expect(() => {
             const child = getHostShadowRoot(elm).querySelector('div');
             const childNodes = child.childNodes;
-        }).toLogWarning(`childNodes on [object HTMLDivElement] returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+        }).toLogWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
     });
 
     it('should return correct elements for custom elements when no children present', () => {

@@ -3,7 +3,8 @@
   "version": "0.29.26",
   "private": true,
   "scripts": {
-    "start": "best"
+    "start": "best",
+    "remote": "best --projects best.headless.config.js --runner remote"
   },
   "devDependencies": {
     "@best/runner-headless": "0.6.4",
