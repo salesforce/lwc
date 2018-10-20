@@ -2,7 +2,7 @@ import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterfa
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
 import { hasAttribute } from "./element";
-import { getOwnPropertyDescriptor, isNull, isFalse } from "../shared/language";
+import { getOwnPropertyDescriptor, isNull, isFalse, getPropertyDescriptor } from "../shared/language";
 import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
@@ -33,7 +33,13 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 // custom element is delegating its focus
                 return 0;
             }
-            return super.tabIndex;
+
+            // NOTE: Technically this should be `super.tabIndex` however Typescript
+            // has a known bug while transpiling down to ES5
+            // https://github.com/Microsoft/TypeScript/issues/338
+            const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
+            return descriptor!.get!.call(this);
+
         }
         set tabIndex(this: HTMLElement, value: any) {
             // get the original value from the element before changing it, just in case
@@ -42,7 +48,13 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             const hasAttr = hasAttribute.call(this, 'tabindex');
             const originalValue = tabIndexGetter.call(this);
             // run the super logic, which bridges the setter to the component
-            super.tabIndex = value;
+
+            // NOTE: Technically this should be `super.tabIndex` however Typescript
+            // has a known bug while transpiling down to ES5
+            // https://github.com/Microsoft/TypeScript/issues/338
+            const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
+            descriptor!.set!.call(this, value);
+
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
             if ((!hasAttr || originalValue !== newValue) && newValue === -1) {
