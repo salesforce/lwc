@@ -15,6 +15,13 @@ export const LWCClassErrors = {
         url: ""
     },
 
+    INVALID_IMPORT_PROHIBITED_API: {
+        code: 1001,
+        message: "Invalid import. \"{0}\" is not part of the lwc api.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
     INVALID_STATIC_OBSERVEDATTRIBUTES: {
         code: 1001,
         message: "Invalid static property \"observedAttributes\". \"observedAttributes\" cannot be used to track attribute changes. Define setters for {0} instead.",

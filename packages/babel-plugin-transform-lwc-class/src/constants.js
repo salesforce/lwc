@@ -49,17 +49,25 @@ const DISALLOWED_PROP_SET = new Set([
 
 const LWC_PACKAGE_ALIAS = 'lwc';
 
-
-const LWC_WHITE_LISTED_INTERNAL_APIS = {
-    CREATE_ELEMENT: 'createElement',
-}
-
 const LWC_PACKAGE_EXPORTS = {
     BASE_COMPONENT: 'LightningElement',
     API_DECORATOR: 'api',
     TRACK_DECORATOR: 'track',
     WIRE_DECORATOR: 'wire',
 }
+
+const LWC_API_WHITELIST = new Set([
+    'buildCustomElementConstructor',
+    'createElement',
+    'dangerousObjectMutation',
+    'getComponentDef',
+    'getComponentConstructor',
+    'isComponentConstructor',
+    'readonly',
+    'register',
+    'unwrap',
+    ...Object.values(LWC_PACKAGE_EXPORTS),
+]);
 
 const LWC_DECORATORS = [
     LWC_PACKAGE_EXPORTS.API_DECORATOR,
@@ -90,7 +98,7 @@ module.exports = {
     LWC_DECORATORS,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
-    LWC_WHITE_LISTED_INTERNAL_APIS,
+    LWC_API_WHITELIST,
 
     LWC_COMPONENT_PROPERTIES,
     DECORATOR_TYPES,
