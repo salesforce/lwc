@@ -48,6 +48,10 @@ import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import { isIdReferencingAttribute } from '../parser/attribute';
 
+function createNoopArrowFunction() {
+    return t.arrowFunctionExpression([], t.blockStatement([]));
+}
+
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
         ${TEMPLATE_PARAMS.API},
@@ -353,23 +357,28 @@ function transform(
             on,
             forKey,
         } = element;
+        let needsCreateHook: boolean = false;
+        let needsUpdateHook: boolean = false;
 
-        // Class attibute defined via string
+        // Dynamic class attribute defined via string
         if (className) {
             const { expression: classExpression } = bindExpression(
                 className,
                 element,
             );
             data.push(t.objectProperty(t.identifier('className'), classExpression));
+            needsCreateHook = true;
+            needsUpdateHook = true;
         }
 
-        // Class attribute defined via object
+        // Static class attribute defined via object
         if (classMap) {
             const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
             data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
+            needsCreateHook = true;
         }
 
-        // Style attribute defined via object
+        // Static style attribute defined via object
         if (styleMap) {
             const styleObj = objectToAST(
                 styleMap,
@@ -380,12 +389,15 @@ function transform(
             );
 
             data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
+            needsCreateHook = true;
         }
 
-        // Style attribute defined via string
+        // Dynamic style attribute defined via string
         if (style) {
             const { expression: styleExpression } = bindExpression(style, element);
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
+            needsCreateHook = true;
+            needsUpdateHook = true;
         }
 
         function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
@@ -428,10 +440,13 @@ function transform(
                     if (isIdReferencingAttribute(key)) {
                         return generateScopedIdFunctionForIdRefAttr(value);
                     }
+                } else {
+                    needsUpdateHook = true;
                 }
                 return computeAttrValue(attrs[key], element);
             });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
+            needsCreateHook = true;
         }
 
         // Properties
@@ -445,10 +460,13 @@ function transform(
                     if (isIdReferencingAttribute(attrName)) {
                         return generateScopedIdFunctionForIdRefAttr(value);
                     }
+                } else {
+                    needsUpdateHook = true;
                 }
                 return computeAttrValue(props[key], element);
             });
             data.push(t.objectProperty(t.identifier('props'), propsObj));
+            needsCreateHook = true;
         }
 
         // Key property on VNode
@@ -496,6 +514,18 @@ function transform(
                 return handler;
             });
             data.push(t.objectProperty(t.identifier('on'), onObj));
+            needsCreateHook = true;
+        }
+
+        if (!needsCreateHook) {
+            // If the element is not receiving any attribute via the template
+            // then we can skip the `create` phase during the diffing algo.
+            data.push(t.objectProperty(t.identifier('create'), createNoopArrowFunction()));
+        }
+        if (!needsUpdateHook) {
+            // If the element is not receiving any computed attribute via the template
+            // then we can skip the `update` phase during the diffing algo.
+            data.push(t.objectProperty(t.identifier('update'), createNoopArrowFunction()));
         }
 
         return t.objectExpression(data);
