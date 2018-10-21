@@ -15,6 +15,7 @@ import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
+import { ComponentInternals } from "./internals";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -37,6 +38,7 @@ export interface VM {
     cmpSlots: SlotSet;
     cmpTrack: Record<string, any>;
     cmpTemplate?: Template;
+    cmpInternals?: ComponentInternals;
     cmpRoot: ShadowRoot;
     callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;

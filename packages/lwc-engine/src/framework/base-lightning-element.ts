@@ -18,6 +18,7 @@ import {
     seal,
     ArrayReduce,
     isObject,
+    isUndefined,
 } from "../shared/language";
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
@@ -30,6 +31,7 @@ import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { unlockAttribute, lockAttribute } from "./attributes";
+import { ComponentInternals } from "./internals";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -285,6 +287,14 @@ BaseLightningElement.prototype = {
         // From within the component instance, the shadowRoot is always
         // reported as "closed". Authors should rely on this.template instead.
         return null;
+    },
+    get internals(): ComponentInternals {
+        const vm = getComponentVM(this);
+        let { cmpInternals } = vm;
+        if (isUndefined(cmpInternals)) {
+            cmpInternals = vm.cmpInternals = new ComponentInternals(vm);
+        }
+        return cmpInternals;
     },
     toString(): string {
         const vm = getComponentVM(this);

@@ -237,4 +237,110 @@ describe('accessibility', () => {
             });
         });
     });
+
+    describe('Aria Properties', () => {
+        describe('#role property on components', () => {
+            it('should return correct value from getter', () => {
+                class MyComponent extends LightningElement {}
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                element.role = 'tab';
+                expect(element.role).toBe('tab');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends LightningElement {}
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                expect(element.role).toBe(null);
+            });
+
+            it('should reflect on element when this.internals.role value is set', () => {
+                class MyComponent extends LightningElement {
+                    connectedCallback() {
+                        this.internals.role = 'tab';
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.role).toBe('tab');
+            });
+
+            it('should call setter when defined', () => {
+                let called = 0;
+                class MyComponent extends LightningElement {
+                    get role() {}
+                    set role(value) {
+                        called += 1;
+                    }
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                };
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'tab';
+                expect(called).toBe(1);
+            });
+
+            it('should not overwrite role attribute when setter does nothing', () => {
+                class MyComponent extends LightningElement {
+                    connectedCallback() {
+                        this.internals.role = 'tab';
+                    }
+                    get role() {}
+                    set role(value) {}
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                };
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'nottab';
+            });
+        });
+
+        describe('#ariaChecked', () => {
+            it('should return correct value from getter', () => {
+                class MyComponent extends LightningElement {}
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                element.ariaChecked = 'true';
+                expect(element.ariaChecked).toBe('true');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends LightningElement {}
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                expect(element.ariaChecked).toBe(null);
+            });
+
+            it('internals reflect default value when aria-checked has been removed', () => {
+                class MyComponent extends LightningElement {
+                    connectedCallback() {
+                        this.internals.ariaChecked = 'true';
+                        this.setAttribute('aria-checked', 'false');
+                        this.removeAttribute('aria-checked');
+                    }
+                }
+                const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.ariaChecked).toBe('true');
+            });
+
+            it('external getAttribute reflect default value when aria-checked has been removed', () => {
+                class MyComponent extends LightningElement {
+                    connectedCallback() {
+                        this.internals.ariaChecked = 'true';
+                    }
+                }
+                const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                document.body.appendChild(element);
+                element.setAttribute('aria-checked', 'false');
+                element.removeAttribute('aria-checked');
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+            });
+        });
+    });
 });
