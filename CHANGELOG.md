@@ -1,5 +1,26 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.25...v) (2018-10-16)
+# [](https://github.com/salesforce/lwc/compare/v0.29.26-1...v) (2018-10-21)
+
+
+### Features
+
+* **wire:** wire output as wire parameter ([#742](https://github.com/salesforce/lwc/issues/742)) ([33de30e](https://github.com/salesforce/lwc/commit/33de30e))
+* next rebased ([#734](https://github.com/salesforce/lwc/issues/734)) ([fb72740](https://github.com/salesforce/lwc/commit/fb72740)), closes [#695](https://github.com/salesforce/lwc/issues/695) [#606](https://github.com/salesforce/lwc/issues/606) [#688](https://github.com/salesforce/lwc/issues/688) [#705](https://github.com/salesforce/lwc/issues/705)
+
+
+
+<a name="0.29.26-1"></a>
+## [0.29.26-1](https://github.com/salesforce/lwc/compare/v0.29.26...v0.29.26-1) (2018-10-16)
+
+
+### Features
+
+* **compiler:** collect module exports metadata ([#735](https://github.com/salesforce/lwc/issues/735)) ([3509be5](https://github.com/salesforce/lwc/commit/3509be5))
+
+
+
+<a name="0.29.26"></a>
+## [0.29.26](https://github.com/salesforce/lwc/compare/v0.29.25...v0.29.26) (2018-10-16)
 
 
 ### Bug Fixes
