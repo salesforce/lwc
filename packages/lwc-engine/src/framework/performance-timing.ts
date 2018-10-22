@@ -9,6 +9,11 @@ type MeasurementPhase =
     | 'renderedCallback'
     | 'errorCallback';
 
+type GlobalMeasurementPhase =
+    | 'rehydrate'
+    | 'createElement'
+    | 'connectingRootElement';
+
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs
 const isUserTimingSupported: boolean =
@@ -43,4 +48,20 @@ export function endMeasure(vm: VM, phase: MeasurementPhase) {
     // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
     performance.clearMarks(name);
     performance.clearMeasures(name);
+}
+
+export function startGlobalMeasure(phase: GlobalMeasurementPhase) {
+    if (!isUserTimingSupported) {
+        return;
+    }
+
+    performance.mark(phase);
+}
+
+export function endGlobalMeasure(phase: GlobalMeasurementPhase) {
+    if (!isUserTimingSupported) {
+        return;
+    }
+
+    performance.measure('lwc-' + phase, phase);
 }
