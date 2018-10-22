@@ -38,7 +38,9 @@ it('should apply transformation for template file', async () => {
             } = $api;
 
             return [api_element("div", {
-                key: 2
+                key: 2,
+                create: () => {},
+                update: () => {}
             }, [api_text("Hello")])];
         }
 

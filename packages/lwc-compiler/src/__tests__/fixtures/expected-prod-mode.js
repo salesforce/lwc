@@ -1,1 +1,1 @@
-define("x/class_and_template",["lwc"],function(a){var b=a.registerTemplate(function(a){const{h:b}=a;return[b("section",{key:2},[])]});class c extends a.LightningElement{constructor(){super(),this.t=1,this.counter=0}render(){return b}}return c});
+define("x/class_and_template",["lwc"],function(a){var b=a.registerTemplate(function(a){const{h:b}=a;return[b("section",{key:2,create:()=>{},update:()=>{}},[])]});class c extends a.LightningElement{constructor(){super(),this.t=1,this.counter=0}render(){return b}}return c});

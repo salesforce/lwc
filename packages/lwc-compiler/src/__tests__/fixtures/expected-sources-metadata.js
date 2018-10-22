@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         c: api_custom_element
     } = $api;
     return [api_custom_element("x-bar", _xBar, {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
     }, [])];
 }
 var _tmpl = registerTemplate(tmpl);
