@@ -7,7 +7,9 @@ import {
     getCodeFromError,
     getFilename,
     getLocation
- } from "./utils";
+} from "./utils";
+
+import { GENERIC_COMPILER_ERROR } from './error-info/compiler';
 
 export * from "./error-info/lwc-class";
 export * from "./error-info/compiler";
@@ -26,12 +28,6 @@ export interface ErrorConfig {
     messageArgs?: any[];
     origin?: CompilerDiagnosticOrigin;
 }
-
-const GENERIC_COMPILER_ERROR = {
-    code: 1,
-    message: "Unexpected compilation error: {0}",
-    level: DiagnosticLevel.Error
-};
 
 export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
     const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;

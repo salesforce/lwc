@@ -1,5 +1,11 @@
 import { DiagnosticLevel } from "../../shared/types";
 
+export const GENERIC_COMPILER_ERROR = {
+    code: 101,
+    message: "Unexpected compilation error: {0}",
+    level: DiagnosticLevel.Error
+};
+
 export const CompilerValidationErrors = {
     INVALID_ALLOWDEFINITION_PROPERTY: {
         code: 1,
