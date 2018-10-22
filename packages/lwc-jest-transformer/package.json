@@ -19,7 +19,7 @@
   "peerDependencies": {
     "lwc-compiler": "0.29.x",
     "lwc-engine": "0.29.x",
-    "lwc-errors": "0.29.x"
+    "lwc-errors": "0.30.1"
   },
   "devDependencies": {
     "lwc-compiler": "0.30.1",
