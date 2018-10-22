@@ -537,7 +537,6 @@ export function fb(fn: (...args: any[]) => any): () => any {
     }
     const vm: VM = vmBeingRendered;
     return function(...args: any[]) {
-        debugger;
         return invokeComponentCallback(vm, fn, args);
     };
 }
@@ -558,7 +557,7 @@ export function ll(originalHandler: EventListener, id: string,
         // located service for the locator metadata
         const { context: { locator } } = vm;
         if (!isUndefined(locator)) {
-            const { locator:locatorService } = Services;
+            const { locator: locatorService } = Services;
             if (locatorService) {
                 locator.resolved = {
                     target        : id,
