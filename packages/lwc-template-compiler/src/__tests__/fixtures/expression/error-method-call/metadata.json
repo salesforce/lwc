@@ -4,7 +4,6 @@
             "code": 1,
             "message": "Invalid expression { Math.random() } - LWC1: Template expression doesn't allow CallExpression",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 8

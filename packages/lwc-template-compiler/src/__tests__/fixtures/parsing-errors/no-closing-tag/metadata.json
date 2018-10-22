@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: <p> has no matching closing tag.",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 5

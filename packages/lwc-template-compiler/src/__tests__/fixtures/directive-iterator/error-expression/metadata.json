@@ -4,7 +4,6 @@
             "code": 1,
             "message": "Invalid expression {x.next} - LWC1: Template expression doesn't allow to modify iterators",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 4,
                 "column": 35

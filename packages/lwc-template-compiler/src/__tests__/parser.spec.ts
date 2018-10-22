@@ -110,8 +110,7 @@ describe('event handlers', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: Event handler should be an expression`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });
@@ -137,8 +136,7 @@ describe('for:each directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: for:each and for:item directives should be associated together.`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -148,8 +146,7 @@ describe('for:each directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: for:item directive is expected to be a string.`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });
@@ -167,8 +164,7 @@ describe('for:of directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: iterator:it directive is expected to be an expression`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });
@@ -192,8 +188,7 @@ describe('if directive', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: Unexpected if modifier is-true`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -203,8 +198,7 @@ describe('if directive', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: If directive should be an expression`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });
@@ -228,8 +222,7 @@ describe('custom component', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -245,8 +238,7 @@ describe('custom component', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: Is attribute value can't be an expression`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });
@@ -258,8 +250,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: 'LWC1: Missing root template tag',
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -269,8 +260,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: 'LWC1: Multiple roots found',
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -280,8 +270,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: 'LWC1: Expected root tag to be template, found section',
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 
@@ -291,8 +280,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1: Root template doesn't allow attributes`,
-            location: EXPECTED_LOCATION,
-            filename: ''
+            location: EXPECTED_LOCATION
         });
     });
 });

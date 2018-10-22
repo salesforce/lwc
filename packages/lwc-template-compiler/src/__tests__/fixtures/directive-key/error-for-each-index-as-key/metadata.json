@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: Invalid key value for element <div>. Key cannot reference for:each index index",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 3,
                 "column": 14

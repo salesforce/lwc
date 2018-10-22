@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: my-iterator is not a valid identifier",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 9

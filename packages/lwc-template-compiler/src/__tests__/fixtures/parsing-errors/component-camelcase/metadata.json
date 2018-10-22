@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 13

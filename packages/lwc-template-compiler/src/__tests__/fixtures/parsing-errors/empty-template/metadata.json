@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: Missing root template tag",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 0,
                 "column": 0

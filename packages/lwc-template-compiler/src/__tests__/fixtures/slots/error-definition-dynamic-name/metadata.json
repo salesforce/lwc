@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: Name attribute on slot tag can't be an expression.",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 11

@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: Invalid template tag. A directive is expected to be associated with the template tag.",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 5

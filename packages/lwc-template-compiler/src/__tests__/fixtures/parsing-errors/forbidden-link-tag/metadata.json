@@ -4,7 +4,6 @@
             "code": 1,
             "message": "LWC1: Forbidden tag found in template: '<link>' tag is not allowed.",
             "level": 1,
-            "filename": "",
             "location": {
                 "line": 2,
                 "column": 5
