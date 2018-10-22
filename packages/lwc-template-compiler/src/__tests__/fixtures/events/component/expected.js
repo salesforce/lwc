@@ -9,7 +9,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       [
         api_custom_element(
@@ -19,7 +21,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             key: 3,
             on: {
               foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
-            }
+            },
+            update: () => {}
           },
           []
         )

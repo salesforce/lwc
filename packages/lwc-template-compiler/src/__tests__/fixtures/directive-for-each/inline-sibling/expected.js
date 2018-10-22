@@ -14,7 +14,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       api_flatten([
         api_iterator($cmp.items, function(item) {
@@ -30,7 +32,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "li",
           {
-            key: 4
+            key: 4,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Last")]
         )

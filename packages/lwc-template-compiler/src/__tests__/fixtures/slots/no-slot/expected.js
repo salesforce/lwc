@@ -9,7 +9,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-cmp",
       _xCmp,
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       []
     )

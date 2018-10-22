@@ -14,7 +14,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           viewBox: "0 0 5 5",
           "aria-hidden": "true"
         },
-        key: 2
+        key: 2,
+        update: () => {}
       },
       [
         api_element(
@@ -23,7 +24,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               "xlink:href": "/x"
             },
-            key: 3
+            key: 3,
+            update: () => {}
           },
           []
         )

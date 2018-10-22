@@ -13,13 +13,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       api_iterator($cmp.items, function(item, index) {
         return api_element(
           "li",
           {
-            key: api_key(3, item.id)
+            key: api_key(3, item.id),
+            create: () => {},
+            update: () => {}
           },
           [api_dynamic(index), api_text(" - "), api_dynamic(item)]
         );

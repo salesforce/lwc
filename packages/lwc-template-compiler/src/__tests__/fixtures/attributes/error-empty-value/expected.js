@@ -11,7 +11,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           title: ""
         },
-        key: 2
+        key: 2,
+        update: () => {}
       },
       []
     ),

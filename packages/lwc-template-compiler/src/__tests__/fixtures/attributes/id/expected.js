@@ -23,7 +23,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           htmlFor: api_scoped_id("foo", 5)
         },
-        key: 2
+        key: 2,
+        update: () => {}
       },
       []
     ),
@@ -34,7 +35,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           id: api_scoped_id("bar", 3)
         },
-        key: 3
+        key: 3,
+        update: () => {}
       },
       []
     ),
@@ -45,7 +47,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           id: api_scoped_id("baz", 4)
         },
-        key: 4
+        key: 4,
+        update: () => {}
       },
       []
     ),
@@ -60,7 +63,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             4
           )}`
         },
-        key: 5
+        key: 5,
+        update: () => {}
       },
       []
     ),
@@ -70,7 +74,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           for: api_scoped_id("boof", 7)
         },
-        key: 6
+        key: 6,
+        update: () => {}
       },
       [api_text("label text")]
     ),
@@ -80,7 +85,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           id: api_scoped_id("boof", 7)
         },
-        key: 7
+        key: 7,
+        update: () => {}
       },
       []
     ),
@@ -92,7 +98,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               for: api_scoped_id("uid", api_key(11, thing.key))
             },
-            key: api_key(9, thing.key)
+            key: api_key(9, thing.key),
+            update: () => {}
           },
           [api_dynamic(thing.label)]
         ),
@@ -102,7 +109,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               id: api_scoped_id("desc", api_key(10, thing.key))
             },
-            key: api_key(10, thing.key)
+            key: api_key(10, thing.key),
+            update: () => {}
           },
           [api_text("description text")]
         ),
@@ -113,7 +121,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               id: api_scoped_id("uid", api_key(11, thing.key)),
               "aria-describedby": api_scoped_id("desc", api_key(10, thing.key))
             },
-            key: api_key(11, thing.key)
+            key: api_key(11, thing.key),
+            update: () => {}
           },
           []
         )

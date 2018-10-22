@@ -7,13 +7,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       [
         api_element(
           "p",
           {
-            key: 3
+            key: 3,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Before header")]
         ),
@@ -23,7 +27,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               name: "header"
             },
-            key: 4
+            key: 4,
+            update: () => {}
           },
           [api_text("Default header")],
           $slotset
@@ -31,27 +36,35 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            key: 5
+            key: 5,
+            create: () => {},
+            update: () => {}
           },
           [api_text("In")]
         ),
         api_element(
           "p",
           {
-            key: 6
+            key: 6,
+            create: () => {},
+            update: () => {}
           },
           [api_text("between")]
         ),
         api_slot(
           "",
           {
-            key: 7
+            key: 7,
+            create: () => {},
+            update: () => {}
           },
           [
             api_element(
               "p",
               {
-                key: 8
+                key: 8,
+                create: () => {},
+                update: () => {}
               },
               [api_text("Default body")]
             )
@@ -64,13 +77,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               name: "footer"
             },
-            key: 9
+            key: 9,
+            update: () => {}
           },
           [
             api_element(
               "p",
               {
-                key: 10
+                key: 10,
+                create: () => {},
+                update: () => {}
               },
               [api_text("Default footer")]
             )

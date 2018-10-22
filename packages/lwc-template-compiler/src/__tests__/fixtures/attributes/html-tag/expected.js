@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       [
         api_element(
@@ -17,7 +19,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               title: "x",
               "aria-hidden": "x"
             },
-            key: 3
+            key: 3,
+            update: () => {}
           },
           [api_text("x")]
         )

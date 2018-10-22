@@ -16,7 +16,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_element(
             "p",
             {
-              key: api_key(4, item.id)
+              key: api_key(4, item.id),
+              create: () => {},
+              update: () => {}
             },
             [api_text("Inner")]
           );

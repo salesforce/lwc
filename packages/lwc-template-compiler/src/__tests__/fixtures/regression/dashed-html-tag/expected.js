@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       [
         api_element(
@@ -16,7 +18,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               local: "x"
             },
-            key: 3
+            key: 3,
+            update: () => {}
           },
           []
         )

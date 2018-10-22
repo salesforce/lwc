@@ -8,7 +8,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_element(
           "p",
           {
-            key: 3
+            key: 3,
+            create: () => {},
+            update: () => {}
           },
           [api_text("1")]
         )
@@ -17,7 +19,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       ? api_element(
           "p",
           {
-            key: 5
+            key: 5,
+            create: () => {},
+            update: () => {}
           },
           [api_text("2")]
         )

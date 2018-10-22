@@ -14,14 +14,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       api_iterator($cmp.items, function(item) {
         return api_custom_element(
           "ns-item",
           _nsItem,
           {
-            key: api_key(4, item.key)
+            key: api_key(4, item.key),
+            create: () => {},
+            update: () => {}
           },
           [api_dynamic(item.value)]
         );

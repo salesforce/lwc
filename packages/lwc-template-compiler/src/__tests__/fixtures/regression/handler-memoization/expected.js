@@ -18,20 +18,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 2,
         on: {
           click: _m0 || ($ctx._m0 = api_bind($cmp.create))
-        }
+        },
+        update: () => {}
       },
       [api_text("New")]
     ),
     api_element(
       "ul",
       {
-        key: 3
+        key: 3,
+        create: () => {},
+        update: () => {}
       },
       api_iterator($cmp.list, function(task) {
         return api_element(
           "li",
           {
-            key: api_key(5, task.id)
+            key: api_key(5, task.id),
+            create: () => {},
+            update: () => {}
           },
           [
             api_dynamic(task.title),
@@ -41,7 +46,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 6,
                 on: {
                   click: api_bind(task.delete)
-                }
+                },
+                update: () => {}
               },
               [api_text("[X]")]
             )

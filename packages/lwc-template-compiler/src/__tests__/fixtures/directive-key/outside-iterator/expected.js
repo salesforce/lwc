@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: api_key(2, $cmp.keyGetter)
+        key: api_key(2, $cmp.keyGetter),
+        create: () => {},
+        update: () => {}
       },
       []
     )

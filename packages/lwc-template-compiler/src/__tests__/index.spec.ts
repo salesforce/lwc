@@ -52,7 +52,9 @@ describe('compileToFunction', () => {
                 } = $api;
 
               return [api_element("h1", {
-                    key: 2
+                    key: 2,
+                    create: () => {},
+                    update: () => {}
                 }, [api_text("Hello world!")])];
             }
 
@@ -76,7 +78,9 @@ describe('compileToFunction', () => {
                 } = $api;
 
               return [api_custom_element("x-foo", _xFoo, {
-                    key: 2
+                    key: 2,
+                    create: () => {},
+                    update: () => {}
                 }, [])];
             }
 
@@ -98,7 +102,9 @@ describe('compileToFunction', () => {
                 } = $api;
 
                 return [api_slot("", {
-                    key: 2
+                    key: 2,
+                    create: () => {},
+                    update: () => {}
                 }, [], $slotset)];
             }
             tmpl.slots = [""];

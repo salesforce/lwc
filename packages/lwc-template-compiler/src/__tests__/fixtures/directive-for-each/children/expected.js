@@ -16,7 +16,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s1: true
         },
-        key: 2
+        key: 2,
+        update: () => {}
       },
       api_flatten([
         api_text("Other Child"),
@@ -26,7 +27,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            key: 4
+            key: 4,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Last child")]
         )
@@ -38,7 +41,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s2: true
         },
-        key: 5
+        key: 5,
+        update: () => {}
       },
       api_flatten([
         api_text("Other Child"),
@@ -48,14 +52,18 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "p",
                   {
-                    key: api_key(8, item.id)
+                    key: api_key(8, item.id),
+                    create: () => {},
+                    update: () => {}
                   },
                   [api_text("X1")]
                 ),
                 api_element(
                   "p",
                   {
-                    key: api_key(9, item.id)
+                    key: api_key(9, item.id),
+                    create: () => {},
+                    update: () => {}
                   },
                   [api_text("X2")]
                 )
@@ -70,13 +78,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s3: true
         },
-        key: 10
+        key: 10,
+        update: () => {}
       },
       api_flatten([
         api_element(
           "p",
           {
-            key: 11
+            key: 11,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Last child")]
         ),
@@ -84,7 +95,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_element(
             "div",
             {
-              key: api_key(12, item.id)
+              key: api_key(12, item.id),
+              create: () => {},
+              update: () => {}
             },
             []
           );
@@ -97,20 +110,25 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s4: true
         },
-        key: 13
+        key: 13,
+        update: () => {}
       },
       [
         api_element(
           "p",
           {
-            key: 14
+            key: 14,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Other child1")]
         ),
         api_element(
           "p",
           {
-            key: 15
+            key: 15,
+            create: () => {},
+            update: () => {}
           },
           [api_text("Other child2")]
         )

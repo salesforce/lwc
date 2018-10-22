@@ -18,14 +18,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s2: true
         },
-        key: 2
+        key: 2,
+        update: () => {}
       },
       $cmp.isTrue
         ? api_iterator($cmp.items, function(item) {
             return api_element(
               "p",
               {
-                key: api_key(5, item.id)
+                key: api_key(5, item.id),
+                create: () => {},
+                update: () => {}
               },
               [api_text("X")]
             );

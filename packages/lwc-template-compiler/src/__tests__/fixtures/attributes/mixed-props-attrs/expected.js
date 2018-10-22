@@ -35,7 +35,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           title: "test",
           tabindex: "-1"
         },
-        key: 3
+        key: 3,
+        update: () => {}
       },
       []
     ),
@@ -58,7 +59,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           tabIndex: "0",
           bgColor: "blue"
         },
-        key: 4
+        key: 4,
+        update: () => {}
       },
       []
     ),
@@ -71,7 +73,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           focusable: "true"
         },
-        key: 5
+        key: 5,
+        update: () => {}
       },
       [
         api_element(
@@ -80,7 +83,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               "xlink:href": "xx"
             },
-            key: 6
+            key: 6,
+            update: () => {}
           },
           []
         )
@@ -97,7 +101,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bgColor: "x",
           ariaHidden: "hidden"
         },
-        key: 7
+        key: 7,
+        update: () => {}
       },
       []
     ),
@@ -107,7 +112,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           bgcolor: "x"
         },
-        key: 8
+        key: 8,
+        update: () => {}
       },
       []
     ),
@@ -124,7 +130,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bar: "test",
           min: "3"
         },
-        key: 9
+        key: 9,
+        update: () => {}
       },
       []
     ),
@@ -139,7 +146,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           minLength: "3",
           maxLength: "10"
         },
-        key: 10
+        key: 10,
+        update: () => {}
       },
       []
     ),

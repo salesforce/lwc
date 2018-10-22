@@ -7,13 +7,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       },
       api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
         return api_element(
           "p",
           {
-            key: api_key(4, $cmp.foo.index)
+            key: api_key(4, $cmp.foo.index),
+            create: () => {},
+            update: () => {}
           },
           [api_dynamic(xValue)]
         );
