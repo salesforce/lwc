@@ -562,8 +562,8 @@ export function ll(originalHandler: EventListener, id: string,
                 locator.resolved = {
                     target        : id,
                     host          : locator.id,
-                    targetContext: context && context(),
-                    hostContext  : locator.context && locator.context()
+                    targetContext : isFunction(context) && context(),
+                    hostContext   : isFunction(locator.context) && locator.context()
                 };
                 // a registered `located` service will be invoked with
                 // access to the context.locator, which will contain:
