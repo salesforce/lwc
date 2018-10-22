@@ -805,7 +805,7 @@ export default function parse(source: string, state: State): {
 
         addDiagnostic(generateCompilerDiagnostic(errorInfo, {
             messageArgs,
-            context: {
+            origin: {
                 location: getLocation(node)
             }
         }));
@@ -814,7 +814,7 @@ export default function parse(source: string, state: State): {
     function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location) {
         addDiagnostic(generateCompilerDiagnostic(errorInfo, {
             messageArgs,
-            context: {
+            origin: {
                 location: normalizeLocation(location)
             }
         }));

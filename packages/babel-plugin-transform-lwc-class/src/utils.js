@@ -176,11 +176,11 @@ function isDefaultExport(path) {
     return path.parentPath.isExportDefaultDeclaration();
 }
 
-function generateError(source, config) {
-    const message = generateErrorMessage(config.errorInfo, config.messageArgs);
+function generateError(source, { errorInfo, messageArgs } = {}) {
+    const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
 
-    error.lwcCode = config.errorInfo.code;
+    error.lwcCode = errorInfo && errorInfo.code;
     return error;
 }
 

@@ -31,7 +31,7 @@ export function parseHTML(source: string) {
         parsingErrors.push(
             generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
                 messageArgs: [code],
-                context: {
+                origin: {
                     location: { line: startLine, column: startCol }
                 }
             })
@@ -51,7 +51,7 @@ export function parseHTML(source: string) {
             parsingErrors.push(
                 generateCompilerDiagnostic(ParserDiagnostics.NO_MATCHING_CLOSING_TAGS, {
                     messageArgs: [node.tagName],
-                    context: {
+                    origin: {
                         location: {
                             line: startTag.startLine || startTag.line,
                             column: startTag.startCol || startTag.col

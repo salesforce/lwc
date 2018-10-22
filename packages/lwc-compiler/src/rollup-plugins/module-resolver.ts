@@ -35,7 +35,7 @@ function readFile(
     } else {
         throw generateCompilerError(ModuleResolutionErrors.NONEXISTENT_FILE, {
             messageArgs: [filename],
-            context: {filename}
+            origin: {filename}
         });
     }
 }
@@ -67,12 +67,12 @@ export default function({
                 if (importer) {
                     throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
                         messageArgs: [ importee, importer ],
-                        context: { filename: importer }
+                        origin: { filename: importer }
                     });
                 }
                 throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
                     messageArgs: [importee],
-                    context: { filename: importer }
+                    origin: { filename: importer }
                 });
             }
             return absPath;

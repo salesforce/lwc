@@ -131,11 +131,11 @@ function getImportInfo(path) {
  *      messageArgs: Array of arguments for the error message
  * }
  */
-function generateError(path, config) {
-    const message = generateErrorMessage(config.errorInfo, config.messageArgs);
+function generateError(path, { errorInfo, messageArgs } = {}) {
+    const message = generateErrorMessage(errorInfo, messageArgs);
     const error = path.buildCodeFrameError(message);
 
-    error.lwcCode = config.errorInfo.code;
+    error.lwcCode = errorInfo.code;
 
     return error;
 }

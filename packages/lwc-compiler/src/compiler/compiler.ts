@@ -17,7 +17,7 @@ function temporaryAdapterForTypesafety(diagnostic: CompilerDiagnostic): Diagnost
 
     if (diagnostic.location) {
         const { line, column } = diagnostic.location;
-        diag.location = { line, column, start: 0, length: 0 };
+        diag.location = { line, column, start: -1, length: -1 };
     }
 
     return diag as Diagnostic;

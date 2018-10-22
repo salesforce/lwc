@@ -1,8 +1,8 @@
 import {
     CompilerDiagnostic,
+    CompilerError,
     TemplateErrors,
     DiagnosticLevel,
-    convertDiagnosticToCompilerError,
     generateCompilerError,
     normalizeToDiagnostic
 } from 'lwc-errors';
@@ -73,7 +73,7 @@ export function compileToFunction(source: string): Function {
 
     for (const warning of parsingResults.warnings) {
         if (warning.level === DiagnosticLevel.Error) {
-            throw convertDiagnosticToCompilerError(warning);
+            throw CompilerError.from(warning);
         } else if (warning.level === DiagnosticLevel.Warning) {
             /* tslint:disable-next-line:no-console */
             console.warn(warning.message);

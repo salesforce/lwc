@@ -38,7 +38,7 @@ const DEFAULT_FORMAT = "amd";
 
 function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
-        const context = loc
+        const origin = loc
             ? {
                 filename: loc.file,
                 location: {
@@ -49,7 +49,7 @@ function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
 
         diagnostics.push(generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
             messageArgs: [message],
-            context,
+            origin,
         }));
     };
 }

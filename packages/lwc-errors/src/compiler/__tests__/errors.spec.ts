@@ -58,7 +58,7 @@ describe('error handling', () => {
 
             const error = generateCompilerError(ERROR_INFO, {
                 messageArgs: args,
-                context: { filename }
+                origin: { filename }
             });
             expect(error.filename).toEqual(filename);
         });
@@ -69,7 +69,7 @@ describe('error handling', () => {
 
             const error = generateCompilerError(ERROR_INFO, {
                 messageArgs: args,
-                context: { location }
+                origin: { location }
             });
             expect(error.location).toEqual(location);
         });

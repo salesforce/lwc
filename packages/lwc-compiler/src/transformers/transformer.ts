@@ -54,7 +54,7 @@ export function getTransformer(fileName: string): FileTransformer {
         default:
             throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
                 messageArgs: [fileName],
-                context: {filename: fileName}
+                origin: {filename: fileName}
             });
     }
 }

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { convertDiagnosticToCompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from "lwc-errors";
+import { CompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from "lwc-errors";
 import compile from "lwc-template-compiler";
 import { TemplateModuleDependency } from "lwc-template-compiler";
 
@@ -52,7 +52,7 @@ const transform: FileTransformer = function(
 
         const fatalError = result.warnings.find(warning => warning.level === DiagnosticLevel.Error);
         if (fatalError) {
-            throw convertDiagnosticToCompilerError(fatalError, { filename });
+            throw CompilerError.from(fatalError, { filename });
         }
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
