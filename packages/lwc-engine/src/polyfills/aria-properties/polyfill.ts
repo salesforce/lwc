@@ -3,57 +3,6 @@
 const ARIA_REGEX = /^aria/;
 const CAMEL_REGEX = /-([a-z])/g;
 
-// Global Aria and Role Properties derived from ARIA and Role Attributes.
-// https://wicg.github.io/aom/spec/aria-reflection.html
-export const ElementPrototypeAriaPropertyNames = [
-    'ariaAutoComplete',
-    'ariaChecked',
-    'ariaCurrent',
-    'ariaDisabled',
-    'ariaExpanded',
-    'ariaHasPopUp',
-    'ariaHidden',
-    'ariaInvalid',
-    'ariaLabel',
-    'ariaLevel',
-    'ariaMultiLine',
-    'ariaMultiSelectable',
-    'ariaOrientation',
-    'ariaPressed',
-    'ariaReadOnly',
-    'ariaRequired',
-    'ariaSelected',
-    'ariaSort',
-    'ariaValueMax',
-    'ariaValueMin',
-    'ariaValueNow',
-    'ariaValueText',
-    'ariaLive',
-    'ariaRelevant',
-    'ariaAtomic',
-    'ariaBusy',
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-    'ariaPosInSet',
-    'ariaSetSize',
-    'ariaColCount',
-    'ariaColIndex',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaKeyShortcuts',
-    'ariaModal',
-    'ariaPlaceholder',
-    'ariaRoleDescription',
-    'ariaRowCount',
-    'ariaRowIndex',
-    'ariaRowSpan',
-    'role',
-];
-
 type AriaPropMap = Record<string, any>;
 
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
@@ -64,6 +13,7 @@ const {
     toLowerCase: StringToLowerCase,
     toUpperCase: StringToUpperCase,
 } = String.prototype;
+const patchedAttributes: Record<string, 1> = Object.create(null);
 
 function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
     let map = nodeToAriaPropertyValuesMap.get(elm);
@@ -89,9 +39,9 @@ function patchCustomElementAttributeMethods(elm: HTMLElement) {
     Object.defineProperties(elm, {
         removeAttribute: {
             value(this: HTMLElement, attrName: string) {
-                const propName = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => StringToUpperCase.call(g[1]));
                 let newValue = null;
-                if (hasOwnProperty.call(descriptors, propName)) {
+                if (patchedAttributes[attrName]) {
+                    const propName = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => StringToUpperCase.call(g[1]));
                     const map = getAriaPropertyMap(this);
                     newValue = map[propName];
                 }
@@ -133,15 +83,9 @@ function createAriaPropertyPropertyDescriptor(propName: string, attrName: string
     };
 }
 
-const descriptors: PropertyDescriptorMap = {};
-
-export function patch() {
-    for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1) {
-        const propName = ElementPrototypeAriaPropertyNames[i];
-        if (Object.getOwnPropertyDescriptor(Element.prototype, propName) === undefined) {
-            const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
-            descriptors[propName] = createAriaPropertyPropertyDescriptor(propName, attrName, null);
-        }
-    }
-    Object.defineProperties(Element.prototype, descriptors);
+export function patch(propName: string) {
+    const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
+    patchedAttributes[attrName] = 1;
+    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName, null);
+    Object.defineProperty(Element.prototype, propName, descriptor);
 }

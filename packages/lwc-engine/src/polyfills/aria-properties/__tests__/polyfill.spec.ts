@@ -1,5 +1,21 @@
 import '../main';
 
+import { ElementPrototypeAriaPropertyNames } from '../main';
+import { patch } from '../polyfill';
+
+// TODO: https://github.com/salesforce/lwc/pull/568#discussion_r208827386
+// While Jest creates a new window object between each test file evaluation, the
+// jsdom code is not reevaluated. Which mean that the patched
+// HTMLElement.prototype.click will remain patched for all the tests that happen
+// to run in the same worker. This is a growing pain that we have today because
+// it introduces an uncertainty in the way tests run. We really need to speak
+// about to mitigate this issue in the future.
+for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1) {
+    const propName = ElementPrototypeAriaPropertyNames[i];
+    // forcing to always patch for tests
+    patch(propName);
+}
+
 describe('aria-properties polyfill', () => {
     describe('#role', () => {
         it('should reflect attribute by default', () => {

@@ -1,4 +1,4 @@
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 import { defineProperties, isUndefined, getOwnPropertyDescriptor, create, ArrayReduce } from '../shared/language';
 import { ViewModelReflection } from './utils';
 import { setInternalField, getInternalField } from '../shared/fields';
