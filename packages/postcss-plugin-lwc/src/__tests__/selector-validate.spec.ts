@@ -8,7 +8,7 @@ describe('selector validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 7,
+            column: 7
         });
     });
 
@@ -19,7 +19,7 @@ describe('selector validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 6,
+            column: 6
         });
     });
 
@@ -30,7 +30,7 @@ describe('selector validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 1,
+            column: 1
         });
     });
 
@@ -41,7 +41,7 @@ describe('selector validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 1,
+            column: 1
         });
     });
 
@@ -52,7 +52,7 @@ describe('selector validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 1,
+            column: 1
         });
     });
 });
@@ -73,7 +73,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 4,
+            column: 4
         });
     });
 
@@ -85,7 +85,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 6,
+            column: 6
         });
     });
 
@@ -96,7 +96,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 2,
+            column: 2
         });
         await expect(process('[my-lang="fr"] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
@@ -104,7 +104,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 2,
+            column: 2
         });
     });
 
@@ -120,7 +120,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 2,
+            column: 2
         });
         await expect(process('div[data] {}')).rejects.toMatchObject({
             message: expect.stringMatching(
@@ -128,7 +128,7 @@ describe('attribute validation', () => {
             ),
             file: FILE_NAME,
             line: 1,
-            column: 4,
+            column: 4
         });
     });
 

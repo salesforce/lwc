@@ -7,7 +7,7 @@ describe('Element import', () => {
         import engine from 'lwc';
     `, {
         error: {
-            message: `test.js: Invalid import. "lwc" doesn't have default export.`,
+            message: `Invalid import. "lwc" doesn't have default export.`,
             loc: {
                 line: 1,
                 column: 7,
@@ -20,7 +20,7 @@ describe('Element import', () => {
         export default class extends engine.LightningElement {}
     `, {
         error: {
-            message: `test.js: Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
+            message: `Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
             loc: {
                 line: 1,
                 column: 7,
@@ -34,7 +34,7 @@ describe('Element import', () => {
         export default class extends LightningElement {}
     `, {
         error: {
-            message: `test.js: LWC component class can't be an anonymous.`,
+            message: `LWC component class can't be an anonymous.`,
             loc: {
                 line: 3,
                 column: 15
@@ -70,7 +70,7 @@ describe('observedAttributes array', () => {
         }
     `, {
         error: {
-            message: `test.js: Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
+            message: `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
             loc: {
                 line: 1,
                 column: 7,

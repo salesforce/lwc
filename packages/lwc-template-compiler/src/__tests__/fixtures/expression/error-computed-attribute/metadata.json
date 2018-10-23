@@ -1,8 +1,13 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression {classNames[0]} - Template expression doesn't allow NumericLiteral",
-    "start": 36,
-    "length": 21
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "Invalid expression {classNames[0]} - LWC1001: Template expression doesn't allow NumericLiteral",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12
+            }
+        }
+    ]
 }

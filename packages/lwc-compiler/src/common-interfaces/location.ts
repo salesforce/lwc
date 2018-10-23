@@ -4,4 +4,7 @@ export interface Location {
 
     /** Number of character after the start index */
     length: number;
+
+    line?: number;
+    column?: number;
 }

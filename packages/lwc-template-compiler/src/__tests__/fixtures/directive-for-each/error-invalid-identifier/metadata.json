@@ -1,16 +1,27 @@
 {
-  "warnings": [{
-    "length": 18,
-    "level": "error",
-    "message": "my-item is not a valid identifier",
-    "start": 36
-  }, {
-    "length": 20,
-    "level": "error",
-    "message": "my-index is not a valid identifier",
-    "start": 103
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: my-item is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 26
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: my-index is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 43
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

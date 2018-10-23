@@ -1,35 +1,56 @@
 {
-  "warnings": [{
-    "length": 15,
-    "level": "error",
-    "message": "for:item directive is expected to be a string.",
-    "start": 37
-  }, {
-    "length": 17,
-    "level": "error",
-    "message": "for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-    "start": 53
-  }, {
-    "length": 16,
-    "level": "error",
-    "message": "for:each directive is expected to be a expression.",
-    "start": 87
-  }, {
-    "length": 17,
-    "level": "error",
-    "message": "for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-    "start": 120
-  }, {
-    "length": 17,
-    "level": "error",
-    "message": "for:index directive is expected to be a string.",
-    "start": 187
-  }],
-  "metadata": {
-    "templateUsedIds": [
-      "items",
-      "item",
-      "index"
-    ]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: for:item directive is expected to be a string.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 27
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 43
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: for:each directive is expected to be a expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 10
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 43
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: for:index directive is expected to be a string.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 43
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items",
+            "item",
+            "index"
+        ]
+    }
 }

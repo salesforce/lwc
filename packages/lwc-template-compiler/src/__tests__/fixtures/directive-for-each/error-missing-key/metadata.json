@@ -1,11 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
-    "start": 67,
-    "length": 14
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

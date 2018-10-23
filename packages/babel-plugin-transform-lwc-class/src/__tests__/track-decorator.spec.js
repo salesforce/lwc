@@ -55,7 +55,7 @@ Test.track = {
         }
     `, {
         error: {
-            message: 'test.js: @track decorator can only be applied to class properties.',
+            message: '@track decorator can only be applied to class properties.',
             loc: {
                 line: 2,
                 column: 11
@@ -74,7 +74,7 @@ Test.track = {
         }
     `, {
         error: {
-            message: 'test.js: @track decorator can only be applied to class properties.',
+            message: '@track decorator can only be applied to class properties.',
             loc: {
                 line: 4,
                 column: 11
@@ -93,7 +93,7 @@ Test.track = {
         }
     `, {
         error: {
-            message: 'test.js: @track decorator can only be applied to class properties.',
+            message: '@track decorator can only be applied to class properties.',
             loc: {
                 line: 4,
                 column: 11

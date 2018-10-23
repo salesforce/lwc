@@ -48,6 +48,8 @@ import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import { isIdReferencingAttribute } from '../parser/attribute';
 
+import { TemplateErrors, generateCompilerError } from 'lwc-errors';
+
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
         ${TEMPLATE_PARAMS.API},
@@ -199,7 +201,9 @@ function transform(
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
         } else {
-            throw new Error(`Unknown if modifier ${modifier}`);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
+                messageArgs: [modifier]
+            });
         }
 
         return t.conditionalExpression(

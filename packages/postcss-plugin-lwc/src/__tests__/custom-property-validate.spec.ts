@@ -17,7 +17,7 @@ it('should prevent definition of standard custom properties', () => {
         ),
         file: FILE_NAME,
         line: 1,
-        column: 7,
+        column: 7
     });
 });
 
@@ -30,6 +30,6 @@ it('should prevent definition of lwc-prefixed custom properties', () => {
         ),
         file: FILE_NAME,
         line: 1,
-        column: 7,
+        column: 7
     });
 });

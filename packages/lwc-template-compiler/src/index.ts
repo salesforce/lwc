@@ -1,3 +1,13 @@
+import {
+    CompilerDiagnostic,
+    CompilerError,
+    TemplateErrors,
+    DiagnosticLevel,
+    generateCompilerError,
+    normalizeToDiagnostic,
+    ParserDiagnostics,
+} from 'lwc-errors';
+
 import State from './state';
 import { mergeConfig, Config } from './config';
 
@@ -5,7 +15,7 @@ import parse from './parser';
 import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
-import { CompilationMetadata, CompilationWarning } from './shared/types';
+import { CompilationMetadata } from './shared/types';
 
 export {
     ModuleDependency as TemplateModuleDependency,
@@ -17,21 +27,20 @@ export default function compiler(
     config: Config,
 ): {
     code: string;
-    warnings: CompilationWarning[];
+    warnings: CompilerDiagnostic[];
     metadata: CompilationMetadata;
 } {
     const options = mergeConfig(config);
     const state = new State(source, options);
 
     let code = '';
-    const warnings: CompilationWarning[] = [];
-
+    const warnings: CompilerDiagnostic[] = [];
     try {
         const parsingResults = parse(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
-            warning => warning.level === 'error',
+            warning => warning.level === DiagnosticLevel.Error,
         );
 
         if (!hasParsingError && parsingResults.root) {
@@ -39,12 +48,9 @@ export default function compiler(
             code = output.code;
         }
     } catch (error) {
-        warnings.push({
-            level: 'error',
-            message: `Unexpected compilation error: ${error.message}`,
-            start: 0,
-            length: 0,
-        });
+        const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
+        diagnostic.message = `Unexpected compilation error: ${diagnostic.message}`;
+        warnings.push(diagnostic);
     }
 
     return {
@@ -66,20 +72,20 @@ export function compileToFunction(source: string): Function {
 
     const parsingResults = parse(source, state);
 
-    for (const { message, level } of parsingResults.warnings) {
-        if (level === 'error') {
-            throw new Error(message);
-        } else if (level === 'warning') {
+    for (const warning of parsingResults.warnings) {
+        if (warning.level === DiagnosticLevel.Error) {
+            throw CompilerError.from(warning);
+        } else if (warning.level === DiagnosticLevel.Warning) {
             /* tslint:disable-next-line:no-console */
-            console.warn(message);
+            console.warn(warning.message);
         } else {
             /* tslint:disable-next-line:no-console */
-            console.log(message);
+            console.log(warning.message);
         }
     }
 
     if (!parsingResults.root) {
-        throw new Error(`Invalid template`);
+        throw generateCompilerError(TemplateErrors.INVALID_TEMPLATE);
     }
 
     const { code } = generate(parsingResults.root, state, options);

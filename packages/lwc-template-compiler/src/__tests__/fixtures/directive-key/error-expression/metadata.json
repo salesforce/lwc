@@ -1,11 +1,18 @@
 {
-  "warnings": [{
-    "length": 11,
-    "level": "error",
-    "message": "Key attribute value should be an expression",
-    "start": 19
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Key attribute value should be an expression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

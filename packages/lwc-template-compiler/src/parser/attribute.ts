@@ -1,6 +1,8 @@
 import * as parse5 from 'parse5-with-errors';
 import camelcase from 'camelcase';
 
+import { ParserDiagnostics, generateCompilerError } from 'lwc-errors';
+
 import {
     EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
@@ -74,17 +76,13 @@ export function normalizeAttributeValue(
     const { name, value } = attr;
     if (booleanAttributes.has(name)) {
         if (value === 'true') {
-            throw new Error([
-                `To set a boolean attributes, try <${tag} ${name}> instead of <${tag} ${name}="${value}">.`,
-                'If the attribute is present, its value must either be the empty string',
-                'or a value that is an ASCII case -insensitive match for the attribute\'s canonical name',
-                'with no leading or trailing whitespace.',
-            ].join(''));
+            throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
+                messageArgs: [tag, name, value]
+            });
         } else if (value === 'false') {
-            throw new Error([
-                `To not set a boolean attribute, try <${tag}> instead of <${tag} ${name}="${value}">.`,
-                'To represent a false value, the attribute has to be omitted altogether.',
-            ].join(' '));
+            throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_FALSE, {
+                messageArgs: [tag, name, value]
+            });
         }
     }
 
@@ -98,13 +96,9 @@ export function normalizeAttributeValue(
             const unquoted = raw.replace(/"/g, '');
             const escaped = raw.replace('"{', '"\\{');
 
-            const err = new Error([
-                `Ambiguous attribute value ${raw}.`,
-                `If you want to make it a valid identifier you should remove the surrounding quotes ${unquoted}.`,
-                `If you want to make it a string you should escape it ${escaped}.`,
-            ].join(' '));
-
-            throw err;
+            throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE, {
+                messageArgs: [raw, unquoted, escaped]
+            });
         }
 
         // <input value={myValue} />
@@ -134,9 +128,9 @@ export function normalizeAttributeValue(
         escaped += escaped.endsWith('"') ? '' : '"';
 
         // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
-        throw new Error(
-            `Ambiguous attribute value ${raw}. If you want to make it a string you should escape it ${escaped}`,
-        );
+        throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
+            messageArgs: [raw, escaped]
+        });
     }
 
     // <input value="myValue"/>

@@ -1,11 +1,18 @@
 {
-  "warnings": [{
-    "length": 28,
-    "level": "error",
-    "message": "my-iterator is not a valid identifier",
-    "start": 19
-  }],
-  "metadata": {
-    "templateUsedIds": ["items"]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: my-iterator is not a valid identifier",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "templateUsedIds": [
+            "items"
+        ]
+    }
 }

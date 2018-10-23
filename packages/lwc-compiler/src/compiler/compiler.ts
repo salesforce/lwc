@@ -1,10 +1,27 @@
+import { CompilerDiagnostic, DiagnosticLevel } from "lwc-errors";
+import { Diagnostic } from "../diagnostics/diagnostic";
+
 import { bundle } from "../bundler/bundler";
 import { BundleMetadata } from "../bundler/meta-collector";
-import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
 import { version } from '../index';
 
 export { default as templateCompiler } from "lwc-template-compiler";
+
+/**
+ * Transforms a CompilerDiagnostic object so that it's compatible with previous Diagnostic type
+ * @param diagnostic
+ */
+function temporaryAdapterForTypesafety(diagnostic: CompilerDiagnostic): Diagnostic {
+    const diag = diagnostic as any;
+
+    if (diagnostic.location) {
+        const { line, column } = diagnostic.location;
+        diag.location = { line, column, start: -1, length: -1 };
+    }
+
+    return diag as Diagnostic;
+}
 
 export interface CompilerOutput {
     success: boolean;
@@ -29,7 +46,7 @@ export async function compile(
     const normalizedOptions = normalizeOptions(options);
 
     let result: BundleResult | undefined;
-    const diagnostics: Diagnostic[] = [];
+    const diagnostics: CompilerDiagnostic[] = [];
 
     const {
         diagnostics: bundleDiagnostics,
@@ -51,13 +68,13 @@ export async function compile(
     return {
         version,
         success: !hasError(diagnostics),
-        diagnostics,
+        diagnostics: diagnostics.map(temporaryAdapterForTypesafety),
         result
     };
 }
 
-function hasError(diagnostics: Diagnostic[]) {
+function hasError(diagnostics: CompilerDiagnostic[]) {
     return diagnostics.some(d => {
-        return d.level <= DiagnosticLevel.Error;
+        return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
     });
 }

@@ -1,28 +1,40 @@
 {
-  "warnings": [
-    {
-      "length": 11,
-      "level": "error",
-      "message": "To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">.If the attribute is present, its value must either be the empty stringor a value that is an ASCII case -insensitive match for the attribute's canonical namewith no leading or trailing whitespace.",
-      "start": 18
-    },
-    {
-      "length": 12,
-      "level": "error",
-      "message": "To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
-      "start": 43
-    },
-    {
-      "length": 13,
-      "level": "error",
-      "message": "To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">.If the attribute is present, its value must either be the empty stringor a value that is an ASCII case -insensitive match for the attribute's canonical namewith no leading or trailing whitespace.",
-      "start": 69
-    },
-    {
-      "length": 14,
-      "level": "error",
-      "message": "To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
-      "start": 96
-    }
-  ]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 8
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 8
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">. If the attribute is present, its value must either be the empty string or a value that is an ASCII case -insensitive match for the attribute's canonical name with no leading or trailing whitespace.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 8
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 8
+            }
+        }
+    ]
 }

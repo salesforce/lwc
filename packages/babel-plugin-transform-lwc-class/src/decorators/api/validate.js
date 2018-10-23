@@ -1,3 +1,4 @@
+const { DecoratorErrors } = require('lwc-errors');
 const { isApiDecorator } = require('./shared');
 const {
     AMBIGUOUS_PROP_SET,
@@ -6,6 +7,8 @@ const {
     DECORATOR_TYPES
 } = require('../../constants');
 
+const { generateError } = require('../../utils');
+
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(decorator => (
         decorator.name === TRACK_DECORATOR
@@ -13,7 +16,9 @@ function validateConflict(path, decorators) {
     ));
 
     if (isPublicFieldTracked) {
-        throw path.buildCodeFrameError('@api method or property cannot be used with @track');
+        throw generateError(path, {
+            errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT
+        });
     }
 }
 
@@ -24,38 +29,47 @@ function isBooleanPropDefaultTrue(property) {
 
 function validatePropertyValue(property) {
     if (isBooleanPropDefaultTrue(property)) {
-        throw property.buildCodeFrameError('Boolean public property must default to false.');
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY
+        });
     }
 }
 
 function validatePropertyName(property) {
     if (property.node.computed) {
-        throw property.buildCodeFrameError('@api cannot be applied to a computed property, getter, setter or method.');
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED
+        });
     }
 
     const propertyName = property.get('key.name').node;
 
     if (propertyName === 'part') {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. "part" is a future reserved attribute for web components.`
-        );
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
+            messageArgs: [propertyName]
+        });
     } else if (propertyName.startsWith('on')) {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. Properties starting with "on" are reserved for event handlers.`
-        );
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
+            messageArgs: [propertyName]
+        });
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. Properties starting with "data" are reserved attributes.`
-        );
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
+            messageArgs: [propertyName]
+        });
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
-        throw property.buildCodeFrameError(
-            `Invalid property name "${propertyName}". "${propertyName}" is a reserved attribute.`
-        );
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
+            messageArgs: [propertyName]
+        });
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
-        throw property.buildCodeFrameError(
-            `Ambiguous attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${camelCased}".`
-        );
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
+            messageArgs: [propertyName, camelCased]
+        });
     }
 }
 
@@ -71,9 +85,10 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
         ));
 
         if (associatedGetter) {
-            throw parentPath.buildCodeFrameError(
-                `@api get ${name} and @api set ${name} detected in class declaration. Only one of the two needs to be decorated with @api.`,
-            );
+            throw generateError(parentPath, {
+                errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                messageArgs: [name]
+            });
         }
     });
 }
@@ -99,9 +114,10 @@ function validateUniqueness(decorators) {
             );
 
             if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
-                throw comparePath.buildCodeFrameError(
-                    `Duplicate @api property "${currentPropertyName}".`,
-                );
+                throw generateError(comparePath, {
+                    errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
+                    messageArgs: [currentPropertyName]
+                });
             }
         }
     }

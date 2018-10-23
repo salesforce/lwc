@@ -15,7 +15,7 @@ it('should throw when processing an invalid HTML file', async () => {
     ).rejects.toMatchObject({
         filename: 'foo.html',
         message: expect.stringContaining(
-            'foo.html: Invalid HTML syntax: eof-in-tag.',
+            'Invalid HTML syntax: eof-in-tag.',
         ),
     });
 });

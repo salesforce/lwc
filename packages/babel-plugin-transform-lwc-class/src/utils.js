@@ -1,4 +1,5 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
+const { LWCClassErrors, generateErrorMessage } = require('lwc-errors');
 
 const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
@@ -142,13 +143,15 @@ function getEngineImportSpecifiers(path) {
     }, []).reduce((acc, specifier) => {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
-            throw specifier.buildCodeFrameError(
-                `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { ${LWC_PACKAGE_EXPORTS.BASE_COMPONENT} } from '${LWC_PACKAGE_ALIAS}'".`,
-            );
+            throw generateError(specifier, {
+                errorInfo: LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
+                messageArgs: [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS]
+            });
         } else if (specifier.isImportDefaultSpecifier()) {
-            throw specifier.buildCodeFrameError(
-                `Invalid import. "${LWC_PACKAGE_ALIAS}" doesn't have default export.`,
-            );
+            throw generateError(specifier, {
+                errorInfo: LWCClassErrors.INVALID_IMPORT_MISSING_DEFAULT_EXPORT,
+                messageArgs: [LWC_PACKAGE_ALIAS]
+            });
         }
 
         // Get the list of specifiers with their name
@@ -173,6 +176,14 @@ function isDefaultExport(path) {
     return path.parentPath.isExportDefaultDeclaration();
 }
 
+function generateError(source, { errorInfo, messageArgs } = {}) {
+    const message = generateErrorMessage(errorInfo, messageArgs);
+    const error = source.buildCodeFrameError(message);
+
+    error.lwcCode = errorInfo && errorInfo.code;
+    return error;
+}
+
 module.exports = {
     findClassMethod,
     isClassMethod,
@@ -180,6 +191,7 @@ module.exports = {
     isSetterClassMethod,
     staticClassProperty,
     getEngineImportSpecifiers,
+    generateError,
     isComponentClass,
     isDefaultExport,
     getExportedNames,

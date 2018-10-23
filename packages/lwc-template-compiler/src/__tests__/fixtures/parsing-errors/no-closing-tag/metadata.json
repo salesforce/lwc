@@ -1,8 +1,13 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "<p> has no matching closing tag.",
-    "start": 15,
-    "length": 3
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: <p> has no matching closing tag.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        }
+    ]
 }

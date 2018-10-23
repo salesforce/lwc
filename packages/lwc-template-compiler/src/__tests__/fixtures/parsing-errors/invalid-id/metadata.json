@@ -1,22 +1,31 @@
 {
-  "warnings": [
-    {
-      "length": 8,
-      "level": "error",
-      "message": "Duplicate id value \"bar\" detected. Id values must be unique within a template.",
-      "start": 98
-    },
-    {
-      "length": 21,
-      "level": "error",
-      "message": "Attribute \"aria-labelledby\" references a non-existant id \"baz\".",
-      "start": 120
-    },
-    {
-      "length": 8,
-      "level": "warning",
-      "message": "Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-      "start": 22
-    }
-  ]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Duplicate id value \"bar\" detected. Id values must be unique within a template.",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 12
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: Attribute \"aria-labelledby\" references a non-existant id \"baz\".",
+            "level": 1,
+            "location": {
+                "line": 8,
+                "column": 12
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
+            "level": 2,
+            "location": {
+                "line": 2,
+                "column": 12
+            }
+        }
+    ]
 }
