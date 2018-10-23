@@ -1,37 +1,40 @@
 
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
 
 export default class Root extends LightningElement {
 
     stateVar1 = "from-root-1";
     stateVar2 = "from-root-2";
+
     state = {
         todos: [{   id: 1, text: "Todo Item 1",
-                    clickHandler: (e) => console.log("click 1", e) },
+                    clickHandler: (e) => window.clicked=true },
                 {   id: 2, text: "Todo Item 2",
-                    clickHandler: (e) => console.log("click 2", e) }]
+                    clickHandler: (e) => window.clicked=true }]
     }
 
     stateBar = {
         foo: 10,
         handleClickInBar: function(e) {
-            console.log(this, e);
+            window.clicked = true;
         }
     }
 
     handleClick(e) {
-        console.log("Hey There was a click", e);
+        window.clicked = true;
     }
 
     rootContext() {
-        throw new Error("Root");
+        return {
+            "key-foo": this.stateVar2
+        };
     }
 
     todoContext() {
         return {
             "key-root": this.stateVar1,
             "key-common": this.stateVar2
-        }
+        };
     }
 }
 

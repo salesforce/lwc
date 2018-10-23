@@ -33,7 +33,7 @@ const RENDER_APIS: {
     customElement: { name: 'c', alias: 'api_custom_element' },
     bind: { name: 'b', alias: 'api_bind' },
     functionBind: {name: 'fb', alias: 'function_bind'},
-    locatorListenerBind: { name: 'll', alias: 'locator_listener_bind' },
+    locatorListenerBind: { name: 'll', alias: 'locator_listener' },
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
     key: { name: 'k', alias: 'api_key' },

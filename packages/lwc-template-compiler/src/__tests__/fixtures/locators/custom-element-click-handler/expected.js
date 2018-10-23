@@ -4,7 +4,7 @@ import { registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     fb: function_bind,
-    ll: locator_listener_bind,
+    ll: locator_listener,
     c: api_custom_element
   } = $api;
 
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         on: {
           click:
             _m1 ||
-            ($ctx._m1 = locator_listener_bind(
+            ($ctx._m1 = locator_listener(
               $cmp.handleClick,
               "button-in-slot",
               function_bind($cmp.locatorProvider)

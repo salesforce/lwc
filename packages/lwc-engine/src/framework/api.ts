@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from "./invoker";
-import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString } from "../shared/language";
+import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString, ArraySlice } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { VM, SlotSet } from "./vm";
 import { ComponentConstructor } from "./component";
@@ -536,14 +536,14 @@ export function fb(fn: (...args: any[]) => any): () => any {
         throw new Error();
     }
     const vm: VM = vmBeingRendered;
-    return function(...args: any[]) {
-        return invokeComponentCallback(vm, fn, args);
+    return function() {
+        return invokeComponentCallback(vm, fn, ArraySlice.call(arguments));
     };
 }
 
-// [l]ocator_[l]istener_bind function
-export function ll(originalHandler: EventListener, id: string,
-                   context?: (...args: any[]) => any, scope?: any): EventListener {
+// [l]ocator_[l]istener function
+export function ll(originalHandler: EventListener,
+                   id: string, context?: (...args: any[]) => any): EventListener {
     if (isNull(vmBeingRendered)) {
         throw new Error();
     }
@@ -565,11 +565,9 @@ export function ll(originalHandler: EventListener, id: string,
                     targetContext : isFunction(context) && context(),
                     hostContext   : isFunction(locator.context) && locator.context()
                 };
-                // a registered `located` service will be invoked with
-                // access to the context.locator, which will contain:
-                // outer id, outer provider, inner id, and inner provider
-                // The service will invoke both providers in order to collect
-                // their respective contexts, and log the locator metadata
+                // a registered `locator` service will be invoked with
+                // access to the context.locator.resolved, which will contain:
+                // outer id, outer context, inner id, and inner context
                 invokeServiceHook(vm, locatorService);
             }
         }

@@ -18,7 +18,7 @@ export default class Container extends LightningElement {
     }
 
     containerClick() {
-        console.log("Container click - embedded in slot");
+        window.clicked = true;
     }
 }
 

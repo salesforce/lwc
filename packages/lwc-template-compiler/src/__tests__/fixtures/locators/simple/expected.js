@@ -1,7 +1,7 @@
 import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { fb: function_bind, ll: locator_listener_bind, h: api_element } = $api;
+  const { fb: function_bind, ll: locator_listener, h: api_element } = $api;
 
   const { _m0, _m1 } = $ctx;
   return [
@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         on: {
           click:
             _m1 ||
-            ($ctx._m1 = locator_listener_bind(
+            ($ctx._m1 = locator_listener(
               $cmp.clickHandler,
               "link",
               function_bind($cmp.contextFn)

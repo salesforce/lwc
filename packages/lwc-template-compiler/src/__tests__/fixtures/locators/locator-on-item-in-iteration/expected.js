@@ -4,7 +4,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     d: api_dynamic,
     fb: function_bind,
-    ll: locator_listener_bind,
+    ll: locator_listener,
     h: api_element,
     k: api_key,
     i: api_iterator
@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             key: 4,
             on: {
-              click: locator_listener_bind(
+              click: locator_listener(
                 todo.clickHandler,
                 "todo-item",
                 function_bind($cmp.locatorProviderTodo)
