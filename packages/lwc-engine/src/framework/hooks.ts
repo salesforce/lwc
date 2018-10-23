@@ -17,6 +17,7 @@ import modComputedClassName from "./modules/computed-class-attr";
 import modComputedStyle from "./modules/computed-style-attr";
 import modStaticClassName from "./modules/static-class-attr";
 import modStaticStyle from "./modules/static-style-attr";
+import modContext from "./modules/context";
 import { hasDynamicChildren } from "./patch";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
@@ -64,6 +65,7 @@ export function createElmDefaultHook(vnode: VElement) {
     modStaticStyle.create(vnode);
     modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
+    modContext.create(vnode);
 }
 
 export function createElmHook(vnode: VElement) {
@@ -167,6 +169,7 @@ export function createCustomElmDefaultHook(vnode: VCustomElement) {
     modStaticStyle.create(vnode);
     modComputedClassName.create(vnode);
     modComputedStyle.create(vnode);
+    modContext.create(vnode);
 }
 
 export function createChildrenHook(vnode: VElement) {

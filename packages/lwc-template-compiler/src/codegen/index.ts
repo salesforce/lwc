@@ -18,7 +18,6 @@ import {
 import {
     traverse,
     isCustomElement,
-    isComponentProp,
 } from '../shared/ir';
 
 import {
@@ -35,11 +34,11 @@ import Stack from '../shared/stack';
 import {
     identifierFromComponentName,
     objectToAST,
-    getMemberExpressionRoot,
     isTemplate,
     shouldFlatten,
     destructuringAssignmentFromObject,
     isSlot,
+    memorizeHandler,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -356,6 +355,7 @@ function transform(
             props,
             on,
             forKey,
+            locator
         } = element;
 
         // Class attibute defined via string
@@ -455,6 +455,22 @@ function transform(
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
+        // Locators
+        if (locator) {
+            const locatorObject: t.ObjectProperty[] = [];
+            const locatorId = t.objectProperty(t.identifier('id') , t.stringLiteral(locator.id));
+            locatorObject.push(locatorId);
+            if (locator.context) {
+                let locatorContextFunction = bindExpression(locator.context, element).expression;
+                locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
+                locatorContextFunction = memorizeHandler(codeGen, element, locator.context, locatorContextFunction);
+                locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
+            }
+            const contextObj = t.objectProperty(t.identifier('locator'), t.objectExpression(locatorObject));
+
+            data.push(t.objectProperty(t.identifier('context'), t.objectExpression([contextObj])));
+        }
+
         // Key property on VNode
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
@@ -471,31 +487,19 @@ function transform(
         if (on) {
             const onObj = objectToAST(on, key => {
                 const { expression: componentHandler } = bindExpression(on[key], element);
-                let handler: t.Expression = codeGen.genBind(componentHandler);
-
-                // #439 - The handler can only be memorized if it is bound to component instance
-                const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-                const shouldMemorizeHandler = isComponentProp(id, element);
-
-                // Apply memorization if the handler is memorizable.
-                //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
-                if (shouldMemorizeHandler) {
-                    const memorizedId = codeGen.getMemorizationId();
-                    const memorization = t.assignmentExpression(
-                        '=',
-                        t.memberExpression(
-                            t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                            memorizedId,
-                        ),
-                        handler,
-                    );
-
-                    handler = t.logicalExpression(
-                        '||',
-                        memorizedId,
-                        memorization,
-                    );
+                let handler: t.Expression;
+                if (locator !== undefined && key === 'click') {
+                    let locatorContext: t.Expression | undefined;
+                    if (locator.context) {
+                        locatorContext = bindExpression(locator.context, element).expression;
+                        locatorContext = codeGen.genFunctionBind(locatorContext);
+                    }
+                    handler = codeGen.genLocatorBind(componentHandler, locator.id, locatorContext);
+                } else {
+                    handler = codeGen.genBind(componentHandler);
                 }
+
+                handler = memorizeHandler(codeGen, element, componentHandler, handler);
 
                 return handler;
             });

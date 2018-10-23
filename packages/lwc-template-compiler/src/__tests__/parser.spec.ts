@@ -151,6 +151,69 @@ describe('for:each directives', () => {
     });
 });
 
+describe('locator parsing', () => {
+    it('good-locator', () => {
+        const { root } = parseTemplate(`<template>
+            <a locator:id="simple-link" locator:context={contextFn}>hello</a>
+        </template>`);
+        expect(root.tag).toBe('template');
+        expect(root.children[0].tag).toBe('a');
+        expect(root.children[0].locator.id).toBe("simple-link");
+        expect(root.children[0].locator.context.name).toBe("contextFn");
+        expect(root.children[0].children[0].value).toBe('hello');
+    });
+    it('locator-context-without-id', () => {
+        const { warnings } = parseTemplate(`<template>
+            <a locator:context={contextFn}>hello</a>
+        </template>`);
+        expect(warnings).toContainEqual({
+            level: 'error',
+            message: 'locator:context must be used with locator:id',
+            start: 23,
+            length: 40
+        });
+    });
+    it('expression in locator:id attribute is an error', () => {
+        const { warnings } = parseTemplate(`
+            <template>
+                <button locator:id={hello} onclick={handle}></button>
+            </template>
+        `);
+        expect(warnings).toContainEqual({
+            length: 18,
+            level: "error",
+            message: "locator:id directive is expected to be a string.",
+            start: 48
+        });
+    });
+    it('string for locator:context attribute is an error ', () => {
+        const { warnings } = parseTemplate(`
+            <template>
+                <button locator:id="hello" locator:context="bad" onclick={handle}></button>
+            </template>
+        `)
+        expect(warnings).toContainEqual({
+            length: 21,
+            level: "error",
+            message: "locator:context directive is expected to be an expression.",
+            start: 67
+        });
+    })
+    it('string for locator:context attribute is MemberExpression', () => {
+        const { warnings } = parseTemplate(`
+            <template>
+                <button locator:id="hello" locator:context={foo.bar} onclick={handle}></button>
+            </template>
+        `)
+        expect(warnings).toContainEqual({
+            length: 25,
+            level: "error",
+            message: "locator:context cannot be a member expression. It can only be functions on the component",
+            start: 67
+        });
+    })
+});
+
 describe('for:of directives', () => {
     it('right syntax', () => {
         const { root } = parseTemplate(`<template><section iterator:it={items}></section></template>`);

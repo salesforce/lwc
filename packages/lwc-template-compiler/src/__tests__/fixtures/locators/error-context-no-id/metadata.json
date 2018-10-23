@@ -1,0 +1,17 @@
+{
+    "warnings": [
+        {
+            "message": "locator:context must be used with locator:id",
+            "start": 15,
+            "length": 44,
+            "level": "error"
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "someFunction"
+        ],
+        "templateDependencies": []
+    }
+}

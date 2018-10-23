@@ -23,6 +23,11 @@ export interface ForEach {
     index?: TemplateIdentifier;
 }
 
+export interface Locator {
+    id: string;
+    context?: TemplateExpression;
+}
+
 export interface ForIterator {
     expression: TemplateExpression;
     iterator: TemplateIdentifier;
@@ -60,6 +65,8 @@ export interface IRElement {
     forKey?: TemplateExpression;
 
     key?: number;
+
+    locator?: Locator;
 
     slotName?: string;
     slotSet?: SlotDefinition;

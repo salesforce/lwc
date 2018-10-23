@@ -52,6 +52,7 @@ import {
     ForIterator,
     IRExpressionAttribute,
     ForEach,
+    TemplateExpression,
 } from '../shared/types';
 
 import {
@@ -164,6 +165,7 @@ export default function parse(source: string, state: State): {
                 applyIf(element);
                 applyStyle(element);
                 applyHandlers(element);
+                applyLocator(element);
                 applyComponent(element);
                 applySlot(element);
                 applyKey(element, elementNode.__location);
@@ -318,6 +320,55 @@ export default function parse(source: string, state: State): {
 
             element.if = ifAttribute.value;
             element.ifModifier = modifier;
+        }
+    }
+
+    function applyLocator(element: IRElement) {
+        const locatorIdAttribute = getTemplateAttribute(element, 'locator:id');
+        const locatorContextAttribute = getTemplateAttribute(element, 'locator:context');
+
+        if (!locatorIdAttribute && !locatorContextAttribute) {
+            return;
+        }
+
+        if (!locatorIdAttribute && locatorContextAttribute) {
+            removeAttribute(element, locatorContextAttribute.name);
+            return warnOnElement(
+                `locator:context must be used with locator:id`,
+                element.__original,
+            );
+        }
+
+        if (locatorIdAttribute) {
+            removeAttribute(element, locatorIdAttribute.name);
+            if (locatorContextAttribute) {
+                removeAttribute(element, locatorContextAttribute.name);
+            }
+
+            if (locatorIdAttribute.type !== IRAttributeType.String) {
+                return warnAt('locator:id directive is expected to be a string.', locatorIdAttribute.location);
+            }
+            const id = locatorIdAttribute.value;
+
+            let context: TemplateExpression | undefined;
+
+            if (locatorContextAttribute !== undefined) {
+                if (locatorContextAttribute.type !== IRAttributeType.Expression) {
+                    return warnAt('locator:context directive is expected to be an expression.', locatorContextAttribute.location);
+                } else {
+                    context = locatorContextAttribute.value;
+                    if (isMemberExpression(context)) {
+                        return warnAt('locator:context cannot be a member expression. It can only be functions on the component', locatorContextAttribute.location);
+                    }
+                }
+            }
+
+            element.locator = {
+                id,
+                context
+            };
+
+            return;
         }
     }
 

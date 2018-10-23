@@ -1,6 +1,7 @@
 import * as t from 'babel-types';
 import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
+import { isUndefined } from 'util';
 
 type RenderPrimitive =
     | 'iterator'
@@ -9,6 +10,8 @@ type RenderPrimitive =
     | 'slot'
     | 'customElement'
     | 'bind'
+    | 'functionBind'
+    | 'locatorListenerBind'
     | 'text'
     | 'dynamic'
     | 'key'
@@ -29,6 +32,8 @@ const RENDER_APIS: {
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     bind: { name: 'b', alias: 'api_bind' },
+    functionBind: {name: 'fb', alias: 'function_bind'},
+    locatorListenerBind: { name: 'll', alias: 'locator_listener' },
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
     key: { name: 'k', alias: 'api_key' },
@@ -87,6 +92,19 @@ export default class CodeGen {
 
     genBind(handler: t.Expression) {
         return this._renderApiCall(RENDER_APIS.bind, [handler]);
+    }
+
+    genFunctionBind(fn: t.Expression) {
+        return this._renderApiCall(RENDER_APIS.functionBind, [fn]);
+    }
+
+    genLocatorBind(handler: t.Expression, locatorId: string,
+                   locatorProvider: t.Expression | undefined) {
+        const argsList = [handler, t.stringLiteral(locatorId)];
+        if (!isUndefined(locatorProvider)) {
+            argsList.push(locatorProvider);
+        }
+        return this._renderApiCall(RENDER_APIS.locatorListenerBind, argsList);
     }
 
     genFlatten(children: t.Expression[]) {
