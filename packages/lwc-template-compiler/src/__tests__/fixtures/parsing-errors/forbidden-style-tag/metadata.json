@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: Forbidden tag found in template: '<style>' tag is not allowed.",
+            "code": 1001,
+            "message": "LWC1001: Forbidden tag found in template: '<style>' tag is not allowed.",
             "level": 1,
             "location": {
                 "line": 2,

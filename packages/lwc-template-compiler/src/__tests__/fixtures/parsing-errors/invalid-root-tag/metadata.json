@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: Expected root tag to be template, found section",
+            "code": 1001,
+            "message": "LWC1001: Expected root tag to be template, found section",
             "level": 1,
             "location": {
                 "line": 1,

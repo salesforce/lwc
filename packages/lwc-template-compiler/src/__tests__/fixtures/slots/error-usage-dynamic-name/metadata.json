@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: Slot attribute value can't be an expression.",
+            "code": 1001,
+            "message": "LWC1001: Slot attribute value can't be an expression.",
             "level": 1,
             "location": {
                 "line": 3,

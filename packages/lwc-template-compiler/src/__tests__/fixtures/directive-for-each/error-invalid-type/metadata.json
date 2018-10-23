@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: for:item directive is expected to be a string.",
+            "code": 1001,
+            "message": "LWC1001: for:item directive is expected to be a string.",
             "level": 1,
             "location": {
                 "line": 2,
@@ -10,8 +10,8 @@
             }
         },
         {
-            "code": 1,
-            "message": "LWC1: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "code": 1001,
+            "message": "LWC1001: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 1,
             "location": {
                 "line": 2,
@@ -19,8 +19,8 @@
             }
         },
         {
-            "code": 1,
-            "message": "LWC1: for:each directive is expected to be a expression.",
+            "code": 1001,
+            "message": "LWC1001: for:each directive is expected to be a expression.",
             "level": 1,
             "location": {
                 "line": 3,
@@ -28,8 +28,8 @@
             }
         },
         {
-            "code": 1,
-            "message": "LWC1: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
+            "code": 1001,
+            "message": "LWC1001: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 1,
             "location": {
                 "line": 3,
@@ -37,8 +37,8 @@
             }
         },
         {
-            "code": 1,
-            "message": "LWC1: for:index directive is expected to be a string.",
+            "code": 1001,
+            "message": "LWC1001: for:index directive is expected to be a string.",
             "level": 1,
             "location": {
                 "line": 4,

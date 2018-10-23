@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: my-item is not a valid identifier",
+            "code": 1001,
+            "message": "LWC1001: my-item is not a valid identifier",
             "level": 1,
             "location": {
                 "line": 2,
@@ -10,8 +10,8 @@
             }
         },
         {
-            "code": 1,
-            "message": "LWC1: my-index is not a valid identifier",
+            "code": 1001,
+            "message": "LWC1001: my-index is not a valid identifier",
             "level": 1,
             "location": {
                 "line": 3,

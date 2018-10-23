@@ -171,7 +171,7 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('LWC1: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('LWC1001: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
@@ -195,7 +195,7 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('LWC1: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('LWC1001: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);

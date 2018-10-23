@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: Invalid template tag. A directive is expected to be associated with the template tag.",
+            "code": 1001,
+            "message": "LWC1001: Invalid template tag. A directive is expected to be associated with the template tag.",
             "level": 1,
             "location": {
                 "line": 2,

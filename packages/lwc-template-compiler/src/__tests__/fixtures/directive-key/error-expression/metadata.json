@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "LWC1: Key attribute value should be an expression",
+            "code": 1001,
+            "message": "LWC1001: Key attribute value should be an expression",
             "level": 1,
             "location": {
                 "line": 2,

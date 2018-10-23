@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1,
-            "message": "Invalid expression {classNames[0]} - LWC1: Template expression doesn't allow NumericLiteral",
+            "code": 1001,
+            "message": "Invalid expression {classNames[0]} - LWC1001: Template expression doesn't allow NumericLiteral",
             "level": 1,
             "location": {
                 "line": 3,

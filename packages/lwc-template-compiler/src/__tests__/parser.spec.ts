@@ -109,7 +109,7 @@ describe('event handlers', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: Event handler should be an expression`,
+            message: `LWC1001: Event handler should be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -135,7 +135,7 @@ describe('for:each directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: for:each and for:item directives should be associated together.`,
+            message: `LWC1001: for:each and for:item directives should be associated together.`,
             location: EXPECTED_LOCATION
         });
     });
@@ -145,7 +145,7 @@ describe('for:each directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: for:item directive is expected to be a string.`,
+            message: `LWC1001: for:item directive is expected to be a string.`,
             location: EXPECTED_LOCATION
         });
     });
@@ -163,7 +163,7 @@ describe('for:of directives', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: iterator:it directive is expected to be an expression`,
+            message: `LWC1001: iterator:it directive is expected to be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -187,7 +187,7 @@ describe('if directive', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: Unexpected if modifier is-true`,
+            message: `LWC1001: Unexpected if modifier is-true`,
             location: EXPECTED_LOCATION
         });
     });
@@ -197,7 +197,7 @@ describe('if directive', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: If directive should be an expression`,
+            message: `LWC1001: If directive should be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -221,7 +221,7 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+            message: `LWC1001: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             location: EXPECTED_LOCATION
         });
     });
@@ -237,7 +237,7 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: Is attribute value can't be an expression`,
+            message: `LWC1001: Is attribute value can't be an expression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -249,7 +249,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: 'LWC1: Missing root template tag',
+            message: 'LWC1001: Missing root template tag',
             location: EXPECTED_LOCATION
         });
     });
@@ -259,7 +259,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: 'LWC1: Multiple roots found',
+            message: 'LWC1001: Multiple roots found',
             location: EXPECTED_LOCATION
         });
     });
@@ -269,7 +269,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: 'LWC1: Expected root tag to be template, found section',
+            message: 'LWC1001: Expected root tag to be template, found section',
             location: EXPECTED_LOCATION
         });
     });
@@ -279,7 +279,7 @@ describe('root errors', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: `LWC1: Root template doesn't allow attributes`,
+            message: `LWC1001: Root template doesn't allow attributes`,
             location: EXPECTED_LOCATION
         });
     });
@@ -290,7 +290,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
-            message: `Invalid expression {this.title} - LWC1: Template expression doesn't allow ThisExpression`,
+            message: `Invalid expression {this.title} - LWC1001: Template expression doesn't allow ThisExpression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -299,7 +299,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
-            message: `Invalid expression {getTitle()} - LWC1: Template expression doesn't allow CallExpression`,
+            message: `Invalid expression {getTitle()} - LWC1001: Template expression doesn't allow CallExpression`,
             location: EXPECTED_LOCATION
         });
     });
@@ -308,7 +308,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
-            message: `Invalid expression {foo;title} - LWC1: Multiple expressions found`,
+            message: `Invalid expression {foo;title} - LWC1001: Multiple expressions found`,
             location: EXPECTED_LOCATION
         });
     });
@@ -361,7 +361,7 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(12);
 
-            const MESSAGE_RE = /^LWC1: The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
+            const MESSAGE_RE = /^LWC1001: The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
             for (const { message } of warnings) {
                 expect(message).toMatch(MESSAGE_RE);
             }
@@ -385,7 +385,7 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(11);
 
-            const MESSAGE_RE = /^LWC1: The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
+            const MESSAGE_RE = /^LWC1001: The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
             for (const { message } of warnings) {
                 expect(message).toMatch(MESSAGE_RE);
             }
