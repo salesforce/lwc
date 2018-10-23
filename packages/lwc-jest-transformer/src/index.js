@@ -8,6 +8,7 @@ const engineVersion = require('lwc-engine/package.json').version;
 const compilerVersion = require('lwc-compiler/package.json').version;
 const { waitForPromise } = require('./utils');
 const apexScopedImport = require('./transforms/apex-scoped-import');
+const i18nScopedImport = require('./transforms/i18n-scoped-import');
 const labelScopedImport = require('./transforms/label-scoped-import');
 const resourceScopedImport = require('./transforms/resource-scoped-import');
 const contentAssetUrlScopedImport = require('./transforms/content-asset-url-scoped-import');
@@ -22,6 +23,7 @@ const BABEL_CONFIG = {
     "plugins": [
         babelCommonJs,
         apexScopedImport,
+        i18nScopedImport,
         labelScopedImport,
         contentAssetUrlScopedImport,
         resourceScopedImport,
