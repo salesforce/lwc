@@ -8,7 +8,7 @@ describe('Locator Check', () => {
     });
 
     beforeEach(() => {
-        browser.execute(() => {
+        browser.execute(function() {
             window.clicked = undefined;
             window.interaction = undefined;
         });
@@ -17,10 +17,10 @@ describe('Locator Check', () => {
     it('locator logged on simple button click', () => {
         const button = browser.element(".simple-locator");
         button.click();
-        const clicked = browser.execute(() => {
+        const clicked = browser.execute(function() {
             return window.clicked;
         }).value;
-        const interaction = browser.execute(() => {
+        const interaction = browser.execute(function() {
             return window.interaction;
         }).value;
 
@@ -39,10 +39,10 @@ describe('Locator Check', () => {
     it('locator logged on button click inside slot', () => {
         const button = browser.element(".button-in-slot");
         button.click();
-        const clicked = browser.execute(() => {
+        const clicked = browser.execute(function() {
             return window.clicked;
         }).value;
-        const interaction = browser.execute(() => {
+        const interaction = browser.execute(function() {
             return window.interaction;
         }).value;
 
@@ -60,10 +60,10 @@ describe('Locator Check', () => {
     it('locator logged clicking on iteration item', () => {
         const button = browser.element(".todo-item");
         button.click();
-        const clicked = browser.execute(() => {
+        const clicked = browser.execute(function() {
             return window.clicked;
         }).value;
-        const interaction = browser.execute(() => {
+        const interaction = browser.execute(function() {
             return window.interaction;
         }).value;
 
