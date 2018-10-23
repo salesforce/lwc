@@ -334,8 +334,8 @@ export default function parse(source: string, state: State): {
         if (!locatorIdAttribute && locatorContextAttribute) {
             removeAttribute(element, locatorContextAttribute.name);
             return warnOnElement(
-                `locator:context must be used with locator:id`,
-                element.__original,
+                ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID,
+                element.__original
             );
         }
 
@@ -346,7 +346,7 @@ export default function parse(source: string, state: State): {
             }
 
             if (locatorIdAttribute.type !== IRAttributeType.String) {
-                return warnAt('locator:id directive is expected to be a string.', locatorIdAttribute.location);
+                return warnAt(ParserDiagnostics.LOCATOR_ID_SHOULD_BE_STRING, [], locatorIdAttribute.location);
             }
             const id = locatorIdAttribute.value;
 
@@ -354,11 +354,11 @@ export default function parse(source: string, state: State): {
 
             if (locatorContextAttribute !== undefined) {
                 if (locatorContextAttribute.type !== IRAttributeType.Expression) {
-                    return warnAt('locator:context directive is expected to be an expression.', locatorContextAttribute.location);
+                    return warnAt(ParserDiagnostics.LOCATOR_CONTEXT_SHOULD_BE_EXPRESSION, [], locatorContextAttribute.location);
                 } else {
                     context = locatorContextAttribute.value;
                     if (isMemberExpression(context)) {
-                        return warnAt('locator:context cannot be a member expression. It can only be functions on the component', locatorContextAttribute.location);
+                        return warnAt(ParserDiagnostics.LOCATOR_CONTEXT_CANNOT_BE_MEMBER_EXPRESSION, [], locatorContextAttribute.location);
                     }
                 }
             }

@@ -1,10 +1,10 @@
 {
     "warnings": [
         {
-            "message": "locator:context must be used with locator:id",
-            "start": 15,
-            "length": 44,
-            "level": "error"
+            "code": 1001,
+            "message": "LWC1001: locator:context must be used with locator:id",
+            "location": {"column": 5, "line": 2},
+            "level": 1
         }
     ],
     "metadata": {
