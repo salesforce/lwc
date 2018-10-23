@@ -26,7 +26,7 @@ export default class EventFlow extends LightningElement {
 
     connectedCallback() {
         this.template.addEventListener('log', event => {
-            this.log(unwrap(event).detail.guid);
+            this.log(event.detail.guid);
         });
     }
 

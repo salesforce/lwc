@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
-import { createElement, unwrap, register } from '../main';
-import { getHostShadowRoot, LightningElement } from '../html-element';
+import { createElement, register, LightningElement } from '../main';
 
 describe('Locators & Located Service', () => {
     it('click triggered and locator logged', () => {

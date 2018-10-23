@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getHostShadowRoot } from "../../framework/html-element";
 import { wrapIframeWindow } from "../iframe";
 
 describe('wrapped iframe window', () => {

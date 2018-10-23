@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
-import { getHostShadowRoot } from '../html-element';
 
 const styledTemplate = compileTemplate(`
     <template>
@@ -39,7 +38,7 @@ describe('synthetic shadow', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(shadowRoot.querySelector('section').hasAttribute('test')).toBe(true);
         expect(shadowRoot.querySelector('p').hasAttribute('test')).toBe(true);
     });
@@ -70,7 +69,7 @@ describe('synthetic shadow', () => {
         let firstChild;
         expect(() => {
             // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = getHostShadowRoot(elm).firstChild as HTMLElement;
+            firstChild = elm.shadowRoot.firstChild as HTMLElement;
         }).toLogWarning(
             `Discouraged access to property 'childNodes' on 'Node'`
         );
@@ -91,7 +90,7 @@ describe('synthetic shadow', () => {
         let firstChild;
         expect(() => {
             // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = getHostShadowRoot(elm).firstChild as HTMLElement;
+            firstChild = elm.shadowRoot.firstChild as HTMLElement;
         }).toLogWarning(
             `Discouraged access to property 'childNodes' on 'Node'`
         );
@@ -113,7 +112,7 @@ describe('synthetic shadow', () => {
         elm.tmpl = styledTemplate;
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(elm.hasAttribute('test-host')).toBe(true);
         expect(shadowRoot.querySelectorAll('[test]').length).toBeGreaterThan(0);
 
@@ -160,7 +159,7 @@ describe('synthetic shadow', () => {
         elm.tmpl = tmpl1;
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(elm.hasAttribute('tmpl1-host')).toBe(true);
         expect(shadowRoot.querySelectorAll('[tmpl1]').length).toBeGreaterThan(0);
 

@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
-import { getHostShadowRoot } from '../html-element';
 
 function createCustomComponent(html) {
     class MyComponent extends LightningElement {
@@ -40,13 +39,13 @@ describe('template', () => {
             document.body.appendChild(elm);
 
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div').length
+                elm.shadowRoot.querySelectorAll('div').length
             ).toBe(2);
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div')[0].textContent
+                elm.shadowRoot.querySelectorAll('div')[0].textContent
             ).toBe('a');
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div')[1].textContent
+                elm.shadowRoot.querySelectorAll('div')[1].textContent
             ).toBe('b');
         });
 
@@ -70,13 +69,13 @@ describe('template', () => {
             document.body.appendChild(elm);
 
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div').length
+                elm.shadowRoot.querySelectorAll('div').length
             ).toBe(2);
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div')[0].textContent
+                elm.shadowRoot.querySelectorAll('div')[0].textContent
             ).toBe('a');
             expect(
-                getHostShadowRoot(elm).querySelectorAll('div')[1].textContent
+                elm.shadowRoot.querySelectorAll('div')[1].textContent
             ).toBe('b');
         });
 
@@ -419,7 +418,7 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            const div = getHostShadowRoot(element).querySelector('div');
+            const div = element.shadowRoot.querySelector('div');
             expect(div.getAttribute('title')).toBe('foo');
         });
 
@@ -448,10 +447,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(getHostShadowRoot(element).querySelector('div').getAttribute('title')).toBe('initial');
+            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(getHostShadowRoot(element).querySelector('div').hasAttribute('title')).toBe(false);
+                expect(element.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
             });
         });
     });

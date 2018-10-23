@@ -1,6 +1,6 @@
 import target from '../computed-class-attr';
 import * as api from '../../api';
-import { LightningElement } from '../../html-element';
+import { LightningElement } from '../../main';
 
 describe('module/computed-class-attr', () => {
     it('should apply data.className', () => {

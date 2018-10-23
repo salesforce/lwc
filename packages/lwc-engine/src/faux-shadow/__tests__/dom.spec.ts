@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getHostShadowRoot } from "../../framework/html-element";
 import { getRootNode } from "../node";
 
 describe('dom', () => {
@@ -39,7 +38,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = getHostShadowRoot(elm).querySelector('x-child');
+            const child = elm.shadowRoot.querySelector('x-child');
             const match = getRootNode.call(child, { composed: true });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -92,7 +91,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = getHostShadowRoot(elm).querySelector('x-child');
+            const child = elm.shadowRoot.querySelector('x-child');
             const match = getRootNode.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -176,7 +175,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = getHostShadowRoot(elm).querySelector('x-foo');
+            const child = elm.shadowRoot.querySelector('x-foo');
             child.trigger();
         });
     });
