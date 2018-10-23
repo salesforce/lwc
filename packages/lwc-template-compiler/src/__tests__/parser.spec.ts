@@ -162,17 +162,19 @@ describe('locator parsing', () => {
         expect(root.children[0].locator.context.name).toBe("contextFn");
         expect(root.children[0].children[0].value).toBe('hello');
     });
+
     it('locator-context-without-id', () => {
         const { warnings } = parseTemplate(`<template>
             <a locator:context={contextFn}>hello</a>
         </template>`);
         expect(warnings).toContainEqual({
-            level: 'error',
-            message: 'locator:context must be used with locator:id',
-            start: 23,
-            length: 40
+            code: 1001,
+            level: DiagnosticLevel.Error,
+            message: 'LWC1001: locator:context must be used with locator:id',
+            location: { line: 2, column: 13 }
         });
     });
+
     it('expression in locator:id attribute is an error', () => {
         const { warnings } = parseTemplate(`
             <template>
@@ -180,38 +182,40 @@ describe('locator parsing', () => {
             </template>
         `);
         expect(warnings).toContainEqual({
-            length: 18,
-            level: "error",
-            message: "locator:id directive is expected to be a string.",
-            start: 48
+            code: 1001,
+            level: DiagnosticLevel.Error,
+            message: "LWC1001: locator:id directive is expected to be a string.",
+            location: {column: 25, line: 3},
         });
     });
+
     it('string for locator:context attribute is an error ', () => {
         const { warnings } = parseTemplate(`
             <template>
                 <button locator:id="hello" locator:context="bad" onclick={handle}></button>
             </template>
-        `)
+        `);
         expect(warnings).toContainEqual({
-            length: 21,
-            level: "error",
-            message: "locator:context directive is expected to be an expression.",
-            start: 67
+            code: 1001,
+            level: DiagnosticLevel.Error,
+            message: "LWC1001: locator:context directive is expected to be an expression.",
+            location: {column: 44, line: 3},
         });
-    })
+    });
+
     it('string for locator:context attribute is MemberExpression', () => {
         const { warnings } = parseTemplate(`
             <template>
                 <button locator:id="hello" locator:context={foo.bar} onclick={handle}></button>
             </template>
-        `)
+        `);
         expect(warnings).toContainEqual({
-            length: 25,
-            level: "error",
-            message: "locator:context cannot be a member expression. It can only be functions on the component",
-            start: 67
+            code: 1001,
+            level: DiagnosticLevel.Error,
+            message: "LWC1001: locator:context cannot be a member expression. It can only be functions on the component",
+            location: {line: 3, column: 44},
         });
-    })
+    });
 });
 
 describe('for:of directives', () => {

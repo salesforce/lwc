@@ -171,6 +171,13 @@ export const ParserDiagnostics = {
         url: ""
     },
 
+    GENERIC_PARSING_ERROR: {
+        code: 1001,
+        message: "Error parsing attribute: {0}",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
     IDENTIFIER_PARSING_ERROR: {
         code: 1001,
         message: "Error parsing identifier: {0}",
@@ -276,9 +283,30 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    GENERIC_PARSING_ERROR: {
+    LOCATOR_CONTEXT_CANNOT_BE_MEMBER_EXPRESSION: {
         code: 1001,
-        message: "Error parsing attribute: {0}",
+        message: "locator:context cannot be a member expression. It can only be functions on the component",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID: {
+        code: 1001,
+        message: "locator:context must be used with locator:id",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    LOCATOR_CONTEXT_SHOULD_BE_EXPRESSION: {
+        code: 1001,
+        message: "locator:context directive is expected to be an expression.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    LOCATOR_ID_SHOULD_BE_STRING: {
+        code: 1001,
+        message: "locator:id directive is expected to be a string.",
         level: DiagnosticLevel.Error,
         url: ""
     },
