@@ -114,7 +114,9 @@
         api_element(
           "div",
           {
-            key: 2
+            key: 2,
+            create: function create() {},
+            update: function update() {}
           },
           [api_dynamic(__getKey($cmp, "x"))]
         )
@@ -187,7 +189,8 @@
             classMap: {
               container: true
             },
-            key: 2
+            key: 2,
+            update: function update () {}
           },
           [
             api_custom_element(
@@ -197,7 +200,8 @@
                 props: {
                   x: "1"
                 },
-                key: 3
+                key: 3,
+                update: function update() {}
               },
               []
             )

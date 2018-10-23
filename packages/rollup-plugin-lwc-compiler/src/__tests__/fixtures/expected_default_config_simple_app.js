@@ -8,7 +8,9 @@
       } = $api;
 
       return [api_element("div", {
-        key: 2
+        key: 2,
+        create: () => {},
+        update: () => {}
       }, [api_dynamic($cmp.x)])];
     }
 
@@ -41,12 +43,14 @@
         classMap: {
           "container": true
         },
-        key: 2
+        key: 2,
+        update: () => {}
       }, [api_custom_element("x-foo", Foo, {
         props: {
           "x": "1"
         },
-        key: 3
+        key: 3,
+        update: () => {}
       }, [])])];
     }
 
