@@ -15,7 +15,13 @@ import {
 
 import { collectImportLocations } from "./import-location-collector";
 import { SourceMap } from "../compiler/compiler";
-import { CompilerDiagnostic, generateCompilerDiagnostic, DiagnosticLevel, ModuleResolutionErrors, normalizeToDiagnostic } from "lwc-errors";
+import {
+    CompilerDiagnostic,
+    generateCompilerDiagnostic,
+    DiagnosticLevel,
+    ModuleResolutionErrors,
+    normalizeToDiagnostic
+} from "lwc-errors";
 
 export interface BundleReport {
     code: string;
@@ -117,7 +123,7 @@ export async function bundle(
         code = result.code;
         map = result.map;
     } catch (e) {
-        const diagnostic = normalizeToDiagnostic(e);
+        const diagnostic = normalizeToDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, e);
         diagnostic.level = DiagnosticLevel.Fatal;
         diagnostics.push(diagnostic);
     }

@@ -171,6 +171,13 @@ export const ParserDiagnostics = {
         url: ""
     },
 
+    IDENTIFIER_PARSING_ERROR: {
+        code: 1001,
+        message: "Error parsing identifier: {0}",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
     IF_DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1001,
         message: "If directive should be an expression",
@@ -269,7 +276,7 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    LINE_774: {
+    GENERIC_PARSING_ERROR: {
         code: 1001,
         message: "Error parsing attribute: {0}",
         level: DiagnosticLevel.Error,

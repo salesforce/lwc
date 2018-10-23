@@ -9,8 +9,6 @@ import {
     getLocation
 } from "./utils";
 
-import { GENERIC_COMPILER_ERROR } from './error-info/compiler';
-
 export * from "./error-info/lwc-class";
 export * from "./error-info/compiler";
 export * from "./error-info/jest-transformer";
@@ -136,7 +134,7 @@ export function normalizeToCompilerError(errorInfo: LWCErrorInfo, error: any, or
  *
  * @return {CompilerDiagnostic}
  */
-export function normalizeToDiagnostic(error: any, origin?: CompilerDiagnosticOrigin): CompilerDiagnostic {
+export function normalizeToDiagnostic(errorInfo: LWCErrorInfo, error: any, origin?: CompilerDiagnosticOrigin): CompilerDiagnostic {
     if (error instanceof CompilerError) {
         const diagnostic = error.toDiagnostic();
         if (origin) {
@@ -146,7 +144,7 @@ export function normalizeToDiagnostic(error: any, origin?: CompilerDiagnosticOri
         return diagnostic;
     }
 
-    return convertErrorToDiagnostic(error, GENERIC_COMPILER_ERROR, origin);
+    return convertErrorToDiagnostic(error, errorInfo, origin);
 }
 
 function convertErrorToDiagnostic(error: any, fallbackErrorInfo: LWCErrorInfo, origin?: CompilerDiagnosticOrigin): CompilerDiagnostic {

@@ -210,7 +210,7 @@ export default function parse(source: string, state: State): {
                         try {
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
-                            addDiagnostic(normalizeToDiagnostic(error, {
+                            addDiagnostic(normalizeToDiagnostic(ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, error, {
                                 location: normalizeLocation(location)
                             }));
                             return;
@@ -343,7 +343,7 @@ export default function parse(source: string, state: State): {
                 item = parseIdentifier(forItemAttribute.value);
             } catch (error) {
                 return addDiagnostic(
-                    normalizeToDiagnostic(error, {
+                    normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
                         location: normalizeLocation(forItemAttribute.location)
                     })
                 );
@@ -360,7 +360,7 @@ export default function parse(source: string, state: State): {
                     index = parseIdentifier(forIndex.value);
                 } catch (error) {
                     return addDiagnostic(
-                        normalizeToDiagnostic(error, {
+                        normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
                             location: normalizeLocation(forIndex.location)
                         })
                     );
@@ -400,7 +400,7 @@ export default function parse(source: string, state: State): {
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
             return addDiagnostic(
-                normalizeToDiagnostic(error, {
+                normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
                     location: normalizeLocation(iteratorExpression.location)
                 })
             );
@@ -776,10 +776,11 @@ export default function parse(source: string, state: State): {
         } catch (error) {
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
-
-            addDiagnostic(normalizeToDiagnostic(error, {
-                location: normalizeLocation(location)
-            }));
+            addDiagnostic(
+                normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error, {
+                    location: normalizeLocation(location)
+                })
+            );
 
             return;
         }

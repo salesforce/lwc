@@ -4,7 +4,8 @@ import {
     TemplateErrors,
     DiagnosticLevel,
     generateCompilerError,
-    normalizeToDiagnostic
+    normalizeToDiagnostic,
+    ParserDiagnostics,
 } from 'lwc-errors';
 
 import State from './state';
@@ -47,7 +48,7 @@ export default function compiler(
             code = output.code;
         }
     } catch (error) {
-        const diagnostic = normalizeToDiagnostic(error);
+        const diagnostic = normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error);
         diagnostic.message = `Unexpected compilation error: ${diagnostic.message}`;
         warnings.push(diagnostic);
     }
