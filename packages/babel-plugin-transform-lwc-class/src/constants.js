@@ -56,6 +56,19 @@ const LWC_PACKAGE_EXPORTS = {
     WIRE_DECORATOR: 'wire',
 }
 
+const LWC_API_WHITELIST = new Set([
+    'buildCustomElementConstructor',
+    'createElement',
+    'dangerousObjectMutation',
+    'getComponentDef',
+    'getComponentConstructor',
+    'isComponentConstructor',
+    'readonly',
+    'register',
+    'unwrap',
+    ...Object.values(LWC_PACKAGE_EXPORTS),
+]);
+
 const LWC_DECORATORS = [
     LWC_PACKAGE_EXPORTS.API_DECORATOR,
     LWC_PACKAGE_EXPORTS.TRACK_DECORATOR,
@@ -85,8 +98,8 @@ module.exports = {
     LWC_DECORATORS,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
+    LWC_API_WHITELIST,
 
     LWC_COMPONENT_PROPERTIES,
-
     DECORATOR_TYPES,
 };

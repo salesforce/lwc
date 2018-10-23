@@ -2,6 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
+
 describe('Element import', () => {
     pluginTest('throws if using default import on lwc', `
         import engine from 'lwc';
@@ -57,6 +58,42 @@ describe('Element import', () => {
                 }
 
             }`
+        }
+    });
+
+    pluginTest('throws non-whitelisted lwc api is imported', `
+        import { registerTemplate } from "lwc";
+        import tmpl from './localTemplate.html';
+        registerTemplate(tmpl);
+    `, {
+        error: {
+            message: `Invalid import. "registerTemplate" is not part of the lwc api.`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+
+    pluginTest('allows importing whitelisted apis from "lwc"', `
+        import {
+            api,
+            track,
+            wire,
+            createElement,
+            LightningElement,
+            buildCustomElementConstructor,
+            dangerousObjectMutation,
+            getComponentDef,
+            getComponentConstructor,
+            isComponentConstructor,
+            readonly,
+            register,
+            unwrap,
+        } from "lwc";
+    `, {
+        output: {
+            code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, dangerousObjectMutation, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`
         }
     });
 });
