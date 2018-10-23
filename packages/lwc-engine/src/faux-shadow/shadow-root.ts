@@ -94,11 +94,10 @@ export interface SyntheticShadowRootInterface extends ShadowRoot {
 }
 
 // @ts-ignore: TODO: remove after TS 3.x upgrade
-export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
+export class SyntheticShadowRoot implements ShadowRoot {
     mode: ShadowRootMode = ShadowRootMode.OPEN;
     delegatesFocus: boolean = false;
     constructor() {
-        super();
         throw new TypeError('Illegal constructor');
     }
     get nodeType() {
@@ -247,4 +246,8 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
 // passed instanceof checks against window.ShadowDom
 if (isNativeShadowRootAvailable) {
     setPrototypeOf(SyntheticShadowRoot.prototype, (window as any).ShadowRoot.prototype);
+} else {
+    // This is due to an issue with Babel compilation when DocumentFragment is the super
+    // https://github.com/babel/babel/issues/8915
+    setPrototypeOf(SyntheticShadowRoot.prototype, DocumentFragment.prototype);
 }
