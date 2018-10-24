@@ -1,8 +1,9 @@
+import assert from "../shared/assert";
 import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener } from './element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor } from '../shared/language';
 import { DocumentPrototypeActiveElement } from './document';
-import { eventCurrentTargetGetter } from './events';
+import { eventCurrentTargetGetter, eventTargetGetter } from './events';
 import { getShadowRoot } from './shadow-root';
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -39,17 +40,36 @@ function getFirstFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
     return null;
 }
 
-function getFocusableSegments(host: HTMLElement): Record<string, HTMLElement[]> {
+function getLastFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
+    for (let i = elements.length; i > 0; i -= 1) {
+        const elm = elements[i];
+        if (isFocusable(elm)) {
+            return elm;
+        }
+    }
+    return null;
+}
+
+interface QuerySegments {
+    prev: HTMLElement[];
+    inner: HTMLElement[];
+    next: HTMLElement[];
+}
+
+function getFocusableSegments(host: HTMLElement): QuerySegments {
     const all = querySelectorAll.call(document, PossibleFocusableElementQuery);
-    const local = querySelectorAll.call(host, PossibleFocusableElementQuery);
-    // TODO: assert, local should have at least one element, otherwise why are we here?
-    // TODO: assert, host should have tabindex -1, otherwise why are we here?
-    const firstChild = local[0];
-    const lastChild = local[local.length - 1];
+    const inner = querySelectorAll.call(host, PossibleFocusableElementQuery);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(inner.length > 0, `When focusin event is received, there has to be a focusable target at least.`);
+        assert.invariant(host.tabIndex === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
+    }
+    const firstChild = inner[0];
+    const lastChild = inner[inner.length - 1];
     const prev = ArraySlice.call(all, 0, ArrayIndexOf.call(all, firstChild) - 1);
     const next = ArraySlice.call(all, ArrayIndexOf.call(all, lastChild));
     return {
         prev,
+        inner,
         next,
     };
 }
@@ -90,38 +110,144 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): n
     return -1;
 }
 
-function getPreviousFocusableElement(host: HTMLElement): HTMLElement | null {
-    const { prev } = getFocusableSegments(host);
+function getPreviousFocusableElement(segments: QuerySegments): HTMLElement | null {
+    const { prev } = segments;
     return getFirstFocusableMatch(Array.prototype.reverse.call(prev));
 }
 
-function getNextFocusableElement(host: HTMLElement): HTMLElement | null {
-    const { next } = getFocusableSegments(host);
+function getNextFocusableElement(segments: QuerySegments): HTMLElement | null {
+    const { next } = segments;
     return getFirstFocusableMatch(next);
+}
+
+function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
+    const nextNode = getNextFocusableElement(segments);
+    if (isNull(nextNode)) {
+        // nothing to focus on, blur to invalidate the operation
+        (focusEventTarget as HTMLElement).blur();
+        return;
+    }
+    nextNode.focus();
+}
+
+function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
+    const prevNode = getPreviousFocusableElement(segments);
+    if (isNull(prevNode)) {
+        // nothing to focus on, blur to invalidate the operation
+        (focusEventTarget as HTMLElement).blur();
+        return;
+    }
+    prevNode.focus();
+}
+
+function isFirstFocusableChild(target: EventTarget, segments: QuerySegments): boolean {
+    return getFirstFocusableMatch(segments.inner) === target;
+}
+
+function isLastFocusableChild(target: EventTarget, segments: QuerySegments): boolean {
+    return getLastFocusableMatch(segments.inner) === target;
 }
 
 function focusInEventHandler(event: FocusEvent) {
     const host: EventTarget = eventCurrentTargetGetter.call(event);
+    const target: EventTarget = eventTargetGetter.call(event);
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
+    const segments = getFocusableSegments(host as HTMLElement);
+    const isFirstFocusableChildReceivingFocus = isFirstFocusableChild(target, segments);
+    const isLastFocusableChildReceivingFocus = isLastFocusableChild(target, segments);
+    if (isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) {
+        // the focus is definitely not a result of tab or shift-tab interaction
+        return;
+    }
+    if (isNull(relatedTarget)) {
+        // could be a direct click, or entering the page from the url bar, etc.
+        if (isFirstFocusableChildReceivingFocus) {
+            // it is very likely that it is coming from above
+            if (segments.prev.length === 0) {
+                // since the host is the first tabbable element of the page
+                // the focus is almost certain that it is a tab action, so we
+                // must skip.
+                focusOnNextOrBlur(target, segments);
+                /**
+                 * note: false positive here is when the user is clicking
+                 * directly on the first focusable element of the page when
+                 * this element is wrapped by a custom element that has
+                 * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
+                 * <body>
+                 *   <x-foo tabindex="-1">
+                 *     #shadowRoot(delegatesFocus=true)
+                 *       <input />  <--- user clicks here instead of tabbing
+                 *   ... some content with other focusable elements
+                 **/
+            }
+            return;
+        } else {
+            // it is very likely that it is coming from below
+            if (segments.next.length === 0) {
+                // since the host is the last tabbable element of the page
+                // the focus is almost certain that it is a shift-tab action, so we
+                // must skip.
+                focusOnPrevOrBlur(target, segments);
+                /**
+                 * note: false positive here is when the user is clicking
+                 * directly on the last focusable element of the page when
+                 * this element is wrapped by a custom element that has
+                 * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
+                 * <body>
+                 *   ... some content with other focusable elements
+                 *   <x-foo tabindex="-1">
+                 *     #shadowRoot(delegatesFocus=true)
+                 *       <input />  <--- user clicks here instead of tabbing
+                 **/
+            }
+        }
+        return; // do nothing, it is definitely not a tab
+    }
+    // If there is a related target, everything is easier
     const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
     switch (post) {
         case 1:
-            // focus is coming from above, so, set it to the next
-            const nextNode = getNextFocusableElement(host as HTMLElement);
-            if (!isNull(nextNode)) {
-                nextNode.focus();
-            } else {
-                // TODO: what should we do when we have no next element?
+            // focus is probably coming from above
+            if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousFocusableElement(segments)) {
+                // the focus was on the immediate focusable elements from above,
+                // it is almost certain that the focus is due to tab keypress
+                focusOnNextOrBlur(target, segments);
             }
+            /**
+             * note: false positive here is when the user is clicking
+             * directly on the first focusable element inside the next
+             * custom element that is wrapping it, and it has
+             * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
+             * <body>
+             *   <x-input>
+             *     #shadowRoot(delegatesFocus=true)
+             *       <input />  <--- focus in here
+             *   <x-input tabindex="-1">
+             *     #shadowRoot(delegatesFocus=true)
+             *       <input />  <--- user clicks here
+             **/
             break;
         case 2:
-            // focus is coming from below, so, set it to the prev
-            const prevNode = getPreviousFocusableElement(host as HTMLElement);
-            if (!isNull(prevNode)) {
-                prevNode.focus();
-            } else {
-                // TODO: what should we do when we have no next element?
+            // focus is probably coming from below
+            // focus is probably coming from above
+            if (isLastFocusableChildReceivingFocus && relatedTarget === getNextFocusableElement(segments)) {
+                // the focus was on the immediate focusable elements from above,
+                // it is almost certain that the focus is due to tab keypress
+                focusOnPrevOrBlur(target, segments);
             }
+            /**
+             * note: false positive here is when the user is clicking
+             * directly on the last focusable element inside the next
+             * custom element that is wrapping it, and it has
+             * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
+             * <body>
+             *   <x-input tabindex="-1">
+             *     #shadowRoot(delegatesFocus=true)
+             *       <input />  <--- user clicks here
+             *   <x-input>
+             *     #shadowRoot(delegatesFocus=true)
+             *       <input />  <--- focus in here
+             **/
             break;
     }
 }
