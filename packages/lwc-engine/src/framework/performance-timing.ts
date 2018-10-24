@@ -9,10 +9,11 @@ type MeasurementPhase =
     | 'renderedCallback'
     | 'errorCallback';
 
-type GlobalMeasurementPhase =
-    | 'rehydrate'
-    | 'createElement'
-    | 'connectingRootElement';
+export enum GlobalMeasurementPhase {
+    REHYDRATE = 'rehydrate',
+    INIT = 'init',
+    HYDRATE = 'hydrate'
+}
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs
