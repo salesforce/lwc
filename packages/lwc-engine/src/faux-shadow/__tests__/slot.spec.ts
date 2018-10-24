@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from "../../framework/main";
-import { getHostShadowRoot } from "../../framework/html-element";
 
 interface LightningSlotElement extends HTMLSlotElement {
     assignedElements(options?: object): Element[];
@@ -34,19 +33,19 @@ describe('assignedNodes and assignedElements', () => {
 
         it('should not find any slotables (assignedNodes)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('slot') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should not find any slotables (assignedElements)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('slot') as LightningSlotElement;
             expect(slot.assignedElements()).toHaveLength(0);
         });
 
         it('should find flattened slotables (assignedNodes)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('slot') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(3);
             expect(assigned[1].tagName).toBe('DIV');
@@ -54,7 +53,7 @@ describe('assignedNodes and assignedElements', () => {
 
         it('should find flattened slotables (assignedElements)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('slot') as LightningSlotElement;
             const assigned = slot.assignedElements({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -87,19 +86,19 @@ describe('assignedNodes and assignedElements', () => {
 
         it('should not find any slotables for the outer slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="outer"]') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should not find any slotables for the inner slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="inner"]') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
         it('should find flattened slotables for the outer slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="outer"]') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -107,7 +106,7 @@ describe('assignedNodes and assignedElements', () => {
 
         it('should find flattened slotables for the inner slot', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('[name="inner"]') as LightningSlotElement;
+            const slot = element.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
@@ -157,8 +156,8 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should find the slotable for the outer slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -169,16 +168,16 @@ describe('assignedNodes and assignedElements', () => {
                 // slotted correctly, its fallback with the inner is not going to be added
                 // to the dom.
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(0);
             });
 
             it('should find assigned content for the outer slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -189,8 +188,8 @@ describe('assignedNodes and assignedElements', () => {
                 // slotted correctly, its fallback with the inner is not going to be added
                 // to the dom.
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('DIV');
@@ -239,16 +238,16 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should not find any slotable for the outer slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(0);
             });
 
             it('should find the slotable for the inner slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -256,8 +255,8 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should find default content for the outer slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="outer"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="outer"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -265,8 +264,8 @@ describe('assignedNodes and assignedElements', () => {
 
             it('should find assigned content for the inner slot', () => {
                 document.body.appendChild(element);
-                const child = getHostShadowRoot(element).querySelector('x-assigned-nodes-child');
-                const slot = getHostShadowRoot(child as HTMLUnknownElement).querySelector('[name="inner"]') as LightningSlotElement;
+                const child = element.shadowRoot.querySelector('x-assigned-nodes-child');
+                const slot = child.shadowRoot.querySelector('[name="inner"]') as LightningSlotElement;
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
@@ -300,7 +299,7 @@ describe('slot.name', () => {
 
             element = createElement('x-assigned-nodes', { is: MyComponent });
             document.body.appendChild(element);
-            const slots = getHostShadowRoot(element).querySelectorAll('slot');
+            const slots = element.shadowRoot.querySelectorAll('slot');
             expect(slots.length).toBe(2);
             expect(slots[0].name).toBe('');
             expect(slots[1].name).toBe('foo');
@@ -382,8 +381,8 @@ describe('slotted elements', () => {
 
         const elm = createElement('x-mock', { is: MyMock, fallback: true });
         document.body.appendChild(elm);
-        const child = getHostShadowRoot(elm).querySelector('x-child');
-        const button = getHostShadowRoot(child as HTMLUnknownElement).querySelector('button');
+        const child = elm.shadowRoot.querySelector('x-child');
+        const button = child.shadowRoot.querySelector('button');
         button.click();
     });
 

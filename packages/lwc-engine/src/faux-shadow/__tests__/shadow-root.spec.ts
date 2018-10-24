@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getHostShadowRoot } from '../../framework/html-element';
 import { SyntheticShadowRoot } from "../shadow-root";
 
 describe('root', () => {
@@ -34,7 +33,7 @@ describe('root', () => {
             class MyComponent extends LightningElement {}
 
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(getHostShadowRoot(elm).mode).toBe('open');
+            expect(elm.shadowRoot.mode).toBe('open');
         });
 
         it('should allow searching for elements from template', () => {
@@ -52,7 +51,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const nodes = getHostShadowRoot(elm).querySelectorAll('p');
+                const nodes = elm.shadowRoot.querySelectorAll('p');
                 expect(nodes).toHaveLength(1);
             });
         });
@@ -71,7 +70,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const node = getHostShadowRoot(elm).querySelector('p');
+                const node = elm.shadowRoot.querySelector('p');
                 expect(node.tagName).toBe('P');
             });
         });
@@ -106,10 +105,10 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
 
-            expect(getHostShadowRoot(elm).querySelectorAll('p')).toHaveLength(1);
+            expect(elm.shadowRoot.querySelectorAll('p')).toHaveLength(1);
 
-            const xChild = getHostShadowRoot(elm).querySelector('x-child');
-            expect(getHostShadowRoot(xChild).querySelectorAll('p')).toHaveLength(0);
+            const xChild = elm.shadowRoot.querySelector('x-child');
+            expect(xChild.shadowRoot.querySelectorAll('p')).toHaveLength(0);
         });
 
         it('should ignore slotted elements when queried via querySelector', () => {
@@ -142,10 +141,10 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
 
-            expect(getHostShadowRoot(elm).querySelector('p')).not.toBeNull();
+            expect(elm.shadowRoot.querySelector('p')).not.toBeNull();
 
-            const xChild = getHostShadowRoot(elm).querySelector('x-child');
-            expect(getHostShadowRoot(xChild).querySelector('p')).toBeNull();
+            const xChild = elm.shadowRoot.querySelector('x-child');
+            expect(xChild.shadowRoot.querySelector('p')).toBeNull();
         });
 
 
@@ -177,13 +176,13 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const children = getHostShadowRoot(elem).childNodes;
+            const children = elem.shadowRoot.childNodes;
             expect(children).toHaveLength(2);
             expect(children[0]).toBe(
-                getHostShadowRoot(elem).querySelector('div')
+                elem.shadowRoot.querySelector('div')
             );
             expect(children[1]).toBe(
-                getHostShadowRoot(elem).querySelector('p')
+                elem.shadowRoot.querySelector('p')
             );
         });
     });
@@ -203,9 +202,9 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const first = getHostShadowRoot(elem).firstChild;
+            const first = elem.shadowRoot.firstChild;
             expect(first).toBe(
-                getHostShadowRoot(elem).querySelector('div')
+                elem.shadowRoot.querySelector('div')
             );
         });
         it('could be a text node', () => {
@@ -223,7 +222,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const first = getHostShadowRoot(elem).firstChild;
+            const first = elem.shadowRoot.firstChild;
             expect(first.textContent).toBe('first-text-node');
         });
     });
@@ -244,9 +243,9 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const last = getHostShadowRoot(elem).lastChild;
+            const last = elem.shadowRoot.lastChild;
             expect(last).toBe(
-                getHostShadowRoot(elem).querySelector('p')
+                elem.shadowRoot.querySelector('p')
             );
         });
         it('could be a text node', () => {
@@ -264,7 +263,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const last = getHostShadowRoot(elem).lastChild;
+            const last = elem.shadowRoot.lastChild;
             expect(last.textContent).toBe('last-text-node');
         });
     });
@@ -301,11 +300,11 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             const div = root.querySelector('div');
             const child = root.querySelector('x-child');
             const text = root.lastChild;
-            const childRoot = getHostShadowRoot(child as HTMLElement);
+            const childRoot = child.shadowRoot;
             const p = childRoot.querySelector('p');
             expect(root.contains(document.body)).toBe(false);
             expect(root.contains(div)).toBe(true);
@@ -350,11 +349,11 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             const div = root.querySelector('div');
             const child = root.querySelector('x-child');
             const text = root.lastChild;
-            const childRoot = getHostShadowRoot(child as HTMLElement);
+            const childRoot = child.shadowRoot;
             const p = childRoot.querySelector('p');
             const {
                 DOCUMENT_POSITION_DISCONNECTED,
@@ -389,7 +388,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             expect(root.hasChildNodes()).toBe(false);
         });
         it('should return false for empty shadow root', () => {
@@ -404,7 +403,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             expect(root.hasChildNodes()).toBe(false);
         });
         it('should return true when at least a text node is present', () => {
@@ -421,7 +420,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             expect(root.hasChildNodes()).toBe(true);
         });
         it('should return true when at least a slot is present', () => {
@@ -438,7 +437,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-parent', { is: MyComponent });
             document.body.appendChild(elem);
-            const root = getHostShadowRoot(elem);
+            const root = elem.shadowRoot;
             expect(root.hasChildNodes()).toBe(true);
         });
     });
@@ -459,7 +458,7 @@ describe('root', () => {
 
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
-            const first = getHostShadowRoot(elem).firstChild;
+            const first = elem.shadowRoot.firstChild;
             expect(first.parentElement).toBe(null);
         });
     });

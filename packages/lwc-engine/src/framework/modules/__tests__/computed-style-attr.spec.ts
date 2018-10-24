@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
 
 describe('modules/computed-style-attr', () => {
     it('should add style to the element', () => {
@@ -18,7 +17,7 @@ describe('modules/computed-style-attr', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
+        expect(elm.shadowRoot.querySelector('div').style.display).toBe('inline');
     });
 
     it('should patch style to the element', () => {
@@ -44,11 +43,11 @@ describe('modules/computed-style-attr', () => {
 
         const elm = createElement('x-cmp', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('inline');
+        expect(elm.shadowRoot.querySelector('div').style.display).toBe('inline');
 
         elm.counter++;
         return Promise.resolve().then(() => {
-            expect(getHostShadowRoot(elm).querySelector('div').style.display).toBe('block');
+            expect(elm.shadowRoot.querySelector('div').style.display).toBe('block');
         });
     });
 

@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
-import { getHostShadowRoot } from '../html-element';
 
 describe('component', function() {
     describe('public computed props', () => {
@@ -45,7 +44,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.lunch).toBe('salad');
-            expect(getHostShadowRoot(elm).querySelector('x-child').breakfast).toBe('pancakes');
+            expect(elm.shadowRoot.querySelector('x-child').breakfast).toBe('pancakes');
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function() {
@@ -388,7 +387,7 @@ describe('component', function() {
                 }
             });
             document.body.appendChild(elm);
-            expect(getHostShadowRoot(elm).querySelector('section').style.cssText).toBe('color: red;');
+            expect(elm.shadowRoot.querySelector('section').style.cssText).toBe('color: red;');
             expect(calledCSSText).toBe(true);
         });
 
@@ -475,7 +474,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
 
-            const section = getHostShadowRoot(elm).querySelector('section');
+            const section = elm.shadowRoot.querySelector('section');
 
             const removePropertyMock = jest.fn();
             section.style.removeProperty = removePropertyMock;

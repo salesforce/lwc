@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 
-import { createElement } from '../main';
-import { LightningElement, getHostShadowRoot } from '../html-element';
+import { createElement, LightningElement } from '../main';
 
 const adjectives = [
     "pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain",
@@ -161,7 +160,7 @@ describe('diff algo', () => {
             store.run()
             elm.rows = store.data;
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             expect(template.querySelectorAll('x-row').length).toBe(1000);
         });
         it('should append new items', () => {
@@ -171,7 +170,7 @@ describe('diff algo', () => {
             elm.rows = store.data;
             document.body.appendChild(elm);
             store.add();
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = store.data;
             return Promise.resolve(() => {
@@ -189,7 +188,7 @@ describe('diff algo', () => {
             const [a, b, c] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [a, c, b];
             return Promise.resolve(() => {
@@ -206,7 +205,7 @@ describe('diff algo', () => {
             const [a, b, c] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [c, b, a];
             return Promise.resolve(() => {
@@ -224,7 +223,7 @@ describe('diff algo', () => {
             const [a, b, c, d] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [c, b, d];
             return Promise.resolve(() => {
@@ -241,7 +240,7 @@ describe('diff algo', () => {
             const [a, b, c, d] = store.data;
             elm.rows = [c, d];
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2] = template.querySelectorAll('x-row');
             elm.rows = [a, b, c, d]; // inserting new items first
             return Promise.resolve(() => {
@@ -258,7 +257,7 @@ describe('diff algo', () => {
             const [a, b, c, d] = store.data;
             elm.rows = [a, b];
             document.body.appendChild(elm);
-            const template = getHostShadowRoot(elm);
+            const template = elm.shadowRoot;
             const [e1, e2] = template.querySelectorAll('x-row');
             elm.rows = [a, b, c, d]; // inserting new items at the end
             return Promise.resolve(() => {

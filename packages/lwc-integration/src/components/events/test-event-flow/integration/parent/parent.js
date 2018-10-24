@@ -1,4 +1,4 @@
-import { LightningElement, api, track, unwrap } from "lwc";
+import { LightningElement } from "lwc";
 import { EVENT } from '../EVENT';
 
 export default class Parent extends LightningElement {

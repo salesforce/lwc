@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
-import { createElement } from '../main';
-import { LightningElement } from '../html-element';
+import { createElement, LightningElement } from '../main';
 
 describe('accessibility', () => {
     describe('focus()', () => {

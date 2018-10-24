@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
-import { getHostShadowRoot } from '../html-element';
 
 describe('patch', () => {
 
@@ -281,7 +280,7 @@ describe('patch', () => {
                 element.triggerRender('second');
             })
             .then(() => {
-                expect(getHostShadowRoot(element).querySelector('span').textContent).toBe('second');
+                expect(element.shadowRoot.querySelector('span').textContent).toBe('second');
             });
         });
 

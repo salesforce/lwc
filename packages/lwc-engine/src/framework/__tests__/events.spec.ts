@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
-import { createElement, unwrap } from '../main';
-import { getHostShadowRoot, LightningElement } from '../html-element';
+import { createElement, LightningElement } from '../main';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -574,7 +573,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -599,7 +598,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -707,7 +706,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
         }
@@ -738,7 +737,7 @@ describe('Component events', () => {
         const errorHandler = jest.fn(evt => evt.preventDefault());
         window.addEventListener('error', errorHandler);
 
-        const buttonEl = getHostShadowRoot(element).querySelector('button');
+        const buttonEl = element.shadowRoot.querySelector('button');
         buttonEl.click();
 
         expect(errorHandler.mock.calls).toHaveLength(1);
@@ -961,7 +960,7 @@ describe('Shadow Root events', () => {
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm)
+        elm.shadowRoot
             .querySelector('div')
             .dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
     });

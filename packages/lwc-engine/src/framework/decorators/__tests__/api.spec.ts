@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
 
 describe('decorators/api.ts', () => {
     describe('@api x', () => {
@@ -42,7 +41,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm.shadowRoot.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider properties reactive if not used in render', function() {
@@ -164,7 +163,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm.shadowRoot.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider getter and setters reactive', function() {

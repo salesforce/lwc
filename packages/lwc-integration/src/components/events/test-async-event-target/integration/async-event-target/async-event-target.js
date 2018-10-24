@@ -1,4 +1,4 @@
-import { LightningElement, unwrap, track } from "lwc";
+import { LightningElement, track } from "lwc";
 
 
 export default class AsyncEventTarget extends LightningElement {
