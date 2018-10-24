@@ -51,18 +51,17 @@ export function endMeasure(vm: VM, phase: MeasurementPhase) {
     performance.clearMeasures(name);
 }
 
-export function startGlobalMeasure(phase: GlobalMeasurementPhase) {
-    if (!isUserTimingSupported) {
-        return;
-    }
+// tslint:disable-next-line:no-empty
+const noop = function() {};
 
+function _startGlobalMeasure(phase: GlobalMeasurementPhase) {
     performance.mark(phase);
 }
 
-export function endGlobalMeasure(phase: GlobalMeasurementPhase) {
-    if (!isUserTimingSupported) {
-        return;
-    }
-
-    performance.measure('lwc-' + phase, phase);
+function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
+    performance.measure(`lwc-${phase}`, phase);
 }
+
+export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
+
+export const endGlobalMeasure = isUserTimingSupported ? _endGlobalMeasure : noop;
