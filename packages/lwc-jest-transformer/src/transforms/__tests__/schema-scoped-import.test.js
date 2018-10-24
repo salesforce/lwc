@@ -71,7 +71,7 @@ describe('@salesforce/schema import', () => {
         import { default as resource } from '@salesforce/schema/Opportunity.Account.Name';
     `, undefined, 'Invalid import from @salesforce/schema/Opportunity.Account.Name');
 
-    test('throws error if renamed multipel default imports', `
+    test('throws error if renamed multiple default imports', `
         import { default as resource, foo } from '@salesforce/schema/Opportunity.Account.Name';
     `, undefined, 'Invalid import from @salesforce/schema/Opportunity.Account.Name');
 });

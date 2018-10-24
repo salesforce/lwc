@@ -39,7 +39,7 @@ describe('@salesforce/user import', () => {
         import { default as label } from '@salesforce/user/Id';
     `, undefined, 'Invalid import from @salesforce/user/Id');
 
-    test('throws error if renamed multipel default imports', `
+    test('throws error if renamed multiple default imports', `
         import { default as label, foo } from '@salesforce/user/Id';
     `, undefined, 'Invalid import from @salesforce/user/Id');
 });
