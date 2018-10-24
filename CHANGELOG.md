@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.0...v) (2018-10-22)
+# [](https://github.com/salesforce/lwc/compare/v0.30.1...v) (2018-10-24)
+
+
+### Bug Fixes
+
+* **compiler:** resolves conflicts between locator and errors work ([#759](https://github.com/salesforce/lwc/issues/759)) ([a212efd](https://github.com/salesforce/lwc/commit/a212efd))
+* **engine:** error when event listener was on document ([#762](https://github.com/salesforce/lwc/issues/762)) ([6471a65](https://github.com/salesforce/lwc/commit/6471a65))
+
+
+### Features
+
+* **compiler:** Implement error codes system onto compiler modules ([#726](https://github.com/salesforce/lwc/issues/726)) ([3ee81d5](https://github.com/salesforce/lwc/commit/3ee81d5))
+* Add support for locators ([#701](https://github.com/salesforce/lwc/issues/701)) ([464daf4](https://github.com/salesforce/lwc/commit/464daf4))
+* **compiler:** throw on any non-whitelisted lwc imports ([#752](https://github.com/salesforce/lwc/issues/752)) ([9652133](https://github.com/salesforce/lwc/commit/9652133))
+
+
+
+<a name="0.30.1"></a>
+## [0.30.1](https://github.com/salesforce/lwc/compare/v0.30.0...v0.30.1) (2018-10-22)
 
 
 
