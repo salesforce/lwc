@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid import statement, import statement only support a single parameter.",
+    "column": 1,
+    "line": 1
+}

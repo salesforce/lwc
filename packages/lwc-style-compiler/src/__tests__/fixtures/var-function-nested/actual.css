@@ -1,0 +1,1 @@
+div { background: var(--lwc-color, var(--lwc-other, black)); }
