@@ -11,9 +11,11 @@ const {
     createElementNS,
     createTextNode,
     createComment,
+    querySelectorAll,
 } = Document.prototype;
 
 export {
+    querySelectorAll,
     createElement,
     createElementNS,
     createTextNode,

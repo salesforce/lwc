@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener } from './element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor } from '../shared/language';
-import { DocumentPrototypeActiveElement } from './document';
+import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from './document';
 import { eventCurrentTargetGetter, eventTargetGetter } from './events';
 import { getShadowRoot } from './shadow-root';
 
@@ -20,10 +20,14 @@ function isVisible(element: HTMLElement): boolean {
 }
 
 function isActive(element: HTMLElement): boolean {
-    const res =
-        ("disabled" in element && isFalse((element as any).disabled)) ||
-        ("href" in element && (element as any).href);
-    return res;
+    if ('disabled' in element) {
+        return isFalse((element as any).disabled); // button elements
+    }
+
+    if ('href' in element) {
+        return (element as any).href !== ''; // anchor elements
+    }
+    return true; // anything else with a tabindex === 0 (eg, span)
 }
 
 function isFocusable(element: HTMLElement): boolean {
@@ -41,7 +45,7 @@ function getFirstFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
 }
 
 function getLastFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
-    for (let i = elements.length; i > 0; i -= 1) {
+    for (let i = elements.length - 1; i >= 0; i -= 1) {
         const elm = elements[i];
         if (isFocusable(elm)) {
             return elm;
@@ -57,7 +61,7 @@ interface QuerySegments {
 }
 
 function getFocusableSegments(host: HTMLElement): QuerySegments {
-    const all = querySelectorAll.call(document, PossibleFocusableElementQuery);
+    const all = documentQuerySelectorAll.call(document, PossibleFocusableElementQuery);
     const inner = querySelectorAll.call(host, PossibleFocusableElementQuery);
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(inner.length > 0, `When focusin event is received, there has to be a focusable target at least.`);
@@ -65,8 +69,8 @@ function getFocusableSegments(host: HTMLElement): QuerySegments {
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
-    const prev = ArraySlice.call(all, 0, ArrayIndexOf.call(all, firstChild) - 1);
-    const next = ArraySlice.call(all, ArrayIndexOf.call(all, lastChild));
+    const prev = ArraySlice.call(all, 0, ArrayIndexOf.call(all, firstChild));
+    const next = ArraySlice.call(all, ArrayIndexOf.call(all, lastChild) + 1);
     return {
         prev,
         inner,
