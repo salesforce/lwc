@@ -8,8 +8,10 @@ import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
 import { HTMLElementConstructor } from "./base-bridge-element";
 import { patchCustomElementWithRestrictions } from "./restrictions";
+import { endGlobalMeasure, startGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
+    startGlobalMeasure(GlobalMeasurementPhase.INIT);
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
@@ -22,7 +24,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // fallback defaults to false to favor shadowRoot
         normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
     }
-    return class extends BaseElement {
+    const wcClass = class extends BaseElement {
         constructor() {
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
@@ -36,9 +38,11 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             }
         }
         connectedCallback() {
+            startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
             const vm = getCustomElementVM(this);
             appendVM(vm);
             renderVM(vm);
+            endGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
         }
         disconnectedCallback() {
             const vm = getCustomElementVM(this);
@@ -70,4 +74,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // the reflection from attributes to props via attributeChangedCallback.
         static observedAttributes = ArrayMap.call(getOwnPropertyNames(props), (propName) => props[propName].attr);
     };
+
+    endGlobalMeasure(GlobalMeasurementPhase.INIT);
+    return wcClass;
 }
