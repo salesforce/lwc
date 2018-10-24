@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('decorators/api.ts', () => {
     describe('@api x', () => {
         it('should allow inheriting public props', function() {
@@ -50,6 +52,7 @@ describe('decorators/api.ts', () => {
             class MyComponent extends LightningElement  {
                 render() {
                     counter++;
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = {
@@ -74,6 +77,7 @@ describe('decorators/api.ts', () => {
                 render() {
                     this.x;
                     counter++;
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = {
@@ -178,6 +182,7 @@ describe('decorators/api.ts', () => {
                 render() {
                     this.x;
                     counter++;
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = {
@@ -209,6 +214,7 @@ describe('decorators/api.ts', () => {
                 render() {
                     this.x;
                     counter++;
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = {

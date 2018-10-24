@@ -1,5 +1,8 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import wire from "../wire";
+
+const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('wire.ts', () => {
     describe('integration', () => {
@@ -55,6 +58,7 @@ describe('wire.ts', () => {
                 render() {
                     counter++;
                     this.foo.x;
+                    return emptyTemplate;
                 }
             }
             MyComponent.wire = { foo: {} };
@@ -82,6 +86,7 @@ describe('wire.ts', () => {
                 render() {
                     counter++;
                     this.foo.x;
+                    return emptyTemplate;
                 }
             }
             MyComponent.wire = { foo: {} };
@@ -197,6 +202,7 @@ describe('wire.ts', () => {
             class MyComponent extends LightningElement {
                 render() {
                     this.foo = 1;
+                    return emptyTemplate;
                 }
             }
             MyComponent.wire = { foo: {  } };

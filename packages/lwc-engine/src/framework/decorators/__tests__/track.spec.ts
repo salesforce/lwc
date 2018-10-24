@@ -1,6 +1,9 @@
+import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import track from "../track";
 import readonly from "../readonly";
+
+const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('track.ts', () => {
     describe('integration', () => {
@@ -56,6 +59,7 @@ describe('track.ts', () => {
                 render() {
                     counter++;
                     this.foo.x;
+                    return emptyTemplate;
                 }
             }
             MyComponent.track = { foo: 1 };
@@ -81,6 +85,7 @@ describe('track.ts', () => {
                 render() {
                     counter++;
                     this.foo.x;
+                    return emptyTemplate;
                 }
             }
             MyComponent.track = { foo: 1 };
@@ -194,6 +199,7 @@ describe('track.ts', () => {
             class MyComponent extends LightningElement {
                 render() {
                     this.foo = 1;
+                    return emptyTemplate;
                 }
             }
             MyComponent.track = { foo: {  } };

@@ -93,13 +93,10 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
 
     try {
         const html = callHook(component, render);
-        if (isFunction(html)) {
-            result = evaluateTemplate(vm, html);
-        } else if (!isUndefined(html)) {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`) or undefined, instead, it has returned ${html}.`);
-            }
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(isFunction(html), `The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned ${html}.`);
         }
+        result = evaluateTemplate(vm, html);
     } catch (e) {
         error = Object(e);
     } finally {
