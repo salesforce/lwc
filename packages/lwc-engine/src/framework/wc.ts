@@ -11,7 +11,6 @@ import { patchCustomElementWithRestrictions } from "./restrictions";
 import { endGlobalMeasure, startGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
-    startGlobalMeasure(GlobalMeasurementPhase.INIT);
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
@@ -24,8 +23,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // fallback defaults to false to favor shadowRoot
         normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
     }
-    const wcClass = class extends BaseElement {
+    return class extends BaseElement {
         constructor() {
+            startGlobalMeasure(GlobalMeasurementPhase.INIT);
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
@@ -36,6 +36,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             if (process.env.NODE_ENV !== 'production') {
                 patchCustomElementWithRestrictions(this);
             }
+            endGlobalMeasure(GlobalMeasurementPhase.INIT);
         }
         connectedCallback() {
             startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
@@ -74,7 +75,4 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         // the reflection from attributes to props via attributeChangedCallback.
         static observedAttributes = ArrayMap.call(getOwnPropertyNames(props), (propName) => props[propName].attr);
     };
-
-    endGlobalMeasure(GlobalMeasurementPhase.INIT);
-    return wcClass;
 }
