@@ -40,7 +40,13 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
     });
 }
 
-function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+/**
+ * Marks a reactive parameter as having changed.
+ * @param cmp The component
+ * @param reactiveParameter Reactive parameter that has changed
+ * @param configContext The service context
+ */
+export function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     if (!configContext.mutated) {
         configContext.mutated = new Set<ReactiveParameter>();
         // collect all prop changes via a microtask
@@ -95,7 +101,7 @@ export function getReactiveParameterValue(cmp: Element, reactiveParameter: React
  * Installs setter override to trap changes to a property, triggering the config listeners.
  * @param cmp The component
  * @param reactiveParameter Reactive parameter that defines the property to monitor
- * @param context The service context
+ * @param configContext The service context
  */
 export function installTrap(cmp: Object, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);

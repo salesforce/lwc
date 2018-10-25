@@ -15,7 +15,8 @@ import {
     ComposableEvent
 } from './engine';
 import {
-    installTrap
+    installTrap,
+    updated
 } from './property-trap';
 
 export type NoArgumentListener = () => void;
@@ -153,6 +154,7 @@ export class WireEventTarget {
                     reactives
                 };
 
+                // setup listeners for all reactive parameters
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 reactiveKeys.forEach(key => {
                     const reactiveParameter = buildReactiveParameter(reactives[key]);
@@ -164,7 +166,10 @@ export class WireEventTarget {
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
+                    // enqueue to pickup default values
+                    updated(this._cmp, reactiveParameter, configContext);
                 });
+
                 break;
 
             default:
