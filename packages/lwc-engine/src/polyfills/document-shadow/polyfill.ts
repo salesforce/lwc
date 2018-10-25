@@ -29,6 +29,9 @@ export default function apply() {
             while (!isUndefined(getNodeOwnerKey(node))) {
                 node = parentElementGetter.call(node);
             }
+            if (node.tagName === 'HTML') { // IE 11. Active element should never be html element
+                node = document.body;
+            }
             return node;
         },
         enumerable: true,
