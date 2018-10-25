@@ -159,53 +159,9 @@ function focusInEventHandler(event: FocusEvent) {
     const segments = getFocusableSegments(host as HTMLElement);
     const isFirstFocusableChildReceivingFocus = isFirstFocusableChild(target, segments);
     const isLastFocusableChildReceivingFocus = isLastFocusableChild(target, segments);
-    if (isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) {
+    if ((isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) || isNull(relatedTarget)) {
         // the focus is definitely not a result of tab or shift-tab interaction
         return;
-    }
-    if (isNull(relatedTarget)) {
-        // could be a direct click, or entering the page from the url bar, etc.
-        if (isFirstFocusableChildReceivingFocus) {
-            // it is very likely that it is coming from above
-            if (segments.prev.length === 0) {
-                // since the host is the first tabbable element of the page
-                // the focus is almost certain that it is a tab action, so we
-                // must skip.
-                focusOnNextOrBlur(target, segments);
-                /**
-                 * note: false positive here is when the user is clicking
-                 * directly on the first focusable element of the page when
-                 * this element is wrapped by a custom element that has
-                 * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
-                 * <body>
-                 *   <x-foo tabindex="-1">
-                 *     #shadowRoot(delegatesFocus=true)
-                 *       <input />  <--- user clicks here instead of tabbing
-                 *   ... some content with other focusable elements
-                 **/
-            }
-            return;
-        } else {
-            // it is very likely that it is coming from below
-            if (segments.next.length === 0) {
-                // since the host is the last tabbable element of the page
-                // the focus is almost certain that it is a shift-tab action, so we
-                // must skip.
-                focusOnPrevOrBlur(target, segments);
-                /**
-                 * note: false positive here is when the user is clicking
-                 * directly on the last focusable element of the page when
-                 * this element is wrapped by a custom element that has
-                 * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
-                 * <body>
-                 *   ... some content with other focusable elements
-                 *   <x-foo tabindex="-1">
-                 *     #shadowRoot(delegatesFocus=true)
-                 *       <input />  <--- user clicks here instead of tabbing
-                 **/
-            }
-        }
-        return; // do nothing, it is definitely not a tab
     }
     // If there is a related target, everything is easier
     const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
