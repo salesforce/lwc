@@ -212,12 +212,38 @@ function focusInEventHandler(event: FocusEvent) {
     }
 }
 
+
+function willTriggerFocusInEvent(target: HTMLElement): boolean {
+    return (
+        target !== DocumentPrototypeActiveElement.call(document) && // if the element is currently active, it will not fire a focusin event
+        isFocusable(target)
+    );
+}
+
+function stopFocusIn(evt) {
+    const currentTarget = eventCurrentTargetGetter.call(evt);
+    removeEventListener.call(currentTarget, 'focusin', focusInEventHandler);
+    setTimeout(() => addEventListener.call(currentTarget, 'focusin', focusInEventHandler), 1);
+}
+
+function handleFocusMouseDown(evt) {
+    const target = eventTargetGetter.call(evt);
+    // If we are mouse down in an element that can be focused
+    // and the currentTarget's activeElement is not element we are mouse-ing down in
+    // We can bail out and let the browser do its thing.
+    if (willTriggerFocusInEvent(target)) {
+        addEventListener.call(eventCurrentTargetGetter.call(evt), 'focusin', stopFocusIn, true);
+    }
+}
+
 export function handleFocusIn(elm: HTMLElement) {
     // TODO: assert that elm has tabindex attribute set to -1
+    addEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
     addEventListener.call(elm, 'focusin', focusInEventHandler);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
     // TODO: assert that elm should have tabindex attribute set to something other than -1
     removeEventListener.call(elm, 'focusin', focusInEventHandler);
+    removeEventListener.call(elm, 'focusin', handleFocusMouseDown, true);
 }
