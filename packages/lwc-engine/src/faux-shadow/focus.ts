@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener } from './element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
-import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor } from '../shared/language';
+import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor, toString } from '../shared/language';
 import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from './document';
 import { eventCurrentTargetGetter, eventTargetGetter } from './events';
 import { getShadowRoot } from './shadow-root';
@@ -212,7 +212,6 @@ function focusInEventHandler(event: FocusEvent) {
     }
 }
 
-
 function willTriggerFocusInEvent(target: HTMLElement): boolean {
     return (
         target !== DocumentPrototypeActiveElement.call(document) && // if the element is currently active, it will not fire a focusin event
@@ -237,13 +236,17 @@ function handleFocusMouseDown(evt) {
 }
 
 export function handleFocusIn(elm: HTMLElement) {
-    // TODO: assert that elm has tabindex attribute set to -1
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(elm.tabIndex === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
+    }
     addEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
     addEventListener.call(elm, 'focusin', focusInEventHandler);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
-    // TODO: assert that elm should have tabindex attribute set to something other than -1
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(elm.tabIndex !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
+    }
     removeEventListener.call(elm, 'focusin', focusInEventHandler);
     removeEventListener.call(elm, 'focusin', handleFocusMouseDown, true);
 }
