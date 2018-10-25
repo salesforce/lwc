@@ -37,7 +37,6 @@ describe('patch', () => {
             class MyComponent extends LightningElement {
                 renderedCallback() {
                     flag = true;
-                    return emptyTemplate;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
