@@ -1,12 +1,10 @@
 import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
-import { hasAttribute } from "./element";
-import { getOwnPropertyDescriptor, isNull, isFalse, getPropertyDescriptor } from "../shared/language";
+import { hasAttribute, tabIndexGetter } from "./element";
+import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
 import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
-
-const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;

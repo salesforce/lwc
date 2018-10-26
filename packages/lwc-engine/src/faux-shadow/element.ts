@@ -21,6 +21,8 @@ const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
+const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
+
 export {
     addEventListener,
     removeEventListener,
@@ -36,4 +38,5 @@ export {
     innerHTMLSetter,
     tagNameGetter,
     getBoundingClientRect,
+    tabIndexGetter,
 };

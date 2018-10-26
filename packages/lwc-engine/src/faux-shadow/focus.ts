@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener } from './element';
+import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter } from './element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor, toString } from '../shared/language';
 import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from './document';
@@ -222,7 +222,12 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 function stopFocusIn(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', focusInEventHandler);
-    setTimeout(() => addEventListener.call(currentTarget, 'focusin', focusInEventHandler), 1);
+    setTimeout(() => {
+        // only reinstate the focus if the tabindex is still -1
+        if (tabIndexGetter.call(currentTarget) === -1) {
+            addEventListener.call(currentTarget, 'focusin', focusInEventHandler);
+        }
+    }, 0);
 }
 
 function handleFocusMouseDown(evt) {
@@ -237,7 +242,7 @@ function handleFocusMouseDown(evt) {
 
 export function handleFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(elm.tabIndex === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
+        assert.invariant(tabIndexGetter.call(elm) === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
     }
     // We want to listen for mousedown
     // If the user is triggering a mousedown event on an element
@@ -255,7 +260,7 @@ export function handleFocusIn(elm: HTMLElement) {
 
 export function ignoreFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(elm.tabIndex !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
+        assert.invariant(tabIndexGetter.call(elm) !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
     }
     removeEventListener.call(elm, 'focusin', focusInEventHandler);
     removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
