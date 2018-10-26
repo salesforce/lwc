@@ -124,6 +124,8 @@ function serializeCss(result: LazyResult): string {
     if (buffer) {
         return `[\n  ${buffer}\n  ].join('')`;
     }
+
+    return '';
 }
 
 // TODO: this code needs refactor, it could be simpler by using a native post-css walker
