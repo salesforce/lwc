@@ -1,5 +1,11 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "[hidden]" + shadowSelector + " {}\n[lang=\"fr\"]" + shadowSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "[hidden]",
+  shadowSelector,
+  " {}[lang=\"fr\"]",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

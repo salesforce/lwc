@@ -1,5 +1,2 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "/* Comment with grave accents \\`#\\` */\n";
-    return content;
-}
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";

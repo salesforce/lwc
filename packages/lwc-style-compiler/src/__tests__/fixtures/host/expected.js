@@ -1,5 +1,9 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += ":host {}\n" + hostSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  realShadow ? (":host {}") : '',
+  hostSelector,
+  " {}"
+  ].join('');
+  return content;
 }

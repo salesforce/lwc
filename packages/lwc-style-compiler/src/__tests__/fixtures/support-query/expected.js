@@ -1,5 +1,9 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "@supports (display: flex) {\n    h1" + shadowSelector + " {}\n}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "@supports (display: flex) {h1",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

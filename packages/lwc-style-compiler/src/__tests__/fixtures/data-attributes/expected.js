@@ -1,5 +1,11 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "[data-foo]" + shadowSelector + " {}\n[data-foo=\"bar\"]" + shadowSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "[data-foo]",
+  shadowSelector,
+  " {}[data-foo=\"bar\"]",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

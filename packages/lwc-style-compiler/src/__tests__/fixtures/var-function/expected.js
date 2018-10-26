@@ -1,5 +1,19 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "div" + shadowSelector + " { color: var(--lwc-color); }\ndiv" + shadowSelector + " { color: var(--lwc-color, black); }\ndiv" + shadowSelector + " { color: var(--lwc-color) important; }\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "div",
+  shadowSelector,
+  " {color: ",
+  varResolver("--lwc-color"),
+  ";}div",
+  shadowSelector,
+  " {color: ",
+  varResolver("--lwc-color","black"),
+  ";}div",
+  shadowSelector,
+  " {color: ",
+  varResolver("--lwc-color"),
+  " important;}"
+  ].join('');
+  return content;
 }

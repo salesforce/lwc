@@ -1,5 +1,11 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "[aria-labelledby]" + shadowSelector + " {}\n[aria-labelledby=\"bar\"]" + shadowSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "[aria-labelledby]",
+  shadowSelector,
+  " {}[aria-labelledby=\"bar\"]",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

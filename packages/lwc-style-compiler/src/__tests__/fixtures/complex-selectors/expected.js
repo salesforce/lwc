@@ -1,5 +1,19 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "h1" + shadowSelector + " > a" + shadowSelector + " {}\nh1" + shadowSelector + " + a" + shadowSelector + " {}\ndiv.active" + shadowSelector + " > p" + shadowSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "h1",
+  shadowSelector,
+  " > a",
+  shadowSelector,
+  " {}h1",
+  shadowSelector,
+  " + a",
+  shadowSelector,
+  " {}div.active",
+  shadowSelector,
+  " > p",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

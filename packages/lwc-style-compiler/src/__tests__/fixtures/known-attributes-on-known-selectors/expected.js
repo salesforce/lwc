@@ -1,5 +1,11 @@
-export default function(hostSelector, shadowSelector) {
-    let content = "";
-    content += "input[min]" + shadowSelector + " {}\ninput[min=100]" + shadowSelector + " {}\n";
-    return content;
+export default function(hostSelector, shadowSelector, realShadow) {
+  let content = "";
+  content += [
+  "input[min]",
+  shadowSelector,
+  " {}input[min=100]",
+  shadowSelector,
+  " {}"
+  ].join('');
+  return content;
 }

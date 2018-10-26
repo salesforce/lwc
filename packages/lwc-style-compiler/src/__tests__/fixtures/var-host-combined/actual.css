@@ -1,0 +1,18 @@
+:host {
+    color: var(--lwc-color);
+    padding: 10px;
+}
+div {
+    background: var(--lwc-color, var(--lwc-other, black));
+    display: "block";
+}
+
+h1:before {
+    content: 'test"escaping quote(\')'
+}
+
+h1:after {
+    content: "test'escaping quote(\")"
+}
+
+
