@@ -95,6 +95,7 @@ function serializeCss(result: LazyResult): string {
             currentRuleTokens.push({ type: TokenType.text, value: part });
             currentRuleTokens = reduceTokens(currentRuleTokens);
 
+            // If we are in fakeShadow we dont want to have :host selectors
             if (currentRuleTokens.some((t) => t.value.startsWith(':host'))) {
                 const exprToken = currentRuleTokens.map(({type, value}) => type === 'text' ? `"${value}"` : value).join(' + ');
                 tokens.push({
@@ -161,6 +162,10 @@ function tokenizeCssSelector(data: string): Token[] {
     return tokens;
 }
 
+/*
+* This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
+* and transforms its custom variables in function calls
+*/
 function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     const { type, nodes, value } = node;
 
