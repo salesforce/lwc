@@ -40,7 +40,13 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
     });
 }
 
-function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+/**
+ * Marks a reactive parameter as having changed.
+ * @param cmp The component
+ * @param reactiveParameter Reactive parameter that has changed
+ * @param configContext The service context
+ */
+export function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     if (!configContext.mutated) {
         configContext.mutated = new Set<ReactiveParameter>();
         // collect all prop changes via a microtask
@@ -55,13 +61,16 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
     // configContext.mutated must be set prior to invoking this function
     const mutated = configContext.mutated as Set<ReactiveParameter>;
     delete configContext.mutated;
+
+    // pull this variable out of scope to workaround babel minify issue - https://github.com/babel/minify/issues/877
+    let listeners;
     mutated.forEach(reactiveParameter => {
         const value = getReactiveParameterValue(cmp, reactiveParameter);
         if (configContext.values[reactiveParameter.reference] === value) {
             return;
         }
         configContext.values[reactiveParameter.reference] = value;
-        const listeners = configContext.listeners[reactiveParameter.head];
+        listeners = configContext.listeners[reactiveParameter.head];
         for (let i = 0, len = listeners.length; i < len; i++) {
             uniqueListeners.add(listeners[i]);
         }
@@ -95,7 +104,7 @@ export function getReactiveParameterValue(cmp: Element, reactiveParameter: React
  * Installs setter override to trap changes to a property, triggering the config listeners.
  * @param cmp The component
  * @param reactiveParameter Reactive parameter that defines the property to monitor
- * @param context The service context
+ * @param configContext The service context
  */
 export function installTrap(cmp: Object, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);

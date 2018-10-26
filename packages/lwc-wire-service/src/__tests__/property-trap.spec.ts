@@ -1,7 +1,8 @@
 import {
     installTrap,
     findDescriptor,
-    getReactiveParameterValue
+    getReactiveParameterValue,
+    updated
 } from '../property-trap';
 import { ConfigContext, ReactiveParameter } from '../wiring';
 
@@ -121,7 +122,7 @@ describe('invokeConfigListeners', () => {
         head: 'prop1'
     };
 
-    it('invokes listener with new value', () => {
+    it('invokes listener with reactive parameter default value', () => {
         const expected = 'expected';
         const listener = jest.fn();
         const context: ConfigContext = {
@@ -129,7 +130,29 @@ describe('invokeConfigListeners', () => {
                 prop1: [{ listener, reactives: { param1: 'prop1' } }]
             },
             values: {
-                prop1: ''
+                // initial state is empty
+            }
+        };
+        class Target {
+            prop1 = expected;
+        }
+        const cmp = new Target();
+        installTrap(cmp, reactiveParameter, context);
+        updated(cmp, reactiveParameter, context);
+        return Promise.resolve().then(() => {
+            expect(listener).toHaveBeenCalledTimes(1);
+            expect(listener.mock.calls[0][0]).toEqual({ param1: expected });
+        });
+    });
+
+    it('invokes listener with new value once', () => {
+        const expected = 'expected';
+        const listener = jest.fn();
+        const context: ConfigContext = {
+            listeners: {
+                prop1: [{ listener, reactives: { param1: 'prop1' } }]
+            },
+            values: {
             }
         };
         class Target {
@@ -137,6 +160,7 @@ describe('invokeConfigListeners', () => {
         }
         const cmp = new Target();
         installTrap(cmp, reactiveParameter, context);
+        updated(cmp, reactiveParameter, context);
         cmp.prop1 = expected;
         return Promise.resolve().then(() => {
             expect(listener).toHaveBeenCalledTimes(1);

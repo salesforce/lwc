@@ -64,12 +64,20 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     const { importSource, resourceName } = getImportInfo(path);
 
     // if no fallback value provided, use the resource path from the import statement
-    fallbackData = fallbackData || importSource.substring(importIdentifier.length);
+    if (fallbackData === undefined) {
+        fallbackData = importSource.substring(importIdentifier.length);
+    }
+
+    if (typeof fallbackData === 'number') {
+        fallbackData = t.numericLiteral(fallbackData);
+    } else {
+        fallbackData = t.stringLiteral(fallbackData);
+    }
 
     path.replaceWithMultiple(defaultTemplate({
         RESOURCE_NAME: t.identifier(resourceName),
         IMPORT_SOURCE: t.stringLiteral(importSource),
-        FALLBACK_DATA: t.stringLiteral(fallbackData)
+        FALLBACK_DATA: fallbackData
     }));
 }
 
