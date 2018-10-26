@@ -1,5 +1,5 @@
 import { templateString } from "../shared/utils";
-import { LWCErrorInfo, DiagnosticLevel } from "../shared/types";
+import { LWCErrorInfo } from "../shared/types";
 import {
     CompilerDiagnosticOrigin,
     CompilerDiagnostic,
@@ -153,7 +153,7 @@ function convertErrorToDiagnostic(error: any, fallbackErrorInfo: LWCErrorInfo, o
         ? error.message
         : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const level = error.level || DiagnosticLevel.Error;
+    const level = error.level || fallbackErrorInfo.level;
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 

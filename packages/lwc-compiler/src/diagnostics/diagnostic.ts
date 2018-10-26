@@ -15,6 +15,12 @@ export interface Diagnostic {
      * This field is optional, for example when the compiler throws an uncaught exception.
      */
     location?: Location;
+
+    /**
+     * Error code for the diagnostic. Temporarily added while all older references
+     * to Diagnostics is migrated to the new object.
+     */
+    code?: number;
 }
 
 export enum DiagnosticLevel {
