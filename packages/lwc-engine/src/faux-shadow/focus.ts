@@ -1,13 +1,10 @@
 import assert from "../shared/assert";
-import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener } from './element';
+import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter } from './element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor, toString } from '../shared/language';
 import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from './document';
 import { eventCurrentTargetGetter, eventTargetGetter } from './events';
 import { getShadowRoot } from './shadow-root';
-
-// TODO: Move this to element.ts
-const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -225,7 +222,12 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 function stopFocusIn(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', focusInEventHandler);
-    setTimeout(() => addEventListener.call(currentTarget, 'focusin', focusInEventHandler), 1);
+    setTimeout(() => {
+        // only reinstate the focus if the tabindex is still -1
+        if (tabIndexGetter.call(currentTarget) === -1) {
+            addEventListener.call(currentTarget, 'focusin', focusInEventHandler);
+        }
+    }, 0);
 }
 
 function handleFocusMouseDown(evt) {
