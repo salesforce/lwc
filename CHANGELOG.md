@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.1...v) (2018-10-24)
+# [](https://github.com/salesforce/lwc/compare/v0.30.2...v) (2018-10-26)
+
+
+### Bug Fixes
+
+* **engine:** fix issue [#766](https://github.com/salesforce/lwc/issues/766) to patch query selectors ([#769](https://github.com/salesforce/lwc/issues/769)) ([81093fc](https://github.com/salesforce/lwc/commit/81093fc))
+* **engine:** focus delegation fixes to narrow false positives ([#763](https://github.com/salesforce/lwc/issues/763)) ([22e75a5](https://github.com/salesforce/lwc/commit/22e75a5))
+* **wire-service:** workaround babel minify issue in compat mode ([#768](https://github.com/salesforce/lwc/issues/768)) ([8e718ae](https://github.com/salesforce/lwc/commit/8e718ae))
+
+
+### Features
+
+* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/i18n ([#758](https://github.com/salesforce/lwc/issues/758)) ([00a13cc](https://github.com/salesforce/lwc/commit/00a13cc))
+* **wire:** use class property default values ([#767](https://github.com/salesforce/lwc/issues/767)) ([4c76b9a](https://github.com/salesforce/lwc/commit/4c76b9a))
+
+
+
+<a name="0.30.2"></a>
+## [0.30.2](https://github.com/salesforce/lwc/compare/v0.30.1...v0.30.2) (2018-10-24)
 
 
 ### Bug Fixes
