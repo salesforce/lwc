@@ -1,6 +1,6 @@
 {
   "name": "lwc-errors",
-  "version": "0.30.2",
+  "version": "0.30.3-alpha01",
   "description": "LWC Error Utilities",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
