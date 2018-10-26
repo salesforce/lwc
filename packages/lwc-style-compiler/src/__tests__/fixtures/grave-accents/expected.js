@@ -1,3 +1,4 @@
-export default function(hostSelector, shadowSelector, realShadow) {
-  let content = "";
+export default function(hostSelector, shadowSelector, nativeShadow) {
+  return `
+`
 }

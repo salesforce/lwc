@@ -1,9 +1,5 @@
-export default function(hostSelector, shadowSelector, realShadow) {
-  let content = "";
-  content += [
-  "*",
-  shadowSelector,
-  " {}"
-  ].join('');
-  return content;
+export default function(hostSelector, shadowSelector, nativeShadow) {
+  return `
+*${shadowSelector} {}
+`
 }

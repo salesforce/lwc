@@ -1,15 +1,8 @@
-export default function(hostSelector, shadowSelector, realShadow) {
-  let content = "";
-  content += [
-  "h1",
-  shadowSelector,
-  ", h2",
-  shadowSelector,
-  " {}h1",
-  shadowSelector,
-  ",\nh2",
-  shadowSelector,
-  "\n{}"
-  ].join('');
-  return content;
+export default function(hostSelector, shadowSelector, nativeShadow) {
+  return `
+h1${shadowSelector}, h2${shadowSelector} {}
+h1${shadowSelector},
+h2${shadowSelector}
+{}
+`
 }

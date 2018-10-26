@@ -1,9 +1,5 @@
-export default function(hostSelector, shadowSelector, realShadow) {
-  let content = "";
-  content += [
-  "@media screen and (min-width: 900px) {h1",
-  shadowSelector,
-  " {}"
-  ].join('');
-  return content;
+export default function(hostSelector, shadowSelector, nativeShadow) {
+  return `
+@media screen and (min-width: 900px) {h1${shadowSelector} {}
+`
 }

@@ -1,11 +1,6 @@
-export default function(hostSelector, shadowSelector, realShadow) {
-  let content = "";
-  content += [
-  "[aria-labelledby]",
-  shadowSelector,
-  " {}[aria-labelledby=\"bar\"]",
-  shadowSelector,
-  " {}"
-  ].join('');
-  return content;
+export default function(hostSelector, shadowSelector, nativeShadow) {
+  return `
+[aria-labelledby]${shadowSelector} {}
+[aria-labelledby="bar"]${shadowSelector} {}
+`
 }
