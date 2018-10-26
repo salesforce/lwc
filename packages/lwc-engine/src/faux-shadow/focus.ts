@@ -239,7 +239,17 @@ export function handleFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm.tabIndex === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
     }
+    // We want to listen for mousedown
+    // If the user is triggering a mousedown event on an element
+    // That can trigger a focus event, then we need to opt out
+    // of our tabindex -1 dance. The tabindex -1 only applies for keyboard navigation
     addEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
+
+    // This focusin listener is to catch focusin events from keyboard interactions
+    // A better solution would perhaps be to listen for keydown events, but
+    // the keydown event happens on whatever element already has focus (or no element
+    // at all in the case of the location bar. So, instead we have to assume that focusin
+    // without a mousedown means keyboard navigation
     addEventListener.call(elm, 'focusin', focusInEventHandler);
 }
 
@@ -248,5 +258,5 @@ export function ignoreFocusIn(elm: HTMLElement) {
         assert.invariant(elm.tabIndex !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
     }
     removeEventListener.call(elm, 'focusin', focusInEventHandler);
-    removeEventListener.call(elm, 'focusin', handleFocusMouseDown, true);
+    removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
 }
