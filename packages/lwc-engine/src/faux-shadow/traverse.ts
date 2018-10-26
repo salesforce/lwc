@@ -348,7 +348,7 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
 }
 
 export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstructor {
-    const Ctor = PatchedNode(elm) as HTMLSlotElementConstructor;
+    const Ctor = PatchedElement(elm) as HTMLSlotElementConstructor;
     return class PatchedHTMLSlotElement extends Ctor {
         assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
             const flatten = !isUndefined(options) && isTrue(options.flatten);

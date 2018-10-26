@@ -424,4 +424,79 @@ describe('slotted elements', () => {
         expect(slottedDiv.parentNode).toBe(child);
     });
 
+    it('should not be reachable via query selectors on the slot', () => {
+        const childHTML = compileTemplate(`<template>
+            <slot>
+            </slot>
+        </template>`);
+
+        let childTemplate;
+        class ChildComponent extends LightningElement {
+            render() {
+                childTemplate = this.template;
+                return childHTML;
+            }
+        }
+        const parentHTML = compileTemplate(`<template>
+            <c-child>
+                <div>Slotted</div>
+            </c-child>
+        </template>`, {
+            modules: {
+                'c-child': ChildComponent
+            }
+        });
+
+        class ParentComponent extends LightningElement {
+            render() {
+                return parentHTML;
+            }
+        }
+        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        document.body.appendChild(elm);
+        const slot = childTemplate.querySelector('slot');
+        const slotContent = slot.querySelector('div');
+        expect(slotContent).toBe(null);
+        const slotElements = slot.querySelectorAll('div');
+        expect(slotElements).toHaveLength(0);
+    });
+
+    it('should not be reachable via childNodes on the slot', () => {
+        const childHTML = compileTemplate(`<template>
+            <slot>
+            </slot>
+        </template>`);
+
+        let childTemplate;
+        class ChildComponent extends LightningElement {
+            render() {
+                childTemplate = this.template;
+                return childHTML;
+            }
+        }
+        const parentHTML = compileTemplate(`<template>
+            <c-child>
+                <div>Slotted</div>
+            </c-child>
+        </template>`, {
+            modules: {
+                'c-child': ChildComponent
+            }
+        });
+
+        class ParentComponent extends LightningElement {
+            render() {
+                return parentHTML;
+            }
+        }
+        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        document.body.appendChild(elm);
+        const slot = childTemplate.querySelector('slot');
+        let children;
+        expect(() => {
+            children = slot.childNodes;
+        }).toLogWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
+        expect(children).toHaveLength(0);
+    });
+
 });
