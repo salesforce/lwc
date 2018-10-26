@@ -6,6 +6,9 @@ import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelect
 import { eventCurrentTargetGetter, eventTargetGetter } from './events';
 import { getShadowRoot } from './shadow-root';
 
+// TODO: Move this to element.ts
+const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
+
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null = getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
@@ -237,7 +240,7 @@ function handleFocusMouseDown(evt) {
 
 export function handleFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(elm.tabIndex === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
+        assert.invariant(tabIndexGetter.call(elm) === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
     }
     // We want to listen for mousedown
     // If the user is triggering a mousedown event on an element
@@ -255,7 +258,7 @@ export function handleFocusIn(elm: HTMLElement) {
 
 export function ignoreFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(elm.tabIndex !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
+        assert.invariant(tabIndexGetter.call(elm) !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
     }
     removeEventListener.call(elm, 'focusin', focusInEventHandler);
     removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);

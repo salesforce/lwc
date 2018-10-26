@@ -965,6 +965,42 @@ describe('html-element', () => {
                 /The result must not have attributes./
             );
         });
+
+        it('should not throw when tabIndex is not reflected to element', () => {
+            class MyComponent extends LightningElement {
+                get tabIndex() {
+                    return 0;
+                }
+
+                set tabIndex(value) {
+
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.tabIndex = -1;
+            }).not.toThrow();
+        });
+
+        it('should not throw when tabIndex is reflected to element', () => {
+            class MyComponent extends LightningElement {
+                get tabIndex() {
+                    return this.getAttribute('tabindex');
+                }
+
+                set tabIndex(value) {
+                    this.setAttribute('tabindex', value);
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.tabIndex = -1;
+            }).not.toThrow();
+        });
     });
 
     describe('life-cycles', function() {
