@@ -32,24 +32,15 @@ const CSS_NANO_CONFIG = {
     zindex: false,
 };
 
-export function transform(
-    src: string,
-    id: string,
-    config: Config = {},
-): {
-    code: string;
-} {
+export function transform(src: string, id: string, config: Config = {}): { code: string } {
     const allowDefinition = !config.customProperties || config.customProperties.allowDefinition;
     const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
 
     const plugins = [
         postcssPluginLwc({
-            customProperties: {
-                allowDefinition,
-                collectVarFunctions,
-            },
-            filename: id,
-        }),
+            customProperties: { allowDefinition, collectVarFunctions },
+            filename: id
+        })
     ];
 
     const minify = config.outputConfig && config.outputConfig.minify;
@@ -57,11 +48,7 @@ export function transform(
         plugins.push(cssnano(CSS_NANO_CONFIG));
     }
 
-    const result = postcss(plugins).process(src, {
-        from: id,
-    });
+    const result = postcss(plugins).process(src, { from: id });
 
-    return {
-        code: serialize(result, config),
-    };
+    return { code: serialize(result, config) };
 }

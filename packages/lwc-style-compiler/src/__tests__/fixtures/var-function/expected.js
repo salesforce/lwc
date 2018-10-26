@@ -1,3 +1,4 @@
+import varResolver from "custom-properties-resolver";
 export default function(hostSelector, shadowSelector, realShadow) {
   let content = "";
   content += [

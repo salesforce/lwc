@@ -41,7 +41,7 @@ export default postcss.plugin('postcss-plugin-lwc', (pluginConfig: PluginConfig)
             validateCustomProperties(root);
         }
 
-        transformCustomProperties(root);
+        transformCustomProperties(root, result);
 
         root.walkRules(rule => {
             // Let transform the selector with the 2 processors.

@@ -3,9 +3,7 @@ export default function(hostSelector, shadowSelector, realShadow) {
   content += [
   ".foo",
   shadowSelector,
-  " {content: ",
-  "\"\\\\\"",
-  ";}"
+  " {content: \"\\\\\";}"
   ].join('');
   return content;
 }

@@ -25,12 +25,13 @@ const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
 export default function serialize(result: LazyResult, config: Config): string {
     const { messages } = result;
+    const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
 
     let buffer = '';
 
-    if (useVarResolver) {
+    if (collectVarFunctions && useVarResolver) {
         buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!.resolverModule!}";\n`;
     }
 
@@ -49,7 +50,7 @@ export default function serialize(result: LazyResult, config: Config): string {
         buffer += `  content += ${STYLESHEET_IDENTIFIER + i}(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER});\n`;
     }
 
-    const serializedStyle = serializeCss(result);
+    const serializedStyle = serializeCss(result, collectVarFunctions);
     if (serializedStyle) {
         buffer += `  content += ${serializedStyle};\n`;
         buffer += `  return content;\n`;
@@ -80,13 +81,13 @@ function normalizeString(str: string) {
     return str.replace(/(\r\n\t|\n|\r\t)/gm, '').trim();
 }
 
-function serializeCss(result: LazyResult): string {
+function serializeCss(result: LazyResult, collectVarFunctions: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
 
+    // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
-
-        // When consuming the beggining of a rule, first we tozenize the selector
+        // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(part));
 
@@ -96,6 +97,7 @@ function serializeCss(result: LazyResult): string {
             currentRuleTokens = reduceTokens(currentRuleTokens);
 
             // If we are in fakeShadow we dont want to have :host selectors
+            // So we enclose it in a ternary operator
             if (currentRuleTokens.some((t) => t.value.startsWith(':host'))) {
                 const exprToken = currentRuleTokens.map(({type, value}) => type === 'text' ? `"${value}"` : value).join(' + ');
                 tokens.push({
@@ -106,11 +108,19 @@ function serializeCss(result: LazyResult): string {
                 tokens.push(...currentRuleTokens);
             }
             currentRuleTokens = [];
+
         // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
-            const declTokens = tokenizeCssDeclaration(node);
-            currentRuleTokens.push(...declTokens);
-            currentRuleTokens.push({ type: TokenType.text, value: ';' });
+            if (collectVarFunctions) {
+                const declTokens = tokenizeCssDeclaration(node);
+                currentRuleTokens.push(...declTokens);
+                currentRuleTokens.push({ type: TokenType.text, value: ';' });
+            } else {
+                currentRuleTokens.push({
+                    type: TokenType.text,
+                    value: part
+                });
+            }
 
         // When inside anything else just push it
         } else {

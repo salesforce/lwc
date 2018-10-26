@@ -3,9 +3,9 @@ export default function(hostSelector, shadowSelector, realShadow) {
   content += [
   "h1",
   shadowSelector,
-  "{z-index: 100;}h2",
+  "{z-index:100;display:block}h2",
   shadowSelector,
-  "{z-index: 500;}"
+  "{z-index:500}"
   ].join('');
   return content;
 }

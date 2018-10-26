@@ -1,24 +1,18 @@
-import { Root } from 'postcss';
-// import parseValue from 'postcss-value-parser';
+import { Root, Result } from 'postcss';
+import parseValue from 'postcss-value-parser';
+import { varFunctionMessage } from '../utils/message';
 
-export default function process(root: Root) {
+export default function process(root: Root, result: Result) {
     root.walkDecls(decl => {
-        // const valueRoot = parseValue(decl.value);
-
-        // valueRoot.walk((node) => {
-        //     if (node.type === 'function' && node.value === 'var') {
-        //         node.value = '';
-        //         node.before = 'VAR_START__';
-        //         node.after = '__VAR_END';
-
-        //         node.nodes.forEach(child => {
-        //             if (child.type === 'div' && child.value === ',') {
-        //                 child.value = '__VAR_DIVIDER__';
-        //             }
-        //         });
-        //     }
-        // });
-
-        // decl.value = valueRoot.toString();
+        const valueRoot = parseValue(decl.value);
+        let varFound = false;
+        valueRoot.walk(({ type, value }) => {
+            if (!varFound && type === 'function' && value === 'var') {
+                // Add the imported to results messages
+                const message = varFunctionMessage(value);
+                result.messages.push(message);
+                varFound = true;
+            }
+        });
     });
 }

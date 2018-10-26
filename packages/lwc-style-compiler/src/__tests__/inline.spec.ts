@@ -1,9 +1,8 @@
 import { transform } from '../index';
 
-describe('playground tet ', () => {
-    it('example', () => {
-        const src =
-`
+describe('playground test for debugging ', () => {
+    it('examples', () => {
+        const src =`
 h1 {
     border: 1px var(--border-type, solid) var(--mycolor, rgba(0,0,0,0.1));
 }
