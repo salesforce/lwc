@@ -46,16 +46,15 @@ export default function serialize(result: LazyResult, config: Config): string {
     buffer += `  let content = "";\n`;
 
     for (let i = 0; i < importedStylesheets.length; i++) {
-        buffer += `  content += ${STYLESHEET_IDENTIFIER +
-            i}(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER});\n`;
+        buffer += `  content += ${STYLESHEET_IDENTIFIER + i}(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER});\n`;
     }
 
     const serializedStyle = serializeCss(result);
     if (serializedStyle) {
         buffer += `  content += ${serializedStyle};\n`;
         buffer += `  return content;\n`;
-        buffer += '}\n';
     }
+    buffer += '}\n';
 
     return buffer;
 }

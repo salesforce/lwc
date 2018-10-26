@@ -13,7 +13,6 @@ h2 {
 }
 `;
         const { code } = transform(src, 'test', {});
-        console.log(code);
         expect(code).toBeDefined();
     });
 });
