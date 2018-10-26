@@ -128,10 +128,11 @@ describe("compiler result", () => {
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
 
-        const { level, message } = diagnostics[0];
+        const { level, message, code } = diagnostics[0];
 
         expect(level).toBe(DiagnosticLevel.Fatal);
         expect(message).toContain('./nothing failed to be resolved from foo.js');
+        expect(code).toBe(1001);
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in javascript', async () => {

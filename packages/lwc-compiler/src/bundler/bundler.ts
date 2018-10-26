@@ -16,6 +16,7 @@ import {
 import { collectImportLocations } from "./import-location-collector";
 import { SourceMap } from "../compiler/compiler";
 import {
+    CompilerError,
     CompilerDiagnostic,
     generateCompilerDiagnostic,
     DiagnosticLevel,
@@ -123,6 +124,11 @@ export async function bundle(
         code = result.code;
         map = result.map;
     } catch (e) {
+        // Rollup may have clobbered error.code with its own data
+        if (e instanceof CompilerError && (e as any).pluginCode) {
+            e.code = (e as any).pluginCode;
+        }
+
         const diagnostic = normalizeToDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, e);
         diagnostic.level = DiagnosticLevel.Fatal;
         diagnostics.push(diagnostic);
