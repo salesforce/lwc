@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.2...v) (2018-10-26)
+# [](https://github.com/salesforce/lwc/compare/v0.30.3...v) (2018-10-26)
+
+
+### Bug Fixes
+
+* **engine:** fixing tab index assert ([#773](https://github.com/salesforce/lwc/issues/773)) ([667b929](https://github.com/salesforce/lwc/commit/667b929))
+
+
+
+<a name="0.30.3"></a>
+## [0.30.3](https://github.com/salesforce/lwc/compare/v0.30.2...v0.30.3) (2018-10-26)
 
 
 ### Bug Fixes
