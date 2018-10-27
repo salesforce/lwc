@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isString, isFunction, isUndefined, create } from "../shared/language";
+import { isString, isFunction, isUndefined, create, emptyString } from "../shared/language";
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
@@ -7,6 +7,7 @@ import { EmptyArray } from "./utils";
 import { VM } from "./vm";
 import { removeAttribute, setAttribute } from "./dom-api";
 
+const NATIVE_HOST_SELECTOR = ':host';
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
@@ -142,7 +143,7 @@ export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
-        const textContent = factory(':host', '');
+        const textContent = factory(NATIVE_HOST_SELECTOR, emptyString);
         return createStyleVNode(getCachedStyleElement(textContent));
     }
 }
