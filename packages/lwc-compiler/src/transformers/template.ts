@@ -48,7 +48,7 @@ const transform: FileTransformer = function(
     };
 };
 
-function serialize(code: string, filename: string, { namespace }: NormalizedCompilerOptions): string {
+function serialize(code: string, filename: string, { namespace, name }: NormalizedCompilerOptions): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
     let buffer = '';
