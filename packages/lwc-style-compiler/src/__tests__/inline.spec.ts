@@ -10,6 +10,10 @@ describe('playground test for debugging ', () => {
     content: "x";
 }
 
+:host .foo {
+    background: red;
+}
+
 h1 {
 
     border: 1px var(--border-type, solid) var(--mycolor, rgba(0,0,0,0.1));

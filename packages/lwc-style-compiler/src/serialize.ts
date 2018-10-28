@@ -95,24 +95,11 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean): string 
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
             currentRuleTokens = reduceTokens(currentRuleTokens);
-
-            // If we are in fakeShadow we dont want to have :host selectors
-            // So we enclose it in a ternary operator
-            if (currentRuleTokens.some((t) => t.value.startsWith(':host'))) {
-                const exprToken = currentRuleTokens.map(({ type, value }) => {
-                    value = collectVarFunctions ? value : escapeDoubleQuotes(value);
-                    return type === TokenType.text ? `"${value}"` : value;
-                }).join(' + ');
-
-                tokens.push({
-                    type: TokenType.expression,
-                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${exprToken}) : ''`
-                });
-            } else {
-                tokens.push(...currentRuleTokens);
-            }
-            tokens.push({ type: TokenType.text, value: '\n' });
+            tokens.push(...currentRuleTokens);
             currentRuleTokens = [];
+
+            // Add spacing per rule
+            tokens.push({ type: TokenType.text, value: '\n' });
 
         // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
