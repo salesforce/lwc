@@ -27,6 +27,7 @@ const transform: FileTransformer = function(
     metadataCollector?: MetadataCollector
 ) {
     let result;
+    let metadata;
 
     try {
         result = compile(src, {});
@@ -34,6 +35,12 @@ const transform: FileTransformer = function(
         if (fatalError) {
             throw CompilerError.from(fatalError, { filename });
         }
+
+        metadata = result.metadata;
+        if (metadataCollector) {
+            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
+        }
+
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
@@ -44,7 +51,8 @@ const transform: FileTransformer = function(
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: serialize(code, filename, options),
-        map: { mappings: '' }
+        map: { mappings: '' },
+        metadata
     };
 };
 
