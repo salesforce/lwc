@@ -4,7 +4,6 @@ function stylesheet(hostSelector, shadowSelector) {
 div${shadowSelector} {color: ${varResolver("--lwc-color")};}
 div${shadowSelector} {color: ${varResolver("--lwc-color","black")};}
 div${shadowSelector} {color: ${varResolver("--lwc-color")} important;}
-`
+`;
 }
-export default [
-  stylesheet];
+export default [stylesheet];

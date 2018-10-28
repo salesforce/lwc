@@ -2,12 +2,6 @@ import styleSheet0 from "foo";
 import styleSheet1 from "./foo.css";
 
 function stylesheet(hostSelector, shadowSelector) {
-  return `
-`
+  return ``;
 }
-export default [
-  stylesheet,
-  styleSheet0
-,
-  styleSheet1
-];
+export default [stylesheet, styleSheet0, styleSheet1];

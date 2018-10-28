@@ -25,6 +25,8 @@ const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 export default function serialize(result: LazyResult, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
+    const minify = Boolean(config.outputConfig && config.outputConfig.minify);
+    const eolChar = minify ? '' : '\n';
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
 
@@ -43,15 +45,15 @@ export default function serialize(result: LazyResult, config: Config): string {
     }
 
     buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}) {\n`;
-    buffer += `  return \`\n`;
+    buffer += '  return \`';
 
-    const serializedStyle = serializeCss(result, collectVarFunctions);
-    buffer += serializedStyle + "`\n}\n";
+    const serializedStyle = serializeCss(result, collectVarFunctions, minify);
+    buffer += (serializedStyle ? eolChar : '') + serializedStyle + `\`;\n}\n`;
 
-    buffer += 'export default [\n  stylesheet';
+    buffer += 'export default [stylesheet';
 
     for (let i = 0; i < importedStylesheets.length; i++) {
-        buffer += `,\n  ${STYLESHEET_IDENTIFIER + i}\n`;
+        buffer += `, ${STYLESHEET_IDENTIFIER + i}`;
     }
     buffer += '];';
 
@@ -91,7 +93,7 @@ function escapeString(src: string): string {
     });
 }
 
-function serializeCss(result: LazyResult, collectVarFunctions: boolean): string {
+function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
 
@@ -109,7 +111,9 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean): string 
             currentRuleTokens = [];
 
             // Add spacing per rule
-            tokens.push({ type: TokenType.text, value: '\n' });
+            if (!minify) {
+                tokens.push({ type: TokenType.text, value: '\n' });
+            }
 
         // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {

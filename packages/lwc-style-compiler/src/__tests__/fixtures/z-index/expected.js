@@ -1,8 +1,4 @@
 function stylesheet(hostSelector, shadowSelector) {
-  return `
-h1${shadowSelector}{z-index:100;display:block}
-h2${shadowSelector}{z-index:500}
-`
+  return `h1${shadowSelector}{z-index:100;display:block}h2${shadowSelector}{z-index:500}`;
 }
-export default [
-  stylesheet];
+export default [stylesheet];

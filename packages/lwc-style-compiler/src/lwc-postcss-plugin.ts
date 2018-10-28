@@ -16,6 +16,7 @@ export interface PluginConfig {
         allowDefinition?: boolean;
         collectVarFunctions?: boolean;
     };
+    minify?: boolean;
     filename: string;
 }
 

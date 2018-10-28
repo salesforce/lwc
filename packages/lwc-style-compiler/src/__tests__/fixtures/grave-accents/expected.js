@@ -1,6 +1,4 @@
 function stylesheet(hostSelector, shadowSelector) {
-  return `
-`
+  return ``;
 }
-export default [
-  stylesheet];
+export default [stylesheet];
