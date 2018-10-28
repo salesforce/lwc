@@ -59,7 +59,7 @@ export const ParserDiagnostics = {
     ATTRIBUTE_CANNOT_BE_EMPTY: {
         code: 1001,
         message: "The attribute \"{0}\" cannot be an empty string. Remove the attribute if it is unnecessary.",
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: ""
     },
 
@@ -69,10 +69,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: ""
     },
+
     ATTRIBUTE_SHOULD_BE_STATIC_STRING: {
         code: 1001,
         message: "The attribute \"{0}\" cannot be an expression. It must be a static string value.",
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: ""
     },
 
@@ -229,7 +230,7 @@ export const ParserDiagnostics = {
     INVALID_ID_REFERENCE: {
         code: 1001,
         message: "Id \"{0}\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-        level: DiagnosticLevel.Warning,
+        level: DiagnosticLevel.Error,
         url: ""
     },
 

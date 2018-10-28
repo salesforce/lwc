@@ -1,0 +1,18 @@
+<template>
+    <label for={foo}>label text</label>
+    <input id={foo}>
+
+    <template if:true={bar}>
+        <input id={baz}>
+    </template>
+
+    <template for:each={boofs} for:item="boof">
+        <input id={bif} key={baf}>
+    </template>
+
+    <template if:true={bar}>
+        <template for:each={hogera} for:item="hoge">
+            <input id={piyo} key={fuga}>
+        </template>
+    </template>
+</template>

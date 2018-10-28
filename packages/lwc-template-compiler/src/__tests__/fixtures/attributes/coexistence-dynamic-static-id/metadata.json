@@ -1,0 +1,46 @@
+{
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"for\" cannot be an expression. It must be a static string value.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"id\" cannot be an expression. It must be a static string value.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"id\" cannot be an expression. It must be a static string value.",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "foo",
+            "bar",
+            "baz",
+            "boofs",
+            "baf",
+            "bif",
+            "hogera",
+            "fuga",
+            "piyo"
+        ],
+        "templateDependencies": []
+    }
+}

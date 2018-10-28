@@ -651,6 +651,18 @@ export default function parse(source: string, state: State): {
         }
     }
 
+    function isInIteration(element: IRElement): boolean {
+        if (element.tag === 'template') {
+            if (element.forEach || element.forOf) {
+                return true;
+            }
+        }
+        if (element.parent) {
+            return isInIteration(element.parent);
+        }
+        return false;
+    }
+
     function validateAttributes(element: IRElement) {
         const { attrsList } = element;
         attrsList.forEach(attr => {
@@ -664,6 +676,10 @@ export default function parse(source: string, state: State): {
                 }
             }
             if (isRestrictedStaticAttribute(attr.name)) {
+                if (isInIteration(element)) {
+                    // Allow dynamic IDs in iterations (for now)
+                    return;
+                }
                 if (isExpression(attr.value)) {
                     warnOnElement(
                         ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
