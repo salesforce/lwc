@@ -21,11 +21,16 @@
         {
             "code": 1001,
             "message": "LWC1001: Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-            "level": 2,
+            "level": 1,
             "location": {
                 "line": 2,
                 "column": 12
             }
         }
-    ]
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }
