@@ -1,9 +1,13 @@
 import styleSheet0 from "foo";
 import styleSheet1 from "./foo.css";
 
-export default function(hostSelector, shadowSelector, nativeShadow) {
+function stylesheet(hostSelector, shadowSelector) {
   return `
-${styleSheet0(hostSelector, shadowSelector, nativeShadow)}
-${styleSheet1(hostSelector, shadowSelector, nativeShadow)}
 `
 }
+export default [
+  stylesheet,
+  styleSheet0
+,
+  styleSheet1
+];

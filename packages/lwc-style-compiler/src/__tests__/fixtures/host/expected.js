@@ -1,6 +1,7 @@
-export default function(hostSelector, shadowSelector, nativeShadow) {
+function stylesheet(hostSelector, shadowSelector) {
   return `
-${nativeShadow ? (":host {}") : ''}
 ${hostSelector} {}
 `
 }
+export default [
+  stylesheet];

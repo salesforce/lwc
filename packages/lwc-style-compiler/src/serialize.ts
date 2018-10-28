@@ -43,15 +43,18 @@ export default function serialize(result: LazyResult, config: Config): string {
         buffer += '\n';
     }
 
-    buffer += `export default function(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+    buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}) {\n`;
     buffer += `  return \`\n`;
-
-    for (let i = 0; i < importedStylesheets.length; i++) {
-        buffer += "${" + `${STYLESHEET_IDENTIFIER + i}(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER})` + "}\n";
-    }
 
     const serializedStyle = serializeCss(result, collectVarFunctions);
     buffer += serializedStyle + "`\n}\n";
+
+    buffer += 'export default [\n  stylesheet';
+
+    for (let i = 0; i < importedStylesheets.length; i++) {
+        buffer += `,\n  ${STYLESHEET_IDENTIFIER + i}\n`;
+    }
+    buffer += '];';
 
     return buffer;
 }
@@ -77,9 +80,11 @@ function normalizeString(str: string) {
     return str.replace(/(\r\n\t|\n|\r\t)/gm, '').trim();
 }
 
+/* We might need this regex in the future, commenting it for now...
 function escapeDoubleQuotes(str: string) {
     return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
 }
+*/
 
 function serializeCss(result: LazyResult, collectVarFunctions: boolean): string {
     const tokens: Token[] = [];
@@ -122,7 +127,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean): string 
 
     const buffer =
         reduceTokens(tokens)
-        .map(t => t.type === TokenType.text ? t.value : '${' + t.value + '}').join('');
+        .map(t => t.type === TokenType.expression || t.type === TokenType.identifier ? '${' + t.value + '}' : t.value).join('');
 
     return buffer;
 }
@@ -189,8 +194,8 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     if (type === 'string') {
         const { quote } = node;
         return [{
-            type: quote ? TokenType.identifier : TokenType.text,
-            value: quote ? JSON.stringify(quote + value + quote) : value
+            type: TokenType.text,
+            value: quote ? (quote + value + quote) : value
         }];
     }
 
@@ -203,18 +208,23 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
         }];
     }
 
-    // If we inside a var() function prepare for a function call
+    // If we inside a var() function we need to prepend and append to generate an expression
     if (type === 'function') {
         if (value === 'var') {
             let tokens = recursiveValueParse({ nodes }, true);
             tokens = reduceTokens(tokens);
+            // The children tokens are a combination of identifiers, text and other expressions
+            // Since we are producing evaluatable javascript we need to do the right scaping:
             const exprToken = tokens.reduce((buffer, n) => {
                 return buffer + (n.type === TokenType.text ? JSON.stringify(n.value) : n.value);
             }, '');
+
+            // Generate the function call for runtime evaluation
             return [{
                 type: TokenType.expression,
                 value: `${VAR_RESOLVER_IDENTIFIER}(${exprToken})`
             }];
+        // for any other function just do the equivalent string concatenation (no need for expressions)
         } else {
             const tokens = nodes.reduce((acc: Token[], n: any) => {
                 acc.push(...recursiveValueParse(n, false));
@@ -228,6 +238,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
         }
     }
 
+    // For any other token types we just need to return text
     return [{ type: TokenType.text, value }];
 }
 

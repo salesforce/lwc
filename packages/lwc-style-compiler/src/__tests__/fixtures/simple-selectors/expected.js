@@ -1,4 +1,4 @@
-export default function(hostSelector, shadowSelector, nativeShadow) {
+function stylesheet(hostSelector, shadowSelector) {
   return `
 h1${shadowSelector} {}
 .foo${shadowSelector} {}
@@ -6,3 +6,5 @@ h1${shadowSelector} {}
 [data-foo="bar"]${shadowSelector} {}
 `
 }
+export default [
+  stylesheet];
