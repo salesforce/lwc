@@ -1,10 +1,10 @@
 
 h1:before {
-    content: 'my test"escaping quote(\')'
+    content: '$test"escaping quote(\')'
 }
 
 h1:after {
-    content: "my test'escaping quote(\")"
+    content: "$my test'escaping quote(\")"
 }
 
 h2:before {

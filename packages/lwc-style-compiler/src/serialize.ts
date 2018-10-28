@@ -120,7 +120,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean): string 
             } else {
                 currentRuleTokens.push({
                     type: TokenType.text,
-                    value: part
+                    value: escapeString(part)
                 });
             }
 
@@ -249,7 +249,6 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
 
 function tokenizeCssDeclaration(node: any): Token[] {
     const tokens: Token[] = [];
-    debugger;
     const valueRoot = parseValue(node.value);
     const parsed = recursiveValueParse(valueRoot);
 
