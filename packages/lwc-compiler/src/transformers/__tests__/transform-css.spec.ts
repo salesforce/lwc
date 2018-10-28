@@ -34,11 +34,10 @@ it('should apply transformation for stylesheet file', async () => {
             return \`
                 \${hostSelector} {color: red;}
                 div\${shadowSelector} {background-color: red;}
-            \`
+            \`;
         }
 
-        export default [
-        stylesheet];
+        export default [stylesheet];
     `;
 
     const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);
@@ -81,11 +80,10 @@ describe('custom properties', () => {
             function stylesheet(hostSelector, shadowSelector) {
                 return \`
                 div\${shadowSelector} {color: var(--bg-color);}
-                \`
+                \`;
             }
 
-            export default [
-            stylesheet];
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -111,10 +109,9 @@ describe('custom properties', () => {
         function stylesheet(hostSelector, shadowSelector) {
         return \`
         div\${shadowSelector} {color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}
-        \`
+        \`;
         }
-        export default [
-        stylesheet];
+        export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -140,12 +137,9 @@ describe('custom properties', () => {
         const expected = `
         import varResolver from "@customProperties";
         function stylesheet(hostSelector, shadowSelector) {
-        return \`
-        div\${shadowSelector}{color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}
-        \`
+            return \`div\${shadowSelector}{color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}\`;
         }
-        export default [
-        stylesheet];
+        export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -169,12 +163,10 @@ describe('regressions', () => {
         const actual = `/* Comment with grave accents \`#\` */`;
         const expected = `
             function stylesheet(hostSelector, shadowSelector) {
-                return \`
-                \`
+                return \`\`;
             }
 
-            export default [
-                stylesheet];
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);
@@ -187,11 +179,10 @@ describe('regressions', () => {
             function stylesheet(hostSelector, shadowSelector) {
                 return \`
                 .foo\${shadowSelector} {content: "x\\\\x";}
-                \`
+                \`;
             }
 
-            export default [
-            stylesheet];
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);

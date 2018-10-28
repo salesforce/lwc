@@ -6,11 +6,10 @@ function stylesheet(hostSelector, shadowSelector) {
 ${hostSelector} {color: blue;}
 div${shadowSelector} {color: red;}
 x-foo${shadowSelector} {color: green;}
-    `
+    `;
 }
 
-var stylesheets = [
-stylesheet];
+var stylesheets = [stylesheet];
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
