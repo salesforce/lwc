@@ -7,12 +7,4 @@ div {
     display: "block";
 }
 
-h1:before {
-    content: 'test"escaping quote(\')'
-}
-
-h1:after {
-    content: "test'escaping quote(\")"
-}
-
 

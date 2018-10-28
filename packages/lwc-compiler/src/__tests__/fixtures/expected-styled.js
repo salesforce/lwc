@@ -1,28 +1,16 @@
 import _xFoo from 'x/foo';
 import { registerTemplate, LightningElement } from 'lwc';
 
-function factory(hostSelector, shadowSelector) {
-    return `:host {
-    color: blue;
+function stylesheet(hostSelector, shadowSelector) {
+    return `
+${hostSelector} {color: blue;}
+div${shadowSelector} {color: red;}
+x-foo${shadowSelector} {color: green;}
+    `
 }
 
-${hostSelector} {
-    color: blue;
-}
-div${shadowSelector} {
-    color: red;
-}
-x-foo${shadowSelector} {
-    color: green;
-}
-    `;
-}
-
-var stylesheet = {
-    factory,
-    hostAttribute: 'x-styled_styled-host',
-    shadowAttribute: 'x-styled_styled',
-};
+var stylesheets = [
+stylesheet];
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -39,8 +27,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 
 var _tmpl = registerTemplate(tmpl);
 
-if (stylesheet) {
-    tmpl.stylesheet = stylesheet;
+if (stylesheets) {
+    tmpl.stylesheets = {
+        stylesheets,
+        hostAttribute: "x-styled_styled-host",
+        shadowAttribute: "x-styled_styled"
+    };
 }
 
 class Styled extends LightningElement {

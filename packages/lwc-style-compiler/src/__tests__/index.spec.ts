@@ -26,14 +26,14 @@ function testFixture(fixtureDir: string) {
 
     let actualSource: string;
     if (fs.existsSync(actualPath)) {
-        actualSource = fs.readFileSync(actualPath, 'utf-8');
+        actualSource = fs.readFileSync(actualPath, 'utf8');
     } else {
         throw new Error(`Missing actual file ${actualPath}`);
     }
 
     let expectedSource: undefined | string;
     if (fs.existsSync(expectedPath)) {
-        expectedSource = fs.readFileSync(expectedPath, 'utf-8');
+        expectedSource = fs.readFileSync(expectedPath, 'utf8');
     }
 
     let expectedError: undefined | any;
@@ -70,7 +70,7 @@ function testFixture(fixtureDir: string) {
             expect(error).toMatchObject(expectedError);
         } else if (result) {
             // Generate expected file if not present
-            fs.writeFileSync(expectedPath, result);
+            fs.writeFileSync(expectedPath, result, 'utf8');
         } else if (error) {
             // Generate expected file if not present
             fs.writeFileSync(errorPath, JSON.stringify(error, null, 4));

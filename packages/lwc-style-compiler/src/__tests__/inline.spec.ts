@@ -30,7 +30,6 @@ h2 {
                 resolverModule: "custom-properties-resolver"
             }
         });
-        console.log(code);
 
         expect(code).toBeDefined();
     });

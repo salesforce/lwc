@@ -85,6 +85,12 @@ function escapeDoubleQuotes(str: string) {
 }
 */
 
+function escapeString(src: string): string {
+    return src.replace(/[`\\]/g, (char: string) => {
+        return '\\' + char;
+    });
+}
+
 function serializeCss(result: LazyResult, collectVarFunctions: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
@@ -194,7 +200,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
         const { quote } = node;
         return [{
             type: TokenType.text,
-            value: quote ? (quote + value + quote) : value
+            value: quote ? (quote + escapeString(value) + quote) : value
         }];
     }
 
@@ -243,6 +249,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
 
 function tokenizeCssDeclaration(node: any): Token[] {
     const tokens: Token[] = [];
+    debugger;
     const valueRoot = parseValue(node.value);
     const parsed = recursiveValueParse(valueRoot);
 

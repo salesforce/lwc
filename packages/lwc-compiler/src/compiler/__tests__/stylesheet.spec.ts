@@ -8,9 +8,7 @@ describe("stylesheet", () => {
             namespace: "x",
             files: {
                 "styled.js": readFixture("namespaced_folder/styled/styled.js"),
-                "styled.html": readFixture(
-                    "namespaced_folder/styled/styled.html"
-                ),
+                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
                 "styled.css": readFixture("namespaced_folder/styled/styled.css")
             },
             outputConfig: { format: "es" }
@@ -24,9 +22,7 @@ describe("stylesheet", () => {
             namespace: "x",
             files: {
                 "styled.js": readFixture("namespaced_folder/styled/styled.js"),
-                "styled.html": readFixture(
-                    "namespaced_folder/styled/styled.html"
-                ),
+                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
                 "styled.css": readFixture("namespaced_folder/styled/styled.css")
             },
             outputConfig: { format: "es", minify: true }

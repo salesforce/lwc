@@ -52,14 +52,16 @@ function serialize(code: string, filename: string, { namespace, name }: Normaliz
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
     let buffer = '';
-    buffer += `import stylesheet from "${cssRelPath}";\n\n`;
+    buffer += `import stylesheets from "${cssRelPath}";\n\n`;
     buffer += code;
     buffer += '\n\n';
-    buffer += `tmpl.stylesheet = {\n`;
-    buffer += `    factory: stylesheet,\n`;
+    buffer += 'if (stylesheets) {\n';
+    buffer += `  tmpl.stylesheets = {\n`;
+    buffer += `    stylesheets,\n`;
     buffer += `    hostAttribute: "${scopingAttribute}-host",\n`;
-    buffer += `    shadowAttribute: "${scopingAttribute}",\n`;
-    buffer += `};`;
+    buffer += `    shadowAttribute: "${scopingAttribute}"\n`;
+    buffer += `  };\n`;
+    buffer += `}`;
 
     return buffer;
 }

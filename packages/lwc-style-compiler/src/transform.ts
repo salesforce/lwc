@@ -33,6 +33,10 @@ const CSS_NANO_CONFIG = {
 };
 
 export function transform(src: string, id: string, config: Config = {}): { code: string } {
+    if (src === '') {
+        return { code: 'export default undefined' };
+    }
+
     const allowDefinition = !config.customProperties || config.customProperties.allowDefinition;
     const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
 
