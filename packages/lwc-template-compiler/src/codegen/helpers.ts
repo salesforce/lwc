@@ -41,6 +41,10 @@ export function isTemplate(element: IRElement) {
     return element.tag === 'template';
 }
 
+export function isStyleSheet(element: IRElement) {
+    return element.tag === 'style';
+}
+
 /** Returns true if the passed element is a slot element */
 export function isSlot(element: IRElement) {
     return element.tag === 'slot';

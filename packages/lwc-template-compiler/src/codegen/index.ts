@@ -35,6 +35,7 @@ import {
     identifierFromComponentName,
     objectToAST,
     isTemplate,
+    isStyleSheet,
     shouldFlatten,
     destructuringAssignmentFromObject,
     isSlot,
@@ -105,6 +106,10 @@ function transform(
             },
 
             exit(element: IRElement) {
+                if (isStyleSheet(element)) {
+                    return;
+                }
+
                 let children = stack.pop();
 
                 // Apply children flattening

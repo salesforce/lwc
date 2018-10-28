@@ -23,9 +23,10 @@ h2 {
 `;
         const { code } = transform(src, 'test', {
             customProperties: {
-                // resolverModule: "custom-properties-resolver"
+                resolverModule: "custom-properties-resolver"
             }
         });
+        console.log(code);
 
         expect(code).toBeDefined();
     });
