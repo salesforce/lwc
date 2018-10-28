@@ -2,6 +2,7 @@ import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
 import { ModuleDependency } from "./shared/types";
+import { Statement, ImportDeclaration } from 'babel-types';
 
 export interface IdAttributeData {
     key: number;
@@ -23,6 +24,14 @@ export default class State {
     slots: string[] = [];
     extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
+
+    inlineStyle: {
+        body: Statement[],
+        imports: ImportDeclaration[]
+    } = {
+        body: [],
+        imports: []
+    };
 
     idAttrData: IdAttributeData[] = [];
     idrefAttrData: IdrefAttributeData[] = [];

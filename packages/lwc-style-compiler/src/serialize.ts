@@ -19,7 +19,6 @@ interface Token {
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
-const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
 const STYLESHEET_IDENTIFIER = 'styleSheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 

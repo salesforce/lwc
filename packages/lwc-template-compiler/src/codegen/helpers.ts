@@ -108,8 +108,8 @@ export function memorizeHandler(codeGen: CodeGen, element,
     return handler;
 }
 
-export function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
-    const metadataExpressions: t.ExpressionStatement[] = [];
+export function generateTemplateMetadata(state: State): t.Statement[] {
+    const metadataExpressions: t.Statement[] = [];
 
     // Generate the slots property on template function if slots are defined in the template:
     //      tmpl.slots = ['', 'x']
@@ -127,6 +127,21 @@ export function generateTemplateMetadata(state: State): t.ExpressionStatement[] 
         metadataExpressions.push(
             t.expressionStatement(slotsMetadata),
         );
+    }
+
+    if (state.inlineStyle.body.length) {
+        metadataExpressions.push(...state.inlineStyle.body);
+
+        const stylesheetsProperty = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier('stylesheets')
+        );
+
+        const stylesheetsMetadata = t.assignmentExpression('=', stylesheetsProperty, t.identifier('stylesheets'));
+        metadataExpressions.push(
+            t.expressionStatement(stylesheetsMetadata),
+        );
+
     }
 
     return metadataExpressions;

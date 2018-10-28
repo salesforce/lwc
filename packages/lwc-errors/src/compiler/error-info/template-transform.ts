@@ -38,6 +38,21 @@ export const TemplateErrors = {
 };
 
 export const ParserDiagnostics = {
+    EMPTY_STYLE_TAG: {
+        code: 1001,
+
+        message: "A style tag must not be empty",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    INVALID_STYLE_TAG_POSITION: {
+        code: 1001,
+
+        message: "Style tag can only be placed as a firs child of your root",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
     AMBIGUOUS_ATTRIBUTE_VALUE: {
         code: 1001,
 

@@ -385,7 +385,7 @@ export default function parse(source: string, state: State): {
         }
 
         if (isUndefined(element.inlineStyles)) {
-            warnOnElement(ParserDiagnostics.UNNECESARY_EMPTY_STYLE_TAG, element.__original);
+            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, element.__original);
         }
 
         const parentElement = element.parent;

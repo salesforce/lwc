@@ -2,6 +2,9 @@ import * as t from 'babel-types';
 import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
 import { isUndefined } from 'util';
+import parseStyles from './styles';
+
+import { Config as StylesheetConfig } from "lwc-style-compiler/dist/types/index";
 
 type RenderPrimitive =
     | 'iterator'
@@ -49,6 +52,40 @@ export default class CodeGen {
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
     memorizedIds: t.Identifier[] = [];
+    inlineStyleImports: t.ImportDeclaration[] = [];
+    inlineStyleBody: t.Statement[] = [];
+
+    genInlineStyles(src: string | undefined, stylesheetConfig: StylesheetConfig): void {
+        if (src) {
+            // We get back a AST module which may have three pieces:
+            // 1) import statements
+            // 2) the inline function
+            // 3) default export
+            // We need to separate the imports and change the default export for a correct inlining
+            const importDeclarations: t.Statement[] = [];
+            const styleBody: t.Statement[] = [];
+            const inlineStylesAst = parseStyles(src, stylesheetConfig);
+
+            inlineStylesAst.forEach(node => {
+                if (t.isImportDeclaration(node)) {
+                    importDeclarations.push(node);
+                } else if (t.isExportDefaultDeclaration(node)) {
+                    const stylesheetDeclaration = t.variableDeclaration('const', [
+                        t.variableDeclarator(
+                            t.identifier('stylesheets'), node.declaration as t.ArrayExpression
+                        )
+                    ]);
+
+                    styleBody.push(stylesheetDeclaration);
+                } else {
+                    styleBody.push(node);
+                }
+            });
+
+            this.inlineStyleImports = importDeclarations;
+            this.inlineStyleBody = styleBody;
+        }
+    }
 
     genElement(
         tagName: string,

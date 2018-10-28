@@ -157,6 +157,12 @@ export const TransformerErrors = {
         level: DiagnosticLevel.Error,
         url: ""
     },
+    CSS_IN_HTML_ERROR: {
+        code: 1001,
+        message: "An error ocurred parsing inline CSS",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
 
     HTML_TRANSFORMER_ERROR: {
         code: 1001,

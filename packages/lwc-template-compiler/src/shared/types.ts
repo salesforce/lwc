@@ -37,7 +37,7 @@ export interface IRElement {
     type: 'element';
     tag: string;
 
-    inlineStyles: string;
+    inlineStyles?: string;
 
     attrsList: parse5.AST.Default.Attribute[];
 
