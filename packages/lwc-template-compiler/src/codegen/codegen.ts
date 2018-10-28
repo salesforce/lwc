@@ -62,7 +62,7 @@ export default class CodeGen {
             // 2) the inline function
             // 3) default export
             // We need to separate the imports and change the default export for a correct inlining
-            const importDeclarations: t.Statement[] = [];
+            const importDeclarations: t.ImportDeclaration[] = [];
             const styleBody: t.Statement[] = [];
             const inlineStylesAst = parseStyles(src, stylesheetConfig);
 
