@@ -71,26 +71,6 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    ATTRIBUTE_CANNOT_BE_EMPTY: {
-        code: 1001,
-        message: "The attribute \"{0}\" cannot be an empty string. Remove the attribute if it is unnecessary.",
-        level: DiagnosticLevel.Warning,
-        url: ""
-    },
-
-    ATTRIBUTE_REFERENCES_NONEXISTENT_ID: {
-        code: 1001,
-        message: "Attribute \"{0}\" references a non-existant id \"{1}\".",
-        level: DiagnosticLevel.Error,
-        url: ""
-    },
-    ATTRIBUTE_SHOULD_BE_STATIC_STRING: {
-        code: 1001,
-        message: "The attribute \"{0}\" cannot be an expression. It must be a static string value.",
-        level: DiagnosticLevel.Warning,
-        url: ""
-    },
-
     BOOLEAN_ATTRIBUTE_FALSE: {
         code: 1001,
 
@@ -125,6 +105,20 @@ export const ParserDiagnostics = {
     DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1001,
         message: "{0} directive is expected to be an expression",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    INVALID_ID_ATTRIBUTE: {
+        code: 1001,
+        message: "Invalid id value \"{0}\". Id values must not contain any whitespace.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    INVALID_STATIC_ID_IN_ITERATION: {
+        code: 1001,
+        message: "Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -238,13 +232,6 @@ export const ParserDiagnostics = {
         message: "Invalid HTML syntax: {0}. For more information, " +
         "please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}",
         level: DiagnosticLevel.Error,
-        url: ""
-    },
-
-    INVALID_ID_REFERENCE: {
-        code: 1001,
-        message: "Id \"{0}\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-        level: DiagnosticLevel.Warning,
         url: ""
     },
 

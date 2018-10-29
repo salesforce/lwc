@@ -2,35 +2,47 @@
     "warnings": [
         {
             "code": 1001,
-            "message": "LWC1001: Duplicate id value \"bar\" detected. Id values must be unique within a template.",
+            "message": "LWC1001: Invalid id value \"bar baz\". Id values must not contain any whitespace.",
             "level": 1,
             "location": {
-                "line": 6,
+                "line": 4,
                 "column": 12
             }
         },
         {
             "code": 1001,
-            "message": "LWC1001: Attribute \"aria-labelledby\" references a non-existant id \"baz\".",
+            "message": "LWC1001: Invalid id value \" boof\". Id values must not contain any whitespace.",
             "level": 1,
             "location": {
-                "line": 8,
+                "line": 5,
                 "column": 12
             }
         },
         {
             "code": 1001,
-            "message": "LWC1001: Id \"foo\" must be referenced in the template by an id-referencing attribute such as \"for\" or \"aria-describedby\".",
-            "level": 2,
+            "message": "LWC1001: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 1,
             "location": {
-                "line": 2,
+                "line": 7,
+                "column": 16
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
+            "level": 1,
+            "location": {
+                "line": 3,
                 "column": 12
             }
         }
     ],
     "metadata": {
         "definedSlots": [],
-        "templateUsedIds": [],
+        "templateUsedIds": [
+            "hogera",
+            "fuga"
+        ],
         "templateDependencies": []
     }
 }
