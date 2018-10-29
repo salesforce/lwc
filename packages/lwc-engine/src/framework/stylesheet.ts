@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isString, isUndefined, create, emptyString, isArray, forEach } from "../shared/language";
+import { isString, isUndefined, create, emptyString, isArray, forEach, ArrayReduce } from "../shared/language";
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
@@ -142,7 +142,7 @@ export function evaluateCSS(vm: VM, stylesheetsObj: Stylesheet): VNode | null {
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
-        const textContent = stylesheets.reduce((buffer, stylesheet) => {
+        const textContent = ArrayReduce.call(stylesheets, (buffer, stylesheet) => {
             return buffer + stylesheet(emptyString, emptyString, true);
         }, '');
         return createStyleVNode(getCachedStyleElement(textContent));
