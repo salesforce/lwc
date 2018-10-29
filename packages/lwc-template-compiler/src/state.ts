@@ -8,13 +8,6 @@ export interface IdAttributeData {
     location: MarkupData.Location;
     value: string;
 }
-export interface IdrefAttributeData {
-    key: number;
-    location: MarkupData.Location;
-    name: string;
-    values: string[];
-}
-
 export default class State {
     code: string;
     config: ResolvedConfig;
@@ -25,7 +18,6 @@ export default class State {
     dependencies: string[] = [];
 
     idAttrData: IdAttributeData[] = [];
-    idrefAttrData: IdrefAttributeData[] = [];
 
     constructor(code: string, config: ResolvedConfig) {
         this.code = code;
