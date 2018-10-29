@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.3...v) (2018-10-26)
+# [](https://github.com/salesforce/lwc/compare/v0.30.4...v) (2018-10-29)
+
+
+### Bug Fixes
+
+* **compiler:** resolve error code conflicts ([#770](https://github.com/salesforce/lwc/issues/770)) ([8885eb6](https://github.com/salesforce/lwc/commit/8885eb6))
+
+
+
+<a name="0.30.4"></a>
+## [0.30.4](https://github.com/salesforce/lwc/compare/v0.30.3...v0.30.4) (2018-10-26)
 
 
 ### Bug Fixes
