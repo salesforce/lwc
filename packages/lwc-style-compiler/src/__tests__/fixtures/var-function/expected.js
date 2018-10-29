@@ -1,5 +1,5 @@
 import varResolver from "custom-properties-resolver";
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
 div${shadowSelector} {color: ${varResolver("--lwc-color")};}
 div${shadowSelector} {color: ${varResolver("--lwc-color","black")};}

@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
 [hidden]${shadowSelector} {}
 [lang="fr"]${shadowSelector} {}

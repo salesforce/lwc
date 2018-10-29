@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
 h1${shadowSelector} > a${shadowSelector} {}
 h1${shadowSelector} + a${shadowSelector} {}

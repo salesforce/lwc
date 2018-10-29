@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
 [aria-labelledby]${shadowSelector} {}
 [aria-labelledby="bar"]${shadowSelector} {}

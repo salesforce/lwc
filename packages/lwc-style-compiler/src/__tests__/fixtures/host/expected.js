@@ -1,5 +1,6 @@
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
+${nativeShadow ? (":host {}") : ''}
 ${hostSelector} {}
 `;
 }

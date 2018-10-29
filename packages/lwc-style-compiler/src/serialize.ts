@@ -19,6 +19,7 @@ interface Token {
 // Javascript identifiers used for the generation of the style module
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
+const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
 const STYLESHEET_IDENTIFIER = 'styleSheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
@@ -44,7 +45,7 @@ export default function serialize(result: LazyResult, config: Config): string {
         buffer += '\n';
     }
 
-    buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}) {\n`;
+    buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
     buffer += '  return \`';
 
     const serializedStyle = serializeCss(result, collectVarFunctions, minify);
@@ -81,11 +82,9 @@ function normalizeString(str: string) {
     return str.replace(/(\r\n\t|\n|\r\t)/gm, '').trim();
 }
 
-/* We might need this regex in the future, commenting it for now...
 function escapeDoubleQuotes(str: string) {
     return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
 }
-*/
 
 function escapeString(src: string): string {
     return src.replace(/[`\\]/g, (char: string) => {
@@ -107,7 +106,21 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
             currentRuleTokens = reduceTokens(currentRuleTokens);
-            tokens.push(...currentRuleTokens);
+            // If we are in fakeShadow we dont want to have :host selectors
+            // So we enclose it in a ternary operator
+            if (currentRuleTokens.some((t) => t.value.startsWith(':host'))) {
+                const exprToken = currentRuleTokens.map(({ type, value }) => {
+                    return type === TokenType.text ? `"${escapeDoubleQuotes(value)}"` : value;
+                }).join(' + ');
+                tokens.push({
+                    type: TokenType.expression,
+                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${exprToken}) : ''`
+                });
+            } else {
+                tokens.push(...currentRuleTokens);
+            }
+
+            // Reset rule
             currentRuleTokens = [];
 
             // Add spacing per rule

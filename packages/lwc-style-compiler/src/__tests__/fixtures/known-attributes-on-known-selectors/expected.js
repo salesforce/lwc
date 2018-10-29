@@ -1,4 +1,4 @@
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
   return `
 input[min]${shadowSelector} {}
 input[min=100]${shadowSelector} {}
