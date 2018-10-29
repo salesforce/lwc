@@ -20,7 +20,7 @@ interface Token {
 const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
 const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
 const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
-const STYLESHEET_IDENTIFIER = 'styleSheet';
+const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
 export default function serialize(result: LazyResult, config: Config): string {
@@ -51,12 +51,11 @@ export default function serialize(result: LazyResult, config: Config): string {
     const serializedStyle = serializeCss(result, collectVarFunctions, minify);
     buffer += (serializedStyle ? eolChar : '') + serializedStyle + `\`;\n}\n`;
 
-    buffer += 'export default [stylesheet';
+    buffer += 'export default [';
 
-    for (let i = 0; i < importedStylesheets.length; i++) {
-        buffer += `, ${STYLESHEET_IDENTIFIER + i}`;
-    }
-    buffer += '];';
+    const styleList = importedStylesheets.map((str, i) =>`${STYLESHEET_IDENTIFIER + i}`);
+    styleList.push(STYLESHEET_IDENTIFIER);
+    buffer +=  styleList.join(', ') + '];';
 
     return buffer;
 }

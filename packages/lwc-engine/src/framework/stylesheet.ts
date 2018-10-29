@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isString, isUndefined, create, emptyString, isArray } from "../shared/language";
+import { isString, isUndefined, create, emptyString, isArray, forEach } from "../shared/language";
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
@@ -134,12 +134,10 @@ export function evaluateCSS(vm: VM, stylesheetsObj: Stylesheet): VNode | null {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 
-        stylesheets.forEach(stylesheet => {
+        return forEach.call(stylesheets, stylesheet => {
             const textContent = stylesheet(hostSelector, shadowSelector, false);
             insertGlobalStyle(textContent);
         });
-
-        return null;
 
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an

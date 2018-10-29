@@ -31,7 +31,7 @@ describe('inline styles', () => {
 
         functionMatchCode(code , `
             import { registerTemplate } from "lwc";
-            import styleSheet0 from "foo";
+            import stylesheet0 from "foo";
 
             function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
@@ -52,7 +52,7 @@ describe('inline styles', () => {
                 \`;
             }
 
-            const stylesheets = [stylesheet, styleSheet0];
+            const stylesheets = [stylesheet0, stylesheet];
             tmpl.stylesheets = stylesheets;
         `);
     });
@@ -70,7 +70,7 @@ describe('inline styles', () => {
         functionMatchCode(code , `
         import { registerTemplate } from \"lwc\";
         import varResolver from \"@css/varResolver\";
-        import styleSheet0 from \"foo\";
+        import stylesheet0 from \"foo\";
         function tmpl($api, $cmp, $slotset, $ctx) {
         const {
         t: api_text,
@@ -86,7 +86,7 @@ describe('inline styles', () => {
         \${nativeShadow ? ":host {color: " + varResolver("--color") + ";}" : hostSelector + " {color: " + varResolver("--color") + ";}"}
         \`;
         }
-        const stylesheets = [stylesheet, styleSheet0];
+        const stylesheets = [stylesheet0, stylesheet];
         tmpl.stylesheets = stylesheets;
         `);
 
