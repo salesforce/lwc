@@ -65,7 +65,7 @@ function getFocusableSegments(host: HTMLElement): QuerySegments {
     const inner = querySelectorAll.call(host, PossibleFocusableElementQuery);
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(inner.length > 0, `When focusin event is received, there has to be a focusable target at least.`);
-        assert.invariant(host.tabIndex === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
+        assert.invariant(tabIndexGetter.call(host) === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
