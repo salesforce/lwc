@@ -13,7 +13,6 @@ describe('playground test for debugging ', () => {
                 resolverModule: "custom-properties-resolver"
             }
         });
-        console.log(code);
 
         expect(code).toBeDefined();
     });

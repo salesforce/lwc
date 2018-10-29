@@ -53,8 +53,13 @@ export default postcss.plugin('postcss-plugin-lwc', (pluginConfig: PluginConfig)
             if (fakeShadowSelector !== nativeShadowSelector) {
                 // The cloned selector is inserted before the currently processed selector to avoid processing
                 // again the cloned selector.
-                const clonedRule = rule.cloneBefore();
+                const currentRule: any = rule;
+                const clonedRule: any = rule.cloneBefore();
                 clonedRule.selector = nativeShadowSelector;
+
+                // Safe a reference to each other
+                clonedRule._isHostNative = true;
+                currentRule._isFakeNative = true;
             }
         });
     };

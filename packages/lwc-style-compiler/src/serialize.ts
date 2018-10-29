@@ -92,9 +92,16 @@ function escapeString(src: string): string {
     });
 }
 
+function generateExpressionFromTokens(tokens: Token[]): string {
+    return tokens.map(({ type, value }) => (
+        type === TokenType.text ? `"${escapeDoubleQuotes(value)}"` : value
+    )).join(' + ');
+}
+
 function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
+    let tmpHostExpression: string | null;
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
@@ -106,17 +113,26 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
             currentRuleTokens = reduceTokens(currentRuleTokens);
+
             // If we are in fakeShadow we dont want to have :host selectors
-            // So we enclose it in a ternary operator
-            if (currentRuleTokens.some((t) => t.value.startsWith(':host'))) {
-                const exprToken = currentRuleTokens.map(({ type, value }) => {
-                    return type === TokenType.text ? `"${escapeDoubleQuotes(value)}"` : value;
-                }).join(' + ');
+            if ((node as any)._isHostNative) {
+                // create an expression for all the tokens (concatenation of strings)
+                // Save it so in the next rule we can apply a ternary
+                tmpHostExpression = generateExpressionFromTokens(currentRuleTokens);
+            } else if ((node as any)._isFakeNative) {
+                const exprToken = generateExpressionFromTokens(currentRuleTokens);
+
                 tokens.push({
                     type: TokenType.expression,
-                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${exprToken}) : ''`
+                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken})`
                 });
+
+                tmpHostExpression = null;
+
             } else {
+                if (tmpHostExpression) {
+                    throw new Error('Unexpected host rules ordering');
+                }
                 tokens.push(...currentRuleTokens);
             }
 
