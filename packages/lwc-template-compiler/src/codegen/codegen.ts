@@ -115,13 +115,11 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
-    genScopedId(id: string, compilerKey: t.NumericLiteral | t.Expression) {
-        return this._renderApiCall(
-            RENDER_APIS.scopedId, [
-                t.stringLiteral(id),
-                compilerKey
-            ]
-        );
+    genScopedId(id: string | t.Expression): t.CallExpression {
+        if (typeof id === 'string') {
+            return this._renderApiCall(RENDER_APIS.scopedId, [t.stringLiteral(id)]);
+        }
+        return this._renderApiCall(RENDER_APIS.scopedId, [id]);
     }
 
     getSlotId(name: string) {

@@ -408,76 +408,32 @@ describe('expression', () => {
 });
 
 describe('props and attributes', () => {
-    describe('attributes that must have static values', () => {
-        it('should restrict usage of dynamic attributes', () => {
-            const { warnings } = parseTemplate(`
-                <template>
-                    <div id={foo}></div>
-                    <label for={foo}></label>
-                    <div aria-activedescendant={foo}></div>
-                    <div aria-controls={foo}></div>
-                    <div aria-describedby={foo}></div>
-                    <div aria-details={foo}></div>
-                    <div aria-errormessage={foo}></div>
-                    <div aria-flowto={foo}></div>
-                    <div aria-labelledby={foo}></div>
-                    <div aria-owns={foo}></div>
-                    <x-foo id={foo}></x-foo>
-                    <x-foo aria-owns={foo}></x-foo>
-                </template>
-            `);
-            expect(warnings.length).toBe(12);
-
-            const MESSAGE_RE = /^LWC1001: The attribute "[\w-]+" cannot be an expression\. It must be a static string value\.$/;
-            for (const { message } of warnings) {
-                expect(message).toMatch(MESSAGE_RE);
-            }
-        });
-
-        it('should restrict usage of empty string values', () => {
-            const { warnings } = parseTemplate(`
-                <template>
-                    <div id=""></div>
-                    <label for=""></label>
-                    <div aria-activedescendant=""></div>
-                    <div aria-controls=""></div>
-                    <div aria-describedby=""></div>
-                    <div aria-details=""></div>
-                    <div aria-errormessage=""></div>
-                    <div aria-flowto=""></div>
-                    <div aria-labelledby=""></div>
-                    <div aria-owns=""></div>
-                    <x-foo aria-owns=""></x-foo>
-                </template>
-            `);
-            expect(warnings.length).toBe(11);
-
-            const MESSAGE_RE = /^LWC1001: The attribute "[\w-]+" cannot be an empty string\. Remove the attribute if it is unnecessary\.$/;
-            for (const { message } of warnings) {
-                expect(message).toMatch(MESSAGE_RE);
-            }
-        });
-
-        it('should not restrict usage of static values', () => {
+    describe('should throw an error for duplicate static ids', () => {
+        it('native element', () => {
             const { warnings } = parseTemplate(`
                 <template>
                     <div id="foo"></div>
-                    <div id="bar"></div>
-                    <div id="baz"></div>
-                    <label for="foo"></label>
-                    <div aria-activedescendant="foo"></div>
-                    <div aria-controls="foo"></div>
-                    <div aria-describedby="foo bar baz"></div>
-                    <div aria-details="foo"></div>
-                    <div aria-errormessage="foo"></div>
-                    <div aria-flowto="foo"></div>
-                    <div aria-labelledby="foo bar baz"></div>
-                    <div aria-owns="foo"></div>
-                    <x-foo id="boof"></x-foo>
-                    <x-foo aria-owns="boof"></x-foo>
+                    <div id="foo"></div>
+                    <div id={baz}></div>
+                    <div id={baz}></div>
                 </template>
             `);
-            expect(warnings.length).toBe(0);
+            expect(warnings.length).toBe(1);
+            expect(warnings[0].message)
+                .toMatch(/Duplicate id value "foo" detected\. Id values must be unique within a template\./);
+        });
+        it('custom element', () => {
+            const { warnings } = parseTemplate(`
+                <template>
+                    <x-foo id="bar"></x-foo>
+                    <x-foo id="bar"></x-foo>
+                    <x-foo id={baz}></x-foo>
+                    <x-foo id={baz}></x-foo>
+                </template>
+            `);
+            expect(warnings.length).toBe(1);
+            expect(warnings[0].message)
+                .toMatch(/Duplicate id value "bar" detected\. Id values must be unique within a template\./);
         });
     });
 

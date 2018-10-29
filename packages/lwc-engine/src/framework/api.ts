@@ -591,6 +591,7 @@ export function k(compilerKey: number, obj: any): number | string | void {
     }
 }
 
-export function gid(id: string, key: number | string): string {
-    return `${id}-${getCurrentOwnerId()}-${key}`;
+// [g]lobal [id] function
+export function gid(id: string): string {
+    return `${id}-${getCurrentOwnerId()}`;
 }
