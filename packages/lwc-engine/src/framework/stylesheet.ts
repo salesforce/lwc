@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isString, isFunction, isUndefined, create, emptyString, isArray } from "../shared/language";
+import { isString, isUndefined, create, emptyString, isArray } from "../shared/language";
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
