@@ -53,7 +53,7 @@ export default function serialize(result: LazyResult, config: Config): string {
 
     buffer += 'export default [';
 
-    const styleList = importedStylesheets.map((str, i) =>`${STYLESHEET_IDENTIFIER + i}`);
+    const styleList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
     styleList.push(STYLESHEET_IDENTIFIER);
     buffer +=  styleList.join(', ') + '];';
 
