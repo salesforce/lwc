@@ -8,16 +8,16 @@ const styledTemplate = compileTemplate(`
         <p></p>
     </template>
 `);
-styledTemplate.stylesheet = {
+
+styledTemplate.stylesheets = {
     hostAttribute: 'test-host',
     shadowAttribute: 'test',
-    factory: (hostToken, shadowToken) => {
+    stylesheets: [(hostToken, shadowToken) => {
         return `
-            :host { color: red; }
             ${hostToken} { color: red; }
             section${shadowToken} { color: blue; }
         `;
-    },
+    }],
 };
 
 const unstyledTemplate = compileTemplate(`
@@ -129,10 +129,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl1</section>
             </template>
         `);
-        tmpl1.stylesheet = {
+        tmpl1.stylesheets = {
             hostAttribute: 'tmpl1-host',
             shadowAttribute: 'tmpl1',
-            factory: () => ``,
+            stylesheets: [() => ``],
         };
 
         const tmpl2 = compileTemplate(`
@@ -140,10 +140,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl2</section>
             </template>
         `);
-        tmpl2.stylesheet = {
+        tmpl2.stylesheets = {
             hostAttribute: 'tmpl2-host',
             shadowAttribute: 'tmpl2',
-            factory: () => ``,
+            stylesheets: [() => ``],
         };
 
         class Component extends LightningElement {
