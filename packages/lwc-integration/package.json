@@ -1,7 +1,7 @@
 {
   "name": "lwc-integration",
   "private": true,
-  "version": "0.30.5",
+  "version": "0.30.6",
   "license": "Beerware",
   "scripts": {
     "build": "node scripts/build.js",
@@ -26,10 +26,10 @@
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
-    "lwc-compiler": "0.30.5",
-    "lwc-engine": "0.30.5",
+    "lwc-compiler": "0.30.6",
+    "lwc-engine": "0.30.6",
     "minimist": "^1.2.0",
-    "rollup-plugin-lwc-compiler": "0.30.5",
+    "rollup-plugin-lwc-compiler": "0.30.6",
     "wdio-junit-reporter": "^0.4.3",
     "wdio-mocha-framework": "~0.5.13",
     "wdio-sauce-service": "~0.4.8",
