@@ -268,6 +268,33 @@ BaseLightningElement.prototype = {
         const { elm } = vm;
         return elm.querySelectorAll(selectors);
     },
+
+    /**
+     * Returns all element descendants of node that
+     * match the provided tagName.
+     */
+    getElementsByTagName<E extends Element = Element>(tagNameOrWildCard: string): NodeListOf<E> {
+        const vm = getComponentVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(vm), `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
+        }
+        const { elm } = vm;
+        return elm.getElementsByTagName(tagNameOrWildCard);
+    },
+
+    /**
+     * Returns all element descendants of node that
+     * match the provide classnames.
+     */
+    getElementsByClassName<E extends Element = Element>(names: string): NodeListOf<E> {
+        const vm = getComponentVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(vm), `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
+        }
+        const { elm } = vm;
+        return elm.getElementsByClassName(names);
+    },
+
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getComponentVM(this);

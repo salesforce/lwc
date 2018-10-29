@@ -376,12 +376,13 @@ export function PatchedNode(node: Node): NodeConstructor {
 
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
+    // @ts-ignore type-mismatch
     return class PatchedHTMLElement extends Ctor {
-        querySelector(selector: string): Element | null {
+        querySelector(this: Element, selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
         }
-        querySelectorAll(selectors: string): SyntheticNodeList<Element> {
-            return lightDomQuerySelectorAll(this as Element, selectors);
+        querySelectorAll(this: Element, selectors: string): SyntheticNodeList<Element> {
+            return lightDomQuerySelectorAll(this, selectors);
         }
         get innerHTML(): string {
             return getInnerHTML(this);
@@ -391,6 +392,40 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         }
         get outerHTML() {
             return getOuterHTML(this);
+        }
+        // ParentNode.prototype
+        get childElementCount(this: HTMLElement) {
+            return this.children.length;
+        }
+        // All these methods are expecting to return HTMLCollection
+        get children(this: Element) {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? new SyntheticNodeList([]) : getAllMatches(owner, getFilteredChildNodes(this));
+            const children: Element[] = [];
+            for (let i = 0; i < childNodes.length; i += 1) {
+                const node: Node = childNodes[i];
+                if (node instanceof Element) {
+                    ArrayPush.apply(children, node as Element);
+                }
+            }
+            return new SyntheticNodeList(children);
+        }
+        get firstElementChild(this: Element) {
+            return this.children[0] || null;
+        }
+        get lastElementChild(this: Element) {
+            const { children } = this;
+            return children.item(children.length - 1) || null;
+        }
+        getElementsByClassName(this: Element, names: string) {
+            const query = names.split(' ').map((name) => '.' + name.trim()).join(',');
+            // we should probably be more restrictive here
+            return query === '' ? new SyntheticNodeList([]) :  lightDomQuerySelectorAll(this, query);
+        }
+        getElementsByTagName(this: Element, tagNameOrWildCard: string) {
+            const query = tagNameOrWildCard === '*' ? '*' : '#' + tagNameOrWildCard;
+            // we should probably be more restrictive here
+            return query === '#' ? new SyntheticNodeList([]) :  lightDomQuerySelectorAll(this, query);
         }
     };
 }
