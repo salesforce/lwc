@@ -8,8 +8,7 @@
     <input id="boof">
 
     <template for:each={things} for:item="thing">
-        <label key={thing.key} for="uid">{thing.label}</label>
-        <p key={thing.key} id="desc">description text</p>
-        <input key={thing.key} id="uid" aria-describedby="desc">
+        <p key={thing.key} id={thing.id}>description text</p>
+        <input key={thing.key} aria-describedby={thing.id}>
     </template>
 </template>
