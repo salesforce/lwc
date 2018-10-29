@@ -30,9 +30,9 @@ it('should apply transformation for stylesheet file', async () => {
     `;
 
     const expected = `
-        function stylesheet(hostSelector, shadowSelector) {
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
             return \`
-                \${hostSelector} {color: red;}
+                \${nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}")}
                 div\${shadowSelector} {background-color: red;}
             \`;
         }
@@ -77,7 +77,7 @@ describe('custom properties', () => {
     it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
-            function stylesheet(hostSelector, shadowSelector) {
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
                 return \`
                 div\${shadowSelector} {color: var(--bg-color);}
                 \`;
@@ -106,7 +106,7 @@ describe('custom properties', () => {
 
         const expected = `
         import varResolver from "@customProperties";
-        function stylesheet(hostSelector, shadowSelector) {
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
         return \`
         div\${shadowSelector} {color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}
         \`;
@@ -136,7 +136,7 @@ describe('custom properties', () => {
 
         const expected = `
         import varResolver from "@customProperties";
-        function stylesheet(hostSelector, shadowSelector) {
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
             return \`div\${shadowSelector}{color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}\`;
         }
         export default [stylesheet];
@@ -162,7 +162,7 @@ describe('regressions', () => {
     it('should escape grave accents', async () => {
         const actual = `/* Comment with grave accents \`#\` */`;
         const expected = `
-            function stylesheet(hostSelector, shadowSelector) {
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
                 return \`\`;
             }
 
@@ -176,7 +176,7 @@ describe('regressions', () => {
     it('should escape backslash', async () => {
         const actual = `.foo { content: "x\\x"; }`;
         const expected = `
-            function stylesheet(hostSelector, shadowSelector) {
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
                 return \`
                 .foo\${shadowSelector} {content: "x\\\\x";}
                 \`;

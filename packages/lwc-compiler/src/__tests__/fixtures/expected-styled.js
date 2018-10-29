@@ -1,9 +1,9 @@
 import _xFoo from 'x/foo';
 import { registerTemplate, LightningElement } from 'lwc';
 
-function stylesheet(hostSelector, shadowSelector) {
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
     return `
-${hostSelector} {color: blue;}
+${nativeShadow ? (":host {color: blue;}") : (hostSelector + " {color: blue;}")}
 div${shadowSelector} {color: red;}
 x-foo${shadowSelector} {color: green;}
     `;

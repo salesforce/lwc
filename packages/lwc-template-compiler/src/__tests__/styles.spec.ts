@@ -46,9 +46,9 @@ describe('inline styles', () => {
 
             export default registerTemplate(tmpl);
 
-            function stylesheet(hostSelector, shadowSelector) {
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
                 return \`
-                    \$\{hostSelector} {color: var(--color)}
+                \${nativeShadow ? \":host {color: var(--color)}\" : hostSelector + \" {color: var(--color)}\"}
                 \`;
             }
 
@@ -57,7 +57,7 @@ describe('inline styles', () => {
         `);
     });
 
-    it('inline styles default options', () => {
+    it('inline styles with resolver', () => {
         const { code } = compile(`
             <template>
                 <style>
@@ -68,31 +68,26 @@ describe('inline styles', () => {
         `, { stylesheetConfig: { customProperties: { resolverModule: '@css/varResolver' }}});
 
         functionMatchCode(code , `
-            import { registerTemplate } from "lwc";
-            import varResolver from "@css/varResolver";
-            import styleSheet0 from "foo";
-
-            function tmpl($api, $cmp, $slotset, $ctx) {
-                const {
-                    t: api_text,
-                    h: api_element
-                } = $api;
-
-                return [api_element("h1", {
-                    key: 3
-                }, [api_text("Hello world!")])];
-            }
-
-            export default registerTemplate(tmpl);
-
-            function stylesheet(hostSelector, shadowSelector) {
-                return \`
-                    \${hostSelector} {color: \${varResolver("--color")};}
-                \`;
-            }
-
-            const stylesheets = [stylesheet, styleSheet0];
-            tmpl.stylesheets = stylesheets;
+        import { registerTemplate } from \"lwc\";
+        import varResolver from \"@css/varResolver\";
+        import styleSheet0 from \"foo\";
+        function tmpl($api, $cmp, $slotset, $ctx) {
+        const {
+        t: api_text,
+        h: api_element
+        } = $api;
+        return [api_element(\"h1\", {
+        key: 3
+        }, [api_text(\"Hello world!\")])];
+        }
+        export default registerTemplate(tmpl);
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+        return \`
+        \${nativeShadow ? ":host {color: " + varResolver("--color") + ";}" : hostSelector + " {color: " + varResolver("--color") + ";}"}
+        \`;
+        }
+        const stylesheets = [stylesheet, styleSheet0];
+        tmpl.stylesheets = stylesheets;
         `);
 
     });
