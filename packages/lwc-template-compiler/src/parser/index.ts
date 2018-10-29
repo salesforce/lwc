@@ -19,8 +19,6 @@ import {
     attributeToPropertyName,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
-    isIdReferencingAttribute,
-    isRestrictedStaticAttribute,
 } from './attribute';
 
 import {
@@ -556,6 +554,18 @@ export default function parse(source: string, state: State): {
         }
     }
 
+    function isInIteration(element: IRElement): boolean {
+        if (element.tag === 'template') {
+            if (element.forEach || element.forOf) {
+                return true;
+            }
+        }
+        if (element.parent) {
+            return isInIteration(element.parent);
+        }
+        return false;
+    }
+
     function applyAttributes(element: IRElement) {
         const { tag, attrsList } = element;
 
@@ -572,17 +582,16 @@ export default function parse(source: string, state: State): {
 
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
+                    if (/\s+/.test(attr.value)) {
+                        warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [attr.value], location);
+                    }
+                    if (isInIteration(element)) {
+                        warnAt(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, [attr.value], location);
+                    }
                     state.idAttrData.push({
                         key: element.key!,
-                        location: attr.location,
+                        location,
                         value: attr.value,
-                    });
-                } else if (isIdReferencingAttribute(name)) {
-                    state.idrefAttrData.push({
-                        key: element.key!,
-                        location: attr.location,
-                        name: attr.name,
-                        values: attr.value.split(/\s+/),
                     });
                 }
             }
@@ -663,21 +672,6 @@ export default function parse(source: string, state: State): {
                     );
                 }
             }
-            if (isRestrictedStaticAttribute(attr.name)) {
-                if (isExpression(attr.value)) {
-                    warnOnElement(
-                        ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
-                        element.__original,
-                        [attr.name]
-                    );
-                } else if (attr.value === '') {
-                    warnOnElement(
-                        ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
-                        element.__original,
-                        [attr.name]
-                    );
-                }
-            }
         });
     }
 
@@ -697,22 +691,6 @@ export default function parse(source: string, state: State): {
                         );
                     }
                 }
-                if (isRestrictedStaticAttribute(attrName)) {
-                    if (type === IRAttributeType.Expression) {
-                        warnOnElement(
-                            ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
-                            element.__original,
-                            [attrName]
-                        );
-                    }
-                    if (value === '') {
-                        warnOnElement(
-                            ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
-                            element.__original,
-                            [attrName]
-                        );
-                    }
-                }
             }
         }
     }
@@ -728,29 +706,6 @@ export default function parse(source: string, state: State): {
                 );
             } else {
                 seenIds.add(value);
-            }
-        }
-        const seenIdrefs = new Set();
-        for (const { location, name, values } of parseState.idrefAttrData) {
-            for (const value of values) {
-                if (!seenIds.has(value)) {
-                    warnAt(
-                        ParserDiagnostics.ATTRIBUTE_REFERENCES_NONEXISTENT_ID,
-                        [name, value],
-                        location
-                    );
-                } else {
-                    seenIdrefs.add(value);
-                }
-            }
-        }
-        for (const { location, value } of parseState.idAttrData) {
-            if (!seenIdrefs.has(value)) {
-                warnAt(
-                    ParserDiagnostics.INVALID_ID_REFERENCE,
-                    [value],
-                    location
-                );
             }
         }
     }
