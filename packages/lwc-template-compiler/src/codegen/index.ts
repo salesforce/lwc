@@ -112,12 +112,6 @@ function transform(
         t.arrayExpression([]),
     );
 
-    const keyForId: Map<string, number> = state.idAttrData
-        .reduce((map, data) => {
-            map.set(data.value, data.key);
-            return map;
-        }, new Map());
-
     traverse(root, {
         text: {
             exit(textNode: IRText) {
@@ -367,6 +361,20 @@ function transform(
         }
     }
 
+    function generateScopedIdFunctionForIdRefAttr(idRef: string): t.CallExpression | t.TemplateLiteral {
+        const expressions: t.CallExpression[] = idRef
+            .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
+            .map(codeGen.genScopedId.bind(codeGen));
+
+        // Embed call expressions into a template literal:
+        // [api_scoped_id()] => `${api_scoped_id()}`
+        // [api_scoped_id(), api_scoped_id()] => `${api_scoped_id()} ${api_scoped_id()}`
+        const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
+        const quasis = ['', ...spacesBetweenIdRefs, '']
+            .map(str => t.templateElement({ raw: str }));
+        return t.templateLiteral(quasis, expressions);
+    }
+
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
         switch (attr.type) {
             case IRAttributeType.Expression:
@@ -374,9 +382,18 @@ function transform(
                 if (attr.name === 'tabindex') {
                     expression = codeGen.genTabIndex([expression]);
                 }
+                if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
+                    expression = codeGen.genScopedId(expression);
+                }
                 return expression;
 
             case IRAttributeType.String:
+                if (attr.name === 'id') {
+                    return codeGen.genScopedId(attr.value);
+                }
+                if (isIdReferencingAttribute(attr.name)) {
+                    return generateScopedIdFunctionForIdRefAttr(attr.value);
+                }
                 return t.stringLiteral(attr.value);
 
             case IRAttributeType.Boolean:
@@ -435,47 +452,9 @@ function transform(
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
         }
 
-        function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
-            const key = keyForId.get(id);
-            if (forKey) {
-                const generatedKey = codeGen.genKey(
-                    t.numericLiteral(key),
-                    bindExpression(forKey, element).expression
-                );
-                return codeGen.genScopedId(id, generatedKey);
-            } else {
-                return codeGen.genScopedId(id, t.numericLiteral(key));
-            }
-        }
-
-        function generateScopedIdFunctionForIdRefAttr(idRef: string): t.CallExpression | t.TemplateLiteral {
-            const expressions = idRef
-                .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
-                .map(generateScopedIdFunctionForIdAttr);
-
-            if (expressions.length === 1) {
-                return expressions[0];
-            } else {
-                // Combine each computed scoped id via template literal (e.g., `${api_scoped_id()} ${api_scoped_id()}`)
-                const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
-                const quasis = ['', ...spacesBetweenIdRefs, '']
-                    .map(str => t.templateElement({ raw: str }));
-                return t.templateLiteral(quasis, expressions);
-            }
-        }
-
         // Attributes
         if (attrs) {
             const attrsObj = objectToAST(attrs, key => {
-                const value = attrs[key].value;
-                if (typeof value === 'string') {
-                    if (key === 'id') {
-                        return generateScopedIdFunctionForIdAttr(value);
-                    }
-                    if (isIdReferencingAttribute(key)) {
-                        return generateScopedIdFunctionForIdRefAttr(value);
-                    }
-                }
                 return computeAttrValue(attrs[key], element);
             });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
@@ -484,15 +463,6 @@ function transform(
         // Properties
         if (props) {
             const propsObj = objectToAST(props, key => {
-                const { name: attrName, value } = props[key];
-                if (typeof value === 'string') {
-                    if (attrName === 'id') {
-                        return generateScopedIdFunctionForIdAttr(value);
-                    }
-                    if (isIdReferencingAttribute(attrName)) {
-                        return generateScopedIdFunctionForIdRefAttr(value);
-                    }
-                }
                 return computeAttrValue(props[key], element);
             });
             data.push(t.objectProperty(t.identifier('props'), propsObj));

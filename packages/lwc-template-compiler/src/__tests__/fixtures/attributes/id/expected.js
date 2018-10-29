@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element,
     t: api_text,
     h: api_element,
-    d: api_dynamic,
     k: api_key,
     i: api_iterator,
     f: api_flatten
@@ -21,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xSubject,
       {
         props: {
-          htmlFor: api_scoped_id("foo", 5)
+          htmlFor: `${api_scoped_id("foo")}`
         },
         key: 2
       },
@@ -32,7 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xDescription,
       {
         props: {
-          id: api_scoped_id("bar", 3)
+          id: api_scoped_id("bar")
         },
         key: 3
       },
@@ -43,7 +42,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xDescription,
       {
         props: {
-          id: api_scoped_id("baz", 4)
+          id: api_scoped_id("baz")
         },
         key: 4
       },
@@ -54,11 +53,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _xTextarea,
       {
         props: {
-          id: api_scoped_id("foo", 5),
-          ariaDescribedBy: `${api_scoped_id("bar", 3)} ${api_scoped_id(
-            "baz",
-            4
-          )}`
+          id: api_scoped_id("foo"),
+          ariaDescribedBy: `${api_scoped_id("bar")} ${api_scoped_id("baz")}`
         },
         key: 5
       },
@@ -68,7 +64,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "label",
       {
         attrs: {
-          for: api_scoped_id("boof", 7)
+          for: `${api_scoped_id("boof")}`
         },
         key: 6
       },
@@ -78,7 +74,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "input",
       {
         attrs: {
-          id: api_scoped_id("boof", 7)
+          id: api_scoped_id("boof")
         },
         key: 7
       },
@@ -87,22 +83,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_iterator($cmp.things, function(thing) {
       return [
         api_element(
-          "label",
-          {
-            attrs: {
-              for: api_scoped_id("uid", api_key(11, thing.key))
-            },
-            key: api_key(9, thing.key)
-          },
-          [api_dynamic(thing.label)]
-        ),
-        api_element(
           "p",
           {
             attrs: {
-              id: api_scoped_id("desc", api_key(10, thing.key))
+              id: api_scoped_id(thing.id)
             },
-            key: api_key(10, thing.key)
+            key: api_key(9, thing.key)
           },
           [api_text("description text")]
         ),
@@ -110,10 +96,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "input",
           {
             attrs: {
-              id: api_scoped_id("uid", api_key(11, thing.key)),
-              "aria-describedby": api_scoped_id("desc", api_key(10, thing.key))
+              "aria-describedby": api_scoped_id(thing.id)
             },
-            key: api_key(11, thing.key)
+            key: api_key(10, thing.key)
           },
           []
         )
