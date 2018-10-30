@@ -9,5 +9,10 @@
                 "column": 5
             }
         }
-    ]
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

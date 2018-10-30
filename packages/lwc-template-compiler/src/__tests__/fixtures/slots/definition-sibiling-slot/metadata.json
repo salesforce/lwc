@@ -1,5 +1,11 @@
 {
-  "metadata": {
-    "definedSlots": ["other", ""]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [
+            "other",
+            ""
+        ],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

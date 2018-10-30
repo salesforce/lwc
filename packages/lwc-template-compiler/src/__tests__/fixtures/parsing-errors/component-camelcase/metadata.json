@@ -11,6 +11,8 @@
         }
     ],
     "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
         "templateDependencies": [
             {
                 "moduleName": "x/test",

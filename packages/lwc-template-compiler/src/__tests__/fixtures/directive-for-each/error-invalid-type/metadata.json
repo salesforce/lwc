@@ -47,10 +47,12 @@
         }
     ],
     "metadata": {
+        "definedSlots": [],
         "templateUsedIds": [
             "items",
             "item",
             "index"
-        ]
+        ],
+        "templateDependencies": []
     }
 }

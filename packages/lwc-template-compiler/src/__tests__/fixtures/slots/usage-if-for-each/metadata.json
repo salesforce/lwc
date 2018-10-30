@@ -1,11 +1,16 @@
 {
-  "metadata": {
-    "templateUsedIds": ["isTrue", "items"],
-    "templateDependencies": [
-      {
-        "moduleName": "a/b",
-        "tagName": "a-b"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "isTrue",
+            "items"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "a/b",
+                "tagName": "a-b"
+            }
+        ]
+    }
 }
