@@ -51,7 +51,7 @@ return code;
 
 **Return**
 
-* ouptput (object) - the object with the following fields:
+* output (object) - the object with the following fields:
     * `success` (boolean) - compilation results (true only if all compilation steps were successful).
     * `diagnostics` (Diagnostic[]) - an array of compilation `Diagnostic` objects (ex: warnings, errors)
     * `result` (BundleResult) - an object containing compiled code, metadata, and configuration used during compilation;
@@ -144,7 +144,7 @@ export type OutputProxyCompatConfig =
     | { independent: string };
 ```
 
-### Compiler Configuration Eample
+### Compiler Configuration Example
 
 ```js
 const config = {
@@ -244,7 +244,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
 }
 ```
 
-## Comipler Transformation and Bundling:
+## Compiler Transformation and Bundling:
 
 <img width="684" alt="screen shot 2018-08-23 at 4 14 28 pm" src="https://user-images.githubusercontent.com/7842674/44556674-b9d5ef00-a6ef-11e8-8225-6490329e10eb.png">
 
