@@ -8,6 +8,8 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     getNodeKey,
     getNodeOwnerKey,
+    getShadowIncludingRoot,
+    GetRootNodeOptions
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
@@ -135,6 +137,18 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Synthet
         }
     }
     return new SyntheticNodeList(filteredAndPatched);
+}
+
+function getRoot(node: Node): Node {
+    const ownerNode = getNodeOwner(node);
+
+    if (isNull(ownerNode)) {
+        // we hit a wall, is not in lwc boundary.
+        return getShadowIncludingRoot(node);
+    }
+
+    // @ts-ignore: Attributes property is removed from Node (https://developer.mozilla.org/en-US/docs/Web/API/Node)
+    return getShadowRoot(ownerNode) as Node;
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
@@ -322,6 +336,11 @@ export function PatchedNode(node: Node): NodeConstructor {
                 return null;
             }
             return parentNode;
+        }
+        getRootNode(options?: GetRootNodeOptions): Node {
+            const composed: boolean = isUndefined(options) ? false : !!options.composed;
+
+            return isTrue(composed) ? getShadowIncludingRoot(this) : getRoot(this);
         }
     };
 }

@@ -21,6 +21,11 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
+// TODO: remove after TS 3.x upgrade.
+interface GetRootNodeOptions {
+    composed?: boolean;
+}
+
 /**
  * Returns the context shadow included root.
  */
@@ -46,7 +51,7 @@ function findShadowRoot(node: Node): Node {
     return node;
 }
 
-function findComposedRootNode(node: Node): Node {
+function getShadowIncludingRoot(node: Node): Node {
     let nodeParent;
     while (!isNull(nodeParent = parentNodeGetter.call(node))) {
         node = nodeParent;
@@ -69,7 +74,7 @@ function getRootNode(
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
 
     return isTrue(composed) ?
-        findComposedRootNode(this) :
+        getShadowIncludingRoot(this) :
         findShadowRoot(this);
 }
 
@@ -94,6 +99,8 @@ export {
     parentElementGetter,
     childNodesGetter,
     textContextSetter,
+    getShadowIncludingRoot,
+    GetRootNodeOptions,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,
