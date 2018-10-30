@@ -301,4 +301,78 @@ describe('events', () => {
             });
         });
     });
+
+    describe('template listener', () => {
+        it('should get called when event bubbles=true, composed=false and come from within a slot.', () => {
+            const childHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
+            class Child extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+            }
+
+            const grandChildHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
+            class GrandChild extends LightningElement {
+                connectedCallback() {
+                    this.template.addEventListener('click', (evt) => {
+                        this.dispatchEvent(new CustomEvent('bubblesnotcomposed', {
+                            bubbles:true,
+                            composed: false
+                        }));
+                    });
+                }
+                render() {
+                    return grandChildHTML;
+                }
+            }
+
+            let listenerCalled = false;
+            let target;
+            class Root extends LightningElement {
+                connectedCallback() {
+                    this.template.addEventListener('bubblesnotcomposed', evt => {
+                        listenerCalled = true;
+                        target = evt.target;
+                    });
+                }
+
+                render() {
+                    return rootHTML;
+                }
+
+            }
+
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-child>
+                        <x-grand-child>
+                            <button>this button is inside bar.</button>
+                        </x-grand-child>
+                    </x-child>
+                </template>
+            `, { modules: { 'x-child': Child, 'x-grand-child': GrandChild } });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const button = getShadowRoot(elm).querySelector('button');
+                const expectedTarget = getShadowRoot(elm).querySelector('x-grand-child');
+                expect(() => {
+                    button.click();
+                }).toLogWarning(`Invalid event "bubblesnotcomposed" dispatched in element <x-grand-child>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
+
+                expect(listenerCalled).toBe(true);
+                expect(target).toBe(expectedTarget);
+            });
+        });
+    });
 });
