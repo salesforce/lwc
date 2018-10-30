@@ -1,10 +1,13 @@
 {
-  "metadata": {
-    "templateDependencies": [
-      {
-        "moduleName": "ns/cmp",
-        "tagName": "ns-cmp"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": [
+            {
+                "moduleName": "ns/cmp",
+                "tagName": "ns-cmp"
+            }
+        ]
+    }
 }
