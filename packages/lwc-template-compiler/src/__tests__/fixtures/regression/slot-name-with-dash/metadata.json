@@ -1,5 +1,10 @@
 {
-  "metadata": {
-    "definedSlots": ["secret-slot"]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [
+            "secret-slot"
+        ],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

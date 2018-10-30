@@ -1,9 +1,4 @@
 {
-    "metadata": {
-        "templateUsedIds": [
-            "handleClick"
-        ]
-    },
     "warnings": [
         {
             "code": 1001,
@@ -14,5 +9,12 @@
                 "column": 10
             }
         }
-    ]
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "handleClick"
+        ],
+        "templateDependencies": []
+    }
 }

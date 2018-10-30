@@ -1,11 +1,17 @@
 {
-  "metadata": {
-    "templateUsedIds": ["isLoading", "haveLoadedItems", "menuItems"],
-    "templateDependencies": [
-      {
-        "moduleName": "x/b",
-        "tagName": "x-b"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "isLoading",
+            "haveLoadedItems",
+            "menuItems"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "x/b",
+                "tagName": "x-b"
+            }
+        ]
+    }
 }

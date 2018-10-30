@@ -36,5 +36,10 @@
                 "column": 8
             }
         }
-    ]
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }
