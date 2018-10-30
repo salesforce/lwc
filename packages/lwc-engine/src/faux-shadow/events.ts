@@ -32,7 +32,7 @@ export const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescrip
 export const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(Event.prototype, 'currentTarget')!.get!;
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
-function getRootNodeWithHost(node: Node, options): Node {
+function getRootNodeHost(node: Node, options): Node {
     let rootNode = getRootNode.call(node, options);
 
     // is SyntheticShadowRootInterface
@@ -117,7 +117,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
 
             const host = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER)
                 ? currentTarget
-                : getRootNodeWithHost(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
+                : getRootNodeHost(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
 
             // Determining Number 2:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
@@ -219,7 +219,7 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
             const target = eventTargetGetter.call(event);
             const currentTarget = eventCurrentTargetGetter.call(event);
             if (target !== currentTarget) {
-                const rootNode = getRootNodeWithHost(target, { composed });
+                const rootNode = getRootNodeHost(target, { composed });
 
                 if (isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
                     (composed === false && rootNode === currentTarget)) {
@@ -358,7 +358,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from a slotted element
-        isChildNode(getRootNodeWithHost(target, NON_COMPOSED) as HTMLElement, currentTarget as Node)
+        isChildNode(getRootNodeHost(target, NON_COMPOSED) as HTMLElement, currentTarget as Node)
     );
 }
 

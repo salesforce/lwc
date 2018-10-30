@@ -172,7 +172,7 @@ function getShadowIncludingRoot(node: Node): Node {
  */
 export function getRootNode(
     this: Node,
-    options?: { composed?: boolean }
+    options?: GetRootNodeOptions
 ): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
 
