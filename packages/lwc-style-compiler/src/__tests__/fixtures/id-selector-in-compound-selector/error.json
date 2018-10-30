@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of id selector '#foo'. Try using a class selector or some other selector.",
+    "column": 2,
+    "line": 1
+}

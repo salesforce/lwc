@@ -17,12 +17,11 @@ export interface PluginConfig {
         collectVarFunctions?: boolean;
     };
     minify?: boolean;
-    filename: string;
 }
 
 function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
     return postCssSelector(root => {
-        validateIdSelectors(root, config.filename);
+        validateIdSelectors(root);
         transformSelectorScoping(root, transformConfig);
     }) as Processor;
 }
