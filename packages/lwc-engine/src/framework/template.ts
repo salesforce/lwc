@@ -17,7 +17,7 @@ export interface Template {
     /**
      * The stylesheet associated with the template.
      */
-    stylesheet?: Stylesheet;
+    stylesheets?: Stylesheet;
 
     /**
      * List of property names that are accessed of the component instance
@@ -65,7 +65,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
     }
-
     // TODO: add identity to the html functions
     const { component, context, cmpSlots, cmpTemplate } = vm;
     // reset the cache memoizer for template when needed
@@ -88,13 +87,13 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         resetStyleAttributes(vm);
 
-        const { stylesheet } = html;
-        if (isUndefined(stylesheet)) {
+        const { stylesheets } = html;
+        if (isUndefined(stylesheets)) {
             context.styleVNode = undefined;
         } else {
-            applyStyleAttributes(vm, stylesheet);
+            applyStyleAttributes(vm, stylesheets);
             // Caching style vnode so it can be reused on every render
-            context.styleVNode = evaluateCSS(vm, stylesheet);
+            context.styleVNode = evaluateCSS(vm, stylesheets);
         }
 
         if (process.env.NODE_ENV !== 'production') {

@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"custom-attribute\". Attribute \"custom-attribute\" is not a known attribute on <x-foo> element.",
+    "column": 6,
+    "line": 1
+}

@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of deprecated selector \"/deep/\".",
+    "column": 7,
+    "line": 1
+}

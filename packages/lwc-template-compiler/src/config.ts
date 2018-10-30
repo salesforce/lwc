@@ -1,4 +1,5 @@
 import { TemplateErrors, invariant, generateCompilerError } from 'lwc-errors';
+import { Config as StylesheetConfig } from "lwc-style-compiler/dist/types/index";
 export type Format = 'module' | 'function';
 
 export interface Config {
@@ -10,11 +11,13 @@ export interface Config {
      */
     computedMemberExpression?: boolean;
     secure?: boolean;
+    stylesheetConfig?: StylesheetConfig;
 }
 
 export interface ResolvedConfig {
     computedMemberExpression: boolean;
     secure: boolean;
+    stylesheetConfig: StylesheetConfig;
 
     /**
      * Internal configuration for the output format of the template. Accepts:
@@ -30,12 +33,14 @@ const DEFAULT_CONFIG: ResolvedConfig = {
     secure: false,
     computedMemberExpression: false,
     format: 'module',
+    stylesheetConfig: {}
 };
 
 const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
     'computedMemberExpression',
+    'stylesheetConfig'
 ]);
 
 export function mergeConfig(config: Config): ResolvedConfig {

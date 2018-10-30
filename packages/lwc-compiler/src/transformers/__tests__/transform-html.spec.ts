@@ -28,7 +28,7 @@ it('should apply transformation for template file', async () => {
     `;
 
     const expected = `
-        import stylesheet from './foo.css';
+        import stylesheets from "./foo.css";
         import { registerTemplate } from "lwc";
 
         function tmpl($api, $cmp, $slotset, $ctx) {
@@ -43,9 +43,12 @@ it('should apply transformation for template file', async () => {
         }
 
         export default registerTemplate(tmpl);
-
-        if (stylesheet) {
-            tmpl.stylesheet = stylesheet;
+        if (stylesheets) {
+            tmpl.stylesheets = {
+                stylesheets,
+                hostAttribute: "x-foo_foo-host",
+                shadowAttribute: "x-foo_foo"
+            };
         }
     `;
 

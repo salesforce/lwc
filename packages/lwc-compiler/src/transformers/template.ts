@@ -26,45 +26,52 @@ const transform: FileTransformer = function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ) {
-    let code;
+    let result;
     let metadata;
 
     try {
-        const result = compile(src, {});
-
-        // Bind template with associated stylesheet.
-        const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
-        code = [
-            `import stylesheet from '${cssRelPath}';`,
-            ``,
-            result.code,
-            ``,
-            `if (stylesheet) {`,
-            `    tmpl.stylesheet = stylesheet;`,
-            `}`
-        ].join('\n');
-
-        metadata = result.metadata;
-
-        if (metadataCollector) {
-            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
-        }
-
+        result = compile(src, {});
         const fatalError = result.warnings.find(warning => warning.level === DiagnosticLevel.Error);
         if (fatalError) {
             throw CompilerError.from(fatalError, { filename });
         }
+
+        metadata = result.metadata;
+        if (metadataCollector) {
+            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
+        }
+
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
 
+    const { code } = result;
+
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code,
-        metadata,
-        map: { mappings: '' }
+        code: serialize(code, filename, options),
+        map: { mappings: '' },
+        metadata
     };
 };
+
+function serialize(code: string, filename: string, { namespace, name }: NormalizedCompilerOptions): string {
+    const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
+    const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+    let buffer = '';
+    buffer += `import stylesheets from "${cssRelPath}";\n\n`;
+    buffer += code;
+    buffer += '\n\n';
+    buffer += 'if (stylesheets) {\n';
+    buffer += `  tmpl.stylesheets = {\n`;
+    buffer += `    stylesheets,\n`;
+    buffer += `    hostAttribute: "${scopingAttribute}-host",\n`;
+    buffer += `    shadowAttribute: "${scopingAttribute}"\n`;
+    buffer += `  };\n`;
+    buffer += `}`;
+
+    return buffer;
+}
 
 export default transform;

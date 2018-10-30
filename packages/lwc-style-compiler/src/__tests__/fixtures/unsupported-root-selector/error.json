@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of unsupported selector \":root\".",
+    "column": 1,
+    "line": 1
+}

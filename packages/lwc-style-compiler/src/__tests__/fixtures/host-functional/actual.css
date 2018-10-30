@@ -1,0 +1,4 @@
+:host(.foo) {}
+:host(.foo) span {}
+:host(:hover) {}
+:host(.foo, .bar) {}

@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"min\". Attribute \"min\" is not a known attribute on <div> element.",
+    "column": 4,
+    "line": 1
+}

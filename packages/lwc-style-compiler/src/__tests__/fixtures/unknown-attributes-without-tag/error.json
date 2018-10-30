@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"my-title\". For validation purposes, attributes that are not global attributes must be associated with a tag name when used in a CSS selector. (e.g., \"input[min]\" instead of \"[min]\")",
+    "column": 2,
+    "line": 1
+}

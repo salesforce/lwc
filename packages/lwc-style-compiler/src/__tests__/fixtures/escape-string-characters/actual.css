@@ -1,0 +1,16 @@
+
+h1:before {
+    content: '$test"escaping quote(\')'
+}
+
+h1:after {
+    content: "$my test'escaping quote(\")"
+}
+
+h2:before {
+    content: "\\\\"
+}
+
+h2:after {
+    content: "`"
+}

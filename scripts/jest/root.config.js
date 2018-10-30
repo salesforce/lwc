@@ -12,8 +12,8 @@ module.exports = {
         '<rootDir>/packages/lwc-jest-transformer',
         '<rootDir>/packages/lwc-module-resolver',
         '<rootDir>/packages/lwc-template-compiler',
+        '<rootDir>/packages/lwc-style-compiler',
         '<rootDir>/packages/lwc-wire-service',
-        '<rootDir>/packages/postcss-plugin-lwc',
         '<rootDir>/packages/rollup-plugin-lwc-compiler',
     ],
 };

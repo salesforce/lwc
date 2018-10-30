@@ -30,6 +30,10 @@ function generateSecureImport(): t.ImportDeclaration {
     );
 }
 
+function generateInlineStylesImports(state: State) {
+    return state.inlineStyle.imports;
+}
+
 export function format(
     templateFn: t.FunctionDeclaration,
     state: State,
@@ -42,6 +46,8 @@ export function format(
     const metadata = generateTemplateMetadata(state);
 
     imports.push(generateSecureImport());
+    imports.push(...generateInlineStylesImports(state));
+
     const templateBody = [
         templateFn,
         t.exportDefaultDeclaration(

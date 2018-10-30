@@ -137,6 +137,15 @@
         },
         {
             "code": 1001,
+            "message": "LWC1001: Style tag can only be placed as a firs child of your root",
+            "level": 1,
+            "location": {
+                "line": 30,
+                "column": 9
+            }
+        },
+        {
+            "code": 1001,
             "message": "LWC1001: Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
@@ -145,7 +154,9 @@
             }
         }
     ],
-    "definedSlots": [],
-    "templateUsedIds": [],
-    "templateDependencies": []
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

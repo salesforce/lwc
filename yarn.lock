@@ -3587,7 +3587,12 @@ caniuse-api@^1.5.2:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639, caniuse-db@^1.0.30000794:
+caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
+  version "1.0.30000900"
+  resolved "http://npm.lwcjs.org/caniuse-db/-/caniuse-db-1.0.30000900/e123ad2cef981f234afd5572507e0c4ff2b439b0.tgz#e123ad2cef981f234afd5572507e0c4ff2b439b0"
+  integrity sha512-fvicVRDlhHIQpt/bmbLl3hDHKUZb5ZP8O2OuZLz2fSEPlUBbvwwbhhqhGS617ldN6bDoo9A3+MQKQyFq0p7UXA==
+
+caniuse-db@^1.0.30000794:
   version "1.0.30000810"
   resolved "http://npm.lwcjs.org/caniuse-db/-/caniuse-db-1.0.30000810/bd25830c41efab64339a2e381f49677343c84509.tgz#bd25830c41efab64339a2e381f49677343c84509"
   integrity sha1-vSWDDEHvq2Qzmi44H0lnc0PIRQk=
@@ -3820,14 +3825,21 @@ collection-visit@^1.0.0:
     map-visit "^1.0.0"
     object-visit "^1.0.0"
 
-color-convert@^1.3.0, color-convert@^1.9.0:
+color-convert@^1.3.0:
+  version "1.9.3"
+  resolved "http://npm.lwcjs.org/color-convert/-/color-convert-1.9.3/bb71850690e1f136567de629d2d5471deda4c1e8.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
+  integrity sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==
+  dependencies:
+    color-name "1.1.3"
+
+color-convert@^1.9.0:
   version "1.9.1"
   resolved "http://npm.lwcjs.org/color-convert/-/color-convert-1.9.1/c1261107aeb2f294ebffec9ed9ecad529a6097ed.tgz#c1261107aeb2f294ebffec9ed9ecad529a6097ed"
   integrity sha512-mjGanIiwQJskCC18rPR6OmrZ6fm2Lc7PeGFYwCmy5J34wC6F1PzdGL6xeMfmgicfYcNLGuVFA3WzXtIDCQSZxQ==
   dependencies:
     color-name "^1.1.1"
 
-color-name@^1.0.0, color-name@^1.1.1:
+color-name@1.1.3, color-name@^1.0.0, color-name@^1.1.1:
   version "1.1.3"
   resolved "http://npm.lwcjs.org/color-name/-/color-name-1.1.3/a7d0558bd89c42f795dd42328f740831ca53bc25.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
   integrity sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=
@@ -4528,7 +4540,7 @@ css@^2.0.0:
     source-map-resolve "^0.3.0"
     urix "^0.1.0"
 
-cssnano@^3.10.0:
+cssnano@~3.10.0:
   version "3.10.0"
   resolved "http://npm.lwcjs.org/cssnano/-/cssnano-3.10.0/4f38f6cea2b9b17fa01490f23f1dc68ea65c1c38.tgz#4f38f6cea2b9b17fa01490f23f1dc68ea65c1c38"
   integrity sha1-Tzj2zqK5sX+gFJDyPx3GjqZcHDg=
@@ -4997,7 +5009,12 @@ ejs@~2.5.6:
   resolved "http://npm.lwcjs.org/ejs/-/ejs-2.5.7/cc872c168880ae3c7189762fd5ffc00896c9518a.tgz#cc872c168880ae3c7189762fd5ffc00896c9518a"
   integrity sha1-zIcsFoiArjxxiXYv1f/ACJbJUYo=
 
-electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30:
+electron-to-chromium@^1.2.7:
+  version "1.3.82"
+  resolved "http://npm.lwcjs.org/electron-to-chromium/-/electron-to-chromium-1.3.82/7d13ae4437d2a783de3f4efba96b186c540b67b1.tgz#7d13ae4437d2a783de3f4efba96b186c540b67b1"
+  integrity sha512-NI4nB2IWGcU4JVT1AE8kBb/dFor4zjLHMLsOROPahppeHrR0FG5uslxMmkp/thO1MvPjM2xhlKoY29/I60s0ew==
+
+electron-to-chromium@^1.3.30:
   version "1.3.34"
   resolved "http://npm.lwcjs.org/electron-to-chromium/-/electron-to-chromium-1.3.34/d93498f40391bb0c16a603d8241b9951404157ed.tgz#d93498f40391bb0c16a603d8241b9951404157ed"
   integrity sha1-2TSY9AORuwwWpgPYJBuZUUBBV+0=
@@ -7662,9 +7679,9 @@ jmespath@0.15.0:
   integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
 js-base64@^2.1.9:
-  version "2.4.3"
-  resolved "http://npm.lwcjs.org/js-base64/-/js-base64-2.4.3/2e545ec2b0f2957f41356510205214e98fad6582.tgz#2e545ec2b0f2957f41356510205214e98fad6582"
-  integrity sha512-H7ErYLM34CvDMto3GbD6xD0JLUGYXR3QTcH6B/tr4Hi/QpSThnCsIp+Sy5FRTw3B0d6py4HcNkW7nO/wdtGWEw==
+  version "2.4.9"
+  resolved "http://npm.lwcjs.org/js-base64/-/js-base64-2.4.9/748911fb04f48a60c4771b375cac45a80df11c03.tgz#748911fb04f48a60c4771b375cac45a80df11c03"
+  integrity sha512-xcinL3AuDJk7VSzsHgb9DvvIXayBbadtMZ4HFPx8rUszbW1MuNMlwYVC4zzCZ6e1sqZpnNS5ZFYOhXqA39T7LQ==
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
@@ -8286,11 +8303,6 @@ lwc-jest-transformer@0.17.15:
     babel-preset-jest "^22.1.0"
     babel-template "^6.26.0"
     deasync "0.1.12"
-
-macaddress@^0.2.8:
-  version "0.2.9"
-  resolved "http://npm.lwcjs.org/macaddress/-/macaddress-0.2.9/3579b8b9acd5b96b4553abf0f394185a86813cb3.tgz#3579b8b9acd5b96b4553abf0f394185a86813cb3"
-  integrity sha512-k4F1JUof6cQXxNFzx3thLby4oJzXTXQueAOOts944Vqizn+Rjc2QNFenT9FJSLU1CH3PmrHRSyZs2E+Cqw+P2w==
 
 magic-string@^0.10.0:
   version "0.10.2"
@@ -9428,13 +9440,6 @@ parse5@4.0.0:
   resolved "http://npm.lwcjs.org/parse5/-/parse5-4.0.0/6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608.tgz#6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608"
   integrity sha512-VrZ7eOd3T1Fk4XWNXMgiGBK/z0MG48BWG2uQNU4I72fkQuKUTZpl+u9k+CxEG0twMVzSmXEEz12z5Fnw1jIQFA==
 
-parse5@^3.0.3:
-  version "3.0.3"
-  resolved "http://npm.lwcjs.org/parse5/-/parse5-3.0.3/042f792ffdd36851551cf4e9e066b3874ab45b5c.tgz#042f792ffdd36851551cf4e9e066b3874ab45b5c"
-  integrity sha512-rgO9Zg5LLLkfJF9E6CCmXlSE4UVceloys8JrFqCcHloC3usd/kJCyPDwH2SOlzix2j3xaP9sUX3e8+kvkuleAA==
-  dependencies:
-    "@types/node" "*"
-
 parseqs@0.0.5:
   version "0.0.5"
   resolved "http://npm.lwcjs.org/parseqs/-/parseqs-0.0.5/d5208a3738e46766e291ba2ea173684921a8b89d.tgz#d5208a3738e46766e291ba2ea173684921a8b89d"
@@ -9678,12 +9683,11 @@ postcss-discard-unused@^2.2.1:
     uniqs "^2.0.0"
 
 postcss-filter-plugins@^2.0.0:
-  version "2.0.2"
-  resolved "http://npm.lwcjs.org/postcss-filter-plugins/-/postcss-filter-plugins-2.0.2/6d85862534d735ac420e4a85806e1f5d4286d84c.tgz#6d85862534d735ac420e4a85806e1f5d4286d84c"
-  integrity sha1-bYWGJTTXNaxCDkqFgG4fXUKG2Ew=
+  version "2.0.3"
+  resolved "http://npm.lwcjs.org/postcss-filter-plugins/-/postcss-filter-plugins-2.0.3/82245fdf82337041645e477114d8e593aa18b8ec.tgz#82245fdf82337041645e477114d8e593aa18b8ec"
+  integrity sha512-T53GVFsdinJhgwm7rg1BzbeBRomOg9y5MBVhGcsV0CxurUdVj1UlPdKtn7aqYA/c/QVkzKMjq2bSV5dKG5+AwQ==
   dependencies:
     postcss "^5.0.4"
-    uniqid "^4.0.0"
 
 postcss-merge-idents@^2.1.5:
   version "2.1.7"
@@ -9803,7 +9807,7 @@ postcss-reduce-transforms@^1.0.3:
     postcss "^5.0.8"
     postcss-value-parser "^3.0.1"
 
-postcss-selector-parser@3.1.1, postcss-selector-parser@^3.1.1:
+postcss-selector-parser@3.1.1:
   version "3.1.1"
   resolved "http://npm.lwcjs.org/postcss-selector-parser/-/postcss-selector-parser-3.1.1/4f875f4afb0c96573d5cf4d74011aee250a7e865.tgz#4f875f4afb0c96573d5cf4d74011aee250a7e865"
   integrity sha1-T4dfSvsMllc9XPTXQBGu4lCn6GU=
@@ -9840,10 +9844,10 @@ postcss-unique-selectors@^2.0.2:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss-value-parser@^3.0.1, postcss-value-parser@^3.0.2, postcss-value-parser@^3.1.1, postcss-value-parser@^3.1.2, postcss-value-parser@^3.2.3, postcss-value-parser@^3.3.0:
-  version "3.3.0"
-  resolved "http://npm.lwcjs.org/postcss-value-parser/-/postcss-value-parser-3.3.0/87f38f9f18f774a4ab4c8a232f5c5ce8872a9d15.tgz#87f38f9f18f774a4ab4c8a232f5c5ce8872a9d15"
-  integrity sha1-h/OPnxj3dKSrTIojL1xc6IcqnRU=
+postcss-value-parser@3.3.1, postcss-value-parser@^3.0.1, postcss-value-parser@^3.0.2, postcss-value-parser@^3.1.1, postcss-value-parser@^3.1.2, postcss-value-parser@^3.2.3, postcss-value-parser@^3.3.0:
+  version "3.3.1"
+  resolved "http://npm.lwcjs.org/postcss-value-parser/-/postcss-value-parser-3.3.1/9ff822547e2893213cf1c30efa51ac5fd1ba8281.tgz#9ff822547e2893213cf1c30efa51ac5fd1ba8281"
+  integrity sha512-pISE66AbVkp4fDQ7VHBwRNXzAAKJjw4Vw7nWI/+Q3vuly7SNfgYXvm6i5IgFylHGK5sP/xHAbB7N49OS4gWNyQ==
 
 postcss-zindex@^2.0.1:
   version "2.2.0"
@@ -9864,14 +9868,14 @@ postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0
     source-map "^0.5.6"
     supports-color "^3.2.3"
 
-postcss@^6.0.13, postcss@~6.0.19:
-  version "6.0.19"
-  resolved "http://npm.lwcjs.org/postcss/-/postcss-6.0.19/76a78386f670b9d9494a655bf23ac012effd1555.tgz#76a78386f670b9d9494a655bf23ac012effd1555"
-  integrity sha512-f13HRz0HtVwVaEuW6J6cOUCBLFtymhgyLPV7t4QEk2UD3twRI9IluDcQNdzQdBpiixkXj2OmzejhhTbSbDxNTg==
+postcss@~7.0.5:
+  version "7.0.5"
+  resolved "http://npm.lwcjs.org/postcss/-/postcss-7.0.5/70e6443e36a6d520b0fd4e7593fcca3635ee9f55.tgz#70e6443e36a6d520b0fd4e7593fcca3635ee9f55"
+  integrity sha512-HBNpviAUFCKvEh7NZhw1e8MBPivRszIiUnhrJ+sBFVSYSqubrzwX3KG51mYgcRHX8j/cAgZJedONZcm5jTBdgQ==
   dependencies:
-    chalk "^2.3.1"
+    chalk "^2.4.1"
     source-map "^0.6.1"
-    supports-color "^5.2.0"
+    supports-color "^5.5.0"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -11667,6 +11671,13 @@ supports-color@^5.2.0, supports-color@^5.3.0:
   dependencies:
     has-flag "^3.0.0"
 
+supports-color@^5.5.0:
+  version "5.5.0"
+  resolved "http://npm.lwcjs.org/supports-color/-/supports-color-5.5.0/e2e69a44ac8772f78a1ec0b35b689df6530efc8f.tgz#e2e69a44ac8772f78a1ec0b35b689df6530efc8f"
+  integrity sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==
+  dependencies:
+    has-flag "^3.0.0"
+
 supports-color@~5.0.0:
   version "5.0.1"
   resolved "http://npm.lwcjs.org/supports-color/-/supports-color-5.0.1/1c5331f22250c84202805b2f17adf16699f3a39a.tgz#1c5331f22250c84202805b2f17adf16699f3a39a"
@@ -12184,13 +12195,6 @@ uniq@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/uniq/-/uniq-1.0.1/b31c5ae8254844a3a8281541ce2b04b865a734ff.tgz#b31c5ae8254844a3a8281541ce2b04b865a734ff"
   integrity sha1-sxxa6CVIRKOoKBVBzisEuGWnNP8=
-
-uniqid@^4.0.0:
-  version "4.1.1"
-  resolved "http://npm.lwcjs.org/uniqid/-/uniqid-4.1.1/89220ddf6b751ae52b5f72484863528596bb84c1.tgz#89220ddf6b751ae52b5f72484863528596bb84c1"
-  integrity sha1-iSIN32t1GuUrX3JISGNShZa7hME=
-  dependencies:
-    macaddress "^0.2.8"
 
 uniqs@^2.0.0:
   version "2.0.0"

@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of deprecated selector \"::shadow\".",
+    "column": 6,
+    "line": 1
+}

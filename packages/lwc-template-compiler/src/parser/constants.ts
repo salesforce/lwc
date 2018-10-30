@@ -185,7 +185,6 @@ export const HTML_TAG_BLACKLIST = new Set([
     'link',
     'meta',
     'script',
-    'style',
     'title',
 ]);
 

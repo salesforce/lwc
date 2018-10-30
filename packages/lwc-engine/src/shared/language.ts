@@ -128,3 +128,5 @@ export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescripto
         o = getPrototypeOf(o);
      } while (o !== null);
 }
+
+export const emptyString = '';

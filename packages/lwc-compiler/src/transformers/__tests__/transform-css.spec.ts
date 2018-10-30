@@ -30,27 +30,14 @@ it('should apply transformation for stylesheet file', async () => {
     `;
 
     const expected = `
-        function factory(hostSelector, shadowSelector) {
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
             return \`
-                :host {
-                    color: red;
-                }
-
-                \${hostSelector} {
-                    color: red;
-                }
-
-                div\${shadowSelector} {
-                    background-color: red;
-                }
+                \${nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}")}
+                div\${shadowSelector} {background-color: red;}
             \`;
         }
 
-        export default {
-            factory,
-            hostAttribute: 'x-foo_foo-host',
-            shadowAttribute: 'x-foo_foo',
-        };
+        export default [stylesheet];
     `;
 
     const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);
@@ -90,15 +77,13 @@ describe('custom properties', () => {
     it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
-            function factory(hostSelector, shadowSelector) {
-                return \`div\${shadowSelector} { color: var(--bg-color); }\`;
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+                return \`
+                div\${shadowSelector} {color: var(--bg-color);}
+                \`;
             }
 
-            export default {
-                factory,
-                hostAttribute: 'x-foo_foo-host',
-                shadowAttribute: 'x-foo_foo',
-            };
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -120,22 +105,13 @@ describe('custom properties', () => {
         }`;
 
         const expected = `
-            import customProperties from '@customProperties';
-
-            function factory(hostSelector, shadowSelector) {
-                return \`div\${shadowSelector} {
-                    color: \${customProperties(\`--bg-color\`)};
-                    font-size: \${customProperties(\`--font-size\`, \`16px\`)};
-                    margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
-                    border-bottom: 1px solid \${customProperties(\`--lwc-border\`)};
-                }\`;
-            }
-
-            export default {
-                factory,
-                hostAttribute: 'x-foo_foo-host',
-                shadowAttribute: 'x-foo_foo',
-            };
+        import varResolver from "@customProperties";
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+        return \`
+        div\${shadowSelector} {color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}
+        \`;
+        }
+        export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -159,17 +135,11 @@ describe('custom properties', () => {
         }`;
 
         const expected = `
-            import customProperties from '@customProperties';
-
-            function factory(hostSelector, shadowSelector) {
-                return \`div\${shadowSelector}{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}\`;
-            }
-
-            export default {
-                factory,
-                hostAttribute: 'x-foo_foo-host',
-                shadowAttribute: 'x-foo_foo',
-            };
+        import varResolver from "@customProperties";
+        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+            return \`div\${shadowSelector}{color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}\`;
+        }
+        export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', {
@@ -192,15 +162,11 @@ describe('regressions', () => {
     it('should escape grave accents', async () => {
         const actual = `/* Comment with grave accents \`#\` */`;
         const expected = `
-            function factory(hostSelector, shadowSelector) {
-                return \`/* Comment with grave accents \\\`#\\\` */\`;
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+                return \`\`;
             }
 
-            export default {
-                factory,
-                hostAttribute: 'x-foo_foo-host',
-                shadowAttribute: 'x-foo_foo',
-            };
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);
@@ -208,17 +174,15 @@ describe('regressions', () => {
     });
 
     it('should escape backslash', async () => {
-        const actual = '.foo { content: "\\\\"; }';
+        const actual = `.foo { content: "x\\x"; }`;
         const expected = `
-            function factory(hostSelector, shadowSelector) {
-                return \`.foo\${shadowSelector} { content: "\\\\\\\\"; }\`;
+            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+                return \`
+                .foo\${shadowSelector} {content: "x\\\\x";}
+                \`;
             }
 
-            export default {
-                factory,
-                hostAttribute: 'x-foo_foo-host',
-                shadowAttribute: 'x-foo_foo',
-            };
+            export default [stylesheet];
         `;
 
         const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);

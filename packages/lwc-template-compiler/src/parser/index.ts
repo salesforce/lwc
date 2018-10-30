@@ -86,10 +86,15 @@ import {
     normalizeToDiagnostic,
     ParserDiagnostics
 } from 'lwc-errors';
+import { isUndefined } from 'util';
 
 function getKeyGenerator() {
     let count = 1;
     return () => count++;
+}
+
+function isStyleElement(element: IRElement) {
+    return element.tag !== 'style';
 }
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
@@ -160,6 +165,7 @@ export default function parse(source: string, state: State): {
                     parent.children.push(element);
                 }
 
+                applyStylesheet(element, elementNode);
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -175,6 +181,7 @@ export default function parse(source: string, state: State): {
             },
             exit() {
                 const element = stack.pop() as IRElement;
+                validateStylesheet(element);
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
@@ -370,6 +377,31 @@ export default function parse(source: string, state: State): {
 
             return;
         }
+    }
+
+    function validateStylesheet(element: IRElement) {
+        if (isStyleElement(element)) {
+            return;
+        }
+
+        if (isUndefined(element.inlineStyles)) {
+            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, element.__original);
+        }
+
+        const parentElement = element.parent;
+        if (!parentElement || parentElement.tag !== 'template' || parentElement.children[0] !== element) {
+            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, element.__original);
+        }
+    }
+
+    function applyStylesheet(element: IRElement, node: parse5.AST.Default.Element) {
+        if (isStyleElement(element)) {
+            return;
+        }
+
+        const inlineStyles = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
+        element.inlineStyles = inlineStyles;
+        node.childNodes = []; // clear the textNodes
     }
 
     function applyForEach(element: IRElement) {
