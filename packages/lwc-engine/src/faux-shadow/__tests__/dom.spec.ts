@@ -1,6 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getRootNode } from "../node";
+import { getRootNode } from "../traverse";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
@@ -95,7 +95,7 @@ describe('dom', () => {
             const match = getRootNode.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
-            expect(match).toBe(elm);
+            expect(match).toBe(elm.shadowRoot);
         });
 
         it('should return correct value from self', () => {

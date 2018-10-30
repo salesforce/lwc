@@ -8,8 +8,6 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     getNodeKey,
     getNodeOwnerKey,
-    getShadowIncludingRoot,
-    GetRootNodeOptions
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
@@ -34,6 +32,11 @@ import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HT
 import { SyntheticNodeList } from "./node-list";
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
+
+// TODO: remove after TS 3.x upgrade.
+export interface GetRootNodeOptions {
+    composed?: boolean;
+}
 
 function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -149,6 +152,33 @@ function getRoot(node: Node): Node {
 
     // @ts-ignore: Attributes property is removed from Node (https://developer.mozilla.org/en-US/docs/Web/API/Node)
     return getShadowRoot(ownerNode) as Node;
+}
+
+function getShadowIncludingRoot(node: Node): Node {
+    let nodeParent;
+    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
+        node = nodeParent;
+    }
+
+    return node;
+}
+
+/**
+ * Dummy implementation of the Node.prototype.getRootNode.
+ * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
+ *
+ * TODO: Once we start using the real shadowDOM, this method should be replaced by:
+ * const { getRootNode } = Node.prototype;
+ */
+export function getRootNode(
+    this: Node,
+    options?: { composed?: boolean }
+): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+
+    return isTrue(composed) ?
+        getShadowIncludingRoot(this) :
+        getRoot(this);
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
@@ -338,9 +368,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             return parentNode;
         }
         getRootNode(options?: GetRootNodeOptions): Node {
-            const composed: boolean = isUndefined(options) ? false : !!options.composed;
-
-            return isTrue(composed) ? getShadowIncludingRoot(this) : getRoot(this);
+            return getRootNode.call(this, options);
         }
     };
 }

@@ -3,7 +3,6 @@ import {
     isNull,
     hasOwnProperty,
     getOwnPropertyDescriptor,
-    isTrue,
     defineProperties,
 } from '../shared/language';
 
@@ -21,63 +20,6 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
-// TODO: remove after TS 3.x upgrade.
-interface GetRootNodeOptions {
-    composed?: boolean;
-}
-
-/**
- * Returns the context shadow included root.
- */
-function findShadowRoot(node: Node): Node {
-    const initialParent = parentNodeGetter.call(node);
-    // We need to ensure that the parent element is present before accessing it.
-    if (isNull(initialParent)) {
-        return node;
-    }
-
-    // In the case of LWC, the root and the host element are the same things. Therefor,
-    // when calling findShadowRoot on the a host element we want to return the parent host
-    // element and not the current host element.
-    node = initialParent;
-    let nodeParent;
-    while (
-        !isNull(nodeParent = parentNodeGetter.call(node)) &&
-        isUndefined(getNodeKey(node))
-    ) {
-        node = nodeParent;
-    }
-
-    return node;
-}
-
-function getShadowIncludingRoot(node: Node): Node {
-    let nodeParent;
-    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
-        node = nodeParent;
-    }
-
-    return node;
-}
-
-/**
- * Dummy implementation of the Node.prototype.getRootNode.
- * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
- *
- * TODO: Once we start using the real shadowDOM, this method should be replaced by:
- * const { getRootNode } = Node.prototype;
- */
-function getRootNode(
-    this: Node,
-    options?: { composed?: boolean }
-): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-
-    return isTrue(composed) ?
-        getShadowIncludingRoot(this) :
-        findShadowRoot(this);
-}
-
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set!;
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
@@ -91,7 +33,6 @@ const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prot
 export {
     // Node.prototype
     compareDocumentPosition,
-    getRootNode,
     insertBefore,
     removeChild,
     appendChild,
@@ -99,8 +40,6 @@ export {
     parentElementGetter,
     childNodesGetter,
     textContextSetter,
-    getShadowIncludingRoot,
-    GetRootNodeOptions,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,

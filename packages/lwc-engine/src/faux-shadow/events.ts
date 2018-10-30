@@ -4,12 +4,11 @@ import {
     removeEventListener,
 } from "./element";
 import {
-    getRootNode,
     parentNodeGetter,
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { isNodeSlotted } from "./traverse";
+import { isNodeSlotted, getRootNode } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost, SyntheticShadowRootInterface } from "./shadow-root";
 
@@ -32,6 +31,17 @@ function isChildNode(root: Element, node: Node): boolean {
 export const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
 export const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(Event.prototype, 'currentTarget')!.get!;
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
+
+function getRootNodeWithHost(node: Node, options): Node {
+    let rootNode = getRootNode.call(node, options);
+
+    // is SyntheticShadowRootInterface
+    if ('mode' in rootNode && 'delegatesFocus' in rootNode) {
+        rootNode = getHost(rootNode);
+    }
+
+    return rootNode;
+}
 
 const EventPatchDescriptors: PropertyDescriptorMap = {
     target: {
@@ -105,8 +115,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // Directly means: it is a slotted element
             // Indirectly means: it is a qualifying child of a slotted element
 
-            const host = eventContext === EventListenerContext.SHADOW_ROOT_LISTENER ?
-            currentTarget : getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
+            const host = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER)
+                ? currentTarget
+                : getRootNodeWithHost(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
 
             // Determining Number 2:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
@@ -147,7 +158,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             let closestTarget = originalTarget;
             let nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
 
-            while (nodeOwnerKey !== myCurrentShadowKey && !isNodeSlotted(host, closestTarget as Node)) {
+            while (nodeOwnerKey !== myCurrentShadowKey && !isNodeSlotted(host as Element, closestTarget as Node)) {
                 closestTarget = parentNodeGetter.call(closestTarget);
                 nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
             }
@@ -207,19 +218,15 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
             const { composed } = event as any;
             const target = eventTargetGetter.call(event);
             const currentTarget = eventCurrentTargetGetter.call(event);
-            if (
-                // it is composed and was not dispatched onto the custom element directly
-                (target !== currentTarget) &&
-                (
-                    // it is coming from a slotted element
-                    isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
-                    // it is not composed and its is coming from from shadow
-                    (composed === false && getRootNode.call(target) === currentTarget)
-                )
-            ) {
+            if (target !== currentTarget) {
+                const rootNode = getRootNodeWithHost(target, { composed });
+
+                if (isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
+                    (composed === false && rootNode === currentTarget)) {
                     // TODO: we should figure why `undefined` makes sense here
                     // and how this is going to work for native shadow root?
                     listener.call(undefined, event);
+                }
             }
         } as WrappedListener;
         shadowRootWrappedListener!.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
@@ -351,7 +358,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from a slotted element
-        isChildNode(getRootNode.call(target, NON_COMPOSED), currentTarget as Node)
+        isChildNode(getRootNodeWithHost(target, NON_COMPOSED) as HTMLElement, currentTarget as Node)
     );
 }
 
