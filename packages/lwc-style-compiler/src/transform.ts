@@ -44,7 +44,6 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     const plugins = [
         postcssPluginLwc({
             customProperties: { allowDefinition, collectVarFunctions },
-            filename: id
         })
     ];
 
