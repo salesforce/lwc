@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
-import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
+import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
 import { isNativeShadowRootAvailable } from "../env/dom";
 import { patchCustomElementProto } from "./patch";
@@ -92,7 +92,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         });
     }
     if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(element);
+        patchCustomElementWithRestrictions(element, EmptyObject);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });

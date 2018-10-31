@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf } from "../shared/language";
+import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf, getPropertyDescriptor } from "../shared/language";
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -19,25 +19,134 @@ import {
 } from "../env/element";
 import { create } from "./../shared/language";
 
-function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
+function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    return {};
+    const originalChildNodesDescriptor = getPropertyDescriptor(node, 'childNodes')!;
+    const originalTextContentDescriptor = getPropertyDescriptor(node, 'textContent')!;
+    const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
+    const {
+        appendChild,
+        insertBefore,
+        removeChild,
+        replaceChild,
+     } = node;
+    return {
+        childNodes: {
+            get(this: Node) {
+                assert.logWarning(
+                    `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
+                    (this instanceof Element) ? this as Element : (getShadowRootHost(this as ShadowRoot) || undefined)
+                );
+                return originalChildNodesDescriptor!.get!.call(this);
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        appendChild: {
+            value(this: Node, aChild: Node) {
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`appendChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+                return appendChild.call(this, aChild);
+            },
+            enumerable: false,
+            writable: false,
+            configurable: true,
+        },
+        insertBefore: {
+            value(this: Node, newNode: Node, referenceNode: Node) {
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`insertBefore is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+                return insertBefore.call(this, newNode, referenceNode);
+            },
+            enumerable: false,
+            writable: false,
+            configurable: true,
+        },
+        removeChild: {
+            value(this: Node, aChild: Node) {
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`removeChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+                return removeChild.call(this, aChild);
+            },
+            enumerable: false,
+            writable: false,
+            configurable: true,
+        },
+        replaceChild: {
+            value(this: Node, newChild: Node, oldChild: Node) {
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`replaceChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+                return replaceChild.call(this, newChild, oldChild);
+            },
+            enumerable: false,
+            writable: false,
+            configurable: true,
+        },
+        nodeValue: {
+            get(this: Node) {
+                return originalNodeValueDescriptor.get!.call(this);
+            },
+            set(this: Node, value: string) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (this instanceof Element && options.isPortal !== true) {
+                        assert.logError(`nodeValue is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    }
+                }
+                originalNodeValueDescriptor.set!.call(this, value);
+            }
+        },
+        textContent: {
+            get(this: Node): string {
+                return originalTextContentDescriptor.get!.call(this);
+            },
+            set(this: Node, value: string) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (this instanceof Element && options.isPortal !== true) {
+                        assert.logError(`textContent is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    }
+                }
+                originalTextContentDescriptor.set!.call(this, value);
+            }
+        },
+        // TODO: add restrictions for getRootNode() method
+    };
 }
 
-function getElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
+function getElementRestrictionsDescriptors(elm: HTMLElement, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
-    assign(descriptors, {});
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
+    const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
+    assign(descriptors, {
+        innerHTML: {
+            get(): string {
+                return originalInnerHTMLDescriptor.get!.call(this);
+            },
+            set(this: HTMLElement, value: string) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (options.isPortal !== true) {
+                        assert.logError(`innerHTML is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this);
+                    }
+                }
+                return originalInnerHTMLDescriptor.set!.call(this, value);
+            },
+            enumerable: true,
+            configurable: true,
+        }
+    });
     return descriptors;
 }
 
-function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescriptorMap {
+function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -48,7 +157,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
     const originalAddEventListener = sr.addEventListener;
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr);
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr, options);
     assign(descriptors, {
         addEventListener: {
             value(this: ShadowRoot, type: string) {
@@ -172,12 +281,12 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     }
 }
 
-function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
+function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
     const originalAddEventListener = elm.addEventListener;
     return assign(descriptors, {
         addEventListener: {
@@ -210,7 +319,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
     });
 }
 
-function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyDescriptorMap {
+function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -253,7 +362,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     };
 }
 
-function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+function getLightingElementProtypeRestrictionsDescriptors(proto: object, options: RestrictionsOptions): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -295,30 +404,34 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
     return descriptors;
 }
 
-export function patchNodeWithRestrictions(node: Node) {
-    defineProperties(node, getNodeRestrictionsDescriptors(node));
+interface RestrictionsOptions {
+    isPortal?: boolean;
 }
 
-export function patchElementWithRestrictions(elm: HTMLElement) {
-    defineProperties(elm, getElementRestrictionsDescriptors(elm));
+export function patchNodeWithRestrictions(node: Node, options: RestrictionsOptions) {
+    defineProperties(node, getNodeRestrictionsDescriptors(node, options));
+}
+
+export function patchElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {
+    defineProperties(elm, getElementRestrictionsDescriptors(elm, options));
 }
 
 // This routine will prevent access to certain properties on a shadow root instance to guarantee
 // that all components will work fine in IE11 and other browsers without shadow dom support.
-export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
-    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
+export function patchShadowRootWithRestrictions(sr: ShadowRoot, options: RestrictionsOptions) {
+    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr, options));
 }
 
-export function patchCustomElementWithRestrictions(elm: HTMLElement) {
-    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm);
+export function patchCustomElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {
+    const restrictionsDescriptors = getCustomElementRestrictionsDescriptors(elm, options);
     const elmProto = getPrototypeOf(elm);
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
-export function patchComponentWithRestrictions(cmp: ComponentInterface) {
-    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
+export function patchComponentWithRestrictions(cmp: ComponentInterface, options: RestrictionsOptions) {
+    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp, options));
 }
 
-export function patchLightningElementPrototypeWithRestrictions(proto: object) {
-    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
+export function patchLightningElementPrototypeWithRestrictions(proto: object, options: RestrictionsOptions) {
+    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto, options));
 }

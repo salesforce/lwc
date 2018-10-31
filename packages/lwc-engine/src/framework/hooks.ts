@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
-import { EmptyArray, ViewModelReflection } from "./utils";
+import { EmptyArray, ViewModelReflection, EmptyObject } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
@@ -73,15 +73,17 @@ export function createElmHook(vnode: VElement) {
     setNodeOwnerKey(elm, uid);
     if (isTrue(fallback)) {
         const { shadowAttribute, data: { context } } = vnode;
-        const portal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
         patchElementProto(elm, {
             sel,
-            portal,
+            isPortal,
             shadowAttribute,
         });
     }
     if (process.env.NODE_ENV !== 'production') {
-        patchElementWithRestrictions(elm);
+        const { data: { context } } = vnode;
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
+        patchElementWithRestrictions(elm, { isPortal });
     }
 }
 
@@ -157,7 +159,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
     }
     if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
+        patchCustomElementWithRestrictions(elm, EmptyObject);
     }
 }
 
