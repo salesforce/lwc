@@ -28,7 +28,7 @@ function hasFocusableTabIndex(element: HTMLElement) {
     // The main point here is to make sure the tabindex attribute is not an invalid
     // value like tabindex="hello"
     if (value === '' || (value !== '0' && value !== '-1')) {
-        return false
+        return false;
     }
     return true;
 }
@@ -46,7 +46,7 @@ export function isFocusable(element: HTMLElement): boolean {
         ) && (
             hasFocusableTabIndex(element) ||
             hasAttribute.call(element, 'contenteditable') ||
-            tagName ==='IFRAME' ||
+            tagName === 'IFRAME' ||
             tagName === 'VIDEO' ||
             tagName === 'AUDIO' ||
             tagName === 'A' ||
