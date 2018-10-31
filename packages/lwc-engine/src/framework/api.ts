@@ -261,7 +261,13 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
     if (isUndefined(data.update)) {
         data.update = updateElmDefaultHook;
     }
-    let text, elm; // tslint:disable-line
+    let text, elm, shadowAttribute; // tslint:disable-line
+    const fallback = getCurrentFallback();
+    // shadowAttribute is only really needed in fallback mode
+    if (fallback) {
+        shadowAttribute = getCurrentShadowAttribute();
+    }
+    const uid = getCurrentOwnerId();
     const vnode: VElement = {
         sel,
         data,
@@ -270,9 +276,9 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         elm,
         key,
         hook: ElementHook,
-        shadowAttribute: getCurrentShadowAttribute(),
-        uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
+        shadowAttribute,
+        uid,
+        fallback,
     };
     if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
@@ -354,7 +360,13 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
     if (isUndefined(data.update)) {
         data.update = updateCustomElmDefaultHook;
     }
-    let text, elm; // tslint:disable-line
+    let text, elm, shadowAttribute; // tslint:disable-line
+    const fallback = getCurrentFallback();
+    // shadowAttribute is only really needed in fallback mode
+    if (fallback) {
+        shadowAttribute = getCurrentShadowAttribute();
+    }
+    const uid = getCurrentOwnerId();
     children = arguments.length === 3 ? EmptyArray : children as VNodes;
     const vnode: VCustomElement = {
         sel,
@@ -366,9 +378,9 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
 
         hook: CustomElementHook,
         ctor: Ctor,
-        shadowAttribute: getCurrentShadowAttribute(),
-        uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
+        shadowAttribute,
+        uid,
+        fallback,
         mode: 'open', // TODO: this should be defined in Ctor
     };
     return vnode;

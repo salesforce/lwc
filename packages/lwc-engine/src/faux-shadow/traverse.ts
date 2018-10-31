@@ -2,6 +2,8 @@ import assert from "../shared/assert";
 import {
     getNodeKey,
     getNodeNearestOwnerKey,
+    isPortalElement,
+    getNodeOwnerKey,
 } from "./node";
 import {
     parentNodeGetter as nativeParentNodeGetter,
@@ -11,6 +13,13 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
+    removeChild,
+    insertBefore,
+    appendChild,
+    replaceChild,
+    nodeValueGetter,
+    nodeValueSetter,
+    DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
 import {
     querySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
@@ -318,6 +327,7 @@ interface AssignedNodesOptions {
 
 export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
+    // @ts-ignore
     return class extends Ctor {
         get childNodes(this: Node): SyntheticNodeList<Node & Element> {
             const owner = getNodeOwner(this);
@@ -343,13 +353,19 @@ export function PatchedNode(node: Node): NodeConstructor {
             return getTextContent(this);
         }
         set textContent(this: Node, value: string) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`textContent is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
             textContextSetter.call(this, value);
         }
-        get parentNode(this: Node): Node | null {
+        get parentNode(this: Node): (Node & ParentNode) | null {
             const value = nativeParentNodeGetter.call(this);
             if (isNull(value)) {
                 return value;
             }
+            // @ts-ignore
             return getShadowParent(this, value);
         }
         get parentElement(this: Node): HTMLElement | null {
@@ -371,6 +387,65 @@ export function PatchedNode(node: Node): NodeConstructor {
         getRootNode(this: Node, options?: GetRootNodeOptions): Node {
             return getRootNodeGetter.call(this, options);
         }
+        compareDocumentPosition(this: Node, otherNode: Node) {
+            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+                // it is from another shadow
+                return 0;
+            }
+            return compareDocumentPosition.call(this, otherNode);
+        }
+        contains(this: Node, otherNode: Node) {
+            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+                // it is from another shadow
+                return false;
+            }
+            return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+        }
+
+        // portals
+        appendChild(this: Node, aChild: Node) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`appendChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
+            return appendChild.call(this, aChild);
+        }
+        insertBefore(this: Node, newNode: Node, referenceNode: Node) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`insertBefore is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
+            return insertBefore.call(this, newNode, referenceNode);
+        }
+        removeChild(this: Node, aChild: Node) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`removeChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
+            return removeChild.call(this, aChild);
+        }
+        replaceChild(this: Node, newChild: Node, oldChild: Node) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`replaceChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
+            return replaceChild.call(this, newChild, oldChild);
+        }
+        get nodeValue(this: Node) {
+            return nodeValueGetter.call(this);
+        }
+        set nodeValue(this: Node, value: string) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (this instanceof Element && !isPortalElement(this as Element)) {
+                    assert.logError(`nodeValue is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                }
+            }
+            nodeValueSetter.call(this, value);
+        }
     };
 }
 
@@ -386,7 +461,12 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         get innerHTML(): string {
             return getInnerHTML(this);
         }
-        set innerHTML(value: string) {
+        set innerHTML(this: HTMLElement, value: string) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (!isPortalElement(this)) {
+                    assert.logError(`innerHTML is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this);
+                }
+            }
             innerHTMLSetter.call(this, value);
         }
         get outerHTML() {

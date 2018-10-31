@@ -31,7 +31,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             const tagName = StringToLowerCase.call(tagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
                 const def = getComponentDef(Ctor);
-                patchCustomElementProto(this, tagName, def);
+                patchCustomElementProto(this, {
+                    def,
+                });
             }
             createVM(tagName, this, Ctor, normalizedOptions);
             if (process.env.NODE_ENV !== 'production') {

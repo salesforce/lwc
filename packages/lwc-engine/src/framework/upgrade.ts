@@ -87,7 +87,9 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
     if (isTrue(fallback)) {
-        patchCustomElementProto(element, sel, def);
+        patchCustomElementProto(element, {
+            def
+        });
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(element);

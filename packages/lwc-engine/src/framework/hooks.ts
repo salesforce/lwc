@@ -22,7 +22,6 @@ import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdo
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
-import { setAttribute } from "../env/element";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
@@ -69,14 +68,17 @@ export function createElmDefaultHook(vnode: VElement) {
 }
 
 export function createElmHook(vnode: VElement) {
-    const { shadowAttribute, uid, sel, fallback } = vnode;
+    const { uid, sel, fallback } = vnode;
     const elm = vnode.elm as HTMLElement;
-    if (!isUndefined(shadowAttribute)) {
-        setAttribute.call(elm, shadowAttribute, '');
-    }
     setNodeOwnerKey(elm, uid);
     if (isTrue(fallback)) {
-        patchElementProto(elm, sel);
+        const { shadowAttribute, data: { context } } = vnode;
+        const portal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
+        patchElementProto(elm, {
+            sel,
+            portal,
+            shadowAttribute,
+        });
     }
     if (process.env.NODE_ENV !== 'production') {
         patchElementWithRestrictions(elm);
@@ -134,15 +136,16 @@ export function createCustomElmHook(vnode: VCustomElement) {
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
     }
-    const { mode, ctor, shadowAttribute, uid, sel, fallback } = vnode;
-    if (!isUndefined(shadowAttribute)) {
-        setAttribute.call(elm, shadowAttribute, '');
-    }
+    const { mode, ctor, uid, fallback } = vnode;
     setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
     if (isTrue(fallback)) {
-        patchCustomElementProto(elm, sel, def);
+        const { shadowAttribute } = vnode;
+        patchCustomElementProto(elm, {
+            def,
+            shadowAttribute,
+        });
     }
     createVM(vnode.sel as string, elm, ctor, {
         mode,
