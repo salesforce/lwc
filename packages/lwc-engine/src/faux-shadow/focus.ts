@@ -1,10 +1,9 @@
 import assert from "../shared/assert";
-import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter } from '../env/element';
+import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter, tagNameGetter, hasAttribute, getAttribute } from '../env/element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from '../env/node';
 import { ArraySlice, ArrayIndexOf, isFalse, isNull, toString, ArrayReverse } from '../shared/language';
 import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from '../env/document';
 import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from '../env/dom';
-import { getShadowRoot } from './shadow-root';
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -17,19 +16,46 @@ function isVisible(element: HTMLElement): boolean {
     );
 }
 
-function isActive(element: HTMLElement): boolean {
-    if ('disabled' in element) {
-        return isFalse((element as any).disabled); // button elements
+function hasFocusableTabIndex(element: HTMLElement) {
+    if (isFalse(hasAttribute.call(element, 'tabindex'))) {
+        return false;
     }
 
-    if ('href' in element) {
-        return (element as any).href !== ''; // anchor elements
+    const value = getAttribute.call(element, 'tabindex');
+
+    // Really, any numeric tabindex value is valid
+    // But LWC only allows 0 or -1, so we can just check against that.
+    // The main point here is to make sure the tabindex attribute is not an invalid
+    // value like tabindex="hello"
+    if (value === '' || (value !== '0' && value !== '-1')) {
+        return false
     }
-    return true; // anything else with a tabindex === 0 (eg, span)
+    return true;
 }
 
-function isFocusable(element: HTMLElement): boolean {
-    return (element.tabIndex >= 0 && isActive(element) && isVisible(element));
+// This function based on https://allyjs.io/data-tables/focusable.html
+// It won't catch everything, but should be good enough
+// There are a lot of edge cases here that we can't realistically handle
+
+// Exported for jest purposes
+export function isFocusable(element: HTMLElement): boolean {
+    const tagName = tagNameGetter.call(element);
+    return (
+        (
+            isVisible(element)
+        ) && (
+            hasFocusableTabIndex(element) ||
+            hasAttribute.call(element, 'contenteditable') ||
+            tagName ==='IFRAME' ||
+            tagName === 'VIDEO' ||
+            tagName === 'AUDIO' ||
+            tagName === 'A' ||
+            tagName === 'INPUT' ||
+            tagName === 'SELECT' ||
+            tagName === 'TEXTAREA' ||
+            tagName === 'BUTTON'
+        )
+    );
 }
 
 function getFirstFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
@@ -62,7 +88,6 @@ function getFocusableSegments(host: HTMLElement): QuerySegments {
     const all = documentQuerySelectorAll.call(document, PossibleFocusableElementQuery);
     const inner = querySelectorAll.call(host, PossibleFocusableElementQuery);
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(inner.length > 0, `When focusin event is received, there has to be a focusable target at least.`);
         assert.invariant(tabIndexGetter.call(host) === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
     const firstChild = inner[0];
@@ -88,11 +113,6 @@ export function getActiveElement(host: HTMLElement): HTMLElement | null {
     }
     // activeElement must be child of the host and owned by it
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 ? activeElement : null;
-}
-
-export function isDelegatingFocus(host: HTMLElement): boolean {
-    const shadowRoot = getShadowRoot(host);
-    return shadowRoot.delegatesFocus;
 }
 
 function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): number {
@@ -240,7 +260,7 @@ function handleFocusMouseDown(evt) {
 
 export function handleFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(tabIndexGetter.call(elm) === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${elm.tabIndex}`);
+        assert.invariant(tabIndexGetter.call(elm) === -1, `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(elm)} should have tabIndex -1, but has tabIndex ${tabIndexGetter.call(elm)}`);
     }
     // We want to listen for mousedown
     // If the user is triggering a mousedown event on an element
