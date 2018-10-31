@@ -1,6 +1,6 @@
 {
   "name": "lwc-engine",
-  "version": "0.30.7",
+  "version": "0.31.0-alpha03",
   "description": "Raptor Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
-    "lwc-template-compiler": "0.30.7",
+    "lwc-template-compiler": "0.31.0-alpha03",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0",
