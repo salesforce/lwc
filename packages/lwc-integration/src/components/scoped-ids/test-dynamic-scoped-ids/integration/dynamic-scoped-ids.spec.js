@@ -9,11 +9,12 @@ describe('Scoped ids (dynamic)', () => {
     describe('should be transformed', function () {
         it('aria-activedescendant', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.activedescendant-id');
-                var idrefElm = document.querySelector('.activedescendant-idref');
+                var integration = document.querySelector('integration-dynamic-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.activedescendant-id');
+                var idrefElm = integration.shadowRoot.querySelector('.activedescendant-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-activedescendant'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaActiveDescendant,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -23,11 +24,12 @@ describe('Scoped ids (dynamic)', () => {
         });
         it('aria-details', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.details-id');
-                var idrefElm = document.querySelector('.details-idref');
+                var integration = document.querySelector('integration-dynamic-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.details-id');
+                var idrefElm = integration.shadowRoot.querySelector('.details-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-details'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaDetails,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -37,11 +39,12 @@ describe('Scoped ids (dynamic)', () => {
         });
         it('aria-errormessage', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.errormessage-id');
-                var idrefElm = document.querySelector('.errormessage-idref');
+                var integration = document.querySelector('integration-dynamic-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.errormessage-id');
+                var idrefElm = integration.shadowRoot.querySelector('.errormessage-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-errormessage'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaErrorMessage,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -51,11 +54,12 @@ describe('Scoped ids (dynamic)', () => {
         });
         it('aria-flowto', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.flowto-id');
-                var idrefElm = document.querySelector('.flowto-idref');
+                var integration = document.querySelector('integration-dynamic-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.flowto-id');
+                var idrefElm = integration.shadowRoot.querySelector('.flowto-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-flowto'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaFlowTo,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
