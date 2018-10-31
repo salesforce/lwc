@@ -8,11 +8,12 @@ describe('Scoped ids', () => {
 
     it('should transform ids as they are passed down', () => {
         const { inner, outer } = browser.execute(() => {
-            var outerElm = document.querySelector('integration-scoped-ids');
-            var innerElm = document.querySelector('integration-child');
+            var integration = document.querySelector('integration-scoped-ids');
+            var outerElm = integration.shadowRoot.querySelector('integration-child');
+            var innerElm = outerElm.shadowRoot.querySelector('p');
             return {
-                inner: innerElm.getAttribute('id'),
-                outer: outerElm.getAttribute('id'),
+                inner: innerElm.id,
+                outer: outerElm.id,
             };
         }).value;
         assert(inner.length > 0, 'id attr should be non-empty string');
@@ -21,11 +22,12 @@ describe('Scoped ids', () => {
 
     it('static and dynamic id should be the same', () => {
         const { staticValue, dynamicValue } = browser.execute(() => {
-            var staticElm = document.querySelector('.static');
-            var dynamicElm = document.querySelector('.dynamic');
+            var integration = document.querySelector('integration-scoped-ids');
+            var staticElm = integration.shadowRoot.querySelector('.static');
+            var dynamicElm = integration.shadowRoot.querySelector('.dynamic');
             return {
-                staticValue: staticElm.getAttribute('id'),
-                dynamicValue: dynamicElm.getAttribute('id'),
+                staticValue: staticElm.id,
+                dynamicValue: dynamicElm.id,
             };
         }).value;
         assert.strictEqual(staticValue, dynamicValue);

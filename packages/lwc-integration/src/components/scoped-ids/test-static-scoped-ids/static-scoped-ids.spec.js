@@ -9,11 +9,12 @@ describe('Scoped ids (static)', () => {
     describe('should be transformed', function () {
         it('aria-controls', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.controls-id');
-                var idrefElm = document.querySelector('.controls-idref');
+                var integration = document.querySelector('integration-static-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.controls-id');
+                var idrefElm = integration.shadowRoot.querySelector('.controls-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-controls'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaControls,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -23,11 +24,12 @@ describe('Scoped ids (static)', () => {
         });
         it('aria-describedby', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.describedby-id');
-                var idrefElm = document.querySelector('.describedby-idref');
+                var integration = document.querySelector('integration-static-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.describedby-id');
+                var idrefElm = integration.shadowRoot.querySelector('.describedby-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-describedby'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaDescribedBy,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -37,11 +39,12 @@ describe('Scoped ids (static)', () => {
         });
         it('aria-labelledby', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.labelledby-id');
-                var idrefElm = document.querySelector('.labelledby-idref');
+                var integration = document.querySelector('integration-static-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.labelledby-id');
+                var idrefElm = integration.shadowRoot.querySelector('.labelledby-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-labelledby'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaLabelledBy,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -51,30 +54,17 @@ describe('Scoped ids (static)', () => {
         });
         it('aria-owns', () => {
             const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.owns-id');
-                var idrefElm = document.querySelector('.owns-idref');
+                var integration = document.querySelector('integration-static-scoped-ids');
+                var idElm = integration.shadowRoot.querySelector('.owns-id');
+                var idrefElm = integration.shadowRoot.querySelector('.owns-idref');
                 return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('aria-owns'),
+                    id: idElm.id,
+                    idref: idrefElm.ariaOwns,
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
             assert.notStrictEqual(id, 'owns', 'id attr should be transformed');
             assert.notStrictEqual(idref, 'owns', 'idref attr should be transformed');
-            assert(id === idref, 'id attr and idref attr should be the same value');
-        });
-        it('for', () => {
-            const { id, idref } = browser.execute(() => {
-                var idElm = document.querySelector('.for-id');
-                var idrefElm = document.querySelector('.for-idref');
-                return {
-                    id: idElm.getAttribute('id'),
-                    idref: idrefElm.getAttribute('for'),
-                };
-            }).value;
-            assert(id.length > 0, 'id attr should be non-empty string');
-            assert.notStrictEqual(id, 'for', 'id attr should be transformed');
-            assert.notStrictEqual(idref, 'for', 'idref attr should be transformed');
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
     });
