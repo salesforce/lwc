@@ -354,7 +354,7 @@ describe('events', () => {
                 <template>
                     <x-child>
                         <x-grand-child>
-                            <button>this button is inside bar.</button>
+                            <button>click me.</button>
                         </x-grand-child>
                     </x-child>
                 </template>
@@ -364,8 +364,8 @@ describe('events', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const button = getShadowRoot(elm).querySelector('button');
-                const expectedTarget = getShadowRoot(elm).querySelector('x-grand-child');
+                const button = elm.shadowRoot.querySelector('button');
+                const expectedTarget = elm.shadowRoot.querySelector('x-grand-child');
                 expect(() => {
                     button.click();
                 }).toLogWarning(`Invalid event "bubblesnotcomposed" dispatched in element <x-grand-child>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);

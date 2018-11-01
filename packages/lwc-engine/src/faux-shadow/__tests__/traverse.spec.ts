@@ -1140,10 +1140,10 @@ describe('Node.getRootNode on patched elements', () => {
     }
 
     const selectors: any = {};
-    selectors.xChild = (elm) => getShadowRoot(elm)!.querySelector('x-child');
-    selectors.xChildSpanInShadow = (elm) => getShadowRoot(selectors.xChild(elm))!.querySelector('.child-cmp-span');
-    selectors.containerDiv = (elm) => getShadowRoot(elm)!.querySelector('.child-div');
-    selectors.containerSlottedSpan = (elm) => getShadowRoot(elm)!.querySelector('.child-cmp-slotted-span');
+    selectors.xChild = (elm) => elm.shadowRoot!.querySelector('x-child');
+    selectors.xChildSpanInShadow = (elm) => selectors.xChild(elm).shadowRoot.querySelector('.child-cmp-span');
+    selectors.containerDiv = (elm) => elm.shadowRoot!.querySelector('.child-div');
+    selectors.containerSlottedSpan = (elm) => elm.shadowRoot!.querySelector('.child-cmp-slotted-span');
 
     describe('when options.composed=true', () => {
         it('should return itself when node is disconnected', () => {
@@ -1206,7 +1206,7 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                expect(getShadowRoot(elm).getRootNode()).toBe(getShadowRoot(elm));
+                expect(elm.shadowRoot.getRootNode()).toBe(elm.shadowRoot);
             });
         });
 
@@ -1216,7 +1216,7 @@ describe('Node.getRootNode on patched elements', () => {
 
             return Promise.resolve().then(() => {
                 const childDiv = selectors.containerDiv(elm);
-                expect(childDiv!.getRootNode()).toBe(getShadowRoot(elm));
+                expect(childDiv!.getRootNode()).toBe(elm.shadowRoot);
             });
         });
 
@@ -1226,7 +1226,7 @@ describe('Node.getRootNode on patched elements', () => {
 
             return Promise.resolve().then(() => {
                 const childCmp = selectors.xChild(elm);
-                expect(childCmp.getRootNode()).toBe(getShadowRoot(elm));
+                expect(childCmp.getRootNode()).toBe(elm.shadowRoot);
             });
         });
 
@@ -1236,7 +1236,7 @@ describe('Node.getRootNode on patched elements', () => {
 
             return Promise.resolve().then(() => {
                 const spanInChildCmp = selectors.xChildSpanInShadow(elm);
-                expect(spanInChildCmp!.getRootNode()).toBe(getShadowRoot(selectors.xChild(elm)));
+                expect(spanInChildCmp!.getRootNode()).toBe(selectors.xChild(elm).shadowRoot);
             });
         });
 
@@ -1246,7 +1246,7 @@ describe('Node.getRootNode on patched elements', () => {
 
             return Promise.resolve().then(() => {
                 const spanInChildCmp = selectors.containerSlottedSpan(elm);
-                expect(spanInChildCmp!.getRootNode()).toBe(getShadowRoot(elm));
+                expect(spanInChildCmp!.getRootNode()).toBe(elm.shadowRoot);
             });
         });
     });
