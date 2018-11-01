@@ -592,6 +592,17 @@ export function k(compilerKey: number, obj: any): number | string | void {
 }
 
 // [g]lobal [id] function
-export function gid(id: string): string {
+export function gid(id: any): string | null | undefined {
+    if (isNull(id) || isUndefined(id)) {
+        // - Custom elements: `id="null"` and `id="undefined"`
+        // - Native elements will not render the id attribute
+        return id;
+    }
+    if (isString(id) && !id.length) {
+        // - Empty strings will render a boolean attribute: `id`
+        return id;
+    }
+    // - Non-empty strings will render as expected `id="foo-123"`
+    // - Booleans will render as strings `id="true-123"`
     return `${id}-${getCurrentOwnerId()}`;
 }
