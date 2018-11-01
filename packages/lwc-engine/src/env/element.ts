@@ -1,4 +1,4 @@
-import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
+const { getOwnPropertyDescriptor, hasOwnProperty } = Object;
 
 const {
     addEventListener,
@@ -13,6 +13,9 @@ const {
     querySelector,
     querySelectorAll,
     getBoundingClientRect,
+    getElementsByTagName,
+    getElementsByClassName,
+    getElementsByTagNameNS,
 } = Element.prototype;
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
@@ -35,8 +38,12 @@ export {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
-    innerHTMLSetter,
-    tagNameGetter,
     getBoundingClientRect,
+    getElementsByTagName,
+    getElementsByClassName,
+    getElementsByTagNameNS,
+
+    tagNameGetter,
     tabIndexGetter,
+    innerHTMLSetter,
 };

@@ -11,7 +11,7 @@ import { invokeServiceHook, Services } from "./services";
 import { PropsDef, WireHash } from './def';
 import { VM, getComponentVM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
-import { elementTagNameGetter } from "./dom-api";
+import { tagNameGetter } from "../env/element";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -125,5 +125,5 @@ export function getComponentAsString(component: ComponentInterface): string {
         throw new ReferenceError();
     }
     const vm = getComponentVM(component);
-    return `<${StringToLowerCase.call(elementTagNameGetter.call(vm.elm))}>`;
+    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))}>`;
 }

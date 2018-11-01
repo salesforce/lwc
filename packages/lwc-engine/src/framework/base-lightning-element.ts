@@ -27,7 +27,7 @@ import { ViewModelReflection } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, setNodeKey } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent } from "./dom-api";
+import { dispatchEvent } from "../env/dom";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { unlockAttribute, lockAttribute } from "./attributes";
 

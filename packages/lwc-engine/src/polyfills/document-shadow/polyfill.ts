@@ -1,7 +1,7 @@
-import { elementsFromPoint, DocumentPrototypeActiveElement } from "../../faux-shadow/document";
+import { elementsFromPoint, DocumentPrototypeActiveElement } from "../../env/document";
 import { getNodeOwnerKey } from "../../framework/vm";
 import { isUndefined, defineProperty } from "../../shared/language";
-import { parentElementGetter } from "../../framework/dom-api";
+import { parentElementGetter } from "../../env/node";
 
 export default function apply() {
     function elemFromPoint(left: number, top: number): Element | null {

@@ -4,11 +4,10 @@ import { EmptyArray, ViewModelReflection } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
-    setAttribute,
     nodeValueSetter,
     insertBefore,
     removeChild,
-} from "./dom-api";
+} from "../env/node";
 import { patchSlotElement } from "../faux-shadow/faux";
 import modEvents from "./modules/events";
 import modAttrs from "./modules/attrs";
@@ -23,6 +22,7 @@ import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdo
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
+import { setAttribute } from "../env/element";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {

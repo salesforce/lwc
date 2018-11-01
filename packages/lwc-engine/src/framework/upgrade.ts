@@ -4,13 +4,13 @@ import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey 
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
-import { isNativeShadowRootAvailable } from "./dom-api";
+import { isNativeShadowRootAvailable } from "../env/dom";
 import { patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 import { patchCustomElementWithRestrictions } from "./restrictions";
 import { endGlobalMeasure, startGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
+import { appendChild, insertBefore, replaceChild, removeChild } from "../env/node";
 
-const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = createFieldName('connecting');
 const DisconnectingSlot = createFieldName('disconnecting');
 

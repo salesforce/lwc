@@ -1,21 +1,12 @@
-import { ArrayJoin, ArrayPush, forEach, getOwnPropertyDescriptor, isNull, StringToLowerCase } from "./language";
-
-const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
-const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
-const nativeShadowRootHostGetter: (this: ShadowRoot) => Element = (function() {
-    if (typeof (window as any).ShadowRoot !== "undefined") {
-        return getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!;
-    } else {
-        return () => {
-            throw new Error(`Internal Error: Invalid ShadowRoot resolution.`);
-        };
-    }
-})();
+import { ArrayJoin, ArrayPush, forEach, isNull, StringToLowerCase } from "./language";
+import { tagNameGetter } from "../env/element";
+import { parentNodeGetter } from "../env/node";
+import { ShadowRootHostGetter } from "../env/dom";
 
 const StringSplit = String.prototype.split;
 
 function isLWC(element): element is HTMLElement {
-    return (element instanceof Element) && (elementTagNameGetter.call(element).indexOf('-') !== -1);
+    return (element instanceof Element) && (tagNameGetter.call(element).indexOf('-') !== -1);
 }
 
 function isShadowRoot(elmOrShadow: Node | ShadowRoot): elmOrShadow is ShadowRoot {
@@ -31,14 +22,14 @@ function getFormattedComponentStack(elm: Element): string {
 
     do {
         if (isLWC(currentElement)) {
-            ArrayPush.call(componentStack, `${indentation}<${StringToLowerCase.call(elementTagNameGetter.call(currentElement))}>`);
+            ArrayPush.call(componentStack, `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`);
 
             indentation = indentation + indentationChar;
         }
 
         if (isShadowRoot(currentElement)) {
             // if at some point we find a ShadowRoot, it must be a native shadow root.
-            currentElement = nativeShadowRootHostGetter.call(currentElement);
+            currentElement = ShadowRootHostGetter.call(currentElement);
         } else {
             currentElement = parentNodeGetter.call(currentElement);
         }

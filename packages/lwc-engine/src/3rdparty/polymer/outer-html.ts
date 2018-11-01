@@ -11,12 +11,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // This code is inspired by Polymer ShadyDOM Polyfill
 
 import { getInnerHTML } from "./inner-html";
+import { tagNameGetter } from "../../env/element";
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
 const escapeAttrRegExp = /[&\u00A0"]/g;
 const escapeDataRegExp = /[&\u00A0<>]/g;
 const { replace, toLowerCase } = String.prototype;
-const tagNameGetter: (this: Element) => string = Object.getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
 function escapeReplace(c) {
     switch (c) {

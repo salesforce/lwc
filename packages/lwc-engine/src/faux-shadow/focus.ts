@@ -1,14 +1,12 @@
 import assert from "../shared/assert";
-import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter } from './element';
-import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from './node';
-import { ArraySlice, ArrayIndexOf, isFalse, isNull, getOwnPropertyDescriptor, toString } from '../shared/language';
-import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from './document';
-import { eventCurrentTargetGetter, eventTargetGetter } from './events';
+import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter } from '../env/element';
+import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from '../env/node';
+import { ArraySlice, ArrayIndexOf, isFalse, isNull, toString, ArrayReverse } from '../shared/language';
+import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from '../env/document';
+import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from '../env/dom';
 import { getShadowRoot } from './shadow-root';
 
 const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
-const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null = getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
 
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
@@ -116,7 +114,7 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): n
 
 function getPreviousFocusableElement(segments: QuerySegments): HTMLElement | null {
     const { prev } = segments;
-    return getFirstFocusableMatch(Array.prototype.reverse.call(prev));
+    return getFirstFocusableMatch(ArrayReverse.call(prev));
 }
 
 function getNextFocusableElement(segments: QuerySegments): HTMLElement | null {

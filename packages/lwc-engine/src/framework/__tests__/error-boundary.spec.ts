@@ -1,6 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
-import { querySelector, querySelectorAll } from "../../faux-shadow/element";
+import { querySelector, querySelectorAll } from "../../env/element";
 
 function createBoundaryComponent({ name, ctor }) {
     const baseTmpl = compileTemplate(`
