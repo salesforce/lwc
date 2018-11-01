@@ -80,12 +80,16 @@ function transformPublicProps(t, klassBody, apiDecorators) {
     }
 
     return publicProps.filter((node) => {
-        const { name, path, type } = node;
+        const { type } = node;
         return type === 'getter' || type === 'setter' || type === 'property';
-    }).map(({ path }) => ({
-        type: 'property',
-        name: path.parentPath.get('key.name').node
-    }));
+    }).map(({ path }) => {
+        const parentNode = path.parentPath.get('value');
+        return {
+            type: 'property',
+            name: path.parentPath.get('key.name').node,
+            value: parentNode.value && parentNode.value.node,
+        }
+    });
 }
 
 /** Transform class public methods and returns the list of public methods  */
@@ -114,6 +118,8 @@ module.exports = function transform(t, klass, decorators) {
 
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
     const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
+
+    console.log('----> props: ', apiProperties);
 
     if ((apiProperties.length + apiMethods.length) > 0) {
         return {

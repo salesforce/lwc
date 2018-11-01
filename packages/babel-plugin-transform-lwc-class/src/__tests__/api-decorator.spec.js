@@ -473,6 +473,39 @@ Test.publicMethods = ["foo"];`
 });
 
 describe('Metadata', () => {
+    pluginTest.only(
+        'gather metadata',
+        `
+        import { LightningElement, api } from 'lwc';
+        export default class Foo extends LightningElement {
+            @api
+            index = "index value";
+
+            @api
+            title
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [
+                        {
+                            type: "api",
+                            targets: [
+                                { name: "index", type: "property", value: "index value" },
+                            ]
+                        },
+                        {
+                            type: "api",
+                            targets: [
+                                { name: "title", type: "property", value: undefined },
+                            ]
+                        }
+                    ],
+                },
+            },
+        }
+    );
     pluginTest(
         'gather metadata',
         `
