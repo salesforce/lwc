@@ -1,5 +1,11 @@
 {
-  "metadata": {
-    "templateUsedIds": ["items", "isTrue"]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "items",
+            "isTrue"
+        ],
+        "templateDependencies": []
+    }
 }

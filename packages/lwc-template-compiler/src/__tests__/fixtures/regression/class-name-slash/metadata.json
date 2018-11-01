@@ -1,16 +1,19 @@
 {
-  "metadata": {
-    "templateDependencies": [
-      {
-        "properties": {
-          "xClass": {
-            "type": "literal",
-            "value": "bar"
-          }
-        },
-        "moduleName": "x/cmp",
-        "tagName": "x-cmp"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": [
+            {
+                "moduleName": "x/cmp",
+                "tagName": "x-cmp",
+                "properties": {
+                    "xClass": {
+                        "type": "literal",
+                        "value": "bar"
+                    }
+                }
+            }
+        ]
+    }
 }

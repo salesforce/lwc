@@ -1,11 +1,15 @@
 {
-  "metadata": {
-    "templateUsedIds": ["rows"],
-    "templateDependencies": [
-      {
-        "moduleName": "ns/row",
-        "tagName": "tr"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "rows"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "ns/row",
+                "tagName": "tr"
+            }
+        ]
+    }
 }

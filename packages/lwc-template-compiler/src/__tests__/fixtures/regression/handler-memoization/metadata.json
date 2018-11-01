@@ -1,5 +1,11 @@
 {
-  "metadata": {
-    "templateUsedIds": ["create", "list"]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "create",
+            "list"
+        ],
+        "templateDependencies": []
+    }
 }

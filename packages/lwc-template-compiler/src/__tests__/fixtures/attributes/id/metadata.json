@@ -1,52 +1,55 @@
 {
-  "metadata": {
-    "definedSlots": [],
-    "templateUsedIds": ["things"],
-    "templateDependencies": [
-      {
-        "moduleName": "x/subject",
-        "properties": {
-          "htmlFor": {
-            "type": "literal",
-            "value": "foo"
-          }
-        },
-        "tagName": "x-subject"
-      },
-      {
-        "moduleName": "x/description",
-        "properties": {
-          "id": {
-            "type": "literal",
-            "value": "bar"
-          }
-        },
-        "tagName": "x-description"
-      },
-      {
-        "moduleName": "x/description",
-        "properties": {
-          "id": {
-            "type": "literal",
-            "value": "baz"
-          }
-        },
-        "tagName": "x-description"
-      },
-      {
-        "moduleName": "x/textarea",
-        "properties": {
-          "ariaDescribedBy": {
-            "type": "literal",
-            "value": "bar baz"
-          },
-          "id": {
-            "type": "literal",
-            "value": "foo"
-          }
-        },
-        "tagName": "x-textarea"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "things"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "x/subject",
+                "tagName": "x-subject",
+                "properties": {
+                    "htmlFor": {
+                        "type": "literal",
+                        "value": "foo"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/description",
+                "tagName": "x-description",
+                "properties": {
+                    "id": {
+                        "type": "literal",
+                        "value": "bar"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/description",
+                "tagName": "x-description",
+                "properties": {
+                    "id": {
+                        "type": "literal",
+                        "value": "baz"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/textarea",
+                "tagName": "x-textarea",
+                "properties": {
+                    "id": {
+                        "type": "literal",
+                        "value": "foo"
+                    },
+                    "ariaDescribedBy": {
+                        "type": "literal",
+                        "value": "bar baz"
+                    }
+                }
+            }
+        ]
+    }
 }

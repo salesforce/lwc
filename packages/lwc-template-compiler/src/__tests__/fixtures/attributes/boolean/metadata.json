@@ -1,5 +1,10 @@
 {
-  "metadata": {
-    "templateUsedIds": ["getReadOnly"]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "getReadOnly"
+        ],
+        "templateDependencies": []
+    }
 }

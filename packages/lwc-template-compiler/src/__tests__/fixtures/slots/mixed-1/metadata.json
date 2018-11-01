@@ -1,5 +1,12 @@
 {
-  "metadata": {
-    "definedSlots": ["header", "", "footer"]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [
+            "header",
+            "",
+            "footer"
+        ],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }
