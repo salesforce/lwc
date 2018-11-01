@@ -33,6 +33,14 @@ export interface ForIterator {
     iterator: TemplateIdentifier;
 }
 
+export enum LWCDirectiveDomMode {
+    manual = 'manual',
+}
+
+export interface LWCDirective {
+    dom: LWCDirectiveDomMode
+}
+
 export interface IRElement {
     type: 'element';
     tag: string;
@@ -69,6 +77,7 @@ export interface IRElement {
     key?: number;
 
     locator?: Locator;
+    lwc?: LWCDirective;
 
     slotName?: string;
     slotSet?: SlotDefinition;

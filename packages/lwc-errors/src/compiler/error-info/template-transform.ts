@@ -422,5 +422,19 @@ export const ParserDiagnostics = {
         message: "Unexpected if modifier {0}",
         level: DiagnosticLevel.Error,
         url: ""
-    }
+    },
+
+    LWC_DOM_INVALID_VALUE: {
+        code: 1001,
+        message: "Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to {0}",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
+
+    LWC_DOM_INVALID_CONTENTS: {
+        code: 1001,
+        message: "Invalid contents for element with \"lwc:dom\". Element must be empty",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
 };
