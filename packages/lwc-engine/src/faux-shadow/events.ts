@@ -40,8 +40,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const originalTarget: EventTarget = eventTargetGetter.call(this);
 
             // Handle cases where the currentTarget is null (for async events)
-            // and when currentTarget is window or document.
-            if (!(currentTarget instanceof Node) || currentTarget instanceof Document) {
+            // when currentTarget is window or document
+            // when currentTarget is not an LWC node
+            if (!(currentTarget instanceof Node) || currentTarget instanceof Document || getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE) === document) {
                 // the event was inspected asynchronously, in which case we need to return the
                 // top custom element that belongs to the body.
                 let outerMostElement = originalTarget;
