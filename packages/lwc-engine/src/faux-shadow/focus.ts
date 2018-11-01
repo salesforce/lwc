@@ -1,11 +1,21 @@
 import assert from "../shared/assert";
-import { querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter, tagNameGetter, hasAttribute, getAttribute } from '../env/element';
+import { matches, querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter, tagNameGetter, hasAttribute, getAttribute } from '../env/element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from '../env/node';
-import { ArraySlice, ArrayIndexOf, isFalse, isNull, toString, ArrayReverse } from '../shared/language';
+import { ArraySlice, ArrayIndexOf, isFalse, isNull, toString, ArrayReverse, hasOwnProperty } from '../shared/language';
 import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from '../env/document';
 import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from '../env/dom';
 
-const PossibleFocusableElementQuery = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const TabbableElementsQuery = `
+    button:not([tabindex="-1"]):not([disabled]),
+    [contenteditable]:not([tabindex="-1"]),
+    video[controls]:not([tabindex="-1"]),
+    audio[controls]:not([tabindex="-1"]),
+    [href]:not([tabindex="-1"]),
+    input:not([tabindex="-1"]):not([disabled]),
+    select:not([tabindex="-1"]):not([disabled]),
+    textarea:not([tabindex="-1"]):not([disabled]),
+    [tabindex="0"]
+`;
 
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
@@ -33,6 +43,27 @@ function hasFocusableTabIndex(element: HTMLElement) {
     return true;
 }
 
+const focusableTagNames = {
+    IFRAME: 1,
+    VIDEO: 1,
+    AUDIO: 1,
+    A: 1,
+    INPUT: 1,
+    SELECT: 1,
+    TEXTAREA: 1,
+    BUTTON: 1,
+}
+
+// This function based on https://allyjs.io/data-tables/focusable.html
+// It won't catch everything, but should be good enough
+// There are a lot of edge cases here that we can't realistically handle
+// Determines if a particular element is tabbable, as opposed to simply focusable
+
+// Exported for jest purposes
+export function isTabbable(element: HTMLElement): boolean {
+    return matches.call(element, TabbableElementsQuery);
+}
+
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
@@ -46,32 +77,25 @@ export function isFocusable(element: HTMLElement): boolean {
         ) && (
             hasFocusableTabIndex(element) ||
             hasAttribute.call(element, 'contenteditable') ||
-            tagName === 'IFRAME' ||
-            tagName === 'VIDEO' ||
-            tagName === 'AUDIO' ||
-            tagName === 'A' ||
-            tagName === 'INPUT' ||
-            tagName === 'SELECT' ||
-            tagName === 'TEXTAREA' ||
-            tagName === 'BUTTON'
+            hasOwnProperty.call(focusableTagNames, tagName)
         )
     );
 }
 
-function getFirstFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
+function getFirstTabbableMatch(elements: HTMLElement[]): HTMLElement | null {
     for (let i = 0, len = elements.length; i < len; i += 1) {
         const elm = elements[i];
-        if (isFocusable(elm)) {
+        if (isTabbable(elm)) {
             return elm;
         }
     }
     return null;
 }
 
-function getLastFocusableMatch(elements: HTMLElement[]): HTMLElement | null {
+function getLastTabbableMatch(elements: HTMLElement[]): HTMLElement | null {
     for (let i = elements.length - 1; i >= 0; i -= 1) {
         const elm = elements[i];
-        if (isFocusable(elm)) {
+        if (isTabbable(elm)) {
             return elm;
         }
     }
@@ -85,8 +109,8 @@ interface QuerySegments {
 }
 
 function getFocusableSegments(host: HTMLElement): QuerySegments {
-    const all = documentQuerySelectorAll.call(document, PossibleFocusableElementQuery);
-    const inner = querySelectorAll.call(host, PossibleFocusableElementQuery);
+    const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
+    const inner = querySelectorAll.call(host, TabbableElementsQuery);
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(tabIndexGetter.call(host) === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
@@ -102,8 +126,8 @@ function getFocusableSegments(host: HTMLElement): QuerySegments {
 }
 
 export function getFirstFocusableElement(host: HTMLElement): HTMLElement | null {
-    const local = querySelectorAll.call(host, PossibleFocusableElementQuery);
-    return getFirstFocusableMatch(local);
+    const local = querySelectorAll.call(host, TabbableElementsQuery);
+    return getFirstTabbableMatch(local);
 }
 
 export function getActiveElement(host: HTMLElement): HTMLElement | null {
@@ -134,12 +158,12 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): n
 
 function getPreviousFocusableElement(segments: QuerySegments): HTMLElement | null {
     const { prev } = segments;
-    return getFirstFocusableMatch(ArrayReverse.call(prev));
+    return getFirstTabbableMatch(ArrayReverse.call(prev));
 }
 
 function getNextFocusableElement(segments: QuerySegments): HTMLElement | null {
     const { next } = segments;
-    return getFirstFocusableMatch(next);
+    return getFirstTabbableMatch(next);
 }
 
 function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
@@ -162,12 +186,12 @@ function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegment
     prevNode.focus();
 }
 
-function isFirstFocusableChild(target: EventTarget, segments: QuerySegments): boolean {
-    return getFirstFocusableMatch(segments.inner) === target;
+function isFirstTabbableChild(target: EventTarget, segments: QuerySegments): boolean {
+    return getFirstTabbableMatch(segments.inner) === target;
 }
 
-function isLastFocusableChild(target: EventTarget, segments: QuerySegments): boolean {
-    return getLastFocusableMatch(segments.inner) === target;
+function isLastTabbableChild(target: EventTarget, segments: QuerySegments): boolean {
+    return getLastTabbableMatch(segments.inner) === target;
 }
 
 function focusInEventHandler(event: FocusEvent) {
@@ -175,8 +199,8 @@ function focusInEventHandler(event: FocusEvent) {
     const target: EventTarget = eventTargetGetter.call(event);
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
     const segments = getFocusableSegments(host as HTMLElement);
-    const isFirstFocusableChildReceivingFocus = isFirstFocusableChild(target, segments);
-    const isLastFocusableChildReceivingFocus = isLastFocusableChild(target, segments);
+    const isFirstFocusableChildReceivingFocus = isFirstTabbableChild(target, segments);
+    const isLastFocusableChildReceivingFocus = isLastTabbableChild(target, segments);
     if ((isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) || isNull(relatedTarget)) {
         // the focus is definitely not a result of tab or shift-tab interaction
         return;
