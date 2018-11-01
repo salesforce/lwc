@@ -1,12 +1,15 @@
-
 {
-  "metadata": {
-    "templateUsedIds": ["handleFoo"],
-    "templateDependencies": [
-      {
-        "moduleName": "ns/foo",
-        "tagName": "ns-foo"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "handleFoo"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "ns/foo",
+                "tagName": "ns-foo"
+            }
+        ]
+    }
 }

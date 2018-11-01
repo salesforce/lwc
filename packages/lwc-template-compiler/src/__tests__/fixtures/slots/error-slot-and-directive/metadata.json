@@ -11,8 +11,10 @@
         }
     ],
     "metadata": {
+        "definedSlots": [],
         "templateUsedIds": [
             "isTrue"
-        ]
+        ],
+        "templateDependencies": []
     }
 }

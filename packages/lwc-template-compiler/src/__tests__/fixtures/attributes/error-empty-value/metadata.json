@@ -1,20 +1,23 @@
 {
-  "metadata": {
-    "templateDependencies": [
-      {
-        "properties": {
-          "content": {
-            "type": "literal",
-            "value": ""
-          },
-          "visible": {
-            "type": "literal",
-            "value": true
-          }
-        },
-        "moduleName": "foo/bar",
-        "tagName": "foo-bar"
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": [
+            {
+                "moduleName": "foo/bar",
+                "tagName": "foo-bar",
+                "properties": {
+                    "content": {
+                        "type": "literal",
+                        "value": ""
+                    },
+                    "visible": {
+                        "type": "literal",
+                        "value": true
+                    }
+                }
+            }
+        ]
+    }
 }

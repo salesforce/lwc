@@ -3,8 +3,11 @@
         {
             "code": 1001,
             "message": "LWC1001: locator:context must be used with locator:id",
-            "location": {"column": 5, "line": 2},
-            "level": 1
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
         }
     ],
     "metadata": {
