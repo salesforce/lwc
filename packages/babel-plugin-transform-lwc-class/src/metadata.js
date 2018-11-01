@@ -21,10 +21,12 @@ module.exports = function () {
                 path.get('body').get('body').forEach(path => {
                     if (!isSynthetic(path) && (isProperty(path) || isMethod(path))) {
                         const name = path.node.key.name;
+                        const { value: valueNode } = path.node;
                         if (!isPrivate(name)) {
                             const metadata = {
                                 type: isProperty(path)? 'property': 'method',
                                 name,
+                                value: valueNode && valueNode.value,
                                 loc: extractLoc(path.node.loc)
                             }
                             const comment = extractComment(path.node);
