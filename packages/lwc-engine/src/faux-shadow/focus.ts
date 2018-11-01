@@ -52,7 +52,7 @@ const focusableTagNames = {
     SELECT: 1,
     TEXTAREA: 1,
     BUTTON: 1,
-}
+};
 
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
