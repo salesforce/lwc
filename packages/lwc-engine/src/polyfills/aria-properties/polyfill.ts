@@ -26,7 +26,7 @@ function getNormalizedAriaPropertyValue(propName: string, value: any): any {
     return value == null ? null : value + '';
 }
 
-function createAriaPropertyPropertyDescriptor(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
+function createAriaPropertyPropertyDescriptor(propName: string, attrName: string): PropertyDescriptor {
     return {
         get(this: HTMLElement): any {
             const map = getAriaPropertyMap(this);
@@ -54,6 +54,6 @@ function createAriaPropertyPropertyDescriptor(propName: string, attrName: string
 
 export function patch(propName: string) {
     const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
-    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName, null);
+    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
     Object.defineProperty(Element.prototype, propName, descriptor);
 }

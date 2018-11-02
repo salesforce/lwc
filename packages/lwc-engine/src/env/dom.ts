@@ -1,4 +1,4 @@
-const { getOwnPropertyDescriptor } = Object;
+import { getOwnPropertyDescriptor } from "../shared/language";
 
 const ShadowRootHostGetter: (this: ShadowRoot) => Element | null = typeof (window as any).ShadowRoot !== "undefined" ?
     getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get! :

@@ -1,4 +1,4 @@
-const { getOwnPropertyDescriptor, hasOwnProperty } = Object;
+import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 
 const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(Document.prototype, 'activeElement')!.get as (this: Document) => Element | null;
 

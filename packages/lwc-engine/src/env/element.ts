@@ -1,4 +1,4 @@
-const { getOwnPropertyDescriptor, hasOwnProperty } = Object;
+import { hasOwnProperty, getOwnPropertyDescriptor } from "../shared/language";
 
 const {
     addEventListener,

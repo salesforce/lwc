@@ -1,4 +1,4 @@
-const { getOwnPropertyDescriptor, hasOwnProperty } = Object;
+import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
