@@ -1,4 +1,4 @@
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 import {
     StringToLowerCase,
     StringReplace,
