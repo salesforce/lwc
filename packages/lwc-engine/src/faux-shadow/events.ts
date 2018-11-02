@@ -8,7 +8,7 @@ import {
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { isNodeSlotted, getRootNode } from "./traverse";
+import { isNodeSlotted, getRootNodeGetter } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost, SyntheticShadowRootInterface } from "./shadow-root";
 
@@ -33,7 +33,7 @@ export const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnP
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function getRootNodeHost(node: Node, options): Node {
-    let rootNode = getRootNode.call(node, options);
+    let rootNode = getRootNodeGetter.call(node, options);
 
     // is SyntheticShadowRootInterface
     if ('mode' in rootNode && 'delegatesFocus' in rootNode) {

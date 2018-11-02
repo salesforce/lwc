@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf, defineProperty } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNode, GetRootNodeOptions } from "./traverse";
+import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
@@ -241,8 +241,8 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         throw new Error();
     }
 
-    getRootNode(options?: GetRootNodeOptions): Node {
-        return getRootNode.call(this, options);
+    getRootNode(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
+        return getRootNodeGetter.call(this, options);
     }
 }
 

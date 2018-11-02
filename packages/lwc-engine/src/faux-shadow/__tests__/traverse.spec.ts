@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getShadowRoot } from "../../faux-shadow/shadow-root";
+import { getRootNodeGetter } from "../traverse";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -1108,7 +1109,6 @@ describe('assignedSlot', () => {
     });
 });
 
-
 describe('Node.getRootNode on patched elements', () => {
     afterEach(() => {
         while (document.body.childNodes.length > 0) {
@@ -1139,12 +1139,6 @@ describe('Node.getRootNode on patched elements', () => {
         }
     }
 
-    const selectors: any = {};
-    selectors.xChild = (elm) => elm.shadowRoot!.querySelector('x-child');
-    selectors.xChildSpanInShadow = (elm) => selectors.xChild(elm).shadowRoot.querySelector('.child-cmp-span');
-    selectors.containerDiv = (elm) => elm.shadowRoot!.querySelector('.child-div');
-    selectors.containerSlottedSpan = (elm) => elm.shadowRoot!.querySelector('.child-cmp-slotted-span');
-
     describe('when options.composed=true', () => {
         it('should return itself when node is disconnected', () => {
             const elm = createElement('x-container', { is: ContainerComponent });
@@ -1164,7 +1158,8 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const child = selectors.xChildSpanInShadow(elm);
+                const child = elm.shadowRoot.querySelector('x-child')
+                    .shadowRoot.querySelector('.child-cmp-span');
 
                 expect(child.getRootNode({ composed: true })).toBe(document);
             });
@@ -1215,7 +1210,7 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const childDiv = selectors.containerDiv(elm);
+                const childDiv = elm.shadowRoot.querySelector('.child-div');
                 expect(childDiv!.getRootNode()).toBe(elm.shadowRoot);
             });
         });
@@ -1225,7 +1220,7 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const childCmp = selectors.xChild(elm);
+                const childCmp = elm.shadowRoot.querySelector('x-child');
                 expect(childCmp.getRootNode()).toBe(elm.shadowRoot);
             });
         });
@@ -1235,8 +1230,9 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const spanInChildCmp = selectors.xChildSpanInShadow(elm);
-                expect(spanInChildCmp!.getRootNode()).toBe(selectors.xChild(elm).shadowRoot);
+                const xChild = elm.shadowRoot.querySelector('x-child');
+                const spanInChildCmp = xChild.shadowRoot.querySelector('.child-cmp-span');
+                expect(spanInChildCmp!.getRootNode()).toBe(xChild.shadowRoot);
             });
         });
 
@@ -1245,8 +1241,29 @@ describe('Node.getRootNode on patched elements', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const spanInChildCmp = selectors.containerSlottedSpan(elm);
+                const spanInChildCmp = elm.shadowRoot.querySelector('.child-cmp-slotted-span');
                 expect(spanInChildCmp!.getRootNode()).toBe(elm.shadowRoot);
+            });
+        });
+
+        it('should return correct shadow on non patched elements', () => {
+            const cmpHtml = compileTemplate(`<template><div class="container"></div></template>`);
+            let injectedElement;
+            class InjectContanerComponent extends LightningElement {
+                renderedCallback() {
+                    this.template.querySelector('.container').innerHTML = '<span><p class="injected">injected element</p></span>';
+                    injectedElement = this.template.querySelector('p.injected');
+                }
+                render() {
+                    return cmpHtml;
+                }
+            }
+
+            const elm = createElement('x-container', { is: InjectContanerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(getRootNodeGetter.call(injectedElement)).toBe(elm.shadowRoot);
             });
         });
     });

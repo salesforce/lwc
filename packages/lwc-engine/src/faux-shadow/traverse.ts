@@ -170,7 +170,7 @@ function getShadowIncludingRoot(node: Node): Node {
  * TODO: Once we start using the real shadowDOM, this method should be replaced by:
  * const { getRootNode } = Node.prototype;
  */
-export function getRootNode(
+export function getRootNodeGetter(
     this: Node,
     options?: GetRootNodeOptions
 ): Node {
@@ -367,8 +367,8 @@ export function PatchedNode(node: Node): NodeConstructor {
             }
             return parentNode;
         }
-        getRootNode(options?: GetRootNodeOptions): Node {
-            return getRootNode.call(this, options);
+        getRootNode(this: Node, options?: GetRootNodeOptions): Node {
+            return getRootNodeGetter.call(this, options);
         }
     };
 }
