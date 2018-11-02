@@ -407,22 +407,6 @@ describe('html-element', () => {
             );
         });
 
-        it('should log warning when dispatching event in the custom element with bubble=true and composed=false', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    this.dispatchEvent(new CustomEvent('foobar', { bubbles: true, composed: false }));
-                }
-            }
-
-            const elm = createElement('x-foo', { is: Foo });
-
-            expect(() => (
-                document.body.appendChild(elm)
-            )).toLogWarning(
-                `Invalid event "foobar" dispatched in element <x-foo>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`
-            );
-        });
-
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
             class Foo extends LightningElement {
                 connectedCallback() {

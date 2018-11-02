@@ -152,11 +152,10 @@ BaseLightningElement.prototype = {
             if (!(event instanceof GlobalEvent)) {
                 throw new Error(`Failed to execute 'dispatchEvent' on ${getComponentAsString(this)}: parameter 1 is not of type 'Event'.`);
             }
-            const { type: evtName, composed, bubbles } = event;
+
+            const { type: evtName } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(this)} because no one is listening for the event "${evtName}" just yet.`);
-            if (bubbles && ('composed' in event && !composed)) {
-                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${getComponentAsString(this)}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`, elm);
-            }
+
             if (vm.idx === 0) {
                 assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(this)}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`, elm);
             }
