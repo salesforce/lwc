@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
 import { EmptyArray, ViewModelReflection } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey, isSyntheticShadowRoot } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
     setAttribute,
@@ -41,7 +41,7 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
 export function createTextHook(vnode: VNode) {
     const text = vnode.elm as Text;
     setNodeOwnerKey(text, vnode.uid);
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         patchTextNodeProto(text);
     }
 }
@@ -49,7 +49,7 @@ export function createTextHook(vnode: VNode) {
 export function createCommentHook(vnode: VNode) {
     const comment = vnode.elm as Comment;
     setNodeOwnerKey(comment, vnode.uid);
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         patchCommentNodeProto(comment);
     }
 }
@@ -69,13 +69,13 @@ export function createElmDefaultHook(vnode: VElement) {
 }
 
 export function createElmHook(vnode: VElement) {
-    const { shadowAttribute, uid, sel, fallback } = vnode;
+    const { shadowAttribute, uid, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
     if (!isUndefined(shadowAttribute)) {
         setAttribute.call(elm, shadowAttribute, '');
     }
     setNodeOwnerKey(elm, uid);
-    if (isTrue(fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         patchElementProto(elm, sel);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -84,8 +84,7 @@ export function createElmHook(vnode: VElement) {
 }
 
 export function createSlotElmHook(vnode: VElement) {
-    const { fallback } = vnode;
-    if (isTrue(fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         // special logic to support slotchange event in fallback mode
         const elm = vnode.elm as HTMLSlotElement;
         patchSlotElement(elm);
@@ -115,7 +114,7 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         // slow path
         const elm = vnode.elm as HTMLElement;
         const vm = getCustomElementVM(elm);
@@ -134,20 +133,17 @@ export function createCustomElmHook(vnode: VCustomElement) {
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
     }
-    const { mode, ctor, shadowAttribute, uid, sel, fallback } = vnode;
+    const { mode, ctor, shadowAttribute, uid, sel } = vnode;
     if (!isUndefined(shadowAttribute)) {
         setAttribute.call(elm, shadowAttribute, '');
     }
     setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
-    if (isTrue(fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         patchCustomElementProto(elm, sel, def);
     }
-    createVM(vnode.sel as string, elm, ctor, {
-        mode,
-        fallback,
-    });
+    createVM(vnode.sel as string, elm, ctor, { mode });
     const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);

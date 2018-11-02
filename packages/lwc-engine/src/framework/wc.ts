@@ -1,6 +1,6 @@
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse, ArrayMap } from "../shared/language";
-import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
+import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit, isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
@@ -15,20 +15,26 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         Ctor = resolveCircularModuleDependency(Ctor);
     }
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
-    const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
+    const normalizedOptions: CreateVMInit = { mode: 'open', isRoot: true };
     if (isObject(options) && !isNull(options)) {
-        const { mode, fallback } = (options as any);
+        const { mode, fallback: useSynthetic } = (options as any);
         // TODO: for now, we default to open, but eventually it should default to 'closed'
         if (mode === 'closed') { normalizedOptions.mode = mode; }
-        // fallback defaults to false to favor shadowRoot
-        normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
+        // fallback defaults to false to favor native ShadowRoot when creating WC Constructors
+        if (isUndefined(isSyntheticShadowRoot)) {
+            if (isTrue(useSynthetic) || isFalse(isNativeShadowRootAvailable)) {
+                alwaysUseSyntheticShadowRoot();
+            } else {
+                alwaysUseNativeShadowRoot();
+            }
+        }
     }
     return class extends BaseElement {
         constructor() {
             startGlobalMeasure(GlobalMeasurementPhase.INIT);
             super();
             const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
-            if (isTrue(normalizedOptions.fallback)) {
+            if (isSyntheticShadowRoot) {
                 const def = getComponentDef(Ctor);
                 patchCustomElementProto(this, tagName, def);
             }

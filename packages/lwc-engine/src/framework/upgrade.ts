@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
-import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
+import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey, isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
@@ -70,11 +70,18 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
 
-    let { mode, fallback } = (options as any);
+    let { mode } = (options as any);
+    const { fallback: useSynthetic } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }
-    // TODO: for now, we default to true, but eventually it should default to false
-    fallback = isUndefined(fallback) || isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
+    // fallback defaults to true to favor synthetic ShadowRoot when using this mechanism
+    if (isUndefined(isSyntheticShadowRoot)) {
+        if (isUndefined(useSynthetic) || isTrue(useSynthetic) || isFalse(isNativeShadowRootAvailable)) {
+            alwaysUseSyntheticShadowRoot();
+        } else {
+            alwaysUseNativeShadowRoot();
+        }
+    }
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -86,14 +93,14 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     }
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
-    if (isTrue(fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         patchCustomElementProto(element, sel, def);
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(element);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
+    createVM(sel, element, Ctor, { mode, isRoot: true });
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);

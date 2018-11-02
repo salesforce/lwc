@@ -4,7 +4,7 @@ import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
 import { EmptyArray } from "./utils";
-import { VM } from "./vm";
+import { VM, isSyntheticShadowRoot } from "./vm";
 import { removeAttribute, setAttribute } from "./dom-api";
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -127,10 +127,9 @@ export function evaluateCSS(vm: VM, stylesheetsObj: Stylesheet): VNode | null {
         assert.isTrue(isString(stylesheetsObj.shadowAttribute), `Invalid stylesheet shadow attribute.`);
     }
 
-    const { fallback } = vm;
     const { stylesheets, hostAttribute, shadowAttribute } = stylesheetsObj;
 
-    if (fallback) {
+    if (isSyntheticShadowRoot) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 

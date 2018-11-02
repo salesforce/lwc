@@ -31,7 +31,6 @@ export interface VNode {
   hook: Hooks;
   uid: number;
   shadowAttribute?: string;
-  fallback: boolean;
 }
 
 export interface VElement extends VNode {
@@ -40,7 +39,6 @@ export interface VElement extends VNode {
   elm: Element | undefined;
   text: undefined;
   key: Key;
-  fallback: boolean;
 }
 
 export interface VCustomElement extends VElement {

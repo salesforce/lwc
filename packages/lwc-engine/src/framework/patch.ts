@@ -6,6 +6,7 @@ import { setPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "./base-bridge-element";
 import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement, PatchedCustomElement } from '../faux-shadow/faux';
+import { isSyntheticShadowRoot } from "./vm";
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
@@ -20,9 +21,9 @@ export function hasDynamicChildren(children: VNodes): boolean {
     return FromIteration.has(children);
 }
 
-export function patchChildren(host: Element, shadowRoot: ShadowRoot, oldCh: VNodes, newCh: VNodes, isFallback: boolean) {
+export function patchChildren(host: Element, shadowRoot: ShadowRoot, oldCh: VNodes, newCh: VNodes) {
     if (oldCh !== newCh) {
-        const parentNode = isFallback ? host : shadowRoot;
+        const parentNode = isSyntheticShadowRoot ? host : shadowRoot;
         const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
         fn(parentNode, oldCh, newCh);
     }

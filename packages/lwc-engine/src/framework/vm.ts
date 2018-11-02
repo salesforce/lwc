@@ -44,7 +44,6 @@ export interface VM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
-    fallback: boolean;
     mode: string;
     component?: ComponentInterface;
     deps: VM[][];
@@ -160,7 +159,6 @@ export function removeVM(vm: VM) {
 export interface CreateVMInit {
     mode: "open" | "closed";
     // custom settings for now
-    fallback: boolean;
     isRoot?: boolean;
 }
 
@@ -169,7 +167,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, fallback } = options;
+    const { isRoot, mode } = options;
     const shadowRootOptions: ShadowRootInit = {
         mode,
         delegatesFocus: !!Ctor.delegatesFocus,
@@ -181,7 +179,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         isScheduled: false,
         isDirty: true,
         isRoot: isTrue(isRoot),
-        fallback,
         mode,
         def,
         elm: elm as HTMLElement,
@@ -190,7 +187,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         cmpProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
-        cmpSlots: fallback ? create(null) : undefined,
+        cmpSlots: isSyntheticShadowRoot ? create(null) : undefined,
         cmpTemplate: undefined,
         cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
@@ -233,14 +230,14 @@ function patchErrorBoundaryVm(errorBoundaryVm: VM) {
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
     const children = renderComponent(errorBoundaryVm);
-    const { elm, cmpRoot, fallback, children: oldCh } = errorBoundaryVm;
+    const { elm, cmpRoot, children: oldCh } = errorBoundaryVm;
     errorBoundaryVm.isScheduled = false;
     errorBoundaryVm.children = children; // caching the new children collection
 
     // patch function mutates vnodes by adding the element reference,
     // however, if patching fails it contains partial changes.
     // patch failures are caught in flushRehydrationQueue
-    patchChildren(elm, cmpRoot, oldCh, children, fallback);
+    patchChildren(elm, cmpRoot, oldCh, children);
     processPostPatchCallbacks(errorBoundaryVm);
 }
 
@@ -248,7 +245,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { elm, cmpRoot, fallback, children: oldCh } = vm;
+    const { elm, cmpRoot, children: oldCh } = vm;
     vm.children = children; // caching the new children collection
     if (children.length === 0 && oldCh.length === 0) {
         return; // nothing to do here
@@ -262,7 +259,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(elm, cmpRoot, oldCh, children, fallback);
+        patchChildren(elm, cmpRoot, oldCh, children);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -400,9 +397,9 @@ export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { children: oldCh, fallback } = vm;
+    const { children: oldCh } = vm;
     vm.children = EmptyArray;
-    if (isTrue(fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         // faux-shadow does not have a real cmpRoot instance, instead
         // we need to remove the content of the host entirely
         ElementInnerHTMLSetter.call(vm.elm, '');
@@ -634,4 +631,14 @@ export function allocateInSlot(vm: VM, children: VNodes) {
             }
         }
     }
+}
+
+export let isSyntheticShadowRoot: boolean;
+
+export function alwaysUseSyntheticShadowRoot() {
+    isSyntheticShadowRoot = true;
+}
+
+export function alwaysUseNativeShadowRoot() {
+    isSyntheticShadowRoot = false;
 }

@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from "./invoker";
 import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString, ArraySlice } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
-import { VM, SlotSet } from "./vm";
+import { VM, SlotSet, isSyntheticShadowRoot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks, Key, VCustomElement } from "../3rdparty/snabbdom/types";
 import {
@@ -31,7 +31,6 @@ import { markAsDynamicChildren, hasDynamicChildren, patchEvent } from "./patch";
 import {
     insertBefore,
     removeChild,
-    isNativeShadowRootAvailable,
 } from "./dom-api";
 import { Services, invokeServiceHook } from "./services";
 
@@ -203,21 +202,6 @@ function getCurrentOwnerId(): number {
     return (vmBeingRendered as VM).uid;
 }
 
-const getCurrentFallback: () => boolean = isNativeShadowRootAvailable ?
-    function() {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return (vmBeingRendered as VM).fallback;
-    } : () => {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return true;
-    };
-
 function getCurrentShadowAttribute(): string | undefined {
     if (process.env.NODE_ENV !== 'production') {
         // TODO: enable this after refactoring all failing tests
@@ -270,7 +254,6 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         hook: ElementHook,
         shadowAttribute: getCurrentShadowAttribute(),
         uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
     };
     if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
@@ -303,7 +286,7 @@ export function s(slotName: string, data: ElementCompilerData, children: VNodes,
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(isSyntheticShadowRoot)) {
         markAsDynamicChildren(children);
     }
     const { data: { create: originalCreate } } = vnode;
@@ -366,7 +349,6 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
         ctor: Ctor,
         shadowAttribute: getCurrentShadowAttribute(),
         uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
         mode: 'open', // TODO: this should be defined in Ctor
     };
     return vnode;
@@ -486,7 +468,6 @@ export function t(text: string): VText {
 
         hook: TextHook,
         uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
     };
 }
 
@@ -504,7 +485,6 @@ export function p(text: string): VComment {
 
         hook: CommentHook,
         uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
     };
 }
 
@@ -523,7 +503,7 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function(event: Event) {
-        if (vm.fallback) {
+        if (isSyntheticShadowRoot) {
             patchEvent(event);
         }
         invokeEventListener(vm, fn, vm.component, event);
