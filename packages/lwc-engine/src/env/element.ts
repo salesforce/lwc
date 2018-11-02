@@ -27,7 +27,7 @@ const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Elemen
 const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
 const matches: (this: Element, selector: string) => boolean = hasOwnProperty.call(Element.prototype, 'matches') ?
     Element.prototype.matches :
-    (HTMLElement.prototype as any).msMatches; // IE11
+    (Element.prototype as any).msMatchesSelector; // IE11
 
 export {
     addEventListener,
