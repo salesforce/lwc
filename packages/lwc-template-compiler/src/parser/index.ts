@@ -342,6 +342,14 @@ export default function parse(source: string, state: State): {
 
         removeAttribute(element, lwcDomAttribute.name);
 
+        if (isCustomElement(element)) {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element.__original, [`<${element.tag}>`]);
+        }
+
+        if (element.tag === 'slot') {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element.__original);
+        }
+
         if (lwcDomAttribute.type !== IRAttributeType.String || LWCDirectiveDomMode.hasOwnProperty(lwcDomAttribute.value) === false) {
             const possibleValues = Object.keys(LWCDirectiveDomMode).map((value) => `"${value}"`).join(', or ');
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [possibleValues]);

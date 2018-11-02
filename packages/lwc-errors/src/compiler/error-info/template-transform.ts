@@ -437,4 +437,18 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: "",
     },
+
+    LWC_DOM_INVALID_CUSTOM_ELEMENT: {
+        code: 1001,
+        message: "Invalid directive \"lwc:dom\" on element {0}. \"lwc:dom\" cannot be added to a custom element",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
+
+    LWC_DOM_INVALID_SLOT_ELEMENT: {
+        code: 1001,
+        message: "Invalid directive \"lwc:dom\" on <slot>.. \"lwc:dom\" cannot be added to a <slot>",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
 };
