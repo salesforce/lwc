@@ -38,7 +38,7 @@ export enum LWCDirectiveDomMode {
 }
 
 export interface LWCDirective {
-    dom: LWCDirectiveDomMode
+    dom: LWCDirectiveDomMode;
 }
 
 export interface IRElement {

@@ -65,7 +65,7 @@ const TEMPLATE_FUNCTION = template(
     { sourceType: 'module' },
 );
 
-function generateContext(element: IRElement, data:t.ObjectProperty[], codeGen: CodeGen) {
+function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
     const { lwc, locator } = element;
     const contextExpressions: t.ObjectProperty[] = [];
 
@@ -77,7 +77,6 @@ function generateContext(element: IRElement, data:t.ObjectProperty[], codeGen: C
                 t.stringLiteral(lwc[key])
             );
         });
-
 
         const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
         contextExpressions.push(lwcObj);
