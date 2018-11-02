@@ -43,6 +43,17 @@ function hasFocusableTabIndex(element: HTMLElement) {
     return true;
 }
 
+// This function based on https://allyjs.io/data-tables/focusable.html
+// It won't catch everything, but should be good enough
+// There are a lot of edge cases here that we can't realistically handle
+// Determines if a particular element is tabbable, as opposed to simply focusable
+
+// Exported for jest purposes
+export function isTabbable(element: HTMLElement): boolean {
+    return matches.call(element, TabbableElementsQuery) && isVisible(element);
+}
+
+
 const focusableTagNames = {
     IFRAME: 1,
     VIDEO: 1,
@@ -57,17 +68,6 @@ const focusableTagNames = {
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
-// Determines if a particular element is tabbable, as opposed to simply focusable
-
-// Exported for jest purposes
-export function isTabbable(element: HTMLElement): boolean {
-    return matches.call(element, TabbableElementsQuery);
-}
-
-// This function based on https://allyjs.io/data-tables/focusable.html
-// It won't catch everything, but should be good enough
-// There are a lot of edge cases here that we can't realistically handle
-
 // Exported for jest purposes
 export function isFocusable(element: HTMLElement): boolean {
     const tagName = tagNameGetter.call(element);
@@ -108,7 +108,7 @@ interface QuerySegments {
     next: HTMLElement[];
 }
 
-function getFocusableSegments(host: HTMLElement): QuerySegments {
+function getTabbableSegments(host: HTMLElement): QuerySegments {
     const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
     const inner = querySelectorAll.call(host, TabbableElementsQuery);
     if (process.env.NODE_ENV !== 'production') {
@@ -125,7 +125,7 @@ function getFocusableSegments(host: HTMLElement): QuerySegments {
     };
 }
 
-export function getFirstFocusableElement(host: HTMLElement): HTMLElement | null {
+export function getFirstTabbableElement(host: HTMLElement): HTMLElement | null {
     const local = querySelectorAll.call(host, TabbableElementsQuery);
     return getFirstTabbableMatch(local);
 }
@@ -198,7 +198,7 @@ function focusInEventHandler(event: FocusEvent) {
     const host: EventTarget = eventCurrentTargetGetter.call(event);
     const target: EventTarget = eventTargetGetter.call(event);
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
-    const segments = getFocusableSegments(host as HTMLElement);
+    const segments = getTabbableSegments(host as HTMLElement);
     const isFirstFocusableChildReceivingFocus = isFirstTabbableChild(target, segments);
     const isLastFocusableChildReceivingFocus = isLastTabbableChild(target, segments);
     if ((isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) || isNull(relatedTarget)) {
