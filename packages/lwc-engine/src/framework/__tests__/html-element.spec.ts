@@ -1245,17 +1245,11 @@ describe('html-element', () => {
                 expect(element.role).toBe(null);
             });
 
-            it('should return null even if the shadow root value is set', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.role = 'tab';
-                    }
-                }
+            it('should return null by default', () => {
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
                 expect(element.role).toBe(null);
-                // checking for the internal polyfill value as well
-                expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
             });
 
             it('should call setter when defined', () => {
@@ -1275,79 +1269,6 @@ describe('html-element', () => {
                 document.body.appendChild(element);
                 element.role = 'tab';
                 expect(called).toBe(1);
-            });
-
-            it('should not overwrite role attribute when setter does nothing', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.role = 'tab';
-                    }
-                    get role() {}
-                    set role(value) {}
-                }
-                MyComponent.publicProps = {
-                    role: {
-                        config: 3,
-                    }
-                }
-                const element = createElement('prop-getter-aria-role', { is: MyComponent });
-                document.body.appendChild(element);
-                element.role = 'nottab';
-                expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
-            });
-
-            it('should reflect role from root when element value is set to null', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.role = 'tab';
-                    }
-                }
-                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
-                document.body.appendChild(element);
-                element.role = 'nottab';
-                return Promise.resolve().then(() => {
-                    element.role = null;
-                    return Promise.resolve().then(() => {
-                        expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
-                    });
-                });
-            });
-
-            it('should remove role attribute from element when root and value is null', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.role = 'tab';
-                    }
-                    clearRole() {
-                        this.template.role = null;
-                    }
-                }
-                MyComponent.publicMethods = ['clearRole'];
-                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
-                document.body.appendChild(element);
-                //element.role = 'nottab';
-                return Promise.resolve().then(() => {
-                    element.role = null;
-                    element.clearRole();
-                    return Promise.resolve().then(() => {
-                        expect(HTMLElement.prototype.hasAttribute.call(element, 'role')).toBe(false);
-                    });
-                });
-            });
-
-            describe('AOM shim', () => {
-                it('getAttribute reflect default value when aria-checked has been removed', () => {
-                    class MyComponent extends LightningElement {
-                        connectedCallback() {
-                            this.template.role = 'tab'
-                        }
-                    }
-                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
-                    document.body.appendChild(element);
-                    element.setAttribute('role', 'button');
-                    element.removeAttribute('role');
-                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
-                });
             });
         });
 
@@ -1377,47 +1298,6 @@ describe('html-element', () => {
                 const element = createElement('prop-getter-aria-checked', { is: MyComponent });
                 expect(element.ariaChecked).toBe(null);
             });
-
-            it('should return null even if the shadow root value is set', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.ariaChecked = 'true';
-                    }
-                }
-                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
-                document.body.appendChild(element);
-                expect(element.ariaChecked).toBe(null);
-                // checking for the internal polyfill value as well
-                expect(HTMLElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
-            });
-
-            describe('AOM shim', () => {
-                it('internal getAttribute reflect default value when aria-checked has been removed', () => {
-                    class MyComponent extends LightningElement {
-                        connectedCallback() {
-                            this.template.ariaChecked = 'true';
-                            this.setAttribute('aria-checked', 'false');
-                            this.removeAttribute('aria-checked');
-                        }
-                    }
-                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
-                    document.body.appendChild(element);
-                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
-                });
-
-                it('external getAttribute reflect default value when aria-checked has been removed', () => {
-                    class MyComponent extends LightningElement {
-                        connectedCallback() {
-                            this.template.ariaChecked = 'true';
-                        }
-                    }
-                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
-                    document.body.appendChild(element);
-                    element.setAttribute('aria-checked', 'false');
-                    element.removeAttribute('aria-checked');
-                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
-                });
-            });
         });
 
         describe('#ariaLabel', () => {
@@ -1445,19 +1325,6 @@ describe('html-element', () => {
                 }
                 const element = createElement('prop-getter-aria-label', { is: MyComponent });
                 expect(element.ariaLabel).toBe(null);
-            });
-
-            it('should return null value when not value is set, shadow root value should not leak out', () => {
-                class MyComponent extends LightningElement {
-                    connectedCallback() {
-                        this.template.ariaLabel = 'foo';
-                    }
-                }
-                const element = createElement('prop-getter-aria-label', { is: MyComponent });
-                document.body.appendChild(element);
-                expect(element.ariaLabel).toBe(null);
-                // checking for the internal polyfill value as well
-                expect(HTMLElement.prototype.getAttribute.call(element, 'aria-label')).toBe('foo');
             });
         });
     });

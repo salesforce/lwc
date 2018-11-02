@@ -1,13 +1,11 @@
 import assert from "../shared/assert";
-import { isFalse, create, isUndefined, getOwnPropertyDescriptor, ArrayReduce, isNull, defineProperties, setPrototypeOf, defineProperty } from "../shared/language";
+import { isNull, setPrototypeOf, defineProperty } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter, } from "./node";
-// it is ok to import from the polyfill since they always go hand-to-hand anyways.
-import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "./node";
 import { DocumentPrototypeActiveElement } from "./document";
 import { SyntheticNodeList } from "./node-list";
 
@@ -30,36 +28,11 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalField(elm, ShadowRootKey);
 }
 
-// Synthetic creation of all AOM property descriptors for Shadow Roots
-function createShadowRootAOMDescriptorMap(): PropertyDescriptorMap {
-    return ArrayReduce.call(ElementPrototypeAriaPropertyNames, (seed: PropertyDescriptorMap, propName: string) => {
-        let descriptor: PropertyDescriptor | undefined;
-        if (isNativeShadowRootAvailable) {
-            descriptor = getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, propName);
-        } else {
-            descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
-        }
-        if (!isUndefined(descriptor)) {
-            seed[propName] = descriptor;
-        }
-        return seed;
-    }, create(null));
-}
-
-let ShadowRootPrototypePatched = false;
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
     if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode, delegatesFocus } = options;
-
-    // These cannot be patched when module is loaded because
-    // Element.prototype needs to be patched first, which happens
-    // after this module is executed
-    if (isFalse(ShadowRootPrototypePatched)) {
-        ShadowRootPrototypePatched = true;
-        defineProperties(SyntheticShadowRoot.prototype, createShadowRootAOMDescriptorMap());
-    }
     // creating a real fragment for shadowRoot instance
     const sr = createDocumentFragment.call(document);
     defineProperty(sr, 'mode', {
