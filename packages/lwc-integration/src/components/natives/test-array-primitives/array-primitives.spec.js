@@ -10,14 +10,37 @@ describe('Testing array primitives', () => {
     it('page load', () => {
         const title = browser.getTitle();
         assert.equal(title, 'array-primitives');
-        assert.ok(element);
     });
 
     it('check initial state', function () {
-        const items = browser.execute(function () {
-            return document.querySelector('integration-array-primitives').shadowRoot.querySelector('li').length;
+        const initialLength = 5;
+        const { value } = browser.execute(function () {
+            return document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li').length
         });
 
-        assert.equal(items.value, items.length);
+        assert.equal(value, initialLength);
+    });
+
+    it('check splice reactivity', function () {
+        const splicedList = [ 'one', 'three', 'four', 'five' ];
+        const splicedLength = splicedList.length;
+        browser.execute(function () {
+            return document.querySelector('integration-array-primitives').shadowRoot.querySelector('.splice').click();
+        });
+
+        // Technically a microtask is not needed since selenium already does macrotasking
+
+        const { value } = browser.execute(function () {
+            var list = Array.prototype.slice.call(
+                document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li')
+            );
+
+            return list.map(function (li) {
+                return li.textContent;
+            });
+        });
+
+        assert.equal(value.length, splicedLength);
+        assert.deepEqual(value, splicedList);
     });
 });
