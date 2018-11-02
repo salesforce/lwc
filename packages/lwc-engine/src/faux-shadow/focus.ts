@@ -53,7 +53,6 @@ export function isTabbable(element: HTMLElement): boolean {
     return matches.call(element, TabbableElementsQuery) && isVisible(element);
 }
 
-
 const focusableTagNames = {
     IFRAME: 1,
     VIDEO: 1,
