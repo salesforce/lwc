@@ -14,7 +14,7 @@ import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
-import { startMeasure, endMeasure } from "./performance-timing";
+import { startMeasure, endMeasure, startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -311,6 +311,8 @@ function processPostPatchCallbacks(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
+    startGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(rehydrateQueue.length, `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`);
     }
@@ -330,6 +332,9 @@ function flushRehydrationQueue() {
                     }
                     ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
                 }
+                // we need to end the measure before throwing.
+                endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+
                 // rethrowing the original error will break the current tick, but since the next tick is
                 // already scheduled, it should continue patching the rest.
                 throw error; // tslint:disable-line
@@ -341,6 +346,8 @@ function flushRehydrationQueue() {
             }
         }
     }
+
+    endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
 }
 
 function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
