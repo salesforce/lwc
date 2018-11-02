@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.6...v) (2018-10-29)
+# [](https://github.com/salesforce/lwc/compare/v0.30.7...v) (2018-11-02)
+
+
+### Bug Fixes
+
+* **engine:** using tabindex getter in assert ([#785](https://github.com/salesforce/lwc/issues/785)) ([e56b4e2](https://github.com/salesforce/lwc/commit/e56b4e2))
+* remove harmful warning that encourages composed events ([#795](https://github.com/salesforce/lwc/issues/795)) ([e5cc47e](https://github.com/salesforce/lwc/commit/e5cc47e))
+
+
+### Features
+
+* CSS parsing and programatic imports ([#776](https://github.com/salesforce/lwc/issues/776)) ([f739710](https://github.com/salesforce/lwc/commit/f739710))
+* **engine:** performance marks ([#756](https://github.com/salesforce/lwc/issues/756)) ([24e029a](https://github.com/salesforce/lwc/commit/24e029a))
+* upgrade COMPAT to support splice ([#797](https://github.com/salesforce/lwc/issues/797)) ([1ab7f4a](https://github.com/salesforce/lwc/commit/1ab7f4a))
+
+
+
+<a name="0.30.7"></a>
+## [0.30.7](https://github.com/salesforce/lwc/compare/v0.30.6...v0.30.7) (2018-10-29)
 
 
 
