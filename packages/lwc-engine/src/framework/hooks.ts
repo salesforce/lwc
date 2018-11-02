@@ -73,7 +73,7 @@ export function createElmHook(vnode: VElement) {
     setNodeOwnerKey(elm, uid);
     if (isTrue(fallback)) {
         const { shadowAttribute, data: { context } } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual';
         patchElementProto(elm, {
             sel,
             isPortal,
@@ -82,7 +82,7 @@ export function createElmHook(vnode: VElement) {
     }
     if (process.env.NODE_ENV !== 'production') {
         const { data: { context } } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && hasOwnProperty.call(context.lwc, 'portal');
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual';
         patchElementWithRestrictions(elm, { isPortal });
     }
 }
