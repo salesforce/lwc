@@ -2,7 +2,7 @@ import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from "./invoker";
 import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString, ArraySlice } from "../shared/language";
 import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
-import { VM, SlotSet, isSyntheticShadowRoot } from "./vm";
+import { VM, SlotSet } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks, Key, VCustomElement } from "../3rdparty/snabbdom/types";
 import {
@@ -33,6 +33,7 @@ import {
     removeChild,
 } from "./dom-api";
 import { Services, invokeServiceHook } from "./services";
+import { isSyntheticShadowRoot } from "./config";
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;

@@ -4,8 +4,9 @@ import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
 import { EmptyArray } from "./utils";
-import { VM, isSyntheticShadowRoot } from "./vm";
+import { VM } from "./vm";
 import { removeAttribute, setAttribute } from "./dom-api";
+import { isSyntheticShadowRoot } from "./config";
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.

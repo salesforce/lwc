@@ -1,6 +1,7 @@
 import assert from "../shared/assert";
 import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
-import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey, isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./vm";
+import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
+import { isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./config";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";

@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
 import { EmptyArray, ViewModelReflection } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey, isSyntheticShadowRoot } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
     setAttribute,
@@ -23,6 +23,7 @@ import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdo
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
+import { isSyntheticShadowRoot } from "./config";
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {

@@ -1,6 +1,7 @@
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse, ArrayMap } from "../shared/language";
-import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit, isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./vm";
+import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
+import { isSyntheticShadowRoot, alwaysUseSyntheticShadowRoot, alwaysUseNativeShadowRoot } from "./config";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";

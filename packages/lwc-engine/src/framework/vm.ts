@@ -15,6 +15,7 @@ import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure, startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
+import { isSyntheticShadowRoot } from "./config";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -631,14 +632,4 @@ export function allocateInSlot(vm: VM, children: VNodes) {
             }
         }
     }
-}
-
-export let isSyntheticShadowRoot: boolean;
-
-export function alwaysUseSyntheticShadowRoot() {
-    isSyntheticShadowRoot = true;
-}
-
-export function alwaysUseNativeShadowRoot() {
-    isSyntheticShadowRoot = false;
 }
