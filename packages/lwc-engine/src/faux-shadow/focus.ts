@@ -155,18 +155,18 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): n
     return -1;
 }
 
-function getPreviousFocusableElement(segments: QuerySegments): HTMLElement | null {
+function getPreviousTabbableElement(segments: QuerySegments): HTMLElement | null {
     const { prev } = segments;
     return getFirstTabbableMatch(ArrayReverse.call(prev));
 }
 
-function getNextFocusableElement(segments: QuerySegments): HTMLElement | null {
+function getNextTabbableElement(segments: QuerySegments): HTMLElement | null {
     const { next } = segments;
     return getFirstTabbableMatch(next);
 }
 
 function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const nextNode = getNextFocusableElement(segments);
+    const nextNode = getNextTabbableElement(segments);
     if (isNull(nextNode)) {
         // nothing to focus on, blur to invalidate the operation
         (focusEventTarget as HTMLElement).blur();
@@ -176,7 +176,7 @@ function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegment
 }
 
 function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const prevNode = getPreviousFocusableElement(segments);
+    const prevNode = getPreviousTabbableElement(segments);
     if (isNull(prevNode)) {
         // nothing to focus on, blur to invalidate the operation
         (focusEventTarget as HTMLElement).blur();
@@ -209,7 +209,7 @@ function focusInEventHandler(event: FocusEvent) {
     switch (post) {
         case 1:
             // focus is probably coming from above
-            if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousFocusableElement(segments)) {
+            if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousTabbableElement(segments)) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnNextOrBlur(target, segments);
@@ -231,7 +231,7 @@ function focusInEventHandler(event: FocusEvent) {
         case 2:
             // focus is probably coming from below
             // focus is probably coming from above
-            if (isLastFocusableChildReceivingFocus && relatedTarget === getNextFocusableElement(segments)) {
+            if (isLastFocusableChildReceivingFocus && relatedTarget === getNextTabbableElement(segments)) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnPrevOrBlur(target, segments);
