@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.30.7...v) (2018-11-02)
+# [](https://github.com/salesforce/lwc/compare/v0.31.1...v) (2018-11-03)
+
+
+### Bug Fixes
+
+* remove assert due to safari bug ([#798](https://github.com/salesforce/lwc/issues/798)) ([9381315](https://github.com/salesforce/lwc/commit/9381315))
+
+
+
+<a name="0.31.1"></a>
+## [0.31.1](https://github.com/salesforce/lwc/compare/v0.30.7...v0.31.1) (2018-11-02)
 
 
 ### Bug Fixes
