@@ -21,24 +21,24 @@ describe('example-foo', () => {
         expect(element).toMatchSnapshot();
     });
 
-    it('renders foo-inner DOM', () => {
+    it('3renders foo-inner DOM', () => {
         const element = createElement('example-foo', { is: Foo });
         document.body.appendChild(element);
-        const classes = element.getElementsByClassName("exampleFooInner");
+        const classes = element.shadowRoot.querySelector('example-foo-inner').shadowRoot.querySelectorAll(".exampleFooInner");
         expect(classes).toHaveLength(1);
     });
 
     it('renders component from another namespace (other-bar)', () => {
         const element = createElement('example-foo', { is: Foo });
         document.body.appendChild(element);
-        const classes = element.getElementsByClassName("otherBar");
+        const classes = element.shadowRoot.querySelector('other-bar').shadowRoot.querySelectorAll(".otherBar");
         expect(classes).toHaveLength(1);
     });
 
     it('can import component from another namespace', () => {
         const element = createElement('other-bar', { is: Bar });
         document.body.appendChild(element);
-        const classes = element.getElementsByClassName("otherBar");
+        const classes = element.shadowRoot.querySelectorAll(".otherBar");
         expect(classes).toHaveLength(1);
     });
 

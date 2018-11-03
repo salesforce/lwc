@@ -5,9 +5,9 @@ import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySele
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
+import { createStaticNodeList } from "../shared/static-node-list";
 import { DocumentPrototypeActiveElement } from "../env/document";
-import { SyntheticNodeList } from "./node-list";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
 
 const HostKey = createFieldName('host');
@@ -138,8 +138,8 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         }
         return textContent;
     }
-    get childNodes(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
-        return shadowRootChildNodes(this);
+    get childNodes(this: SyntheticShadowRootInterface): NodeListOf<Node & Element> {
+        return createStaticNodeList(shadowRootChildNodes(this));
     }
     get parentNode() {
         return null;
@@ -167,8 +167,8 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
      */
     // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
     // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
-    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): SyntheticNodeList<Element> {
-        return shadowRootQuerySelectorAll(this, selectors);
+    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<Element> {
+        return createStaticNodeList(shadowRootQuerySelectorAll(this, selectors));
     }
     addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         addShadowRootEventListener(this, type, listener, options);
