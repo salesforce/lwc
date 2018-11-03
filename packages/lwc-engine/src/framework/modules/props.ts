@@ -3,7 +3,7 @@ import { create, hasOwnProperty, isUndefined, keys } from "../../shared/language
 import { getInternalField } from "../../shared/fields";
 import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
-import { VNode, Module } from "../../3rdparty/snabbdom/types";
+import { VNode } from "../../3rdparty/snabbdom/types";
 import { getAttrNameFromPropName } from "../attributes";
 
 const EspecialTagAndPropMap = create(null, {
@@ -64,8 +64,10 @@ function update(oldVnode: VNode, vnode: VNode) {
         }
     }
 }
-const propsModule: Module = {
-    create: update,
+
+const emptyVNode = { data: {} };
+
+export default {
+    create: (vnode: VNode) => update(emptyVNode as VNode, vnode),
     update,
 };
-export default propsModule;

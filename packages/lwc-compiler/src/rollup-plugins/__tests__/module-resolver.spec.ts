@@ -1,6 +1,6 @@
 import { compile } from "../../compiler/compiler";
-import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 import { pretify, readFixture } from "../../__tests__/utils";
+import { DiagnosticLevel } from "lwc-errors";
 
 const VALID_CONFIG = {
     outputConfig: {
@@ -42,7 +42,7 @@ describe("module resolver", () => {
                     } = $api;
 
                     return [api_element(\"p\", {
-                        key: 1
+                        key: 2
                     }, [api_text(\"Manually Imported Template\")])];
                 }
 
@@ -86,7 +86,7 @@ describe("module resolver", () => {
                     } = $api;
 
                     return [api_element(\"p\", {
-                        key: 1
+                        key: 2
                     }, [api_text(\"Another Template\")])];
                 }
 

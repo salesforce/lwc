@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Missing root template tag",
-    "start": 0,
-    "length": 0
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Missing root template tag",
+            "level": 1,
+            "location": {
+                "line": 0,
+                "column": 0
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

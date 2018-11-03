@@ -13,13 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "table",
       {
-        key: 3
+        key: 2
       },
       [
         api_element(
           "tbody",
           {
-            key: 2
+            key: 3
           },
           api_iterator($cmp.rows, function(row) {
             return row.visible
@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       is: "ns-row"
                     },
-                    key: api_key(1, row.id)
+                    key: api_key(4, row.id)
                   },
                   []
                 )

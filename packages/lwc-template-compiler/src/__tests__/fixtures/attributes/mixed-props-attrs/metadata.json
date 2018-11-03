@@ -1,101 +1,110 @@
 {
-  "metadata": {
-    "templateUsedIds": ["p", "foo"],
-    "templateDependencies": [
-      {
-        "moduleName": "ns/foo",
-        "tagName": "ns-foo",
-        "properties": {
-          "d": {
-            "type": "expression",
-            "value": "p.foo"
-          }
-        }
-      },
-      {
-        "moduleName": "ns/bar",
-        "tagName": "ns-bar",
-        "properties": {
-          "ariaDescribedBy": {
-            "type": "literal",
-            "value": "describedby"
-          },
-          "ariaHidden": {
-            "type": "literal",
-            "value": "hidden"
-          },
-          "bgColor": {
-            "type": "literal",
-            "value": "blue"
-          },
-          "foo": {
-            "type": "literal",
-            "value": "bar"
-          },
-          "fooBar": {
-            "type": "literal",
-            "value": "x"
-          },
-          "role": {
-            "type": "literal",
-            "value": "xx"
-          },
-          "tabIndex": {
-            "type": "literal",
-            "value": "0"
-          }
-        }
-      },
-      {
-        "moduleName": "ns/buzz",
-        "tagName": "div",
-        "properties": {
-          "ariaHidden": {
-            "type": "literal",
-            "value": "hidden"
-          },
-          "bgColor": {
-            "type": "literal",
-            "value": "x"
-          }
-        }
-      },
-      {
-        "moduleName": "ns/table",
-        "tagName": "table",
-        "properties": {
-          "bar": {
-            "type": "literal",
-            "value": "test"
-          },
-          "bgColor": {
-            "type": "literal",
-            "value": "x"
-          },
-          "min": {
-            "type": "literal",
-            "value": "3"
-          },
-          "tabIndex": {
-            "type": "literal",
-            "value": "0"
-          }
-        }
-      },
-      {
-        "moduleName": "ns/input",
-        "tagName": "input",
-        "properties": {
-          "maxLength": {
-            "type": "literal",
-            "value": "10"
-          },
-          "minLength": {
-            "type": "literal",
-            "value": "3"
-          }
-        }
-      }
-    ]
-  }
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "p",
+            "foo"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "ns/foo",
+                "tagName": "ns-foo",
+                "properties": {
+                    "d": {
+                        "type": "expression",
+                        "value": "p.foo"
+                    },
+                    "id": {
+                        "type": "literal",
+                        "value": "ns-foo"
+                    }
+                }
+            },
+            {
+                "moduleName": "ns/bar",
+                "tagName": "ns-bar",
+                "properties": {
+                    "ariaDescribedBy": {
+                        "type": "literal",
+                        "value": "ns-foo"
+                    },
+                    "ariaHidden": {
+                        "type": "literal",
+                        "value": "hidden"
+                    },
+                    "fooBar": {
+                        "type": "literal",
+                        "value": "x"
+                    },
+                    "foo": {
+                        "type": "literal",
+                        "value": "bar"
+                    },
+                    "role": {
+                        "type": "literal",
+                        "value": "xx"
+                    },
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "0"
+                    },
+                    "bgColor": {
+                        "type": "literal",
+                        "value": "blue"
+                    }
+                }
+            },
+            {
+                "moduleName": "ns/buzz",
+                "tagName": "div",
+                "properties": {
+                    "bgColor": {
+                        "type": "literal",
+                        "value": "x"
+                    },
+                    "ariaHidden": {
+                        "type": "literal",
+                        "value": "hidden"
+                    }
+                }
+            },
+            {
+                "moduleName": "ns/table",
+                "tagName": "table",
+                "properties": {
+                    "bgColor": {
+                        "type": "literal",
+                        "value": "x"
+                    },
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "0"
+                    },
+                    "bar": {
+                        "type": "literal",
+                        "value": "test"
+                    },
+                    "min": {
+                        "type": "literal",
+                        "value": "3"
+                    }
+                }
+            },
+            {
+                "moduleName": "ns/input",
+                "tagName": "input",
+                "properties": {
+                    "minLength": {
+                        "type": "literal",
+                        "value": "3"
+                    },
+                    "maxLength": {
+                        "type": "literal",
+                        "value": "10"
+                    }
+                }
+            }
+        ]
+    }
 }

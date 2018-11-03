@@ -15,7 +15,7 @@ it('should throw when processing an invalid HTML file', async () => {
     ).rejects.toMatchObject({
         filename: 'foo.html',
         message: expect.stringContaining(
-            'foo.html: Invalid HTML syntax: eof-in-tag.',
+            'Invalid HTML syntax: eof-in-tag.',
         ),
     });
 });
@@ -28,7 +28,7 @@ it('should apply transformation for template file', async () => {
     `;
 
     const expected = `
-        import stylesheet from './foo.css';
+        import stylesheets from "./foo.css";
         import { registerTemplate } from "lwc";
 
         function tmpl($api, $cmp, $slotset, $ctx) {
@@ -38,14 +38,17 @@ it('should apply transformation for template file', async () => {
             } = $api;
 
             return [api_element("div", {
-                key: 1
+                key: 2
             }, [api_text("Hello")])];
         }
 
         export default registerTemplate(tmpl);
-
-        if (stylesheet) {
-            tmpl.stylesheet = stylesheet;
+        if (stylesheets) {
+            tmpl.stylesheets = {
+                stylesheets,
+                hostAttribute: "x-foo_foo-host",
+                shadowAttribute: "x-foo_foo"
+            };
         }
     `;
 

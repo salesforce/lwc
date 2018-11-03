@@ -1,5 +1,165 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.29.19...v) (2018-10-12)
+# [](https://github.com/salesforce/lwc/compare/v0.31.1...v) (2018-11-03)
+
+
+### Bug Fixes
+
+* remove assert due to safari bug ([#798](https://github.com/salesforce/lwc/issues/798)) ([9381315](https://github.com/salesforce/lwc/commit/9381315))
+
+
+
+<a name="0.31.1"></a>
+## [0.31.1](https://github.com/salesforce/lwc/compare/v0.30.7...v0.31.1) (2018-11-02)
+
+
+### Bug Fixes
+
+* **engine:** using tabindex getter in assert ([#785](https://github.com/salesforce/lwc/issues/785)) ([e56b4e2](https://github.com/salesforce/lwc/commit/e56b4e2))
+* remove harmful warning that encourages composed events ([#795](https://github.com/salesforce/lwc/issues/795)) ([e5cc47e](https://github.com/salesforce/lwc/commit/e5cc47e))
+
+
+### Features
+
+* CSS parsing and programatic imports ([#776](https://github.com/salesforce/lwc/issues/776)) ([f739710](https://github.com/salesforce/lwc/commit/f739710))
+* **engine:** performance marks ([#756](https://github.com/salesforce/lwc/issues/756)) ([24e029a](https://github.com/salesforce/lwc/commit/24e029a))
+* upgrade COMPAT to support splice ([#797](https://github.com/salesforce/lwc/issues/797)) ([1ab7f4a](https://github.com/salesforce/lwc/commit/1ab7f4a))
+
+
+
+<a name="0.30.7"></a>
+## [0.30.7](https://github.com/salesforce/lwc/compare/v0.30.6...v0.30.7) (2018-10-29)
+
+
+
+<a name="0.30.6"></a>
+## [0.30.6](https://github.com/salesforce/lwc/compare/v0.30.5...v0.30.6) (2018-10-29)
+
+
+
+<a name="0.30.5"></a>
+## [0.30.5](https://github.com/salesforce/lwc/compare/v0.30.4...v0.30.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **compiler:** resolve error code conflicts ([#770](https://github.com/salesforce/lwc/issues/770)) ([8885eb6](https://github.com/salesforce/lwc/commit/8885eb6))
+
+
+
+<a name="0.30.4"></a>
+## [0.30.4](https://github.com/salesforce/lwc/compare/v0.30.3...v0.30.4) (2018-10-26)
+
+
+### Bug Fixes
+
+* **engine:** fixing tab index assert ([#773](https://github.com/salesforce/lwc/issues/773)) ([667b929](https://github.com/salesforce/lwc/commit/667b929))
+
+
+
+<a name="0.30.3"></a>
+## [0.30.3](https://github.com/salesforce/lwc/compare/v0.30.2...v0.30.3) (2018-10-26)
+
+
+### Bug Fixes
+
+* **engine:** fix issue [#766](https://github.com/salesforce/lwc/issues/766) to patch query selectors ([#769](https://github.com/salesforce/lwc/issues/769)) ([81093fc](https://github.com/salesforce/lwc/commit/81093fc))
+* **engine:** focus delegation fixes to narrow false positives ([#763](https://github.com/salesforce/lwc/issues/763)) ([22e75a5](https://github.com/salesforce/lwc/commit/22e75a5))
+* **wire-service:** workaround babel minify issue in compat mode ([#768](https://github.com/salesforce/lwc/issues/768)) ([8e718ae](https://github.com/salesforce/lwc/commit/8e718ae))
+
+
+### Features
+
+* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/i18n ([#758](https://github.com/salesforce/lwc/issues/758)) ([00a13cc](https://github.com/salesforce/lwc/commit/00a13cc))
+* **wire:** use class property default values ([#767](https://github.com/salesforce/lwc/issues/767)) ([4c76b9a](https://github.com/salesforce/lwc/commit/4c76b9a))
+
+
+
+<a name="0.30.2"></a>
+## [0.30.2](https://github.com/salesforce/lwc/compare/v0.30.1...v0.30.2) (2018-10-24)
+
+
+### Bug Fixes
+
+* **compiler:** resolves conflicts between locator and errors work ([#759](https://github.com/salesforce/lwc/issues/759)) ([a212efd](https://github.com/salesforce/lwc/commit/a212efd))
+* **engine:** error when event listener was on document ([#762](https://github.com/salesforce/lwc/issues/762)) ([6471a65](https://github.com/salesforce/lwc/commit/6471a65))
+
+
+### Features
+
+* **compiler:** Implement error codes system onto compiler modules ([#726](https://github.com/salesforce/lwc/issues/726)) ([3ee81d5](https://github.com/salesforce/lwc/commit/3ee81d5))
+* Add support for locators ([#701](https://github.com/salesforce/lwc/issues/701)) ([464daf4](https://github.com/salesforce/lwc/commit/464daf4))
+* **compiler:** throw on any non-whitelisted lwc imports ([#752](https://github.com/salesforce/lwc/issues/752)) ([9652133](https://github.com/salesforce/lwc/commit/9652133))
+
+
+
+<a name="0.30.1"></a>
+## [0.30.1](https://github.com/salesforce/lwc/compare/v0.30.0...v0.30.1) (2018-10-22)
+
+
+
+<a name="0.30.0"></a>
+# [0.30.0](https://github.com/salesforce/lwc/compare/v0.29.26-1...v0.30.0) (2018-10-21)
+
+
+### Features
+
+* **wire:** wire output as wire parameter ([#742](https://github.com/salesforce/lwc/issues/742)) ([33de30e](https://github.com/salesforce/lwc/commit/33de30e))
+* next rebased ([#734](https://github.com/salesforce/lwc/issues/734)) ([fb72740](https://github.com/salesforce/lwc/commit/fb72740)), closes [#695](https://github.com/salesforce/lwc/issues/695) [#606](https://github.com/salesforce/lwc/issues/606) [#688](https://github.com/salesforce/lwc/issues/688) [#705](https://github.com/salesforce/lwc/issues/705)
+
+
+
+<a name="0.29.26-1"></a>
+## [0.29.26-1](https://github.com/salesforce/lwc/compare/v0.29.26...v0.29.26-1) (2018-10-16)
+
+
+### Features
+
+* **compiler:** collect module exports metadata ([#735](https://github.com/salesforce/lwc/issues/735)) ([3509be5](https://github.com/salesforce/lwc/commit/3509be5))
+
+
+
+<a name="0.29.26"></a>
+## [0.29.26](https://github.com/salesforce/lwc/compare/v0.29.25...v0.29.26) (2018-10-16)
+
+
+### Bug Fixes
+
+* retargeting works as expected for innerHTML template modifications ([#739](https://github.com/salesforce/lwc/issues/739)) ([efa6a66](https://github.com/salesforce/lwc/commit/efa6a66))
+
+
+
+<a name="0.29.25"></a>
+## [0.29.25](https://github.com/salesforce/lwc/compare/v0.29.24...v0.29.25) (2018-10-15)
+
+
+
+<a name="0.29.24"></a>
+## [0.29.24](https://github.com/salesforce/lwc/compare/v0.29.23...v0.29.24) (2018-10-15)
+
+
+
+<a name="0.29.23"></a>
+## [0.29.23](https://github.com/salesforce/lwc/compare/v0.29.22...v0.29.23) (2018-10-15)
+
+
+
+<a name="0.29.22"></a>
+## [0.29.22](https://github.com/salesforce/lwc/compare/v0.29.21...v0.29.22) (2018-10-15)
+
+
+### Features
+
+* scoped ids ([#714](https://github.com/salesforce/lwc/issues/714)) ([4f48fc7](https://github.com/salesforce/lwc/commit/4f48fc7))
+
+
+
+<a name="0.29.21"></a>
+## [0.29.21](https://github.com/salesforce/lwc/compare/v0.29.20...v0.29.21) (2018-10-13)
+
+
+
+<a name="0.29.20"></a>
+## [0.29.20](https://github.com/salesforce/lwc/compare/v0.29.19...v0.29.20) (2018-10-12)
 
 
 ### Bug Fixes

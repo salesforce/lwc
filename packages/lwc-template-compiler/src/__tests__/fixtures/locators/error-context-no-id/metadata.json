@@ -1,0 +1,20 @@
+{
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: locator:context must be used with locator:id",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "someFunction"
+        ],
+        "templateDependencies": []
+    }
+}

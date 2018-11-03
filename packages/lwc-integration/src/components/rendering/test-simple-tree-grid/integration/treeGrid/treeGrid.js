@@ -8,7 +8,7 @@ export default class Tree1 extends LightningElement {
 
     constructor() {
         super();
-        this.root.addEventListener('togglerow', this.toggleRow.bind(this));
+        this.template.addEventListener('togglerow', this.toggleRow.bind(this));
     }
 
     get collapsedNodes() {

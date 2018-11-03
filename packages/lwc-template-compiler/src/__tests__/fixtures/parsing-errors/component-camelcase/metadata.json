@@ -1,16 +1,23 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
-    "start": 23,
-    "length": 12
-  }],
-  "metadata": {
-    "templateDependencies": [
-      {
-        "moduleName": "x/test",
-        "tagName": "x-test"
-      }
-    ]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 13
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": [
+            {
+                "moduleName": "x/test",
+                "tagName": "x-test"
+            }
+        ]
+    }
 }

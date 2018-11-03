@@ -2,17 +2,14 @@ import * as t from 'babel-types';
 import toCamelCase from 'camelcase';
 
 import State from '../state';
-import { isElement } from '../shared/ir';
+import { isElement, isComponentProp } from '../shared/ir';
 import { IRElement } from '../shared/types';
-import { TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import { kebabcaseToCamelcase } from "../shared/naming";
+import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
-}
-export function getKeyGenerator() {
-    let counter = 1;
-    return () => counter++;
 }
 
 export { kebabcaseToCamelcase };
@@ -42,6 +39,10 @@ export function objectToAST(
 /** Returns true if the passed element is a template element */
 export function isTemplate(element: IRElement) {
     return element.tag === 'template';
+}
+
+export function isStyleSheet(element: IRElement) {
+    return element.tag === 'style';
 }
 
 /** Returns true if the passed element is a slot element */
@@ -79,8 +80,36 @@ export function destructuringAssignmentFromObject(
     ]);
 }
 
-export function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
-    const metadataExpressions: t.ExpressionStatement[] = [];
+export function memorizeHandler(codeGen: CodeGen, element,
+                                componentHandler: t.Expression, handler: t.Expression): t.Expression {
+    // #439 - The handler can only be memorized if it is bound to component instance
+    const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
+    const shouldMemorizeHandler = isComponentProp(id, element);
+
+    // Apply memorization if the handler is memorizable.
+    //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
+    if (shouldMemorizeHandler) {
+        const memorizedId = codeGen.getMemorizationId();
+        const memorization = t.assignmentExpression(
+            '=',
+            t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                memorizedId,
+            ),
+            handler,
+        );
+
+        handler = t.logicalExpression(
+            '||',
+            memorizedId,
+            memorization,
+        );
+    }
+    return handler;
+}
+
+export function generateTemplateMetadata(state: State): t.Statement[] {
+    const metadataExpressions: t.Statement[] = [];
 
     // Generate the slots property on template function if slots are defined in the template:
     //      tmpl.slots = ['', 'x']
@@ -98,6 +127,21 @@ export function generateTemplateMetadata(state: State): t.ExpressionStatement[] 
         metadataExpressions.push(
             t.expressionStatement(slotsMetadata),
         );
+    }
+
+    if (state.inlineStyle.body.length) {
+        metadataExpressions.push(...state.inlineStyle.body);
+
+        const stylesheetsProperty = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier('stylesheets')
+        );
+
+        const stylesheetsMetadata = t.assignmentExpression('=', stylesheetsProperty, t.identifier('stylesheets'));
+        metadataExpressions.push(
+            t.expressionStatement(stylesheetsMetadata),
+        );
+
     }
 
     return metadataExpressions;

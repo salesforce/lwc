@@ -1,5 +1,5 @@
 <template>
-    <ns-foo d={p.foo}></ns-foo>
+    <ns-foo d={p.foo} id="ns-foo"></ns-foo>
     <a
         class="test"
         data-foo="datafoo"
@@ -12,7 +12,7 @@
     <ns-bar
         class="r"
         data-xx="foo"
-        aria-describedby="describedby"
+        aria-describedby="ns-foo"
         aria-hidden="hidden"
         foo-bar="x"
         foo="bar"

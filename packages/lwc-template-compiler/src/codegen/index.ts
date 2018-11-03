@@ -18,7 +18,6 @@ import {
 import {
     traverse,
     isCustomElement,
-    isComponentProp,
 } from '../shared/ir';
 
 import {
@@ -35,18 +34,21 @@ import Stack from '../shared/stack';
 import {
     identifierFromComponentName,
     objectToAST,
-    getMemberExpressionRoot,
     isTemplate,
+    isStyleSheet,
     shouldFlatten,
     destructuringAssignmentFromObject,
-    getKeyGenerator,
     isSlot,
+    memorizeHandler,
 } from './helpers';
 
 import CodeGen from './codegen';
 
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
+import { isIdReferencingAttribute } from '../parser/attribute';
+
+import { TemplateErrors, generateCompilerError } from 'lwc-errors';
 
 const TEMPLATE_FUNCTION = template(
     `function ${TEMPLATE_FUNCTION_NAME}(
@@ -67,13 +69,19 @@ function transform(
     root: IRNode,
     codeGen: CodeGen,
     state: State,
-    generateKey: () => number = getKeyGenerator(),
+    options: ResolvedConfig
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
     stack.push(
         t.arrayExpression([]),
     );
+
+    const keyForId: Map<string, number> = state.idAttrData
+        .reduce((map, data) => {
+            map.set(data.value, data.key);
+            return map;
+        }, new Map());
 
     traverse(root, {
         text: {
@@ -99,9 +107,14 @@ function transform(
             },
 
             exit(element: IRElement) {
+                if (isStyleSheet(element)) {
+                    codeGen.genInlineStyles(element.inlineStyles, options.stylesheetConfig);
+                    return;
+                }
+
                 let children = stack.pop();
 
-                // Apply children flatening
+                // Apply children flattening
                 if (shouldFlatten(element) && t.isArrayExpression(children)) {
                     children = element.children.length === 1 ?
                         children.elements[0] as t.Expression :
@@ -113,7 +126,7 @@ function transform(
                     transformTemplate(element, children) :
                     transformElement(element, children);
             },
-        },
+        }
     });
 
     /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
@@ -194,7 +207,9 @@ function transform(
         } else if (modifier === 'strict-true') {
             leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
         } else {
-            throw new Error(`Unknown if modifier ${modifier}`);
+            throw generateCompilerError(TemplateErrors.UNKNOWN_IF_MODIFIER, {
+                messageArgs: [modifier]
+            });
         }
 
         return t.conditionalExpression(
@@ -320,7 +335,10 @@ function transform(
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
         switch (attr.type) {
             case IRAttributeType.Expression:
-                const { expression } = bindExpression(attr.value, element);
+                let { expression } = bindExpression(attr.value, element);
+                if (attr.name === 'tabindex') {
+                    expression = codeGen.genTabIndex([expression]);
+                }
                 return expression;
 
             case IRAttributeType.String:
@@ -344,6 +362,7 @@ function transform(
             props,
             on,
             forKey,
+            locator
         } = element;
 
         // Class attibute defined via string
@@ -355,13 +374,13 @@ function transform(
             data.push(t.objectProperty(t.identifier('className'), classExpression));
         }
 
-        // Class attibute defined via an object
+        // Class attribute defined via object
         if (classMap) {
             const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
             data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
         }
 
-        // Style attibute defined via an object
+        // Style attribute defined via object
         if (styleMap) {
             const styleObj = objectToAST(
                 styleMap,
@@ -374,74 +393,120 @@ function transform(
             data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
         }
 
-        // Style attibute defined via a string
+        // Style attribute defined via string
         if (style) {
             const { expression: styleExpression } = bindExpression(style, element);
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
         }
 
+        function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
+            const key = keyForId.get(id);
+            if (forKey) {
+                const generatedKey = codeGen.genKey(
+                    t.numericLiteral(key),
+                    bindExpression(forKey, element).expression
+                );
+                return codeGen.genScopedId(id, generatedKey);
+            } else {
+                return codeGen.genScopedId(id, t.numericLiteral(key));
+            }
+        }
+
+        function generateScopedIdFunctionForIdRefAttr(idRef: string): t.CallExpression | t.TemplateLiteral {
+            const expressions = idRef
+                .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
+                .map(generateScopedIdFunctionForIdAttr);
+
+            if (expressions.length === 1) {
+                return expressions[0];
+            } else {
+                // Combine each computed scoped id via template literal (e.g., `${api_scoped_id()} ${api_scoped_id()}`)
+                const spacesBetweenIdRefs = ' '.repeat(expressions.length - 1).split('');
+                const quasis = ['', ...spacesBetweenIdRefs, '']
+                    .map(str => t.templateElement({ raw: str }));
+                return t.templateLiteral(quasis, expressions);
+            }
+        }
+
         // Attributes
         if (attrs) {
-            const attrsObj = objectToAST(attrs, key =>
-                computeAttrValue(attrs[key], element),
-            );
+            const attrsObj = objectToAST(attrs, key => {
+                const value = attrs[key].value;
+                if (typeof value === 'string') {
+                    if (key === 'id') {
+                        return generateScopedIdFunctionForIdAttr(value);
+                    }
+                    if (isIdReferencingAttribute(key)) {
+                        return generateScopedIdFunctionForIdRefAttr(value);
+                    }
+                }
+                return computeAttrValue(attrs[key], element);
+            });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
         }
 
         // Properties
         if (props) {
-            const propsObj = objectToAST(props, key =>
-                computeAttrValue(props[key], element),
-            );
+            const propsObj = objectToAST(props, key => {
+                const { name: attrName, value } = props[key];
+                if (typeof value === 'string') {
+                    if (attrName === 'id') {
+                        return generateScopedIdFunctionForIdAttr(value);
+                    }
+                    if (isIdReferencingAttribute(attrName)) {
+                        return generateScopedIdFunctionForIdRefAttr(value);
+                    }
+                }
+                return computeAttrValue(props[key], element);
+            });
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
+        // Locators
+        if (locator) {
+            const locatorObject: t.ObjectProperty[] = [];
+            const locatorId = t.objectProperty(t.identifier('id') , t.stringLiteral(locator.id));
+            locatorObject.push(locatorId);
+            if (locator.context) {
+                let locatorContextFunction = bindExpression(locator.context, element).expression;
+                locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
+                locatorContextFunction = memorizeHandler(codeGen, element, locator.context, locatorContextFunction);
+                locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
+            }
+            const contextObj = t.objectProperty(t.identifier('locator'), t.objectExpression(locatorObject));
+
+            data.push(t.objectProperty(t.identifier('context'), t.objectExpression([contextObj])));
+        }
+
         // Key property on VNode
-        const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
             const { expression: forKeyExpression } = bindExpression(forKey, element);
-            data.push(
-                t.objectProperty(
-                    t.identifier('key'),
-                    codeGen.genKey(compilerKey, forKeyExpression),
-                ),
-            );
+            const generatedKey = codeGen.genKey(t.numericLiteral(element.key!), forKeyExpression);
+            data.push(t.objectProperty(t.identifier('key'), generatedKey));
         } else {
             // If stand alone element with no user-defined key
             // member expression id
-            data.push(t.objectProperty(t.identifier('key'), compilerKey));
+            data.push(t.objectProperty(t.identifier('key'), t.numericLiteral(element.key!)));
         }
 
         // Event handler
         if (on) {
             const onObj = objectToAST(on, key => {
                 const { expression: componentHandler } = bindExpression(on[key], element);
-                let handler: t.Expression = codeGen.genBind(componentHandler);
-
-                // #439 - The handler can only be memorized if it is bound to component instance
-                const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
-                const shouldMemorizeHandler = isComponentProp(id, element);
-
-                // Apply memorization if the handler is memorizable.
-                //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
-                if (shouldMemorizeHandler) {
-                    const memorizedId = codeGen.getMemorizationId();
-                    const memorization = t.assignmentExpression(
-                        '=',
-                        t.memberExpression(
-                            t.identifier(TEMPLATE_PARAMS.CONTEXT),
-                            memorizedId,
-                        ),
-                        handler,
-                    );
-
-                    handler = t.logicalExpression(
-                        '||',
-                        memorizedId,
-                        memorization,
-                    );
+                let handler: t.Expression;
+                if (locator !== undefined && key === 'click') {
+                    let locatorContext: t.Expression | undefined;
+                    if (locator.context) {
+                        locatorContext = bindExpression(locator.context, element).expression;
+                        locatorContext = codeGen.genFunctionBind(locatorContext);
+                    }
+                    handler = codeGen.genLocatorBind(componentHandler, locator.id, locatorContext);
+                } else {
+                    handler = codeGen.genBind(componentHandler);
                 }
+
+                handler = memorizeHandler(codeGen, element, componentHandler, handler);
 
                 return handler;
             });
@@ -454,9 +519,13 @@ function transform(
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
+function generateTemplateFunction(templateRoot: IRElement, state: State, options: ResolvedConfig): t.FunctionDeclaration {
     const codeGen = new CodeGen();
-    const statement = transform(templateRoot, codeGen, state);
+    const statement = transform(templateRoot, codeGen, state, options);
+
+    // Copy AST generated styles to the state
+    state.inlineStyle.body = codeGen.inlineStyleBody;
+    state.inlineStyle.imports = codeGen.inlineStyleImports;
 
     const apis = destructuringAssignmentFromObject(
         t.identifier(TEMPLATE_PARAMS.API),
@@ -519,7 +588,7 @@ function format({ config }: State) {
 }
 
 export default function(templateRoot: IRElement, state: State, options: ResolvedConfig): CompilationOutput {
-    const templateFunction = generateTemplateFunction(templateRoot, state);
+    const templateFunction = generateTemplateFunction(templateRoot, state, options);
     const formatter = format(state);
     const program = formatter(templateFunction, state, options);
 

@@ -17,9 +17,10 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
-    isRestrictedStaticAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
+    isIdReferencingAttribute,
+    isRestrictedStaticAttribute,
 } from './attribute';
 
 import {
@@ -48,11 +49,10 @@ import {
     IRAttribute,
     IRAttributeType,
     TemplateIdentifier,
-    CompilationWarning,
-    WarningLevel,
     ForIterator,
     IRExpressionAttribute,
     ForEach,
+    TemplateExpression,
 } from '../shared/types';
 
 import {
@@ -79,6 +79,23 @@ import {
     HTML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from 'babel-types';
+import {
+    CompilerDiagnostic,
+    generateCompilerDiagnostic,
+    LWCErrorInfo,
+    normalizeToDiagnostic,
+    ParserDiagnostics
+} from 'lwc-errors';
+import { isUndefined } from 'util';
+
+function getKeyGenerator() {
+    let count = 1;
+    return () => count++;
+}
+
+function isStyleElement(element: IRElement) {
+    return element.tag !== 'style';
+}
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
     const { value } = attribute;
@@ -110,11 +127,13 @@ function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttrib
 
     return index.name === value.name;
 }
+
 export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
-    warnings: CompilationWarning[],
+    warnings: CompilerDiagnostic[],
 } {
-    const warnings: CompilationWarning[] = [];
+    const warnings: CompilerDiagnostic[] = [];
+    const generateKey = getKeyGenerator();
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
@@ -137,6 +156,7 @@ export default function parse(source: string, state: State): {
 
                 const element = createElement(elementNode.tagName, node);
                 element.attrsList = elementNode.attrs;
+                element.key = generateKey();
 
                 if (!root) {
                     root = element;
@@ -145,11 +165,13 @@ export default function parse(source: string, state: State): {
                     parent.children.push(element);
                 }
 
+                applyStylesheet(element, elementNode);
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
                 applyStyle(element);
                 applyHandlers(element);
+                applyLocator(element);
                 applyComponent(element);
                 applySlot(element);
                 applyKey(element, elementNode.__location);
@@ -159,6 +181,7 @@ export default function parse(source: string, state: State): {
             },
             exit() {
                 const element = stack.pop() as IRElement;
+                validateStylesheet(element);
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
@@ -172,6 +195,7 @@ export default function parse(source: string, state: State): {
         Text: {
             enter(node: parse5.AST.Default.TextNode) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
+                // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
                 const location = node.__location as parse5.MarkupData.Location;
 
                 const { startOffset, endOffset } = location;
@@ -195,7 +219,10 @@ export default function parse(source: string, state: State): {
                         try {
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
-                            return warnAt(error.message, location);
+                            addDiagnostic(normalizeToDiagnostic(ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, error, {
+                                location: normalizeLocation(location)
+                            }));
+                            return;
                         }
                     } else {
                         value = decodeTextContent(token);
@@ -210,6 +237,7 @@ export default function parse(source: string, state: State): {
             },
         },
     });
+    validateState(state);
 
     function getTemplateRoot(
         documentFragment: parse5.AST.Default.DocumentFragment,
@@ -221,7 +249,7 @@ export default function parse(source: string, state: State): {
         ));
 
         if (validRoots.length > 1) {
-            warnOnElement(`Multiple roots found`, documentFragment.childNodes[1]);
+            warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
         const templateTag = documentFragment.childNodes.find((child) => (
@@ -229,7 +257,7 @@ export default function parse(source: string, state: State): {
         ));
 
         if (!templateTag) {
-            warnAt(`Missing root template tag`);
+            warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
         } else {
             return templateTag as parse5.AST.Default.Element;
         }
@@ -265,16 +293,12 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, eventHandlerAttribute.name);
 
             if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`Event handler should be an expression`, eventHandlerAttribute.location);
+                return warnAt(ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION, [], eventHandlerAttribute.location);
             }
 
             let eventName = eventHandlerAttribute.name;
             if (!eventName.match(EVENT_HANDLER_NAME_RE)) {
-                const msg = [
-                    `Invalid event name ${eventName}.`,
-                    `Event name can only contain lower-case alphabetic characters`,
-                ].join(' ');
-                return warnAt(msg, eventHandlerAttribute.location);
+                return warnAt(ParserDiagnostics.INVALID_EVENT_NAME, [eventName], eventHandlerAttribute.location);
             }
 
             // Strip the `on` prefix from the event handler name
@@ -293,17 +317,91 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, IF_RE);
 
             if (ifAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`If directive should be an expression`, ifAttribute.location);
+                return warnAt(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, [], ifAttribute.location);
             }
 
             const [, modifier] = ifAttribute.name.split(':');
             if (!VALID_IF_MODIFIER.has(modifier)) {
-                return warnAt(`Unexpected if modifier ${modifier}`, ifAttribute.location);
+                return warnAt(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, [modifier], ifAttribute.location);
             }
 
             element.if = ifAttribute.value;
             element.ifModifier = modifier;
         }
+    }
+
+    function applyLocator(element: IRElement) {
+        const locatorIdAttribute = getTemplateAttribute(element, 'locator:id');
+        const locatorContextAttribute = getTemplateAttribute(element, 'locator:context');
+
+        if (!locatorIdAttribute && !locatorContextAttribute) {
+            return;
+        }
+
+        if (!locatorIdAttribute && locatorContextAttribute) {
+            removeAttribute(element, locatorContextAttribute.name);
+            return warnOnElement(
+                ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID,
+                element.__original
+            );
+        }
+
+        if (locatorIdAttribute) {
+            removeAttribute(element, locatorIdAttribute.name);
+            if (locatorContextAttribute) {
+                removeAttribute(element, locatorContextAttribute.name);
+            }
+
+            if (locatorIdAttribute.type !== IRAttributeType.String) {
+                return warnAt(ParserDiagnostics.LOCATOR_ID_SHOULD_BE_STRING, [], locatorIdAttribute.location);
+            }
+            const id = locatorIdAttribute.value;
+
+            let context: TemplateExpression | undefined;
+
+            if (locatorContextAttribute !== undefined) {
+                if (locatorContextAttribute.type !== IRAttributeType.Expression) {
+                    return warnAt(ParserDiagnostics.LOCATOR_CONTEXT_SHOULD_BE_EXPRESSION, [], locatorContextAttribute.location);
+                } else {
+                    context = locatorContextAttribute.value;
+                    if (isMemberExpression(context)) {
+                        return warnAt(ParserDiagnostics.LOCATOR_CONTEXT_CANNOT_BE_MEMBER_EXPRESSION, [], locatorContextAttribute.location);
+                    }
+                }
+            }
+
+            element.locator = {
+                id,
+                context
+            };
+
+            return;
+        }
+    }
+
+    function validateStylesheet(element: IRElement) {
+        if (isStyleElement(element)) {
+            return;
+        }
+
+        if (isUndefined(element.inlineStyles)) {
+            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, element.__original);
+        }
+
+        const parentElement = element.parent;
+        if (!parentElement || parentElement.tag !== 'template' || parentElement.children[0] !== element) {
+            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, element.__original);
+        }
+    }
+
+    function applyStylesheet(element: IRElement, node: parse5.AST.Default.Element) {
+        if (isStyleElement(element)) {
+            return;
+        }
+
+        const inlineStyles = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
+        element.inlineStyles = inlineStyles;
+        node.childNodes = []; // clear the textNodes
     }
 
     function applyForEach(element: IRElement) {
@@ -318,29 +416,37 @@ export default function parse(source: string, state: State): {
             removeAttribute(element, forItemAttribute.name);
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
-                return warnAt('for:each directive is expected to be a expression.', forEachAttribute.location);
+                return warnAt(ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION, [], forEachAttribute.location);
             } else if (forItemAttribute.type !== IRAttributeType.String) {
-                return warnAt('for:item directive is expected to be a string.', forItemAttribute.location);
+                return warnAt(ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING, [], forItemAttribute.location);
             }
 
             let item: TemplateIdentifier;
             try {
                 item = parseIdentifier(forItemAttribute.value);
             } catch (error) {
-                return warnAt(`${forItemAttribute.value} is not a valid identifier`, forItemAttribute.location);
+                return addDiagnostic(
+                    normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
+                        location: normalizeLocation(forItemAttribute.location)
+                    })
+                );
             }
 
             let index: TemplateIdentifier | undefined;
             if (forIndex) {
                 removeAttribute(element, forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
-                    return warnAt(`for:index directive is expected to be a string.`, forIndex.location);
+                    return warnAt(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, [], forIndex.location);
                 }
 
                 try {
                     index = parseIdentifier(forIndex.value);
                 } catch (error) {
-                    return warnAt(`${forIndex.value} is not a valid identifier`, forIndex.location);
+                    return addDiagnostic(
+                        normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
+                            location: normalizeLocation(forIndex.location)
+                        })
+                    );
                 }
             }
 
@@ -351,7 +457,7 @@ export default function parse(source: string, state: State): {
             };
         } else {
             return warnOnElement(
-                `for:each and for:item directives should be associated together.`,
+                ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
                 element.__original,
             );
         }
@@ -369,15 +475,18 @@ export default function parse(source: string, state: State): {
         const [, iteratorName] = iteratorAttributeName.split(':');
 
         if (iteratorExpression.type !== IRAttributeType.Expression) {
-            const message = `${iteratorExpression.name} directive is expected to be an expression.`;
-            return warnAt(message, iteratorExpression.location);
+            return warnAt(ParserDiagnostics.DIRECTIVE_SHOULD_BE_EXPRESSION, [iteratorExpression.name], iteratorExpression.location);
         }
 
         let iterator: TemplateIdentifier;
         try {
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
-            return warnAt(`${iteratorName} is not a valid identifier`, iteratorExpression.location);
+            return addDiagnostic(
+                normalizeToDiagnostic(ParserDiagnostics.IDENTIFIER_PARSING_ERROR, error, {
+                    location: normalizeLocation(iteratorExpression.location)
+                })
+            );
         }
 
         element.forOf = {
@@ -391,26 +500,26 @@ export default function parse(source: string, state: State): {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
+                return warnAt(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, [], keyAttribute.location);
             }
 
             const forOfParent = getForOfParent(element);
             const forEachParent = getForEachParent(element);
             if (forOfParent) {
                 if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
+                    return warnAt(ParserDiagnostics.KEY_SHOULDNT_REFERENCE_ITERATOR_INDEX, [element.tag], keyAttribute.location);
                 }
             } else if (forEachParent) {
                 if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
                     const name = ('name' in keyAttribute.value) && keyAttribute.value.name;
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${name}`, keyAttribute.location);
+                    return warnAt(ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX, [element.tag, name], keyAttribute.location);
                 }
             }
             removeAttribute(element, 'key');
 
             element.forKey = keyAttribute.value;
         } else if (isIteratorElement(element) && element.tag !== 'template') {
-            return warnAt(`Missing key for element <${element.tag}> inside of iterator. Elements within iterators must have a unique, computed key value.`, location);
+            return warnAt(ParserDiagnostics.MISSING_KEY_IN_ITERATOR, [element.tag], location);
         }
     }
 
@@ -425,7 +534,7 @@ export default function parse(source: string, state: State): {
         const isAttr = getTemplateAttribute(element, 'is');
         if (isAttr) {
             if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(`Is attribute value can't be an expression`, isAttr.location);
+                return warnAt(ParserDiagnostics.IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
             }
 
             // Don't remove the is, because passed as attribute
@@ -447,7 +556,7 @@ export default function parse(source: string, state: State): {
         const slotAttribute = getTemplateAttribute(element, 'slot');
         if (slotAttribute) {
             if (slotAttribute.type === IRAttributeType.Expression) {
-                return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
+                return warnAt(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], slotAttribute.location);
             }
         }
 
@@ -457,7 +566,7 @@ export default function parse(source: string, state: State): {
         }
 
         if (element.forEach || element.forOf || element.if) {
-            return warnOnElement(`Slot tag can't be associated with directives`, element.__original);
+            return warnOnElement(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, element.__original);
         }
 
         // Default slot have empty string name
@@ -466,7 +575,7 @@ export default function parse(source: string, state: State): {
         const nameAttribute = getTemplateAttribute(element, 'name');
         if (nameAttribute) {
             if (nameAttribute.type === IRAttributeType.Expression) {
-                return warnAt(`Name attribute on slot tag can't be an expression.`, nameAttribute.location);
+                return warnAt(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, [], nameAttribute.location);
             } else if (nameAttribute.type === IRAttributeType.String) {
                 name = nameAttribute.value;
             }
@@ -490,12 +599,24 @@ export default function parse(source: string, state: State): {
 
             const { name, location } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
-                const msg = [
-                    `${name} is not valid attribute for ${tag}. For more information refer to`,
-                    `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
-                ].join(' ');
+                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            }
 
-                warnAt(msg, location);
+            if (attr.type === IRAttributeType.String) {
+                if (name === 'id') {
+                    state.idAttrData.push({
+                        key: element.key!,
+                        location: attr.location,
+                        value: attr.value,
+                    });
+                } else if (isIdReferencingAttribute(name)) {
+                    state.idrefAttrData.push({
+                        key: element.key!,
+                        location: attr.location,
+                        name: attr.name,
+                        values: attr.value.split(/\s+/),
+                    });
+                }
             }
 
             if (isAttribute(element, name)) {
@@ -517,12 +638,12 @@ export default function parse(source: string, state: State): {
 
         if (isRoot) {
             if (tag !== 'template') {
-                return warnOnElement(`Expected root tag to be template, found ${tag}`, node);
+                return warnOnElement(ParserDiagnostics.ROOT_TAG_SHOULD_BE_TEMPLATE, node, [tag]);
             }
 
             const hasAttributes = node.attrs.length !== 0;
             if (hasAttributes) {
-                return warnOnElement(`Root template doesn't allow attributes`, node);
+                return warnOnElement(ParserDiagnostics.ROOT_TEMPLATE_CANNOT_HAVE_ATTRIBUTES, node);
             }
         }
 
@@ -537,7 +658,7 @@ export default function parse(source: string, state: State): {
             const hasAttributes = node.attrs.length !== 0;
             if (!isRoot && !hasAttributes) {
                 warnOnElement(
-                    'Invalid template tag. A directive is expected to be associated with the template tag.',
+                    ParserDiagnostics.NO_DIRECTIVE_FOUND_ON_TEMPLATE,
                     node,
                 );
             }
@@ -546,15 +667,17 @@ export default function parse(source: string, state: State): {
             const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
             if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
-                    `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
+                    ParserDiagnostics.FORBIDDEN_TAG_ON_TEMPLATE,
                     node,
+                    [tag]
                 );
             }
             const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
                 return warnOnElement(
-                    `Forbidden svg namespace tag found in template: '<${tag}>' tag is not allowed within <svg>`,
-                    node
+                    ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE,
+                    node,
+                    [tag]
                 );
             }
         }
@@ -564,18 +687,26 @@ export default function parse(source: string, state: State): {
         const { attrsList } = element;
         attrsList.forEach(attr => {
             const attrName = attr.name;
-            if (isRestrictedStaticAttribute(attrName) && isExpression(attr.value as any)) {
-                warnOnElement(
-                    `The attribute "${attrName}" cannot be an expression. It must be a static string value.`,
-                    element.__original as parse5.AST.Default.Element,
-                    'warning'
-                );
-            } else if (isTabIndexAttribute(attrName)) {
-                // tabindex remains an attribute for regular elements
+            if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
-                        `The attribute "tabindex" can only be set to "0" or "-1".`,
-                        element.__original as parse5.AST.Default.Element
+                        ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
+                        element.__original
+                    );
+                }
+            }
+            if (isRestrictedStaticAttribute(attr.name)) {
+                if (isExpression(attr.value)) {
+                    warnOnElement(
+                        ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
+                        element.__original,
+                        [attr.name]
+                    );
+                } else if (attr.value === '') {
+                    warnOnElement(
+                        ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
+                        element.__original,
+                        [attr.name]
                     );
                 }
             }
@@ -586,19 +717,72 @@ export default function parse(source: string, state: State): {
         const { props } = element;
         if (props !== undefined) {
             for (const propName in props) {
-                const prop = props[propName];
-                const attrName = prop.name;
+                const { name: attrName, type, value } = props[propName];
                 if (isTabIndexAttribute(attrName)) {
                     if (
-                        prop.type !== IRAttributeType.Expression &&
-                        !isValidTabIndexAttributeValue(prop.value)
+                        type !== IRAttributeType.Expression &&
+                        !isValidTabIndexAttributeValue(value)
                     ) {
                         warnOnElement(
-                            `The attribute "tabindex" can only be set to "0" or "-1".`,
-                            element.__original as parse5.AST.Default.Element
+                            ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
+                            element.__original,
                         );
                     }
                 }
+                if (isRestrictedStaticAttribute(attrName)) {
+                    if (type === IRAttributeType.Expression) {
+                        warnOnElement(
+                            ParserDiagnostics.ATTRIBUTE_SHOULD_BE_STATIC_STRING,
+                            element.__original,
+                            [attrName]
+                        );
+                    }
+                    if (value === '') {
+                        warnOnElement(
+                            ParserDiagnostics.ATTRIBUTE_CANNOT_BE_EMPTY,
+                            element.__original,
+                            [attrName]
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    function validateState(parseState: State) {
+        const seenIds = new Set();
+        for (const { location, value } of parseState.idAttrData) {
+            if (seenIds.has(value)) {
+                warnAt(
+                    ParserDiagnostics.DUPLICATE_ID_FOUND,
+                    [value],
+                    location
+                );
+            } else {
+                seenIds.add(value);
+            }
+        }
+        const seenIdrefs = new Set();
+        for (const { location, name, values } of parseState.idrefAttrData) {
+            for (const value of values) {
+                if (!seenIds.has(value)) {
+                    warnAt(
+                        ParserDiagnostics.ATTRIBUTE_REFERENCES_NONEXISTENT_ID,
+                        [name, value],
+                        location
+                    );
+                } else {
+                    seenIdrefs.add(value);
+                }
+            }
+        }
+        for (const { location, value } of parseState.idAttrData) {
+            if (!seenIdrefs.has(value)) {
+                warnAt(
+                    ParserDiagnostics.INVALID_ID_REFERENCE,
+                    [value],
+                    location
+                );
             }
         }
     }
@@ -641,12 +825,7 @@ export default function parse(source: string, state: State): {
         // parse5 do automatically the convertion from camelcase to all lowercase. If the attributes names
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
-            const msg = [
-                `${rawAttribute} is not valid attribute for ${treeAdapter.getTagName(node)}.`,
-                `All attributes name should be all lowercase.`,
-            ].join(' ');
-
-            warnAt(msg, location);
+            warnAt(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, [rawAttribute, treeAdapter.getTagName(node)], location);
             return;
         }
 
@@ -680,16 +859,20 @@ export default function parse(source: string, state: State): {
         } catch (error) {
             // Removes the attribute, if impossible to parse it value.
             removeAttribute(el, name);
+            addDiagnostic(
+                normalizeToDiagnostic(ParserDiagnostics.GENERIC_PARSING_ERROR, error, {
+                    location: normalizeLocation(location)
+                })
+            );
 
-            warnAt(error.message, location);
             return;
         }
     }
 
-    function warnOnElement(message: string, node: parse5.AST.Node, level: WarningLevel = 'error') {
-        const getLocation = (toLocate?: parse5.AST.Node): { start: number, length: number } => {
+    function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
+        const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number } => {
             if (!toLocate) {
-                return { start: 0, length: 0 };
+                return { line: 0, column: 0 };
             }
 
             const location = (toLocate as parse5.AST.Default.Element).__location;
@@ -698,27 +881,43 @@ export default function parse(source: string, state: State): {
                 return getLocation(treeAdapter.getParentNode(toLocate));
             } else {
                 return {
-                    start: location.startOffset,
-                    length: location.endOffset - location.startOffset,
+                    line: location.line || location.startLine,
+                    column: location.col || location.startCol,
                 };
             }
         };
 
-        const { start, length } = getLocation(node);
-        warnings.push({ message, start, length, level });
+        addDiagnostic(generateCompilerDiagnostic(errorInfo, {
+            messageArgs,
+            origin: {
+                location: getLocation(node)
+            }
+        }));
     }
 
-    function warnAt(message: string, location?: parse5.MarkupData.Location, level: WarningLevel = 'error') {
-        let start = 0;
-        let length = 0;
+    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location) {
+        addDiagnostic(generateCompilerDiagnostic(errorInfo, {
+            messageArgs,
+            origin: {
+                location: normalizeLocation(location)
+            }
+        }));
+    }
+
+    // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+    function normalizeLocation(location?: parse5.MarkupData.Location): { line: number, column: number } {
+        let line = 0;
+        let column = 0;
 
         if (location) {
-            const { startOffset, endOffset } = location;
-            start = startOffset;
-            length = endOffset - startOffset;
+            line = location.line || location.startLine;
+            column = location.col || location.startCol;
         }
+        return { line, column };
+    }
 
-        warnings.push({ message, start, length, level });
+    function addDiagnostic(diagnostic: CompilerDiagnostic) {
+        warnings.push(diagnostic);
     }
 
     return { root, warnings };

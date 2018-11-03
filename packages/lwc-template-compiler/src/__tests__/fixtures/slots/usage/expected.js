@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 4
+        key: 2
       },
       [
         api_custom_element(
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                   slot: "header"
                 },
-                key: 1
+                key: 4
               },
               [api_text("Header Slot Content")]
             ),
@@ -34,7 +34,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                   slot: true
                 },
-                key: 2
+                key: 5
               },
               [api_text("Default Content")]
             )

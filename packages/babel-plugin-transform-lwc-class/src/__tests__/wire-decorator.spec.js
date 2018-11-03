@@ -27,7 +27,12 @@ const wireMetadataParameterTest =
                                     type: 'property',
                                 }
                             ],
-                        }]
+                        }],
+                        exports: [
+                            {
+                                type: 'ExportDefaultDeclaration',
+                            }
+                        ],
                     },
                 },
             },
@@ -104,7 +109,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
+            message: '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
             loc: {
                 line: 2,
                 column: 4,
@@ -193,7 +198,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire expects a function identifier to be imported as first parameter.',
+            message: '@wire expects a function identifier to be imported as first parameter.',
             loc: {
                 line: 4,
                 column: 6,
@@ -209,7 +214,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire expects a configuration object expression as second parameter.',
+            message: '@wire expects a configuration object expression as second parameter.',
             loc: {
                 line: 2,
                 column: 20,
@@ -227,7 +232,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire method or property cannot be used with @api',
+            message: '@wire method or property cannot be used with @api',
             loc: {
                 line: 2,
                 column: 20,
@@ -245,7 +250,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire method or property cannot be used with @track',
+            message: '@wire method or property cannot be used with @track',
             loc: {
                 line: 2,
                 column: 20,
@@ -263,7 +268,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: Method or property can only have 1 @wire decorator',
+            message: 'Method or property can only have 1 @wire decorator',
             loc: {
                 line: 2,
                 column: 20,
@@ -354,7 +359,7 @@ Test.wire = {
         }
     `, {
         error: {
-            message: 'test.js: @wire method or property cannot be used with @api',
+            message: '@wire method or property cannot be used with @api',
             loc: {
                 line: 2,
                 column: 20,
@@ -396,7 +401,12 @@ describe('Metadata', () => {
                             static: { key2: { value: ['fixed'], type: 'array' } },
                             type: 'method',
                         }],
-                    }]
+                    }],
+                    exports: [
+                        {
+                            type: 'ExportDefaultDeclaration',
+                        }
+                    ],
                 },
             },
         },

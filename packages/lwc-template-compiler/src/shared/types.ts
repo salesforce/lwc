@@ -23,6 +23,11 @@ export interface ForEach {
     index?: TemplateIdentifier;
 }
 
+export interface Locator {
+    id: string;
+    context?: TemplateExpression;
+}
+
 export interface ForIterator {
     expression: TemplateExpression;
     iterator: TemplateIdentifier;
@@ -31,6 +36,8 @@ export interface ForIterator {
 export interface IRElement {
     type: 'element';
     tag: string;
+
+    inlineStyles?: string;
 
     attrsList: parse5.AST.Default.Attribute[];
 
@@ -58,6 +65,10 @@ export interface IRElement {
     forEach?: ForEach;
     forOf?: ForIterator;
     forKey?: TemplateExpression;
+
+    key?: number;
+
+    locator?: Locator;
 
     slotName?: string;
     slotSet?: SlotDefinition;

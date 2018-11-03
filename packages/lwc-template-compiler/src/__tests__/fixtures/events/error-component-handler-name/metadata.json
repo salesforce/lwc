@@ -1,16 +1,23 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Event handler should be an expression",
-    "start": 41,
-    "length": 24
-  }],
-  "metadata": {
-    "templateDependencies": [
-      {
-        "moduleName": "x/test",
-        "tagName": "x-test"
-      }
-    ]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Event handler should be an expression",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 17
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": [
+            {
+                "moduleName": "x/test",
+                "tagName": "x-test"
+            }
+        ]
+    }
 }

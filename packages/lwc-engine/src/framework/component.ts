@@ -23,13 +23,13 @@ export interface ComponentInterface {
 export interface ComponentConstructor {
     new (): ComponentInterface;
     readonly name: string;
-    readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
     readonly publicProps?: PropsDef;
     readonly track?: string[];
     readonly wire?: WireHash;
     readonly labels?: string[];
     readonly templateUsedProps?: string[];
+    readonly delegatesFocus?: boolean;
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {

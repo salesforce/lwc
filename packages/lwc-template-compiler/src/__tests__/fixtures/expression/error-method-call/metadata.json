@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid expression { Math.random() } - Template expression doesn't allow CallExpression",
-    "start": 18,
-    "length": 17
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "Invalid expression { Math.random() } - LWC1001: Template expression doesn't allow CallExpression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 8
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

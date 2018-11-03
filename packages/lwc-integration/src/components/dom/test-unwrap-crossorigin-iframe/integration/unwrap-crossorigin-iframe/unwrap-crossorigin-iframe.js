@@ -6,7 +6,7 @@ export default class UnwrapCrossOriginIframe extends LightningElement {
 
     @api
     unwrapContentWindow() {
-        const contentWindow = this.root.querySelector('iframe').contentWindow;
+        const contentWindow = this.template.querySelector('iframe').contentWindow;
         try {
             unwrap(contentWindow);
         } catch (e) {

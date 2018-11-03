@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid import statement, unable to find imported module.",
+    "column": 1,
+    "line": 1
+}

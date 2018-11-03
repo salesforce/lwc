@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_element(
           "p",
           {
-            key: api_key(1, xValue)
+            key: api_key(4, xValue)
           },
           [api_dynamic(xValue)]
         );

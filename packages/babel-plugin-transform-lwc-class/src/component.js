@@ -1,13 +1,26 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
-const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
-const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+
+const { findClassMethod, generateError, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
+const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES, LWC_API_WHITELIST } = require('./constants');
+const { LWCClassErrors } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
+
+            // validate internal api imports
+            engineImportSpecifiers.forEach(({name}) => {
+                if (!LWC_API_WHITELIST.has(name)) {
+                    throw generateError(path, {
+                        errorInfo: LWCClassErrors.INVALID_IMPORT_PROHIBITED_API,
+                        messageArgs: [name]
+                    });
+                }
+            })
+
 
             // Store on state local identifiers referencing engine base component
             state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
@@ -23,9 +36,10 @@ module.exports = function ({ types: t }) {
                     const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
                     return `"${propName}"`;
                 });
-                throw path.buildCodeFrameError(
-                    `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for ${observedAttributeNames.join(', ')} instead.`
-                );
+                throw generateError(path, {
+                    errorInfo: LWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
+                    messageArgs: [observedAttributeNames.join(', ')]
+                });
             }
         },
         Class(path, state) {
@@ -34,9 +48,9 @@ module.exports = function ({ types: t }) {
             if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
-                    throw path.buildCodeFrameError(
-                        `LWC component class can't be an anonymous.`
-                    );
+                    throw generateError(path, {
+                        errorInfo: LWCClassErrors.LWC_CLASS_CANNOT_BE_ANONYMOUS
+                    });
                 }
 
                 if (isDefaultExport(path)) {

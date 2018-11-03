@@ -1,7 +1,7 @@
 import { SourceMapConsumer } from "source-map";
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
-import { DiagnosticLevel } from "../../diagnostics/diagnostic";
+import { DiagnosticLevel } from "lwc-errors";
 
 const VALID_CONFIG = {
     outputConfig: {
@@ -128,10 +128,11 @@ describe("compiler result", () => {
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
 
-        const { level, message } = diagnostics[0];
+        const { level, message, code } = diagnostics[0];
 
         expect(level).toBe(DiagnosticLevel.Fatal);
         expect(message).toContain('./nothing failed to be resolved from foo.js');
+        expect(code).toBe(1001);
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in javascript', async () => {
@@ -171,7 +172,7 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('LWC1001: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
@@ -195,11 +196,12 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('LWC1001: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
+        expect(diagnostics[1].filename).toBe('foo.html');
+        expect(diagnostics[1].message).toContain('<template> has no matching closing tag.');
     });
 
     test("sourcemaps correctness", async () => {
@@ -376,8 +378,12 @@ describe("compiler metadata", () => {
                     }
                 ],
                 templatePath: "foo.html"
-            }
-        ],
+            }],
+            exports: [
+                { type: "ExportDefaultDeclaration" },
+                { type: "ExportNamedDeclaration", value: "HELLOWORLD" },
+                { type: "ExportNamedDeclaration", value: "ohai" },
+            ],
         });
     });
 
@@ -464,6 +470,7 @@ describe("compiler metadata", () => {
                     templatePath: "foo.html"
                 }
             ],
+            exports: [{ type: 'ExportDefaultDeclaration' }],
         });
     });
 });

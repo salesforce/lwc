@@ -1,3 +1,4 @@
+const { generateErrorMessage, JestTransformerErrors } = require('lwc-errors');
 const babelTemplate = require('@babel/template').default;
 
 const defaultTemplate = babelTemplate(`
@@ -63,12 +64,20 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     const { importSource, resourceName } = getImportInfo(path);
 
     // if no fallback value provided, use the resource path from the import statement
-    fallbackData = fallbackData || importSource.substring(importIdentifier.length);
+    if (fallbackData === undefined) {
+        fallbackData = importSource.substring(importIdentifier.length);
+    }
+
+    if (typeof fallbackData === 'number') {
+        fallbackData = t.numericLiteral(fallbackData);
+    } else {
+        fallbackData = t.stringLiteral(fallbackData);
+    }
 
     path.replaceWithMultiple(defaultTemplate({
         RESOURCE_NAME: t.identifier(resourceName),
         IMPORT_SOURCE: t.stringLiteral(importSource),
-        FALLBACK_DATA: t.stringLiteral(fallbackData)
+        FALLBACK_DATA: fallbackData
     }));
 }
 
@@ -108,7 +117,10 @@ function getImportInfo(path) {
     const importSpecifiers = path.get('specifiers');
 
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@salesforce/label/c.foo'"`);
+        throw generateError(path, {
+            errorInfo: JestTransformerErrors.INVALID_IMPORT,
+            messageArgs: [importSource]
+        });
     }
 
     const resourceName = importSpecifiers[0].get('local').node.name;
@@ -117,6 +129,23 @@ function getImportInfo(path) {
         importSource,
         resourceName,
     };
+}
+
+/**
+ * Helper function for throwing a consistent error
+ * @param {*} path
+ * @param {*} config {
+ *      errorInfo: Reference to the error info object,
+ *      messageArgs: Array of arguments for the error message
+ * }
+ */
+function generateError(path, { errorInfo, messageArgs } = {}) {
+    const message = generateErrorMessage(errorInfo, messageArgs);
+    const error = path.buildCodeFrameError(message);
+
+    error.lwcCode = errorInfo.code;
+
+    return error;
 }
 
 module.exports = {

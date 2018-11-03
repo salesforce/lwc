@@ -1,127 +1,154 @@
 {
-  "warnings": [
-    {
-      "length": 24,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 15
-    },
-    {
-      "length": 21,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 44
-    },
-    {
-      "length": 30,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 70
-    },
-    {
-      "length": 23,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 105
-    },
-    {
-      "length": 32,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 231
-    },
-    {
-      "length": 29,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 268
-    },
-    {
-      "length": 38,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 302
-    },
-    {
-      "length": 31,
-      "level": "error",
-      "message": "The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
-      "start": 345
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 10,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 11,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 12,
+                "column": 5
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 13,
+                "column": 5
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "computed"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": ""
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "1"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "true"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "2"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "expression",
+                        "value": "computed"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "0"
+                    }
+                }
+            },
+            {
+                "moduleName": "x/foo",
+                "tagName": "x-foo",
+                "properties": {
+                    "tabIndex": {
+                        "type": "literal",
+                        "value": "-1"
+                    }
+                }
+            }
+        ]
     }
-  ],
-  "metadata": {
-    "templateUsedIds": ["computed"],
-    "templateDependencies": [
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": ""
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": "1"
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": "true"
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": "2"
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "expression",
-            "value": "computed"
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": "0"
-          }
-        },
-        "tagName": "x-foo"
-      },
-      {
-        "moduleName": "x/foo",
-        "properties": {
-          "tabIndex": {
-            "type": "literal",
-            "value": "-1"
-          }
-        },
-        "tagName": "x-foo"
-      }
-    ]
-  }
 }

@@ -1,0 +1,14 @@
+:host {
+    color: var(--lwc-color);
+    padding: 10px;
+}
+:host(.foo) {
+    background: linear-gradient(to top, var(--lwc-color), var(--lwc-other));
+}
+
+div {
+    background: var(--lwc-color, var(--lwc-other, black));
+    display: "block";
+}
+
+

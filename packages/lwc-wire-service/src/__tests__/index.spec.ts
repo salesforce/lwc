@@ -86,7 +86,7 @@ describe('wire service', () => {
             registerWireService((svc) => {
                 wireService = svc;
             });
-            const mockDef = {
+            const mockDef: ElementDef = {
                 wire: {
                     target: {
                         adapter: () => { /**/ },
@@ -95,6 +95,112 @@ describe('wire service', () => {
                 }
             };
             expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": unknown adapter id: ');
+        });
+        it('throws when dot-notation reactive parameter refers to non-@wire target', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'x.y' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-notation reactive parameter "x.y" must refer to a @wire property');
+        });
+        it('throws when dot-notation reactive parameter refers to @wired method', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    x: {
+                        adapter: adapterId,
+                        method: 1,
+                    },
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'x.y' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": dot-notation reactive parameter "x.y" must refer to a @wire property');
+        });
+        it('throws when reactive parameter refers to own wire target', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'target' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": reactive parameter "target" must not refer to self');
+        });
+        it('throws when reactive parameter is empty', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: '' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": reactive parameters must not be empty');
+        });
+        it('throws when reactive parameter contains empty segment', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'a..b' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": reactive parameters must not be empty');
+        });
+        it('throws when reactive parameter ends with empty segment', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => { /**/ };
+            register(adapterId, adapterId);
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: adapterId,
+                        params: { p1: 'a.b.' }
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": reactive parameters must not be empty');
         });
     });
     describe('connected handling', () => {

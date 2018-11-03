@@ -1,23 +1,22 @@
 import assert from "../shared/assert";
-import { isString, isFunction, isUndefined, create } from "../shared/language";
+import { isString, isUndefined, create, emptyString, isArray, forEach, ArrayReduce } from "../shared/language";
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
 import { EmptyArray } from "./utils";
 import { VM } from "./vm";
 import { removeAttribute, setAttribute } from "./dom-api";
-
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-type StyleFactory = (hostSelector: string, shadowSelector: string) => string;
+type StyleFactory = (hostSelector: string, shadowSelector: string, nativeShadow: boolean) => string;
 
 export interface Stylesheet {
     /**
      * The factory associated with the stylesheet.
      */
-    factory: StyleFactory;
+    stylesheets: StyleFactory[];
 
     /**
      * HTML attribute that need to be applied to the host element. This attribute is used for the
@@ -74,16 +73,19 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
+function noop() {
+    /** do nothing */
+}
+
 function createStyleVNode(elm: HTMLStyleElement) {
-    return api.h('style', {
+    const vnode = api.h('style', {
         key: 'style', // special key
-        hook: {
-            // Force the diffing algo to pickup the generated VNode.
-            create(_oldVnode: VNode, vnode: VNode) {
-                vnode.elm = elm;
-            }
-        }
+        create: noop,
+        update: noop,
     }, EmptyArray);
+    // Force the diffing algo to use the cloned style.
+    vnode.elm = elm;
+    return vnode;
 }
 
 /**
@@ -116,30 +118,33 @@ export function applyStyleAttributes(vm: VM, stylesheet: Stylesheet): void {
     context.shadowAttribute = shadowAttribute;
 }
 
-export function evaluateCSS(vm: VM, stylesheet: Stylesheet): VNode | null {
+export function evaluateCSS(vm: VM, stylesheetsObj: Stylesheet): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
 
-        assert.isTrue(isFunction(stylesheet.factory), `Invalid stylesheet factory.`);
-        assert.isTrue(isString(stylesheet.hostAttribute), `Invalid stylesheet host attribute.`);
-        assert.isTrue(isString(stylesheet.shadowAttribute), `Invalid stylesheet shadow attribute.`);
+        assert.isTrue(isArray(stylesheetsObj.stylesheets), `Invalid stylesheets.`);
+        assert.isTrue(isString(stylesheetsObj.hostAttribute), `Invalid stylesheet host attribute.`);
+        assert.isTrue(isString(stylesheetsObj.shadowAttribute), `Invalid stylesheet shadow attribute.`);
     }
 
     const { fallback } = vm;
-    const { factory, hostAttribute, shadowAttribute } = stylesheet;
+    const { stylesheets, hostAttribute, shadowAttribute } = stylesheetsObj;
 
     if (fallback) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 
-        const textContent = factory(hostSelector, shadowSelector);
-        insertGlobalStyle(textContent);
-        return null;
+        return forEach.call(stylesheets, stylesheet => {
+            const textContent = stylesheet(hostSelector, shadowSelector, false);
+            insertGlobalStyle(textContent);
+        });
 
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
-        const textContent = factory(':host', '');
+        const textContent = ArrayReduce.call(stylesheets, (buffer, stylesheet) => {
+            return buffer + stylesheet(emptyString, emptyString, true);
+        }, '');
         return createStyleVNode(getCachedStyleElement(textContent));
     }
 }

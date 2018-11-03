@@ -3,6 +3,7 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 const {
     addEventListener,
     removeEventListener,
+    hasAttribute,
     getAttribute,
     getAttributeNS,
     setAttribute,
@@ -11,6 +12,7 @@ const {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
+    getBoundingClientRect,
 } = Element.prototype;
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
@@ -19,9 +21,12 @@ const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
+const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (this: HTMLElement) => number;
+
 export {
     addEventListener,
     removeEventListener,
+    hasAttribute,
     getAttribute,
     getAttributeNS,
     setAttribute,
@@ -32,4 +37,6 @@ export {
     querySelectorAll,
     innerHTMLSetter,
     tagNameGetter,
+    getBoundingClientRect,
+    tabIndexGetter,
 };

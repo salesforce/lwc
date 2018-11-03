@@ -1,0 +1,11 @@
+{
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "clickHandler",
+            "contextFn"
+        ],
+        "templateDependencies": []
+    }
+}

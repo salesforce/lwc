@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`example-i18n default snapshot 1`] = `
+<example-i18n>
+  #shadow-root(open)
+    <p
+      dir="value set in test"
+      lang="en"
+    >
+      M/d/yyyy
+    </p>
+</example-i18n>
+`;

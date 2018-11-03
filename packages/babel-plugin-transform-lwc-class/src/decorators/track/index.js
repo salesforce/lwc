@@ -1,5 +1,6 @@
-const { staticClassProperty } = require('../../utils');
+const { generateError, staticClassProperty } = require('../../utils');
 const { LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, LWC_COMPONENT_PROPERTIES } = require('../../constants');
+const { DecoratorErrors } = require('lwc-errors');
 
 const TRACK_PROPERTY_VALUE = 1;
 
@@ -10,7 +11,9 @@ function isTrackDecorator(decorator) {
 function validate(klass, decorators) {
     decorators.filter(isTrackDecorator).forEach(({ path }) => {
         if (!path.parentPath.isClassProperty()) {
-            throw path.buildCodeFrameError(`@track decorator can only be applied to class properties.`);
+            throw generateError(path, {
+                errorInfo: DecoratorErrors.TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES
+            });
         }
     });
 }

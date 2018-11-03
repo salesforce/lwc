@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 
-import { createElement, register, unwrap } from '../main';
-import { getHostShadowRoot, LightningElement } from '../html-element';
+import { createElement, LightningElement } from '../main';
 import assertLogger from '../../shared/assert';
 
 jest.mock('../secure-template', () => ({
@@ -35,7 +34,7 @@ describe('html-element', () => {
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = getHostShadowRoot(element).querySelector('x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.setFoo();
 
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
@@ -94,7 +93,7 @@ describe('html-element', () => {
             const element = createElement('x-parent', { is: Parent });
             document.body.appendChild(element);
 
-            const child = getHostShadowRoot(element).querySelector('x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.setFoo();
 
             expect(child.hasAttribute('foo')).toBe(true);
@@ -156,7 +155,7 @@ describe('html-element', () => {
             const element = createElement('remove-namespaced-attribute-on-host-element', { is: Parent });
             document.body.appendChild(element);
 
-            const child = getHostShadowRoot(element).querySelector('x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.removeTitle();
 
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
@@ -205,7 +204,7 @@ describe('html-element', () => {
             const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
 
-            const child = getHostShadowRoot(element).querySelector('x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.removeTitle();
 
             expect(child.hasAttribute('title')).toBe(false);
@@ -408,42 +407,6 @@ describe('html-element', () => {
             );
         });
 
-        it('should log warning when dispatching event in the custom element with bubble=true and composed=false', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    this.dispatchEvent(new CustomEvent('foobar', { bubbles: true, composed: false }));
-                }
-            }
-
-            const elm = createElement('x-foo', { is: Foo });
-
-            expect(() => (
-                document.body.appendChild(elm)
-            )).toLogWarning(
-                `Invalid event "foobar" dispatched in element <x-foo>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`
-            );
-        });
-
-        it('should log warning when accessing shadowRoot as root.', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    const evt = new CustomEvent(
-                        'foobar',
-                        { detail: this.root.querySelector('foo')}
-                    );
-                    this.dispatchEvent(evt);
-                }
-            }
-
-            const elm = createElement('x-foo', { is: Foo });
-
-            expect(() => (
-                document.body.appendChild(elm)
-            )).toLogWarning(
-                `"this.root" access in <x-foo> has been deprecated and will be removed. Use "this.template" instead.`
-            );
-        });
-
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
             class Foo extends LightningElement {
                 connectedCallback() {
@@ -489,7 +452,7 @@ describe('html-element', () => {
                     this.template.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is visible for the root, always
-                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
+                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
                 render() {
@@ -500,7 +463,7 @@ describe('html-element', () => {
             elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            getHostShadowRoot(elm).querySelector('div').click();
+            elm.shadowRoot.querySelector('div').click();
         });
 
         it('should get native events from template', function () {
@@ -524,7 +487,7 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            getHostShadowRoot(elm).querySelector('div').click();
+            elm.shadowRoot.querySelector('div').click();
         });
 
         it('should get custom events in root when marked as bubbles=true', function () {
@@ -542,7 +505,7 @@ describe('html-element', () => {
                     this.template.addEventListener('xyz', (e) => {
                         expect(e.bubbles).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is host element
-                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
+                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element
                     });
                 }
                 render() {
@@ -553,7 +516,7 @@ describe('html-element', () => {
             elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            const divElm = getHostShadowRoot(elm).querySelector('div');
+            const divElm = elm.shadowRoot.querySelector('div');
             divElm.dispatchEvent(new CustomEvent('xyz'));
             divElm.dispatchEvent(new CustomEvent('xyz', { bubbles: true, composed: true }));
             divElm.dispatchEvent(new CustomEvent('xyz', { bubbles: true, composed: false }));
@@ -580,7 +543,7 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            const divElm = getHostShadowRoot(elm).querySelector('div');
+            const divElm = elm.shadowRoot.querySelector('div');
             divElm.dispatchEvent(new CustomEvent('xyz'));
             divElm.dispatchEvent(new CustomEvent('xyz', { bubbles: true, composed: true }));
             divElm.dispatchEvent(new CustomEvent('xyz', { bubbles: true, composed: false }));
@@ -730,7 +693,7 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            const childElm = parentElm.shadowRoot.querySelector('x-child');
             childElm.setAttribute('title', "value from parent");
 
             expect(assertLogger.logError).toBeCalled();
@@ -761,7 +724,7 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            const childElm = parentElm.shadowRoot.querySelector('x-child');
             childElm.removeAttribute('title');
 
             expect(assertLogger.logError).toBeCalled();
@@ -985,6 +948,42 @@ describe('html-element', () => {
             }).toThrowError(
                 /The result must not have attributes./
             );
+        });
+
+        it('should not throw when tabIndex is not reflected to element', () => {
+            class MyComponent extends LightningElement {
+                get tabIndex() {
+                    return 0;
+                }
+
+                set tabIndex(value) {
+
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.tabIndex = -1;
+            }).not.toThrow();
+        });
+
+        it('should not throw when tabIndex is reflected to element', () => {
+            class MyComponent extends LightningElement {
+                get tabIndex() {
+                    return this.getAttribute('tabindex');
+                }
+
+                set tabIndex(value) {
+                    this.setAttribute('tabindex', value);
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.tabIndex = -1;
+            }).not.toThrow();
         });
     });
 
@@ -1574,7 +1573,7 @@ describe('html-element', () => {
                 element.lang = 'en';
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('en');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('en');
                 });
             });
 
@@ -1702,7 +1701,7 @@ describe('html-element', () => {
                 element.hidden = true;
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('true');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('true');
                 });
             });
 
@@ -1835,7 +1834,7 @@ describe('html-element', () => {
                 element.dir = 'ltr';
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('ltr');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('ltr');
                 });
             });
 
@@ -1966,7 +1965,7 @@ describe('html-element', () => {
                 element.id = 'id';
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('id');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('id');
                 });
             });
 
@@ -2094,7 +2093,7 @@ describe('html-element', () => {
                 element.accessKey = 'accessKey';
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('accessKey');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('accessKey');
                 });
             });
 
@@ -2222,7 +2221,7 @@ describe('html-element', () => {
                 element.title = 'title';
                 return Promise.resolve().then(() => {
                     expect(renderCount).toBe(2);
-                    expect(getHostShadowRoot(element).querySelector('div').textContent).toBe('title');
+                    expect(element.shadowRoot.querySelector('div').textContent).toBe('title');
                 });
             });
 
@@ -2296,7 +2295,7 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            const childElm = parentElm.shadowRoot.querySelector('x-child');
             childElm.setAttribute('title', "value from parent");
 
             expect(assertLogger.logError).toBeCalled();
@@ -2327,7 +2326,7 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            const childElm = parentElm.shadowRoot.querySelector('x-child');
             childElm.removeAttribute('title');
 
             expect(assertLogger.logError).toBeCalled();
@@ -2402,7 +2401,7 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             parentElm.setAttribute('title', 'parent title');
             document.body.appendChild(parentElm);
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            const childElm = parentElm.shadowRoot.querySelector('x-child');
 
             expect(childElm.getAttribute('title')).toBe('child title');
         });

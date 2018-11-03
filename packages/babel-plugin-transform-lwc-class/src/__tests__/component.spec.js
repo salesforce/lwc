@@ -2,12 +2,13 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
+
 describe('Element import', () => {
     pluginTest('throws if using default import on lwc', `
         import engine from 'lwc';
     `, {
         error: {
-            message: `test.js: Invalid import. "lwc" doesn't have default export.`,
+            message: `Invalid import. "lwc" doesn't have default export.`,
             loc: {
                 line: 1,
                 column: 7,
@@ -20,7 +21,7 @@ describe('Element import', () => {
         export default class extends engine.LightningElement {}
     `, {
         error: {
-            message: `test.js: Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
+            message: `Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
             loc: {
                 line: 1,
                 column: 7,
@@ -34,7 +35,7 @@ describe('Element import', () => {
         export default class extends LightningElement {}
     `, {
         error: {
-            message: `test.js: LWC component class can't be an anonymous.`,
+            message: `LWC component class can't be an anonymous.`,
             loc: {
                 line: 3,
                 column: 15
@@ -59,6 +60,42 @@ describe('Element import', () => {
             }`
         }
     });
+
+    pluginTest('throws non-whitelisted lwc api is imported', `
+        import { registerTemplate } from "lwc";
+        import tmpl from './localTemplate.html';
+        registerTemplate(tmpl);
+    `, {
+        error: {
+            message: `Invalid import. "registerTemplate" is not part of the lwc api.`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+
+    pluginTest('allows importing whitelisted apis from "lwc"', `
+        import {
+            api,
+            track,
+            wire,
+            createElement,
+            LightningElement,
+            buildCustomElementConstructor,
+            dangerousObjectMutation,
+            getComponentDef,
+            getComponentConstructor,
+            isComponentConstructor,
+            readonly,
+            register,
+            unwrap,
+        } from "lwc";
+    `, {
+        output: {
+            code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, dangerousObjectMutation, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`
+        }
+    });
 });
 
 describe('observedAttributes array', () => {
@@ -70,7 +107,7 @@ describe('observedAttributes array', () => {
         }
     `, {
         error: {
-            message: `test.js: Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
+            message: `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
             loc: {
                 line: 1,
                 column: 7,
@@ -161,6 +198,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: '* Foo doc',
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -179,6 +217,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
                 doc: "*\n* Foo doc",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -198,6 +237,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
                 doc: '*\n* multi\n* line',
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -215,6 +255,7 @@ describe('metadata', () => {
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
                 doc: "* last",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             },
         }
     });
@@ -234,6 +275,7 @@ describe('metadata', () => {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
                 },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -251,7 +293,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -269,7 +312,8 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -289,6 +333,7 @@ describe('metadata', () => {
                     start: { column: 0, line: 3 }
                 },
                 doc: "* { one: \"1\", two: '2', array: [1, 2, 3]}",
+                exports: [{ type: 'ExportDefaultDeclaration' }],
             }
         }
     });
@@ -388,7 +433,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 3, column: 0 },
                         end: { line: 13, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }
@@ -429,7 +475,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 6, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }
@@ -469,7 +516,8 @@ describe('metadata', () => {
                     declarationLoc: {
                         start: { line: 2, column: 0 },
                         end: { line: 5, column: 1 }
-                    }
+                    },
+                    exports: [{ type: 'ExportDefaultDeclaration' }],
                 }
             }
         }

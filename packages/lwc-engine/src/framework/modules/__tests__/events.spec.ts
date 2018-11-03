@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
 
 describe('module/events', () => {
     it('attaches click event handler to element', function() {
@@ -22,7 +21,7 @@ describe('module/events', () => {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('div').click();
+        elm.shadowRoot.querySelector('div').click();
 
         expect(result).toHaveLength(1);
     });
@@ -61,11 +60,11 @@ describe('module/events', () => {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('div').click();
+        elm.shadowRoot.querySelector('div').click();
 
         elm.counter += 1;
         return Promise.resolve().then( () => {
-            getHostShadowRoot(elm).querySelector('div').click();
+            elm.shadowRoot.querySelector('div').click();
             expect(second).toBe(true);
             expect(result).toEqual([1, 2]);
         });
@@ -107,12 +106,12 @@ describe('module/events', () => {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('p').click();
+        elm.shadowRoot.querySelector('p').click();
 
         elm.counter += 1;
         return Promise.resolve().then( () => {
             expect(second).toBe(true);
-            getHostShadowRoot(elm).querySelector('div').click();
+            elm.shadowRoot.querySelector('div').click();
             expect(result).toEqual([1, 1]);
         });
     });
@@ -144,7 +143,7 @@ describe('module/events', () => {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('div').click();
+        elm.shadowRoot.querySelector('div').click();
 
         expect(result).toHaveLength(2);
         expect(result[0]).toBe(cmp);
@@ -174,7 +173,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('x-child').click();
+        elm.shadowRoot.querySelector('x-child').click();
 
         expect(result).toHaveLength(1);
     });
@@ -202,7 +201,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm).querySelector('x-child').dispatchEvent(new CustomEvent('test', {}));
+        elm.shadowRoot.querySelector('x-child').dispatchEvent(new CustomEvent('test', {}));
 
         expect(result).toHaveLength(1);
     });

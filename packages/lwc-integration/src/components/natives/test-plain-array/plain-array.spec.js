@@ -8,7 +8,7 @@ describe('Plain array methods', () => {
     });
 
     it('should display unshifted items correctly', function () {
-        const elements = browser.elements('#push-list-plain li');
+        const elements = browser.elements('.push-list-plain li');
         assert.strictEqual(elements.value[0].getText(), '1');
         assert.strictEqual(elements.value[1].getText(), '2');
         assert.strictEqual(elements.value[2].getText(), '3');
@@ -16,7 +16,7 @@ describe('Plain array methods', () => {
     });
 
     it('should display pushed items correctly', function () {
-        const elements = browser.elements('#push-list li');
+        const elements = browser.elements('.push-list li');
         assert.strictEqual(elements.value[0].getText(), 'first');
         assert.strictEqual(elements.value[1].getText(), 'second');
         assert.strictEqual(elements.value[2].getText(), 'proxy');
@@ -24,7 +24,7 @@ describe('Plain array methods', () => {
     });
 
     it('should display concat items correctly', function () {
-        const elements = browser.elements('#concat-list-plain li');
+        const elements = browser.elements('.concat-list-plain li');
         assert.strictEqual(elements.value[0].getText(), '1');
         assert.strictEqual(elements.value[1].getText(), '2');
         assert.strictEqual(elements.value[2].getText(), '3');
@@ -32,7 +32,7 @@ describe('Plain array methods', () => {
     });
 
     it('should display concat items correctly', function () {
-        const elements = browser.elements('#concat-list-proxy li');
+        const elements = browser.elements('.concat-list-proxy li');
         assert.strictEqual(elements.value[0].getText(), 'first');
         assert.strictEqual(elements.value[1].getText(), 'second');
         assert.strictEqual(elements.value[2].getText(), 'proxy');

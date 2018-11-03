@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus",
-    "start": 15,
-    "length": 10
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

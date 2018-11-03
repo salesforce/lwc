@@ -1,28 +1,15 @@
 import _xFoo from 'x/foo';
 import { registerTemplate, LightningElement } from 'lwc';
 
-function factory(hostSelector, shadowSelector) {
-    return `:host {
-    color: blue;
-}
-
-${hostSelector} {
-    color: blue;
-}
-div${shadowSelector} {
-    color: red;
-}
-x-foo${shadowSelector},[is="x-foo"]${shadowSelector} {
-    color: green;
-}
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+    return `
+${nativeShadow ? (":host {color: blue;}") : (hostSelector + " {color: blue;}")}
+div${shadowSelector} {color: red;}
+x-foo${shadowSelector} {color: green;}
     `;
 }
 
-var stylesheet = {
-    factory,
-    hostAttribute: 'x-styled_styled-host',
-    shadowAttribute: 'x-styled_styled',
-};
+var stylesheets = [stylesheet];
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -31,16 +18,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
 
   return [api_element("div", {
-        key: 1
-    }, []), api_custom_element("x-foo", _xFoo, {
         key: 2
+    }, []), api_custom_element("x-foo", _xFoo, {
+        key: 3
     }, [])];
 }
 
 var _tmpl = registerTemplate(tmpl);
 
-if (stylesheet) {
-    tmpl.stylesheet = stylesheet;
+if (stylesheets) {
+    tmpl.stylesheets = {
+        stylesheets,
+        hostAttribute: "x-styled_styled-host",
+        shadowAttribute: "x-styled_styled"
+    };
 }
 
 class Styled extends LightningElement {

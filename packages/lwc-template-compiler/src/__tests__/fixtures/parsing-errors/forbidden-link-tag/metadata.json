@@ -1,8 +1,18 @@
 {
-    "warnings": [{
-      "level": "error",
-      "message": "Forbidden tag found in template: '<link>' tag is not allowed.",
-      "start": 15,
-      "length": 23
-    }]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Forbidden tag found in template: '<link>' tag is not allowed.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
+}

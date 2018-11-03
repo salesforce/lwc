@@ -15,7 +15,7 @@ describe('events', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`[object HTMLUnknownElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
+            }).toLogWarning(`[object HTMLElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
         });
         it('should log warning when adding existing listener to the shadowRoot element', () => {
             function eventListener() {}; // tslint:disable-line
@@ -28,7 +28,7 @@ describe('events', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`[object HTMLUnknownElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
+            }).toLogWarning(`[object HTMLElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
         });
 
         it('should log warning when adding existing listener with options to the custom element', () => {
@@ -66,7 +66,7 @@ describe('events', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogError(`Did not find event listener for event "foo" executing removeEventListener on [object HTMLUnknownElement]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
+            }).toLogError(`Did not find event listener for event "foo" executing removeEventListener on [object HTMLElement]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
         });
 
         it('should log error when removing non attached listener on the ShadowRoot', () => {
@@ -79,7 +79,7 @@ describe('events', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogError(`Did not find event listener for event "foo" executing removeEventListener on [object HTMLUnknownElement]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
+            }).toLogError(`Did not find event listener for event "foo" executing removeEventListener on [object HTMLElement]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
         });
     });
 
@@ -201,6 +201,7 @@ describe('events', () => {
             div.click();
             expect(target).toBe(div);
         });
+
         it('should report correct target when slotted through multiple components and rehydration happens', () => {
             class Root extends LightningElement {
                 newTitle = 'bar';
@@ -266,6 +267,37 @@ describe('events', () => {
                 div.click();
                 expect(getShadowRoot(elm).querySelector('div')).toBe(div); // making sure that the dom is reused
                 expect(target).toBe(div);
+            });
+        });
+
+        it('should report correct target when elements are added via innerHTML', () => {
+            let target;
+
+            class Root extends LightningElement {
+                renderedCallback() {
+                    this.template.addEventListener('click', event => {
+                        target = event.target;
+                    });
+                    this.template.querySelector('.container').innerHTML = `<span><a></a></span>`;
+                }
+                render() {
+                    return rootHTML;
+                }
+            }
+
+            const rootHTML = compileTemplate(`
+                <template>
+                    <div class="container"></div>
+                </template>
+            `);
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const anchor = getShadowRoot(elm).querySelector('a');
+                anchor.click();
+                expect(target).toBe(anchor);
             });
         });
     });

@@ -51,7 +51,7 @@ export default class Child extends LightningElement {
             });
 
             // Button
-            this.template.querySelector('button#child').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('button.child').addEventListener('childbuttonclick', event => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON);
             });
 

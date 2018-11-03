@@ -1,11 +1,21 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "If directive should be an expression",
-    "start": 43,
-    "length": 16
-  }],
-  "metadata": {
-    "templateUsedIds": ["foo", "bar"]
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: If directive should be an expression",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 19
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "foo",
+            "bar"
+        ],
+        "templateDependencies": []
+    }
 }

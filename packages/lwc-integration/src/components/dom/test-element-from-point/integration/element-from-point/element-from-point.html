@@ -1,0 +1,6 @@
+<template>
+    <button class="shadow-element-from-point" onclick={handleShadowElementFromPointClick}>Click to run shadow dom element from point</button>
+    <button class="document-from-point" onclick={handleDocumentElementFromPointClick}>Click to run document element from point</button>
+    <div if:true={didSelectCorrectShadowElement} class="correct-shadow-element-indicator">Correct shadow element selected</div>
+    <div if:true={didSelectCorrectDocumentElement} class="correct-document-element-indicator">Correct document element selected</div>
+</template>

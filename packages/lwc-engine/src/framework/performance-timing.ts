@@ -9,6 +9,12 @@ type MeasurementPhase =
     | 'renderedCallback'
     | 'errorCallback';
 
+export enum GlobalMeasurementPhase {
+    REHYDRATE = 'rehydrate',
+    INIT = 'init',
+    HYDRATE = 'hydrate'
+}
+
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
 // JSDom (used in Jest) for example doesn't implement the UserTiming APIs
 const isUserTimingSupported: boolean =
@@ -44,3 +50,18 @@ export function endMeasure(vm: VM, phase: MeasurementPhase) {
     performance.clearMarks(name);
     performance.clearMeasures(name);
 }
+
+// tslint:disable-next-line:no-empty
+const noop = function() {};
+
+function _startGlobalMeasure(phase: GlobalMeasurementPhase) {
+    performance.mark(phase);
+}
+
+function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
+    performance.measure(`lwc-${phase}`, phase);
+}
+
+export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
+
+export const endGlobalMeasure = isUserTimingSupported ? _endGlobalMeasure : noop;

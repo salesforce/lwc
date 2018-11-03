@@ -1,8 +1,0 @@
-{
-    "warnings": [{
-      "level": "error",
-      "message": "Forbidden tag found in template: '<style>' tag is not allowed.",
-      "start": 15,
-      "length": 31
-    }]
-  }

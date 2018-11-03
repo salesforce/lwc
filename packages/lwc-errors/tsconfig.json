@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declarationDir": "dist/types",
+    "noImplicitAny": true,
+    "outDir": "dist/commonjs",
+    "rootDir": "src",
+    "sourceMap": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "target": "es2017",
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "**/dist",
+    "**/__tests__"
+  ]
+}

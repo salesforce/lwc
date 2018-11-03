@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Event handler should be an expression",
-    "start": 19,
-    "length": 24
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Event handler should be an expression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 9
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

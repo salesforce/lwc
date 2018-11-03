@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Expected root tag to be template, found section",
-    "start": 0,
-    "length": 42
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: Expected root tag to be template, found section",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 1
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

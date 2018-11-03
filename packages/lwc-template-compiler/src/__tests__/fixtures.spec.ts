@@ -39,8 +39,8 @@ describe('fixtures', () => {
             const src = readFixtureFile('actual.html');
 
             const configOverride = JSON.parse(readFixtureFile('config.json'));
-            const expectedCode = readFixtureFile(expectedJsFile);
-            const expectedMetaData = JSON.parse(readFixtureFile(expectedMetaFile));
+            let expectedCode = readFixtureFile(expectedJsFile);
+            let expectedMetaData = JSON.parse(readFixtureFile(expectedMetaFile));
 
             const actual = compiler(src, {
                 ...BASE_CONFIG,
@@ -51,27 +51,29 @@ describe('fixtures', () => {
 
             if (expectedCode === null) {
                 // write compiled js file if doesn't exist (ie new fixture)
-                writeFixtureFile(expectedJsFile, prettier.format(actual.code));
+                expectedCode = actual.code;
+                writeFixtureFile(expectedJsFile, prettier.format(expectedCode));
+
             }
 
             if (expectedMetaData === null) {
                 // write metadata file if doesn't exist (ie new fixture)
                 const metadata = {
                     warnings: actual.warnings,
-                    ...actualMeta,
+                    metadata: {...actualMeta},
                 };
-                writeFixtureFile(expectedMetaFile, JSON.stringify(metadata, null, 4));
+                expectedMetaData = metadata;
+                writeFixtureFile(expectedMetaFile, JSON.stringify(expectedMetaData, null, 4));
             }
 
+            // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
-
-            if (expectedCode && expectedCode.length) {
-                expect(
-                    prettier.format(actual.code),
-                ).toEqual(
-                    prettier.format(expectedCode),
-                );
-            }
+            // check compiled code
+            expect(
+                prettier.format(actual.code),
+            ).toEqual(
+                prettier.format(expectedCode),
+            );
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};

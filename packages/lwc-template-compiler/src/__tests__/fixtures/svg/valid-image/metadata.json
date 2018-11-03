@@ -1,6 +1,8 @@
 {
-  "warnings": [],
-  "definedSlots": [],
-  "templateUsedIds": [],
-  "templateDependencies": []
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }

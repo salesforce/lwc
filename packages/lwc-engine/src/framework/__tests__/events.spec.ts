@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
-import { createElement, unwrap } from '../main';
-import { getHostShadowRoot, LightningElement } from '../html-element';
+import { createElement, LightningElement } from '../main';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -212,6 +211,80 @@ describe('Events on Custom Elements', () => {
         expect(result).toHaveLength(2);
         expect(result[0]).toBe(undefined); // context must be the component
         expect(result[1]).toBeInstanceOf(Event);
+    });
+
+    it('should not execute native events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('click', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not execute composed: true events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('custom', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const event = new CustomEvent('custom', {
+            bubbles: true,
+            composed: true,
+        });
+        elm.dispatchEvent(event);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should not execute composed: false events handlers for events originating on the host', () => {
+        const spy = jest.fn();
+        const myComponentTmpl = compileTemplate(`
+            <template>
+
+            </template>
+        `);
+        class MyComponent extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('custom', spy);
+            }
+            render() {
+                return myComponentTmpl;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const event = new CustomEvent('custom', {
+            bubbles: true,
+            composed: false,
+        });
+        elm.dispatchEvent(event);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it('should add event listeners in constructor when created via createElement', function() {
@@ -500,7 +573,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -525,7 +598,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -633,7 +706,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
         }
@@ -664,7 +737,7 @@ describe('Component events', () => {
         const errorHandler = jest.fn(evt => evt.preventDefault());
         window.addEventListener('error', errorHandler);
 
-        const buttonEl = getHostShadowRoot(element).querySelector('button');
+        const buttonEl = element.shadowRoot.querySelector('button');
         buttonEl.click();
 
         expect(errorHandler.mock.calls).toHaveLength(1);
@@ -887,7 +960,7 @@ describe('Shadow Root events', () => {
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
-        getHostShadowRoot(elm)
+        elm.shadowRoot
             .querySelector('div')
             .dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
     });

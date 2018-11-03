@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
-import { getHostShadowRoot } from '../html-element';
 
 const styledTemplate = compileTemplate(`
     <template>
@@ -9,16 +8,16 @@ const styledTemplate = compileTemplate(`
         <p></p>
     </template>
 `);
-styledTemplate.stylesheet = {
+
+styledTemplate.stylesheets = {
     hostAttribute: 'test-host',
     shadowAttribute: 'test',
-    factory: (hostToken, shadowToken) => {
+    stylesheets: [(hostToken, shadowToken) => {
         return `
-            :host { color: red; }
             ${hostToken} { color: red; }
             section${shadowToken} { color: blue; }
         `;
-    },
+    }],
 };
 
 const unstyledTemplate = compileTemplate(`
@@ -39,7 +38,7 @@ describe('synthetic shadow', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(shadowRoot.querySelector('section').hasAttribute('test')).toBe(true);
         expect(shadowRoot.querySelector('p').hasAttribute('test')).toBe(true);
     });
@@ -70,7 +69,7 @@ describe('synthetic shadow', () => {
         let firstChild;
         expect(() => {
             // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = getHostShadowRoot(elm).firstChild as HTMLElement;
+            firstChild = elm.shadowRoot.firstChild as HTMLElement;
         }).toLogWarning(
             `Discouraged access to property 'childNodes' on 'Node'`
         );
@@ -91,7 +90,7 @@ describe('synthetic shadow', () => {
         let firstChild;
         expect(() => {
             // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = getHostShadowRoot(elm).firstChild as HTMLElement;
+            firstChild = elm.shadowRoot.firstChild as HTMLElement;
         }).toLogWarning(
             `Discouraged access to property 'childNodes' on 'Node'`
         );
@@ -113,7 +112,7 @@ describe('synthetic shadow', () => {
         elm.tmpl = styledTemplate;
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(elm.hasAttribute('test-host')).toBe(true);
         expect(shadowRoot.querySelectorAll('[test]').length).toBeGreaterThan(0);
 
@@ -130,10 +129,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl1</section>
             </template>
         `);
-        tmpl1.stylesheet = {
+        tmpl1.stylesheets = {
             hostAttribute: 'tmpl1-host',
             shadowAttribute: 'tmpl1',
-            factory: () => ``,
+            stylesheets: [() => ``],
         };
 
         const tmpl2 = compileTemplate(`
@@ -141,10 +140,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl2</section>
             </template>
         `);
-        tmpl2.stylesheet = {
+        tmpl2.stylesheets = {
             hostAttribute: 'tmpl2-host',
             shadowAttribute: 'tmpl2',
-            factory: () => ``,
+            stylesheets: [() => ``],
         };
 
         class Component extends LightningElement {
@@ -160,7 +159,7 @@ describe('synthetic shadow', () => {
         elm.tmpl = tmpl1;
         document.body.appendChild(elm);
 
-        const shadowRoot = getHostShadowRoot(elm);
+        const shadowRoot = elm.shadowRoot;
         expect(elm.hasAttribute('tmpl1-host')).toBe(true);
         expect(shadowRoot.querySelectorAll('[tmpl1]').length).toBeGreaterThan(0);
 

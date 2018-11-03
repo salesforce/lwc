@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of unsupported selector \"::slotted\".",
+    "column": 1,
+    "line": 1
+}

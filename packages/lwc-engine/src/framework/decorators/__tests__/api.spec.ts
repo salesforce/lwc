@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
 
 describe('decorators/api.ts', () => {
     describe('@api x', () => {
@@ -42,7 +41,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm.shadowRoot.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider properties reactive if not used in render', function() {
@@ -99,10 +98,16 @@ describe('decorators/api.ts', () => {
                 </template>
             `);
             class MyComponent extends LightningElement  {
+                getTextContent() {
+                    return this.template.querySelector('div').textContent;
+                }
+
                 render() {
                     return html;
                 }
             }
+
+            MyComponent.publicMethods = ['getTextContent'];
             MyComponent.publicProps = {
                 x: {
                     config: 0
@@ -113,7 +118,8 @@ describe('decorators/api.ts', () => {
             elm.x = 'foo';
             document.body.appendChild(elm);
             expect(elm.x).toBe('foo');
-            expect(elm.textContent).toBe('foo');
+            expect(elm.getTextContent()).toBe('foo');
+
         });
     });
 
@@ -157,7 +163,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm.shadowRoot.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider getter and setters reactive', function() {
@@ -230,6 +236,10 @@ describe('decorators/api.ts', () => {
                 </template>
             `);
             class MyComponent extends LightningElement  {
+                getTextContent() {
+                    return this.template.querySelector('div').textContent;
+                }
+
                 get validity() {
                     return 'foo';
                 }
@@ -244,10 +254,12 @@ describe('decorators/api.ts', () => {
                 }
             };
 
+            MyComponent.publicMethods = ['getTextContent'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.validity).toBe('foo');
-            expect(elm.textContent).toBe('foo');
+            expect(elm.getTextContent()).toBe('foo');
         });
 
         it('should allow calling the getter during construction', function() {

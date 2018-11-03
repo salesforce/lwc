@@ -15,6 +15,9 @@ module.exports = {
     // Ignore jest custom setup scripts from the code coverage.
     coveragePathIgnorePatterns: [
         '<rootDir>/scripts/',
+        '<rootDir>/src/faux-shadow/focus.ts',
+        '<rootDir>/src/polyfills/aria-properties',
+        '<rootDir>/src/framework/wc.ts'
     ],
 
     // Override global threshold for the package. As we increase the test coverage we should increase

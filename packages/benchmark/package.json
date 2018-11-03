@@ -1,18 +1,19 @@
 {
   "name": "benchmark",
-  "version": "0.29.20",
+  "version": "0.31.2",
   "private": true,
   "scripts": {
-    "start": "best"
+    "start": "best",
+    "remote": "best --projects best.headless.config.js --runner remote"
   },
   "devDependencies": {
     "@best/runner-headless": "0.7.1",
     "@best/runner-remote": "0.7.1",
     "@best/store-aws": "0.7.1",
     "best-cli": "0.7.1",
-    "rollup-plugin-lwc-compiler": "0.29.20"
+    "rollup-plugin-lwc-compiler": "0.31.2"
   },
   "dependencies": {
-    "lwc-engine": "0.29.20"
+    "lwc-engine": "0.31.2"
   }
 }

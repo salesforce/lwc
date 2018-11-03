@@ -1,0 +1,15 @@
+<template>
+    <x-subject for="foo"></x-subject>
+    <x-description id="bar"></x-description>
+    <x-description id="baz"></x-description>
+    <x-textarea id="foo" aria-describedby="bar baz"></x-textarea>
+
+    <label for="boof">label text</label>
+    <input id="boof">
+
+    <template for:each={things} for:item="thing">
+        <label key={thing.key} for="uid">{thing.label}</label>
+        <p key={thing.key} id="desc">description text</p>
+        <input key={thing.key} id="uid" aria-describedby="desc">
+    </template>
+</template>

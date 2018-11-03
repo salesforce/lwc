@@ -10,6 +10,8 @@ import {
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_CONTAINS,
+    DOCUMENT_POSITION_PRECEDING,
+    DOCUMENT_POSITION_FOLLOWING,
 } = Node;
 
 const {
@@ -96,6 +98,8 @@ export {
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,
+    DOCUMENT_POSITION_PRECEDING,
+    DOCUMENT_POSITION_FOLLOWING,
 };
 
 const NodePatchDescriptors: PropertyDescriptorMap = {};
@@ -112,7 +116,12 @@ const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
+    let ownerKey: number | undefined;
+    // search for the first element with owner identity (just in case of manually inserted elements)
+    while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
+        node = parentNodeGetter.call(node);
+    }
+    return ownerKey;
 }
 
 export function getNodeKey(node: Node): number | undefined {

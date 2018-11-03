@@ -1,8 +1,18 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "raptor is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
-    "start": 71,
-    "length": 21
-  }]
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: raptor is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 47
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
 }
