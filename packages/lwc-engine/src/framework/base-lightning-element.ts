@@ -273,7 +273,7 @@ BaseLightningElement.prototype = {
      * Returns all element descendants of node that
      * match the provided tagName.
      */
-    getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element> {
+    getElementsByTagName(tagNameOrWildCard: string) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.getElementsByTagName() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
@@ -286,7 +286,7 @@ BaseLightningElement.prototype = {
      * Returns all element descendants of node that
      * match the provide classnames.
      */
-    getElementsByClassName(names: string): HTMLCollectionOf<Element> {
+    getElementsByClassName(names: string) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.getElementsByClassName() cannot be called during the construction of the custom element for ${getComponentAsString(this)} because no children has been added to this element yet.`);
