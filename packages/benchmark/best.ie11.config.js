@@ -5,8 +5,8 @@ module.exports = {
         ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
         ['rollup-plugin-compat', {}]
     ],
-    benchmarkOnClient: false,
-    benchmarkIterations: 60,
+    benchmarkOnClient: true,
+    benchmarkIterations: 30,
     testPathIgnorePatterns: ['**/__benchmarks__/benchmark-table-wc/*.benchmark.js'],
     runnerConfig: [
         {

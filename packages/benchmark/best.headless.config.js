@@ -5,7 +5,7 @@ module.exports = {
         ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }]
     ],
     benchmarkOnClient: true,
-    benchmarkIterations: 60,
+    benchmarkIterations: 30,
     runnerConfig: [
         {
             "runner": '@best/runner-headless',
