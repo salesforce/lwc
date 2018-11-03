@@ -4,7 +4,7 @@ module.exports = {
         ['rollup-plugin-lwc-compiler', { rootDir: '<rootDir>/src/' }],
         ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }]
     ],
-    benchmarkOnClient: false,
+    benchmarkOnClient: true,
     benchmarkIterations: 60,
     runnerConfig: [
         {
