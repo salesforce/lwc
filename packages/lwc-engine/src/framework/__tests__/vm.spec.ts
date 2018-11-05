@@ -3,6 +3,8 @@ import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
 import { getErrorComponentStack, isNodeFromTemplate } from "../vm";
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('vm', () => {
     describe('#isNodeFromTemplate', () => {
         it('should return false when element is created externally', () => {
@@ -104,6 +106,7 @@ describe('vm', () => {
                 }
                 render() {
                     counter++;
+                    return emptyTemplate;
                 }
             }
 

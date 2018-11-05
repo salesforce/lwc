@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('watcher', () => {
 
     describe('integration', () => {
@@ -10,6 +12,7 @@ describe('watcher', () => {
             class MyComponent1 extends LightningElement {
                 render() {
                     counter++;
+                    return emptyTemplate;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -47,6 +50,7 @@ describe('watcher', () => {
             class MyComponent3 extends LightningElement {
                 render() {
                     counter++;
+                    return emptyTemplate;
                 }
             }
             MyComponent3.publicProps = { x: 1 };
@@ -147,6 +151,7 @@ describe('watcher', () => {
                 }
                 render() {
                     counter++;
+                    return emptyTemplate;
                 }
             }
 
@@ -265,6 +270,7 @@ describe('watcher', () => {
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
+                    return emptyTemplate;
                 }
             }
             MyComponent1.track = { state: 1 };
@@ -291,6 +297,7 @@ describe('watcher', () => {
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
+                    return emptyTemplate;
                 }
             }
             MyComponent1.publicMethods = ['popFromList'];
@@ -315,6 +322,7 @@ describe('watcher', () => {
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
+                    return emptyTemplate;
                 }
             }
             MyComponent1.publicMethods = ['unshiftFromList'];

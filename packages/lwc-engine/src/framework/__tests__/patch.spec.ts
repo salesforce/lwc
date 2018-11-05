@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('patch', () => {
 
     describe('#patch()', () => {
@@ -55,6 +57,7 @@ describe('patch', () => {
                 }
                 render() {
                     calls.push('child:render');
+                    return emptyTemplate;
                 }
                 renderedCallback() {
                     calls.push('child:renderedCallback');
@@ -113,6 +116,7 @@ describe('patch', () => {
                 }
                 render() {
                     calls.push('child:render');
+                    return emptyTemplate;
                 }
                 renderedCallback() {
                     calls.push('child:renderedCallback');
@@ -190,6 +194,7 @@ describe('patch', () => {
                 }
                 render() {
                     calls.push('child:render');
+                    return emptyTemplate;
                 }
                 renderedCallback() {
                     calls.push('child:renderedCallback');

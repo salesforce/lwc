@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('invoker', () => {
 
     describe('integration', () => {
@@ -9,7 +11,7 @@ describe('invoker', () => {
             document.body.innerHTML = '';
         });
 
-        it('should support undefined result from render()', () => {
+        it('should throw if render() returns undefined', () => {
             let counter = 0;
             class MyComponent extends LightningElement {
                 render() {
@@ -18,11 +20,13 @@ describe('invoker', () => {
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrow();
             expect(counter).toBe(1);
         });
 
-        it('should throw if render() returns something that is not a function or a promise or undefined', () => {
+        it('should throw if render() returns something that is not a template function', () => {
             class MyComponent extends LightningElement {
                 render() {
                     return 1;
@@ -246,6 +250,7 @@ describe('invoker', () => {
                 }
                 render() {
                     lifecycle.push('render');
+                    return emptyTemplate;
                 }
             }
 

@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 describe('class-list', () => {
     describe('integration', () => {
         it('should support static class attribute', () => {
@@ -237,6 +239,7 @@ describe('class-list', () => {
                 }
                 render() {
                     this.state.x;
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicMethods = ['initClassNames', 'updateTracked', 'addAnotherClass', 'addOtherClass'];
