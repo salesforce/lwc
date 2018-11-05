@@ -1,6 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getRootNode } from "../node";
+import { getRootNodeGetter } from "../traverse";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
@@ -39,7 +39,7 @@ describe('dom', () => {
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
             const child = elm.shadowRoot.querySelector('x-child');
-            const match = getRootNode.call(child, { composed: true });
+            const match = getRootNodeGetter.call(child, { composed: true });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
             expect(match.nodeName).toBe('#document');
@@ -50,7 +50,7 @@ describe('dom', () => {
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
 
-            const match = getRootNode.call(elm, { composed: true });
+            const match = getRootNodeGetter.call(elm, { composed: true });
 
             expect(match.nodeName).toBe('#document');
         });
@@ -92,10 +92,10 @@ describe('dom', () => {
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
             const child = elm.shadowRoot.querySelector('x-child');
-            const match = getRootNode.call(child, { composed: false });
+            const match = getRootNodeGetter.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
-            expect(match).toBe(elm);
+            expect(match).toBe(elm.shadowRoot);
         });
 
         it('should return correct value from self', () => {
@@ -103,7 +103,7 @@ describe('dom', () => {
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
 
-            const match = getRootNode.call(elm, { composed: false });
+            const match = getRootNodeGetter.call(elm, { composed: false });
 
             expect(match.nodeName).toBe('#document');
         });

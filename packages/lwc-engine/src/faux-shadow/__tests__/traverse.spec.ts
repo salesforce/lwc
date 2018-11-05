@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getShadowRoot } from "../../faux-shadow/shadow-root";
+import { getRootNodeGetter } from "../traverse";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -1105,5 +1106,165 @@ describe('assignedSlot', () => {
         const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
         const text = elm.shadowRoot.querySelector('x-native-slotted-component-child').childNodes[0];
         expect(text.assignedSlot).toBe(slot);
+    });
+});
+
+describe('Node.getRootNode on patched elements', () => {
+    afterEach(() => {
+        while (document.body.childNodes.length > 0) {
+            document.body.removeChild(document.body.childNodes[0]);
+        }
+    });
+
+    const childHtml = compileTemplate(`<template><span class="child-cmp-span">txt</span><slot></slot></template>`);
+    class ChildComponent extends LightningElement {
+        render() {
+            return childHtml;
+        }
+    }
+
+    const containerHtml  = compileTemplate(`
+            <template>
+                <div id="container">
+                    <div class="child-div">some text node</div>
+                    <x-child><span class="child-cmp-slotted-span">txt</span></x-child>
+                </div>
+            </template>
+        `, {
+        modules: { 'x-child': ChildComponent }
+    });
+    class ContainerComponent extends LightningElement {
+        render() {
+            return containerHtml;
+        }
+    }
+
+    describe('when options.composed=true', () => {
+        it('should return itself when node is disconnected', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            expect(elm.getRootNode({ composed: true })).toBe(elm);
+        });
+
+        it('should return document when request inside an lwc cmp', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(elm.getRootNode({ composed: true })).toBe(document);
+            });
+        });
+        it('should return document when request in a hierarchy of lwc cmp', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const child = elm.shadowRoot.querySelector('x-child')
+                    .shadowRoot.querySelector('.child-cmp-span');
+
+                expect(child.getRootNode({ composed: true })).toBe(document);
+            });
+        });
+        it('should return documentFragment the cmp is inside it', () => {
+            class ContainerComponent extends LightningElement {
+                render() {
+                    return containerHtml;
+                }
+            }
+            const elm = createElement('x-container', { is: ContainerComponent });
+
+            const fragment = document.createDocumentFragment();
+            fragment.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(elm.getRootNode({ composed: true })).toBe(fragment);
+            });
+        });
+    });
+
+    describe('when options.composed=false', () => {
+        it('should return itself when node is disconnected', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            expect(elm.getRootNode({ composed: false })).toBe(elm);
+        });
+
+        it('should return document as root when node is the root custom element', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(elm.getRootNode()).toBe(document);
+            });
+        });
+
+        it('should return itself as root when node is a shadow', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.getRootNode()).toBe(elm.shadowRoot);
+            });
+        });
+
+        it('should containing shadow of an element in the template of a component', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const childDiv = elm.shadowRoot.querySelector('.child-div');
+                expect(childDiv!.getRootNode()).toBe(elm.shadowRoot);
+            });
+        });
+
+        it('should containing shadow when node is a component custom element', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const childCmp = elm.shadowRoot.querySelector('x-child');
+                expect(childCmp.getRootNode()).toBe(elm.shadowRoot);
+            });
+        });
+
+        it('should return containing shadow when the node is in a component hierachy', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const xChild = elm.shadowRoot.querySelector('x-child');
+                const spanInChildCmp = xChild.shadowRoot.querySelector('.child-cmp-span');
+                expect(spanInChildCmp!.getRootNode()).toBe(xChild.shadowRoot);
+            });
+        });
+
+        it('should return containing shadow when node is inside a slot', () => {
+            const elm = createElement('x-container', { is: ContainerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                const spanInChildCmp = elm.shadowRoot.querySelector('.child-cmp-slotted-span');
+                expect(spanInChildCmp!.getRootNode()).toBe(elm.shadowRoot);
+            });
+        });
+
+        it('should return correct shadow on non patched elements', () => {
+            const cmpHtml = compileTemplate(`<template><div class="container"></div></template>`);
+            let injectedElement;
+            class InjectContanerComponent extends LightningElement {
+                renderedCallback() {
+                    this.template.querySelector('.container').innerHTML = '<span><p class="injected">injected element</p></span>';
+                    injectedElement = this.template.querySelector('p.injected');
+                }
+                render() {
+                    return cmpHtml;
+                }
+            }
+
+            const elm = createElement('x-container', { is: InjectContanerComponent });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(getRootNodeGetter.call(injectedElement)).toBe(elm.shadowRoot);
+            });
+        });
     });
 });
