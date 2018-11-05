@@ -14,8 +14,6 @@ import {
     create,
     ArrayIndexOf,
     ArrayPush,
-    defineProperty,
-    getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getPrototypeOf,
     isFunction,
@@ -23,6 +21,7 @@ import {
     setPrototypeOf,
     ArrayReduce,
     isUndefined,
+    getOwnPropertyDescriptor,
 } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
@@ -41,7 +40,6 @@ import {
 } from "./utils";
 
 interface PropDef {
-    config: number;
     type: string; // TODO: make this an enum
     attr: string;
 }
@@ -77,7 +75,8 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, ErrorCallback
+    ComponentConstructor, ErrorCallback, ComponentMeta,
+    getComponentRegisteredMeta, registerComponent,
  } from './component';
 import { Template } from "./template";
 
@@ -119,7 +118,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     return isElementComponent(proto, protoSet);
 }
 
-function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
+function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
 
@@ -130,11 +129,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
     }
 
-    const name: string = Ctor.name;
-    let props = getPublicPropertiesHash(Ctor);
-    let methods = getPublicMethodsHash(Ctor);
-    let wire = getWireHash(Ctor);
-    const track = getTrackHash(Ctor);
+    const name: string = meta.name;
+    let props = getPublicPropertiesHash(Ctor, meta.publicProps);
+    let methods = getPublicMethodsHash(Ctor, meta.publicMethods);
+    let wire = getWireHash(Ctor, meta.wire);
+    const track = getTrackHash(Ctor, meta.track);
 
     const proto = Ctor.prototype;
     const decoratorMap: DecoratorMap = create(null);
@@ -202,22 +201,12 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
     if (process.env.NODE_ENV !== 'production') {
         freeze(Ctor.prototype);
-        freeze(wire);
-        freeze(props);
-        freeze(methods);
-        for (const key in def) {
-            defineProperty(def, key, {
-                configurable: false,
-                writable: false,
-            });
-        }
     }
     return def;
 }
 
-function getTrackHash(target: ComponentConstructor): TrackDef {
-    const track = target.track;
-    if (!getOwnPropertyDescriptor(target, 'track') || !track || !getOwnPropertyNames(track).length) {
+function getTrackHash(target: ComponentConstructor, track: string[] | undefined): TrackDef {
+    if (isUndefined(track) || getOwnPropertyNames(track).length === 0) {
         return EmptyObject;
     }
 
@@ -225,9 +214,8 @@ function getTrackHash(target: ComponentConstructor): TrackDef {
     return assign(create(null), track);
 }
 
-function getWireHash(target: ComponentConstructor): WireHash | undefined {
-    const wire = target.wire;
-    if (!getOwnPropertyDescriptor(target, 'wire') || !wire || !getOwnPropertyNames(wire).length) {
+function getWireHash(target: ComponentConstructor, wire: WireHash | undefined): WireHash | undefined {
+    if (isUndefined(wire) || getOwnPropertyNames(wire).length === 0) {
         return;
     }
 
@@ -235,9 +223,8 @@ function getWireHash(target: ComponentConstructor): WireHash | undefined {
     return assign(create(null), wire);
 }
 
-function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
-    const props = target.publicProps;
-    if (!getOwnPropertyDescriptor(target, 'publicProps') || !props || !getOwnPropertyNames(props).length) {
+function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef | undefined): PropsDef {
+    if (isUndefined(props) || getOwnPropertyNames(props).length === 0) {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
@@ -261,7 +248,6 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
         }
 
         propsHash[propName] = assign({
-            config: 0,
             type: 'any',
             attr: attrName,
         }, props[propName]);
@@ -269,9 +255,8 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
     }, create(null));
 }
 
-function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
-    const publicMethods = target.publicMethods;
-    if (!getOwnPropertyDescriptor(target, 'publicMethods') || !publicMethods || !publicMethods.length) {
+function getPublicMethodsHash(target: ComponentConstructor, publicMethods: string[] | undefined): MethodDef {
+    if (isUndefined(publicMethods) || publicMethods.length === 0) {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
@@ -287,12 +272,31 @@ export function isComponentConstructor(Ctor: any): boolean {
    return isElementComponent(Ctor);
 }
 
+function getOwnValue(o: any, key: string): any | undefined {
+    const d = getOwnPropertyDescriptor(o, key);
+    return d && d.value;
+}
+
 export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
         return def;
     }
-    def = createComponentDef(Ctor);
+    let meta = getComponentRegisteredMeta(Ctor);
+    if (isUndefined(meta)) {
+        // @ts-ignore this is a temporary manual registration until
+        // the compiler is updated to call registerComponent
+        // Temporary workaround:
+        // meta must be an own property, otherwise it is inherited.
+        const { name } = Ctor;
+        const publicMethods = getOwnValue(Ctor, 'publicMethods');
+        const publicProps = getOwnValue(Ctor, 'publicProps');
+        const wire = getOwnValue(Ctor, 'wire');
+        const track = getOwnValue(Ctor, 'track');
+        meta = { publicMethods, publicProps, wire, track, name };
+        registerComponent(Ctor, meta);
+    }
+    def = createComponentDef(Ctor, meta);
     CtorToDefMap.set(Ctor, def);
     return def;
 }
@@ -326,7 +330,6 @@ import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } f
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (props: PropsDef, propName: string): PropsDef => {
     const attrName = getAttrNameFromPropName(propName);
     props[propName] = {
-        config: 3,
         type: 'any',
         attr: attrName,
     };

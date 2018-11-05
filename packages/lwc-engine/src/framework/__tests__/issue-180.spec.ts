@@ -14,12 +14,4 @@ describe('issue #180', () => {
         expect(elm.getAttribute('data-foo')).toBe('miami');
     });
 
-    it('should not allow dataFoo public api property', () => {
-        class MyComponent extends LightningElement {}
-        MyComponent.publicProps = { dataFoo: { config: 1 } };
-        expect(() => {
-            createElement('x-foo', { is: MyComponent });
-        }).toThrow();
-    });
-
 });

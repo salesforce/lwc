@@ -234,7 +234,7 @@ describe('performance-timing', () => {
             }
 
             static track = {
-                state: { config: 0 }
+                state: {}
             };
         }
 
@@ -251,7 +251,7 @@ describe('performance-timing', () => {
             }
 
             static track = {
-                state: { config: 0 }
+                state: {}
             };
         }
 

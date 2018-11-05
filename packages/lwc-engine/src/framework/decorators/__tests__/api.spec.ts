@@ -13,9 +13,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 0
-                }
+                breakfast: {}
             };
 
             const html = compileTemplate(`
@@ -35,9 +33,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             Parent.publicProps = {
-                parentGetter: {
-                    config: 0
-                }
+                parentGetter: {}
             };
 
             const elm = createElement('x-foo', { is: Parent });
@@ -56,9 +52,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 0
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -81,9 +75,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 0
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -113,9 +105,7 @@ describe('decorators/api.ts', () => {
 
             MyComponent.publicMethods = ['getTextContent'];
             MyComponent.publicProps = {
-                x: {
-                    config: 0
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -136,9 +126,7 @@ describe('decorators/api.ts', () => {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 1
-                }
+                breakfast: {}
             };
 
             const html = compileTemplate(`
@@ -159,9 +147,7 @@ describe('decorators/api.ts', () => {
             }
 
             Parent.publicProps = {
-                parentGetter: {
-                    config: 1
-                }
+                parentGetter: {}
             };
 
             const elm = createElement('x-foo', { is: Parent });
@@ -186,9 +172,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 3
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -218,9 +202,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 3
-                }
+                x: {}
             };
             MyComponent.track = {
                 y: 1
@@ -255,9 +237,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                validity: {
-                    config: 1
-                }
+                validity: {}
             };
 
             MyComponent.publicMethods = ['getTextContent'];
@@ -281,9 +261,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 3
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -304,9 +282,7 @@ describe('decorators/api.ts', () => {
                 }
             }
             MyComponent.publicProps = {
-                x: {
-                    config: 3
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -372,7 +348,7 @@ describe('decorators/api.ts', () => {
             }
 
             XFoo.publicProps = {
-                counter: { config: 0 }
+                counter: {}
             };
 
             const elm1 = createElement('x-foo', { is: XFoo });

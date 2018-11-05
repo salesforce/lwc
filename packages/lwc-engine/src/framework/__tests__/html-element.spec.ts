@@ -1128,9 +1128,7 @@ describe('html-element', () => {
             }
 
             MyComponent.publicProps = {
-                foo: {
-                    config: 3
-                }
+                foo: {}
             };
 
             MyComponent.track = { state: 1 };
@@ -1163,9 +1161,7 @@ describe('html-element', () => {
                 foo = null;
             }
             MyComponent.publicProps = {
-                foo: {
-                    config: 0
-                }
+                foo: {}
             };
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
@@ -1182,10 +1178,8 @@ describe('html-element', () => {
                 set foo(value) {}
             }
             MyParent.publicProps = {
-                foo: {
-                    config: 3,
-                }
-            }
+                foo: {}
+            };
             class MyComponent extends MyParent {
 
             }
@@ -1203,10 +1197,8 @@ describe('html-element', () => {
                 }
             }
             MyParent.publicProps = {
-                foo: {
-                    config: 3,
-                }
-            }
+                foo: {}
+            };
             class MyComponent extends MyParent {
 
             }
@@ -1261,10 +1253,8 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    role: {
-                        config: 3,
-                    }
-                }
+                    role: {}
+                };
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
                 element.role = 'tab';
@@ -1359,9 +1349,7 @@ describe('html-element', () => {
                     get lang() {}
                 }
                 MyComponent.publicProps = {
-                    lang: {
-                        config: 3,
-                    }
+                    lang: {}
                 };
 
                 const element = createElement('prop-setter-lang', { is: MyComponent });
@@ -1407,9 +1395,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    lang: {
-                        config: 1,
-                    }
+                    lang: {}
                 };
 
                 const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
@@ -1487,9 +1473,7 @@ describe('html-element', () => {
                     get hidden() {}
                 }
                 MyComponent.publicProps = {
-                    hidden: {
-                        config: 3,
-                    }
+                    hidden: {}
                 };
 
                 const element = createElement('prop-setter-hidden', { is: MyComponent });
@@ -1534,9 +1518,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    hidden: {
-                        config: 1,
-                    }
+                    hidden: {}
                 };
 
                 const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
@@ -1619,9 +1601,7 @@ describe('html-element', () => {
                 }
 
                 MyComponent.publicProps = {
-                    dir: {
-                        config: 3,
-                    }
+                    dir: {}
                 };
 
                 const element = createElement('prop-setter-dir', { is: MyComponent });
@@ -1667,9 +1647,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    dir: {
-                        config: 1,
-                    }
+                    dir: {}
                 };
 
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
@@ -1750,9 +1728,7 @@ describe('html-element', () => {
                     get id() {}
                 }
                 MyComponent.publicProps = {
-                    id: {
-                        config: 3,
-                    }
+                    id: {}
                 };
 
                 const element = createElement('prop-setter-id', { is: MyComponent });
@@ -1798,9 +1774,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    id: {
-                        config: 1,
-                    }
+                    id: {}
                 };
 
                 const element = createElement('prop-getter-id-imperative', { is: MyComponent });
@@ -1881,9 +1855,7 @@ describe('html-element', () => {
                     get accessKey() {}
                 }
                 MyComponent.publicProps = {
-                    accessKey: {
-                        config: 3,
-                    }
+                    accessKey: {}
                 };
 
                 const element = createElement('prop-setter-accessKey', { is: MyComponent });
@@ -1928,10 +1900,8 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    accessKey: {
-                        config: 1,
-                    }
-                }
+                    accessKey: {}
+                };
                 const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
                 expect(element.accessKey).toBe('accessKey');
                 expect(count).toBe(1);
@@ -2008,10 +1978,8 @@ describe('html-element', () => {
                     get title() {}
                 }
                 MyComponent.publicProps = {
-                    title: {
-                        config: 3,
-                    }
-                }
+                    title: {}
+                };
                 const element = createElement('prop-setter-title', { is: MyComponent });
                 element.title = {},
                 expect(count).toBe(1);
@@ -2054,9 +2022,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    title: {
-                        config: 1,
-                    }
+                    title: {}
                 };
 
                 const element = createElement('prop-getter-title-imperative', { is: MyComponent });

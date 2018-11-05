@@ -12,9 +12,7 @@ describe('component', function() {
                 }
             }
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 1
-                }
+                breakfast: {}
             };
 
             const html = compileTemplate(
@@ -36,9 +34,7 @@ describe('component', function() {
                 }
             }
             Parent.publicProps = {
-                lunch: {
-                    config: 1
-                }
+                lunch: {}
             };
 
             const elm = createElement('x-foo', { is: Parent });
@@ -55,9 +51,7 @@ describe('component', function() {
                 m = propVal;
             }
             MyChild.publicProps = {
-                m: {
-                    config: 0
-                }
+                m: {}
             };
 
             const html = compileTemplate(
@@ -93,9 +87,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                x: {
-                    config: 1
-                }
+                x: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -131,9 +123,7 @@ describe('component', function() {
 
             MyComponent.track = { state: 1 };
             MyComponent.publicProps = {
-                validity: {
-                    config: 1
-                }
+                validity: {}
             };
             MyComponent.publicMethods = ['updateTrackedValue', 'getTextContent'];
 
@@ -161,9 +151,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 1
-                }
+                breakfast: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -185,9 +173,7 @@ describe('component', function() {
                 }
             }
             MyChild.publicProps = {
-                breakfast: {
-                    config: 3
-                }
+                breakfast: {}
             };
 
             const html = compileTemplate(
@@ -238,9 +224,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 3
-                }
+                breakfast: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -275,9 +259,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 3
-                }
+                breakfast: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -313,9 +295,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 3
-                }
+                breakfast: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -330,24 +310,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {
-                    config: 1
-                }
-            };
-
-            expect(() => {
-                createElement('x-foo', { is: MyComponent });
-            }).toThrow();
-        });
-
-        it('should throw when configured prop is missing setter', function() {
-            class MyComponent extends LightningElement  {
-            }
-
-            MyComponent.publicProps = {
-                breakfast: {
-                    config: 2
-                }
+                breakfast: {}
             };
 
             expect(() => {

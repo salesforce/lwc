@@ -12,6 +12,7 @@ import { PropsDef, WireHash } from './def';
 import { VM, getComponentVM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { tagNameGetter } from "../env/element";
+import { Template } from "./template";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -19,17 +20,37 @@ export interface ComponentInterface {
     setAttribute(attrName: string, value: any): void;
 }
 
-// TODO: review this with the compiler output
 export interface ComponentConstructor {
     new (): ComponentInterface;
+    readonly name: string;
+    readonly labels?: string[];
+    readonly delegatesFocus?: boolean;
+}
+
+export interface ComponentMeta {
     readonly name: string;
     readonly publicMethods?: string[];
     readonly publicProps?: PropsDef;
     readonly track?: string[];
     readonly wire?: WireHash;
-    readonly labels?: string[];
-    readonly templateUsedProps?: string[];
-    readonly delegatesFocus?: boolean;
+    readonly template?: Template;
+}
+
+const signedComponentToMetaMap: WeakMap<ComponentConstructor, ComponentMeta> = new WeakMap();
+
+export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
+    return signedComponentToMetaMap.has(Ctor);
+}
+
+// chaining this method as a way to wrap existing
+// assignment of component constructor easily, without too much transformation
+export function registerComponent(Ctor: ComponentConstructor, meta: ComponentMeta): ComponentConstructor {
+    signedComponentToMetaMap.set(Ctor, meta);
+    return Ctor;
+}
+
+export function getComponentRegisteredMeta(Ctor: ComponentConstructor): ComponentMeta | undefined {
+    return signedComponentToMetaMap.get(Ctor);
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {

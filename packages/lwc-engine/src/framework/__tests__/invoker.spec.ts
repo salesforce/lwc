@@ -223,9 +223,7 @@ describe('invoker', () => {
                 }
             }
             MyComponent3.publicProps = {
-                foo: {
-                    config: 0
-                }
+                foo: {}
             };
 
             const elm = createElement('x-foo', { is: MyComponent3 });

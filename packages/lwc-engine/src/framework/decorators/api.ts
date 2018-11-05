@@ -1,14 +1,11 @@
 import assert from "../../shared/assert";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
-import { isObject, isNull, isTrue, hasOwnProperty, toString } from "../../shared/language";
+import { isObject, isNull, isTrue, toString } from "../../shared/language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { ComponentInterface, ComponentConstructor } from "../component";
 import { VM, getComponentVM } from "../vm";
 import { isUndefined, isFunction } from "../../shared/language";
 import { reactiveMembrane } from "../membrane";
-
-const COMPUTED_GETTER_MASK = 1;
-const COMPUTED_SETTER_MASK = 2;
 
 export default function api(target: ComponentConstructor, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
@@ -16,25 +13,16 @@ export default function api(target: ComponentConstructor, propName: PropertyKey,
             assert.fail(`@api decorator can only be used as a decorator function.`);
         }
     }
-    const meta = target.publicProps;
-    // publicProps must be an own property, otherwise the meta is inherited.
-    const config = (!isUndefined(meta) && hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
-    // initializing getters and setters for each public prop on the target prototype
-    if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid property ${toString(propName)} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-            const mustHaveGetter = COMPUTED_GETTER_MASK & config;
-            const mustHaveSetter = COMPUTED_SETTER_MASK & config;
-            if (mustHaveGetter) {
-                assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${toString(propName)} decorated with @api in ${target}`);
-            }
-            if (mustHaveSetter) {
-                assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${toString(propName)} decorated with @api in ${target}`);
-                assert.isTrue(mustHaveGetter, `Missing getter for property ${toString(propName)} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`);
-            }
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid property ${toString(propName)} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+        if (isObject(descriptor) && isFunction(descriptor.set)) {
+            assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${toString(propName)} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`);
         }
+    }
+    // initializing getters and setters for each public prop on the target prototype
+    if (isObject(descriptor) && (isFunction(descriptor.get) || isFunction(descriptor.set))) {
         // if it is configured as an accessor it must have a descriptor
-        return createPublicAccessorDescriptor(target, propName, descriptor as PropertyDescriptor);
+        return createPublicAccessorDescriptor(target, propName, descriptor);
     } else {
         return createPublicPropertyDescriptor(target, propName, descriptor);
     }

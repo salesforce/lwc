@@ -10,17 +10,6 @@ describe('def', () => {
             }).not.toThrow();
         });
 
-        it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
-            class MyComponent extends LightningElement {}
-            const def = getComponentDef(MyComponent);
-            expect(() => {
-                def.name = 'something else';
-            }).toThrow();
-
-            def.expando = 1;
-            expect(def.expando).toBe(1);
-        });
-
         it('should throw for stateful components not extending Element', () => {
             const def = class MyComponent {};
             expect(() => getComponentDef(def)).toThrow();
@@ -48,19 +37,15 @@ describe('def', () => {
                 foo: { get: foo, configurable: true }
             });
             MyComponent.publicProps = {
-                foo: {
-                    config: 1
-                },
+                foo: {},
                 xBar: {},
             };
             const { props } = getComponentDef(MyComponent);
             expect(props.foo).toEqual({
-                config: 1,
                 type: 'any',
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
-                config: 0,
                 type: 'any',
                 attr: 'x-bar',
             });
@@ -136,24 +121,20 @@ describe('def', () => {
             const { props } = getComponentDef(MyComponent);
             // aria multi-capital
             expect(props.ariaActiveDescendant).toEqual({
-                config: 3,
                 type: 'any',
                 attr: 'aria-activedescendant',
             });
             expect(props.role).toEqual({
-                config: 3,
                 type: 'any',
                 attr: 'role',
             });
             // aria exception
             expect(props.ariaAutoComplete).toEqual({
-                config: 3,
                 type: 'any',
                 attr: 'aria-autocomplete',
             });
             // explicit mapping
             expect(props.tabIndex).toEqual({
-                config: 3,
                 type: 'any',
                 attr: 'tabindex',
             });
@@ -167,9 +148,7 @@ describe('def', () => {
             });
 
             MySuperComponent.publicProps = {
-                x: {
-                    config: 1
-                }
+                x: {}
             };
 
             function foo() {}
@@ -182,12 +161,8 @@ describe('def', () => {
             });
 
             MyComponent.publicProps = {
-                foo: {
-                    config: 1
-                },
-                xBar: {
-                    config: 3
-                },
+                foo: {},
+                xBar: {},
             };
 
             class MySubComponent extends MyComponent {}
@@ -198,22 +173,18 @@ describe('def', () => {
 
             const { props } = getComponentDef(MySubComponent);
             expect(props.foo).toEqual({
-                config: 1,
                 type: 'any',
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
-                config: 3,
                 type: 'any',
                 attr: 'x-bar',
             });
             expect(props.fizz).toEqual({
-                config: 0,
                 type: 'any',
                 attr: 'fizz',
             });
             expect(props.x).toEqual({
-                config: 1,
                 type: 'any',
                 attr: 'x',
             });
@@ -227,9 +198,7 @@ describe('def', () => {
             });
 
             MyComponent.publicProps = {
-                x: {
-                    config: 1
-                }
+                x: {}
             };
 
             expect(() => {
@@ -293,7 +262,6 @@ describe('def', () => {
                 foo: {}
             };
             expect(getComponentDef(MyComponent).props.foo).toEqual({
-                config: 0,
                 type: 'any',
                 attr: 'foo',
             });
@@ -306,7 +274,6 @@ describe('def', () => {
             };
             // non-global html property with weird map
             expect(getComponentDef(MyComponent).props.readOnly).toEqual({
-                config: 0,
                 type: 'any',
                 attr: 'readonly',
             });
