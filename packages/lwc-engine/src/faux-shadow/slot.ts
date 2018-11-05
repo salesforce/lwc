@@ -20,10 +20,12 @@ if (typeof MutationObserver === 'undefined') {
     function MutationObserverMock() {}
     MutationObserverMock.prototype = {
         observe() {
-            assert.isTrue(
-                process.env.NODE_ENV === 'test',
-                'MutationObserver should not be mocked outside of the jest test environment'
-            );
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(
+                    process.env.NODE_ENV === 'test',
+                    'MutationObserver should not be mocked outside of the jest test environment'
+                );
+            }
         }
     };
     (window as any).MutationObserver = MutationObserverMock;
