@@ -28,15 +28,17 @@ describe('Testing array primitives', () => {
             return document.querySelector('integration-array-primitives').shadowRoot.querySelector('.splice').click();
         });
 
-        // Technically a microtask is not needed since selenium already does macrotasking
+        const { value } = browser.executeAsync(function (done) {
+            Promise.resolve().then(function () {
+                var list = Array.prototype.slice.call(
+                    document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li')
+                );
 
-        const { value } = browser.execute(function () {
-            var list = Array.prototype.slice.call(
-                document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li')
-            );
+                var textList = list.map(function (li) {
+                    return li.textContent;
+                });
 
-            return list.map(function (li) {
-                return li.textContent;
+                done(textList);
             });
         });
 
