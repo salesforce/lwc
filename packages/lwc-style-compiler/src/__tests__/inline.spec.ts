@@ -15,8 +15,6 @@ describe('playground test for debugging ', () => {
             }
         });
 
-        console.log(code);
-
         expect(code).toBeDefined();
     });
 });
