@@ -106,7 +106,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
     postcss.stringify(result.root, (part, node, nodePosition) => {
         // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
-            currentRuleTokens.push(...tokenizeCssSelector(part));
+            currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
 
         // When consuming the end of a rule we normalize it and produce a new one
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
@@ -156,9 +156,11 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
                 });
             }
 
-        // When inside anything else just push it
+        // When inside anything else but a comment just push it
         } else {
-            currentRuleTokens.push({ type: TokenType.text, value: normalizeString(part) });
+            if (!node || node.type !== 'comment') {
+                currentRuleTokens.push({ type: TokenType.text, value: normalizeString(part) });
+            }
         }
     });
 
@@ -171,8 +173,8 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
 // TODO: this code needs refactor, it could be simpler by using a native post-css walker
 function tokenizeCssSelector(data: string): Token[] {
+    data = data.replace(/( {2,})/gm, ' '); // remove when there are more than two spaces
     const tokens: Token[] = [];
-
     let pos = 0;
     let next = 0;
     const max = data.length;
