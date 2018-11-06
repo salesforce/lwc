@@ -6,7 +6,7 @@ const getBoundingClientRect = jest.fn().mockReturnValue({
     height: 100,
 }); // Hacking in layout for jsdom.
 
-import {
+export {
     addEventListener,
     removeEventListener,
     hasAttribute,
@@ -27,24 +27,4 @@ import {
     matches,
 } from './../element'; // Pass through all the functions from element, we probably don't want those mocked
 
-export {
-    addEventListener,
-    removeEventListener,
-    hasAttribute,
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    querySelector,
-    querySelectorAll,
-    getBoundingClientRect,
-    getElementsByTagName,
-    getElementsByClassName,
-    getElementsByTagNameNS,
-    tagNameGetter,
-    tabIndexGetter,
-    innerHTMLSetter,
-    matches,
-}
+export { getBoundingClientRect }
