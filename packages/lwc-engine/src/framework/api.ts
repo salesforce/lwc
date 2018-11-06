@@ -29,10 +29,12 @@ import {
 } from "./hooks";
 import { markAsDynamicChildren, hasDynamicChildren, patchEvent } from "./patch";
 import {
+    isNativeShadowRootAvailable,
+} from "../env/dom";
+import {
     insertBefore,
     removeChild,
-    isNativeShadowRootAvailable,
-} from "./dom-api";
+} from "../env/node";
 import { Services, invokeServiceHook } from "./services";
 
 export interface ElementCompilerData extends VNodeData {

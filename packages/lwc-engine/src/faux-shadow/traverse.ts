@@ -1,18 +1,21 @@
 import assert from "../shared/assert";
 import {
+    getNodeKey,
+    getNodeNearestOwnerKey,
+} from "./node";
+import {
     parentNodeGetter as nativeParentNodeGetter,
     childNodesGetter as nativeChildNodesGetter,
     textContextSetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
-    getNodeKey,
-    getNodeOwnerKey,
-} from "./node";
+    parentElementGetter,
+} from "../env/node";
 import {
-    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
-} from "./element";
-import { elementsFromPoint } from "./document";
+    querySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
+} from "../env/element";
+import { elementsFromPoint } from "../env/document";
 import { wrapIframeWindow } from "./iframe";
 import {
     ArrayReduce,
@@ -22,16 +25,14 @@ import {
     isTrue,
     getPrototypeOf,
 } from "../shared/language";
-import { getOwnPropertyDescriptor, isNull } from "../shared/language";
+import { isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
-import { parentElementGetter } from "../framework/dom-api";
 import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
 import { SyntheticNodeList } from "./node-list";
-
-const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
+import { iFrameContentWindowGetter } from "../env/dom";
 
 // TODO: remove after TS 3.x upgrade.
 export interface GetRootNodeOptions {
@@ -42,7 +43,7 @@ function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
         return null;
     }
-    const ownerKey = getNodeOwnerKey(node);
+    const ownerKey = getNodeNearestOwnerKey(node);
     if (isUndefined(ownerKey)) {
         return null;
     }
@@ -67,7 +68,7 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
         assert.invariant(node instanceof Node, `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`);
         assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`);
     }
-    const ownerKey = getNodeOwnerKey(node);
+    const ownerKey = getNodeNearestOwnerKey(node);
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
 }
 
@@ -81,13 +82,13 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     // just in case the provided node is not an element
     let currentElement: Element = node instanceof HTMLElement ? node : parentElementGetter.call(node);
     while (!isNull(currentElement) && currentElement !== host) {
-        const elmOwnerKey = getNodeOwnerKey(currentElement);
+        const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
         const parent: Element = parentElementGetter.call(currentElement);
         if (elmOwnerKey === hostKey) {
             // we have reached a host's node element, and only if
             // that element is an slot, then the node is considered slotted
             return isSlotElement(currentElement);
-        } else if (parent !== host && getNodeOwnerKey(parent) !== elmOwnerKey) {
+        } else if (parent !== host && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
             // we are crossing a boundary of some sort since the elm and its parent
             // have different owner key. for slotted elements, this is only possible
             // if the parent happens to be a slot that is not owned by the host
@@ -106,7 +107,7 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): Node | nul
         // walking up via parent chain might end up in the shadow root element
         return getShadowRoot(owner) as Node;
     } else if (value instanceof Element) {
-        if (getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
+        if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
             return value;
         } else if (!isNull(owner) && isSlotElement(value)) {
@@ -220,7 +221,7 @@ export function lightDomQuerySelectorAll(elm: Element, selectors: string): Synth
     if (isNull(owner)) {
         return new SyntheticNodeList([]);
     }
-    const nodeList = nativeQuerySelectorAll.call(elm, selectors);
+    const nodeList = querySelectorAll.call(elm, selectors);
     if (getNodeKey(elm)) {
         // it is a custom element, and we should then filter by slotted elements
         return getAllSlottedMatches(elm as HTMLElement, nodeList);
@@ -236,7 +237,7 @@ export function lightDomQuerySelector(elm: Element, selector: string): Element |
         // the it is a root, and those can't have a lightdom
         return null;
     }
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    const nodeList = querySelectorAll.call(elm, selector);
     if (getNodeKey(elm)) {
         // it is a custom element, and we should then filter by slotted elements
         return getFirstSlottedMatch(elm as HTMLElement, nodeList);
@@ -248,13 +249,13 @@ export function lightDomQuerySelector(elm: Element, selector: string): Element |
 
 export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, selector: string): Element | null {
     const elm = getHost(root);
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    const nodeList = querySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
 export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): SyntheticNodeList<Element> {
     const elm = getHost(root);
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    const nodeList = querySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
 }
 
@@ -288,7 +289,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
         // node itself is a custom element
         // lwc element, in which case we need to get only the nodes
         // that were slotted
-        const slots = nativeQuerySelectorAll.call(node, 'slot');
+        const slots = querySelectorAll.call(node, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
             if (isNodeOwnedBy(node as HTMLElement, slot)) {
                 ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
@@ -333,7 +334,7 @@ export function PatchedNode(node: Node): NodeConstructor {
              * or they both belong to the same template (default content)
              * we should assume that it is not slotted
              */
-            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
+            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)) {
                 return null;
             }
             return parentNode as HTMLElement;

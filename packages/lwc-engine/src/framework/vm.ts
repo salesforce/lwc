@@ -7,7 +7,7 @@ import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter, parentNodeGetter, ElementInnerHTMLSetter, ShadowRootInnerHTMLSetter, elementTagNameGetter, ShadowRootHostGetter } from "./dom-api";
+import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from "../env/dom";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -15,6 +15,8 @@ import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure, startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
+import { tagNameGetter, innerHTMLSetter } from "../env/element";
+import { parentElementGetter, parentNodeGetter } from "../env/node";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -405,7 +407,7 @@ export function resetShadowRoot(vm: VM) {
     if (isTrue(fallback)) {
         // faux-shadow does not have a real cmpRoot instance, instead
         // we need to remove the content of the host entirely
-        ElementInnerHTMLSetter.call(vm.elm, '');
+        innerHTMLSetter.call(vm.elm, '');
     } else {
         ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     }
@@ -469,7 +471,7 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
-            const tagName = elementTagNameGetter.call(elm);
+            const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
             ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${ is ? ' is="${is}' : '' }>`);
         }

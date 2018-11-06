@@ -1,3 +1,5 @@
+import { setAttribute, removeAttribute, getAttribute, hasAttribute } from '../../env/element';
+
 // this regular expression is used to transform aria props into aria attributes because
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
@@ -6,7 +8,6 @@ type AriaPropMap = Record<string, any>;
 
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
 const { hasOwnProperty } = Object.prototype;
-const { hasAttribute, setAttribute, removeAttribute, getAttribute } = Element.prototype;
 const {
     replace: StringReplace,
     toLowerCase: StringToLowerCase,
@@ -25,7 +26,7 @@ function getNormalizedAriaPropertyValue(propName: string, value: any): any {
     return value == null ? null : value + '';
 }
 
-function createAriaPropertyPropertyDescriptor(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
+function createAriaPropertyPropertyDescriptor(propName: string, attrName: string): PropertyDescriptor {
     return {
         get(this: HTMLElement): any {
             const map = getAriaPropertyMap(this);
@@ -53,6 +54,6 @@ function createAriaPropertyPropertyDescriptor(propName: string, attrName: string
 
 export function patch(propName: string) {
     const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
-    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName, null);
+    const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
     Object.defineProperty(Element.prototype, propName, descriptor);
 }

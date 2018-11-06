@@ -1,6 +1,6 @@
 import { isString } from '../../shared/language';
 import { VNode } from "../../3rdparty/snabbdom/types";
-import { removeAttribute } from '../dom-api';
+import { removeAttribute } from '../../env/element';
 
 // The style property is a string when defined via an expression in the template.
 function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {

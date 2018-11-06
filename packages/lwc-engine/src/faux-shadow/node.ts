@@ -1,52 +1,62 @@
 import {
     isUndefined,
     isNull,
-    hasOwnProperty,
-    getOwnPropertyDescriptor,
+    isTrue,
     defineProperties,
 } from '../shared/language';
+import { parentNodeGetter } from '../env/node';
 
-const {
-    DOCUMENT_POSITION_CONTAINED_BY,
-    DOCUMENT_POSITION_CONTAINS,
-    DOCUMENT_POSITION_PRECEDING,
-    DOCUMENT_POSITION_FOLLOWING,
-} = Node;
+/**
+ * Returns the context shadow included root.
+ */
+function findShadowRoot(node: Node): Node {
+    const initialParent = parentNodeGetter.call(node);
+    // We need to ensure that the parent element is present before accessing it.
+    if (isNull(initialParent)) {
+        return node;
+    }
 
-const {
-    insertBefore,
-    removeChild,
-    appendChild,
-    compareDocumentPosition,
-} = Node.prototype;
+    // In the case of LWC, the root and the host element are the same things. Therefor,
+    // when calling findShadowRoot on the a host element we want to return the parent host
+    // element and not the current host element.
+    node = initialParent;
+    let nodeParent;
+    while (
+        !isNull(nodeParent = parentNodeGetter.call(node)) &&
+        isUndefined(getNodeKey(node))
+    ) {
+        node = nodeParent;
+    }
 
-const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set!;
-const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
-const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
-    getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
-    getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
+    return node;
+}
 
-const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prototype, 'childNodes') ?
-    getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get! :
-    getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!;  // IE11
+function findComposedRootNode(node: Node): Node {
+    let nodeParent;
+    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
+        node = nodeParent;
+    }
 
-export {
-    // Node.prototype
-    compareDocumentPosition,
-    insertBefore,
-    removeChild,
-    appendChild,
-    parentNodeGetter,
-    parentElementGetter,
-    childNodesGetter,
-    textContextSetter,
+    return node;
+}
 
-    // Node
-    DOCUMENT_POSITION_CONTAINS,
-    DOCUMENT_POSITION_CONTAINED_BY,
-    DOCUMENT_POSITION_PRECEDING,
-    DOCUMENT_POSITION_FOLLOWING,
-};
+/**
+ * Dummy implementation of the Node.prototype.getRootNode.
+ * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
+ *
+ * TODO: Once we start using the real shadowDOM, this method should be replaced by:
+ * const { getRootNode } = Node.prototype;
+ */
+export function getRootNode(
+    this: Node,
+    options?: { composed?: boolean }
+): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+
+    return isTrue(composed) ?
+        findComposedRootNode(this) :
+        findShadowRoot(this);
+}
 
 const NodePatchDescriptors: PropertyDescriptorMap = {};
 
@@ -61,7 +71,7 @@ export function patchNode(node: Node) {
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
-export function getNodeOwnerKey(node: Node): number | undefined {
+export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {

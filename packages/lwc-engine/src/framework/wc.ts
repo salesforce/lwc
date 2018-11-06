@@ -3,7 +3,8 @@ import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, 
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
-import { elementTagNameGetter, isNativeShadowRootAvailable } from "./dom-api";
+import { tagNameGetter } from "../env/element";
+import { isNativeShadowRootAvailable } from "../env/dom";
 import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
 import { HTMLElementConstructor } from "./base-bridge-element";
@@ -27,7 +28,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         constructor() {
             startGlobalMeasure(GlobalMeasurementPhase.INIT);
             super();
-            const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
+            const tagName = StringToLowerCase.call(tagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
                 const def = getComponentDef(Ctor);
                 patchCustomElementProto(this, tagName, def);

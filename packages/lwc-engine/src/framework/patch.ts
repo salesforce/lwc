@@ -1,6 +1,6 @@
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { patchEvent } from "../faux-shadow/faux";
-import { elementTagNameGetter } from "./dom-api";
+import { tagNameGetter } from "../env/element";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, create, isUndefined } from "../shared/language";
 import { ComponentDef } from "./def";
@@ -53,7 +53,7 @@ export function patchCommentNodeProto(comment: Comment) {
 const TagToProtoCache: Record<string, object> = create(null);
 
 function getPatchedElementClass(elm: HTMLElement): HTMLElementConstructor {
-    switch (elementTagNameGetter.call(elm)) {
+    switch (tagNameGetter.call(elm)) {
         case 'SLOT':
             return PatchedSlotElement(elm as HTMLSlotElement);
         case 'IFRAME':

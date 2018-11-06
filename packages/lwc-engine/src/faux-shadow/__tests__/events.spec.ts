@@ -1,6 +1,5 @@
 import { createElement, LightningElement } from '../../framework/main';
 import { compileTemplate } from 'test-utils';
-import { getShadowRoot } from '../../faux-shadow/shadow-root';
 
 describe('events', () => {
     describe('log messages', () => {
@@ -197,7 +196,7 @@ describe('events', () => {
             });
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-            const div = getShadowRoot(elm).querySelector('div');
+            const div = elm.shadowRoot.querySelector('div');
             div.click();
             expect(target).toBe(div);
         });
@@ -261,11 +260,11 @@ describe('events', () => {
             });
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-            const div = getShadowRoot(elm).querySelector('div');
+            const div = elm.shadowRoot.querySelector('div');
             elm.changeSomething();
             return Promise.resolve().then(() => {
                 div.click();
-                expect(getShadowRoot(elm).querySelector('div')).toBe(div); // making sure that the dom is reused
+                expect(elm.shadowRoot.querySelector('div')).toBe(div); // making sure that the dom is reused
                 expect(target).toBe(div);
             });
         });
@@ -295,7 +294,7 @@ describe('events', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
-                const anchor = getShadowRoot(elm).querySelector('a');
+                const anchor = elm.shadowRoot.querySelector('a');
                 anchor.click();
                 expect(target).toBe(anchor);
             });

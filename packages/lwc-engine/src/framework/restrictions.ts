@@ -16,7 +16,7 @@ import {
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-} from "./dom-api";
+} from "../env/element";
 import { create } from "./../shared/language";
 
 function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {

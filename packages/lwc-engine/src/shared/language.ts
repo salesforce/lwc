@@ -28,6 +28,7 @@ const {
     join: ArrayJoin,
     forEach,
     reduce: ArrayReduce,
+    reverse: ArrayReverse,
 } = Array.prototype;
 
 const {
@@ -74,6 +75,7 @@ export {
     isArray,
     ArrayIndexOf,
     ArrayPush,
+    ArrayReverse,
     forEach,
 };
 

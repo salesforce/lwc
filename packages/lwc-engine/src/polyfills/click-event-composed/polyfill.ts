@@ -1,4 +1,5 @@
-const { addEventListener, removeEventListener } = Element.prototype;
+import { addEventListener, removeEventListener } from "../../env/element";
+
 const originalClickDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'click');
 
 function handleClick(event) {

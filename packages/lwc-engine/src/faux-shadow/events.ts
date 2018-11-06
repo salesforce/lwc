@@ -2,15 +2,21 @@ import assert from "../shared/assert";
 import {
     addEventListener,
     removeEventListener,
-} from "./element";
+} from "../env/element";
 import {
     parentNodeGetter,
     DOCUMENT_POSITION_CONTAINS,
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
+} from "../env/node";
+import {
+    getNodeNearestOwnerKey,
+    getNodeKey,
 } from "./node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { isNodeSlotted, getRootNodeGetter } from "./traverse";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost, SyntheticShadowRootInterface } from "./shadow-root";
+import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -28,8 +34,6 @@ function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
 }
 
-export const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
-export const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(Event.prototype, 'currentTarget')!.get!;
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function getRootNodeHost(node: Node, options): Node {
@@ -56,7 +60,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 // top custom element that belongs to the body.
                 let outerMostElement = originalTarget;
                 let parentNode;
-                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(getNodeOwnerKey(outerMostElement as Node))) {
+                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(getNodeNearestOwnerKey(outerMostElement as Node))) {
                     outerMostElement = parentNode;
                 }
 
@@ -108,7 +112,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             //   we CANNOT get the owner VM. Instead, we must get the custom element's VM instead.
             //   this.template.addEventListener('click', () => {});
             // }
-            const myCurrentShadowKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeOwnerKey(currentTarget as Node);
+            const myCurrentShadowKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeNearestOwnerKey(currentTarget as Node);
 
             // Resolving the host of the shadow that is being retargeted (which is based on the current target)
             // with this value, we can check if any element in the path was slotted (directly or indirectly).
@@ -156,11 +160,11 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // </template>
             //
             let closestTarget = originalTarget;
-            let nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
+            let nodeOwnerKey = getNodeNearestOwnerKey(closestTarget as Node);
 
             while (nodeOwnerKey !== myCurrentShadowKey && !isNodeSlotted(host as Element, closestTarget as Node)) {
                 closestTarget = parentNodeGetter.call(closestTarget);
-                nodeOwnerKey = getNodeOwnerKey(closestTarget as Node);
+                nodeOwnerKey = getNodeNearestOwnerKey(closestTarget as Node);
             }
 
             /**

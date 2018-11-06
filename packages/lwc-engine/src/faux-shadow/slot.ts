@@ -1,35 +1,21 @@
 import assert from "../shared/assert";
-import { addEventListener } from "./element";
+import { addEventListener } from "../env/element";
 import {
     createFieldName,
     getInternalField,
     setInternalField,
 } from "../shared/fields";
-import { dispatchEvent } from "./event-target";
+import { dispatchEvent } from "../env/dom";
 import {
     ArrayIndexOf,
     ArrayPush,
     defineProperties,
     forEach,
 } from "../shared/language";
-
-// MutationObserver is not yet implemented in jsdom:
-// https://github.com/jsdom/jsdom/issues/639
-if (typeof MutationObserver === 'undefined') {
-    /* tslint:disable-next-line:no-empty */
-    function MutationObserverMock() {}
-    MutationObserverMock.prototype = {
-        observe() {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(
-                    process.env.NODE_ENV === 'test',
-                    'MutationObserver should not be mocked outside of the jest test environment'
-                );
-            }
-        }
-    };
-    (window as any).MutationObserver = MutationObserverMock;
-}
+import {
+    MutationObserverObserve,
+    MutationObserver,
+} from "../env/window";
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -37,7 +23,6 @@ if (typeof MutationObserver === 'undefined') {
 // https://dom.spec.whatwg.org/#garbage-collection
 let observer;
 
-const observe = MutationObserver.prototype.observe;
 const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createFieldName('slotchange');
 
@@ -51,7 +36,7 @@ function addEventListenerPatchedValue(this: EventTarget, type: string, listener:
         if (!observer) {
             observer = initSlotObserver();
         }
-        observe.call(observer, this as Node, observerConfig);
+        MutationObserverObserve.call(observer, this as Node, observerConfig);
     }
     addEventListener.call(this as HTMLSlotElement, type, listener, options);
 }

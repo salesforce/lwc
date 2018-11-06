@@ -5,13 +5,13 @@ import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySele
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "./node";
-import { DocumentPrototypeActiveElement } from "./document";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
+import { DocumentPrototypeActiveElement } from "../env/document";
 import { SyntheticNodeList } from "./node-list";
+import { isNativeShadowRootAvailable } from "../env/dom";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 const { createDocumentFragment } = document;
 
 export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
