@@ -366,9 +366,7 @@ describe('events', () => {
             return Promise.resolve().then(() => {
                 const button = elm.shadowRoot.querySelector('button');
                 const expectedTarget = elm.shadowRoot.querySelector('x-grand-child');
-                expect(() => {
-                    button.click();
-                }).toLogWarning(`Invalid event "bubblesnotcomposed" dispatched in element <x-grand-child>. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
+                button.click();
 
                 expect(listenerCalled).toBe(true);
                 expect(target).toBe(expectedTarget);
