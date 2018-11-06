@@ -47,7 +47,12 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     });
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
-    setInternalField(sr, HostKey, elm);
+    defineProperty(sr, HostKey, {
+        value: elm,
+        enumerable: false,
+        configurable: false,
+        writable: false,
+    });
     setInternalField(elm, ShadowRootKey, sr);
     // expose the shadow via a hidden symbol for testing purposes
     if (process.env.NODE_ENV === 'test') {
