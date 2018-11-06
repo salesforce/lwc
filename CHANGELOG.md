@@ -1,5 +1,24 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.31.1...v) (2018-11-03)
+# [](https://github.com/salesforce/lwc/compare/v0.31.2...v) (2018-11-06)
+
+
+### Bug Fixes
+
+* **engine:** render() can only return qualifying templates ([#764](https://github.com/salesforce/lwc/issues/764)) ([c6556de](https://github.com/salesforce/lwc/commit/c6556de))
+* **engine:** was leaking assert lib to prod ([#801](https://github.com/salesforce/lwc/issues/801)) ([d2942fc](https://github.com/salesforce/lwc/commit/d2942fc))
+* css newline ([#804](https://github.com/salesforce/lwc/issues/804)) ([c644c3b](https://github.com/salesforce/lwc/commit/c644c3b))
+* integration flapper ([#807](https://github.com/salesforce/lwc/issues/807)) ([076385f](https://github.com/salesforce/lwc/commit/076385f))
+* test expecting invalid warning ([#805](https://github.com/salesforce/lwc/issues/805)) ([c21f9ff](https://github.com/salesforce/lwc/commit/c21f9ff))
+
+
+### Features
+
+* **engine:** getRootNode in patched nodes ([#786](https://github.com/salesforce/lwc/issues/786)) ([ede0d7b](https://github.com/salesforce/lwc/commit/ede0d7b))
+
+
+
+<a name="0.31.2"></a>
+## [0.31.2](https://github.com/salesforce/lwc/compare/v0.31.1...v0.31.2) (2018-11-03)
 
 
 ### Bug Fixes
