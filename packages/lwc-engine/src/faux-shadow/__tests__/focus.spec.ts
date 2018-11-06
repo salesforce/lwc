@@ -1,21 +1,7 @@
-// Hacking in visibility
-const originalDesc = Object.getOwnPropertyDescriptor(Element.prototype, 'getBoundingClientRect');
-Object.defineProperty(Element.prototype, 'getBoundingClientRect', {
-    value: function () {
-        return {
-            width: 100,
-            height: 100
-        }
-    },
-    configurable: true
-});
-
+jest.mock('./../../env/element');
 import { isFocusable, isTabbable } from '../focus';
 
 describe('focus', () => {
-    afterAll(() => {
-        Object.defineProperty(Element.prototype, 'getBoundingClientRect', originalDesc);
-    });
     describe('isFocusable', () => {
         describe('Form control elements', () => {
             it('<button type="button"> is focusable', () => {
