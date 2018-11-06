@@ -51,9 +51,12 @@ describe('Array prototype methods', () => {
         assert.strictEqual(elements.value[3].getText(), 'concat 2');
     });
 
-    it('should display concat items correctly', async function () {
+    it('should display concat items correctly', function () {
         const el = browser.element('.prop-concat-list');
         el.click();
+
+        microTask();
+
         const elements = browser.elements('.prop-concat-list li');
         assert.strictEqual(elements.value[0].getText(), 'concat 1');
         assert.strictEqual(elements.value[1].getText(), 'concat 2');
