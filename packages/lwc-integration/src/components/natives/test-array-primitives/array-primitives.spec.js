@@ -24,8 +24,10 @@ describe('Testing array primitives', () => {
     it('check splice reactivity', function () {
         const splicedList = [ 'one', 'three', 'four', 'five' ];
         const splicedLength = splicedList.length;
-        browser.execute(function () {
-            return document.querySelector('integration-array-primitives').shadowRoot.querySelector('.splice').click();
+        browser.executeAsync(function (done) {
+            document.querySelector('integration-array-primitives').shadowRoot.querySelector('.splice').click();
+
+            setTimeout(done, 0)
         });
 
         // Technically a microtask is not needed since selenium already does macrotasking
