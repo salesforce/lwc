@@ -5,7 +5,7 @@ import {
     getPropertyDescriptor,
 } from "../shared/language";
 import { defaultDefHTMLPropertyNames } from "./attributes";
-import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 
 // Initialization Routines
 import "../polyfills/document-shadow/main";

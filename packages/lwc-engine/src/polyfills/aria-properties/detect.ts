@@ -1,3 +1,3 @@
-export function detect(): boolean {
-    return Object.getOwnPropertyDescriptor(Element.prototype, 'role') === undefined;
+export function detect(propName: string): boolean {
+    return Object.getOwnPropertyDescriptor(Element.prototype, propName) === undefined;
 }
