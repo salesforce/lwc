@@ -84,16 +84,17 @@ function transformPublicProps(t, klassBody, apiDecorators) {
         return type === 'getter' || type === 'setter' || type === 'property';
     }).map(({ path }) => {
         const parentNode = path.parentPath.get('value');
+        const parentValue = parentNode.value && parentNode.value.node || undefined;
         return {
             type: 'property',
             name: path.parentPath.get('key.name').node,
-            value: parentNode.value && parentNode.value.node,
+            value: parentValue,
         }
     });
 }
 
 /** Transform class public methods and returns the list of public methods  */
-function transfromPublicMethods(t, klassBody, apiDecorators) {
+function transformPublicMethods(t, klassBody, apiDecorators) {
     const publicMethods = apiDecorators.filter(({ type }) => type === DECORATOR_TYPES.METHOD);
 
     if (publicMethods.length) {
@@ -117,9 +118,7 @@ module.exports = function transform(t, klass, decorators) {
     const apiDecorators = decorators.filter(isApiDecorator);
 
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
-    const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
-
-    console.log('----> props: ', apiProperties);
+    const apiMethods = transformPublicMethods(t, klassBody, apiDecorators);
 
     if ((apiProperties.length + apiMethods.length) > 0) {
         return {

@@ -26,7 +26,7 @@ module.exports = function () {
                             const metadata = {
                                 type: isProperty(path)? 'property': 'method',
                                 name,
-                                value: valueNode && valueNode.value,
+                                value: valueNode && valueNode.value || undefined,
                                 loc: extractLoc(path.node.loc)
                             }
                             const comment = extractComment(path.node);
