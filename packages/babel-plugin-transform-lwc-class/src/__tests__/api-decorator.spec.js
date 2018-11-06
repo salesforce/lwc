@@ -573,7 +573,7 @@ describe('Transform method', () => {
 });
 
 describe('Metadata', () => {
-    pluginTest.only(
+    pluginTest(
         'gather metadata',
         `
         import { LightningElement, api } from 'lwc';
@@ -590,16 +590,42 @@ describe('Metadata', () => {
                 metadata: {
                     decorators: [
                         {
-                            type: "api",
                             targets: [
-                                { name: "index", type: "property", value: "index value" },
-                            ]
+                                { name: "index", type: "property", value: undefined },
+                                { name: "title", type: "property", value: undefined }
+                            ],
+                            type: "api"
+                        }
+                    ],
+                    classMembers: [
+                        {
+                            type: "property",
+                            name: "index",
+                            loc: {
+                                start: { line: 3, column: 0},
+                                end: { line: 4, column: 22 }
+                            },
+                            decorator: "api",
+                            value: "index value"
                         },
                         {
-                            type: "api",
-                            targets: [
-                                { name: "title", type: "property", value: undefined },
-                            ]
+                            type: "property",
+                            name: "title",
+                            loc: {
+                                start: { line: 5, column: 0 },
+                                end: { line: 6, column: 5 }
+                            },
+                            decorator: "api",
+                            value: undefined
+                        },
+                    ],
+                    declarationLoc: {
+                        start: { column: 0, line: 2 },
+                        end: { column: 1, line: 7}
+                    },
+                    exports: [
+                        {
+                            type: 'ExportDefaultDeclaration',
                         }
                     ],
                 },
