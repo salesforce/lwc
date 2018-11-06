@@ -1,0 +1,20 @@
+:host(.selected) button {
+    color: #0070d2; /* $slider-handle-color-background-active */
+}
+
+:host:not(.selected) button {
+    color: #6d6d70; /*$color-background-info*/
+    transition: all .2s ease-in-out;
+}
+
+:host:not(.selected):hover button,
+:host button:focus {
+    color: #005fb2; /* $color-background-button-brand-hover */
+    transform: scale(1.2);
+}
+
+button:focus {
+    outline: none;
+    box-shadow: none;
+    background-color: #f3f2f2; /* $color-border-context-bar-theme-default-active */
+}
