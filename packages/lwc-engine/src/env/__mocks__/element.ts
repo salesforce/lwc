@@ -27,4 +27,4 @@ export {
     matches,
 } from './../element'; // Pass through all the functions from element, we probably don't want those mocked
 
-export { getBoundingClientRect }
+export { getBoundingClientRect };
