@@ -111,7 +111,8 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
     const inner = querySelectorAll.call(host, TabbableElementsQuery);
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(tabIndexGetter.call(host) === -1, `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
+        assert.invariant(inner.length > 0 || (tabIndexGetter.call(host) === 0 && isDelegatingFocus(host)), `When focusin event is received, there has to be a focusable target at least.`);
+        assert.invariant(tabIndexGetter.call(host) === -1 || isDelegatingFocus(host), `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
@@ -120,8 +121,11 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     // Host element can show up in our "previous" section if its tabindex is 0
     // We want to filter that out here
     const firstChildIndex = (hostIndex > -1) ? hostIndex : ArrayIndexOf.call(all, firstChild);
+
+    // Account for an empty inner list
+    const lastChildIndex = inner.length === 0 ? firstChildIndex + 1 : ArrayIndexOf.call(all, lastChild) + 1;
     const prev = ArraySlice.call(all, 0, firstChildIndex);
-    const next = ArraySlice.call(all, ArrayIndexOf.call(all, lastChild) + 1);
+    const next = ArraySlice.call(all, lastChildIndex);
     return {
         prev,
         inner,
@@ -201,8 +205,12 @@ function isLastTabbableChild(target: EventTarget, segments: QuerySegments): bool
 function handleDelegateFocusFocusIn(host: HTMLElement, target: HTMLElement, segments: QuerySegments, position: number) {
     if (position === 1) {
         // probably tabbing into element
-        const { inner } = segments;
-        inner[0].focus();
+        const first = getFirstFocusableMatch(segments.inner);
+        if (first) {
+            first.focus();
+        } else {
+            focusOnNextOrBlur(target, segments);
+        }
         return;
     } else if (host === target) { // Shift tabbed back to the host
         focusOnPrevOrBlur(host, segments);
@@ -218,18 +226,33 @@ function keyboardFocusInHandler(event: FocusEvent) {
     const host: EventTarget = eventCurrentTargetGetter.call(event);
     const target: EventTarget = eventTargetGetter.call(event);
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
-    const segments = getTabbableSegments(host as HTMLElement);
-    const isFirstFocusableChildReceivingFocus = isFirstTabbableChild(target, segments);
-    const isLastFocusableChildReceivingFocus = isLastTabbableChild(target, segments);
-    if ((isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) || isNull(relatedTarget)) {
-        // the focus is definitely not a result of tab or shift-tab interaction
+
+    // If related target is null, user is probably tabbing into the document from the browser chrome (location bar?)
+    // If relatedTarget is null, we can't do much here because we don't know what direction the user is tabbing
+    // This is a bit of an edge case, and only comes up if the custom element is the very first or very last
+    // tabbable element in a document
+    if (isNull(relatedTarget)) {
+        return;
+    }
+
+    const segments = getFocusableSegments(host as HTMLElement);
+    const isFirstFocusableChildReceivingFocus = isFirstFocusableChild(target, segments);
+    const isLastFocusableChildReceivingFocus = isLastFocusableChild(target, segments);
+
+    // Determine where the focus is coming from (Tab or Shift+Tab)
+    const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+
+    // If host is delegating focus and tabIndex === 0
+    // and the element receiving focus is the last focusable element
+    // in the shadow, we don't have to do anything
+    if (tabIndexGetter.call(host) === 0 && post === 2 && isLastFocusableChildReceivingFocus) {
         return;
     }
 
     // The host element itself is receiving focus
     // Handle delegates focus with tabIndex=0
     if (target === host) {
-        handleDelegateFocusFocusIn(host as HTMLElement, target as HTMLElement, segments, post)
+        handleDelegateFocusFocusIn(host as HTMLElement, target as HTMLElement, segments, post);
         return;
     }
 
