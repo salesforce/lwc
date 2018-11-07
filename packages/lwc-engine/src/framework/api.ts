@@ -27,7 +27,7 @@ import {
     createTextHook,
     createCommentHook,
 } from "./hooks";
-import { markAsDynamicChildren, hasDynamicChildren, patchEvent } from "./patch";
+import { markAsDynamicChildren, patchEvent } from "./patch";
 import {
     isNativeShadowRootAvailable,
 } from "../env/dom";
@@ -515,13 +515,7 @@ export function d(value: any): VNode | null {
     if (value == null) {
         return null;
     }
-    const vtext = t(value);
-
-    // The "children" here is really just a text value
-    // but the value can change between renders
-    // so we have to mark as dynamic
-    markAsDynamicChildren(vtext);
-    return vtext;
+    return t(value);
 }
 
 // [b]ind function
