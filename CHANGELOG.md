@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.31.2...v) (2018-11-06)
+# [](https://github.com/salesforce/lwc/compare/v0.31.3...v) (2018-11-07)
+
+
+### Bug Fixes
+
+* add microtasking to integration tests ([#808](https://github.com/salesforce/lwc/issues/808)) ([7c4b834](https://github.com/salesforce/lwc/commit/7c4b834))
+
+
+
+<a name="0.31.3"></a>
+## [0.31.3](https://github.com/salesforce/lwc/compare/v0.31.2...v0.31.3) (2018-11-06)
 
 
 ### Bug Fixes
