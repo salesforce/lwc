@@ -1,0 +1,15 @@
+<template>
+    <template if:true={hasParts}>
+        <template for:each={text} for:item="part">
+            <template if:true={part.highlight}>
+                {part.text}
+            </template>
+            <template if:false={part.highlight}>
+                {part.text}
+            </template>
+        </template>
+    </template>
+    <template if:false={hasParts}>
+        {text}
+    </template>
+</template>

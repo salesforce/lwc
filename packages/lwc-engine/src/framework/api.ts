@@ -462,13 +462,14 @@ export function f(items: any[]): any[] {
         const item = items[j];
         if (isArray(item)) {
             ArrayPush.apply(flattened, item);
-            // iteration mark propagation so the flattened structure can
-            // be diffed correctly.
-            if (hasDynamicChildren(item)) {
-                markAsDynamicChildren(flattened);
-            }
         } else {
             ArrayPush.call(flattened, item);
+        }
+
+        // iteration mark propagation so the flattened structure can
+        // be diffed correctly.
+        if (hasDynamicChildren(item)) {
+            markAsDynamicChildren(flattened);
         }
     }
     return flattened;
@@ -515,7 +516,13 @@ export function d(value: any): VNode | null {
     if (value == null) {
         return null;
     }
-    return t(value);
+    const vtext = t(value);
+
+    // The "children" here is really just a text value
+    // but the value can change between renders
+    // so we have to mark as dynamic
+    markAsDynamicChildren(vtext);
+    return vtext;
 }
 
 // [b]ind function
