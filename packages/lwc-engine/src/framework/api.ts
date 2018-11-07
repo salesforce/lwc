@@ -458,18 +458,17 @@ export function f(items: any[]): any[] {
     }
     const len = items.length;
     const flattened: VNodes = [];
+
+    // all flattened nodes should be marked as dynamic
+    // TODO: compiler should give us some sort of indicator
+    // to describe whether a vnode is dynamic or not
+    markAsDynamicChildren(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
         if (isArray(item)) {
             ArrayPush.apply(flattened, item);
         } else {
             ArrayPush.call(flattened, item);
-        }
-
-        // iteration mark propagation so the flattened structure can
-        // be diffed correctly.
-        if (hasDynamicChildren(item)) {
-            markAsDynamicChildren(flattened);
         }
     }
     return flattened;
