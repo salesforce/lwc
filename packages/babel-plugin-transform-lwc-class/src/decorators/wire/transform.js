@@ -1,5 +1,5 @@
 const { isWireDecorator } = require('./shared');
-const { staticClassProperty } = require('../../utils');
+const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
@@ -217,14 +217,15 @@ module.exports = function transform(t, klass, decorators) {
     });
 
     if (wiredValues.length) {
-        klass.get('body').pushContainer(
-            'body',
-            staticClassProperty(
-                t,
-                LWC_COMPONENT_PROPERTIES.WIRE,
-                buildWireConfigValue(t, wiredValues)
-            )
+        const staticProp = staticClassProperty(
+            t,
+            LWC_COMPONENT_PROPERTIES.WIRE,
+            buildWireConfigValue(t, wiredValues)
         );
+
+        markAsLWCNode(staticProp);
+
+        klass.get('body').pushContainer('body', staticProp);
     }
 
     if (metadata.length > 0) {

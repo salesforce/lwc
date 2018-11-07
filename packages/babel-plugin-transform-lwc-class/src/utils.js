@@ -184,7 +184,17 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
     return error;
 }
 
+function isLWCNode(node) {
+    return node._lwc = true;
+}
+
+function markAsLWCNode(node) {
+    node._lwc = true;
+}
+
 module.exports = {
+    isLWCNode,
+    markAsLWCNode,
     findClassMethod,
     isClassMethod,
     isGetterClassMethod,
