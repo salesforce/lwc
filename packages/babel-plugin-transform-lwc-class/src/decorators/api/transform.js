@@ -1,5 +1,5 @@
 const { isApiDecorator } = require('./shared');
-const { staticClassProperty, markAsLWCNode } = require('../../utils');
+const { extractValueMetadata, markAsLWCNode, staticClassProperty } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
@@ -85,14 +85,21 @@ function transformPublicProps(t, klassBody, apiDecorators) {
     return publicProps.filter((node) => {
         const { type } = node;
         return type === 'getter' || type === 'setter' || type === 'property';
-    }).map(({ path }) => {
-        const parentNode = path.parentPath.get('value');
-        const parentValue = parentNode.value && parentNode.value.node || undefined;
-        return {
+    }).map((node) => {
+        const { path, type } = node;
+        const parentNode = path.parent;
+        const parentValue = parentNode && parentNode.value;
+
+        const meta = {
             type: 'property',
             name: path.parentPath.get('key.name').node,
-            value: parentValue,
         }
+
+        if (type === 'property') {
+            meta.value = extractValueMetadata(parentValue)
+        }
+
+        return meta;
     });
 }
 
