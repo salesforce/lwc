@@ -205,7 +205,7 @@ describe('Transform property', () => {
         }
     });
 
-    pluginTest('throws error if default value is true', `
+    pluginTest('throws error if string value is true', `
         import { api } from 'lwc';
         export default class Test {
             @api publicProp = true;
@@ -472,7 +472,7 @@ Test.publicMethods = ["foo"];`
     });
 });
 
-describe('Metadata', () => {
+describe.only('Metadata', () => {
     pluginTest(
         'gather metadata',
         `
@@ -491,7 +491,7 @@ describe('Metadata', () => {
                     decorators: [
                         {
                             targets: [
-                                { name: "index", type: "property", value: undefined },
+                                { name: "index", type: "property", value: "index value" },
                                 { name: "title", type: "property", value: undefined }
                             ],
                             type: "api"
@@ -532,7 +532,7 @@ describe('Metadata', () => {
             },
         }
     );
-    pluginTest(
+    pluginTest.only(
         'gather metadata',
         `
         import { LightningElement, api } from 'lwc';
@@ -548,7 +548,25 @@ describe('Metadata', () => {
             }
 
             @api
-            index;
+            staticObject = { prop: "default object value" };
+
+            @api
+            staticString = "string value";
+
+            @api
+            numeric = 0;
+
+            @api
+            title
+
+            @api
+            staticUndefined = undefined;
+
+            @api
+            staticNull = null;
+
+            @api
+            staticArray = ['stringval', 0, null, undefined, {}, []];
 
             @api publicMethod() {}
         }
@@ -561,7 +579,26 @@ describe('Metadata', () => {
                             type: "api",
                             targets: [
                                 { name: "todo", type: "property" },
-                                { name: "index", type: "property" },
+                                { name: "staticString", type: "property", value: { type: "string", value: "string value" }},
+                                { name: "numeric", type: "property", value: { type: "number", value: 0 }},
+                                { name: "staticObject", type: "property", value: {
+                                        type: "object",
+                                        value: {
+                                            prop: { type: "string", value: "default object value" }
+                                        }
+                                    }
+                                },
+                                { name: "staticUndefined", type: undefined, value: undefined },
+                                { name: "staticNull", type: null, value: null },
+                                { name: "title", type: "property", value: { type: undefined, value: undefined }},
+                                { name: "staticArray", type: "property", value: { type: "array", value: [
+                                    { type: "string", value: "stringval" },
+                                    { type: "number", value: 0 },
+                                    { type: "null", value: null },
+                                    { type: "undefined", value: undefined },
+                                    { type: "object", value: {} },
+                                    { type: "array", value: { type: "array", value: [] } },
+                                ] }},
                                 { name: "publicMethod", type: "method" }
                             ]
                         }
@@ -574,30 +611,52 @@ describe('Metadata', () => {
                                 start: { line: 7, column: 0 },
                                 end: { line: 10, column: 1 }
                             },
-                            decorator: "api"
+                            decorator: "api",
+                            value: undefined,
                         },
                         {
                             type: "property",
-                            name: "index",
+                            name: "staticString",
                             loc: {
                                 start: { line: 11, column: 0 },
-                                end: { line: 12, column: 6 }
+                                end: { line: 12, column: 22 }
                             },
-                            decorator: "api"
+                            decorator: "api",
+                            value: { type: "string", value:"index value" },
+                        },
+                        {
+                            type: "property",
+                            name: "staticObject",
+                            loc: {
+                                start: { line: 11, column: 0 },
+                                end: { line: 12, column: 22 }
+                            },
+                            decorator: "api",
+                            value: { type: "object", value: undefined },
+                        },
+                        {
+                            decorator: "api",
+                            loc: {
+                                end: { column: 5, line: 14 },
+                                start: { column: 0, line: 13 }
+                            },
+                            name: "title",
+                            type: "property",
+                            value: undefined
                         },
                         {
                             type: "method",
                             name: "publicMethod",
                             loc: {
-                                start: { line: 13, column: 0 },
-                                end: { line: 13, column: 22 }
+                                start: { line: 15, column: 0 },
+                                end: { line: 15, column: 22 }
                             },
-                            decorator: "api"
+                            decorator: "api",
                         }
                     ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 14 }
+                        end: { column: 1, line: 16 }
                     },
                     exports: [
                         {
