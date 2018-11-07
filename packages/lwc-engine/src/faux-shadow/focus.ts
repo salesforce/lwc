@@ -115,7 +115,12 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
-    const prev = ArraySlice.call(all, 0, ArrayIndexOf.call(all, firstChild));
+    const hostIndex = ArrayIndexOf.call(all, host);
+
+    // Host element can show up in our "previous" section if its tabindex is 0
+    // We want to filter that out here
+    const firstChildIndex = (hostIndex > -1) ? hostIndex : ArrayIndexOf.call(all, firstChild);
+    const prev = ArraySlice.call(all, 0, firstChildIndex);
     const next = ArraySlice.call(all, ArrayIndexOf.call(all, lastChild) + 1);
     return {
         prev,
@@ -193,7 +198,23 @@ function isLastTabbableChild(target: EventTarget, segments: QuerySegments): bool
     return getLastTabbableMatch(segments.inner) === target;
 }
 
-function focusInEventHandler(event: FocusEvent) {
+function handleDelegateFocusFocusIn(host: HTMLElement, target: HTMLElement, segments: QuerySegments, position: number) {
+    if (position === 1) {
+        // probably tabbing into element
+        const { inner } = segments;
+        inner[0].focus();
+        return;
+    } else if (host === target) { // Shift tabbed back to the host
+        focusOnPrevOrBlur(host, segments);
+    }
+}
+
+// focusin handler for custom elements
+// This handler should only be called when a user
+// focuses on either the custom element, or an internal element
+// via keyboard navigation (tab or shift+tab)
+// Focusing via mouse should be disqualified before this gets called
+function keyboardFocusInHandler(event: FocusEvent) {
     const host: EventTarget = eventCurrentTargetGetter.call(event);
     const target: EventTarget = eventTargetGetter.call(event);
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
@@ -204,8 +225,22 @@ function focusInEventHandler(event: FocusEvent) {
         // the focus is definitely not a result of tab or shift-tab interaction
         return;
     }
-    // If there is a related target, everything is easier
-    const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+
+    // The host element itself is receiving focus
+    // Handle delegates focus with tabIndex=0
+    if (target === host) {
+        handleDelegateFocusFocusIn(host as HTMLElement, target as HTMLElement, segments, post)
+        return;
+    }
+
+    // If we receive a focusin event that is not focusing on the first or last
+    // element inside of a shadow, we can assume that the user is tabbing between
+    // elements inside of the custom element shadow, so we do nothing
+    if (isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) {
+        return;
+    }
+
+    // This case will get hit if the custom element tabindex=-1
     switch (post) {
         case 1:
             // focus is probably coming from above
@@ -214,19 +249,6 @@ function focusInEventHandler(event: FocusEvent) {
                 // it is almost certain that the focus is due to tab keypress
                 focusOnNextOrBlur(target, segments);
             }
-            /**
-             * note: false positive here is when the user is clicking
-             * directly on the first focusable element inside the next
-             * custom element that is wrapping it, and it has
-             * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
-             * <body>
-             *   <x-input>
-             *     #shadowRoot(delegatesFocus=true)
-             *       <input />  <--- focus in here
-             *   <x-input tabindex="-1">
-             *     #shadowRoot(delegatesFocus=true)
-             *       <input />  <--- user clicks here
-             **/
             break;
         case 2:
             // focus is probably coming from below
@@ -236,19 +258,6 @@ function focusInEventHandler(event: FocusEvent) {
                 // it is almost certain that the focus is due to tab keypress
                 focusOnPrevOrBlur(target, segments);
             }
-            /**
-             * note: false positive here is when the user is clicking
-             * directly on the last focusable element inside the next
-             * custom element that is wrapping it, and it has
-             * delegatesFocus and tabindex="-1", this is very very rare, e.g.:
-             * <body>
-             *   <x-input tabindex="-1">
-             *     #shadowRoot(delegatesFocus=true)
-             *       <input />  <--- user clicks here
-             *   <x-input>
-             *     #shadowRoot(delegatesFocus=true)
-             *       <input />  <--- focus in here
-             **/
             break;
     }
 }
@@ -262,11 +271,11 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 
 function stopFocusIn(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
-    removeEventListener.call(currentTarget, 'focusin', focusInEventHandler);
+    removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
     setTimeout(() => {
         // only reinstate the focus if the tabindex is still -1
         if (tabIndexGetter.call(currentTarget) === -1) {
-            addEventListener.call(currentTarget, 'focusin', focusInEventHandler);
+            addEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
         }
     }, 0);
 }
@@ -296,13 +305,13 @@ export function handleFocusIn(elm: HTMLElement) {
     // the keydown event happens on whatever element already has focus (or no element
     // at all in the case of the location bar. So, instead we have to assume that focusin
     // without a mousedown means keyboard navigation
-    addEventListener.call(elm, 'focusin', focusInEventHandler);
+    addEventListener.call(elm, 'focusin', keyboardFocusInHandler);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(tabIndexGetter.call(elm) !== -1, `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`);
     }
-    removeEventListener.call(elm, 'focusin', focusInEventHandler);
+    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler);
     removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
 }

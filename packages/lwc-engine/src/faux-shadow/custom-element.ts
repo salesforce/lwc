@@ -55,7 +55,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
 
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
-            if ((!hasAttr || originalValue !== newValue) && newValue === -1) {
+            if ((!hasAttr || originalValue !== newValue) && (newValue === -1 || (isDelegatingFocus(this) && newValue === 0))) {
                 // add the magic to skip this element
                 handleFocusIn(this);
             } else if (originalValue === -1) {
