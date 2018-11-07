@@ -1,4 +1,4 @@
-const { isComponentClass, isDefaultExport, getExportedNames } = require('./utils');
+const { extractValueMetadata, isComponentClass, isDefaultExport, getExportedNames } = require('./utils');
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('./constants');
 
 module.exports = function () {
@@ -26,9 +26,13 @@ module.exports = function () {
                             const metadata = {
                                 type: isProperty(path)? 'property': 'method',
                                 name,
-                                value: valueNode && valueNode.value || undefined,
                                 loc: extractLoc(path.node.loc)
                             }
+
+                            if (isProperty(path)) {
+                                metadata.value = extractValueMetadata(valueNode);
+                            }
+
                             const comment = extractComment(path.node);
                             if (comment) {
                                 metadata.doc = comment;
