@@ -2,7 +2,7 @@ const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
 
-const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
+const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS, WIRE, TRACK } } = require('../constants');
 const { generateError, getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
 const { DecoratorErrors } = require('lwc-errors');
 
@@ -188,7 +188,21 @@ function decorators({ types: t }) {
     };
 }
 
+const DECO_META_PROPS = new Set([PUBLIC_PROPS, PUBLIC_METHODS, WIRE, TRACK]);
+
+function postDecorators({ t: types }) {
+    return {
+        ClassProperty(path) {
+            const { node } = path;
+            if (node.static) {
+
+            }
+        }
+    };
+}
+
 module.exports = {
     decorators,
     invalidDecorators,
+    postDecorators
 }

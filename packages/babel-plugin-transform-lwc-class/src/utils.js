@@ -163,7 +163,7 @@ function getEngineImportSpecifiers(path) {
 function isComponentClass(classPath, componentBaseClassImports) {
     const superClass = classPath.get('superClass');
 
-    return superClass.isIdentifier()
+    return superClass.isIdentifier() && componentBaseClassImports
         && componentBaseClassImports.some(componentBaseClassImport => (
             classPath.scope.bindingIdentifierEquals(
                 superClass.node.name,

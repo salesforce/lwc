@@ -1,11 +1,12 @@
 const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
-const { invalidDecorators } = require('./decorators');
+const { invalidDecorators, postDecorators } = require('./decorators');
 
 function exit(api) {
     return {
         Program: {
             exit(path, state) {
                 const visitors = api.traverse.visitors.merge([
+                    postDecorators(api),
                     classProperty(api, { loose: true }).visitor,
 
                     // Decorator usage validation is done on a program exit because by the time program exits,
