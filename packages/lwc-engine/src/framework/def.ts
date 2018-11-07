@@ -16,7 +16,6 @@ import {
     ArrayPush,
     getOwnPropertyNames,
     getPrototypeOf,
-    isFunction,
     isNull,
     setPrototypeOf,
     ArrayReduce,
@@ -25,47 +24,22 @@ import {
 } from "../shared/language";
 import { getInternalField } from "../shared/fields";
 import {
-    getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
 } from "./attributes";
-import decorate, { DecoratorMap } from "./decorators/decorate";
-import wireDecorator from "./decorators/wire";
-import trackDecorator from "./decorators/track";
-import apiDecorator from "./decorators/api";
 import {
-    EmptyObject,
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     ViewModelReflection,
+    EmptyObject,
 } from "./utils";
+import {
+    ComponentConstructor, ErrorCallback, ComponentMeta,
+    getComponentRegisteredMeta, registerComponent,
+ } from './component';
+import { Template } from "./template";
 
-interface PropDef {
-    type: string; // TODO: make this an enum
-    attr: string;
-}
-interface WireDef {
-    method?: number;
-    [key: string]: any;
-}
-export interface PropsDef {
-    [key: string]: PropDef;
-}
-interface TrackDef {
-    [key: string]: 1;
-}
-type PublicMethod = (...args: any[]) => any;
-interface MethodDef {
-    [key: string]: PublicMethod;
-}
-export interface WireHash {
-    [key: string]: WireDef;
-}
-export interface ComponentDef {
+export interface ComponentDef extends DecoratorMeta {
     name: string;
-    wire: WireHash | undefined;
-    track: TrackDef;
-    props: PropsDef;
-    methods: MethodDef;
     ctor: ComponentConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: () => void;
@@ -74,11 +48,6 @@ export interface ComponentDef {
     render?: () => Template;
     errorCallback?: ErrorCallback;
 }
-import {
-    ComponentConstructor, ErrorCallback, ComponentMeta,
-    getComponentRegisteredMeta, registerComponent,
- } from './component';
-import { Template } from "./template";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -130,36 +99,21 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
     }
 
     const name: string = meta.name;
-    let props = getPublicPropertiesHash(Ctor, meta.publicProps);
-    let methods = getPublicMethodsHash(Ctor, meta.publicMethods);
-    let wire = getWireHash(Ctor, meta.wire);
-    const track = getTrackHash(Ctor, meta.track);
 
-    const proto = Ctor.prototype;
-    const decoratorMap: DecoratorMap = create(null);
-
-    // TODO: eventually, the compiler should do this work
+    // TODO: eventually, the compiler should do this call directly, but we will also
+    // have to fix all our tests, which are using this declaration manually.
     {
-        for (const propName in props) {
-            decoratorMap[propName] = apiDecorator;
-        }
-        if (wire) {
-            for (const propName in wire) {
-                const wireDef: WireDef = wire[propName];
-                if (wireDef.method) {
-                    // for decorated methods we need to do nothing
-                    continue;
-                }
-                decoratorMap[propName] = wireDecorator(wireDef.adapter, wireDef.params);
-            }
-        }
-        if (track) {
-            for (const propName in track) {
-                decoratorMap[propName] = trackDecorator;
-            }
-        }
-        decorate(Ctor, decoratorMap);
+        registerDecorators(Ctor, {
+            publicMethods: getOwnValue(Ctor, 'publicMethods'),
+            publicProps: getOwnValue(Ctor, 'publicProps'),
+            track: getOwnValue(Ctor, 'track'),
+            wire: getOwnValue(Ctor, 'wire'),
+        });
     }
+
+    const decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
+    let { props, methods, wire, track } = decoratorsMeta || EmptyObject;
+    const proto = Ctor.prototype;
 
     let {
         connectedCallback,
@@ -176,6 +130,7 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
         wire = (superDef.wire || wire) ? assign(create(null), superDef.wire, wire) : undefined;
+        track = assign(create(null), superDef.track, track);
         connectedCallback = connectedCallback || superDef.connectedCallback;
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
@@ -205,69 +160,6 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
     return def;
 }
 
-function getTrackHash(target: ComponentConstructor, track: string[] | undefined): TrackDef {
-    if (isUndefined(track) || getOwnPropertyNames(track).length === 0) {
-        return EmptyObject;
-    }
-
-    // TODO: check that anything in `track` is correctly defined in the prototype
-    return assign(create(null), track);
-}
-
-function getWireHash(target: ComponentConstructor, wire: WireHash | undefined): WireHash | undefined {
-    if (isUndefined(wire) || getOwnPropertyNames(wire).length === 0) {
-        return;
-    }
-
-    // TODO: check that anything in `wire` is correctly defined in the prototype
-    return assign(create(null), wire);
-}
-
-function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef | undefined): PropsDef {
-    if (isUndefined(props) || getOwnPropertyNames(props).length === 0) {
-        return EmptyObject;
-    }
-    return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
-        const attrName = getAttrNameFromPropName(propName);
-        if (process.env.NODE_ENV !== 'production') {
-            const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
-            if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
-                const { error, attribute, experimental } = globalHTMLProperty;
-                const msg: string[] = [];
-                if (error) {
-                    msg.push(error);
-                } else if (experimental) {
-                    msg.push(`"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`);
-                } else {
-                    msg.push(`"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
-                    msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
-                    msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
-                }
-                assert.logError(msg.join('\n'));
-            }
-        }
-
-        propsHash[propName] = assign({
-            type: 'any',
-            attr: attrName,
-        }, props[propName]);
-        return propsHash;
-    }, create(null));
-}
-
-function getPublicMethodsHash(target: ComponentConstructor, publicMethods: string[] | undefined): MethodDef {
-    if (isUndefined(publicMethods) || publicMethods.length === 0) {
-        return EmptyObject;
-    }
-    return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
-        }
-        methodsHash[methodName] = target.prototype[methodName];
-        return methodsHash;
-    }, create(null));
-}
-
 export function isComponentConstructor(Ctor: any): boolean {
    return isElementComponent(Ctor);
 }
@@ -289,11 +181,8 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
         // Temporary workaround:
         // meta must be an own property, otherwise it is inherited.
         const { name } = Ctor;
-        const publicMethods = getOwnValue(Ctor, 'publicMethods');
-        const publicProps = getOwnValue(Ctor, 'publicProps');
-        const wire = getOwnValue(Ctor, 'wire');
-        const track = getOwnValue(Ctor, 'track');
-        meta = { publicMethods, publicProps, wire, track, name };
+        const template = getOwnValue(Ctor, 'template');
+        meta = { template, name };
         registerComponent(Ctor, meta);
     }
     def = createComponentDef(Ctor, meta);
@@ -326,10 +215,12 @@ export function setElementProto(elm: HTMLElement, def: ComponentDef) {
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { BaseLightningElement } from "./base-lightning-element";
 import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from "./base-bridge-element";
+import { getDecoratorsRegisteredMeta, registerDecorators, DecoratorMeta, PropsDef } from "./decorators/register";
 
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (props: PropsDef, propName: string): PropsDef => {
     const attrName = getAttrNameFromPropName(propName);
     props[propName] = {
+        config: 3,
         type: 'any',
         attr: attrName,
     };

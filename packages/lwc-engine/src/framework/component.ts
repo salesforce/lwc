@@ -8,7 +8,6 @@ import {
 } from "./invoker";
 import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined, StringToLowerCase } from "../shared/language";
 import { invokeServiceHook, Services } from "./services";
-import { PropsDef, WireHash } from './def';
 import { VM, getComponentVM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { tagNameGetter } from "../env/element";
@@ -29,14 +28,10 @@ export interface ComponentConstructor {
 
 export interface ComponentMeta {
     readonly name: string;
-    readonly publicMethods?: string[];
-    readonly publicProps?: PropsDef;
-    readonly track?: string[];
-    readonly wire?: WireHash;
     readonly template?: Template;
 }
 
-const signedComponentToMetaMap: WeakMap<ComponentConstructor, ComponentMeta> = new WeakMap();
+const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
 
 export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
     return signedComponentToMetaMap.has(Ctor);

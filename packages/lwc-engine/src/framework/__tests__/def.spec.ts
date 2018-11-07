@@ -43,10 +43,12 @@ describe('def', () => {
             const { props } = getComponentDef(MyComponent);
             expect(props.foo).toEqual({
                 type: 'any',
+                config: 1,
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
                 type: 'any',
+                config: 0,
                 attr: 'x-bar',
             });
         });
@@ -122,20 +124,24 @@ describe('def', () => {
             // aria multi-capital
             expect(props.ariaActiveDescendant).toEqual({
                 type: 'any',
+                config: 3,
                 attr: 'aria-activedescendant',
             });
             expect(props.role).toEqual({
                 type: 'any',
+                config: 3,
                 attr: 'role',
             });
             // aria exception
             expect(props.ariaAutoComplete).toEqual({
                 type: 'any',
+                config: 3,
                 attr: 'aria-autocomplete',
             });
             // explicit mapping
             expect(props.tabIndex).toEqual({
                 type: 'any',
+                config: 3,
                 attr: 'tabindex',
             });
         });
@@ -174,18 +180,22 @@ describe('def', () => {
             const { props } = getComponentDef(MySubComponent);
             expect(props.foo).toEqual({
                 type: 'any',
+                config: 1,
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
                 type: 'any',
+                config: 3,
                 attr: 'x-bar',
             });
             expect(props.fizz).toEqual({
                 type: 'any',
+                config: 0,
                 attr: 'fizz',
             });
             expect(props.x).toEqual({
                 type: 'any',
+                config: 1,
                 attr: 'x',
             });
         });
@@ -262,6 +272,7 @@ describe('def', () => {
                 foo: {}
             };
             expect(getComponentDef(MyComponent).props.foo).toEqual({
+                config: 0,
                 type: 'any',
                 attr: 'foo',
             });
@@ -274,6 +285,7 @@ describe('def', () => {
             };
             // non-global html property with weird map
             expect(getComponentDef(MyComponent).props.readOnly).toEqual({
+                config: 0,
                 type: 'any',
                 attr: 'readonly',
             });

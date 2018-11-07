@@ -6,6 +6,7 @@ import { ComponentInterface, ComponentConstructor } from "../component";
 import { VM, getComponentVM } from "../vm";
 import { isUndefined, isFunction } from "../../shared/language";
 import { reactiveMembrane } from "../membrane";
+import { getDecoratorsRegisteredMeta } from "./register";
 
 export default function api(target: ComponentConstructor, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
@@ -19,11 +20,16 @@ export default function api(target: ComponentConstructor, propName: PropertyKey,
             assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${toString(propName)} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`);
         }
     }
+    const meta = getDecoratorsRegisteredMeta(target);
     // initializing getters and setters for each public prop on the target prototype
     if (isObject(descriptor) && (isFunction(descriptor.get) || isFunction(descriptor.set))) {
         // if it is configured as an accessor it must have a descriptor
+        // @ts-ignore it must always be set before calling this method
+        meta.props[propName].config = isFunction(descriptor.set) ? 3 : 1;
         return createPublicAccessorDescriptor(target, propName, descriptor);
     } else {
+        // @ts-ignore it must always be set before calling this method
+        meta.props[propName].config = 0;
         return createPublicPropertyDescriptor(target, propName, descriptor);
     }
 }
