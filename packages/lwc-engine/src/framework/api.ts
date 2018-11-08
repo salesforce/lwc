@@ -27,7 +27,7 @@ import {
     createTextHook,
     createCommentHook,
 } from "./hooks";
-import { markAsDynamicChildren, hasDynamicChildren, patchEvent } from "./patch";
+import { markAsDynamicChildren, patchEvent } from "./patch";
 import {
     isNativeShadowRootAvailable,
 } from "../env/dom";
@@ -458,15 +458,18 @@ export function f(items: any[]): any[] {
     }
     const len = items.length;
     const flattened: VNodes = [];
+
+    // all flattened nodes should be marked as dynamic because
+    // flattened nodes are because of a conditional or iteration.
+    // We have to mark as dynamic because this could switch from an
+    // iterator to "static" text at any time.
+    // TODO: compiler should give us some sort of indicator
+    // to describe whether a vnode is dynamic or not
+    markAsDynamicChildren(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
         if (isArray(item)) {
             ArrayPush.apply(flattened, item);
-            // iteration mark propagation so the flattened structure can
-            // be diffed correctly.
-            if (hasDynamicChildren(item)) {
-                markAsDynamicChildren(flattened);
-            }
         } else {
             ArrayPush.call(flattened, item);
         }
