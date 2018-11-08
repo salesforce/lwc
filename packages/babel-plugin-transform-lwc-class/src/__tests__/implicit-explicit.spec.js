@@ -9,12 +9,13 @@ describe('Transforms', () => {
     {
         output: {
             code: `
-            import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from \"lwc\";
-            import { LightningElement } from 'lwc';
+            import _tmpl from "./test.html";
+            import { registerComponent as _registerComponent } from "lwc";
+            import { LightningElement } from "lwc";
             export default _registerComponent(class extends LightningElement {}, {
-            tmpl: _tmpl
+              tmpl: _tmpl
             });
+
         `}
     })
     pluginTestImplicit('test cmp named class with decorators', `
@@ -24,29 +25,28 @@ describe('Transforms', () => {
     {
         output: {
             code: `
-            import { registerDecorators as _registerDecorators } from \"lwc\";
-            import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from \"lwc\";
-            import { LightningElement } from 'lwc';
-
+            import { registerDecorators as _registerDecorators } from "lwc";
+            import _tmpl from "./test.html";
+            import { registerComponent as _registerComponent } from "lwc";
+            import { LightningElement } from "lwc";
+            
             class Test extends LightningElement {
-            constructor(...args) {
-            super(...args);
-            this.foo = 1;
+              constructor(...args) {
+                super(...args);
+                this.foo = 1;
+              }
             }
-
-            }
-
+            
             _registerDecorators(Test, {
-            publicProps: {
-            foo: {
-            config: 0
-            }
-            }
-            })
-
+              publicProps: {
+                foo: {
+                  config: 0
+                }
+              }
+            });
+            
             export default _registerComponent(Test, {
-            tmpl: _tmpl
+              tmpl: _tmpl
             });
         `}
     })
@@ -94,35 +94,35 @@ describe('Implicit mode', () => {
     `, {
         output: {
             code: `
-            import { registerDecorators as _registerDecorators } from \"lwc\";
-            import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from \"lwc\";
-            import { LightningElement } from 'lwc';
-            import { getRecord } from 'recordDataService';
-
-            class Test extends LightningElement {
-            constructor(...args) {
-            super(...args);
-            this.recordData = void 0;
-            }
-
-            }
-
-            _registerDecorators(Test, {
-            wire: {
-            recordData: {
-            adapter: getRecord,
-            params: {},
-            static: {
-            id: 1
-            }
-            }
-            }
-            })
-
-            export default _registerComponent(Test, {
-            tmpl: _tmpl
-            });`
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { LightningElement } from "lwc";
+                import { getRecord } from "recordDataService";
+                
+                class Test extends LightningElement {
+                  constructor(...args) {
+                    super(...args);
+                    this.recordData = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    recordData: {
+                      adapter: getRecord,
+                      params: {},
+                      static: {
+                        id: 1
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+            `
         }
     });
 
@@ -133,30 +133,31 @@ describe('Implicit mode', () => {
         }
     `, {
         output: {
-            code: `import { registerDecorators as _registerDecorators } from \"lwc\";
-            import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from \"lwc\";
-            import { LightningElement } from 'lwc';
-
-            class Test extends LightningElement {
-            constructor(...args) {
-            super(...args);
-            this.foo = void 0;
-            }
-
-            }
-
-            _registerDecorators(Test, {
-            publicProps: {
-            foo: {
-            config: 0
-            }
-            }
-            })
-
-            export default _registerComponent(Test, {
-            tmpl: _tmpl
-            });`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { LightningElement } from "lwc";
+                
+                class Test extends LightningElement {
+                  constructor(...args) {
+                    super(...args);
+                    this.foo = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
+                    foo: {
+                      config: 0
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+            `
         }
     });
 
@@ -167,30 +168,31 @@ describe('Implicit mode', () => {
         }
     `, {
         output: {
-            code: `import { registerDecorators as _registerDecorators } from \"lwc\";
-            import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from \"lwc\";
-            import { LightningElement } from 'lwc';
-
-            class Test extends mixin(LightningElement) {
-            constructor(...args) {
-            super(...args);
-            this.foo = void 0;
-            }
-
-            }
-
-            _registerDecorators(Test, {
-            publicProps: {
-            foo: {
-            config: 0
-            }
-            }
-            })
-
-            export default _registerComponent(Test, {
-            tmpl: _tmpl
-            });`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { LightningElement } from "lwc";
+                
+                class Test extends mixin(LightningElement) {
+                  constructor(...args) {
+                    super(...args);
+                    this.foo = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
+                    foo: {
+                      config: 0
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+            `
         }
     });
 
