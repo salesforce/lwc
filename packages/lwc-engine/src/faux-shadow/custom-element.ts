@@ -3,7 +3,7 @@ import { addCustomElementEventListener, removeCustomElementEventListener } from 
 import { PatchedElement } from './traverse';
 import { hasAttribute, tabIndexGetter } from "../env/element";
 import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
-import { getFirstTabbableElement, getActiveElement, handleFocusIn, ignoreFocusIn } from "./focus";
+import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
@@ -55,30 +55,18 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
 
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
-            if ((!hasAttr || originalValue !== newValue) && newValue === -1) {
-                // add the magic to skip this element
-                handleFocusIn(this);
+            if ((!hasAttr || originalValue !== newValue)) {
+                if (newValue === -1) {
+                    // add the magic to skip this element
+                    handleFocusIn(this);
+                } else if (newValue === 0 && isDelegatingFocus(this)) {
+                    handleFocus(this);
+                }
             } else if (originalValue === -1) {
                 // remove the magic
                 ignoreFocusIn(this);
+                ignoreFocus(this);
             }
-        }
-        focus(this: HTMLElement) {
-            if (isDelegatingFocus(this)) {
-                const currentActiveElement = getActiveElement(this);
-                if (isNull(currentActiveElement)) {
-                    const firstNode = getFirstTabbableElement(this);
-                    if (!isNull(firstNode)) {
-                        // when there is a tabbable element, focus should be delegated
-                        firstNode.focus();
-                        return;
-                    }
-                } else {
-                    // when an already active element is found, focus does nothing
-                    return;
-                }
-            }
-            super.focus();
         }
         blur(this: HTMLElement) {
             if (isDelegatingFocus(this)) {
