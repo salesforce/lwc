@@ -8,17 +8,29 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-                    constructor() {
-                        this.test = 1;
-                    }
-
-                    }
-                    Test.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.test = 1;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
                     test: {
-                        config: 0
+                      config: 0
                     }
-                };`,
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
         }
     });
 
@@ -32,29 +44,44 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Outer {
-                    constructor() {
-                        var _class, _temp;
-
-                        this.outer = void 0;
-                        this.a = (_temp = _class = class {
+            code: `
+                import { registerDecorators as _registerDecorators2 } from "lwc";
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Outer {
+                  constructor() {
+                    this.outer = void 0;
+                    this.a = _registerDecorators2(
+                      class {
                         constructor() {
-                            this.innerA = void 0;
+                          this.innerA = void 0;
                         }
-
-                        }, _class.publicProps = {
-                        innerA: {
+                      },
+                      {
+                        publicProps: {
+                          innerA: {
                             config: 0
+                          }
                         }
-                        }, _temp);
-                    }
-
-                    }
-                    Outer.publicProps = {
+                      }
+                    );
+                  }
+                }
+                
+                _registerDecorators(Outer, {
+                  publicProps: {
                     outer: {
-                        config: 0
+                      config: 0
                     }
-                };`
+                  }
+                });
+                
+                export default _registerComponent(Outer, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -67,17 +94,29 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-                    get publicGetter() {
-                        return 1;
-                    }
-
-                    }
-                    Test.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  get publicGetter() {
+                    return 1;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
                     publicGetter: {
-                        config: 1
+                      config: 1
                     }
-                };`
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -116,37 +155,49 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-                    constructor() {
-                        this._a = true;
-                        this._b = false;
-                    }
-
-                    get a() {
-                        return this._a;
-                    }
-
-                    set a(value) {
-                        this._a = value;
-                    }
-
-                    get b() {
-                        return this._b;
-                    }
-
-                    set b(value) {
-                        this._b = value;
-                    }
-
-                    }
-                    Test.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this._a = true;
+                    this._b = false;
+                  }
+                
+                  get a() {
+                    return this._a;
+                  }
+                
+                  set a(value) {
+                    this._a = value;
+                  }
+                
+                  get b() {
+                    return this._b;
+                  }
+                
+                  set b(value) {
+                    this._b = value;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
                     a: {
-                        config: 3
+                      config: 3
                     },
                     b: {
-                        config: 3
+                      config: 3
                     }
-                };`
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     })
 
@@ -166,42 +217,54 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Text {
-                    constructor() {
-                        this.publicProp = void 0;
-                        this.privateProp = void 0;
-                    }
-
-                    get aloneGet() {}
-
-                    get myget() {}
-
-                    set myget(x) {
-                        return 1;
-                    }
-
-                    m1() {}
-
-                    m2() {}
-
-                    static get ctorGet() {
-                        return 1;
-                    }
-
-                    }
-                    Text.ctor = "ctor";
-                    Text.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Text {
+                  constructor() {
+                    this.publicProp = void 0;
+                    this.privateProp = void 0;
+                  }
+                
+                  get aloneGet() {}
+                
+                  get myget() {}
+                
+                  set myget(x) {
+                    return 1;
+                  }
+                
+                  m1() {}
+                
+                  m2() {}
+                
+                  static get ctorGet() {
+                    return 1;
+                  }
+                }
+                
+                _registerDecorators(Text, {
+                  ctor: "ctor",
+                  publicProps: {
                     publicProp: {
-                        config: 0
+                      config: 0
                     },
                     aloneGet: {
-                        config: 1
+                      config: 1
                     },
                     myget: {
-                        config: 3
+                      config: 3
                     }
-                };
-                Text.publicMethods = ["m1"];`
+                  },
+                  publicMethods: ["m1"]
+                });
+                
+                export default _registerComponent(Text, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -257,17 +320,29 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-                    constructor() {
-                        this.data = void 0;
-                    }
-
-                    }
-                    Test.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.data = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
                     data: {
-                        config: 0
+                      config: 0
                     }
-                };`
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -323,17 +398,29 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-                    constructor() {
-                        this.ariaDescribedBy = void 0;
-                    }
-
-                    }
-                    Test.publicProps = {
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.ariaDescribedBy = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  publicProps: {
                     ariaDescribedBy: {
-                        config: 0
+                      config: 0
                     }
-                };`
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -446,11 +533,23 @@ describe('Transform method', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-  foo() {}
-
-}
-Test.publicMethods = ["foo"];`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  foo() {}
+                }
+                
+                _registerDecorators(Test, {
+                  publicMethods: ["foo"]
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+            `
         }
     });
 

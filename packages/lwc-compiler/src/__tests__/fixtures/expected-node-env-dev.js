@@ -1,4 +1,4 @@
-import { registerTemplate, LightningElement } from 'lwc';
+import { registerTemplate, registerComponent, LightningElement } from 'lwc';
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
@@ -10,8 +10,8 @@ class ClassAndTemplate extends LightningElement {
         }
         this.root.querySelector('outsideOfProductionCheck');
     }
-    render() {
-        return _tmpl;
-    }
 }
-export default ClassAndTemplate;
+var node_env = registerComponent(ClassAndTemplate, {
+    tmpl: _tmpl
+});
+export default node_env;

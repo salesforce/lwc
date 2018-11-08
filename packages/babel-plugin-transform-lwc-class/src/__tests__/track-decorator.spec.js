@@ -10,15 +10,27 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `export default class Test {
-  constructor() {
-    this.record = void 0;
-  }
-
-}
-Test.track = {
-  record: 1
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.record = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  track: {
+                    record: 1
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -31,17 +43,29 @@ Test.track = {
         }
     `, {
         output: {
-            code: `export default class Test {
-  constructor() {
-    this.record = {
-      value: 'test'
-    };
-  }
-
-}
-Test.track = {
-  record: 1
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                
+                class Test {
+                  constructor() {
+                    this.record = {
+                      value: "test"
+                    };
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  track: {
+                    record: 1
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 

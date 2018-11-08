@@ -1,5 +1,5 @@
 import _xBar from 'x/bar';
-import { registerTemplate, LightningElement } from 'lwc';
+import { registerTemplate, registerComponent, LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
 function tmpl($api, $cmp, $slotset, $ctx) {
@@ -21,10 +21,10 @@ class Metadata extends LightningElement {
         return "hello" + name;
     }
     wiredMethod(result) {}
-    render() {
-        return _tmpl;
-    }
 }
+var foo = registerComponent(Metadata, {
+    tmpl: _tmpl
+});
 Metadata.publicProps = {
     publicProp: {
         config: 0
@@ -40,10 +40,10 @@ Metadata.wire = {
     wiredMethod: {
         adapter: getHello,
         params: {
-          name: "publicProp"
+            name: "publicProp"
         },
         static: {
-          fields: ['one', 'two']
+            fields: ['one', 'two']
         },
         method: 1
     }
@@ -52,5 +52,5 @@ const HELLOWORLD = "hello world!";
 function ohai(name) {
     return "ohai, " + name;
 }
-export default Metadata;
+export default foo;
 export { HELLOWORLD, ohai };
