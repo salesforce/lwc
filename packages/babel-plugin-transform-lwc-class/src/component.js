@@ -43,24 +43,7 @@ module.exports = function ({ types: t }) {
             }
         },
         Class(path, state) {
-            const isComponent = isComponentClass(path, state.componentBaseClassImports);
-
-            if (isComponent) {
-                const classRef = path.node.id;
-                if (!classRef) {
-                    throw generateError(path, {
-                        errorInfo: LWCClassErrors.LWC_CLASS_CANNOT_BE_ANONYMOUS
-                    });
-                }
-
-                if (isDefaultExport(path)) {
-                    // Import and wire template to the component if the class has no render method
-                    const classBody = path.get('body');
-                    if (!findClassMethod(classBody, LWC_COMPONENT_PROPERTIES.RENDER)) {
-                        wireTemplateToClass(path, state, classBody);
-                    }
-                }
-            }
+            // TODO: REMOVE UNUSED FUNCTIONT BEFORE MERGE
         }
     };
 

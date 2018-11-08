@@ -3,9 +3,9 @@ const { stripIndents } = require('common-tags');
 
 const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
 
-function transform(plugin, opts = {}) {
+function transform(plugin, pluginOpts = {}, opts = {}) {
     const testConfig = Object.assign({}, BASE_CONFIG, {
-        plugins: [plugin]
+        plugins: [[plugin, pluginOpts]]
     }, opts);
 
     return function(source) {
@@ -22,8 +22,8 @@ function prettify(str) {
         .join('\n');
 }
 
-function pluginTest(plugin, opts = {}) {
-    const testTransform = transform(plugin, opts);
+function pluginTest(plugin, pluginOpts, opts = {}) {
+    const testTransform = transform(plugin, pluginOpts, opts);
 
     const transformTest = function(actual, expected) {
         if (expected.error) {

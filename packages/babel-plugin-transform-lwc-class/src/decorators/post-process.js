@@ -1,11 +1,15 @@
-const REGISTER_DECORATORS_ID = "registerDecorators";
-const { isLWCNode } = require("../utils");
 /*
 * After all our decorator transforms have run,
 * we have created static properties attached to the class body
 * Foo.track = {...}
 *
 */
+
+const { basename } = require('path');
+const { isLWCNode } = require("../utils");
+const REGISTER_DECORATORS_ID = "registerDecorators";
+const moduleImports = require("@babel/helper-module-imports");
+
 module.exports = function postDecorators({ types: t }) {
     function collectDecoratedProperties(body) {
         const metaPropertyList = [];
@@ -30,10 +34,29 @@ module.exports = function postDecorators({ types: t }) {
         ]);
     }
 
-    function createRegisterComponent(node) {
+    function getBaseName({ file }) {
+        const classPath = file.opts.filename;
+        return basename(classPath, '.js');
+    }
+
+    function importDefaultTemplate(path, state) {
+        const componentName = getBaseName(state);
+        return moduleImports.addDefault(path, `./${componentName}.html`, { nameHint: 'tmpl' });
+    }
+
+    function createRegisterComponent(path, state) {
+        const { node } = path;
+        if (path.isClassDeclaration()) {
+            node.type = 'ClassExpression';
+        }
+
+        const templateIdentifier = importDefaultTemplate(path, state);
+
         return t.callExpression(
           t.identifier('registerComponent'),
-          [node]
+          [node, t.objectExpression([
+              t.objectProperty(t.identifier('tmpl'), templateIdentifier)
+          ])]
         );
       }
 
@@ -42,17 +65,16 @@ module.exports = function postDecorators({ types: t }) {
       }
 
     return {
-        ExportDefaultDeclaration(path) {
-            const declaration = path.get("declaration");
-            if (needsComponentRegistration(declaration.node)) {
-                if (declaration.isClassDeclaration()) {
-                  declaration.node.type = 'ClassExpression';
+        ExportDefaultDeclaration(path, state) {
+            const implicitResolution  = !state.opts.isExplicitImport;
+            if (implicitResolution) {
+                const declaration = path.get("declaration");
+                if (needsComponentRegistration(declaration.node)) {
+                    declaration.replaceWith(
+                        createRegisterComponent(declaration, state)
+                    );
                 }
-
-                declaration.replaceWith(
-                  createRegisterComponent(declaration.node)
-                );
-              }
+            }
         },
         ClassExpression(path) {
             const { node } = path;
