@@ -244,7 +244,7 @@ describe('watcher', () => {
                     return newValue;
                 }
             }
-            MyComponent2.publicProps = { x: { config: 3 } };
+            MyComponent2.publicProps = { x: {} };
 
             const elm = createElement('x-foo', { is: MyComponent2 });
             elm.x = 2;

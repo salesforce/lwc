@@ -5,6 +5,8 @@ export { BaseLightningElement as LightningElement } from "./base-lightning-eleme
 export { register } from "./services";
 export { unwrap } from "./membrane";
 export { registerTemplate } from "./template";
+export { registerComponent } from "./component";
+export { registerDecorators } from "./decorators/register";
 export { isNodeFromTemplate } from "./vm";
 
 // TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/129

@@ -230,9 +230,7 @@ describe('template', () => {
             const x = [1, 2, 3];
             class MyComponent extends LightningElement {}
             MyComponent.publicProps = {
-                x: {
-                    config: 0
-                }
+                x: {}
             };
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = x;
