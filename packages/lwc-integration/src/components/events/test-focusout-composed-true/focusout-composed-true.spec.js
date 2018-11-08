@@ -10,11 +10,12 @@ describe('Composed focusout event', () => {
     it('should be composed', function () {
         browser.click('input');
         browser.click('body');
-        browser.pause(50);
-        assert.deepEqual(browser.getText('.focus-out-composed'), 'Focus Out Composed');
-
         browser.waitUntil(() => {
-            browser.click('button');
+            return browser.getText('.focus-out-composed') === 'Focus Out Composed';
+        }, 500, 'Expect native focusout to be composed');
+
+        browser.click('button');
+        browser.waitUntil(() => {
             return browser.getText('.custom-focus-out-not-composed') === 'Custom Focus Out Not Composed';
         }, 500, 'Expect focus out to be composed');
     });
