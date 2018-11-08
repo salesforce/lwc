@@ -7,13 +7,12 @@
 
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
-const { LWCClassErrors } = require('lwc-errors');
-const { isLWCNode, generateError } = require("./utils");
+const { isLWCNode } = require("../utils");
 
 const REGISTER_DECORATORS_ID = "registerDecorators";
 const REGISTER_COMPONENT_ID = "registerComponent";
 
-function postProcess({ types: t }) {
+module.exports = function postProcess({ types: t }) {
     function collectDecoratedProperties(body) {
         const metaPropertyList = [];
         for (const classProps of body.get("body")) {
@@ -122,34 +121,3 @@ function postProcess({ types: t }) {
         }
     };
 };
-
-// -- Validation --------
-
-function validateNoHTMLImports(importDeclarationPath) {
-    const { node: { source : { value } } } = importDeclarationPath;
-    if (value.endsWith('.html')) {
-        throw generateError(importDeclarationPath, {
-            errorInfo: LWCClassErrors.INVALID_HTML_IMPORT_IMPLICIT_MODE,
-            messageArgs: [value]
-        });
-    }
-}
-
-function validateImplicitImport(programPath) {
-    const body = programPath.get("body");
-    for (const decl of body) {
-        if (decl.isImportDeclaration()) {
-            validateNoHTMLImports(decl);
-        }
-    }
-}
-
-function validateExplicitImport(path) {
-    // WIP
-}
-
-module.exports = {
-    postProcess,
-    validateImplicitImport,
-    validateExplicitImport
-}

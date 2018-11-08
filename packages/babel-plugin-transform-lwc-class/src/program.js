@@ -1,13 +1,12 @@
 const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
 const { invalidDecorators } = require('./decorators');
-const { postProcess, validateImplicitImport, validateExplicitImport } = require('./post-process');
+const { validate, transform: postProcess } = require('./post-process');
 
 function exit(api) {
     return {
         Program: {
             exit(path, state) {
-                const validateMode = state.opts.isExplicitImport ? validateExplicitImport : validateImplicitImport;
-                validateMode(path);
+                validate(path, state);
 
                 const visitors = api.traverse.visitors.merge([
                     postProcess(api),
