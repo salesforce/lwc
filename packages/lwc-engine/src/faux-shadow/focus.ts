@@ -248,7 +248,6 @@ function keyboardFocusInHandler(event: FocusEvent) {
         // elements inside of the custom element shadow, so we do nothing
         (isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) ||
 
-
         // If related target is null, user is probably tabbing into the document from the browser chrome (location bar?)
         // If relatedTarget is null, we can't do much here because we don't know what direction the user is tabbing
         // This is a bit of an edge case, and only comes up if the custom element is the very first or very last
