@@ -1,8 +1,5 @@
-const { basename } = require('path');
-const moduleImports = require("@babel/helper-module-imports");
-
-const { findClassMethod, generateError, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
-const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES, LWC_API_WHITELIST } = require('./constants');
+const { generateError, getEngineImportSpecifiers } = require('./utils');
+const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_API_WHITELIST } = require('./constants');
 const { LWCClassErrors } = require('lwc-errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
@@ -20,7 +17,6 @@ module.exports = function ({ types: t }) {
                     });
                 }
             })
-
 
             // Store on state local identifiers referencing engine base component
             state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
@@ -41,41 +37,11 @@ module.exports = function ({ types: t }) {
                     messageArgs: [observedAttributeNames.join(', ')]
                 });
             }
-        },
-        Class(path, state) {
-            // TODO: REMOVE UNUSED FUNCTIONT BEFORE MERGE
         }
     };
 
     function isObservedAttributesStaticProperty(classPropertyPath) {
         const { static: isStaticProperty, key: { name: propertyName } } = classPropertyPath.node;
         return (isStaticProperty && propertyName === CLASS_PROPERTY_OBSERVED_ATTRIBUTES);
-    }
-
-    function getBaseName({ file }) {
-        const classPath = file.opts.filename;
-        return basename(classPath, '.js');
-    }
-
-    function importDefaultTemplate(path, state) {
-        const componentName = getBaseName(state);
-        return moduleImports.addDefault(path, `./${componentName}.html`, { nameHint: 'tmpl' });
-    }
-
-    function wireTemplateToClass(path, state, classBody) {
-        const templateIdentifier = importDefaultTemplate(path, state);
-
-        const renderMethod = t.classMethod(
-            'method',
-            t.identifier(LWC_COMPONENT_PROPERTIES.RENDER),
-            [],
-            t.blockStatement([
-                t.returnStatement(templateIdentifier),
-            ]),
-        );
-
-        classBody.pushContainer('body', [
-            renderMethod,
-        ]);
     }
 };

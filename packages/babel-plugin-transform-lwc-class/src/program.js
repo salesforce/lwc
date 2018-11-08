@@ -1,12 +1,16 @@
 const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
-const { invalidDecorators, postDecorators } = require('./decorators');
+const { invalidDecorators } = require('./decorators');
+const { postProcess, validateImplicitImport, validateExplicitImport } = require('./post-process');
 
 function exit(api) {
     return {
         Program: {
             exit(path, state) {
+                const validateMode = state.opts.isExplicitImport ? validateExplicitImport : validateImplicitImport;
+                validateMode(path);
+
                 const visitors = api.traverse.visitors.merge([
-                    postDecorators(api),
+                    postProcess(api),
                     classProperty(api, { loose: true }).visitor,
 
                     // Decorator usage validation is done on a program exit because by the time program exits,
@@ -15,15 +19,10 @@ function exit(api) {
                     invalidDecorators(api),
                 ]);
 
-                path.traverse(
-                    visitors,
-                    state
-                );
+                path.traverse(visitors, state);
             }
         }
     }
 }
 
-module.exports = {
-    exit,
-}
+module.exports = { exit }

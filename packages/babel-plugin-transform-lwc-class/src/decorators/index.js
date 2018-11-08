@@ -1,7 +1,6 @@
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
-const postDecorators = require('./post-process');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const { generateError, getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
@@ -190,6 +189,5 @@ function decorators({ types: t }) {
 }
 module.exports = {
     decorators,
-    invalidDecorators,
-    postDecorators
+    invalidDecorators
 }

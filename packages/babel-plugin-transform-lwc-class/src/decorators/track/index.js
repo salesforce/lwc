@@ -1,4 +1,4 @@
-const { generateError, staticClassProperty } = require('../../utils');
+const { generateError, staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, LWC_COMPONENT_PROPERTIES } = require('../../constants');
 const { DecoratorErrors } = require('lwc-errors');
 
@@ -33,13 +33,16 @@ function transform(t, klass, decorators) {
             return acc;
         }, {});
 
+        const staticProp = staticClassProperty(
+            t,
+            LWC_COMPONENT_PROPERTIES.TRACK,
+            t.valueToNode(trackConfig)
+        );
+        markAsLWCNode(staticProp);
+
         klass.get('body').pushContainer(
             'body',
-            staticClassProperty(
-                t,
-                LWC_COMPONENT_PROPERTIES.TRACK,
-                t.valueToNode(trackConfig)
-            )
+            staticProp
         );
 
         return {
