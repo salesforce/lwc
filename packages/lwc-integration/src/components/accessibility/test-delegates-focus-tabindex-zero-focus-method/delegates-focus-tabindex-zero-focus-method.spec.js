@@ -8,12 +8,12 @@ describe('Focus method on delegates focus', () => {
 
     it('should focus correct element', function () {
         browser.keys(['Tab']);
-        browser.execute(() => {
+        browser.execute(function () {
             document.querySelector('integration-delegates-focus-tabindex-zero-focus-method').focusInput();
         });
 
         browser.waitUntil(() => {
-            const active = browser.execute(() => {
+            const active = browser.execute(function () {
                 return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
             })
 
