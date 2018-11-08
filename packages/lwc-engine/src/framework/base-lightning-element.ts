@@ -133,7 +133,6 @@ export function BaseLightningElement(this: ComponentInterface) {
     setInternalField(elm, ViewModelReflection, vm);
     defineProperty(cmpRoot, ViewModelReflection, {
         value: vm,
-        enumerable: false,
         configurable: false,
         writable: false,
     });
