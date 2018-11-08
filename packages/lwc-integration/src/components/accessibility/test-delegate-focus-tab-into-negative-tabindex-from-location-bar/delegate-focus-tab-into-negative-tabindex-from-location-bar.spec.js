@@ -11,9 +11,11 @@ describe('Delegates focus', () => {
         browser.keys(['Tab']); // tab into first anchor
         browser.keys(['Tab']); // tab into second anchor
         browser.keys(['Tab']); // tab over integration-child
-        const active = browser.execute(function () {
-            return document.activeElement;
-        });
-        assert.equal(active.getTagName(), 'body');
+        browser.waitUntil(() => {
+            const active = browser.execute(function () {
+                return document.activeElement;
+            });
+            return active.getTagName() === 'body';
+        }, 500, 'expect body to be focused');
     });
 });
