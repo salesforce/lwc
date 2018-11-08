@@ -206,6 +206,16 @@ function isLastTabbableChild(target: EventTarget, segments: QuerySegments): bool
 function keyboardFocusHandler(event: FocusEvent) {
     const host: EventTarget = eventCurrentTargetGetter.call(event);
     const target: EventTarget = eventTargetGetter.call(event);
+
+    // Ideally, we would be able to use a "focus" event that doesn't bubble
+    // but, IE11 doesn't support relatedTarget on focus events so we have to use
+    // focusin instead. The logic below is predicated on non-bubbling events
+    // So, if currentTarget(host) ir not target, we know that the event is bubbling
+    // and we escape because focus occured on something below the host.
+    if (host !== target) {
+        return;
+    }
+
     const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
 
     if (isNull(relatedTarget)) {
@@ -312,12 +322,12 @@ export function handleFocus(elm: HTMLElement) {
 
     // Unbind any focusin listeners we may have going on
     ignoreFocusIn(elm);
-    addEventListener.call(elm, 'focus', keyboardFocusHandler, true);
+    addEventListener.call(elm, 'focusin', keyboardFocusHandler, true);
 
 }
 
 export function ignoreFocus(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focus', keyboardFocusHandler, true);
+    removeEventListener.call(elm, 'focusin', keyboardFocusHandler, true);
 }
 
 export function handleFocusIn(elm: HTMLElement) {
