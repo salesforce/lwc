@@ -18,7 +18,6 @@ import {
     seal,
     ArrayReduce,
     isObject,
-    defineProperty,
 } from "../shared/language";
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
@@ -131,11 +130,7 @@ export function BaseLightningElement(this: ComponentInterface) {
     // linking elm, shadow root and component with the VM
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
-    defineProperty(cmpRoot, ViewModelReflection, {
-        value: vm,
-        configurable: false,
-        writable: false,
-    });
+    setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
     if (process.env.NODE_ENV !== 'production') {
         patchComponentWithRestrictions(component);
