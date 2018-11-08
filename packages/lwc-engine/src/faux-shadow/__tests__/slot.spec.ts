@@ -493,9 +493,7 @@ describe('slotted elements', () => {
         document.body.appendChild(elm);
         const slot = childTemplate.querySelector('slot');
         let children;
-        expect(() => {
-            children = slot.childNodes;
-        }).toLogWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
+        children = slot.childNodes;
         expect(children).toHaveLength(0);
     });
 
