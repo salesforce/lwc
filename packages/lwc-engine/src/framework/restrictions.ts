@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf } from "../shared/language";
+import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf } from "../shared/language";
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -8,7 +8,7 @@ import {
     getCustomElementVM,
     VM,
     getNodeOwnerKey,
-    getComponentVM, getShadowRootHost
+    getComponentVM,
 } from "./vm";
 import {
     getAttribute,
@@ -24,21 +24,7 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalChildNodesDescriptor = getPropertyDescriptor(node, 'childNodes');
-    return {
-        childNodes: {
-            get(this: Node) {
-                assert.logWarning(
-                    `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
-                    (this instanceof Element) ? this as Element : (getShadowRootHost(this as ShadowRoot) || undefined)
-                );
-                return originalChildNodesDescriptor!.get!.call(this);
-            },
-            enumerable: true,
-            configurable: true,
-        },
-        // TODO: add restrictions for getRootNode() method
-    };
+    return {};
 }
 
 function getElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {

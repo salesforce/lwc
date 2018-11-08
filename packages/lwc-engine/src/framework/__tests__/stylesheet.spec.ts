@@ -67,13 +67,8 @@ describe('synthetic shadow', () => {
         document.body.appendChild(elm);
 
         let firstChild;
-        expect(() => {
-            // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = elm.shadowRoot.firstChild as HTMLElement;
-        }).toLogWarning(
-            `Discouraged access to property 'childNodes' on 'Node'`
-        );
-
+        // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
+        firstChild = elm.shadowRoot.firstChild as HTMLElement;
         expect(firstChild.tagName).toBe('SECTION');
     });
 
@@ -88,13 +83,8 @@ describe('synthetic shadow', () => {
         document.body.appendChild(elm);
 
         let firstChild;
-        expect(() => {
-            // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
-            firstChild = elm.shadowRoot.firstChild as HTMLElement;
-        }).toLogWarning(
-            `Discouraged access to property 'childNodes' on 'Node'`
-        );
-
+        // Synthetic shadowRoot doesn't support firstChildElement, we will use the firstChild for now.
+        firstChild = elm.shadowRoot.firstChild as HTMLElement;
         expect(firstChild.tagName).toBe('SECTION');
     });
 
