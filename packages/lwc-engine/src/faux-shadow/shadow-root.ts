@@ -49,7 +49,6 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     defineProperty(sr, HostKey, {
         value: elm,
-        enumerable: false,
         configurable: false,
         writable: false,
     });
