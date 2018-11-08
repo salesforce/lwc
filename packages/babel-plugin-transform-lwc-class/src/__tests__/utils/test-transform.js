@@ -1,5 +1,6 @@
 const babel = require('@babel/core');
 const { stripIndents } = require('common-tags');
+const prettier = require('prettier');
 
 const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
 
@@ -38,10 +39,17 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
             expect(transformError.toString()).toContain(expected.error.message);
         } else if (expected.output) {
             const output = testTransform(actual);
-            if (expected.output.code) {
+            if (expected.output.code !== undefined) {
                 const normalizedActual = output && output.code && stripIndents(output.code);
                 const normalizedExpected = stripIndents(expected.output.code);
-                expect(normalizedActual).toBe(normalizedExpected);
+
+                if (normalizedActual !== normalizedExpected) {
+                    // we should fail, but with style
+                    expect(prettier.format(normalizedActual))
+                        .toBe(prettier.format(normalizedExpected));
+                } else {
+                    expect(normalizedActual).toBe(normalizedExpected);
+                }
             }
             if (expected.output.metadata) {
                 expect(output.metadata).toEqual(expected.output.metadata);
