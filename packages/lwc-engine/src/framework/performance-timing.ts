@@ -60,6 +60,8 @@ function _startGlobalMeasure(phase: GlobalMeasurementPhase) {
 
 function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
     performance.measure(phase, phase);
+    performance.clearMarks(phase);
+    performance.clearMeasures(phase);
 }
 
 export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
