@@ -3,6 +3,7 @@ import { pretify, readFixture } from "../../__tests__/utils";
 import { DiagnosticLevel } from "lwc-errors";
 
 const VALID_CONFIG = {
+    isExplicitImport: true,
     outputConfig: {
         minify: false,
         compat: false,
