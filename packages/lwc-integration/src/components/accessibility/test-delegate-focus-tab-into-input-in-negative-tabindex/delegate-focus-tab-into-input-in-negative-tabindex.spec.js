@@ -11,9 +11,11 @@ describe('Delegates focus', () => {
         browser.keys(['Tab']); // tab into first anchor
         browser.keys(['Tab']); // tab into second anchor
         browser.keys(['Tab']); // tab over integration-child
-        const active = browser.execute(function () {
-            return document.querySelector('integration-delegate-focus-tab-into-input-in-negative-tabindex').shadowRoot.activeElement;
-        });
-        assert.equal(active.getText(), 'Anchor 3');
+        browser.waitUntil(() => {
+            const active = browser.execute(function () {
+                return document.querySelector('integration-delegate-focus-tab-into-input-in-negative-tabindex').shadowRoot.activeElement;
+            });
+            return active.getText() === 'Anchor 3';
+        }, 500, 'Expect Anchor 3 to be focused');
     });
 });

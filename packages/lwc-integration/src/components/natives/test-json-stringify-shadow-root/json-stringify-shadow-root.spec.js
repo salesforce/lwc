@@ -8,6 +8,8 @@ describe('Circular JSON stringity on shadow root', () => {
     });
 
     it('should not throw when running json stringify on shadow root', function () {
-        assert.strictEqual(browser.getText('.error-message'), 'no error');
+        browser.waitUntil(() => {
+            return browser.getText('.error-message') === 'no error';
+        }, 500, 'Expect there to be no error');
     });
 });

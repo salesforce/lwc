@@ -13,7 +13,9 @@ describe('Composed focusout event', () => {
         browser.pause(50);
         assert.deepEqual(browser.getText('.focus-out-composed'), 'Focus Out Composed');
 
-        browser.click('button');
-        assert.deepEqual(browser.getText('.custom-focus-out-not-composed'), 'Custom Focus Out Not Composed');
+        browser.waitUntil(() => {
+            browser.click('button');
+            return browser.getText('.custom-focus-out-not-composed') === 'Custom Focus Out Not Composed';
+        }, 500, 'Expect focus out to be composed');
     });
 });
