@@ -572,197 +572,217 @@ describe('Transform method', () => {
     });
 });
 
-describe.only('Metadata', () => {
-    pluginTest(
-        'gather metadata',
-        `
-        import { LightningElement, api } from 'lwc';
-        export default class Foo extends LightningElement {
-            @api
-            index = "index value";
 
-            @api
-            title
-        }
-    `,
+function apiValueMetadataTest(testName, apiTestSnippet, expectedClassMemberMetadata) {
+    const { name, type, value } = expectedClassMemberMetadata;
+    const expectedDecoratorTarget = { name, type, value };
+
+    pluginTest(
+        testName,
+        `
+            import { LightningElement, api } from 'lwc';
+            export default class Foo extends LightningElement { ${apiTestSnippet} }
+        `,
         {
             output: {
                 metadata: {
-                    decorators: [
-                        {
-                            targets: [
-                                { name: "index", type: "property", value: "index value" },
-                                { name: "title", type: "property", value: undefined }
-                            ],
-                            type: "api"
-                        }
-                    ],
+                    decorators: [{
+                        type: "api",
+                        targets: [
+                            expectedDecoratorTarget,
+                        ],
+                    }],
                     classMembers: [
-                        {
-                            type: "property",
-                            name: "index",
-                            loc: {
-                                start: { line: 3, column: 0},
-                                end: { line: 4, column: 22 }
-                            },
-                            decorator: "api",
-                            value: "index value"
-                        },
-                        {
-                            type: "property",
-                            name: "title",
-                            loc: {
-                                start: { line: 5, column: 0 },
-                                end: { line: 6, column: 5 }
-                            },
-                            decorator: "api",
-                            value: undefined
-                        },
+                        expectedClassMemberMetadata,
                     ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 7}
+                        end: { column: expect.any(Number), line: expect.any(Number) },
                     },
                     exports: [
                         {
                             type: 'ExportDefaultDeclaration',
                         }
                     ],
-                },
-            },
+                }
+            }
         }
     );
-    pluginTest.only(
-        'gather metadata',
+}
+
+describe('Metadata', () => {
+    apiValueMetadataTest(
+        'gather metadata for static "string" property value',
+        `@api staticString = "string value";`,
+        {
+            type: "property",
+            name: "staticString",
+            loc: {
+                end: { line: 2, column: 87 },
+                start: { line: 2, column: 52 },
+            },
+            decorator: "api",
+            value: { type: "string", value:"string value" },
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static "numeric" property value',
+        `@api numeric = 0;`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 69, line: 2 },
+                start: { column: 52, line: 2 },
+            },
+            name: "numeric",
+            type: "property",
+            value: { type: "number", value: 0 }
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static property without value',
+        `@api nodefault`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 66, line: 2 },
+                start: { column: 52, line: 2 },
+            },
+            name: "nodefault",
+            type: "property",
+            value: { type: undefined, value: undefined }
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static property with "undefined" value',
+        `@api staticUndefined = undefined;`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 85, line: 2 },
+                start: { column: 52, line: 2 },
+            },
+            name: "staticUndefined",
+            type: "property",
+            value: { type: undefined, value: undefined }
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static property with "null" value',
+        `@api staticNull = null;`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 75, line: 2 },
+                start: { column: 52, line: 2 },
+            },
+            name: "staticNull",
+            type: "property",
+            value: { type: "null", value: null }
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static property with "object" value',
+        `@api staticObject = {
+            stringProp: "string property",
+            numericProp: 0,
+            arrayProp: [],
+            objectProp: {},
+        };`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 2, line: 7 },
+                start: { column: 52, line: 2 },
+            },
+            name: "staticObject",
+            type: "property",
+            value: {
+                type: "object",
+                value: {
+                    stringProp: {
+                        type: "string",
+                        value: "string property",
+                    },
+                    numericProp: {
+                        type: "number",
+                        value: 0,
+                    },
+                    arrayProp: {
+                        type: "array",
+                        value: [],
+                    },
+                    objectProp: {
+                        type: "object",
+                        value: {},
+                    },
+                }
+            },
+        },
+    );
+
+    apiValueMetadataTest(
+        'gather metadata for static property with "array" value',
+        `@api staticArray = ['stringval', 0, null, undefined, {}, []];;`,
+        {
+            decorator: "api",
+            loc: {
+                end: { column: 113, line: 2 },
+                start: { column: 52, line: 2 },
+            },
+            name: "staticArray",
+            type: "property",
+            value: {
+                type: "array",
+                value: [
+                    { type: "string", value: "stringval" },
+                    { type: "number", value: 0 },
+                    { type: "null", value: null },
+                    { type: undefined, value: undefined },
+                    { type: "object", value: {} },
+                    { type: "array", value: [] },
+                ]
+            }
+        },
+    );
+
+    pluginTest(
+        'does not gather metadata value for public setter and getter methods',
         `
-        import { LightningElement, api } from 'lwc';
-        export default class Foo extends LightningElement {
-            _privateTodo;
-
-            get todo () {
-                return this._privateTodo;
+            import { LightningElement, api } from 'lwc';
+            export default class Foo extends LightningElement {
+                _privateTodo
+                get todo () { return this._privateTodo; }
+                @api set todo (val) { return this._privateTodo = val; }
             }
-            @api
-            set todo (val) {
-                return this._privateTodo = val;
-            }
-
-            @api
-            staticObject = { prop: "default object value" };
-
-            @api
-            staticString = "string value";
-
-            @api
-            numeric = 0;
-
-            @api
-            title
-
-            @api
-            staticUndefined = undefined;
-
-            @api
-            staticNull = null;
-
-            @api
-            staticArray = ['stringval', 0, null, undefined, {}, []];
-
-            @api publicMethod() {}
-        }
-    `,
+        `,
         {
             output: {
                 metadata: {
-                    decorators: [
-                        {
-                            type: "api",
-                            targets: [
-                                { name: "todo", type: "property" },
-                                { name: "staticString", type: "property", value: { type: "string", value: "string value" }},
-                                { name: "numeric", type: "property", value: { type: "number", value: 0 }},
-                                { name: "staticObject", type: "property", value: {
-                                        type: "object",
-                                        value: {
-                                            prop: { type: "string", value: "default object value" }
-                                        }
-                                    }
-                                },
-                                { name: "staticUndefined", type: undefined, value: undefined },
-                                { name: "staticNull", type: null, value: null },
-                                { name: "title", type: "property", value: { type: undefined, value: undefined }},
-                                { name: "staticArray", type: "property", value: { type: "array", value: [
-                                    { type: "string", value: "stringval" },
-                                    { type: "number", value: 0 },
-                                    { type: "null", value: null },
-                                    { type: "undefined", value: undefined },
-                                    { type: "object", value: {} },
-                                    { type: "array", value: { type: "array", value: [] } },
-                                ] }},
-                                { name: "publicMethod", type: "method" }
-                            ]
-                        }
-                    ],
                     classMembers: [
                         {
-                            type: "property",
+                            decorator: "api",
+                            loc: {
+                                end: { column: 55, line: 5 },
+                                start: { column: 0, line: 5 }
+                            },
                             name: "todo",
-                            loc: {
-                                start: { line: 7, column: 0 },
-                                end: { line: 10, column: 1 }
-                            },
-                            decorator: "api",
-                            value: undefined,
-                        },
-                        {
-                            type: "property",
-                            name: "staticString",
-                            loc: {
-                                start: { line: 11, column: 0 },
-                                end: { line: 12, column: 22 }
-                            },
-                            decorator: "api",
-                            value: { type: "string", value:"index value" },
-                        },
-                        {
-                            type: "property",
-                            name: "staticObject",
-                            loc: {
-                                start: { line: 11, column: 0 },
-                                end: { line: 12, column: 22 }
-                            },
-                            decorator: "api",
-                            value: { type: "object", value: undefined },
-                        },
-                        {
-                            decorator: "api",
-                            loc: {
-                                end: { column: 5, line: 14 },
-                                start: { column: 0, line: 13 }
-                            },
-                            name: "title",
-                            type: "property",
-                            value: undefined
-                        },
-                        {
-                            type: "method",
-                            name: "publicMethod",
-                            loc: {
-                                start: { line: 15, column: 0 },
-                                end: { line: 15, column: 22 }
-                            },
-                            decorator: "api",
+                            type: "property"
                         }
                     ],
                     declarationLoc: {
-                        start: { column: 0, line: 2 },
-                        end: { column: 1, line: 16 }
+                        end: { column: 1, line: 6 },
+                        start: { column: 0, line: 2 }
                     },
-                    exports: [
-                        {
-                            type: 'ExportDefaultDeclaration',
-                        }
+                    decorators: [
+                        { targets: [{ name: "todo", type: "property" }], type: "api" }
                     ],
+                    exports: [{ type: "ExportDefaultDeclaration" }]
                 }
             }
         }
