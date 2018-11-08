@@ -53,6 +53,7 @@ import {
     IRExpressionAttribute,
     ForEach,
     TemplateExpression,
+    LWCDirectiveDomMode,
 } from '../shared/types';
 
 import {
@@ -181,6 +182,8 @@ export default function parse(source: string, state: State): {
             },
             exit() {
                 const element = stack.pop() as IRElement;
+                // Apply lwc directive on way out to ensure the element is empty
+                applyLwcDirective(element);
                 validateStylesheet(element);
                 applyAttributes(element);
                 validateElement(element);
@@ -328,6 +331,38 @@ export default function parse(source: string, state: State): {
             element.if = ifAttribute.value;
             element.ifModifier = modifier;
         }
+    }
+
+    function applyLwcDirective(element: IRElement) {
+        const lwcDomAttribute = getTemplateAttribute(element, 'lwc:dom');
+
+        if (!lwcDomAttribute) {
+            return;
+        }
+
+        removeAttribute(element, lwcDomAttribute.name);
+
+        if (isCustomElement(element)) {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element.__original, [`<${element.tag}>`]);
+        }
+
+        if (element.tag === 'slot') {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element.__original);
+        }
+
+        if (lwcDomAttribute.type !== IRAttributeType.String || LWCDirectiveDomMode.hasOwnProperty(lwcDomAttribute.value) === false) {
+            const possibleValues = Object.keys(LWCDirectiveDomMode).map((value) => `"${value}"`).join(', or ');
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [possibleValues]);
+        }
+
+        if (element.children.length > 0) {
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
+        }
+
+        element.lwc = {
+            dom: lwcDomAttribute.value as LWCDirectiveDomMode
+        };
+
     }
 
     function applyLocator(element: IRElement) {

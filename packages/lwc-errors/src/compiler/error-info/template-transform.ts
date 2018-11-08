@@ -422,5 +422,33 @@ export const ParserDiagnostics = {
         message: "Unexpected if modifier {0}",
         level: DiagnosticLevel.Error,
         url: ""
-    }
+    },
+
+    LWC_DOM_INVALID_VALUE: {
+        code: 1001,
+        message: "Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to {0}",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
+
+    LWC_DOM_INVALID_CONTENTS: {
+        code: 1001,
+        message: "Invalid contents for element with \"lwc:dom\". Element must be empty",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
+
+    LWC_DOM_INVALID_CUSTOM_ELEMENT: {
+        code: 1001,
+        message: "Invalid directive \"lwc:dom\" on element {0}. \"lwc:dom\" cannot be added to a custom element",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
+
+    LWC_DOM_INVALID_SLOT_ELEMENT: {
+        code: 1001,
+        message: "Invalid directive \"lwc:dom\" on <slot>.. \"lwc:dom\" cannot be added to a <slot>",
+        level: DiagnosticLevel.Error,
+        url: "",
+    },
 };

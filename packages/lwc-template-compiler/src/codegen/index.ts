@@ -65,6 +65,41 @@ const TEMPLATE_FUNCTION = template(
     { sourceType: 'module' },
 );
 
+function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
+    const { lwc, locator } = element;
+    const contextExpressions: t.ObjectProperty[] = [];
+
+    // LWC
+    if (lwc) {
+        const lwcObject: t.ObjectProperty[] = Object.keys(lwc).map((key) => {
+            return t.objectProperty(
+                t.identifier(key),
+                t.stringLiteral(lwc[key])
+            );
+        });
+
+        const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
+        contextExpressions.push(lwcObj);
+    }
+
+    // Locators
+    if (locator) {
+        const locatorObject: t.ObjectProperty[] = [];
+        const locatorId = t.objectProperty(t.identifier('id') , t.stringLiteral(locator.id));
+        locatorObject.push(locatorId);
+        if (locator.context) {
+            let locatorContextFunction = bindExpression(locator.context, element).expression;
+            locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
+            locatorContextFunction = memorizeHandler(codeGen, element, locator.context, locatorContextFunction);
+            locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
+        }
+        const contextObj = t.objectProperty(t.identifier('locator'), t.objectExpression(locatorObject));
+        contextExpressions.push(contextObj);
+    }
+
+    data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
+}
+
 function transform(
     root: IRNode,
     codeGen: CodeGen,
@@ -362,7 +397,8 @@ function transform(
             props,
             on,
             forKey,
-            locator
+            locator,
+            lwc,
         } = element;
 
         // Class attibute defined via string
@@ -462,20 +498,8 @@ function transform(
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
-        // Locators
-        if (locator) {
-            const locatorObject: t.ObjectProperty[] = [];
-            const locatorId = t.objectProperty(t.identifier('id') , t.stringLiteral(locator.id));
-            locatorObject.push(locatorId);
-            if (locator.context) {
-                let locatorContextFunction = bindExpression(locator.context, element).expression;
-                locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
-                locatorContextFunction = memorizeHandler(codeGen, element, locator.context, locatorContextFunction);
-                locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
-            }
-            const contextObj = t.objectProperty(t.identifier('locator'), t.objectExpression(locatorObject));
-
-            data.push(t.objectProperty(t.identifier('context'), t.objectExpression([contextObj])));
+        if (lwc || locator) {
+            generateContext(element, data, codeGen);
         }
 
         // Key property on VNode
