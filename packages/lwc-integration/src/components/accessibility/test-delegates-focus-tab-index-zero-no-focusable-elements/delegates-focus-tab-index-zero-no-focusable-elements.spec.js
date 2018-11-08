@@ -10,18 +10,23 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
     it('should correctly skip the custom element', function () {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        let active = browser.execute(function () {
-            return document.activeElement.shadowRoot.activeElement;
-        });
 
-        assert.deepEqual(active.getText(), 'second button')
+        browser.waitUntil(() => {
+            const active = browser.execute(function () {
+                return document.activeElement.shadowRoot.activeElement;
+            });
+
+            return active.getText() === 'second button';
+        }, 500, 'Second button should be focused');
 
         browser.keys(['Shift', 'Tab']);
 
-        active = browser.execute(function () {
-            return document.activeElement.shadowRoot.activeElement;
-        });
+        browser.waitUntil(() => {
+            const active = browser.execute(function () {
+                return document.activeElement.shadowRoot.activeElement;
+            });
 
-        assert.deepEqual(active.getText(), 'first button');
+            return active.getText() === 'first button';
+        }, 500, 'First button should be focused');
     });
 });
