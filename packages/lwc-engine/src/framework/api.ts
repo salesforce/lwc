@@ -459,7 +459,10 @@ export function f(items: any[]): any[] {
     const len = items.length;
     const flattened: VNodes = [];
 
-    // all flattened nodes should be marked as dynamic
+    // all flattened nodes should be marked as dynamic because
+    // flattened nodes are because of a conditional or iteration.
+    // We have to mark as dynamic because this could switch from an
+    // iterator to "static" text at any time.
     // TODO: compiler should give us some sort of indicator
     // to describe whether a vnode is dynamic or not
     markAsDynamicChildren(flattened);

@@ -8,6 +8,7 @@ describe('Dynamic text nodes rendering duplicate text', () => {
 
     it('should not render duplicate text', function () {
         browser.click('integration-duplicate-text-rendering');
+        assert.notDeepEqual(browser.getText('integration-duplicate-text-rendering'), 'ab');
         assert.deepEqual(browser.getText('integration-duplicate-text-rendering'), 'b');
     });
 });
