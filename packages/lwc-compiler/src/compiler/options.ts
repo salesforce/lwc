@@ -3,6 +3,7 @@ import { CompilerValidationErrors, invariant } from "lwc-errors";
 
 const DEFAULT_OPTIONS = {
     baseDir: "",
+    isExplicitImport: false
 };
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
@@ -60,11 +61,13 @@ export interface CompilerOptions {
     baseDir?: string;
     stylesheetConfig?: StylesheetConfig;
     outputConfig?: OutputConfig;
+    isExplicitImport?: boolean;
 }
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
+    isExplicitImport: boolean;
 }
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
