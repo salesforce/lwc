@@ -599,6 +599,9 @@ export function k(compilerKey: number, obj: any): number | string | void {
 // [g]lobal [id] function
 export function gid(id: any): string | null | undefined {
     if (isNull(id) || isUndefined(id) || id === '') {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.logError(`Invalid id value "${id}". Expected a non-empty string.`, vmBeingRendered!.elm);
+        }
         return id;
     }
     return `${id}-${getCurrentOwnerId()}`;

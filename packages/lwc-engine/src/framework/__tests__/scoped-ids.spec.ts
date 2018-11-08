@@ -81,7 +81,9 @@ describe('scoped-ids', () => {
                 }
 
                 const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
+                expect(() => {
+                    document.body.appendChild(elm);
+                }).toLogError('Invalid id value "null". Expected a non-empty string.');
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toEqual(null);
             });
@@ -97,7 +99,9 @@ describe('scoped-ids', () => {
                 }
 
                 const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
+                expect(() => {
+                    document.body.appendChild(elm);
+                }).toLogError('Invalid id value "undefined". Expected a non-empty string.');
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toEqual(null);
             });
@@ -113,7 +117,9 @@ describe('scoped-ids', () => {
                 }
 
                 const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
+                expect(() => {
+                    document.body.appendChild(elm);
+                }).toLogError('Invalid id value "". Expected a non-empty string.');
                 const div = elm.shadowRoot.querySelector('div');
                 expect(div.getAttribute('id')).toEqual('');
             });
