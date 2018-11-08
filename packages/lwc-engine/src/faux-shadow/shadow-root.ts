@@ -14,6 +14,11 @@ const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
 const { createDocumentFragment } = document;
 
+export function isDelegatingFocus(host: HTMLElement): boolean {
+    const shadowRoot = getShadowRoot(host);
+    return shadowRoot.delegatesFocus;
+}
+
 export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(root[HostKey], `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`);

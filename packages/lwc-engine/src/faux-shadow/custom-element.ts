@@ -1,9 +1,9 @@
-import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface } from "./shadow-root";
+import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement } from './traverse';
 import { hasAttribute, tabIndexGetter } from "../env/element";
 import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
-import { getFirstFocusableElement, getActiveElement, isDelegatingFocus, handleFocusIn, ignoreFocusIn } from "./focus";
+import { getFirstTabbableElement, getActiveElement, handleFocusIn, ignoreFocusIn } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
@@ -67,9 +67,9 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             if (isDelegatingFocus(this)) {
                 const currentActiveElement = getActiveElement(this);
                 if (isNull(currentActiveElement)) {
-                    const firstNode = getFirstFocusableElement(this);
+                    const firstNode = getFirstTabbableElement(this);
                     if (!isNull(firstNode)) {
-                        // when there is a focusable element, focus should be delegated
+                        // when there is a tabbable element, focus should be delegated
                         firstNode.focus();
                         return;
                     }
