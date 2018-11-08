@@ -205,7 +205,7 @@ describe('Transform property', () => {
         }
     });
 
-    pluginTest('throws error if string value is true', `
+    pluginTest('throws error if default value is true', `
         import { api } from 'lwc';
         export default class Test {
             @api publicProp = true;

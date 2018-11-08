@@ -186,7 +186,7 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
 
 function extractValueMetadata(valueNode) {
 
-    // TODO: flag anything we can't resolve , such as expressions, as type: 'unresolved'
+    // TODO: should we flag anything we can't resolve , such as expressions, as type: 'unresolved' instead of undefined?
     let valueMetadata = {
         type: undefined,
         value: undefined,
@@ -225,7 +225,6 @@ function extractStringValueMeta(valueNode) {
 
 function extractNumberValueMeta(valueNode) {
     let value = valueNode && valueNode.value;
-
     return {
         type: 'number',
         value: value === null ? undefined : value
@@ -233,7 +232,6 @@ function extractNumberValueMeta(valueNode) {
 }
 
 function extractArrayValueMeta(valueNode) {
-
     const arrayValueMeta = {
         type: 'array',
         value: [],
