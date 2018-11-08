@@ -1,7 +1,55 @@
 const pluginTestFactory = require('./utils/test-transform').pluginTest;
 const pluginTestImplicit = pluginTestFactory(require('../index'), { isExplicitImport: false });
 
-describe('Transform property', () => {
+describe('Transforms', () => {
+    pluginTestImplicit('test cmp anonymous class', `
+    import { LightningElement, api } from 'lwc';
+    export default class extends LightningElement { }
+    `,
+    {
+        output: {
+            code: `
+            import _tmpl from \"./test.html\";
+            import { registerComponent as _registerComponent } from \"lwc\";
+            import { LightningElement } from 'lwc';
+            export default _registerComponent(class extends LightningElement {}, {
+            tmpl: _tmpl
+            });
+        `}
+    })
+    pluginTestImplicit('test cmp named class with decorators', `
+    import { LightningElement, api } from 'lwc';
+    export default class Test extends LightningElement { @api foo = 1 }
+    `,
+    {
+        output: {
+            code: `
+            import { registerDecorators as _registerDecorators } from \"lwc\";
+            import _tmpl from \"./test.html\";
+            import { registerComponent as _registerComponent } from \"lwc\";
+            import { LightningElement } from 'lwc';
+
+            class Test extends LightningElement {
+            constructor(...args) {
+            super(...args);
+            this.foo = 1;
+            }
+
+            }
+
+            _registerDecorators(Test, {
+            publicProps: {
+            foo: {
+            config: 0
+            }
+            }
+            })
+
+            export default _registerComponent(Test, {
+            tmpl: _tmpl
+            });
+        `}
+    })
 });
 
 describe('Implicit mode', () => {
@@ -12,21 +60,6 @@ describe('Implicit mode', () => {
     `, {
         error: {
             message: 'Invalid html import'
-        }
-    });
-
-    pluginTestImplicit('registerComponent in implicit mode', `
-        import { LightningElement } from 'lwc';
-        export default class Test extends LightningElement {
-        }
-    `, {
-        output: {
-            code: `import _tmpl from \"./test.html\";
-            import { registerComponent as _registerComponent } from "lwc";
-            import { LightningElement } from 'lwc';
-            export default _registerComponent(class Test extends LightningElement {}, {
-            tmpl: _tmpl
-            });`
         }
     });
 
@@ -50,7 +83,7 @@ describe('Implicit mode', () => {
         }
     });
 
-    pluginTestImplicit('registerComponent and wire registerDecorator', `
+    pluginTestImplicit('wire', `
         import { LightningElement, wire } from 'lwc';
         import { getRecord } from 'recordDataService';
 
@@ -66,9 +99,16 @@ describe('Implicit mode', () => {
             import { registerComponent as _registerComponent } from \"lwc\";
             import { LightningElement } from 'lwc';
             import { getRecord } from 'recordDataService';
-            export default _registerComponent(_registerDecorators(class Test extends LightningElement {
-            recordData;
-            }, {
+
+            class Test extends LightningElement {
+            constructor(...args) {
+            super(...args);
+            this.recordData = void 0;
+            }
+
+            }
+
+            _registerDecorators(Test, {
             wire: {
             recordData: {
             adapter: getRecord,
@@ -78,13 +118,15 @@ describe('Implicit mode', () => {
             }
             }
             }
-            }), {
+            })
+
+            export default _registerComponent(Test, {
             tmpl: _tmpl
             });`
         }
     });
 
-    pluginTestImplicit('registerComponent and api registerDecorator', `
+    pluginTestImplicit('api decorator', `
         import { LightningElement, api } from 'lwc';
         export default class Test extends LightningElement {
             @api foo;
@@ -95,18 +137,62 @@ describe('Implicit mode', () => {
             import _tmpl from \"./test.html\";
             import { registerComponent as _registerComponent } from \"lwc\";
             import { LightningElement } from 'lwc';
-            export default _registerComponent(_registerDecorators(class Test extends LightningElement {
-            foo;
-            }, {
+
+            class Test extends LightningElement {
+            constructor(...args) {
+            super(...args);
+            this.foo = void 0;
+            }
+
+            }
+
+            _registerDecorators(Test, {
             publicProps: {
             foo: {
             config: 0
             }
             }
-            }), {
+            })
+
+            export default _registerComponent(Test, {
             tmpl: _tmpl
             });`
         }
     });
+
+    pluginTestImplicit('mixin', `
+        import { LightningElement, api } from 'lwc';
+        export default class Test extends mixin(LightningElement) {
+            @api foo;
+        }
+    `, {
+        output: {
+            code: `import { registerDecorators as _registerDecorators } from \"lwc\";
+            import _tmpl from \"./test.html\";
+            import { registerComponent as _registerComponent } from \"lwc\";
+            import { LightningElement } from 'lwc';
+
+            class Test extends mixin(LightningElement) {
+            constructor(...args) {
+            super(...args);
+            this.foo = void 0;
+            }
+
+            }
+
+            _registerDecorators(Test, {
+            publicProps: {
+            foo: {
+            config: 0
+            }
+            }
+            })
+
+            export default _registerComponent(Test, {
+            tmpl: _tmpl
+            });`
+        }
+    });
+
 
 });

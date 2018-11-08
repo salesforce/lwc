@@ -52,14 +52,20 @@ module.exports = function postProcess({ types: t }) {
         });
     }
 
-    function createRegisterComponent(path, state) {
-        const id = moduleImports.addNamed(path, REGISTER_COMPONENT_ID, 'lwc');
-        const { node } = path;
-        if (path.isClassDeclaration()) {
-            node.type = 'ClassExpression';
-        }
+    function createRegisterComponent(declarationPath, state) {
+        const id = moduleImports.addNamed(declarationPath, REGISTER_COMPONENT_ID, 'lwc');
+        const templateIdentifier = importDefaultTemplate(declarationPath, state);
+        const statementPath = declarationPath.getStatementParent();
+        const hasIdentifier = t.isIdentifier(declarationPath.node.id);
+        let node = declarationPath.node;
 
-        const templateIdentifier = importDefaultTemplate(path, state);
+        if (hasIdentifier) {
+            statementPath.insertBefore(declarationPath.node);
+            node = node.id;
+        } else {
+            // if it does not have an id, we can treat it as a ClassExpression
+            node.type = "ClassExpression";
+        }
 
         return t.callExpression(
             id,
