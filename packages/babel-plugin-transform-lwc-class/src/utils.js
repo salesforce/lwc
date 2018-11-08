@@ -212,7 +212,7 @@ function extractValueMetadata(valueNode) {
         valueMetadata = extractNumberValueMeta(valueNode);
     } else if (type === 'NullLiteral') {
         valueMetadata = {
-            type: null,
+            type: "null",
             value: null,
         };
     } else if (type === 'ObjectExpression') {

@@ -29,7 +29,8 @@ module.exports = function () {
                                 loc: extractLoc(path.node.loc)
                             }
 
-                            if (isProperty(path)) {
+                            // only collect value metadata for deterministic static properties
+                            if (isProperty(path) && !path.isClassMethod()) {
                                 metadata.value = extractValueMetadata(valueNode);
                             }
 
