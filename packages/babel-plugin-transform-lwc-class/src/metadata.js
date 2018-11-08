@@ -29,11 +29,6 @@ module.exports = function () {
                                 loc: extractLoc(path.node.loc)
                             }
 
-                            // only collect value metadata for deterministic static properties
-                            if (isProperty(path) && !path.isClassMethod()) {
-                                metadata.value = extractValueMetadata(valueNode);
-                            }
-
                             const comment = extractComment(path.node);
                             if (comment) {
                                 metadata.doc = comment;
@@ -41,6 +36,12 @@ module.exports = function () {
                             const decorator = extractLWCDecorator(path.node);
                             if (decorator) {
                                 metadata.decorator = decorator;
+
+                                // only collect value metadata for public static properties
+                                if (decorator === 'api' && !path.isClassMethod()) {
+                                    metadata.value = extractValueMetadata(valueNode);
+                                }
+
                             }
 
                             if (!visitedProperties.has(name)) {
