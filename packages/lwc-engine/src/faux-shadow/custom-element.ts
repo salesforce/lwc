@@ -3,7 +3,7 @@ import { addCustomElementEventListener, removeCustomElementEventListener } from 
 import { PatchedElement } from './traverse';
 import { hasAttribute, tabIndexGetter } from "../env/element";
 import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
-import { getFirstTabbableElement, getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
+import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
