@@ -11,14 +11,21 @@ describe('Tabbing into custom element with delegates focus', () => {
     it('should not apply focus to input in shadow', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        const activeFromDocument = browser.execute(function () {
-            return document.activeElement;
-        });
 
-        assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-false-negative-tab-index');
-        const activeFromShadow = browser.execute(function () {
-            return document.querySelector('integration-delegates-focus-false-negative-tab-index').shadowRoot.activeElement;
-        });
-        assert.equal(activeFromShadow.getTagName(), 'a');
+        browser.waitUntil(() => {
+            const activeFromDocument = browser.execute(function () {
+                return document.activeElement;
+            });
+
+            return activeFromDocument.getTagName() === 'integration-delegates-focus-false-negative-tab-index'
+        }, 500, 'expect integration-delegates-focus-false-negative-tab-index to be focused');
+
+        browser.waitUntil(() => {
+            const activeFromShadow = browser.execute(function () {
+                return document.querySelector('integration-delegates-focus-false-negative-tab-index').shadowRoot.activeElement;
+            });
+
+            return activeFromShadow.getTagName() === 'a';
+        }, 500, 'expect anchor to be focused');
     });
 });
