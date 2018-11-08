@@ -13,7 +13,7 @@ export default function(
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
 ): FileTransformerResult {
-    const isExplicitImport = options;
+    const { isExplicitImport } = options;
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [[lwcClassTransformPlugin, { isExplicitImport }], ...BABEL_PLUGINS_BASE],
         filename,
