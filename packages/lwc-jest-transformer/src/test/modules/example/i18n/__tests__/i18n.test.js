@@ -13,7 +13,8 @@ afterEach(() => {
 
 describe('example-i18n', () => {
 
-    it('default snapshot', () => {
+    it.only('default snapshot', () => {
+        debugger;
         const element = createElement('example-i18n', { is: I18n });
         document.body.appendChild(element);
         expect(element).toMatchSnapshot();

@@ -28,7 +28,7 @@ export interface ComponentConstructor {
 
 export interface ComponentMeta {
     readonly name: string;
-    readonly template?: Template;
+    readonly tmpl?: Template;
 }
 
 const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
