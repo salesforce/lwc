@@ -362,7 +362,7 @@ describe('metadata', () => {
                         {
                             type: "api",
                             targets: [
-                                { type: "property", name: "publicProp", value: { type: undefined, value: undefined } },
+                                { type: "property", name: "publicProp", value: { type: "unresolved", value: undefined } },
                                 { type: "property", name: "todo" },
                                 { type: "method", name: "publicMethod" }
                             ]
@@ -387,7 +387,7 @@ describe('metadata', () => {
                         {
                             type: "property",
                             name: "publicProp",
-                            value: { type: undefined, value: undefined },
+                            value: { type: "unresolved", value: undefined },
                             loc: {
                                 start: { line: 5, column: 24 },
                                 end: { line: 5, column: 40 }

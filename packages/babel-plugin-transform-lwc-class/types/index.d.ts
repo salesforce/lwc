@@ -11,7 +11,7 @@ export interface ApiDecorator {
     targets: ApiDecoratorTarget[];
 }
 export interface StaticPropertyValue {
-    type: string | undefined;
+    type: string;
     value: any;
 }
 export interface ApiDecoratorTarget {

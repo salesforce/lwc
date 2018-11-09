@@ -299,7 +299,7 @@ describe("compiler metadata", () => {
                 {
                     type: "api",
                     targets: [
-                        { type: "property", name: "publicProp", value: { type: undefined, value: undefined } },
+                        { type: "property", name: "publicProp", value: { type: "unresolved", value: undefined } },
                         { type: "method", name: "publicMethod" }
                     ]
                 },
@@ -331,7 +331,7 @@ describe("compiler metadata", () => {
                 {
                     name: "publicProp",
                     type: "property",
-                    value: { type: undefined, value: undefined },
+                    value: { type: "unresolved", value: undefined },
                     decorator: "api",
                     loc: {
                         start: { column: 4, line: 6 },
@@ -416,7 +416,7 @@ describe("compiler metadata", () => {
                 {
                     type: "api",
                     targets: [
-                        { type: "property", name: "prop1", value: { type: undefined, value: undefined } },
+                        { type: "property", name: "prop1", value: { type: "unresolved", value: undefined } },
                         { type: "property", name: "prop2" },
                         { type: "method", name: "method1" }
                     ]
@@ -432,7 +432,7 @@ describe("compiler metadata", () => {
                 {
                     name: "prop1",
                     type: "property",
-                    value: { type: undefined, value: undefined },
+                    value: { type: "unresolved", value: undefined },
                     decorator: "api",
                     doc: "* prop1",
                     loc: {
