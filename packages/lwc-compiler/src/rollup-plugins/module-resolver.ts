@@ -3,7 +3,9 @@ import { ModuleResolutionErrors, generateCompilerError } from 'lwc-errors';
 
 import { NormalizedCompilerOptions } from "../compiler/options";
 
-const EMPTY_CSS_CONTENT = ``;
+const EMPTY_CSS_CONTENT = '';
+const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
+const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 
 function isRelativeImport(id: string) {
     return id.startsWith(".");
@@ -40,6 +42,15 @@ function readFile(
     }
 }
 
+function isImplicitHTMLImport(importee: string, importer: string) {
+    return (
+        path.extname(importer) === ".js" &&
+        path.extname(importee) === '.html' &&
+        path.dirname(importer) === path.dirname(importee) &&
+        path.basename(importer, '.js') === path.basename(importee, '.html')
+    );
+}
+
 export default function({
     options
 }: {
@@ -64,6 +75,10 @@ export default function({
                 !fileExists(absPath, options) &&
                 !isTemplateCss(importee, importer)
             ) {
+                if (isImplicitHTMLImport(absPath, importer)) {
+                    return IMPLICIT_DEFAULT_HTML_PATH;
+                }
+
                 if (importer) {
                     throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
                         messageArgs: [ importee, importer ],
@@ -79,6 +94,10 @@ export default function({
         },
 
         load(id: string) {
+            if (id === IMPLICIT_DEFAULT_HTML_PATH) {
+                return EMPTY_IMPLICIT_HTML_CONTENT;
+            }
+
             return !fileExists(id, options) && path.extname(id) === ".css"
                 ? EMPTY_CSS_CONTENT
                 : readFile(id, options);

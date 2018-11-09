@@ -56,15 +56,17 @@ module.exports = function postProcess({ types: t }) {
         const id = moduleImports.addNamed(declarationPath, REGISTER_COMPONENT_ID, 'lwc');
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         const statementPath = declarationPath.getStatementParent();
-        const hasIdentifier = t.isIdentifier(declarationPath.node.id);
         let node = declarationPath.node;
 
-        if (hasIdentifier) {
-            statementPath.insertBefore(declarationPath.node);
-            node = node.id;
-        } else {
-            // if it does not have an id, we can treat it as a ClassExpression
-            node.type = "ClassExpression";
+        if (declarationPath.isClassDeclaration()) {
+            const hasIdentifier = t.isIdentifier(node.id);
+            if (hasIdentifier) {
+                statementPath.insertBefore(node);
+                node = node.id;
+            } else {
+                // if it does not have an id, we can treat it as a ClassExpression
+                node.type = "ClassExpression";
+            }
         }
 
         return t.callExpression(
@@ -75,8 +77,14 @@ module.exports = function postProcess({ types: t }) {
         );
     }
 
-    function needsComponentRegistration(node) {
-        return t.isIdentifier(node) || t.isCallExpression(node) || t.isClassDeclaration(node);
+    function needsComponentRegistration(path, state) {
+        return (
+            (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
+            path.isMemberExpression() ||
+            path.isCallExpression() ||
+            path.isClassDeclaration() ||
+            path.isConditionalExpression()
+        );
     }
 
     return {
@@ -85,7 +93,7 @@ module.exports = function postProcess({ types: t }) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {
                 const declaration = path.get("declaration");
-                if (needsComponentRegistration(declaration.node)) {
+                if (needsComponentRegistration(declaration)) {
                     declaration.replaceWith(
                         createRegisterComponent(declaration, state)
                     );
