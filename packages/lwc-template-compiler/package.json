@@ -1,6 +1,6 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.31.2",
+  "version": "0.31.6-alpha1",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
@@ -28,8 +28,8 @@
     "babylon": "^6.17.0",
     "camelcase": "~5.0.0",
     "he": "^1.1.1",
-    "lwc-errors": "0.31.2",
-    "lwc-style-compiler": "0.31.2",
+    "lwc-errors": "0.31.6-alpha1",
+    "lwc-style-compiler": "0.31.6-alpha1",
     "parse5-with-errors": "^4.0.1"
   }
 }
