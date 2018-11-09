@@ -5,7 +5,7 @@ import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdo
 import { setPrototypeOf, create, isUndefined, isTrue } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "./base-bridge-element";
-import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement, PatchedCustomElement, makeElementAPortal, setCSSToken } from '../faux-shadow/faux';
+import { PatchedElement, PatchedSlotElement, PatchedNode, PatchedIframeElement, PatchedCustomElement, markElementAsPortal, setCSSToken } from '../faux-shadow/faux';
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
@@ -72,7 +72,7 @@ export function patchElementProto(elm: HTMLElement, options: { sel: string, isPo
     }
     setPrototypeOf(elm, proto);
     if (isTrue(isPortal)) {
-        makeElementAPortal(elm);
+        markElementAsPortal(elm);
     }
     setCSSToken(elm, shadowAttribute);
 }

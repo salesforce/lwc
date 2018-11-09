@@ -24,7 +24,6 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalChildNodesDescriptor = getPropertyDescriptor(node, 'childNodes')!;
     const originalTextContentDescriptor = getPropertyDescriptor(node, 'textContent')!;
     const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
     const {
@@ -34,17 +33,6 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         replaceChild,
      } = node;
     return {
-        childNodes: {
-            get(this: Node) {
-                assert.logWarning(
-                    `Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`,
-                    (this instanceof Element) ? this as Element : (getShadowRootHost(this as ShadowRoot) || undefined)
-                );
-                return originalChildNodesDescriptor!.get!.call(this);
-            },
-            enumerable: true,
-            configurable: true,
-        },
         appendChild: {
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {

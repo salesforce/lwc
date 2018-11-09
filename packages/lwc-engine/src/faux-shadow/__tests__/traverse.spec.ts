@@ -330,7 +330,7 @@ describe('#shadowRoot querySelector', () => {
     it('should adopt elements not defined in template as part of the shadow', () => {
         const myComponentTmpl = compileTemplate(`
             <template>
-                <ul></ul>
+                <ul lwc:dom="manual"></ul>
             </template>
         `);
         class MyComponent extends LightningElement {
@@ -512,7 +512,7 @@ describe('proxy', () => {
     it('should allow setting innerHTML manually', () => {
         const myComponentTmpl = compileTemplate(`
             <template>
-                <span></span>
+                <span lwc:dom="manual"></span>
             </template>
         `);
         class MyComponent extends LightningElement {
@@ -1220,7 +1220,7 @@ describe('Node.getRootNode on patched elements', () => {
         });
 
         it('should return correct shadow on non patched elements', () => {
-            const cmpHtml = compileTemplate(`<template><div class="container"></div></template>`);
+            const cmpHtml = compileTemplate(`<template><div class="container" lwc:dom="manual"></div></template>`);
             let injectedElement;
             class InjectContanerComponent extends LightningElement {
                 renderedCallback() {
