@@ -1,6 +1,6 @@
 {
   "name": "benchmark",
-  "version": "0.31.4",
+  "version": "0.31.6",
   "private": true,
   "scripts": {
     "start": "best",
@@ -11,9 +11,9 @@
     "@best/runner-remote": "0.6.4",
     "@best/store-aws": "0.6.4",
     "best-cli": "0.6.4",
-    "rollup-plugin-lwc-compiler": "0.31.4"
+    "rollup-plugin-lwc-compiler": "0.31.6"
   },
   "dependencies": {
-    "lwc-engine": "0.31.4"
+    "lwc-engine": "0.31.6"
   }
 }

@@ -1,5 +1,25 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.31.3...v) (2018-11-07)
+# [](https://github.com/salesforce/lwc/compare/v0.31.4...v) (2018-11-09)
+
+
+### Bug Fixes
+
+* **engine:** fix for delegatesFocus with tabindex=0 ([#812](https://github.com/salesforce/lwc/issues/812)) ([81f0dbd](https://github.com/salesforce/lwc/commit/81f0dbd))
+* **engine:** fix more ie11 flappers ([#814](https://github.com/salesforce/lwc/issues/814)) ([60f17bc](https://github.com/salesforce/lwc/commit/60f17bc))
+* **engine:** loosening restrictions on focus elements ([#790](https://github.com/salesforce/lwc/issues/790)) ([d520c72](https://github.com/salesforce/lwc/commit/d520c72))
+* **engine:** marking dynamic nodes as dynamic ([#810](https://github.com/salesforce/lwc/issues/810)) ([958201c](https://github.com/salesforce/lwc/commit/958201c))
+* **engine:** remove log when accessing childNodes ([#817](https://github.com/salesforce/lwc/issues/817)) ([9a29102](https://github.com/salesforce/lwc/commit/9a29102))
+* **engine:** removing aggressive assert ([#818](https://github.com/salesforce/lwc/issues/818)) ([fdbc119](https://github.com/salesforce/lwc/commit/fdbc119))
+
+
+### Features
+
+* **compiler:** lwc dom mode directive ([#793](https://github.com/salesforce/lwc/issues/793)) ([e6b27c4](https://github.com/salesforce/lwc/commit/e6b27c4))
+
+
+
+<a name="0.31.4"></a>
+## [0.31.4](https://github.com/salesforce/lwc/compare/v0.31.3...v0.31.4) (2018-11-07)
 
 
 ### Bug Fixes
