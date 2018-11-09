@@ -47,7 +47,7 @@ export interface DecoratorMeta {
 
 const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
 
-export function registerDecorators(Ctor: ComponentConstructor, meta: RegisterDecoratorMeta) {
+export function registerDecorators(Ctor: ComponentConstructor, meta: RegisterDecoratorMeta): ComponentConstructor {
     const decoratorMap: DecoratorMap = create(null);
     const props = getPublicPropertiesHash(Ctor, meta.publicProps);
     const methods = getPublicMethodsHash(Ctor, meta.publicMethods);
@@ -78,6 +78,7 @@ export function registerDecorators(Ctor: ComponentConstructor, meta: RegisterDec
         }
     }
     decorate(Ctor, decoratorMap);
+    return Ctor;
 }
 
 export function getDecoratorsRegisteredMeta(Ctor: ComponentConstructor): DecoratorMeta | undefined {
