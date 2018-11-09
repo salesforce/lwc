@@ -53,12 +53,7 @@ function readFile(
     }
 }
 
-
-export default function({
-    options
-}: {
-    options: NormalizedCompilerOptions;
-}) {
+export default function({ options }: { options: NormalizedCompilerOptions }) {
     return {
         name: "lwc-module-resolver",
 
