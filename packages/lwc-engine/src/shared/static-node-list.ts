@@ -3,7 +3,7 @@ import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
 
-export class StaticNodeList<T extends Node> extends NodeList {
+class StaticNodeList<T extends Node> extends NodeList {
     [key: number]: T;
 
     item(index: number): T {

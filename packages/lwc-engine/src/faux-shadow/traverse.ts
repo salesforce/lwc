@@ -217,7 +217,7 @@ export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: 
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
-export function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {
+function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return [];
@@ -232,7 +232,7 @@ export function lightDomQuerySelectorAll(elm: Element, selectors: string): Eleme
     }
 }
 
-export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
+function lightDomQuerySelector(elm: Element, selector: string): Element | null {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         // the it is a root, and those can't have a lightdom
