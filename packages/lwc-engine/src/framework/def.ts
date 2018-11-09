@@ -101,18 +101,20 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
 
     const { name, template } = meta;
 
+    let decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
+
     // TODO: eventually, the compiler should do this call directly, but we will also
     // have to fix all our tests, which are using this declaration manually.
-    {
+    if (isUndefined(decoratorsMeta)) {
         registerDecorators(Ctor, {
             publicMethods: getOwnValue(Ctor, 'publicMethods'),
             publicProps: getOwnValue(Ctor, 'publicProps'),
             track: getOwnValue(Ctor, 'track'),
             wire: getOwnValue(Ctor, 'wire'),
         });
+        decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
     }
 
-    const decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
     let { props, methods, wire, track } = decoratorsMeta || EmptyObject;
     const proto = Ctor.prototype;
 

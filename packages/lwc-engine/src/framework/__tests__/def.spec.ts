@@ -1,5 +1,6 @@
 import { LightningElement, createElement } from '../main';
 import { getComponentDef, getComponentConstructor } from '../def';
+import { registerDecorators } from '../decorators/register';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
@@ -40,6 +41,31 @@ describe('def', () => {
                 foo: {},
                 xBar: {},
             };
+            const { props } = getComponentDef(MyComponent);
+            expect(props.foo).toEqual({
+                type: 'any',
+                config: 1,
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                type: 'any',
+                config: 0,
+                attr: 'x-bar',
+            });
+        });
+
+        it('should work with registerDecorators for publicProps', () => {
+            function foo() {}
+            class MyComponent extends LightningElement  {}
+            Object.defineProperties(MyComponent.prototype, {
+                foo: { get: foo, configurable: true }
+            });
+            registerDecorators(MyComponent, {
+                publicProps: {
+                    foo: {},
+                    xBar: {},
+                }
+            });
             const { props } = getComponentDef(MyComponent);
             expect(props.foo).toEqual({
                 type: 'any',
