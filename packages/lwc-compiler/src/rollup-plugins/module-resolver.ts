@@ -3,19 +3,30 @@ import { ModuleResolutionErrors, generateCompilerError } from 'lwc-errors';
 
 import { NormalizedCompilerOptions } from "../compiler/options";
 
-const EMPTY_CSS_CONTENT = '';
+const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
+const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 
 function isRelativeImport(id: string) {
     return id.startsWith(".");
 }
 
-function isTemplateCss(id: string, importee: string) {
+function isImplicitCssImport(id: string, importee: string) {
     return (
         path.extname(id) === ".css" &&
         path.extname(importee) === ".html" &&
         path.basename(id, ".css") === path.basename(importee, ".html")
+    );
+}
+
+function isImplicitHTMLImport(importee: string, importer: string) {
+    return (
+        importer &&
+        path.extname(importer) === ".js" &&
+        path.extname(importee) === '.html' &&
+        path.dirname(importer) === path.dirname(importee) &&
+        path.basename(importer, '.js') === path.basename(importee, '.html')
     );
 }
 
@@ -42,15 +53,6 @@ function readFile(
     }
 }
 
-function isImplicitHTMLImport(importee: string, importer: string) {
-    return (
-        importer &&
-        path.extname(importer) === ".js" &&
-        path.extname(importee) === '.html' &&
-        path.dirname(importer) === path.dirname(importee) &&
-        path.basename(importer, '.js') === path.basename(importee, '.html')
-    );
-}
 
 export default function({
     options
@@ -72,10 +74,11 @@ export default function({
                 absPath += ".js";
             }
 
-            if (
-                !fileExists(absPath, options) &&
-                !isTemplateCss(importee, importer)
-            ) {
+            if (!fileExists(absPath, options)) {
+                if (isImplicitCssImport(importee, importer)) {
+                    return IMPLICIT_DEFAULT_CSS_PATH;
+                }
+
                 if (isImplicitHTMLImport(absPath, importer)) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
@@ -95,12 +98,16 @@ export default function({
         },
 
         load(id: string) {
+            if (id === IMPLICIT_DEFAULT_CSS_PATH) {
+                return EMPTY_IMPLICIT_CSS_CONTENT;
+            }
+
             if (id === IMPLICIT_DEFAULT_HTML_PATH) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
-            return !fileExists(id, options) && path.extname(id) === ".css"
-                ? EMPTY_CSS_CONTENT
+            return path.extname(id) === ".css" && !fileExists(id, options)
+                ? EMPTY_IMPLICIT_CSS_CONTENT
                 : readFile(id, options);
         }
     };

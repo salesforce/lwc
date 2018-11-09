@@ -24,24 +24,6 @@ module.exports = function ({ types: t }) {
             )).map(({ path }) => (
                 path.get('local')
             ));
-        },
-        ClassProperty(path, state) {
-            if (isObservedAttributesStaticProperty(path)) {
-                const observedAttributeNames = path.node.value.elements.map((elem) => {
-                    const { value } = elem;
-                    const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
-                    return `"${propName}"`;
-                });
-                throw generateError(path, {
-                    errorInfo: LWCClassErrors.INVALID_STATIC_OBSERVEDATTRIBUTES,
-                    messageArgs: [observedAttributeNames.join(', ')]
-                });
-            }
         }
-    };
-
-    function isObservedAttributesStaticProperty(classPropertyPath) {
-        const { static: isStaticProperty, key: { name: propertyName } } = classPropertyPath.node;
-        return (isStaticProperty && propertyName === CLASS_PROPERTY_OBSERVED_ATTRIBUTES);
     }
 };

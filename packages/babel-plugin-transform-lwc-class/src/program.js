@@ -1,12 +1,11 @@
 const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
 const { invalidDecorators } = require('./decorators');
-const { validate, transform: postProcess } = require('./post-process');
+const { transform: postProcess } = require('./post-process');
 
 function exit(api) {
     return {
         Program: {
             exit(path, state) {
-                // validate(path, state);
 
                 const visitors = api.traverse.visitors.merge([
                     postProcess(api),

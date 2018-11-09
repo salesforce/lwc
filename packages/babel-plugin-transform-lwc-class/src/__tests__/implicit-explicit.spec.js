@@ -53,16 +53,6 @@ describe('Transforms', () => {
 });
 
 describe('Implicit mode', () => {
-    // Skipping this for now until the whole implicit is done
-    // pluginTestImplicit('fails with manually imported html', `
-    //     import { LightningElement } from 'lwc';
-    //     import foo from './bar.html';
-    //     export default class Test extends LightningElement { x = foo }
-    // `, {
-    //     error: {
-    //         message: 'Invalid html import'
-    //     }
-    // });
 
     pluginTestImplicit('noop - implicit export function', `
         export default function x() {}

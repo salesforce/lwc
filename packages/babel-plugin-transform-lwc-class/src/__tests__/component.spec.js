@@ -39,9 +39,9 @@ describe('Element import', () => {
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
                 import { LightningElement as Component } from "lwc";
-                
+
                 class Test extends Component {}
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -86,24 +86,6 @@ describe('Element import', () => {
     });
 });
 
-describe('observedAttributes array', () => {
-    pluginTest('throws if user defined observedAttributes', `
-        import { LightningElement as Component } from 'lwc';
-
-        export default class Test extends Component {
-            static observedAttributes = ['foo', 'title', 'tabindex'];
-        }
-    `, {
-        error: {
-            message: `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
-            loc: {
-                line: 1,
-                column: 7,
-            }
-        }
-    });
-})
-
 describe('render method', () => {
     pluginTest('inject render method', `
         import { LightningElement } from "lwc";
@@ -114,9 +96,9 @@ describe('render method', () => {
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
                 import { LightningElement } from "lwc";
-                
+
                 class Test extends LightningElement {}
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -133,9 +115,9 @@ describe('render method', () => {
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
                 import { Element } from "engine";
-                
+
                 class Test extends Element {}
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -154,11 +136,11 @@ describe('render method', () => {
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
                 import { LightningElement } from "lwc";
-                
+
                 class Test extends LightningElement {
                   render() {}
                 }
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -178,11 +160,11 @@ describe('render method', () => {
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
                 import { LightningElement } from "lwc";
-                
+
                 class Test1 extends LightningElement {}
-                
+
                 class Test2 extends LightningElement {}
-                
+
                 export default _registerComponent(Test2, {
                   tmpl: _tmpl
                 });
