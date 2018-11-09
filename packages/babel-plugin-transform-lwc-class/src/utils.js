@@ -195,7 +195,7 @@ function markAsLWCNode(node) {
 function extractValueMetadata(valueNode) {
 
     let valueMetadata = {
-        type: undefined,
+        type: 'unresolved',
         value: undefined,
     };
 

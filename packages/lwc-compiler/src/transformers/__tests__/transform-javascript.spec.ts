@@ -60,7 +60,7 @@ it('outputs proper metadata', async () => {
             type: 'api',
             targets: [
                 { type: 'property', name: 'todo' },
-                { type: 'property', name: 'index', value: { type: undefined, value: undefined } },
+                { type: 'property', name: 'index', value: { type: "unresolved", value: undefined } },
             ],
         },
     ]);

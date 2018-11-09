@@ -652,7 +652,7 @@ describe('Metadata', () => {
             },
             name: "nodefault",
             type: "property",
-            value: { type: undefined, value: undefined }
+            value: { type: "unresolved", value: undefined }
         },
     );
 
@@ -667,7 +667,7 @@ describe('Metadata', () => {
             },
             name: "staticUndefined",
             type: "property",
-            value: { type: undefined, value: undefined }
+            value: { type: "unresolved", value: undefined }
         },
     );
 
@@ -743,7 +743,7 @@ describe('Metadata', () => {
                     { type: "string", value: "stringval" },
                     { type: "number", value: 0 },
                     { type: "null", value: null },
-                    { type: undefined, value: undefined },
+                    { type: "unresolved", value: undefined },
                     { type: "object", value: {} },
                     { type: "array", value: [] },
                 ]
