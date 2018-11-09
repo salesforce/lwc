@@ -34,18 +34,19 @@ import {
 } from "./utils";
 import {
     ComponentConstructor, ErrorCallback, ComponentMeta,
-    getComponentRegisteredMeta, registerComponent,
+    getComponentRegisteredMeta,
  } from './component';
 import { Template } from "./template";
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
+    template?: Template;
     ctor: ComponentConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
-    render?: () => Template;
+    render: () => Template;
     errorCallback?: ErrorCallback;
 }
 
@@ -98,7 +99,7 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
     }
 
-    const name: string = meta.name;
+    const { name, template } = meta;
 
     // TODO: eventually, the compiler should do this call directly, but we will also
     // have to fix all our tests, which are using this declaration manually.
@@ -147,6 +148,7 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
         props,
         methods,
         bridge,
+        template,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -176,14 +178,13 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     }
     let meta = getComponentRegisteredMeta(Ctor);
     if (isUndefined(meta)) {
-        // @ts-ignore this is a temporary manual registration until
-        // the compiler is updated to call registerComponent
-        // Temporary workaround:
-        // meta must be an own property, otherwise it is inherited.
-        const { name } = Ctor;
-        const template = getOwnValue(Ctor, 'template');
-        meta = { template, name };
-        registerComponent(Ctor, meta);
+        // TODO: remove this workaround:
+        // this is temporary until
+        // all tests are updated to call registerComponent:
+        meta = {
+            template: undefined,
+            name: Ctor.name,
+        };
     }
     def = createComponentDef(Ctor, meta);
     CtorToDefMap.set(Ctor, def);

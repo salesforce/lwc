@@ -2,11 +2,9 @@ import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
 import assertLogger from '../../shared/assert';
+import { registerTemplate } from '../template';
 
-jest.mock('../secure-template', () => ({
-    isTemplateRegistered: () => true,
-    registerTemplate: (t) => t
-}));
+const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -138,17 +136,18 @@ describe('html-element', () => {
                 }
             }
             Child.publicMethods = ['removeTitle'];
-
+            function html($api) {
+                return [$api.c('x-child', Child, {
+                    attrs: {
+                        'x:title': 'foo',
+                    }
+                })];
+            }
+            registerTemplate(html);
             // TODO: The template compiler doesn't allow unknown attributes. This test should be revisited
             class Parent extends LightningElement {
                 render() {
-                    return ($api) => {
-                        return [$api.c('x-child', Child, {
-                            attrs: {
-                                'x:title': 'foo',
-                            }
-                        })]
-                    }
+                    return html;
                 }
             }
 
@@ -885,7 +884,7 @@ describe('html-element', () => {
                 }
                 render() {
                     callCount += 1;
-                    return () => [];
+                    return emptyTemplate;
                 }
             }
 
@@ -924,6 +923,7 @@ describe('html-element', () => {
             class MyComponent extends LightningElement {
                 render() {
                     this.tabIndex = 2;
+                    return emptyTemplate;
                 }
             }
 
@@ -993,7 +993,7 @@ describe('html-element', () => {
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
-                    return () => [];
+                    return emptyTemplate;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -1006,7 +1006,7 @@ describe('html-element', () => {
             let called = 0;
             class MyComponent extends LightningElement {
                 render() {
-                    return () => [];
+                    return emptyTemplate;
                 }
                 connectedCallback() {
                     called++;
@@ -1023,7 +1023,7 @@ describe('html-element', () => {
             class MyComponent extends LightningElement {
                 render() {
                     ops.push('render');
-                    return () => [];
+                    return emptyTemplate;
                 }
                 connectedCallback() {
                     ops.push('connected');
@@ -1037,9 +1037,6 @@ describe('html-element', () => {
         it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function() {
             let called = 0;
             class MyComponent extends LightningElement {
-                render() {
-                    return () => [];
-                }
                 disconnectedCallback() {
                     called++;
                 }
@@ -1057,7 +1054,7 @@ describe('html-element', () => {
                 render() {
                     rendered++;
                     this.x; // reactive
-                    return () => [];
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = { x: 1 };
@@ -1074,7 +1071,7 @@ describe('html-element', () => {
                 render() {
                     rendered++;
                     this.x; // reactive
-                    return () => [];
+                    return emptyTemplate;
                 }
             }
             MyComponent.publicProps = { x: 1 };
@@ -1095,7 +1092,7 @@ describe('html-element', () => {
             class MyComponent extends LightningElement {
                 render() {
                     rendered++;
-                    return () => [];
+                    return emptyTemplate;
                 }
                 connectedCallback() {
                     connected++;
@@ -2252,7 +2249,12 @@ describe('html-element', () => {
                     }
                 }
                 SecureBase.__circular__ = true;
-                class Foo extends SecureBase {}
+                const html = compileTemplate(`<template></template>`);
+                class Foo extends SecureBase {
+                    render() {
+                        return html;
+                    }
+                }
                 const elm = createElement('x-parent', { is: Foo });
                 document.body.appendChild(elm);
             });

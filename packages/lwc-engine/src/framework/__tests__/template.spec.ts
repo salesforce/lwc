@@ -1,5 +1,6 @@
-import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
+import { compileTemplate } from 'test-utils';
+import { registerTemplate } from '../template';
 
 function createCustomComponent(html) {
     class MyComponent extends LightningElement {
@@ -11,11 +12,6 @@ function createCustomComponent(html) {
     document.body.appendChild(elm);
     return elm;
 }
-
-jest.mock('../secure-template', () => ({
-    isTemplateRegistered: () => true,
-    registerTemplate: (t) => t
-}));
 
 describe('template', () => {
     describe('integration', () => {
@@ -168,9 +164,9 @@ describe('template', () => {
                 render() {
                     counter++;
                     if (counter === 1) {
-                        return html1;
+                        return registerTemplate(html1);
                     }
-                    return html2;
+                    return registerTemplate(html2);
                 }
             }
             MyComponent2.publicProps = { x: true };
@@ -185,9 +181,7 @@ describe('template', () => {
         });
 
         it('should support array of vnode', () => {
-            function html($api) {
-                return [$api.h('span', { key: 0 }, [$api.t('some text')]];
-            }
+            const html = compileTemplate(`<template><span>some text</span></template>`);
             class MyComponent3 extends LightningElement {
                 getTextContent() {
                     return this.template.querySelector('span').textContent;
@@ -196,7 +190,7 @@ describe('template', () => {
                     return html;
                 }
             }
-            MyComponent3.publicMethods = ['getTextContent']
+            MyComponent3.publicMethods = ['getTextContent'];
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
             expect(elm.getTextContent()).toBe('some text');
@@ -238,7 +232,7 @@ describe('template', () => {
             expect(elm.x).toEqual(x);
         });
 
-        it('should not create a proxy for methods used from tempalte', () => {
+        it('should not create a proxy for methods used from template', () => {
             let x, y;
             function html(api, cmp) {
                 y = cmp.x;
@@ -251,7 +245,7 @@ describe('template', () => {
                 }
                 x() {}
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });

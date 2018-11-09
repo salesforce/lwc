@@ -1,16 +1,12 @@
-import { createElement, LightningElement } from "../main";
 import * as target from '../services';
+import { createElement, LightningElement } from "../main";
+import { compileTemplate } from 'test-utils';
 
 function resetServices() {
     Object.keys(target.Services).forEach((name) => {
         delete target.Services[name];
     });
 }
-
-jest.mock('../secure-template', () => ({
-    isTemplateRegistered: () => true,
-    registerTemplate: (t) => t
-}));
 
 describe('services', () => {
 
@@ -93,9 +89,7 @@ describe('services', () => {
                     lifecycleLog.push('service disconnected callback');
                 }
             });
-            function html() {
-                return [];
-            }
+            const html = compileTemplate(`<template></template>`);
             class MyComponent extends LightningElement {
                 connectedCallback() {
                     lifecycleLog.push('component connected callback');

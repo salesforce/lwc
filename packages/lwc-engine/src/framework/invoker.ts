@@ -5,7 +5,7 @@ import {
 } from "./context";
 
 import { evaluateTemplate } from "./template";
-import { isUndefined, isFunction } from "../shared/language";
+import { isUndefined, isFunction, toString } from "../shared/language";
 import { getErrorComponentStack, VM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
@@ -76,7 +76,6 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
     const { def: { render }, callHook } = vm;
-    if (isUndefined(render)) { return []; }
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -93,9 +92,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
 
     try {
         const html = callHook(component, render);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(html), `The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned ${html}.`);
-        }
         result = evaluateTemplate(vm, html);
     } catch (e) {
         error = Object(e);

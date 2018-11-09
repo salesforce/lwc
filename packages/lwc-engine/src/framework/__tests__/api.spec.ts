@@ -1,7 +1,7 @@
 import * as api from '../api';
 import { createElement, LightningElement } from '../main';
-
-jest.mock('../secure-template', () => ({ isTemplateRegistered: () => true }));
+import { registerTemplate } from '../template';
+import { compileTemplate } from 'test-utils';
 
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
@@ -91,12 +91,13 @@ describe('api', () => {
 
     describe('#i()', () => {
         it('should support various types', () => {
+            const html = compileTemplate(`<template></template>`);
             class VmRendering extends LightningElement {
                 render() {
                     expect(api.i([], () => null)).toEqual([]);
                     expect(api.i(undefined as any, () => null)).toEqual([]);
                     expect(api.i(null as any, () => null)).toEqual([]);
-                    return () => [];
+                    return html;
                 }
             }
             const elm = createElement('x-vm-aux', { is: VmRendering });
@@ -154,10 +155,11 @@ describe('api', () => {
         });
 
         it('should log warning when invalid iteration value', () => {
+            const html = compileTemplate(`<template></template>`);
             class VmRendering extends LightningElement {
                 render() {
                     api.i(undefined as any, () => null);
-                    return () => [];
+                    return html;
                 }
             }
             const elm = createElement('x-vm-aux', { is: VmRendering });
@@ -174,7 +176,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -191,7 +193,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -211,7 +213,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -227,7 +229,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -246,7 +248,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -264,7 +266,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -280,7 +282,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -296,7 +298,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -314,7 +316,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -330,7 +332,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -346,7 +348,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -362,7 +364,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -378,7 +380,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -394,7 +396,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -410,7 +412,7 @@ describe('api', () => {
             }
             class Foo extends LightningElement {
                 render() {
-                    return html;
+                    return registerTemplate(html);
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
