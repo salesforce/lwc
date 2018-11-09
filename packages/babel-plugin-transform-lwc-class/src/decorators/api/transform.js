@@ -93,7 +93,7 @@ function transformPublicProps(t, klassBody, apiDecorators) {
         }
 
         if (type === 'property') {
-            meta.value = extractValueMetadata(parentValue)
+            meta.value = extractValueMetadata(parentValue);
         }
 
         return meta;

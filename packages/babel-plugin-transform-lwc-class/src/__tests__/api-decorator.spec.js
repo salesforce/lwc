@@ -656,7 +656,7 @@ describe('Metadata', () => {
         `
             import { LightningElement, api } from 'lwc';
             export default class Foo extends LightningElement {
-                _privateTodo
+                _privateTodo;
                 get todo () { return this._privateTodo; }
                 @api set todo (val) { return this._privateTodo = val; }
             }
