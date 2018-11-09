@@ -15,18 +15,9 @@ export function createFieldName(key: string): symbol {
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {
     // TODO: improve this to use  or a WeakMap
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the internal fields
-        defineProperty(o, fieldName, {
-            value,
-            enumerable: true,
-            configurable: false,
-            writable: false,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        o[fieldName] = value;
-    }
+    defineProperty(o, fieldName, {
+        value,
+    });
 }
 
 export function getInternalField(o: object, fieldName: symbol): any {

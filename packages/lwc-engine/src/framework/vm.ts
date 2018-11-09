@@ -525,8 +525,6 @@ export function setNodeOwnerKey(node: Node, value: number) {
         defineProperty(node, OwnerKey, {
             value,
             enumerable: true,
-            configurable: false,
-            writable: false,
         });
     } else {
         // in prod, for better perf, we just let it roll
@@ -544,8 +542,6 @@ export function setNodeKey(node: Node, value: number) {
         defineProperty(node, OwnKey, {
             value,
             enumerable: true,
-            configurable: false,
-            writable: false,
         });
     } else {
         // in prod, for better perf, we just let it roll
