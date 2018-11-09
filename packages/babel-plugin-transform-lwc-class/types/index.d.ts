@@ -10,10 +10,14 @@ export interface ApiDecorator {
     type: 'api';
     targets: ApiDecoratorTarget[];
 }
-
+export interface StaticPropertyValue {
+    type: string | undefined;
+    value: any;
+}
 export interface ApiDecoratorTarget {
     name: string;
     type: DecoratorTargetType;
+    value?: StaticPropertyValue;
 }
 
 export interface TrackDecorator {
@@ -41,6 +45,7 @@ export interface WireDecoratorTarget {
 export interface ClassMember {
     name: string;
     type: DecoratorTargetType;
+    value?: StaticPropertyValue;
     decorator?: string;
     doc?: string;
     loc?: Location;
