@@ -16,9 +16,7 @@ module.exports = function postProcess({ types: t }) {
     function collectDecoratedProperties(body) {
         const metaPropertyList = [];
         for (const classProps of body.get("body")) {
-            if (classProps.isClassProperty({
-                    static: true
-                })) {
+            if (classProps.isClassProperty({ static: true })) {
                 const propertyNode = classProps.node;
                 if (isLWCNode(propertyNode)) {
                     metaPropertyList.push(
@@ -80,7 +78,7 @@ module.exports = function postProcess({ types: t }) {
     function needsComponentRegistration(path, state) {
         return (
             (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
-            path.isMemberExpression() ||
+            // path.isMemberExpression() || // this will probably yield more false positives than anything else
             path.isCallExpression() ||
             path.isClassDeclaration() ||
             path.isConditionalExpression()

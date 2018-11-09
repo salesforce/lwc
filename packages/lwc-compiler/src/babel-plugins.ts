@@ -33,7 +33,6 @@
 *     modules: false,
 * };
 */
-import transformPublicFields from '@babel/plugin-proposal-class-properties';
 import transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
 
 // Base babel configuration
@@ -51,6 +50,5 @@ export const BABEL_CONFIG_BASE = {
 
 // List of plugins applied to all the javascript modules
 export const BABEL_PLUGINS_BASE = [
-    [transformPublicFields, { loose: true }],
     [transformObjectRestSpread, { useBuiltIns: true }],
 ];
