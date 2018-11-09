@@ -6,7 +6,7 @@ function exit(api) {
     return {
         Program: {
             exit(path, state) {
-                validate(path, state);
+                // validate(path, state);
 
                 const visitors = api.traverse.visitors.merge([
                     postProcess(api),
