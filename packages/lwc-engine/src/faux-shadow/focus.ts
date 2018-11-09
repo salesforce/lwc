@@ -112,7 +112,6 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
     const inner = querySelectorAll.call(host, TabbableElementsQuery);
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(inner.length > 0 || (tabIndexGetter.call(host) === 0 && isDelegatingFocus(host)), `When focusin event is received, there has to be a focusable target at least.`);
         assert.invariant(tabIndexGetter.call(host) === -1 || isDelegatingFocus(host), `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
     const firstChild = inner[0];
