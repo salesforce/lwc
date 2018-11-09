@@ -99,7 +99,7 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta): Co
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
     }
 
-    const { name, tmpl: template } = meta;
+    const { name, template } = meta;
 
     // TODO: eventually, the compiler should do this call directly, but we will also
     // have to fix all our tests, which are using this declaration manually.
@@ -182,7 +182,7 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
         // this is temporary until
         // all tests are updated to call registerComponent:
         meta = {
-            tmpl: undefined,
+            template: undefined,
             name: Ctor.name,
         };
     }

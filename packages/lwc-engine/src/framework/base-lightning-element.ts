@@ -291,12 +291,7 @@ BaseLightningElement.prototype = {
     render(): Template {
         const vm = getComponentVM(this);
         const { template } = vm.def;
-        // TODO: remove this block once we have refactored all tests to use
-        // registerComponent()
-        if (isUndefined(template)) {
-            return defaultEmptyTemplate;
-        }
-        return template;
+        return isUndefined(template) ? defaultEmptyTemplate : template;
     },
     toString(): string {
         const vm = getComponentVM(this);

@@ -2,12 +2,8 @@ import { Template } from "./template";
 
 const signedTemplateSet: Set<Template> = new Set();
 
-// TODO: remove this function.
-// defaultEmptyTemplate is an artifact to keep the tests working without
-// refactoring them to call registerComponent().
 export function defaultEmptyTemplate() {
-    /** workaround for testing */
-    return [] || [];
+    return [];
 }
 signedTemplateSet.add(defaultEmptyTemplate);
 

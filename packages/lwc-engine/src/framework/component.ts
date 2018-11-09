@@ -28,7 +28,7 @@ export interface ComponentConstructor {
 
 export interface ComponentMeta {
     readonly name: string;
-    readonly tmpl?: Template;
+    readonly template?: Template;
 }
 
 const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
@@ -39,8 +39,8 @@ export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
 
 // chaining this method as a way to wrap existing
 // assignment of component constructor easily, without too much transformation
-export function registerComponent(Ctor: ComponentConstructor, meta: ComponentMeta): ComponentConstructor {
-    signedComponentToMetaMap.set(Ctor, meta);
+export function registerComponent(Ctor: ComponentConstructor, { name, tmpl: template }): ComponentConstructor {
+    signedComponentToMetaMap.set(Ctor, { name, template });
     return Ctor;
 }
 
