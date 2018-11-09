@@ -194,7 +194,6 @@ function markAsLWCNode(node) {
 
 function extractValueMetadata(valueNode) {
 
-    // TODO: should we flag anything we can't resolve , such as expressions, as type: 'unresolved' instead of undefined?
     let valueMetadata = {
         type: undefined,
         value: undefined,
@@ -245,7 +244,7 @@ function extractArrayValueMeta(valueNode) {
         value: [],
     }
 
-    if (!valueNode || !Array.isArray(valueNode.elements)) {
+    if (!valueNode) {
         return arrayValueMeta;
     }
 
@@ -261,14 +260,12 @@ function extractObjectValueMeta(valueNode) {
         value: {},
     }
 
-    if (!valueNode || !Array.isArray(valueNode.properties)) {
+    if (!valueNode) {
         return objectValueMeta;
     }
 
     const values = {};
 
-    // TODO: do we want this as an object with properties mapped to the value objects
-    // or as an array of value objects?
     valueNode.properties.forEach(({key, value}) => {
         values[key.name] = extractValueMetadata(value);
     });
