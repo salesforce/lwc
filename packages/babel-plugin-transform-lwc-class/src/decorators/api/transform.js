@@ -102,6 +102,7 @@ function transfromPublicMethods(t, klassBody, apiDecorators) {
             PUBLIC_METHODS,
             t.valueToNode(publicMethodsConfig)
         );
+        markAsLWCNode(classProp);
         klassBody.pushContainer('body', classProp);
     }
 

@@ -185,11 +185,11 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
 }
 
 function isLWCNode(node) {
-    return node._lwc = true;
+    return node._lwcNode === true;
 }
 
 function markAsLWCNode(node) {
-    node._lwc = true;
+    node._lwcNode = true;
 }
 
 module.exports = {

@@ -12,13 +12,13 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this.test = 1;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   publicProps: {
                     test: {
@@ -26,7 +26,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -49,7 +49,7 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Outer {
                   constructor() {
                     this.outer = void 0;
@@ -69,7 +69,7 @@ describe('Transform property', () => {
                     );
                   }
                 }
-                
+
                 _registerDecorators(Outer, {
                   publicProps: {
                     outer: {
@@ -77,7 +77,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Outer, {
                   tmpl: _tmpl
                 });
@@ -98,13 +98,13 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   get publicGetter() {
                     return 1;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   publicProps: {
                     publicGetter: {
@@ -112,7 +112,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -159,30 +159,30 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this._a = true;
                     this._b = false;
                   }
-                
+
                   get a() {
                     return this._a;
                   }
-                
+
                   set a(value) {
                     this._a = value;
                   }
-                
+
                   get b() {
                     return this._b;
                   }
-                
+
                   set b(value) {
                     this._b = value;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   publicProps: {
                     a: {
@@ -193,7 +193,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -221,32 +221,33 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Text {
                   constructor() {
                     this.publicProp = void 0;
                     this.privateProp = void 0;
                   }
-                
+
                   get aloneGet() {}
-                
+
                   get myget() {}
-                
+
                   set myget(x) {
                     return 1;
                   }
-                
+
                   m1() {}
-                
+
                   m2() {}
-                
+
                   static get ctorGet() {
                     return 1;
                   }
                 }
-                
+
+                Text.ctor = "ctor";
+
                 _registerDecorators(Text, {
-                  ctor: "ctor",
                   publicProps: {
                     publicProp: {
                       config: 0
@@ -260,7 +261,7 @@ describe('Transform property', () => {
                   },
                   publicMethods: ["m1"]
                 });
-                
+
                 export default _registerComponent(Text, {
                   tmpl: _tmpl
                 });
@@ -324,13 +325,13 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this.data = void 0;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   publicProps: {
                     data: {
@@ -338,7 +339,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -402,13 +403,13 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this.ariaDescribedBy = void 0;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   publicProps: {
                     ariaDescribedBy: {
@@ -416,7 +417,7 @@ describe('Transform property', () => {
                     }
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -537,15 +538,15 @@ describe('Transform method', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   foo() {}
                 }
-                
+
                 _registerDecorators(Test, {
                   publicMethods: ["foo"]
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
