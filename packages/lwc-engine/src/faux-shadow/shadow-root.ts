@@ -3,13 +3,13 @@ import { isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/l
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
-import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { DocumentPrototypeActiveElement } from "../env/document";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
+import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -164,7 +164,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         const { childNodes } = this;
         let innerHTML = '';
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            innerHTML += getInnerHTML(childNodes[i]);
+            innerHTML += getOuterHTML(childNodes[i]);
         }
         return innerHTML;
     }

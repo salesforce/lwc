@@ -70,11 +70,6 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 return originalQuerySelectorAll.apply(this, arguments);
             }
         },
-        ownerDocument: {
-            get() {
-                throw new Error(`Disallowed property "ownerDocument" in ShadowRoot.`);
-            },
-        },
     });
     const BlackListedShadowRootMethods = {
         appendChild: 0,
