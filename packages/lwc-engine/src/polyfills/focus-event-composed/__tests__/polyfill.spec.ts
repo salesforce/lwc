@@ -1,7 +1,5 @@
-import applyEventComposedPolyfill from '../../event-composed/polyfill';
-import applyPolyfill from '../polyfill';
+import applyPolyfill from '../../patch-event/polyfill';
 
-applyEventComposedPolyfill();
 applyPolyfill();
 
 describe('event-composed polyfill', () => {

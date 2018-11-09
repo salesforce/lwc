@@ -20,7 +20,11 @@ if (typeof MO === 'undefined') {
 const MutationObserver = MO;
 const MutationObserverObserve = MutationObserver.prototype.observe;
 
+const { addEventListener: windowAddEventListener, removeEventListener: windowRemoveEventListener } = window;
+
 export {
     MutationObserver,
     MutationObserverObserve,
+    windowAddEventListener,
+    windowRemoveEventListener,
 };

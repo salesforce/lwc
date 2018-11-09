@@ -1,4 +1,4 @@
-import applyPolyfill from '../polyfill';
+import applyPolyfill from '../../patch-event/polyfill';
 
 applyPolyfill();
 

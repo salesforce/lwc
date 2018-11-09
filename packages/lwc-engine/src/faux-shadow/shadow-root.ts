@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isNull, setPrototypeOf, defineProperty } from "../shared/language";
+import { isNull, setPrototypeOf, defineProperty, assign, isFunction, toString } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -171,10 +171,21 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         return shadowRootQuerySelectorAll(this, selectors);
     }
     addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-        addShadowRootEventListener(this, type, listener, options);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(this)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        }
+        const elm = getHost(this);
+        options = assign({}, options, {
+            __shadyTarget: this,
+        });
+        elm.addEventListener(type, listener, options);
     }
     removeEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-        removeShadowRootEventListener(this, type, listener, options);
+        const elm = getHost(this);
+        options = assign({}, options, {
+            __shadyTarget: this,
+        });
+        elm.removeEventListener(type, listener, options);
     }
     compareDocumentPosition(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
         const host = getHost(this);

@@ -1,6 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../../framework/main';
-import applyPolyfill from '../polyfill';
+import applyPolyfill from '../../patch-event/polyfill';
 
 // TODO: https://github.com/salesforce/lwc/pull/568#discussion_r208827386
 // While Jest creates a new window object between each test file evaluation, the

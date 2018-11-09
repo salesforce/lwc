@@ -8,13 +8,10 @@ import { defaultDefHTMLPropertyNames } from "./attributes";
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 
 // Initialization Routines
+import "../polyfills/patch-event/main";
 import "../polyfills/document-shadow/main";
 import "../polyfills/shadow-root/main";
 import "../polyfills/proxy-concat/main";
-import "../polyfills/click-event-composed/main"; // must come before event-composed
-import "../polyfills/event-composed/main";
-import "../polyfills/custom-event-composed/main";
-import "../polyfills/focus-event-composed/main";
 import "../polyfills/aria-properties/main";
 
 /**
