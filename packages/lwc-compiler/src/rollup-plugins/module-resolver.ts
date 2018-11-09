@@ -44,6 +44,7 @@ function readFile(
 
 function isImplicitHTMLImport(importee: string, importer: string) {
     return (
+        importer &&
         path.extname(importer) === ".js" &&
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
