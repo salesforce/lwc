@@ -67,10 +67,10 @@ export function createElmDefaultHook(vnode: VElement) {
     modContext.create(vnode);
 }
 
-
 enum LWCDOMMode {
     manual = 'manual',
 }
+
 export function createElmHook(vnode: VElement) {
     const { uid, sel, fallback } = vnode;
     const elm = vnode.elm as HTMLElement;
