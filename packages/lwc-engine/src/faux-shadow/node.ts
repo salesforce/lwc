@@ -130,7 +130,7 @@ function initPortalObserver() {
 
 const ShadowTokenKey = '$$ShadowTokenKey$$';
 
-export function setCSSToken(elm: Element, shadowToken) {
+export function setCSSToken(elm: Element, shadowToken: string | undefined) {
     if (!isUndefined(shadowToken)) {
         setAttribute.call(elm, shadowToken, '');
         elm[ShadowTokenKey] = shadowToken;

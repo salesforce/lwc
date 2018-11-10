@@ -67,13 +67,17 @@ export function createElmDefaultHook(vnode: VElement) {
     modContext.create(vnode);
 }
 
+
+enum LWCDOMMode {
+    manual = 'manual',
+}
 export function createElmHook(vnode: VElement) {
     const { uid, sel, fallback } = vnode;
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, uid);
     if (isTrue(fallback)) {
         const { shadowAttribute, data: { context } } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual';
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
             isPortal,
@@ -82,7 +86,7 @@ export function createElmHook(vnode: VElement) {
     }
     if (process.env.NODE_ENV !== 'production') {
         const { data: { context } } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual';
+        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementWithRestrictions(elm, { isPortal });
     }
 }

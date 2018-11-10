@@ -24,6 +24,9 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         // this method should never leak to prod
         throw new ReferenceError();
     }
+
+    // getPropertyDescriptor here recursively looks up the prototype chain
+    // and returns the first descriptor for the property
     const originalTextContentDescriptor = getPropertyDescriptor(node, 'textContent')!;
     const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
     const {
