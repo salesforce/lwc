@@ -10,9 +10,9 @@ type MeasurementPhase =
     | 'errorCallback';
 
 export enum GlobalMeasurementPhase {
-    REHYDRATE = 'rehydrate',
-    INIT = 'init',
-    HYDRATE = 'hydrate'
+    REHYDRATE = 'lwc-rehydrate',
+    INIT = 'lwc-init',
+    HYDRATE = 'lwc-hydrate'
 }
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
@@ -59,7 +59,9 @@ function _startGlobalMeasure(phase: GlobalMeasurementPhase) {
 }
 
 function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
-    performance.measure(`lwc-${phase}`, phase);
+    performance.measure(phase, phase);
+    performance.clearMarks(phase);
+    performance.clearMeasures(phase);
 }
 
 export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;

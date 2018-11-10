@@ -9,7 +9,6 @@ import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { patchCustomElementProto } from "./patch";
 import { HTMLElementConstructor } from "./base-bridge-element";
 import { patchCustomElementWithRestrictions } from "./restrictions";
-import { endGlobalMeasure, startGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): HTMLElementConstructor {
     if (isCircularModuleDependency(Ctor)) {
@@ -26,7 +25,6 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
     }
     return class extends BaseElement {
         constructor() {
-            startGlobalMeasure(GlobalMeasurementPhase.INIT);
             super();
             const tagName = StringToLowerCase.call(tagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
@@ -37,14 +35,11 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             if (process.env.NODE_ENV !== 'production') {
                 patchCustomElementWithRestrictions(this);
             }
-            endGlobalMeasure(GlobalMeasurementPhase.INIT);
         }
         connectedCallback() {
-            startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
             const vm = getCustomElementVM(this);
             appendVM(vm);
             renderVM(vm);
-            endGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
         }
         disconnectedCallback() {
             const vm = getCustomElementVM(this);
