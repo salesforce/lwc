@@ -3,6 +3,14 @@ import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
 
+function isValidHTMLCollectionName(name) {
+    return name !== 'length' && isNaN(name);
+}
+
+function getNodeHTMLCollectionName(node) {
+    return node.getAttribute('id') || node.getAttribute('name');
+}
+
 class StaticHTMLCollection<T extends Element> extends HTMLCollection {
     [key: number]: T;
 
@@ -11,12 +19,16 @@ class StaticHTMLCollection<T extends Element> extends HTMLCollection {
     }
 
     // spec: https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
-    namedItem(key: string): T | null {
-        if (key === '') { return null; }
+    namedItem(name: string): T | null {
+        if (isValidHTMLCollectionName(name) && this[name]) {
+            return this[name];
+        }
         const items = getInternalField(this, Items);
-        for (let i = 0, len = items.length; i < len; i += 1) {
-            const item: T = items[i];
-            if (item.id === key || (item.hasAttribute('name') && (item as any).name === key)) {
+        // Note: loop in reverse so that the first named item matches the named property
+        for (let len = items.length - 1; len >= 0; len -= 1) {
+            const item: T = items[len];
+            const nodeName = getNodeHTMLCollectionName(item);
+            if (nodeName === name) {
                 return item;
             }
         }
