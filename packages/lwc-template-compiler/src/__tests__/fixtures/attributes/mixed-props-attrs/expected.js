@@ -7,7 +7,6 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
-
   return [
     api_custom_element(
       "ns-foo",

@@ -8,7 +8,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
     i: api_iterator
   } = $api;
-
   return [
     api_element(
       "ul",

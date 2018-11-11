@@ -563,7 +563,7 @@ function generateTemplateFunction(templateRoot: IRElement, state: State, options
         )),
     );
 
-    let slots: t.Node = t.noop();
+    let slots: t.Node | null = null;
     if (Object.keys(codeGen.usedSlots).length) {
         slots = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.SLOT_SET),
@@ -578,7 +578,7 @@ function generateTemplateFunction(templateRoot: IRElement, state: State, options
         );
     }
 
-    let context: t.Node = t.noop();
+    let context: t.Node | null = null;
     if (codeGen.memorizedIds.length) {
         context = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.CONTEXT),

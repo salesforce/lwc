@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     f: api_flatten
   } = $api;
-
   return [
     api_element(
       "section",
