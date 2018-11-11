@@ -44,7 +44,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "semver": "^5.5.0",
     "ts-jest": "^23.10.3",
-    "tslint": "~5.9.1",
+    "tslint": "~5.11.0",
     "typescript": "3.1.6"
   },
   "config": {

@@ -4,7 +4,7 @@ const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(Document.prototy
 
 const elementsFromPoint = hasOwnProperty.call(Document.prototype, 'elementsFromPoint') ?
     Document.prototype.elementsFromPoint :
-    Document.prototype.msElementsFromPoint;  // IE11
+    (Document.prototype as any).msElementsFromPoint;  // IE11
 
 const {
     createDocumentFragment,
