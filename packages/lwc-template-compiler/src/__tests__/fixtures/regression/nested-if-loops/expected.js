@@ -8,7 +8,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     f: api_flatten
   } = $api;
-
   return $cmp.isTrue
     ? api_flatten([
         api_text("Outer"),

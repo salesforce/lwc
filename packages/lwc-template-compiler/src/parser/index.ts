@@ -80,7 +80,7 @@ import {
     SVG_NAMESPACE_URI,
     HTML_NAMESPACE_URI,
 } from './constants';
-import { isMemberExpression, isIdentifier } from 'babel-types';
+import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
     CompilerDiagnostic,
     generateCompilerDiagnostic,
@@ -137,7 +137,6 @@ export default function parse(source: string, state: State): {
 } {
     const warnings: CompilerDiagnostic[] = [];
     const generateKey = getKeyGenerator();
-
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
         return { warnings: parsingErrors };
@@ -839,26 +838,24 @@ export default function parse(source: string, state: State): {
         }
 
         try {
-            let parsed: IRAttribute;
-
             const isBooleanAttribute = !rawAttribute.includes('=');
             const { value, escapedExpression } = normalizeAttributeValue(matching, rawAttribute, el.tag);
             if (isExpression(value) && !escapedExpression) {
-                return parsed = {
+                return {
                     name,
                     location,
                     type: IRAttributeType.Expression,
                     value: parseTemplateExpression(el, value),
                 };
             } else if (isBooleanAttribute) {
-                return parsed = {
+                return {
                     name,
                     location,
                     type: IRAttributeType.Boolean,
                     value: true,
                 };
             } else {
-                return parsed = {
+                return {
                     name,
                     location,
                     type: IRAttributeType.String,

@@ -9,7 +9,7 @@ describe('@salesforce/apex import', () => {
         let myMethod;
 
         try {
-          myMethod = require('@salesforce/apex/FooController.fooMethod').default;
+          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
           myMethod = function () {
             return Promise.resolve();
@@ -25,7 +25,7 @@ describe('@salesforce/apex import', () => {
         let myMethod;
 
         try {
-          myMethod = require('@salesforce/apex/FooController.fooMethod').default;
+          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
           myMethod = function () {
             return Promise.resolve();

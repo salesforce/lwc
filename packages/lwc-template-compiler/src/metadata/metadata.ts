@@ -6,8 +6,8 @@ import {
     TemplateIdentifier
 } from "../shared/types";
 import { kebabcaseToCamelcase } from "../shared/naming";
-import generate from 'babel-generator';
-import * as babelTypes from 'babel-types';
+import generate from '@babel/generator';
+import * as babelTypes from '@babel/types';
 
 export function getModuleMetadata(element: IRElement): ModuleDependency {
     let properties;

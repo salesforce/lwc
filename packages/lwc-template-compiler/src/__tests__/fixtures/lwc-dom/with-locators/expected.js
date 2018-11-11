@@ -2,7 +2,6 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { fb: function_bind, h: api_element } = $api;
-
   const { _m0 } = $ctx;
   return [
     api_element(

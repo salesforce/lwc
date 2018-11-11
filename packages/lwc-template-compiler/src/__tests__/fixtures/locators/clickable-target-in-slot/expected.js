@@ -8,7 +8,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element,
     c: api_custom_element
   } = $api;
-
   const { _m0, _m1 } = $ctx;
   return [
     api_custom_element(

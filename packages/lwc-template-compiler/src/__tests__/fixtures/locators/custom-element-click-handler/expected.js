@@ -7,7 +7,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     ll: locator_listener,
     c: api_custom_element
   } = $api;
-
   const { _m0, _m1 } = $ctx;
   return [
     api_custom_element(
