@@ -627,6 +627,21 @@ describe('Metadata', () => {
     );
 
     apiValueMetadataTest(
+        'gather metadata for static "boolean" property value',
+        `@api staticBoolean = false;`,
+        {
+            type: "property",
+            name: "staticBoolean",
+            loc: {
+                end: { line: 2, column: 79 },
+                start: { line: 2, column: 52 },
+            },
+            decorator: "api",
+            value: { type: "boolean", value: false },
+        },
+    );
+
+    apiValueMetadataTest(
         'gather metadata for static "numeric" property value',
         `@api numeric = 0;`,
         {
@@ -691,13 +706,14 @@ describe('Metadata', () => {
         `@api staticObject = {
             stringProp: "string property",
             numericProp: 0,
+            booleanProp: true,
             arrayProp: [],
             objectProp: {},
         };`,
         {
             decorator: "api",
             loc: {
-                end: { column: 2, line: 7 },
+                end: { column: 2, line: 8 },
                 start: { column: 52, line: 2 },
             },
             name: "staticObject",
@@ -712,6 +728,10 @@ describe('Metadata', () => {
                     numericProp: {
                         type: "number",
                         value: 0,
+                    },
+                    booleanProp: {
+                        type: "boolean",
+                        value: true,
                     },
                     arrayProp: {
                         type: "array",
@@ -728,11 +748,11 @@ describe('Metadata', () => {
 
     apiValueMetadataTest(
         'gather metadata for static property with "array" value',
-        `@api staticArray = ['stringval', 0, null, undefined, {}, []];;`,
+        `@api staticArray = ['stringval', 0, true, null, undefined, {}, []];;`,
         {
             decorator: "api",
             loc: {
-                end: { column: 113, line: 2 },
+                end: { column: 119, line: 2 },
                 start: { column: 52, line: 2 },
             },
             name: "staticArray",
@@ -742,6 +762,7 @@ describe('Metadata', () => {
                 value: [
                     { type: "string", value: "stringval" },
                     { type: "number", value: 0 },
+                    { type: "boolean", value: true },
                     { type: "null", value: null },
                     { type: "unresolved", value: undefined },
                     { type: "object", value: {} },

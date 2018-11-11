@@ -209,6 +209,8 @@ function extractValueMetadata(valueNode) {
         valueMetadata = extractStringValueMeta(valueNode);
     } else if (type === 'NumericLiteral') {
         valueMetadata = extractNumberValueMeta(valueNode);
+    } else if (type === 'BooleanLiteral') {
+        valueMetadata = extractBooleanValueMeta(valueNode);
     } else if (type === 'NullLiteral') {
         valueMetadata = {
             type: "null",
@@ -235,6 +237,14 @@ function extractNumberValueMeta(valueNode) {
     return {
         type: 'number',
         value: value === null ? undefined : value
+    }
+}
+
+function extractBooleanValueMeta(valueNode) {
+    let value = valueNode && valueNode.value;
+    return {
+        type: 'boolean',
+        value: !!(valueNode && valueNode.value),
     }
 }
 
