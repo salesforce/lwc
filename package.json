@@ -45,7 +45,7 @@
     "semver": "^5.5.0",
     "ts-jest": "^23.10.3",
     "tslint": "~5.9.1",
-    "typescript": "2.7.2"
+    "typescript": "3.1.6"
   },
   "config": {
     "commitizen": {

@@ -1,6 +1,6 @@
-import generate from 'babel-generator';
-import * as t from 'babel-types';
-import template = require('babel-template');
+import generate from '@babel/generator';
+import * as t from '@babel/types';
+import template from "@babel/template";
 
 import State from '../state';
 import { ResolvedConfig } from '../config';
@@ -436,7 +436,7 @@ function transform(
         }
 
         function generateScopedIdFunctionForIdAttr(id: string): t.CallExpression {
-            const key = keyForId.get(id);
+            const key = keyForId.get(id) || -1;
             if (forKey) {
                 const generatedKey = codeGen.genKey(
                     t.numericLiteral(key),
