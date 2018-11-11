@@ -3,7 +3,7 @@ import { compileTemplate } from 'test-utils';
 
 describe('events', () => {
     describe('log messages', () => {
-        it('should log warning when adding existing listener to the custom element', () => {
+        it.skip('should log warning when adding existing listener to the custom element', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {
@@ -16,7 +16,7 @@ describe('events', () => {
                 document.body.appendChild(elm);
             }).toLogWarning(`[object HTMLElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
         });
-        it('should log warning when adding existing listener to the shadowRoot element', () => {
+        it.skip('should log warning when adding existing listener to the shadowRoot element', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {
@@ -30,7 +30,7 @@ describe('events', () => {
             }).toLogWarning(`[object HTMLElement] has duplicate listener for event "foo". Instead add the event listener in the connectedCallback() hook.`);
         });
 
-        it('should log warning when adding existing listener with options to the custom element', () => {
+        it.skip('should log warning when adding existing listener with options to the custom element', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {
@@ -42,7 +42,7 @@ describe('events', () => {
                 document.body.appendChild(elm);
             }).toLogWarning(`The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: true`);
         });
-        it('should log warning when adding existing listener with options to the ShadowRoot', () => {
+        it.skip('should log warning when adding existing listener with options to the ShadowRoot', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {
@@ -55,7 +55,7 @@ describe('events', () => {
             }).toLogWarning(`The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: true`);
         });
 
-        it('should log error when removing non attached listener on the custom element', () => {
+        it.skip('should log error when removing non attached listener on the custom element', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {
@@ -68,7 +68,7 @@ describe('events', () => {
             }).toLogError(`Did not find event listener for event "foo" executing removeEventListener on [object HTMLElement]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
         });
 
-        it('should log error when removing non attached listener on the ShadowRoot', () => {
+        it.skip('should log error when removing non attached listener on the ShadowRoot', () => {
             function eventListener() {}; // tslint:disable-line
             class MyComponent extends LightningElement {
                 connectedCallback() {

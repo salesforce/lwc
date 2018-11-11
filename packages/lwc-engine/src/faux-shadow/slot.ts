@@ -1,5 +1,4 @@
 import assert from "../shared/assert";
-import { addEventListener } from "../env/element";
 import {
     createFieldName,
     getInternalField,
@@ -26,21 +25,6 @@ let observer;
 const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createFieldName('slotchange');
 
-function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
-        if (process.env.NODE_ENV === 'test') {
-            /* tslint:disable-next-line:no-console */
-            console.warn('The "slotchange" event is not supported in our jest test environment.');
-        }
-        setInternalField(this, SlotChangeKey, true);
-        if (!observer) {
-            observer = initSlotObserver();
-        }
-        MutationObserverObserve.call(observer, this as Node, observerConfig);
-    }
-    addEventListener.call(this as HTMLSlotElement, type, listener, options);
-}
-
 function initSlotObserver() {
     return new MutationObserver(mutations => {
         const slots: Node[] = [];
@@ -62,14 +46,26 @@ function initSlotObserver() {
     });
 }
 
-const HTMLSlotElementPatchDescriptors: PropertyDescriptorMap = {
-    addEventListener: {
-        value: addEventListenerPatchedValue,
-        configurable: true,
-        enumerable: true,
-    },
-};
-
 export function patchSlotElement(elm: HTMLSlotElement) {
-    defineProperties(elm, HTMLSlotElementPatchDescriptors);
+    const { addEventListener: superAddEventListener } = elm;
+    defineProperties(elm, {
+        addEventListener: {
+            value(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+                if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
+                    if (process.env.NODE_ENV === 'test') {
+                        /* tslint:disable-next-line:no-console */
+                        console.warn('The "slotchange" event is not supported in our jest test environment.');
+                    }
+                    setInternalField(this, SlotChangeKey, true);
+                    if (!observer) {
+                        observer = initSlotObserver();
+                    }
+                    MutationObserverObserve.call(observer, this as Node, observerConfig);
+                }
+                superAddEventListener.call(this as HTMLSlotElement, type, listener, options);
+            },
+            configurable: true,
+            enumerable: true,
+        },
+    });
 }

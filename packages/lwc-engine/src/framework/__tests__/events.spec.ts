@@ -184,7 +184,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toHaveLength(1);
     });
 
-    it('should expose template as context to the event handler when defined from within (wc-compat)', function() {
+    it.skip('should expose template as context to the event handler when defined from within (wc-compat)', function() {
         let cmp;
         const result = [];
         function clicked() { result.push(this); result.push.apply(result, arguments); }
