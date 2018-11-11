@@ -163,7 +163,7 @@ function getEngineImportSpecifiers(path) {
 function isComponentClass(classPath, componentBaseClassImports) {
     const superClass = classPath.get('superClass');
 
-    return superClass.isIdentifier()
+    return superClass.isIdentifier() && componentBaseClassImports
         && componentBaseClassImports.some(componentBaseClassImport => (
             classPath.scope.bindingIdentifierEquals(
                 superClass.node.name,
@@ -184,7 +184,17 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
     return error;
 }
 
+function isLWCNode(node) {
+    return node._lwcNode === true;
+}
+
+function markAsLWCNode(node) {
+    node._lwcNode = true;
+}
+
 module.exports = {
+    isLWCNode,
+    markAsLWCNode,
     findClassMethod,
     isClassMethod,
     isGetterClassMethod,

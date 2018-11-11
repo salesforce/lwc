@@ -2,6 +2,11 @@ import { Template } from "./template";
 
 const signedTemplateSet: Set<Template> = new Set();
 
+export function defaultEmptyTemplate() {
+    return [];
+}
+signedTemplateSet.add(defaultEmptyTemplate);
+
 export function isTemplateRegistered(tpl: Template): boolean {
     return signedTemplateSet.has(tpl);
 }

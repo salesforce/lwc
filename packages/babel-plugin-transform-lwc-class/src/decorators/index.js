@@ -187,8 +187,7 @@ function decorators({ types: t }) {
         }
     };
 }
-
 module.exports = {
     decorators,
-    invalidDecorators,
+    invalidDecorators
 }

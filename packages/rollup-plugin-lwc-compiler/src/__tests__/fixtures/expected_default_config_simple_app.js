@@ -12,7 +12,7 @@
       }, [api_dynamic($cmp.x)])];
     }
 
-    var html = lwc.registerTemplate(tmpl);
+    var _tmpl = lwc.registerTemplate(tmpl);
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
@@ -20,16 +20,19 @@
         this.x = void 0;
       }
 
-      render() {
-        return html;
-      }
-
     }
-    Foo.publicProps = {
-      x: {
-        config: 0
+
+    lwc.registerDecorators(Foo, {
+      publicProps: {
+        x: {
+          config: 0
+        }
       }
-    };
+    });
+
+    var _xFoo = lwc.registerComponent(Foo, {
+      tmpl: _tmpl
+    });
 
     function tmpl$1($api, $cmp, $slotset, $ctx) {
       const {
@@ -42,7 +45,7 @@
           "container": true
         },
         key: 2
-      }, [api_custom_element("x-foo", Foo, {
+      }, [api_custom_element("x-foo", _xFoo, {
         props: {
           "x": "1"
         },
@@ -50,7 +53,7 @@
       }, [])])];
     }
 
-    var html$1 = lwc.registerTemplate(tmpl$1);
+    var _tmpl$1 = lwc.registerTemplate(tmpl$1);
 
     class App extends lwc.LightningElement {
       constructor() {
@@ -58,15 +61,15 @@
         this.list = [];
       }
 
-      render() {
-        return html$1;
-      }
-
     }
+
+    var App$1 = lwc.registerComponent(App, {
+      tmpl: _tmpl$1
+    });
 
     const container = document.getElementById('main');
     const element = lwc.createElement('x-app', {
-      is: App
+      is: App$1
     });
     container.appendChild(element);
 

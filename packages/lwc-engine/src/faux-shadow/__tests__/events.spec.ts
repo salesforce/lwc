@@ -212,9 +212,7 @@ describe('events', () => {
                 }
             }
             Root.track = {
-                newTitle: {
-                    config: 3
-                }
+                newTitle: 1
             };
             Root.publicMethods = ['changeSomething'];
             class Parent extends LightningElement {

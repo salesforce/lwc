@@ -63,7 +63,7 @@ function validateFields(vm: VM, html: Template) {
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
+        assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be an imported template instead of ${toString(html)}`);
     }
     // TODO: add identity to the html functions
     const { component, context, cmpSlots, cmpTemplate } = vm;
@@ -75,7 +75,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         // Check that the template was built by the compiler
         if (!isTemplateRegistered(html)) {
-            throw new ReferenceError(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./${vm.def.name}.html"\`) or undefined, instead, it has returned a function.`);
+            throw new ReferenceError(`Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned: ${toString(html)}.`);
         }
 
         vm.cmpTemplate = html;

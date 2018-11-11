@@ -1,5 +1,6 @@
 import { LightningElement, createElement } from '../main';
 import { getComponentDef, getComponentConstructor } from '../def';
+import { registerDecorators } from '../decorators/register';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
@@ -8,17 +9,6 @@ describe('def', () => {
             expect(() => {
                 getComponentDef(def);
             }).not.toThrow();
-        });
-
-        it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
-            class MyComponent extends LightningElement {}
-            const def = getComponentDef(MyComponent);
-            expect(() => {
-                def.name = 'something else';
-            }).toThrow();
-
-            def.expando = 1;
-            expect(def.expando).toBe(1);
         });
 
         it('should throw for stateful components not extending Element', () => {
@@ -48,20 +38,43 @@ describe('def', () => {
                 foo: { get: foo, configurable: true }
             });
             MyComponent.publicProps = {
-                foo: {
-                    config: 1
-                },
+                foo: {},
                 xBar: {},
             };
             const { props } = getComponentDef(MyComponent);
             expect(props.foo).toEqual({
-                config: 1,
                 type: 'any',
+                config: 1,
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
-                config: 0,
                 type: 'any',
+                config: 0,
+                attr: 'x-bar',
+            });
+        });
+
+        it('should work with registerDecorators for publicProps', () => {
+            function foo() {}
+            class MyComponent extends LightningElement  {}
+            Object.defineProperties(MyComponent.prototype, {
+                foo: { get: foo, configurable: true }
+            });
+            registerDecorators(MyComponent, {
+                publicProps: {
+                    foo: {},
+                    xBar: {},
+                }
+            });
+            const { props } = getComponentDef(MyComponent);
+            expect(props.foo).toEqual({
+                type: 'any',
+                config: 1,
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                type: 'any',
+                config: 0,
                 attr: 'x-bar',
             });
         });
@@ -136,25 +149,25 @@ describe('def', () => {
             const { props } = getComponentDef(MyComponent);
             // aria multi-capital
             expect(props.ariaActiveDescendant).toEqual({
-                config: 3,
                 type: 'any',
+                config: 3,
                 attr: 'aria-activedescendant',
             });
             expect(props.role).toEqual({
-                config: 3,
                 type: 'any',
+                config: 3,
                 attr: 'role',
             });
             // aria exception
             expect(props.ariaAutoComplete).toEqual({
-                config: 3,
                 type: 'any',
+                config: 3,
                 attr: 'aria-autocomplete',
             });
             // explicit mapping
             expect(props.tabIndex).toEqual({
-                config: 3,
                 type: 'any',
+                config: 3,
                 attr: 'tabindex',
             });
         });
@@ -167,9 +180,7 @@ describe('def', () => {
             });
 
             MySuperComponent.publicProps = {
-                x: {
-                    config: 1
-                }
+                x: {}
             };
 
             function foo() {}
@@ -182,12 +193,8 @@ describe('def', () => {
             });
 
             MyComponent.publicProps = {
-                foo: {
-                    config: 1
-                },
-                xBar: {
-                    config: 3
-                },
+                foo: {},
+                xBar: {},
             };
 
             class MySubComponent extends MyComponent {}
@@ -198,23 +205,23 @@ describe('def', () => {
 
             const { props } = getComponentDef(MySubComponent);
             expect(props.foo).toEqual({
-                config: 1,
                 type: 'any',
+                config: 1,
                 attr: 'foo',
             });
             expect(props.xBar).toEqual({
-                config: 3,
                 type: 'any',
+                config: 3,
                 attr: 'x-bar',
             });
             expect(props.fizz).toEqual({
-                config: 0,
                 type: 'any',
+                config: 0,
                 attr: 'fizz',
             });
             expect(props.x).toEqual({
-                config: 1,
                 type: 'any',
+                config: 1,
                 attr: 'x',
             });
         });
@@ -227,9 +234,7 @@ describe('def', () => {
             });
 
             MyComponent.publicProps = {
-                x: {
-                    config: 1
-                }
+                x: {}
             };
 
             expect(() => {

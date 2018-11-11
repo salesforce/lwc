@@ -1,5 +1,5 @@
 const { isApiDecorator } = require('./shared');
-const { staticClassProperty } = require('../../utils');
+const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
@@ -72,11 +72,14 @@ function transformPublicProps(t, klassBody, apiDecorators) {
 
     if (publicProps.length) {
         const publicPropsConfig = computePublicPropsConfig(publicProps);
-        klassBody.pushContainer('body', staticClassProperty(
+        const staticProp = staticClassProperty(
             t,
             PUBLIC_PROPS,
             t.valueToNode(publicPropsConfig)
-        ));
+        );
+
+        markAsLWCNode(staticProp);
+        klassBody.pushContainer('body', staticProp);
     }
 
     return publicProps.filter((node) => {
@@ -99,6 +102,7 @@ function transfromPublicMethods(t, klassBody, apiDecorators) {
             PUBLIC_METHODS,
             t.valueToNode(publicMethodsConfig)
         );
+        markAsLWCNode(classProp);
         klassBody.pushContainer('body', classProp);
     }
 

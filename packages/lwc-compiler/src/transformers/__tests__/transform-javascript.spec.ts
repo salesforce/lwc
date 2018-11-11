@@ -19,12 +19,12 @@ it('should apply transformation for valid javascript file', async () => {
 
     const expected = `
         import _tmpl from "./foo.html";
+        import { registerComponent as _registerComponent } from "lwc";
         import { LightningElement } from 'lwc';
-        export default class Foo extends LightningElement {
-            render() {
-                return _tmpl;
-            }
-        }
+        class Foo extends LightningElement {}
+        export default _registerComponent(Foo, {
+            tmpl: _tmpl
+        });
     `;
 
     const { code } = await transform(actual, 'foo.js', COMPILER_OPTIONS);

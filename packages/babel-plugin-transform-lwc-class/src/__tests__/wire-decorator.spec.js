@@ -49,24 +49,36 @@ describe('Transform property', () => {
         }
     `, {
         output: {
-            code: `import { getFoo } from 'data-service';
-export default class Test {
-  constructor() {
-    this.wiredProp = void 0;
-  }
-
-}
-Test.wire = {
-  wiredProp: {
-    adapter: getFoo,
-    params: {
-      key1: "prop1"
-    },
-    static: {
-      key2: ["fixed", 'array']
-    }
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1"
+                      },
+                      static: {
+                        key2: ["fixed", "array"]
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`
         }
     });
 
@@ -79,26 +91,38 @@ Test.wire = {
         }
     `, {
         output: {
-            code: `import { getFoo } from 'data-service';
-export default class Test {
-  constructor() {
-    this.wiredProp = void 0;
-  }
-
-}
-Test.wire = {
-  wiredProp: {
-    adapter: getFoo,
-    params: {
-      key1: "prop",
-      key2: "prop"
-    },
-    static: {
-      key3: "fixed",
-      key4: ["fixed", 'array']
-    }
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop",
+                        key2: "prop"
+                      },
+                      static: {
+                        key3: "fixed",
+                        key4: ["fixed", "array"]
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`
         }
     });
 
@@ -125,20 +149,32 @@ Test.wire = {
         }
     `, {
         output: {
-            code: `import { getFoo } from 'data-service';
-export default class Test {
-  constructor() {
-    this.wiredProp = void 0;
-  }
-
-}
-Test.wire = {
-  wiredProp: {
-    adapter: getFoo,
-    params: {},
-    static: {}
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {},
+                      static: {}
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 
@@ -150,20 +186,32 @@ Test.wire = {
         }
     `, {
         output: {
-            code: `import getFoo from 'foo';
-export default class Test {
-  constructor() {
-    this.wiredProp = void 0;
-  }
-
-}
-Test.wire = {
-  wiredProp: {
-    adapter: getFoo,
-    params: {},
-    static: {}
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import getFoo from "foo";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {},
+                      static: {}
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`
         }
     });
 
@@ -175,18 +223,30 @@ Test.wire = {
         }
     `, {
             output: {
-                code: `import { getFoo } from 'data-service';
-export default class Test {
-  constructor() {
-    this.wiredProp = void 0;
-  }
-
-}
-Test.wire = {
-  wiredProp: {
-    adapter: getFoo
-  }
-};`
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    import { getFoo } from "data-service";
+                    
+                    class Test {
+                      constructor() {
+                        this.wiredProp = void 0;
+                      }
+                    }
+                    
+                    _registerDecorators(Test, {
+                      wire: {
+                        wiredProp: {
+                          adapter: getFoo
+                        }
+                      }
+                    });
+                    
+                    export default _registerComponent(Test, {
+                      tmpl: _tmpl
+                    });
+`
             }
         });
 
@@ -287,34 +347,46 @@ Test.wire = {
         }
     `, {
         output: {
-            code: `import { getFoo } from 'data-service';
-export default class Test {
-  constructor() {
-    this.wired1 = void 0;
-    this.wired2 = void 0;
-  }
-
-}
-Test.wire = {
-  wired1: {
-    adapter: getFoo,
-    params: {
-      key1: "prop1"
-    },
-    static: {
-      key2: ["fixed"]
-    }
-  },
-  wired2: {
-    adapter: getFoo,
-    params: {
-      key1: "prop1"
-    },
-    static: {
-      key2: ["array"]
-    }
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wired1 = void 0;
+                    this.wired2 = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wired1: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1"
+                      },
+                      static: {
+                        key2: ["fixed"]
+                      }
+                    },
+                    wired2: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1"
+                      },
+                      static: {
+                        key2: ["array"]
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 });
@@ -329,23 +401,35 @@ describe('Transform method', () => {
         }
     `, {
         output: {
-            code: `import { getFoo } from 'data-service';
-export default class Test {
-  wiredMethod() {}
-
-}
-Test.wire = {
-  wiredMethod: {
-    adapter: getFoo,
-    params: {
-      key1: "prop1"
-    },
-    static: {
-      key2: ["fixed"]
-    },
-    method: 1
-  }
-};`
+            code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  wiredMethod() {}
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredMethod: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1"
+                      },
+                      static: {
+                        key2: ["fixed"]
+                      },
+                      method: 1
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+                `
         }
     });
 

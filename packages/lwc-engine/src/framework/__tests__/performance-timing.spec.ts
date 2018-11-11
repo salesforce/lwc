@@ -1,10 +1,5 @@
 import { compileTemplate } from 'test-utils';
 
-jest.mock('../secure-template', () => ({
-    isTemplateRegistered: () => true,
-    registerTemplate: (t) => t
-}));
-
 declare var global: Global;
 
 interface Global {
@@ -97,6 +92,7 @@ class FlameChart {
 
 describe('performance-timing', () => {
     let createElement: any;
+    let registerTemplate: any;
     let LightningElement: any;
     let flamechart: FlameChart;
 
@@ -105,7 +101,7 @@ describe('performance-timing', () => {
         jest.resetModules();
         createElement = require('../main.ts').createElement;
         LightningElement = require('../main.ts').LightningElement;
-
+        registerTemplate = require('../main.ts').registerTemplate;
         flamechart = new FlameChart();
         flamechart.injectPolyfill();
     });
@@ -142,7 +138,7 @@ describe('performance-timing', () => {
         const barTmpl = compileTemplate(`<template><span></span></template>`);
         class Bar extends LightningElement {
             render() {
-                return barTmpl;
+                return registerTemplate(barTmpl);
             }
         }
 
@@ -158,7 +154,7 @@ describe('performance-timing', () => {
         });
         class Foo extends LightningElement {
             render() {
-                return fooTmpl;
+                return registerTemplate(fooTmpl);
             }
         }
 
@@ -204,7 +200,7 @@ describe('performance-timing', () => {
         });
         class Foo extends LightningElement {
             render() {
-                return fooTmpl;
+                return registerTemplate(fooTmpl);
             }
 
             // tslint:disable-next-line:no-empty
@@ -230,11 +226,11 @@ describe('performance-timing', () => {
             }
 
             render() {
-                return barTmpl;
+                return registerTemplate(barTmpl);
             }
 
             static track = {
-                state: { config: 0 }
+                state: {}
             };
         }
 
@@ -247,11 +243,11 @@ describe('performance-timing', () => {
             }
 
             render() {
-                return bazTmpl;
+                return registerTemplate(bazTmpl);
             }
 
             static track = {
-                state: { config: 0 }
+                state: {}
             };
         }
 
@@ -268,7 +264,7 @@ describe('performance-timing', () => {
         });
         class Foo extends LightningElement {
             render() {
-                return fooTmpl;
+                return registerTemplate(fooTmpl);
             }
         }
 
