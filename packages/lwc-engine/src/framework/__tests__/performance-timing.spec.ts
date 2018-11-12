@@ -217,6 +217,7 @@ describe('performance-timing', () => {
         let bar: Bar;
         let baz: Baz;
 
+        debugger;
         const barTmpl = compileTemplate(`<template>{state}</template>`);
         class Bar extends LightningElement {
             state: boolean = false;

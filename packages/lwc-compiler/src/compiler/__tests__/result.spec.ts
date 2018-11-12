@@ -238,7 +238,7 @@ export default class Test extends LightningElement {
             });
 
             expect(mainDefMappedToOutputPosition).toMatchObject({
-                line: 10,
+                line: 9,
                 column: 11,
             });
 
@@ -249,7 +249,7 @@ export default class Test extends LightningElement {
             });
 
             expect(stringConstantInOutputPosition).toMatchObject({
-                line: 11,
+                line: 10,
                 column: 11,
             });
 
@@ -260,7 +260,7 @@ export default class Test extends LightningElement {
             });
 
             expect(myimportDefinitionOutputPosition).toMatchObject({
-                line: 15,
+                line: 14,
                 column: 8,
             });
 
@@ -271,7 +271,7 @@ export default class Test extends LightningElement {
             });
 
             expect(mainInvocationInOutputPosition).toMatchObject({
-                line: 16,
+                line: 15,
                 column: 13,
             });
         });

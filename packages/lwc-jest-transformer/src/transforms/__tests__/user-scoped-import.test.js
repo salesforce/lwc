@@ -11,9 +11,9 @@ describe('@salesforce/user import', () => {
         let id;
 
         try {
-          id = require('@salesforce/user/Id').default;
+          id = require("@salesforce/user/Id").default;
         } catch (e) {
-          id = '${DEFAULT_ID}';
+          id = "${DEFAULT_ID}";
         }
     `);
 
@@ -25,9 +25,9 @@ describe('@salesforce/user import', () => {
         let id;
 
         try {
-          id = require('@salesforce/user/Id').default;
+          id = require("@salesforce/user/Id").default;
         } catch (e) {
-          id = '${DEFAULT_ID}';
+          id = "${DEFAULT_ID}";
         }
     `);
 

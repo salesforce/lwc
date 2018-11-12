@@ -9,9 +9,9 @@ describe('@salesforce/contentAssetUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/contentAssetUrl/foo').default;
+          myResource = require("@salesforce/contentAssetUrl/foo").default;
         } catch (e) {
-          myResource = 'foo';
+          myResource = "foo";
         }
     `);
 
@@ -21,9 +21,9 @@ describe('@salesforce/contentAssetUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/contentAssetUrl/ns__foo').default;
+          myResource = require("@salesforce/contentAssetUrl/ns__foo").default;
         } catch (e) {
-          myResource = 'ns__foo';
+          myResource = "ns__foo";
         }
     `);
 
@@ -35,9 +35,9 @@ describe('@salesforce/contentAssetUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/contentAssetUrl/foo').default;
+          myResource = require("@salesforce/contentAssetUrl/foo").default;
         } catch (e) {
-          myResource = 'foo';
+          myResource = "foo";
         }
     `);
 
