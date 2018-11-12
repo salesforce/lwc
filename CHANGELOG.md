@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.31.4...v) (2018-11-09)
+# [](https://github.com/salesforce/lwc/compare/v0.31.6...v) (2018-11-12)
+
+
+### Bug Fixes
+
+* remove prod perf markers on wc.ts ([#811](https://github.com/salesforce/lwc/issues/811)) ([074d522](https://github.com/salesforce/lwc/commit/074d522))
+
+
+### Features
+
+* Allow for implicit/explicit resolution ([#813](https://github.com/salesforce/lwc/issues/813)) ([738956f](https://github.com/salesforce/lwc/commit/738956f))
+
+
+
+<a name="0.31.6"></a>
+## [0.31.6](https://github.com/salesforce/lwc/compare/v0.31.4...v0.31.6) (2018-11-09)
 
 
 ### Bug Fixes
