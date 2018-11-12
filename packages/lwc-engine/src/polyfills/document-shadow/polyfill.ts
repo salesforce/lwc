@@ -1,6 +1,6 @@
 import { elementsFromPoint, DocumentPrototypeActiveElement } from "../../env/document";
 import { getNodeOwnerKey } from "../../framework/vm";
-import { isUndefined, defineProperty } from "../../shared/language";
+import { isNull, isUndefined, defineProperty } from "../../shared/language";
 import { parentElementGetter } from "../../env/node";
 
 export default function apply() {
@@ -24,14 +24,19 @@ export default function apply() {
     // Go until we reach to top of the LWC tree
     defineProperty(document, 'activeElement', {
         get() {
-            const active = DocumentPrototypeActiveElement.call(this);
-            let node = active;
+            let node = DocumentPrototypeActiveElement.call(this);
+
+            if (isNull(node)) {
+                return node;
+            }
+
             while (!isUndefined(getNodeOwnerKey(node))) {
                 node = parentElementGetter.call(node);
             }
             if (node.tagName === 'HTML') { // IE 11. Active element should never be html element
                 node = document.body;
             }
+
             return node;
         },
         enumerable: true,
