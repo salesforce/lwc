@@ -5,7 +5,7 @@
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist/",
     "lint": "tslint -p ./tsconfig.json",
     "build": "tsc",
     "test": "jest"
