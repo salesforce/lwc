@@ -6,7 +6,8 @@
   "typings": "dist/types/",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "echo 'Building errors...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
+    "lint": "tslint -p ./tsconfig.json",
+    "build": "tsc",
     "test": "jest"
   },
   "keywords": [

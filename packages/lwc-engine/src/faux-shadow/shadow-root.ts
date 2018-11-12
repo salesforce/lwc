@@ -71,7 +71,6 @@ export interface SyntheticShadowRootInterface extends ShadowRoot {
     delegatesFocus: boolean;
 }
 
-// @ts-ignore: TODO: remove after TS 3.x upgrade
 export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
     mode: ShadowRootMode = ShadowRootMode.OPEN;
     delegatesFocus: boolean = false;
@@ -110,16 +109,12 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         }
         return node;
     }
-    // @ts-ignore: TODO: remove after TS 3.x upgrade
     get firstChild(this: SyntheticShadowRootInterface): ChildNode | null {
         const { childNodes } = this;
-        // @ts-ignore: TODO: remove after TS 3.x upgrade
         return childNodes[0] || null;
     }
-    // @ts-ignore: TODO: remove after TS 3.x upgrade
     get lastChild(this: SyntheticShadowRootInterface): ChildNode | null {
         const { childNodes } = this;
-        // @ts-ignore: TODO: remove after TS 3.x upgrade
         return childNodes[childNodes.length - 1] || null;
     }
     get innerHTML(this: SyntheticShadowRootInterface): string {

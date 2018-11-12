@@ -7,14 +7,14 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist/",
+    "lint": "tslint -p ./tsconfig.json",
     "build": "tsc",
     "test": "jest"
   },
   "devDependencies": {
     "@types/he": "~1.1.0",
     "ast-pretty-print": "~1.1.5",
-    "esutils": "~2.0.2",
-    "glob": "~7.1.2"
+    "esutils": "~2.0.2"
   },
   "dependencies": {
     "@babel/generator": "~7.1.5",

@@ -1,10 +1,10 @@
 import assert from "../shared/assert";
 import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "../shared/language";
 
-interface ReactiveRecord {
-    // TODO: this type definition is missing numbers and symbols as keys
-    [key: string]: VM[];
-}
+// Typescript doesn't allow indexing using symbol. The ReactiveSymbol actual type is { [key: PropertyKey]: VM[] }.
+// Since a PropertyKey can be a Symbol, we need to make the ReactiveRecord type as any for now.
+// More details here: https://github.com/Microsoft/TypeScript/issues/1863
+type ReactiveRecord = any;
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
@@ -38,7 +38,7 @@ export function observeMutation(target: object, key: PropertyKey) {
     const vm = vmBeingRendered;
     let reactiveRecord = TargetToReactiveRecordMap.get(target);
     if (isUndefined(reactiveRecord)) {
-        const newRecord = create(null) as ReactiveRecord;
+        const newRecord = create(null);
         reactiveRecord = newRecord;
         TargetToReactiveRecordMap.set(target, newRecord);
     }
@@ -56,6 +56,6 @@ export function observeMutation(target: object, key: PropertyKey) {
     }
 }
 
-import { scheduleRehydration, VM } from "./vm";
+import { scheduleRehydration } from "./vm";
 import { markComponentAsDirty } from "./component";
 import { vmBeingRendered, isRendering } from "./invoker";

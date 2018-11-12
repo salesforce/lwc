@@ -39,7 +39,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(key)}`);
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpTrack[key]) {

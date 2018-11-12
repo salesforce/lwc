@@ -318,6 +318,8 @@ interface AssignedNodesOptions {
 
 export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
+
+    // @ts-ignore
     return class extends Ctor {
         get childNodes(this: Node): SyntheticNodeList<Node & Element> {
             const owner = getNodeOwner(this);
@@ -345,6 +347,7 @@ export function PatchedNode(node: Node): NodeConstructor {
         set textContent(this: Node, value: string) {
             textContextSetter.call(this, value);
         }
+        // @ts-ignore
         get parentNode(this: Node): Node | null {
             const value = nativeParentNodeGetter.call(this);
             if (isNull(value)) {

@@ -34,10 +34,10 @@ export interface VM {
     idx: number;
     data: VNodeData;
     children: VNodes;
-    cmpProps: Record<string, any>;
+    cmpProps: any;
     cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
-    cmpTrack: Record<string, any>;
+    cmpTrack: any;
     cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
     callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;

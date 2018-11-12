@@ -1,19 +1,16 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "allowJs": false,
-    "checkJs": false,
 
-    "declaration": true,
-    "declarationDir": "dist/types",
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
 
     "outDir": "dist/commonjs",
-
-    "strict": true,
-    "noImplicitAny": true,
+    "declarationDir": "dist/types",
   },
+
   "include": [
-    "src/**/*.ts",
-    "typings/*.ts",
+    "src/",
+    "typings/",
   ]
 }
