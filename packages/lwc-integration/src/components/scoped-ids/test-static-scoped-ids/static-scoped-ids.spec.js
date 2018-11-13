@@ -14,7 +14,7 @@ describe('Scoped ids (static)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.controls-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaControls,
+                    idref: idrefElm.ariaControls
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -29,7 +29,7 @@ describe('Scoped ids (static)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.describedby-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaDescribedBy,
+                    idref: idrefElm.ariaDescribedBy
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -44,7 +44,7 @@ describe('Scoped ids (static)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.labelledby-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaLabelledBy,
+                    idref: idrefElm.ariaLabelledBy
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -59,7 +59,7 @@ describe('Scoped ids (static)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.owns-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaOwns,
+                    idref: idrefElm.ariaOwns
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');

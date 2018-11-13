@@ -14,7 +14,7 @@ describe('Scoped ids (dynamic)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.activedescendant-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaActiveDescendant,
+                    idref: idrefElm.ariaActiveDescendant
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -29,7 +29,7 @@ describe('Scoped ids (dynamic)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.details-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaDetails,
+                    idref: idrefElm.ariaDetails
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -44,7 +44,7 @@ describe('Scoped ids (dynamic)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.errormessage-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaErrorMessage,
+                    idref: idrefElm.ariaErrorMessage
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');
@@ -59,7 +59,7 @@ describe('Scoped ids (dynamic)', () => {
                 var idrefElm = integration.shadowRoot.querySelector('.flowto-idref');
                 return {
                     id: idElm.id,
-                    idref: idrefElm.ariaFlowTo,
+                    idref: idrefElm.ariaFlowTo
                 };
             }).value;
             assert(id.length > 0, 'id attr should be non-empty string');

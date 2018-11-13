@@ -13,7 +13,7 @@ describe('Scoped ids', () => {
             var innerElm = outerElm.shadowRoot.querySelector('p');
             return {
                 inner: innerElm.id,
-                outer: outerElm.id,
+                outer: outerElm.id
             };
         }).value;
         assert(inner.length > 0, 'id attr should be non-empty string');
@@ -27,7 +27,7 @@ describe('Scoped ids', () => {
             var dynamicElm = integration.shadowRoot.querySelector('.dynamic');
             return {
                 staticValue: staticElm.id,
-                dynamicValue: dynamicElm.id,
+                dynamicValue: dynamicElm.id
             };
         }).value;
         assert.strictEqual(staticValue, dynamicValue);
