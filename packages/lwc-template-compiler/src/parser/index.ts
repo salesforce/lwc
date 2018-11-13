@@ -17,6 +17,7 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
+    isProhibitedIsAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
 } from './attribute';
@@ -564,10 +565,10 @@ export default function parse(source: string, state: State): {
             component = tag;
         }
 
-        const isAttr = getTemplateAttribute(element, 'is');
+        const isAttr = getTemplateAttribute(element, 'lwc-deprecated:is');
         if (isAttr) {
             if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(ParserDiagnostics.IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
+                return warnAt(ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
             }
 
             // Don't remove the is, because passed as attribute
@@ -645,6 +646,8 @@ export default function parse(source: string, state: State): {
             const { name, location } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            } else if (isCustomElement(element) && isProhibitedIsAttribute(name)) {
+                warnAt(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, [name, tag], location);
             }
 
             if (attr.type === IRAttributeType.String) {
@@ -739,6 +742,12 @@ export default function parse(source: string, state: State): {
                     );
                 }
             }
+            // if (isProhibitedIsAttribute(attrName)) {
+            //     warnOnElement(
+            //         ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED,
+            //         element.__original
+            //     );
+            // }
         });
     }
 
@@ -758,6 +767,13 @@ export default function parse(source: string, state: State): {
                         );
                     }
                 }
+
+                // if (isProhibitedIsAttribute(attrName)) {
+                //     warnOnElement(
+                //         ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED,
+                //         element.__original
+                //     );
+                // }
             }
         }
     }

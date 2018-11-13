@@ -293,14 +293,25 @@ describe('custom component', () => {
         });
     });
 
-    it('custom component via is attribute', () => {
-        const { root } = parseTemplate(`<template><button is="x-button"></button></template>`);
+    it('custom component via lwc-deprecated:is attribute', () => {
+        const { root } = parseTemplate(`<template><button lwc-deprecated:is="x-button"></button></template>`);
         expect(root.children[0].tag).toBe('button');
         expect(root.children[0].component).toBe('x-button');
     });
 
+    it('errors when using custom component with "is" attribute', () => {
+        const { warnings } = parseTemplate(`<template><foo-button is="x-button"></foo-button></template>`);
+        expect(warnings).toContainEqual({
+            code: expect.any(Number),
+            filename: undefined,
+            level: DiagnosticLevel.Error,
+            message: `LWC1001: Is attribute is not supported`,
+            location: EXPECTED_LOCATION
+        });
+    });
+
     it('is dynamic attribute error', () => {
-        const { warnings } = parseTemplate(`<template><button is={dynamicCmp}></button></template>`);
+        const { warnings } = parseTemplate(`<template><button lwc-deprecated:is={dynamicCmp}></button></template>`);
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
@@ -347,6 +358,21 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1001: Root template doesn't allow attributes`,
+            location: EXPECTED_LOCATION
+        });
+    });
+
+    it('disallows is attribute in non-custom component', () => {
+        const { warnings } = parseTemplate(`<template>
+            <x-menu></x-menu>
+            <button is="x-button"></button>
+        </template>`);
+
+        expect(warnings).toContainEqual({
+            code: expect.any(Number),
+            filename: undefined,
+            level: DiagnosticLevel.Error,
+            message: `LWC1001: is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`,
             location: EXPECTED_LOCATION
         });
     });
@@ -488,7 +514,7 @@ describe('props and attributes', () => {
 
     it('custom element using is with attribute / prop mix', () => {
         const { root } = parseTemplate(`<template>
-            <table bgcolor="x" is="x-table" tabindex="2" bar="test" min="3"></table>
+            <table bgcolor="x" lwc-deprecated:is="x-table" tabindex="2" bar="test" min="3"></table>
         </template>`);
         expect(root.children[0].props).toMatchObject({
             bar: { value: 'test' },
@@ -497,7 +523,7 @@ describe('props and attributes', () => {
             tabIndex: { value: '2' },
         });
         expect(root.children[0].attrs).toMatchObject({
-            is: { value: 'x-table' },
+            ['lwc-deprecated:is']: { value: 'x-table' },
         });
     });
 });
@@ -522,7 +548,7 @@ describe('metadata', () => {
     it('dependent component', () => {
         const { state } = parseTemplate(`<template>
             <x-menu></x-menu>
-            <button is="x-button"></button>
+            <button lwc-deprecated:is="x-button"></button>
         </template>`);
 
         expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);

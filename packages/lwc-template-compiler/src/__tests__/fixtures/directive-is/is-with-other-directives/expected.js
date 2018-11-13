@@ -28,7 +28,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   _nsRow,
                   {
                     attrs: {
-                      is: "ns-row"
+                      "lwc-deprecated:is": "ns-row"
                     },
                     key: api_key(4, row.id)
                   },

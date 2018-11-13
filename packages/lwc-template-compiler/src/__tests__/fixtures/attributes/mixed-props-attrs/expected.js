@@ -91,7 +91,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsBuzz,
       {
         attrs: {
-          is: "ns-buzz"
+          "lwc-deprecated:is": "ns-buzz"
         },
         props: {
           bgColor: "x",
@@ -116,7 +116,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsTable,
       {
         attrs: {
-          is: "ns-table"
+          "lwc-deprecated:is": "ns-table"
         },
         props: {
           bgColor: "x",
@@ -133,7 +133,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       _nsInput,
       {
         attrs: {
-          is: "ns-input"
+          "lwc-deprecated:is": "ns-input"
         },
         props: {
           minLength: "3",

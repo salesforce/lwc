@@ -158,6 +158,10 @@ function isAriaAttribute(attrName: string): boolean {
     return attrName === 'role' || ARIA_RE.test(attrName);
 }
 
+export function isProhibitedIsAttribute(attrName: string): boolean {
+    return attrName === 'is';
+}
+
 export function isTabIndexAttribute(attrName: string): boolean {
     return attrName === 'tabindex';
 }
@@ -181,7 +185,7 @@ function isDataAttribute(attrName: string): boolean {
 
 function isFmkAttribute(attrName: string): boolean {
     return (
-        attrName === 'is' ||
+        attrName === 'lwc-deprecated:is' ||
         attrName === 'key' ||
         attrName === 'slot'
     );
@@ -189,7 +193,7 @@ function isFmkAttribute(attrName: string): boolean {
 
 function isCustomElementAttribute(attrName: string): boolean {
     return (
-        attrName === 'is' ||
+        attrName === 'lwc-deprecated:is' ||
         attrName === 'key' ||
         attrName === 'slot' ||
         !!attrName.match(DATA_RE)
@@ -223,8 +227,8 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle attributes applied to a subclassed element via the is="" attribute.
     // Returns true only attributes that are valid attribute for the base element.
-    const hasIsAttr = !!getAttribute(element, 'is');
-    if (hasIsAttr) {
+    const hasDeprecatedIsAttr = !!getAttribute(element, 'lwc-deprecated:is');
+    if (hasDeprecatedIsAttr) {
         return isValidHTMLAttribute(element.tag, attrName);
     }
 
