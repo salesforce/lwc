@@ -1,5 +1,4 @@
 import { VNodes } from "../3rdparty/snabbdom/types";
-import { patchEvent } from "../faux-shadow/faux";
 import { tagNameGetter } from "../env/element";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, create, isUndefined } from "../shared/language";
@@ -86,7 +85,3 @@ export function patchCustomElementProto(elm: HTMLElement, tag: string, def: Comp
     // temporary patching the proto, eventually this should be just more nodes in the proto chain
     setPrototypeOf(elm, patchedBridge.prototype);
 }
-
-export {
-    patchEvent,
-};

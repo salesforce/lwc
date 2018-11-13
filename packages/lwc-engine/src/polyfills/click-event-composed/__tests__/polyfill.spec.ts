@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../../framework/main';
-import applyPolyfill from '../../patch-event/polyfill';
+import applyEventPolyfill from '../../patch-event/polyfill';
+import applyComposedPolyfill from '../polyfill';
 
 // TODO: https://github.com/salesforce/lwc/pull/568#discussion_r208827386
 // While Jest creates a new window object between each test file evaluation, the
@@ -9,7 +10,8 @@ import applyPolyfill from '../../patch-event/polyfill';
 // to run in the same worker. This is a growing pain that we have today because
 // it introduces an uncertainty in the way tests run. We really need to speak
 // about to mitigate this issue in the future.
-applyPolyfill();
+applyEventPolyfill();
+applyComposedPolyfill();
 
 describe('click-event-composed polyfill', () => {
     const html = compileTemplate(`
@@ -20,15 +22,17 @@ describe('click-event-composed polyfill', () => {
 
     it('should patch click events for listeners bound to the host element', () => {
         expect.assertions(1);
+        // TODO: this test is confusing, I think it was working due to a bug
+        // in our old patching of the click event.
 
         class Foo extends LightningElement {
             renderedCallback() {
-                this.addEventListener('click', event => {
+                this.template.addEventListener('click', event => {
                     const isCustomClick = event instanceof CustomEvent;
                     if (!isCustomClick) {
                         return;
                     }
-                    expect(event.composed).toBe(true);
+                    expect(event.composed).toBe(false);
                 });
                 this.template.querySelector('button').click();
             }

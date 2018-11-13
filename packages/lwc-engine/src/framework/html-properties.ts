@@ -8,6 +8,7 @@ import { defaultDefHTMLPropertyNames } from "./attributes";
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 
 // Initialization Routines
+import "../polyfills/click-event-composed/main";
 import "../polyfills/patch-event/main";
 import "../polyfills/document-shadow/main";
 import "../polyfills/shadow-root/main";

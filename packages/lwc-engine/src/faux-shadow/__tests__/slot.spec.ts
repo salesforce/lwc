@@ -311,6 +311,60 @@ describe('slot.name', () => {
 });
 
 describe('slotted elements', () => {
+    it('should be visible via event.target for simple slotting', () => {
+        expect.assertions(4);
+
+        const htmlContainer = compileTemplate(`
+            <template>
+                <slot onclick={handleClickInSlot}></slot>
+            </template>
+        `);
+
+        class XContainer extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('click', this.handleClickInContainer.bind(this));
+            }
+            render() {
+                return htmlContainer;
+            }
+            handleClickInContainer(e) {
+                expect(e.target).toBe(this.querySelector('button'));
+            }
+            handleClickInSlot(e) {
+                expect(e.target).toBe(this.querySelector('button'));
+                expect(e.currentTarget).toBe(this.template.querySelector('slot'));
+            }
+        }
+
+        const htmlMock = compileTemplate(`
+            <template>
+                <x-container>
+                    <button></button>
+                </x-container>
+            </template>
+        `, {
+            modules: {
+                'x-container': XContainer,
+            }
+        });
+
+        class MyMock extends LightningElement {
+            connectedCallback() {
+                this.template.addEventListener('click', this.handleClickInMock.bind(this));
+            }
+            render() {
+                return htmlMock;
+            }
+            handleClickInMock(e) {
+                expect(e.target).toBe(this.template.querySelector('button'));
+            }
+        }
+
+        const elm = createElement('x-mock', { is: MyMock, fallback: true });
+        document.body.appendChild(elm);
+        const button = elm.shadowRoot.querySelector('button');
+        button.click();
+    });
     it('should be visible via event.target', () => {
         expect.assertions(5);
 
