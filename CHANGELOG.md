@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.31.6...v) (2018-11-12)
+# [](https://github.com/salesforce/lwc/compare/v0.32.1...v) (2018-11-13)
+
+
+### Bug Fixes
+
+* error when document.activeElement is null ([#823](https://github.com/salesforce/lwc/issues/823)) ([5c70269](https://github.com/salesforce/lwc/commit/5c70269))
+
+
+### Features
+
+* dynamic scoped ids ([#787](https://github.com/salesforce/lwc/issues/787)) ([e1e85cc](https://github.com/salesforce/lwc/commit/e1e85cc))
+
+
+
+<a name="0.32.1"></a>
+## [0.32.1](https://github.com/salesforce/lwc/compare/v0.31.6...v0.32.1) (2018-11-12)
 
 
 ### Bug Fixes
