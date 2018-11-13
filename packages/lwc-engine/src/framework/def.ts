@@ -52,17 +52,17 @@ export interface ComponentDef extends DecoratorMeta {
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-function getCtorProto(Ctor: any, topComponentName: string): ComponentConstructor {
+function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
-        throw new ReferenceError(`Invalid prototype chain for ${topComponentName}, you must extend LightningElement.`);
+        throw new ReferenceError(`Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`);
     }
     // covering the cases where the ref is circular in AMD
     if (isCircularModuleDependency(proto)) {
         const p = resolveCircularModuleDependency(proto);
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
-                throw new ReferenceError(`Circular module dependency for ${topComponentName}, must resolve to a constructor that extends LightningElement.`);
+                throw new ReferenceError(`Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`);
             }
         }
         // escape hatch for Locker and other abstractions to provide their own base class instead
@@ -74,23 +74,23 @@ function getCtorProto(Ctor: any, topComponentName: string): ComponentConstructor
     return proto as ComponentConstructor;
 }
 
-function isElementComponent(Ctor: any, topComponentName, protoSet?: any[]): boolean {
+function isElementComponent(Ctor: any, subclassComponentName, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
-    const proto = getCtorProto(Ctor, topComponentName);
+    const proto = getCtorProto(Ctor, subclassComponentName);
     if (proto as any === BaseLightningElement) {
         return true;
     }
-    getComponentDef(proto, topComponentName); // ensuring that the prototype chain is already expanded
+    getComponentDef(proto, subclassComponentName); // ensuring that the prototype chain is already expanded
     ArrayPush.call(protoSet, Ctor);
-    return isElementComponent(proto, topComponentName, protoSet);
+    return isElementComponent(proto, subclassComponentName, protoSet);
 }
 
-function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, topComponentName: string): ComponentDef {
+function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, subclassComponentName: string): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isElementComponent(Ctor, topComponentName), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
+        assert.isTrue(isElementComponent(Ctor, subclassComponentName), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
 
         // local to dev block
         const ctorName = Ctor.name;
@@ -125,8 +125,8 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, top
         errorCallback,
         render,
     } = proto;
-    const superProto = getCtorProto(Ctor, topComponentName);
-    const superDef: ComponentDef | null = superProto as any !== BaseLightningElement ? getComponentDef(superProto, topComponentName) : null;
+    const superProto = getCtorProto(Ctor, subclassComponentName);
+    const superDef: ComponentDef | null = superProto as any !== BaseLightningElement ? getComponentDef(superProto, subclassComponentName) : null;
     const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
     const bridge = HTMLBridgeElementFactory(SuperBridge, getOwnPropertyNames(props), getOwnPropertyNames(methods));
     if (!isNull(superDef)) {
@@ -173,7 +173,7 @@ function getOwnValue(o: any, key: string): any | undefined {
     return d && d.value;
 }
 
-export function getComponentDef(Ctor: ComponentConstructor, topComponentName?: string): ComponentDef {
+export function getComponentDef(Ctor: ComponentConstructor, subclassComponentName?: string): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
         return def;
@@ -188,7 +188,7 @@ export function getComponentDef(Ctor: ComponentConstructor, topComponentName?: s
             name: Ctor.name,
         };
     }
-    def = createComponentDef(Ctor, meta, topComponentName || Ctor.name);
+    def = createComponentDef(Ctor, meta, subclassComponentName || Ctor.name);
     CtorToDefMap.set(Ctor, def);
     return def;
 }
