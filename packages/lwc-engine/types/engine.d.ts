@@ -144,7 +144,7 @@ declare module 'engine' {
     /**
      * Base class for the Lightning Web Component JavaScript class
      */
-    export class Element extends HTMLElementTheGoodPart {
+    export class LightningElement extends HTMLElementTheGoodPart {
         /**
          * Called when the component is created
          */
