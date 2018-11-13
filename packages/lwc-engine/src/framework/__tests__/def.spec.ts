@@ -239,7 +239,7 @@ describe('def', () => {
 
             expect(() => {
                 getComponentDef(MyComponent);
-            }).toThrow();
+            }).toThrow('Missing getter for property x decorated with @api in class MyComponent');
         });
 
         it('should inherit methods correctly', function() {
@@ -322,7 +322,7 @@ describe('def', () => {
             class MyComponent extends L  {}
             expect(() => {
                 getComponentDef(MyComponent);
-            }).toThrow();
+            }).toThrow('Invalid prototype chain for MyComponent, you must extend LightningElement');
         });
 
         it('should not allow null in proto chain', function() {
@@ -331,7 +331,7 @@ describe('def', () => {
             class MyComponent extends Foo  {}
             expect(() => {
                 getComponentDef(MyComponent);
-            }).toThrow();
+            }).toThrow('Invalid prototype chain for MyComponent, you must extend LightningElement');
         });
     });
     describe('#getComponentConstructor()', () => {
@@ -392,7 +392,7 @@ describe('def', () => {
             // make sure it picks the props from LightingElement
             expect(() => {
                 getComponentDef(B);
-            }).toThrow();
+            }).toThrow('Circular module dependency for B, must resolve to a constructor that extends LightningElement');
         });
     });
 });
