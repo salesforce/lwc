@@ -8,7 +8,7 @@ describe('Scoped ids (dynamic)', () => {
 
     describe('should be transformed', function () {
         it('aria-activedescendant', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-dynamic-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.activedescendant-id');
                 var idrefElm = integration.shadowRoot.querySelector('.activedescendant-idref');
@@ -23,7 +23,7 @@ describe('Scoped ids (dynamic)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-details', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-dynamic-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.details-id');
                 var idrefElm = integration.shadowRoot.querySelector('.details-idref');
@@ -38,7 +38,7 @@ describe('Scoped ids (dynamic)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-errormessage', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function (){
                 var integration = document.querySelector('integration-dynamic-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.errormessage-id');
                 var idrefElm = integration.shadowRoot.querySelector('.errormessage-idref');
@@ -53,7 +53,7 @@ describe('Scoped ids (dynamic)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-flowto', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-dynamic-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.flowto-id');
                 var idrefElm = integration.shadowRoot.querySelector('.flowto-idref');
