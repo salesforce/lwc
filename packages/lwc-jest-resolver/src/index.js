@@ -14,6 +14,8 @@ const WHITELISTED_LWC_PACKAGES = {
 
 const lwcMap = lwcNpmResolver.resolveLwcNpmModules();
 
+// This logic is somewhat the same in the compiler resolution system
+// We should try to consolidate it at some point.
 function isImplicitHTMLImport(importee, { basedir }) {
     const ext = extname(importee);
     const isHTML = ext === '.html';
