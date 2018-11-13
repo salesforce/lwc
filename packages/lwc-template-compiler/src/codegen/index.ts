@@ -137,7 +137,7 @@ function transform(
 
             exit(element: IRElement) {
                 if (isStyleSheet(element)) {
-                    codeGen.genInlineStyles(element.inlineStyles, options.stylesheetConfig);
+                    codeGen.genInlineStyles(element.inlineStyles);
                     return;
                 }
 
@@ -313,10 +313,6 @@ function transform(
         element: IRElement,
         fragmentNodes: t.Expression,
     ) {
-        if (!element.forOf) {
-            return fragmentNodes;
-        }
-
         let expression = fragmentNodes;
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
@@ -329,10 +325,6 @@ function transform(
         element: IRElement,
         fragmentNodes: t.Expression,
     ): t.Expression {
-        if (!element.forEach) {
-            return fragmentNodes;
-        }
-
         let expression = fragmentNodes;
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;

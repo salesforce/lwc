@@ -1,10 +1,8 @@
+import * as babylon from 'babylon';
 import * as t from 'babel-types';
 import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
 import { isUndefined } from 'util';
-import parseStyles from './styles';
-
-import { Config as StylesheetConfig } from "lwc-style-compiler/dist/types/index";
 
 type RenderPrimitive =
     | 'iterator'
@@ -44,8 +42,6 @@ const RENDER_APIS: {
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
 };
 
-const SLOT_ID_PREFIX = 'slot';
-
 export default class CodeGen {
     currentId = 0;
 
@@ -55,7 +51,7 @@ export default class CodeGen {
     inlineStyleImports: t.ImportDeclaration[] = [];
     inlineStyleBody: t.Statement[] = [];
 
-    genInlineStyles(src: string | undefined, stylesheetConfig: StylesheetConfig): void {
+    genInlineStyles(src: string | undefined): void {
         if (src) {
             // We get back a AST module which may have three pieces:
             // 1) import statements
@@ -64,7 +60,10 @@ export default class CodeGen {
             // We need to separate the imports and change the default export for a correct inlining
             const importDeclarations: t.ImportDeclaration[] = [];
             const styleBody: t.Statement[] = [];
-            const inlineStylesAst = parseStyles(src, stylesheetConfig);
+
+            // Parse the generated module code and return it's body.
+            const parsed = babylon.parse(src, { sourceType: 'module' });
+            const inlineStylesAst = parsed.program.body;
 
             inlineStylesAst.forEach(node => {
                 if (t.isImportDeclaration(node)) {
@@ -157,19 +156,6 @@ export default class CodeGen {
             return this._renderApiCall(RENDER_APIS.scopedId, [t.stringLiteral(id)]);
         }
         return this._renderApiCall(RENDER_APIS.scopedId, [id]);
-    }
-
-    getSlotId(name: string) {
-        let slotIdentifier = this.usedSlots[name];
-
-        if (!slotIdentifier) {
-            const slotCount = Object.keys(this.usedSlots).length;
-            slotIdentifier = t.identifier(SLOT_ID_PREFIX + slotCount);
-
-            this.usedSlots[name] = slotIdentifier;
-        }
-
-        return slotIdentifier;
     }
 
     getSlot(
