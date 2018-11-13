@@ -30,20 +30,6 @@ function isImplicitHTMLImport(importee, { basedir }) {
     );
 }
 
-function isImplicitHTMLImport(importee, { basedir }) {
-    const ext = extname(importee);
-    const isHTML = ext === '.html';
-    const fileName = basename(importee, '.html');
-    const absPath = resolve(basedir, importee);
-    const jsFile = join(dirname(absPath), fileName + '.js');
-
-    return (
-        isHTML && // if is an HTML file
-        fs.existsSync(jsFile) &&  // There must be a js file with the same name in the same folder
-        !fs.existsSync(absPath) // and the html must not exist
-    );
-}
-
 function getLwcPath(path, options) {
 
     // If is a special LWC package, resolve it from commonjs
