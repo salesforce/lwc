@@ -7,7 +7,7 @@ describe('Scoped ids', () => {
     });
 
     it('should transform ids as they are passed down', () => {
-        const { inner, outer } = browser.execute(() => {
+        const { inner, outer } = browser.execute(function () {
             var integration = document.querySelector('integration-scoped-ids');
             var outerElm = integration.shadowRoot.querySelector('integration-child');
             var innerElm = outerElm.shadowRoot.querySelector('p');
@@ -21,7 +21,7 @@ describe('Scoped ids', () => {
     });
 
     it('static and dynamic id should be the same', () => {
-        const { staticValue, dynamicValue } = browser.execute(() => {
+        const { staticValue, dynamicValue } = browser.execute(function () {
             var integration = document.querySelector('integration-scoped-ids');
             var staticElm = integration.shadowRoot.querySelector('.static');
             var dynamicElm = integration.shadowRoot.querySelector('.dynamic');

@@ -8,7 +8,7 @@ describe('Scoped ids (static)', () => {
 
     describe('should be transformed', function () {
         it('aria-controls', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-static-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.controls-id');
                 var idrefElm = integration.shadowRoot.querySelector('.controls-idref');
@@ -23,7 +23,7 @@ describe('Scoped ids (static)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-describedby', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-static-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.describedby-id');
                 var idrefElm = integration.shadowRoot.querySelector('.describedby-idref');
@@ -38,7 +38,7 @@ describe('Scoped ids (static)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-labelledby', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function() {
                 var integration = document.querySelector('integration-static-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.labelledby-id');
                 var idrefElm = integration.shadowRoot.querySelector('.labelledby-idref');
@@ -53,7 +53,7 @@ describe('Scoped ids (static)', () => {
             assert(id === idref, 'id attr and idref attr should be the same value');
         });
         it('aria-owns', () => {
-            const { id, idref } = browser.execute(() => {
+            const { id, idref } = browser.execute(function () {
                 var integration = document.querySelector('integration-static-scoped-ids');
                 var idElm = integration.shadowRoot.querySelector('.owns-id');
                 var idrefElm = integration.shadowRoot.querySelector('.owns-idref');
