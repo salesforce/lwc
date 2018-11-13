@@ -8,6 +8,7 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
 const { isLWCNode } = require("../utils");
+const LWC_POST_PROCCESED = Symbol();
 
 const REGISTER_DECORATORS_ID = "registerDecorators";
 const REGISTER_COMPONENT_ID = "registerComponent";
@@ -101,11 +102,13 @@ module.exports = function postProcess({ types: t }) {
         // Decorator collector for class expressions
         ClassExpression(path) {
             const { node } = path;
-            const body = path.get("body");
-            const metaPropertyList = collectDecoratedProperties(body);
-            if (metaPropertyList.length) {
-                path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
-                path.skip(); // reusing node so we need to skip it
+            if (!node[LWC_POST_PROCCESED]) {
+                const body = path.get("body");
+                const metaPropertyList = collectDecoratedProperties(body);
+                if (metaPropertyList.length) {
+                    path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
+                }
+                node[LWC_POST_PROCCESED] = true;
             }
         },
         // Decorator collector for class declarations
