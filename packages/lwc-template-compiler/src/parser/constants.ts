@@ -121,7 +121,6 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'novalidate': 'noValidate',
     'usemap': 'useMap',
     'for': 'htmlFor',
-
     // According to the following list, there are 48 aria attributes (of which 2 are deprecated):
     // https://www.w3.org/TR/wai-aria-1.1/#x6-6-definitions-of-states-and-properties-all-aria-attributes
     // This list of 46 non-deprecated aria attributes is consistent with the following proposal:

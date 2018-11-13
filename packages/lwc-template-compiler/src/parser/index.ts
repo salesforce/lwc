@@ -17,6 +17,7 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
+    isDeprecatedIsAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
@@ -668,7 +669,10 @@ export default function parse(source: string, state: State): {
 
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-                attrs[name] = attr;
+
+                // authored code for 'lwc-deprecated:is' attr maps to 'is'
+                const attrKey = isDeprecatedIsAttribute(name) ? 'is' : name;
+                attrs[attrKey] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;
@@ -742,12 +746,6 @@ export default function parse(source: string, state: State): {
                     );
                 }
             }
-            // if (isProhibitedIsAttribute(attrName)) {
-            //     warnOnElement(
-            //         ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED,
-            //         element.__original
-            //     );
-            // }
         });
     }
 
@@ -767,13 +765,6 @@ export default function parse(source: string, state: State): {
                         );
                     }
                 }
-
-                // if (isProhibitedIsAttribute(attrName)) {
-                //     warnOnElement(
-                //         ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED,
-                //         element.__original
-                //     );
-                // }
             }
         }
     }

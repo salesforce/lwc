@@ -158,6 +158,10 @@ function isAriaAttribute(attrName: string): boolean {
     return attrName === 'role' || ARIA_RE.test(attrName);
 }
 
+export function isDeprecatedIsAttribute(attrName: string): boolean {
+    return attrName === 'lwc-deprecated:is';
+}
+
 export function isProhibitedIsAttribute(attrName: string): boolean {
     return attrName === 'is';
 }

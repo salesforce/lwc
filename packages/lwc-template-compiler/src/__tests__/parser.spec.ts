@@ -292,33 +292,6 @@ describe('custom component', () => {
             location: EXPECTED_LOCATION
         });
     });
-
-    it('custom component via lwc-deprecated:is attribute', () => {
-        const { root } = parseTemplate(`<template><button lwc-deprecated:is="x-button"></button></template>`);
-        expect(root.children[0].tag).toBe('button');
-        expect(root.children[0].component).toBe('x-button');
-    });
-
-    it('errors when using custom component with "is" attribute', () => {
-        const { warnings } = parseTemplate(`<template><foo-button is="x-button"></foo-button></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            filename: undefined,
-            level: DiagnosticLevel.Error,
-            message: `LWC1001: Is attribute is not supported`,
-            location: EXPECTED_LOCATION
-        });
-    });
-
-    it('is dynamic attribute error', () => {
-        const { warnings } = parseTemplate(`<template><button lwc-deprecated:is={dynamicCmp}></button></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: `LWC1001: Is attribute value can't be an expression`,
-            location: EXPECTED_LOCATION
-        });
-    });
 });
 
 describe('root errors', () => {
@@ -523,7 +496,7 @@ describe('props and attributes', () => {
             tabIndex: { value: '2' },
         });
         expect(root.children[0].attrs).toMatchObject({
-            ['lwc-deprecated:is']: { value: 'x-table' },
+            is: { value: 'x-table' },
         });
     });
 });
