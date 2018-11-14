@@ -9,7 +9,7 @@ import {
     CONFIG
 } from './constants';
 import {
-    Element,
+    LightningElement,
     ElementDef,
     WireDef,
     ComposableEvent
@@ -99,14 +99,14 @@ function buildReactiveParameter(reference: string): ReactiveParameter {
 }
 
 export class WireEventTarget {
-    _cmp: Element;
+    _cmp: LightningElement;
     _def: ElementDef;
     _context: Context;
     _wireDef: WireDef;
     _wireTarget: string;
 
     constructor(
-        cmp: Element,
+        cmp: LightningElement,
         def: ElementDef,
         context: Context,
         wireDef: WireDef,
