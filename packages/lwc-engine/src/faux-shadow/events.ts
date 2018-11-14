@@ -142,7 +142,7 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
                     (composed === false && rootNode === currentTarget)) {
                     // TODO: we should figure why `undefined` makes sense here
                     // and how this is going to work for native shadow root?
-                    listener.call(undefined, event);
+                    listener.call(sr, event);
                 }
             }
         } as WrappedListener;
