@@ -161,7 +161,7 @@ describe('events', () => {
             let target;
             class Child extends LightningElement {
                 handleClick(evt) {
-                    target = evt.target
+                    target = evt.target;
                 }
                  render() {
                     return childHTML;
@@ -199,6 +199,48 @@ describe('events', () => {
             const div = elm.shadowRoot.querySelector('div');
             div.click();
             expect(target).toBe(div);
+        });
+
+        it('should report the target as the custom element when the handler is on an element not owned by a custom element', () => {
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+                handleClick(evt) {
+                }
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}>
+                        <slot></slot>
+                    </div>
+                </template>
+            `);
+
+            // The below sets up the following HTML:
+            // <body>
+            //   <div> <!-- with onclick handler that accesses event.target -->
+            //     <x-root data-target="x-root">
+            //       <div onclick={handleClick}></div>
+            //     </x-root>
+            //   </div>
+            const elm = createElement('x-root', { is: Root });
+            elm.setAttribute('data-target', 'x-root');
+            const divWithClickHandler = document.createElement('div');
+            let target;
+            divWithClickHandler.addEventListener('click', function(event) {
+                target = event.target;
+            });
+            divWithClickHandler.appendChild(elm);
+            document.body.appendChild(divWithClickHandler);
+
+            const div = elm.shadowRoot.querySelector('div');
+            div.click();
+
+            expect(target.getAttribute('data-target')).toBe('x-root');
         });
 
         it('should report correct target when slotted through multiple components and rehydration happens', () => {

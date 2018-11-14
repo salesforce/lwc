@@ -12,6 +12,7 @@ import {
 import {
     getNodeNearestOwnerKey,
     getNodeKey,
+    getRootNode,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { isNodeSlotted, getRootNodeGetter } from "./traverse";
