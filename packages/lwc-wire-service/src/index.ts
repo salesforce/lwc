@@ -13,7 +13,7 @@ import {
     CONTEXT_UPDATED
 } from './constants';
 import {
-    Element,
+    LightningElement,
     ElementDef
 } from './engine';
 import {
@@ -53,7 +53,7 @@ function invokeListener(listeners: NoArgumentListener[]) {
  * callbacks to wire adapter lifecycle events.
  */
 const wireService = {
-    wiring: (cmp: Element, data: object, def: ElementDef, context: Context) => {
+    wiring: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         const wireContext: WireContext = context[CONTEXT_ID] = Object.create(null);
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
@@ -102,7 +102,7 @@ const wireService = {
         }
     },
 
-    connected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
+    connected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
@@ -110,7 +110,7 @@ const wireService = {
         invokeListener(listeners);
     },
 
-    disconnected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
+    disconnected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;

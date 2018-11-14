@@ -2,6 +2,7 @@ import assert from "../shared/assert";
 import {
     getNodeKey,
     getNodeNearestOwnerKey,
+    getNodeOwnerKey,
 } from "./node";
 import {
     parentNodeGetter as nativeParentNodeGetter,
@@ -11,6 +12,7 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
+    DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
 import {
     querySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
@@ -350,6 +352,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             if (isNull(value)) {
                 return value;
             }
+            // @ts-ignore
             return getShadowParent(this, value);
         }
         get parentElement(this: Node): HTMLElement | null {
@@ -371,6 +374,20 @@ export function PatchedNode(node: Node): NodeConstructor {
         getRootNode(this: Node, options?: GetRootNodeOptions): Node {
             return getRootNodeGetter.call(this, options);
         }
+        compareDocumentPosition(this: Node, otherNode: Node) {
+            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+                // it is from another shadow
+                return 0;
+            }
+            return compareDocumentPosition.call(this, otherNode);
+        }
+        contains(this: Node, otherNode: Node) {
+            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+                // it is from another shadow
+                return false;
+            }
+            return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+        }
     };
 }
 
@@ -387,7 +404,7 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         get innerHTML(): string {
             return getInnerHTML(this);
         }
-        set innerHTML(value: string) {
+        set innerHTML(this: HTMLElement, value: string) {
             innerHTMLSetter.call(this, value);
         }
         get outerHTML() {

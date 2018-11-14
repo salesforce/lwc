@@ -12,6 +12,7 @@ import {
 import {
     getNodeNearestOwnerKey,
     getNodeKey,
+    getRootNode,
 } from "./node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { isNodeSlotted, getRootNodeGetter } from "./traverse";
@@ -53,9 +54,11 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
 
-            // Handle cases where the currentTarget is null (for async events)
-            // and when currentTarget is window or document.
-            if (!(currentTarget instanceof Node) || currentTarget instanceof Document) {
+            // Handle cases where the currentTarget is null (for async events),
+            // and when it's not owned by a custom element
+            if (!(currentTarget instanceof Node)
+                || (getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE) === document
+                    && isUndefined(getNodeKey(currentTarget)))) {
                 // the event was inspected asynchronously, in which case we need to return the
                 // top custom element that belongs to the body.
                 let outerMostElement = originalTarget;

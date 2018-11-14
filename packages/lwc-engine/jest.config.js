@@ -17,7 +17,7 @@ module.exports = {
         '<rootDir>/scripts/',
         '<rootDir>/src/faux-shadow/focus.ts',
         '<rootDir>/src/faux-shadow/slot.ts',
-        '<rootDir>/src/polyfills/aria-properties',
+        '<rootDir>/src/polyfills',
         '<rootDir>/src/framework/wc.ts'
     ],
 

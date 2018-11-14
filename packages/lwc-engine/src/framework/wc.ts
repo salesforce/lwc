@@ -1,7 +1,7 @@
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse, ArrayMap } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
-import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
+import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { getComponentDef } from "./def";
 import { tagNameGetter } from "../env/element";
 import { isNativeShadowRootAvailable } from "../env/dom";
@@ -29,11 +29,13 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             const tagName = StringToLowerCase.call(tagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
                 const def = getComponentDef(Ctor);
-                patchCustomElementProto(this, tagName, def);
+                patchCustomElementProto(this, {
+                    def,
+                });
             }
             createVM(tagName, this, Ctor, normalizedOptions);
             if (process.env.NODE_ENV !== 'production') {
-                patchCustomElementWithRestrictions(this);
+                patchCustomElementWithRestrictions(this, EmptyObject);
             }
         }
         connectedCallback() {

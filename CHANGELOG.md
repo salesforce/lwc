@@ -1,5 +1,17 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.32.1...v) (2018-11-13)
+# [](https://github.com/salesforce/lwc/compare/v0.33.0...v) (2018-11-13)
+
+
+### Bug Fixes
+
+* apply implicit logic to jest resolver ([#825](https://github.com/salesforce/lwc/issues/825)) ([c5554fd](https://github.com/salesforce/lwc/commit/c5554fd))
+* publicPropsTransform ([#833](https://github.com/salesforce/lwc/issues/833)) ([67008de](https://github.com/salesforce/lwc/commit/67008de))
+* serialization ie11 ([#828](https://github.com/salesforce/lwc/issues/828)) ([714c4a8](https://github.com/salesforce/lwc/commit/714c4a8))
+
+
+
+<a name="0.33.0"></a>
+# [0.33.0](https://github.com/salesforce/lwc/compare/v0.32.1...v0.33.0) (2018-11-13)
 
 
 ### Bug Fixes

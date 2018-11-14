@@ -24,7 +24,7 @@ import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
 import { setInternalField } from "../shared/fields";
-import { ViewModelReflection } from "./utils";
+import { ViewModelReflection, EmptyObject } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, setNodeKey } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -136,8 +136,8 @@ export function BaseLightningElement(this: ComponentInterface) {
     setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
     if (process.env.NODE_ENV !== 'production') {
-        patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
+        patchComponentWithRestrictions(component, EmptyObject);
+        patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
     }
 }
 
@@ -337,7 +337,7 @@ const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(getOwnPropertyNa
 defineProperties(BaseLightningElement.prototype, baseDescriptors);
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype);
+    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype, EmptyObject);
 }
 
 freeze(BaseLightningElement);
