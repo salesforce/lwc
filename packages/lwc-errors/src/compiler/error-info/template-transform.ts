@@ -257,9 +257,16 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    IS_ATTRIBUTE_CANNOT_BE_EXPRESSION: {
+    DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION: {
         code: 1001,
-        message: "Is attribute value can't be an expression",
+        message: "\"is\" attribute value can't be an expression",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    IS_ATTRIBUTE_NOT_SUPPORTED: {
+        code: 1001,
+        message: "\"is\" attribute is not supported",
         level: DiagnosticLevel.Error,
         url: ""
     },

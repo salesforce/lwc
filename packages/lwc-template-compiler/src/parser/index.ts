@@ -17,6 +17,8 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
+    isDeprecatedIsAttribute,
+    isProhibitedIsAttribute,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
 } from './attribute';
@@ -564,10 +566,10 @@ export default function parse(source: string, state: State): {
             component = tag;
         }
 
-        const isAttr = getTemplateAttribute(element, 'is');
+        const isAttr = getTemplateAttribute(element, 'lwc-deprecated:is');
         if (isAttr) {
             if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(ParserDiagnostics.IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
+                return warnAt(ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
             }
 
             // Don't remove the is, because passed as attribute
@@ -645,6 +647,8 @@ export default function parse(source: string, state: State): {
             const { name, location } = attr;
             if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            } else if (isCustomElement(element) && isProhibitedIsAttribute(name)) {
+                warnAt(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, [name, tag], location);
             }
 
             if (attr.type === IRAttributeType.String) {
@@ -665,7 +669,10 @@ export default function parse(source: string, state: State): {
 
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-                attrs[name] = attr;
+
+                // authored code for 'lwc-deprecated:is' attr maps to 'is'
+                const attrKey = isDeprecatedIsAttribute(name) ? 'is' : name;
+                attrs[attrKey] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;

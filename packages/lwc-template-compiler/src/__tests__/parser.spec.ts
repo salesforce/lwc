@@ -292,22 +292,6 @@ describe('custom component', () => {
             location: EXPECTED_LOCATION
         });
     });
-
-    it('custom component via is attribute', () => {
-        const { root } = parseTemplate(`<template><button is="x-button"></button></template>`);
-        expect(root.children[0].tag).toBe('button');
-        expect(root.children[0].component).toBe('x-button');
-    });
-
-    it('is dynamic attribute error', () => {
-        const { warnings } = parseTemplate(`<template><button is={dynamicCmp}></button></template>`);
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            level: DiagnosticLevel.Error,
-            message: `LWC1001: Is attribute value can't be an expression`,
-            location: EXPECTED_LOCATION
-        });
-    });
 });
 
 describe('root errors', () => {
@@ -347,6 +331,21 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: `LWC1001: Root template doesn't allow attributes`,
+            location: EXPECTED_LOCATION
+        });
+    });
+
+    it('disallows is attribute in non-custom component', () => {
+        const { warnings } = parseTemplate(`<template>
+            <x-menu></x-menu>
+            <button is="x-button"></button>
+        </template>`);
+
+        expect(warnings).toContainEqual({
+            code: expect.any(Number),
+            filename: undefined,
+            level: DiagnosticLevel.Error,
+            message: `LWC1001: is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`,
             location: EXPECTED_LOCATION
         });
     });
@@ -488,7 +487,7 @@ describe('props and attributes', () => {
 
     it('custom element using is with attribute / prop mix', () => {
         const { root } = parseTemplate(`<template>
-            <table bgcolor="x" is="x-table" tabindex="2" bar="test" min="3"></table>
+            <table bgcolor="x" lwc-deprecated:is="x-table" tabindex="2" bar="test" min="3"></table>
         </template>`);
         expect(root.children[0].props).toMatchObject({
             bar: { value: 'test' },
@@ -522,7 +521,7 @@ describe('metadata', () => {
     it('dependent component', () => {
         const { state } = parseTemplate(`<template>
             <x-menu></x-menu>
-            <button is="x-button"></button>
+            <button lwc-deprecated:is="x-button"></button>
         </template>`);
 
         expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);
