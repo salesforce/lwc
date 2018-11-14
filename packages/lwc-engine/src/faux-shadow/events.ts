@@ -42,9 +42,13 @@ function getRootNodeHost(node: Node, options): Node {
     return rootNode;
 }
 
+type ComposableEvent = (Event & {
+    composed: boolean
+});
+
 const EventPatchDescriptors: PropertyDescriptorMap = {
     target: {
-        get(this: Event): EventTarget {
+        get(this: ComposableEvent): EventTarget {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
             const eventContext = eventToContextMap.get(this);
