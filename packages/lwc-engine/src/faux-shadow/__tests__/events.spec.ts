@@ -207,6 +207,7 @@ describe('events', () => {
                     return rootHTML;
                 }
                 handleClick(evt) {
+                    // event handler is here to trigger patching of the event
                 }
                 render() {
                     return rootHTML;
@@ -214,9 +215,7 @@ describe('events', () => {
             }
             const rootHTML = compileTemplate(`
                 <template>
-                    <div onclick={handleClick}>
-                        <slot></slot>
-                    </div>
+                    <div onclick={handleClick}></div>
                 </template>
             `);
 
@@ -250,6 +249,7 @@ describe('events', () => {
                     return rootHTML;
                 }
                 handleClick(evt) {
+                    // event handler is here to trigger patching of the event
                 }
                 render() {
                     return rootHTML;
