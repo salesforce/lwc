@@ -8,10 +8,10 @@ import {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_FRAGMENT_NODE,
 } from "../env/node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull } from "../shared/language";
 import { getRootNodeGetter } from "./traverse";
 import { getHost, SyntheticShadowRootInterface, SyntheticShadowRoot, getShadowRoot } from "./shadow-root";
-import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
+import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from "../env/dom";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -47,15 +47,42 @@ type ComposableEvent = (Event & {
 });
 
 const EventPatchDescriptors: PropertyDescriptorMap = {
+    relatedTarget: {
+        get(this: ComposableEvent): EventTarget | null {
+            const eventContext = eventToContextMap.get(this);
+            const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+            const relatedTarget = focusEventRelatedTargetGetter.call(this);
+            if (isNull(relatedTarget)) {
+                return null;
+            }
+            const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+                getShadowRoot(originalCurrentTarget as HTMLElement) :
+                originalCurrentTarget;
+
+            return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true)) as EventTarget;
+        },
+        enumerable: true,
+        configurable: true,
+    },
     target: {
         get(this: ComposableEvent): EventTarget {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
+            const composedPath = pathComposer(originalTarget as Node, this.composed);
+            if (!(originalCurrentTarget instanceof Node)) {
+                for(let i = 0, len = composedPath.length; i < len; i += 1) {
+                    const node = composedPath[i];
+                    if (getRootNodeGetter.call(node) === document) {
+                        return node;
+                    }
+                }
+            }
+
             const eventContext = eventToContextMap.get(this);
             const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                 getShadowRoot(originalCurrentTarget as HTMLElement) :
                 originalCurrentTarget;
-            return retarget(currentTarget as Node, pathComposer(originalTarget as Node, this.composed)) as EventTarget;
+            return retarget(currentTarget as Node, composedPath) as EventTarget;
         },
         enumerable: true,
         configurable: true,
