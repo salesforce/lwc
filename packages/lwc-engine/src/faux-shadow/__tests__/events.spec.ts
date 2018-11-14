@@ -227,6 +227,7 @@ describe('events', () => {
             //       <div onclick={handleClick}></div>
             //     </x-root>
             //   </div>
+            // </body>
             const elm = createElement('x-root', { is: Root });
             elm.setAttribute('data-target', 'x-root');
             const divWithClickHandler = document.createElement('div');
