@@ -133,11 +133,6 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     };
 }
 
-export function getFirstTabbableElement(host: HTMLElement): HTMLElement | null {
-    const local = querySelectorAll.call(host, TabbableElementsQuery);
-    return getFirstTabbableMatch(local);
-}
-
 export function getActiveElement(host: HTMLElement): HTMLElement | null {
     const activeElement = DocumentPrototypeActiveElement.call(document);
     if (isNull(activeElement)) {

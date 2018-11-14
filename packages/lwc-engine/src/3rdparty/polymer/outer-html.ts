@@ -89,7 +89,7 @@ export function getOuterHTML(node: Node): string {
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
-            if (parentNode !== null && plaintextParents.has(tagNameGetter.call(parentNode as Element))) {
+            if (parentNode instanceof Element && plaintextParents.has(tagNameGetter.call(parentNode))) {
                 return data;
             }
             return escapeData(data);

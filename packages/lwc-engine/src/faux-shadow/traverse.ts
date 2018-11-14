@@ -33,7 +33,8 @@ import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
 import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
-import { SyntheticNodeList } from "./node-list";
+import { createStaticNodeList } from "../shared/static-node-list";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { iFrameContentWindowGetter } from "../env/dom";
 
 // TODO: remove after TS 3.x upgrade.
@@ -103,11 +104,11 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getShadowParent(node: Node, value: undefined | HTMLElement): Node | null {
+function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & ParentNode) | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner) as Node;
+        return getShadowRoot(owner);
     } else if (value instanceof Element) {
         if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
@@ -126,12 +127,12 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): Node | nul
     return null;
 }
 
-export function shadowRootChildNodes(root: SyntheticShadowRootInterface): SyntheticNodeList<Element & Node> {
+export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Element & Node> {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -142,7 +143,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Synthet
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return new SyntheticNodeList(filteredAndPatched);
+    return filteredAndPatched;
 }
 
 function getRoot(node: Node): Node {
@@ -193,7 +194,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): SyntheticNodeList<Node & Element> {
+function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -201,7 +202,7 @@ function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): S
             ArrayPush.call(filteredAndPatched, node);
         }
     }
-    return new SyntheticNodeList(filteredAndPatched);
+    return filteredAndPatched;
 }
 
 function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | null {
@@ -218,10 +219,10 @@ export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: 
     return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
-export function lightDomQuerySelectorAll(elm: Element, selectors: string): SyntheticNodeList<Element> {
+function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
-        return new SyntheticNodeList([]);
+        return [];
     }
     const nodeList = querySelectorAll.call(elm, selectors);
     if (getNodeKey(elm)) {
@@ -233,7 +234,7 @@ export function lightDomQuerySelectorAll(elm: Element, selectors: string): Synth
     }
 }
 
-export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
+function lightDomQuerySelector(elm: Element, selector: string): Element | null {
     const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         // the it is a root, and those can't have a lightdom
@@ -255,7 +256,7 @@ export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, sele
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): SyntheticNodeList<Element> {
+export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
@@ -322,12 +323,10 @@ export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
     // @ts-ignore
     return class extends Ctor {
-        get childNodes(this: Node): SyntheticNodeList<Node & Element> {
+        get childNodes(this: Node): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
-            if (isNull(owner)) {
-                return new SyntheticNodeList([]);
-            }
-            return getAllMatches(owner, getFilteredChildNodes(this));
+            const items = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticNodeList(items);
         }
         get assignedSlot(this: Node): HTMLElement | null {
             const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
@@ -394,12 +393,13 @@ export function PatchedNode(node: Node): NodeConstructor {
 
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
+    // @ts-ignore type-mismatch
     return class PatchedHTMLElement extends Ctor {
-        querySelector(selector: string): Element | null {
+        querySelector(this: Element, selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
         }
-        querySelectorAll(selectors: string): SyntheticNodeList<Element> {
-            return lightDomQuerySelectorAll(this as Element, selectors);
+        querySelectorAll(this: Element, selectors: string): NodeListOf<Element> {
+            return createStaticNodeList(lightDomQuerySelectorAll(this, selectors));
         }
         get innerHTML(): string {
             return getInnerHTML(this);
@@ -409,6 +409,30 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         }
         get outerHTML() {
             return getOuterHTML(this);
+        }
+        // ParentNode.prototype
+        get childElementCount(this: HTMLElement) {
+            return this.children.length;
+        }
+        // All these methods are expecting to return HTMLCollection
+        get children(this: Element): HTMLCollectionOf<Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const children: Element[] = [];
+            for (let i = 0; i < childNodes.length; i += 1) {
+                const node: Node = childNodes[i];
+                if (node instanceof Element) {
+                    ArrayPush.apply(children, node as Element);
+                }
+            }
+            return createStaticHTMLCollection(children);
+        }
+        get firstElementChild(this: Element) {
+            return this.children[0] || null;
+        }
+        get lastElementChild(this: Element) {
+            const { children } = this;
+            return children.item(children.length - 1) || null;
         }
     };
 }

@@ -1,6 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { SyntheticShadowRoot } from "../shadow-root";
+import { SyntheticShadowRoot, attachShadow } from "../shadow-root";
 
 describe('root', () => {
     describe('constructor', () => {
@@ -460,6 +460,117 @@ describe('root', () => {
             document.body.appendChild(elem);
             const first = elem.shadowRoot.firstChild;
             expect(first.parentElement).toBe(null);
+        });
+    });
+
+    describe('API', () => {
+        it('should be a fragment', () => {
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                    <p></p>
+                </template>
+            `);
+            class MyComponent extends LightningElement {
+                render() {
+                    return myComponentTmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const { shadowRoot } = elem;
+            expect(shadowRoot.nodeType).toBe(Node.DOCUMENT_FRAGMENT_NODE);
+            expect(shadowRoot.nodeName).toBe('#document-fragment');
+            expect(shadowRoot.nodeValue).toBe(null);
+            expect(shadowRoot.namespaceURI).toBe(null);
+            expect(shadowRoot.nextSibling).toBe(null);
+            expect(shadowRoot.previousSibling).toBe(null);
+            expect(shadowRoot.nextElementSibling).toBe(null);
+            expect(shadowRoot.previousElementSibling).toBe(null);
+            expect(shadowRoot.localName).toBe(null);
+            expect(shadowRoot.prefix).toBe(undefined);
+            expect(shadowRoot.ownerDocument).toBe(elem.ownerDocument);
+            expect(shadowRoot.baseURI).toBe(elem.baseURI);
+            expect(shadowRoot.isConnected).toBe(true);
+            expect(shadowRoot.parentElement).toBe(null);
+            expect(shadowRoot.parentNode).toBeNull();
+        });
+
+        it('should be a parentNode', () => {
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    some text
+                    <div></div>
+                    <p></p>
+                    some other text
+                </template>
+            `);
+            class MyComponent extends LightningElement {
+                render() {
+                    return myComponentTmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const { shadowRoot } = elem;
+            expect(shadowRoot.children.length).toBe(2);
+            expect(shadowRoot.childElementCount).toBe(2);
+            expect(shadowRoot.firstElementChild.tagName).toBe('DIV');
+            expect(shadowRoot.lastElementChild.tagName).toBe('P');
+            expect(shadowRoot.childNodes.length).toBe(4);
+        });
+
+        it('should compute the proper textContent', () => {
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    1
+                    <div>2</div>
+                    <p>3</p>
+                    4
+                </template>
+            `);
+            class MyComponent extends LightningElement {
+                render() {
+                    return myComponentTmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const { shadowRoot } = elem;
+            expect(shadowRoot.textContent).toBe(`1234`);
+        });
+        it('should compute the proper innerHTML', () => {
+            const myComponentTmpl = compileTemplate(`
+                <template>
+                    1
+                    <div>2</div>
+                    <p>3</p>
+                    4
+                </template>
+            `);
+            class MyComponent extends LightningElement {
+                render() {
+                    return myComponentTmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const { shadowRoot } = elem;
+            expect(shadowRoot.innerHTML).toBe(`1<div>2</div><p>3</p>4`);
+        });
+    });
+    describe('errors', () => {
+        it('should not allow calling attachShadow twice', () => {
+            const elm = document.createElement('x-foo');
+            attachShadow(elm, { mode: 'open' });
+            expect(() => {
+                attachShadow(elm, { mode: 'open' });
+            }).toThrow();
+
         });
     });
 });

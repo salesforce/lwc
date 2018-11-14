@@ -1,14 +1,15 @@
 import assert from "../shared/assert";
-import { isNull, setPrototypeOf, defineProperty } from "../shared/language";
+import { isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
-import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
+import { createStaticNodeList } from "../shared/static-node-list";
 import { DocumentPrototypeActiveElement } from "../env/document";
-import { SyntheticNodeList } from "./node-list";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
+import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -80,7 +81,44 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         throw new TypeError('Illegal constructor');
     }
     get nodeType() {
-        return 11;
+        return 11; // Node.DOCUMENT_FRAGMENT_NODE
+    }
+    get nodeName() {
+        return '#document-fragment';
+    }
+    get nodeValue() {
+        return null;
+    }
+    get namespaceURI() {
+        return null;
+    }
+    get nextSibling() {
+        return null;
+    }
+    get previousSibling() {
+        return null;
+    }
+    get nextElementSibling() {
+        return null;
+    }
+    get previousElementSibling() {
+        return null;
+    }
+    get localName() {
+        return null;
+    }
+    get prefix() {
+        return;
+    }
+    get ownerDocument(this: SyntheticShadowRootInterface) {
+        return getHost(this).ownerDocument;
+    }
+    get baseURI(this: SyntheticShadowRootInterface) {
+        return getHost(this).baseURI;
+    }
+    get isConnected(this: SyntheticShadowRootInterface) {
+        // @ts-ignore remove this after upgrading ts 3.x
+        return getHost(this).isConnected;
     }
     get host(this: SyntheticShadowRootInterface) {
         return getHost(this);
@@ -126,7 +164,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         const { childNodes } = this;
         let innerHTML = '';
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            innerHTML += getInnerHTML(childNodes[i]);
+            innerHTML += getOuterHTML(childNodes[i]);
         }
         return innerHTML;
     }
@@ -138,10 +176,27 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         }
         return textContent;
     }
-    get childNodes(this: SyntheticShadowRootInterface): SyntheticNodeList<Node & Element> {
-        return shadowRootChildNodes(this);
+    get children(this: SyntheticShadowRootInterface): HTMLCollectionOf<Element> {
+        return createStaticHTMLCollection(ArrayFilter.call(shadowRootChildNodes(this), (elm: Node | Element) => elm instanceof Element));
+    }
+    // ParentNode.prototype
+    get childElementCount(this: HTMLElement) {
+        return this.children.length;
+    }
+    get firstElementChild(this: Element) {
+        return this.children[0] || null;
+    }
+    get lastElementChild(this: Element) {
+        const { children } = this;
+        return children.item(children.length - 1) || null;
+    }
+    get childNodes(this: SyntheticShadowRootInterface): NodeListOf<Node & Element> {
+        return createStaticNodeList(shadowRootChildNodes(this));
     }
     get parentNode() {
+        return null;
+    }
+    get parentElement() {
         return null;
     }
     // TODO: remove this after upgrading TS 3.x (issue #748)
@@ -167,8 +222,8 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
      */
     // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
     // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
-    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): SyntheticNodeList<Element> {
-        return shadowRootQuerySelectorAll(this, selectors);
+    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<Element> {
+        return createStaticNodeList(shadowRootQuerySelectorAll(this, selectors));
     }
     addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         addShadowRootEventListener(this, type, listener, options);
