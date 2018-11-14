@@ -1,12 +1,12 @@
 export { patchEvent } from "./events";
-export { patchSlotElement } from "./slot";
+export { PatchedSlotElement } from "./slot";
 
 export { PatchedCustomElement } from "./custom-element";
 
 export { markElementAsPortal, setCSSToken } from "./node";
 
 export {
-    PatchedElement, PatchedSlotElement,
+    PatchedElement,
     PatchedNode,
     PatchedIframeElement
 } from "./traverse";

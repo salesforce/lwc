@@ -15,7 +15,7 @@ import {
     DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
 import {
-    querySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
+    querySelectorAll, innerHTMLSetter, tagNameGetter,
 } from "../env/element";
 import { elementsFromPoint } from "../env/document";
 import { wrapIframeWindow } from "./iframe";
@@ -23,7 +23,6 @@ import {
     ArrayReduce,
     ArrayPush,
     isUndefined,
-    ArrayFilter,
     isTrue,
     getPrototypeOf,
 } from "../shared/language";
@@ -32,17 +31,18 @@ import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
-import { HTMLElementConstructor, NodeConstructor, HTMLSlotElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
+import { HTMLElementConstructor, NodeConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { iFrameContentWindowGetter } from "../env/dom";
+import { getFilteredSlotAssignedNodes } from "./slot";
 
 // TODO: remove after TS 3.x upgrade.
 export interface GetRootNodeOptions {
     composed?: boolean;
 }
 
-function getNodeOwner(node: Node): HTMLElement | null {
+export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
         return null;
     }
@@ -262,30 +262,6 @@ export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, s
     return getAllMatches(elm, nodeList);
 }
 
-function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
-    const owner = getNodeOwner(slot);
-    if (isNull(owner)) {
-        return [];
-    }
-    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (!isNodeOwnedBy(owner, child)) {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
-}
-
-function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (child instanceof Element && isSlotElement(child)) {
-            ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
-        } else {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
-}
-
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
     if (!isUndefined(getNodeKey(node))) {
@@ -313,10 +289,6 @@ export function getFilteredChildNodes(node: Node): Element[] {
         }
         return seed;
     }, []);
-}
-
-interface AssignedNodesOptions {
-    flatten?: boolean;
 }
 
 export function PatchedNode(node: Node): NodeConstructor {
@@ -433,26 +405,6 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         get lastElementChild(this: Element) {
             const { children } = this;
             return children.item(children.length - 1) || null;
-        }
-    };
-}
-
-export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstructor {
-    const Ctor = PatchedElement(elm) as HTMLSlotElementConstructor;
-    return class PatchedHTMLSlotElement extends Ctor {
-        assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
-            const flatten = !isUndefined(options) && isTrue(options.flatten);
-            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-            return ArrayFilter.call(nodes, node => node instanceof Element);
-        }
-        assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
-            const flatten = !isUndefined(options) && isTrue(options.flatten);
-            return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
-        }
-        get name(this: HTMLSlotElement): string {
-            // in browsers that do not support shadow dom, slot's name attribute is not reflective
-            const name = getAttribute.call(this, 'name');
-            return isNull(name) ? '' : name;
         }
     };
 }

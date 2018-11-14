@@ -17,7 +17,6 @@ import {
     updateNodeHook,
     insertNodeHook,
     removeNodeHook,
-    createSlotElmHook,
     createElmDefaultHook,
     updateElmDefaultHook,
     createCustomElmDefaultHook,
@@ -314,12 +313,6 @@ export function s(slotName: string, data: ElementCompilerData, children: VNodes,
     if (isTrue(vnode.fallback)) {
         markAsDynamicChildren(children);
     }
-    const { data: { create: originalCreate } } = vnode;
-    vnode.data.create = (newVnode: VElement) => {
-        // TODO: eventually, the compiler should add this hook directly via data.create function
-        createSlotElmHook(newVnode);
-        originalCreate(newVnode);
-    };
     return vnode;
 }
 
