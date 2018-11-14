@@ -69,6 +69,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
             const composedPath = pathComposer(originalTarget as Node, this.composed);
+
+            // Handle cases where the currentTarget is null (for async events),
+            // and when an event has been added to Window
             if (!(originalCurrentTarget instanceof Node)) {
                 for(let i = 0, len = composedPath.length; i < len; i += 1) {
                     const node = composedPath[i];
