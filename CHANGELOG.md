@@ -1,5 +1,22 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.0...v) (2018-11-13)
+# [](https://github.com/salesforce/lwc/compare/v0.33.1...v) (2018-11-14)
+
+
+### Bug Fixes
+
+* return correct target when handler is document/body owned ([#836](https://github.com/salesforce/lwc/issues/836)) ([5203d43](https://github.com/salesforce/lwc/commit/5203d43))
+* typescript definitions for lwc and wire roots ([#835](https://github.com/salesforce/lwc/issues/835)) ([3217ce9](https://github.com/salesforce/lwc/commit/3217ce9))
+* **engine:** loopholes in our synthetic shadow for local traversing ([#779](https://github.com/salesforce/lwc/issues/779)) ([fc6dc9c](https://github.com/salesforce/lwc/commit/fc6dc9c))
+
+
+### Features
+
+* **template-compiler:** remove "is" support and add lwc-deprecated:is ([#834](https://github.com/salesforce/lwc/issues/834)) ([f15ad9f](https://github.com/salesforce/lwc/commit/f15ad9f))
+
+
+
+<a name="0.33.1"></a>
+## [0.33.1](https://github.com/salesforce/lwc/compare/v0.33.0...v0.33.1) (2018-11-13)
 
 
 ### Bug Fixes
