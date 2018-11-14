@@ -42,46 +42,6 @@ function getRootNodeHost(node: Node, options): Node {
     return rootNode;
 }
 
-function pathComposer(startNode: Node, composed: boolean): Node[] {
-    let composedPath: HTMLElement[] = [];
-    let current = startNode;
-    let startRoot = startNode as any === window ? window : getRootNodeGetter.call(startNode);
-    while (current) {
-        composedPath.push(current as HTMLElement);
-        if ((current as HTMLElement).assignedSlot) {
-            current = (current as HTMLElement).assignedSlot as HTMLSlotElement;
-        } else if ((current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE && (current as ShadowRoot).host && (composed || current !== startRoot)) {
-            current = (current as ShadowRoot).host as HTMLElement
-        } else {
-            current = (current as HTMLElement).parentNode as any;
-        }
-    }
-    // event composedPath includes window when startNode's ownerRoot is document
-    if (composedPath[composedPath.length - 1] as any === document) {
-        composedPath.push(window as any);
-    }
-    return composedPath;
-}
-
-
-function retarget(refNode: Node, path: Node[]): EventTarget | undefined {
-    // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
-    // shadow-including inclusive ancestor, return ANCESTOR.
-    let refNodePath = pathComposer(refNode, true);
-    let p$ = path;
-    for (let i = 0, ancestor, lastRoot, root, rootIdx; i < p$.length; i++) {
-        ancestor = p$[i];
-        root = ancestor === window ? window : getRootNodeGetter.call(ancestor);
-        if (root !== lastRoot) {
-            rootIdx = refNodePath.indexOf(root);
-            lastRoot = root;
-        }
-        if (!(root instanceof SyntheticShadowRoot) || rootIdx > -1) {
-            return ancestor;
-        }
-    }
-}
-
 const EventPatchDescriptors: PropertyDescriptorMap = {
     target: {
         get(this: Event): EventTarget {
@@ -320,4 +280,52 @@ export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, 
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);
+}
+
+/**
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+function pathComposer(startNode: Node, composed: boolean): Node[] {
+    const composedPath: HTMLElement[] = [];
+    let current = startNode;
+    const startRoot = startNode as any === window ? window : getRootNodeGetter.call(startNode);
+    while (current) {
+        composedPath.push(current as HTMLElement);
+        if ((current as HTMLElement).assignedSlot) {
+            current = (current as HTMLElement).assignedSlot as HTMLSlotElement;
+        } else if ((current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE && (current as ShadowRoot).host && (composed || current !== startRoot)) {
+            current = (current as ShadowRoot).host as HTMLElement;
+        } else {
+            current = (current as HTMLElement).parentNode as any;
+        }
+    }
+    // event composedPath includes window when startNode's ownerRoot is document
+    if (composedPath[composedPath.length - 1] as any === document) {
+        composedPath.push(window as any);
+    }
+    return composedPath;
+}
+
+function retarget(refNode: Node, path: Node[]): EventTarget | undefined {
+    // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
+    // shadow-including inclusive ancestor, return ANCESTOR.
+    const refNodePath = pathComposer(refNode, true);
+    const p$ = path;
+    for (let i = 0, ancestor, lastRoot, root, rootIdx; i < p$.length; i++) {
+        ancestor = p$[i];
+        root = ancestor === window ? window : getRootNodeGetter.call(ancestor);
+        if (root !== lastRoot) {
+            rootIdx = refNodePath.indexOf(root);
+            lastRoot = root;
+        }
+        if (!(root instanceof SyntheticShadowRoot) || rootIdx > -1) {
+            return ancestor;
+        }
+    }
 }
