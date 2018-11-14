@@ -244,6 +244,37 @@ describe('events', () => {
             expect(target.getAttribute('data-target')).toBe('x-root');
         });
 
+        it('should report the target as the custom element when the handler is on "document"', () => {
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+                handleClick(evt) {
+                }
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}></div>
+                </template>
+            `);
+
+            let target;
+            document.addEventListener('click', function(event) {
+                target = event.target;
+            });
+            const elm = createElement('x-root', { is: Root });
+            elm.setAttribute('data-target', 'x-root');
+            document.body.appendChild(elm);
+
+            const div = elm.shadowRoot.querySelector('div');
+            div.click();
+
+            expect(target.getAttribute('data-target')).toBe('x-root');
+        });
+
         it('should report correct target when slotted through multiple components and rehydration happens', () => {
             class Root extends LightningElement {
                 newTitle = 'bar';
