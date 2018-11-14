@@ -284,7 +284,7 @@ describe('events', () => {
 
             const rootHTML = compileTemplate(`
                 <template>
-                    <div class="container"></div>
+                    <div class="container" lwc:dom="manual"></div>
                 </template>
             `);
 
