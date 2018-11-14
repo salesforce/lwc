@@ -7,7 +7,7 @@
  */
 
 import {
-    Element,
+    LightningElement,
 } from './engine';
 import {
     ConfigListenerMetadata,
@@ -46,7 +46,7 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
  * @param reactiveParameter Reactive parameter that has changed
  * @param configContext The service context
  */
-export function updated(cmp: Element, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+export function updated(cmp: LightningElement, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     if (!configContext.mutated) {
         configContext.mutated = new Set<ReactiveParameter>();
         // collect all prop changes via a microtask
@@ -55,7 +55,7 @@ export function updated(cmp: Element, reactiveParameter: ReactiveParameter, conf
     configContext.mutated.add(reactiveParameter);
 }
 
-function updatedFuture(cmp: Element, configContext: ConfigContext) {
+function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
 
     // configContext.mutated must be set prior to invoking this function
@@ -83,7 +83,7 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
  * @param cmp The component
  * @param reactiveParameter The parameter to get
  */
-export function getReactiveParameterValue(cmp: Element, reactiveParameter: ReactiveParameter): any {
+export function getReactiveParameterValue(cmp: LightningElement, reactiveParameter: ReactiveParameter): any {
     let value: any = cmp[reactiveParameter.head];
     if (!reactiveParameter.tail) {
         return value;

@@ -1,5 +1,5 @@
 // subtypes from lwc
-export { Element, ComposableEvent } from 'lwc';
+export { LightningElement, ComposableEvent } from 'lwc';
 export interface WireDef {
     params?: {
         [key: string]: string;
