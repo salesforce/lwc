@@ -73,7 +73,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // Handle cases where the currentTarget is null (for async events),
             // and when an event has been added to Window
             if (!(originalCurrentTarget instanceof Node)) {
-                for(let i = 0, len = composedPath.length; i < len; i += 1) {
+                for (let i = 0, len = composedPath.length; i < len; i += 1) {
                     const node = composedPath[i];
                     if (getRootNodeGetter.call(node) === document) {
                         return node;
