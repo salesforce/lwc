@@ -1,0 +1,25 @@
+/* Correctly positions the loading indicator for inline edit. */
+:host .inline-edit-loading-indicator-container {
+    position: static;
+    width: var(--lwc-squareIconUtilitySmall);
+    float: right;
+    line-height: var(--lwc-lineHeightReset);
+}
+:host .inline-edit-loading-indicator-container .slds-spinner {
+    position: relative;
+    display: inline-block;
+    width: var(--lwc-squareIconSmallContent);
+}
+
+/* Inline edit undo button */
+:host .inline-edit-undo {
+    z-index: 1;
+    position: absolute;
+    right: var(--lwc-spacingSmall);
+}
+
+/* Colors the background of a field container when the field value has changed */
+:host(.undo) {
+    position: relative;
+    background: var(--lwc-colorBackgroundHighlight);
+}
