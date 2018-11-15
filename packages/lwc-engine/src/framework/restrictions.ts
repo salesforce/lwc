@@ -39,7 +39,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         appendChild: {
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(`appendChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    assert.logError(`appendChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return appendChild.call(this, aChild);
             },
@@ -50,7 +50,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         insertBefore: {
             value(this: Node, newNode: Node, referenceNode: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(`insertBefore is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    assert.logError(`insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
@@ -61,7 +61,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         removeChild: {
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(`removeChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    assert.logError(`removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return removeChild.call(this, aChild);
             },
@@ -72,7 +72,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         replaceChild: {
             value(this: Node, newChild: Node, oldChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(`replaceChild is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                    assert.logError(`replaceChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
@@ -87,7 +87,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
             set(this: Node, value: string) {
                 if (process.env.NODE_ENV !== 'production') {
                     if (this instanceof Element && options.isPortal !== true) {
-                        assert.logError(`nodeValue is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                        assert.logError(`nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                     }
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
@@ -100,7 +100,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
             set(this: Node, value: string) {
                 if (process.env.NODE_ENV !== 'production') {
                     if (this instanceof Element && options.isPortal !== true) {
-                        assert.logError(`textContent is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this as Element);
+                        assert.logError(`textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                     }
                 }
                 originalTextContentDescriptor.set!.call(this, value);
@@ -125,7 +125,7 @@ function getElementRestrictionsDescriptors(elm: HTMLElement, options: Restrictio
             set(this: HTMLElement, value: string) {
                 if (process.env.NODE_ENV !== 'production') {
                     if (options.isPortal !== true) {
-                        assert.logError(`innerHTML is disallowed in Element unless \`lwc:portal\` directive is used in the template.`, this);
+                        assert.logError(`innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this);
                     }
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);

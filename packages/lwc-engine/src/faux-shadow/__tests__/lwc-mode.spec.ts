@@ -194,7 +194,7 @@ describe('lwc:dom', () => {
             renderedCallback() {
                 expect(() => {
                     this.template.querySelector('.manual').appendChild(p);
-                }).toLogError('appendChild is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('appendChild is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;
@@ -221,7 +221,7 @@ describe('lwc:dom', () => {
                 expect(() => {
                     const p = this.template.querySelector('p');
                     this.template.querySelector('.manual').insertBefore(document.createElement('span', p);
-                }).toLogError('insertBefore is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('insertBefore is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;
@@ -247,7 +247,7 @@ describe('lwc:dom', () => {
             renderedCallback() {
                 expect(() => {
                     this.template.querySelector('.manual').removeChild(p);
-                }).toLogError('removeChild is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('removeChild is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;
@@ -273,7 +273,7 @@ describe('lwc:dom', () => {
             renderedCallback() {
                 expect(() => {
                     this.template.querySelector('.manual').textContent = 'foo';
-                }).toLogError('textContent is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('textContent is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;
@@ -299,7 +299,7 @@ describe('lwc:dom', () => {
             renderedCallback() {
                 expect(() => {
                     this.template.querySelector('.manual').nodeValue = 'foo';
-                }).toLogError('nodeValue is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('nodeValue is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;
@@ -324,7 +324,7 @@ describe('lwc:dom', () => {
                 expect(() => {
                     this.template.querySelector('p');
                     this.template.querySelector('.manual').replaceChild(document.createElement('span'), p)
-                }).toLogError('replaceChild is disallowed in Element unless `lwc:portal` directive is used in the template.')
+                }).toLogError('replaceChild is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
                 return html;

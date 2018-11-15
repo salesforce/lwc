@@ -29,6 +29,10 @@ const matches: (this: Element, selector: string) => boolean = hasOwnProperty.cal
     Element.prototype.matches :
     (Element.prototype as any).msMatchesSelector; // IE11
 
+const childrenGetter: (this: HTMLElement) => HTMLCollectionOf<Element> = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
+    getOwnPropertyDescriptor(Element.prototype, 'children')!.get! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'children')!.get!;  // IE11
+
 export {
     addEventListener,
     removeEventListener,
@@ -49,4 +53,5 @@ export {
     tabIndexGetter,
     innerHTMLSetter,
     matches,
+    childrenGetter,
 };

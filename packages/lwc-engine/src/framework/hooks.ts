@@ -8,7 +8,6 @@ import {
     insertBefore,
     removeChild,
 } from "../env/node";
-import { patchSlotElement } from "../faux-shadow/faux";
 import modEvents from "./modules/events";
 import modAttrs from "./modules/attrs";
 import modProps from "./modules/props";
@@ -88,15 +87,6 @@ export function createElmHook(vnode: VElement) {
         const { data: { context } } = vnode;
         const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementWithRestrictions(elm, { isPortal });
-    }
-}
-
-export function createSlotElmHook(vnode: VElement) {
-    const { fallback } = vnode;
-    if (isTrue(fallback)) {
-        // special logic to support slotchange event in fallback mode
-        const elm = vnode.elm as HTMLSlotElement;
-        patchSlotElement(elm);
     }
 }
 
