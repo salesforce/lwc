@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.1...v) (2018-11-14)
+# [](https://github.com/salesforce/lwc/compare/v0.33.2...v) (2018-11-15)
+
+
+### Bug Fixes
+
+* parse a-trules correctly in CSS ([#839](https://github.com/salesforce/lwc/issues/839)) ([9c1da4d](https://github.com/salesforce/lwc/commit/9c1da4d))
+
+
+### Features
+
+* **compiler:** collect default value metadata for [@api](https://github.com/api) properties ([#816](https://github.com/salesforce/lwc/issues/816)) ([c64e4b3](https://github.com/salesforce/lwc/commit/c64e4b3))
+
+
+
+<a name="0.33.2"></a>
+## [0.33.2](https://github.com/salesforce/lwc/compare/v0.33.1...v0.33.2) (2018-11-14)
 
 
 ### Bug Fixes
