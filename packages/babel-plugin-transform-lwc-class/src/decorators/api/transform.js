@@ -1,5 +1,5 @@
 const { isApiDecorator } = require('./shared');
-const { staticClassProperty, markAsLWCNode } = require('../../utils');
+const { extractValueMetadata, markAsLWCNode, staticClassProperty } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
@@ -83,16 +83,28 @@ function transformPublicProps(t, klassBody, apiDecorators) {
     }
 
     return publicProps.filter((node) => {
-        const { name, path, type } = node;
+        const { type } = node;
         return type === 'getter' || type === 'setter' || type === 'property';
-    }).map(({ path }) => ({
-        type: 'property',
-        name: path.parentPath.get('key.name').node
-    }));
+    }).map((node) => {
+        const { path, type } = node;
+        const parentNode = path.parent;
+        const parentValue = parentNode && parentNode.value;
+
+        const meta = {
+            type: 'property',
+            name: path.parentPath.get('key.name').node,
+        }
+
+        if (type === 'property') {
+            meta.value = extractValueMetadata(parentValue);
+        }
+
+        return meta;
+    });
 }
 
 /** Transform class public methods and returns the list of public methods  */
-function transfromPublicMethods(t, klassBody, apiDecorators) {
+function transformPublicMethods(t, klassBody, apiDecorators) {
     const publicMethods = apiDecorators.filter(({ type }) => type === DECORATOR_TYPES.METHOD);
 
     if (publicMethods.length) {
@@ -117,7 +129,7 @@ module.exports = function transform(t, klass, decorators) {
     const apiDecorators = decorators.filter(isApiDecorator);
 
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
-    const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
+    const apiMethods = transformPublicMethods(t, klassBody, apiDecorators);
 
     if ((apiProperties.length + apiMethods.length) > 0) {
         return {
