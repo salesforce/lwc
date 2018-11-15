@@ -1,7 +1,7 @@
 import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
-import { hasAttribute, tabIndexGetter } from "../env/element";
+import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
 import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
@@ -87,6 +87,14 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             return createStaticNodeList(childNodes);
         }
         get children(this: HTMLElement): HTMLCollectionOf<Element> {
+            // We cannot patch `children` in test mode
+            // because JSDOM uses children for its "native"
+            // querySelector implementation. If we patch this,
+            // HTMLElement.prototype.querySelector.call(element) will not
+            // return any elements from shadow, which is not what we want
+            if (process.env.NODE_ENV === 'test') {
+                return childrenGetter.call(this);
+            }
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));

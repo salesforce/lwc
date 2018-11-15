@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { getAttribute } from "../env/element";
+import { getAttribute, childrenGetter } from "../env/element";
 import {
     createFieldName,
     getInternalField,
@@ -124,6 +124,14 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
             return createStaticNodeList(childNodes);
         }
         get children(this: HTMLSlotElement): HTMLCollectionOf<Element> {
+            // We cannot patch `children` in test mode
+            // because JSDOM uses children for its "native"
+            // querySelector implementation. If we patch this,
+            // HTMLElement.prototype.querySelector.call(element) will not
+            // return any elements from shadow, which is not what we want
+            if (process.env.NODE_ENV === 'test') {
+                return childrenGetter.call(this);
+            }
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
