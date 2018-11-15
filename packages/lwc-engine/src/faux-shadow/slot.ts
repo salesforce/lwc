@@ -20,11 +20,13 @@ import {
     MutationObserverObserve,
     MutationObserver,
 } from "../env/window";
-import { PatchedElement, isSlotElement, isNodeOwnedBy, getNodeOwner } from "./traverse";
+import { PatchedElement, isSlotElement, isNodeOwnedBy, getNodeOwner, getAllMatches, getFilteredChildNodes } from "./traverse";
 import { HTMLSlotElementConstructor } from "../framework/base-bridge-element";
 import {
     childNodesGetter as nativeChildNodesGetter,
 } from "../env/node";
+import { createStaticNodeList } from "../shared/static-node-list";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -115,6 +117,16 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
             // in browsers that do not support shadow dom, slot's name attribute is not reflective
             const name = getAttribute.call(this, 'name');
             return isNull(name) ? '' : name;
+        }
+        get childNodes(this: HTMLSlotElement): NodeListOf<Node & Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticNodeList(childNodes);
+        }
+        get children(this: HTMLSlotElement): HTMLCollectionOf<Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
         }
     };
 }

@@ -1,10 +1,12 @@
 import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
-import { PatchedElement } from './traverse';
+import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
 import { hasAttribute, tabIndexGetter } from "../env/element";
-import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
+import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
+import { createStaticNodeList } from "../shared/static-node-list";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -78,6 +80,16 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 }
             }
             super.blur();
+        }
+        get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticNodeList(childNodes);
+        }
+        get children(this: HTMLElement): HTMLCollectionOf<Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
         }
     };
 }

@@ -2,17 +2,14 @@ import assert from "../shared/assert";
 import {
     getNodeKey,
     getNodeNearestOwnerKey,
-    getNodeOwnerKey,
+    PatchedNode,
 } from "./node";
 import {
-    parentNodeGetter as nativeParentNodeGetter,
     childNodesGetter as nativeChildNodesGetter,
-    textContextSetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
-    DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
 import {
     querySelectorAll, innerHTMLSetter, tagNameGetter,
@@ -24,16 +21,12 @@ import {
     ArrayPush,
     isUndefined,
     isTrue,
-    getPrototypeOf,
 } from "../shared/language";
 import { isNull } from "../shared/language";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
-import { getTextContent } from "../3rdparty/polymer/text-content";
-import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
-import { HTMLElementConstructor, NodeConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
+import { HTMLElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
 import { createStaticNodeList } from "../shared/static-node-list";
-import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { iFrameContentWindowGetter } from "../env/dom";
 import { getFilteredSlotAssignedNodes } from "./slot";
 
@@ -104,35 +97,12 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & ParentNode) | null {
-    const owner = getNodeOwner(node);
-    if (value === owner) {
-        // walking up via parent chain might end up in the shadow root element
-        return getShadowRoot(owner);
-    } else if (value instanceof Element) {
-        if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
-            // the element and its parent node belong to the same shadow root
-            return value;
-        } else if (!isNull(owner) && isSlotElement(value)) {
-            // slotted elements must be top level childNodes of the slot element
-            // where they slotted into, but its shadowed parent is always the
-            // owner of the slot.
-            const slotOwner = getNodeOwner(value);
-            if (!isNull(slotOwner) && isNodeOwnedBy(owner, slotOwner)) {
-                // it is a slotted element, and therefore its parent is always going to be the host of the slot
-                return slotOwner;
-            }
-        }
-    }
-    return null;
-}
-
 export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Array<Element & Node> {
+export function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -291,78 +261,6 @@ export function getFilteredChildNodes(node: Node): Element[] {
     }, []);
 }
 
-export function PatchedNode(node: Node): NodeConstructor {
-    const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
-    // @ts-ignore
-    return class extends Ctor {
-        get childNodes(this: Node): NodeListOf<Node & Element> {
-            const owner = getNodeOwner(this);
-            const items = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            return createStaticNodeList(items);
-        }
-        get assignedSlot(this: Node): HTMLElement | null {
-            const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
-            /**
-             * if it doesn't have a parent node,
-             * or the parent is not an slot element
-             * or they both belong to the same template (default content)
-             * we should assume that it is not slotted
-             */
-            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)) {
-                return null;
-            }
-            return parentNode as HTMLElement;
-        }
-        get textContent(this: Node): string {
-            return getTextContent(this);
-        }
-        set textContent(this: Node, value: string) {
-            textContextSetter.call(this, value);
-        }
-        get parentNode(this: Node): (Node & ParentNode) | null {
-            const value = nativeParentNodeGetter.call(this);
-            if (isNull(value)) {
-                return value;
-            }
-            // @ts-ignore
-            return getShadowParent(this, value);
-        }
-        get parentElement(this: Node): HTMLElement | null {
-            const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
-            if (isNull(parentNode)) {
-                return null;
-            }
-            const nodeOwner = getNodeOwner(this);
-            if (isNull(nodeOwner)) {
-                return parentNode;
-            }
-            // If we have traversed to the host element,
-            // we need to return null
-            if (nodeOwner === parentNode) {
-                return null;
-            }
-            return parentNode;
-        }
-        getRootNode(this: Node, options?: GetRootNodeOptions): Node {
-            return getRootNodeGetter.call(this, options);
-        }
-        compareDocumentPosition(this: Node, otherNode: Node) {
-            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
-                // it is from another shadow
-                return 0;
-            }
-            return compareDocumentPosition.call(this, otherNode);
-        }
-        contains(this: Node, otherNode: Node) {
-            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
-                // it is from another shadow
-                return false;
-            }
-            return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
-        }
-    };
-}
-
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
     // @ts-ignore type-mismatch
@@ -373,38 +271,19 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         querySelectorAll(this: Element, selectors: string): NodeListOf<Element> {
             return createStaticNodeList(lightDomQuerySelectorAll(this, selectors));
         }
-        get innerHTML(): string {
-            return getInnerHTML(this);
+        get innerHTML(this: Element): string {
+            const { childNodes } = this;
+            let innerHTML = '';
+            for (let i = 0, len = childNodes.length; i < len; i += 1) {
+                innerHTML += getOuterHTML(childNodes[i]);
+            }
+            return innerHTML;
         }
-        set innerHTML(this: HTMLElement, value: string) {
+        set innerHTML(this: Element, value: string) {
             innerHTMLSetter.call(this, value);
         }
         get outerHTML() {
             return getOuterHTML(this);
-        }
-        // ParentNode.prototype
-        get childElementCount(this: HTMLElement) {
-            return this.children.length;
-        }
-        // All these methods are expecting to return HTMLCollection
-        get children(this: Element): HTMLCollectionOf<Element> {
-            const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            const children: Element[] = [];
-            for (let i = 0; i < childNodes.length; i += 1) {
-                const node: Node = childNodes[i];
-                if (node instanceof Element) {
-                    ArrayPush.apply(children, node as Element);
-                }
-            }
-            return createStaticHTMLCollection(children);
-        }
-        get firstElementChild(this: Element) {
-            return this.children[0] || null;
-        }
-        get lastElementChild(this: Element) {
-            const { children } = this;
-            return children.item(children.length - 1) || null;
         }
     };
 }
