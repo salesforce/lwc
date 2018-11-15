@@ -104,7 +104,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
-        debugger;
+
         // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
