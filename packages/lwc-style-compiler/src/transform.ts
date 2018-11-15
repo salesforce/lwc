@@ -48,7 +48,9 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     ];
 
     if (minify) {
-        plugins.push(cssnano(CSS_NANO_CONFIG));
+        // We are unshifting to ensure minification runs before lwc
+        // This is important because we clone declarations that can't be mangled by the minifier.
+        plugins.unshift(cssnano(CSS_NANO_CONFIG));
     }
 
     const result = postcss(plugins).process(src, { from: id });
