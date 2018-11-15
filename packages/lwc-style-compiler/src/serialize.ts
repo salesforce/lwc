@@ -104,6 +104,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
+
         // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
@@ -145,19 +146,20 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
         // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
+
             if (collectVarFunctions) {
                 const declTokens = tokenizeCssDeclaration(node);
                 currentRuleTokens.push(...declTokens);
                 currentRuleTokens.push({ type: TokenType.text, value: ';' });
             } else {
-                currentRuleTokens.push({
-                    type: TokenType.text,
-                    value: escapeString(part)
-                });
+                currentRuleTokens.push({ type: TokenType.text, value: escapeString(part) });
             }
 
-        // When inside anything else but a comment just push it
+        } else if (node && node.type === 'atrule') {
+            // If we have an @at rule we dont want to push it to the global stack rather than the current token
+            tokens.push({ type: TokenType.text, value: part });
         } else {
+            // When inside anything else but a comment just push it
             if (!node || node.type !== 'comment') {
                 currentRuleTokens.push({ type: TokenType.text, value: normalizeString(part) });
             }
