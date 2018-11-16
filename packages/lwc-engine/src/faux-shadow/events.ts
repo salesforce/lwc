@@ -73,7 +73,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             // Handle cases where the currentTarget is null (for async events),
             // and when an event has been added to Window
             if (!(originalCurrentTarget instanceof Node)) {
-                return retarget(document, pathComposer(document as Node, this.composed)) as EventTarget;
+                return retarget(document, pathComposer(originalTarget as Node, this.composed)) as EventTarget;
             }
 
             const eventContext = eventToContextMap.get(this);
