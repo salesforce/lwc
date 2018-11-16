@@ -1,7 +1,7 @@
 import { compile } from "../index";
 import { readFixture, pretify } from "./utils";
 
-describe("inline styles", () => {
+describe("styles", () => {
     it("inline import works", async () => {
         const { result } = await compile({
             name: 'inline_style',
@@ -18,6 +18,26 @@ describe("inline styles", () => {
 
         expect(pretify(result.code)).toBe(
             pretify(readFixture("expected-inline-styles.js"))
+        );
+    });
+
+    it("external import works", async () => {
+        const { result } = await compile({
+            name: 'external_style',
+            namespace: 'x',
+            files: {
+                'external_style.js': readFixture("external_style/external_style.js"),
+                'external_style.html': readFixture("external_style/external_style.html"),
+                'external_style.css': readFixture("external_style/external_style.css")
+            },
+            outputConfig: {
+                compat: false,
+                format: 'es',
+            }
+        });
+
+        expect(pretify(result.code)).toBe(
+            pretify(readFixture("expected-external-styles.js"))
         );
     });
 });

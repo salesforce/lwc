@@ -89,6 +89,28 @@ describe('inline styles', () => {
         const stylesheets = [stylesheet0, stylesheet];
         tmpl.stylesheets = stylesheets;
         `);
+    });
+
+    it('no styles', () => {
+        const { code } = compile(`
+            <template>
+                <h1>Hello world!</h1>
+            </template>
+        `, { stylesheetConfig: { customProperties: { resolverModule: '@css/varResolver' }}});
+
+        functionMatchCode(code , `
+        import { registerTemplate } from \"lwc\";
+        function tmpl($api, $cmp, $slotset, $ctx) {
+            const {
+            t: api_text,
+            h: api_element
+            } = $api;
+            return [api_element("h1", {
+                key: 2
+             }, [api_text("Hello world!")])];
+            }
+        export default registerTemplate(tmpl);
+        `);
 
     });
 });
