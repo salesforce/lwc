@@ -6,13 +6,19 @@ import {
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
+    DOCUMENT_FRAGMENT_NODE,
 } from "../env/node";
 import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull } from "../shared/language";
 import { getRootNodeGetter } from "./traverse";
+<<<<<<< HEAD
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-root";
 import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
+=======
+import { getHost, SyntheticShadowRootInterface, SyntheticShadowRoot, getShadowRoot } from "./shadow-root";
+import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from "../env/dom";
+>>>>>>> c8e24184b7683baf1d3ca4a77c9475ae5a03595a
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -69,6 +75,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
         get(this: ComposableEvent): EventTarget {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
+            const composedPath = pathComposer(originalTarget as Node, this.composed);
 
             // Handle cases where the currentTarget is null (for async events),
             // and when an event has been added to Window
@@ -80,7 +87,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                 getShadowRoot(originalCurrentTarget as HTMLElement) :
                 originalCurrentTarget;
-            return retarget(currentTarget as Node, pathComposer(originalTarget as Node, this.composed)) as EventTarget;
+            return retarget(currentTarget as Node, composedPath) as EventTarget;
         },
         enumerable: true,
         configurable: true,
@@ -129,6 +136,11 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
 
                 if (isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
                     (composed === false && rootNode === currentTarget)) {
+<<<<<<< HEAD
+=======
+                    // TODO: we should figure why `undefined` makes sense here
+                    // and how this is going to work for native shadow root?
+>>>>>>> c8e24184b7683baf1d3ca4a77c9475ae5a03595a
                     listener.call(sr, event);
                 }
             }
@@ -307,4 +319,52 @@ export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, 
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);
+}
+
+/**
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+function pathComposer(startNode: Node, composed: boolean): Node[] {
+    const composedPath: HTMLElement[] = [];
+    let current = startNode;
+    const startRoot = startNode as any === window ? window : getRootNodeGetter.call(startNode);
+    while (current) {
+        composedPath.push(current as HTMLElement);
+        if ((current as HTMLElement).assignedSlot) {
+            current = (current as HTMLElement).assignedSlot as HTMLSlotElement;
+        } else if ((current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE && (current as ShadowRoot).host && (composed || current !== startRoot)) {
+            current = (current as ShadowRoot).host as HTMLElement;
+        } else {
+            current = (current as HTMLElement).parentNode as any;
+        }
+    }
+    // event composedPath includes window when startNode's ownerRoot is document
+    if (composedPath[composedPath.length - 1] as any === document) {
+        composedPath.push(window as any);
+    }
+    return composedPath;
+}
+
+function retarget(refNode: Node, path: Node[]): EventTarget | undefined {
+    // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
+    // shadow-including inclusive ancestor, return ANCESTOR.
+    const refNodePath = pathComposer(refNode, true);
+    const p$ = path;
+    for (let i = 0, ancestor, lastRoot, root, rootIdx; i < p$.length; i++) {
+        ancestor = p$[i];
+        root = ancestor === window ? window : getRootNodeGetter.call(ancestor);
+        if (root !== lastRoot) {
+            rootIdx = refNodePath.indexOf(root);
+            lastRoot = root;
+        }
+        if (!(root instanceof SyntheticShadowRoot) || rootIdx > -1) {
+            return ancestor;
+        }
+    }
 }
