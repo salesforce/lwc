@@ -12,26 +12,7 @@ import { createElement, createDocumentFragment } from "../env/document";
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-type StyleFactory = (hostSelector: string, shadowSelector: string, nativeShadow: boolean) => string;
-
-export interface Stylesheet {
-    /**
-     * The factory associated with the stylesheet.
-     */
-    stylesheets: StyleFactory[];
-
-    /**
-     * HTML attribute that need to be applied to the host element. This attribute is used for the
-     * `:host` pseudo class CSS selector.
-     */
-    hostAttribute: string;
-
-    /**
-     * HTML attribute that need to the applied to all the element that the template produces.
-     * This attribute is used for style encapsulation when the engine runs in fallback mode.
-     */
-    shadowAttribute: string;
-}
+export type StylesheetFactory = (hostSelector: string, shadowSelector: string, nativeShadow: boolean) => string;
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
@@ -101,10 +82,8 @@ export function resetStyleAttributes(vm: VM): void {
 /**
  * Apply/Update the styling token applied to the host element.
  */
-export function applyStyleAttributes(vm: VM, stylesheet: Stylesheet): void {
+export function applyStyleAttributes(vm: VM, hostAttribute, shadowAttribute): void {
     const { context, elm } = vm;
-    const { hostAttribute, shadowAttribute } = stylesheet;
-
     // Remove the style attribute currently applied to the host element.
     setAttribute.call(elm, hostAttribute, '');
 
@@ -112,17 +91,15 @@ export function applyStyleAttributes(vm: VM, stylesheet: Stylesheet): void {
     context.shadowAttribute = shadowAttribute;
 }
 
-export function evaluateCSS(vm: VM, stylesheetsObj: Stylesheet): VNode | null {
+export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttribute, shadowAttribute): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-
-        assert.isTrue(isArray(stylesheetsObj.stylesheets), `Invalid stylesheets.`);
-        assert.isTrue(isString(stylesheetsObj.hostAttribute), `Invalid stylesheet host attribute.`);
-        assert.isTrue(isString(stylesheetsObj.shadowAttribute), `Invalid stylesheet shadow attribute.`);
+        assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
+        assert.isTrue(isString(hostAttribute), `Invalid stylesheet host attribute.`);
+        assert.isTrue(isString(shadowAttribute), `Invalid stylesheet shadow attribute.`);
     }
 
     const { fallback } = vm;
-    const { stylesheets, hostAttribute, shadowAttribute } = stylesheetsObj;
 
     if (fallback) {
         const hostSelector = `[${hostAttribute}]`;

@@ -8,7 +8,7 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { isTemplateRegistered, registerTemplate } from "./secure-template";
-import { evaluateCSS, Stylesheet, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
+import { evaluateCSS, StylesheetFactory, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
 
 export { registerTemplate };
 export interface Template {
@@ -17,13 +17,25 @@ export interface Template {
     /**
      * The stylesheet associated with the template.
      */
-    stylesheets?: Stylesheet;
+    stylesheets?: StylesheetFactory[];
 
     /**
      * List of property names that are accessed of the component instance
      * from the template.
      */
     ids?: string[];
+
+    /**
+     * HTML attribute that need to be applied to the host element. This attribute is used for the
+     * `:host` pseudo class CSS selector.
+     */
+    hostAttribute?: string;
+
+    /**
+     * HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs in fallback mode.
+     */
+    shadowAttribute?: string;
 }
 const EmptySlots: SlotSet = create(null);
 
@@ -85,13 +97,13 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         resetStyleAttributes(vm);
 
-        const { stylesheets } = html;
+        const { stylesheets, hostAttribute, shadowAttribute } = html;
         if (isUndefined(stylesheets)) {
             context.styleVNode = undefined;
         } else {
-            applyStyleAttributes(vm, stylesheets);
+            applyStyleAttributes(vm, hostAttribute, shadowAttribute);
             // Caching style vnode so it can be reused on every render
-            context.styleVNode = evaluateCSS(vm, stylesheets);
+            context.styleVNode = evaluateCSS(vm, stylesheets, hostAttribute, shadowAttribute);
         }
 
         if (process.env.NODE_ENV !== 'production') {
