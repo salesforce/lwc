@@ -58,11 +58,17 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
             if ((!hasAttr || originalValue !== newValue)) {
+                // Value has changed
                 if (newValue === -1) {
                     // add the magic to skip this element
                     handleFocusIn(this);
                 } else if (newValue === 0 && isDelegatingFocus(this)) {
+                    // Listen for focus if the new tabIndex is 0, and we are delegating focus
                     handleFocus(this);
+                } else {
+                    // TabIndex is set to 0, but we aren't delegating focus, so we can ignore everything
+                    ignoreFocusIn(this);
+                    ignoreFocus(this);
                 }
             } else if (originalValue === -1) {
                 // remove the magic
