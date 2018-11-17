@@ -12,6 +12,8 @@ describe('Retarget relatedTarget', () => {
             document.body.focus();
         });
         browser.keys(['Tab']);
+        browser.keys(['Tab']);
+        browser.keys(['Tab']);
         assert.equal(browser.getText('.related-target-tagname'), 'body')
     });
 });
