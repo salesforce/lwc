@@ -129,20 +129,23 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
         );
     }
 
-    if (state.inlineStyle.body.length) {
-        metadataExpressions.push(...state.inlineStyle.body);
+    metadataExpressions.push(...state.inlineStyle.body);
 
-        const stylesheetsProperty = t.memberExpression(
-            t.identifier(TEMPLATE_FUNCTION_NAME),
-            t.identifier('stylesheets')
-        );
+    const hasInlineStyles = state.inlineStyle.body.length;
 
-        const stylesheetsMetadata = t.assignmentExpression('=', stylesheetsProperty, t.identifier('stylesheets'));
-        metadataExpressions.push(
-            t.expressionStatement(stylesheetsMetadata),
-        );
+    const stylesheetsProperty = t.memberExpression(
+        t.identifier(TEMPLATE_FUNCTION_NAME),
+        t.identifier('stylesheets')
+    );
 
-    }
+    const stylesheetsMetadata = t.assignmentExpression(
+        '=',
+        stylesheetsProperty,
+        hasInlineStyles ? t.identifier('stylesheets') : t.arrayExpression()
+    );
+    metadataExpressions.push(
+        t.expressionStatement(stylesheetsMetadata),
+    );
 
     return metadataExpressions;
 }

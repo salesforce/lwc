@@ -27,7 +27,6 @@ export default function serialize(result: LazyResult, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
     const minify = Boolean(config.outputConfig && config.outputConfig.minify);
-    const eolChar = minify ? '' : '\n';
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
 
@@ -45,17 +44,21 @@ export default function serialize(result: LazyResult, config: Config): string {
         buffer += '\n';
     }
 
-    buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
-    buffer += '  return \`';
-
-    const serializedStyle = serializeCss(result, collectVarFunctions, minify);
-    buffer += (serializedStyle ? eolChar : '') + serializedStyle + `\`;\n}\n`;
-
-    buffer += 'export default [';
-
     const styleList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
-    styleList.push(STYLESHEET_IDENTIFIER);
-    buffer +=  styleList.join(', ') + '];';
+    const serializedStyle = serializeCss(result, collectVarFunctions, minify).trim();
+
+    if (serializedStyle) {
+        // inline function
+        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+        buffer += '  return \`';
+        buffer += serializedStyle + `\`;\n}\n`;
+
+        // add import at the end
+        styleList.push(STYLESHEET_IDENTIFIER);
+    }
+
+    // exports
+    buffer += 'export default [' + styleList.join(', ') + '];';
 
     return buffer;
 }

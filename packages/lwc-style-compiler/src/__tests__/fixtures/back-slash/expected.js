@@ -1,6 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return `
-.foo${shadowSelector} {content: "\\\\";}
-`;
+  return `.foo${shadowSelector} {content: "\\\\";}`;
 }
 export default [stylesheet];
