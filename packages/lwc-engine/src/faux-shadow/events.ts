@@ -69,18 +69,19 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
         get(this: ComposableEvent): EventTarget {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
+            const composedPath = pathComposer(originalTarget as Node, this.composed);
 
             // Handle cases where the currentTarget is null (for async events),
             // and when an event has been added to Window
             if (!(originalCurrentTarget instanceof Node)) {
-                return retarget(document, pathComposer(originalTarget as Node, this.composed)) as EventTarget;
+                return retarget(document, composedPath) as EventTarget;
             }
 
             const eventContext = eventToContextMap.get(this);
             const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                 getShadowRoot(originalCurrentTarget as HTMLElement) :
                 originalCurrentTarget;
-            return retarget(currentTarget as Node, pathComposer(originalTarget as Node, this.composed)) as EventTarget;
+            return retarget(currentTarget as Node, composedPath) as EventTarget;
         },
         enumerable: true,
         configurable: true,
