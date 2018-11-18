@@ -64,7 +64,7 @@ function serialize(code: string, filename: string, { namespace, name }: Normaliz
     buffer += code;
     buffer += '\n\n';
     buffer += 'if (_implicitStylesheets) {\n';
-    buffer += `  tmpl.stylesheets ? tmpl.stylesheets.push(_implicitStylesheets) : tmpl.stylesheets = [_implicitStylesheets]\n`;
+    buffer += `  tmpl.stylesheets.push(_implicitStylesheets)\n`;
     buffer += `}\n`;
 
     buffer += `tmpl.stylesheetTokens = {\n`;

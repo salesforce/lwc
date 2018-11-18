@@ -40,4 +40,24 @@ describe("styles", () => {
             pretify(readFixture("expected-external-styles.js"))
         );
     });
+
+    it("explicit import works", async () => {
+        const { result } = await compile({
+            name: 'explicit_like_implicit',
+            namespace: 'x',
+            files: {
+                'explicit_like_implicit.js': readFixture("explicit_like_implicit/explicit_like_implicit.js"),
+                'explicit_like_implicit.html': readFixture("explicit_like_implicit/explicit_like_implicit.html"),
+                'explicit_like_implicit.css': readFixture("explicit_like_implicit/explicit_like_implicit.css")
+            },
+            outputConfig: {
+                compat: false,
+                format: 'es',
+            }
+        });
+
+        expect(pretify(result.code)).toBe(
+            pretify(readFixture("expected-implicit-explicit.js"))
+        );
+    });
 });

@@ -47,9 +47,7 @@ describe('inline styles', () => {
             export default registerTemplate(tmpl);
 
             function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return \`
-                \${nativeShadow ? \":host {color: var(--color)}\" : hostSelector + \" {color: var(--color)}\"}
-                \`;
+                return \`\${nativeShadow ? \":host {color: var(--color)}\" : hostSelector + \" {color: var(--color)}\"}\`;
             }
 
             const stylesheets = [stylesheet0, stylesheet];
@@ -82,9 +80,7 @@ describe('inline styles', () => {
         }
         export default registerTemplate(tmpl);
         function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-        return \`
-        \${nativeShadow ? ":host {color: " + varResolver("--color") + ";}" : hostSelector + " {color: " + varResolver("--color") + ";}"}
-        \`;
+        return \`\${nativeShadow ? ":host {color: " + varResolver("--color") + ";}" : hostSelector + " {color: " + varResolver("--color") + ";}"}\`;
         }
         const stylesheets = [stylesheet0, stylesheet];
         tmpl.stylesheets = stylesheets;

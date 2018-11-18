@@ -52,3 +52,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 
 export default registerTemplate(tmpl);
 tmpl.slots = ["other", ""];
+tmpl.stylesheets = [];
