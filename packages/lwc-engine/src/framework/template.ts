@@ -25,17 +25,19 @@ export interface Template {
      */
     ids?: string[];
 
-    /**
-     * HTML attribute that need to be applied to the host element. This attribute is used for the
-     * `:host` pseudo class CSS selector.
-     */
-    hostAttribute?: string;
+    stylesheetTokens?: {
+        /**
+         * HTML attribute that need to be applied to the host element. This attribute is used for the
+         * `:host` pseudo class CSS selector.
+         */
+        hostAttribute: string;
 
-    /**
-     * HTML attribute that need to the applied to all the element that the template produces.
-     * This attribute is used for style encapsulation when the engine runs in fallback mode.
-     */
-    shadowAttribute?: string;
+        /**
+         * HTML attribute that need to the applied to all the element that the template produces.
+         * This attribute is used for style encapsulation when the engine runs in fallback mode.
+         */
+        shadowAttribute: string;
+    };
 }
 const EmptySlots: SlotSet = create(null);
 
@@ -77,6 +79,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be an imported template instead of ${toString(html)}`);
     }
+
     // TODO: add identity to the html functions
     const { component, context, cmpSlots, cmpTemplate } = vm;
     // reset the cache memoizer for template when needed
@@ -97,10 +100,11 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         resetStyleAttributes(vm);
 
-        const { stylesheets, hostAttribute, shadowAttribute } = html;
-        if (isUndefined(stylesheets)) {
+        const { stylesheets, stylesheetTokens } = html;
+        if (isUndefined(stylesheets) || stylesheets.length === 0) {
             context.styleVNode = undefined;
-        } else {
+        } else if (!isUndefined(stylesheetTokens)) {
+            const { hostAttribute, shadowAttribute } = stylesheetTokens;
             applyStyleAttributes(vm, hostAttribute, shadowAttribute);
             // Caching style vnode so it can be reused on every render
             context.styleVNode = evaluateCSS(vm, stylesheets, hostAttribute, shadowAttribute);

@@ -56,7 +56,7 @@ describe('lwc:dom', () => {
             <template>
                 <div class="manual" lwc:dom="manual"></div>
             </template>
-        `)
+        `);
         class Cmp extends LightningElement {
             renderedCallback() {
                 this.template.querySelector('.manual').appendChild(p);
@@ -157,13 +157,13 @@ describe('lwc:dom', () => {
             <template>
                 <div class="manual" lwc:dom="manual"></div>
             </template>
-        `)
+        `);
 
-        html.stylesheets = {
-            stylesheets: [],
+        html.stylesheets = [];
+        html.stylesheetTokens = {
             hostAttribute: "hostattribute",
             shadowAttribute: "shadowattribute"
-        }
+        };
 
         class Cmp extends LightningElement {
             renderedCallback() {

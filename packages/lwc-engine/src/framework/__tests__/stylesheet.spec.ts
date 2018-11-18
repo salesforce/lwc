@@ -9,16 +9,17 @@ const styledTemplate = compileTemplate(`
     </template>
 `);
 
-styledTemplate.stylesheets = {
+styledTemplate.stylesheetTokens = {
     hostAttribute: 'test-host',
     shadowAttribute: 'test',
-    stylesheets: [(hostToken, shadowToken) => {
-        return `
-            ${hostToken} { color: red; }
-            section${shadowToken} { color: blue; }
-        `;
-    }],
 };
+
+styledTemplate.stylesheets = [(hostToken, shadowToken) => {
+    return `
+        ${hostToken} { color: red; }
+        section${shadowToken} { color: blue; }
+    `;
+}];
 
 const unstyledTemplate = compileTemplate(`
     <template>
@@ -130,10 +131,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl2</section>
             </template>
         `);
-        tmpl2.stylesheets = {
+        tmpl1.stylesheets = [() => ``];
+        tmpl2.stylesheetTokens = {
             hostAttribute: 'tmpl2-host',
             shadowAttribute: 'tmpl2',
-            stylesheets: [() => ``],
         };
 
         class Component extends LightningElement {
