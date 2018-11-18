@@ -13,6 +13,11 @@
     }
 
     var _tmpl = lwc.registerTemplate(tmpl);
+    tmpl.stylesheets = [];
+    tmpl.stylesheetTokens = {
+        hostAttribute: "x-foo_foo-host",
+        shadowAttribute: "x-foo_foo"
+    };
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
@@ -54,6 +59,11 @@
     }
 
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
+    tmpl$1.stylesheets = [];
+    tmpl$1.stylesheetTokens = {
+        hostAttribute: "x-app_app-host",
+        shadowAttribute: "x-app_app"
+    };
 
     class App extends lwc.LightningElement {
       constructor() {

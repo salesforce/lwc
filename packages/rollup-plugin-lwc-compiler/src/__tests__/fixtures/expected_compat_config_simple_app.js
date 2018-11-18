@@ -77,6 +77,13 @@
 
     var _tmpl = lwc.registerTemplate(tmpl);
 
+    __setKey(tmpl, "stylesheets", []);
+
+    __setKey(tmpl, "stylesheetTokens", {
+        hostAttribute: "x-foo_foo-host",
+        shadowAttribute: "x-foo_foo"
+    });
+
     var Foo =
     /*#__PURE__*/
     function (_LightningElement) {
@@ -133,6 +140,13 @@
     }
 
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
+
+    __setKey(tmpl$1, "stylesheets", []);
+
+    __setKey(tmpl$1, "stylesheetTokens", {
+        hostAttribute: "x-app_app-host",
+        shadowAttribute: "x-app_app"
+    });
 
     var App =
     /*#__PURE__*/
