@@ -119,10 +119,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl1</section>
             </template>
         `);
-        tmpl1.stylesheets = {
+        tmpl1.stylesheets = [() => ``];
+        tmpl1.stylesheetTokens = {
             hostAttribute: 'tmpl1-host',
             shadowAttribute: 'tmpl1',
-            stylesheets: [() => ``],
         };
 
         const tmpl2 = compileTemplate(`

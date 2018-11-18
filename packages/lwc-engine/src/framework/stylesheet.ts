@@ -95,8 +95,6 @@ export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttrib
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
-        assert.isTrue(isString(hostAttribute), `Invalid stylesheet host attribute.`);
-        assert.isTrue(isString(shadowAttribute), `Invalid stylesheet shadow attribute.`);
     }
 
     const { fallback } = vm;
