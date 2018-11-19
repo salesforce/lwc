@@ -131,7 +131,7 @@ describe('synthetic shadow', () => {
                 <section>tmpl2</section>
             </template>
         `);
-        tmpl1.stylesheets = [() => ``];
+        tmpl2.stylesheets = [() => ``];
         tmpl2.stylesheetTokens = {
             hostAttribute: 'tmpl2-host',
             shadowAttribute: 'tmpl2',
@@ -145,6 +145,8 @@ describe('synthetic shadow', () => {
         Component.publicProps = {
             tmpl: 0,
         };
+
+        debugger;
 
         const elm = createElement('x-cmp', { is: Component });
         elm.tmpl = tmpl1;
