@@ -14,7 +14,7 @@
     "postbuild": "concurrently --raw \"rollup -c scripts/rollup/rollup.config.umd.dev.js\" \"rollup -c scripts/rollup/rollup.config.umd.prod.js\" \"rollup -c scripts/rollup/rollup.config.es-and-cjs.js\""
   },
   "dependencies": {
-    "observable-membrane": "0.25.0"
+    "observable-membrane": "0.26.0"
   },
   "devDependencies": {
     "@lwc/template-compiler": "0.35.1",
