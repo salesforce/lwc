@@ -209,7 +209,7 @@ describe('Events on Custom Elements', () => {
         document.body.appendChild(elm);
         cmp.template.querySelector('div').click();
         expect(result).toHaveLength(2);
-        expect(result[0]).toBe(undefined); // context must be the component
+        expect(result[0]).toBe(elm.shadowRoot); // context must be the shadow root
         expect(result[1]).toBeInstanceOf(Event);
     });
 
@@ -780,7 +780,7 @@ describe('Shadow Root events', () => {
         elm.clickDiv();
     });
 
-    it('should call event handler with undefined context', () => {
+    it('should call event handler with correct context', () => {
         expect.assertions(1);
 
         const html = compileTemplate(`
@@ -790,8 +790,9 @@ describe('Shadow Root events', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
+                const template = this.template;
                 this.template.addEventListener('click', function () {
-                    expect(this).toBe(undefined);
+                    expect(this).toBe(template);
                 });
             }
 

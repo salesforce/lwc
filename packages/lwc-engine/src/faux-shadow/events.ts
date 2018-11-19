@@ -4,19 +4,15 @@ import {
     removeEventListener,
 } from "../env/element";
 import {
-    parentNodeGetter,
-    DOCUMENT_POSITION_CONTAINS,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
-import {
-    getNodeNearestOwnerKey,
-    getNodeKey,
-} from "./node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse } from "../shared/language";
-import { isNodeSlotted, getRootNodeGetter } from "./traverse";
-import { getHost, SyntheticShadowRootInterface } from "./shadow-root";
-import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull } from "../shared/language";
+import { getRootNodeGetter } from "./traverse";
+import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-root";
+import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from "../env/dom";
+import { pathComposer } from "./../3rdparty/polymer/path-composer";
+import { retarget } from "./../3rdparty/polymer/retarget";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -47,140 +43,45 @@ function getRootNodeHost(node: Node, options): Node {
     return rootNode;
 }
 
+type ComposableEvent = (Event & {
+    composed: boolean
+});
+
 const EventPatchDescriptors: PropertyDescriptorMap = {
+    relatedTarget: {
+        get(this: ComposableEvent): EventTarget | null {
+            const eventContext = eventToContextMap.get(this);
+            const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+            const relatedTarget = focusEventRelatedTargetGetter.call(this);
+            if (isNull(relatedTarget)) {
+                return null;
+            }
+            const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+                getShadowRoot(originalCurrentTarget as HTMLElement) :
+                originalCurrentTarget;
+
+            return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true)) as EventTarget;
+        },
+        enumerable: true,
+        configurable: true,
+    },
     target: {
-        get(this: Event): EventTarget {
-            const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+        get(this: ComposableEvent): EventTarget {
+            const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
+            const composedPath = pathComposer(originalTarget as Node, this.composed);
 
             // Handle cases where the currentTarget is null (for async events),
-            // and when it's not owned by a custom element
-            if (!(currentTarget instanceof Node)
-                || (getRootNodeGetter.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE) === document
-                    && isUndefined(getNodeKey(currentTarget)))) {
-                // the event was inspected asynchronously, in which case we need to return the
-                // top custom element that belongs to the body.
-                let outerMostElement = originalTarget;
-                let parentNode;
-                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(getNodeNearestOwnerKey(outerMostElement as Node))) {
-                    outerMostElement = parentNode;
-                }
-
-                // This value will always be the root LWC node.
-                // There is a chance that this value will be accessed
-                // inside of an async event handler in the component tree,
-                // but because we don't know if it is being accessed
-                // inside the tree or outside the tree, we do not patch.
-                return outerMostElement;
-            }
-
-            // Handle cases where the target is detached from the currentTarget node subtree
-            if (isFalse(compareDocumentPosition.call(originalTarget, currentTarget) & DOCUMENT_POSITION_CONTAINS)) {
-                // In this case, the original target is in a detached root, making it
-                // impossible to retarget (unless we figure out something clever).
-                return originalTarget;
+            // and when an event has been added to Window
+            if (!(originalCurrentTarget instanceof Node)) {
+                return retarget(document, composedPath) as EventTarget;
             }
 
             const eventContext = eventToContextMap.get(this);
-
-            // Retarget to currentTarget if the listener was added to a custom element.
-            if (eventContext === EventListenerContext.CUSTOM_ELEMENT_LISTENER) {
-                return currentTarget as Element;
-            }
-
-            // We need to determine 2 things in order to retarget correctly:
-            // 1) What VM context was the listener added? (e.g. in what VM context was addEventListener called in).
-            // 2) What is the event's original target's relationship to 1, is it owned by the vm, or was it slotted?
-
-            // Determining Number 1:
-            // In most cases, the VM context maps to the currentTarget's owner VM. This will correspond to the custom element:
-            //
-            // // x-parent.html
-            // <template>
-            //  <!--
-            //    This listener is added inside of <x-parent>'s template
-            //    so its VM context will be <x-parent>'s VM
-            //  -->
-            //  <div onclick={handleClick}</div>
-            // </template>
-            //
-            // In the case of this.template.addEventListener, the VM context needs to be the custom element's VM, NOT the owner VM.
-            //
-            // // x-parent.js
-            // connectedCallback() {
-            //   The event below is attached to x-parent's shadow root.
-            //   Under the hood, we add the event listener to the custom element.
-            //   Because template events happen INSIDE the custom element's shadow,
-            //   we CANNOT get the owner VM. Instead, we must get the custom element's VM instead.
-            //   this.template.addEventListener('click', () => {});
-            // }
-            const myCurrentShadowKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeNearestOwnerKey(currentTarget as Node);
-
-            // Resolving the host of the shadow that is being retargeted (which is based on the current target)
-            // with this value, we can check if any element in the path was slotted (directly or indirectly).
-            // Directly means: it is a slotted element
-            // Indirectly means: it is a qualifying child of a slotted element
-
-            const host = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER)
-                ? currentTarget
-                : getRootNodeHost(currentTarget, GET_ROOT_NODE_CONFIG_FALSE);
-
-            // Determining Number 2:
-            // Because we only support bubbling and we are already inside of an event, we know that the original event target
-            // is a child of the currentTarget. The key here, is that we have to determine if the event is coming from an
-            // element inside of the attached shadow context (#1 above) or was slotted (#2).
-            // We determine this by traversing up the DOM until either 1) We come across an element that has the same VM as #1
-            // Or we come across an element that was slotted inside a shadow's slot element from #1.
-            //
-            // If we come across an element that has the same VM as #1, we have an element that was rendered inside #1 template:
-            //
-            // <template>
-            //   <x-foo onClick={handleClick}> <!-- VM is equal to #1, this is our target
-            //      # shadow
-            //           <div> <-- VM is not equal to #1 or #2, keep going
-            //              <span>  <-- click event happened
-            // </template>
-            //
-            //
-            // If we come across an element that was slotted inside #1 template, we have an element that was rendered inside #1 slot:
-            // <template>
-            //  <div onClick={handleClick}>
-            //    <slot>
-            //      <x-bar> <-- it is a valid slotted element (it is not owned by VM #1, but slotted into it)
-            //        # x-bar shadow
-            //          <div> <-- VM is not equal to #1, and does not qualify as slotted for VM #1, keep going
-            //            <x-baz>  <-- VM is not equal to #1, and does not qualify as slotted for VM #1, keep going
-            //              # x-baz shadow
-            //                <span></span>  <-- click event happened
-            //            </x-baz>
-            //          </div>
-            //        # x-bar light dom
-            //          <button></button>  <-- this qualified as an indirected slotted element, which meas it is visible to the handleClick
-            //      </x-bar>
-            //    </slot>
-            //  </div>
-            // </template>
-            //
-            let closestTarget = originalTarget;
-            let nodeOwnerKey = getNodeNearestOwnerKey(closestTarget as Node);
-
-            while (nodeOwnerKey !== myCurrentShadowKey && !isNodeSlotted(host as Element, closestTarget as Node)) {
-                closestTarget = parentNodeGetter.call(closestTarget);
-                nodeOwnerKey = getNodeNearestOwnerKey(closestTarget as Node);
-            }
-
-            /**
-             * <div> <-- document.querySelector('div').addEventListener('click')
-             *    <x-foo></x-foo> <-- this.addEventListener('click') in constructor
-             * </div>
-             *
-             * or
-             *
-             * <x-foo></x-foo> <-- document.querySelector('x-foo').addEventListener('click')
-             * while the event is patched because the component is listening for it internally
-             * via this.addEventListener('click') in constructor or something similar
-             */
-            return closestTarget as Element;
+            const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+                getShadowRoot(originalCurrentTarget as HTMLElement) :
+                originalCurrentTarget;
+            return retarget(currentTarget as Node, composedPath) as EventTarget;
         },
         enumerable: true,
         configurable: true,
@@ -229,9 +130,7 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
 
                 if (isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
                     (composed === false && rootNode === currentTarget)) {
-                    // TODO: we should figure why `undefined` makes sense here
-                    // and how this is going to work for native shadow root?
-                    listener.call(undefined, event);
+                    listener.call(sr, event);
                 }
             }
         } as WrappedListener;
@@ -353,7 +252,6 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     }
 }
 
-const NON_COMPOSED = { composed: false };
 function isValidEventForCustomElement(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
@@ -364,7 +262,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from a slotted element
-        isChildNode(getRootNodeHost(target, NON_COMPOSED) as HTMLElement, currentTarget as Node)
+        isChildNode(getRootNodeHost(target, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement, currentTarget as Node)
     );
 }
 
