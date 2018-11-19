@@ -82,7 +82,7 @@ export function resetStyleAttributes(vm: VM): void {
 /**
  * Apply/Update the styling token applied to the host element.
  */
-export function applyStyleAttributes(vm: VM, hostAttribute, shadowAttribute): void {
+export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttribute: string): void {
     const { context, elm } = vm;
     // Remove the style attribute currently applied to the host element.
     setAttribute.call(elm, hostAttribute, '');
@@ -91,7 +91,7 @@ export function applyStyleAttributes(vm: VM, hostAttribute, shadowAttribute): vo
     context.shadowAttribute = shadowAttribute;
 }
 
-export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttribute, shadowAttribute): VNode | null {
+export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttribute: string, shadowAttribute: string): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
