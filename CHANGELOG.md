@@ -1,5 +1,24 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.4...v) (2018-11-15)
+# [](https://github.com/salesforce/lwc/compare/v0.33.5...v) (2018-11-19)
+
+
+### Bug Fixes
+
+* css minification ordering issue ([#840](https://github.com/salesforce/lwc/issues/840)) ([2f579f6](https://github.com/salesforce/lwc/commit/2f579f6))
+* **engine:** fixes error when switching from tabindex -1 to 0 ([#844](https://github.com/salesforce/lwc/issues/844)) ([a16b399](https://github.com/salesforce/lwc/commit/a16b399))
+* **engine:** relatedTarget event regargeting ([#842](https://github.com/salesforce/lwc/issues/842)) ([2906ed8](https://github.com/salesforce/lwc/commit/2906ed8))
+* import inline styles ([#843](https://github.com/salesforce/lwc/issues/843)) ([c9d1809](https://github.com/salesforce/lwc/commit/c9d1809))
+* remove debugger statament ([#845](https://github.com/salesforce/lwc/issues/845)) ([6c1ce57](https://github.com/salesforce/lwc/commit/6c1ce57))
+
+
+### Performance Improvements
+
+* upgrade compat ([#847](https://github.com/salesforce/lwc/issues/847)) ([9f1ea77](https://github.com/salesforce/lwc/commit/9f1ea77))
+
+
+
+<a name="0.33.5"></a>
+## [0.33.5](https://github.com/salesforce/lwc/compare/v0.33.4...v0.33.5) (2018-11-15)
 
 
 
