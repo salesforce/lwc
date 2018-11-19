@@ -2229,10 +2229,10 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.20.8/d0c31658f7b65cb2e1ce6292117ace8411adb7fa.tgz#d0c31658f7b65cb2e1ce6292117ace8411adb7fa"
-  integrity sha512-neyqcai1u9uWBTIz6Kw1imJuOUwDGSuvxTL0k5cuFGFnvFtUHNTlIZlocDHK5w2eWMtPrGbFrc46C/s6gFwDYw==
+babel-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.21.0/5be0999f2b3dde431295efb07b4f9503da8fa2a2.tgz#5be0999f2b3dde431295efb07b4f9503da8fa2a2"
+  integrity sha512-ndDFIRjZFvJz6aCo9uIfH8SA/fDwb8PaW3mDBm4zMSyJdLrZX5UpJSlVLi4KmXDEmCteq/6S4eJGIbLVOdo5pQ==
 
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
@@ -2806,10 +2806,10 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.5a128fd5:
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-transform-proxy-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.20.8/619ff46289d3808554ea10cb89280365bbc4ec01.tgz#619ff46289d3808554ea10cb89280365bbc4ec01"
-  integrity sha512-XVywZFWXNjCFMhtUnjXBcp9/b1duGLvKHTf/oSqSBMRKgQXwHoYn9Yg2CX2+RfZW6Vux70z++mPsQt73BCmn0Q==
+babel-plugin-transform-proxy-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.21.0/5021b1e92f8b7be99cca3a342a9292713db3b541.tgz#5021b1e92f8b7be99cca3a342a9292713db3b541"
+  integrity sha512-dgy/lWtYjep31Yu5x0f/3kVBDVUOW4sN9R1Uy5UFp0FjF+qek4tN31YfUqgjmXImLMCM7nBkaERislMLnB9qYA==
   dependencies:
     "@babel/types" "7.0.0"
 
@@ -2869,10 +2869,10 @@ babel-polyfill@6.26.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
-babel-preset-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.20.8/6aa3702e51858fd3c1abd6f43ca51d1e6470c0a5.tgz#6aa3702e51858fd3c1abd6f43ca51d1e6470c0a5"
-  integrity sha512-P72ksrxwuhyuftMysV8DnxHamjI1qWmUnyIkm5MWZo7GSWlrmoBEwg8JLBLLbcoQ7chXL/dFTh1lyJqT4nEOqg==
+babel-preset-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.21.0/adb45f52161fd2b12bb8132a66a6b4da6b54c19e.tgz#adb45f52161fd2b12bb8132a66a6b4da6b54c19e"
+  integrity sha512-PqW2mVqKoSggkecX627smOZ4/uz3PLdx66neUuGWcOU7Fx5QFh1Hfxkd0MXVZ7DE8odIsNgOj5rJdKnCedFZnQ==
   dependencies:
     "@babel/plugin-proposal-class-properties" "7.1.0"
     "@babel/plugin-proposal-object-rest-spread" "7.0.0"
@@ -2903,7 +2903,7 @@ babel-preset-compat@0.20.8:
     "@babel/plugin-transform-template-literals" "7.0.0"
     "@babel/plugin-transform-typeof-symbol" "7.0.0"
     "@babel/plugin-transform-unicode-regex" "7.0.0"
-    babel-plugin-transform-proxy-compat "0.20.8"
+    babel-plugin-transform-proxy-compat "0.21.0"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -3968,10 +3968,10 @@ compare-versions@^3.1.0:
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-3.3.0/af93ea705a96943f622ab309578b9b90586f39c3.tgz#af93ea705a96943f622ab309578b9b90586f39c3"
   integrity sha512-MAAAIOdi2s4Gl6rZ76PNcUa9IOYB+5ICdT41o5uMRf09aEu/F9RK+qhe8RjXNPwcTjGV7KU7h2P/fljThFVqyQ==
 
-compat-polyfills@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.20.8/ae8207d6cfd4fb5a3e681133a8e0d42054ebcd94.tgz#ae8207d6cfd4fb5a3e681133a8e0d42054ebcd94"
-  integrity sha512-5V6ASkrHKkqbakmgtAEy8kKq8VHU4H71b9VcrTqxiRKY9++a0hJxRBVU1wMq/jixPZVJmIkbHikzO/FimgE21A==
+compat-polyfills@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.21.0/8503e0c406d6c2df3d289d28511dd85e0d6d8347.tgz#8503e0c406d6c2df3d289d28511dd85e0d6d8347"
+  integrity sha512-TcNWBnhj1OYHdCCsddOxtRrG5OvmILXJBrDfeEIFyJBrMQeomUXr73dpCY28CfH2XU3ZRVwozWfWAwIq6Q/tHQ==
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -5141,16 +5141,16 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
 
-es5-proxy-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.20.8/b42a7bd40fa97914f3c4ecbe83e2f2d9fdef1605.tgz#b42a7bd40fa97914f3c4ecbe83e2f2d9fdef1605"
-  integrity sha512-OU8B98tkyvns1pCOHcSHTsBIcp2ir/XOkzSZnrudDedd/hR87zhgImim3UbPB7qAC/V3s9dtH5HPfg+E7KPdRg==
+es5-proxy-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/es5-proxy-compat/-/es5-proxy-compat-0.21.0/d5f6d6b24c88482e2bb97b5a7997a86d257119b3.tgz#d5f6d6b24c88482e2bb97b5a7997a86d257119b3"
+  integrity sha512-p0SjuXqjXiMZKsDqTZidcObTdCcCvp6klCjcIl8ll3rz4YZCO7o6LH/ySCf2m2SlNCQ3Ew73igU6A3xouMqB3A==
   dependencies:
-    babel-compat "0.20.8"
-    babel-plugin-transform-proxy-compat "0.20.8"
-    babel-preset-compat "0.20.8"
-    compat-polyfills "0.20.8"
-    proxy-compat "0.20.8"
+    babel-compat "0.21.0"
+    babel-plugin-transform-proxy-compat "0.21.0"
+    babel-preset-compat "0.21.0"
+    compat-polyfills "0.21.0"
+    proxy-compat "0.21.0"
 
 es6-promise@^4.0.3:
   version "4.2.4"
@@ -9982,10 +9982,10 @@ proxy-addr@~2.0.2:
     forwarded "~0.1.2"
     ipaddr.js "1.6.0"
 
-proxy-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.20.8/247e6a315817a43e3bbdad1a3e90cfefd9567c13.tgz#247e6a315817a43e3bbdad1a3e90cfefd9567c13"
-  integrity sha512-Uqmq5i2/y1NcmYE38yUVb6fDqg1jOKXRpxG3kaE8B9KoLGqjDSTv6UxADJTTfE0UbIYYwCjkfhDuYCxcIYjmfA==
+proxy-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/proxy-compat/-/proxy-compat-0.21.0/d0354452b787659bb460dcddf6348e4d32c0681e.tgz#d0354452b787659bb460dcddf6348e4d32c0681e"
+  integrity sha512-UZbht8On5DbF263KQCIcQzE8+dgCuoYQUi/sjTPe28qeEqw20kfWUETRoP1gjCMwi1w3TIUHVEmcMuVhAhs96w==
 
 proxy-from-env@^1.0.0:
   version "1.0.0"
@@ -10754,13 +10754,13 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.8/cff4c26c5e7d0b4197cac04e33b31f58fdb0ecbb.tgz#cff4c26c5e7d0b4197cac04e33b31f58fdb0ecbb"
-  integrity sha512-p6zCMmNJrKSYHF5kFmvLu45/oTqlUyQE8VSQuF8KwT3nLFcyUqalIKviRxaJtN/aoHucQX2Hrdh4JQIBBRCqWw==
+rollup-plugin-compat@0.21.0:
+  version "0.21.0"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.21.0/867e573822a8664d42cf2ff4aa6d4467b4c0bcf8.tgz#867e573822a8664d42cf2ff4aa6d4467b4c0bcf8"
+  integrity sha512-4ABcklh7Urhg9rbjHrAg3no4jfxr9n/m0ICJ+FxK/25a94CqA4k6IsZXaYmL//nj/4fSUrxAHSJUYyanSZpYGw==
   dependencies:
     "@babel/core" "7.1.0"
-    es5-proxy-compat "0.20.8"
+    es5-proxy-compat "0.21.0"
     magic-string "~0.25.1"
     rollup-pluginutils "~2.0.1"
 
