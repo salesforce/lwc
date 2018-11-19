@@ -20,7 +20,7 @@ key: 3
 var _tmpl = registerTemplate(tmpl);
 tmpl.stylesheets = [];
 if (_implicitStylesheets) {
-tmpl.stylesheets.push(_implicitStylesheets);
+tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
 tmpl.stylesheetTokens = {
 hostAttribute: "x-styled_styled-host",

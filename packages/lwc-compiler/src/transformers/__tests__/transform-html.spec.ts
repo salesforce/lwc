@@ -45,7 +45,7 @@ it('should apply transformation for template file', async () => {
         export default registerTemplate(tmpl);
         tmpl.stylesheets = [];
         if (_implicitStylesheets) {
-            tmpl.stylesheets.push(_implicitStylesheets)
+            tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets)
         }
         tmpl.stylesheetTokens = {
             hostAttribute: "x-foo_foo-host",

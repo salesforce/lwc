@@ -10,7 +10,7 @@ var _tmpl = registerTemplate(tmpl);
 const stylesheets = [_implicitStylesheets];
 tmpl.stylesheets = stylesheets;
 if (_implicitStylesheets) {
-    tmpl.stylesheets.push(_implicitStylesheets);
+    tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
 tmpl.stylesheetTokens = {
     hostAttribute: "x-explicit_like_implicit_explicit_like_implicit-host",
