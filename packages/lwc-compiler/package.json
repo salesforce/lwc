@@ -16,7 +16,7 @@
     "@babel/plugin-proposal-object-rest-spread": "7.0.0",
     "@types/chokidar": "^1.7.5",
     "babel-plugin-transform-lwc-class": "0.33.5",
-    "babel-preset-compat": "0.20.8",
+    "babel-preset-compat": "0.21.0",
     "babel-preset-minify": "0.5.0-alpha.5a128fd5",
     "lwc-errors": "0.33.5",
     "lwc-style-compiler": "0.33.5",
