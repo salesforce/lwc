@@ -146,8 +146,6 @@ describe('synthetic shadow', () => {
             tmpl: 0,
         };
 
-        debugger;
-
         const elm = createElement('x-cmp', { is: Component });
         elm.tmpl = tmpl1;
         document.body.appendChild(elm);
