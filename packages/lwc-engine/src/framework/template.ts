@@ -8,7 +8,7 @@ import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
 import { isTemplateRegistered, registerTemplate } from "./secure-template";
-import { evaluateCSS, Stylesheet, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
+import { evaluateCSS, StylesheetFactory, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
 
 export { registerTemplate };
 export interface Template {
@@ -17,13 +17,27 @@ export interface Template {
     /**
      * The stylesheet associated with the template.
      */
-    stylesheets?: Stylesheet;
+    stylesheets?: StylesheetFactory[];
 
     /**
      * List of property names that are accessed of the component instance
      * from the template.
      */
     ids?: string[];
+
+    stylesheetTokens?: {
+        /**
+         * HTML attribute that need to be applied to the host element. This attribute is used for the
+         * `:host` pseudo class CSS selector.
+         */
+        hostAttribute: string;
+
+        /**
+         * HTML attribute that need to the applied to all the element that the template produces.
+         * This attribute is used for style encapsulation when the engine runs in fallback mode.
+         */
+        shadowAttribute: string;
+    };
 }
 const EmptySlots: SlotSet = create(null);
 
@@ -65,6 +79,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be an imported template instead of ${toString(html)}`);
     }
+
     // TODO: add identity to the html functions
     const { component, context, cmpSlots, cmpTemplate } = vm;
     // reset the cache memoizer for template when needed
@@ -85,13 +100,14 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         resetStyleAttributes(vm);
 
-        const { stylesheets } = html;
-        if (isUndefined(stylesheets)) {
+        const { stylesheets, stylesheetTokens } = html;
+        if (isUndefined(stylesheets) || stylesheets.length === 0) {
             context.styleVNode = undefined;
-        } else {
-            applyStyleAttributes(vm, stylesheets);
+        } else if (!isUndefined(stylesheetTokens)) {
+            const { hostAttribute, shadowAttribute } = stylesheetTokens;
+            applyStyleAttributes(vm, hostAttribute, shadowAttribute);
             // Caching style vnode so it can be reused on every render
-            context.styleVNode = evaluateCSS(vm, stylesheets);
+            context.styleVNode = evaluateCSS(vm, stylesheets, hostAttribute, shadowAttribute);
         }
 
         if (process.env.NODE_ENV !== 'production') {

@@ -55,6 +55,7 @@ describe('compileToFunction', () => {
                     key: 2
                 }, [api_text("Hello world!")])];
             }
+            tmpl.stylesheets = [];
 
             return tmpl;
         `);
@@ -79,7 +80,7 @@ describe('compileToFunction', () => {
                     key: 2
                 }, [])];
             }
-
+            tmpl.stylesheets = [];
             return tmpl;
         `);
     });
@@ -102,7 +103,7 @@ describe('compileToFunction', () => {
                 }, [], $slotset)];
             }
             tmpl.slots = [""];
-
+            tmpl.stylesheets = [];
             return tmpl;
         `);
     });

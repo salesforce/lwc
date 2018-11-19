@@ -3,13 +3,8 @@ import { transform } from '../index';
 describe('playground test for debugging ', () => {
     it('examples', () => {
         const src = `
-        @media screen and (max-width: 768px) {
-            :host {
-                width: calc(50% - 1rem);
-            }
-        }
-
-`;
+            @import "@foo/test";
+        `;
         const { code } = transform(src, 'test', {
             customProperties: {
                 resolverModule: "custom-properties-resolver"

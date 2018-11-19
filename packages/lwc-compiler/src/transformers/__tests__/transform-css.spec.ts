@@ -30,13 +30,10 @@ it('should apply transformation for stylesheet file', async () => {
     `;
 
     const expected = `
-        function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return \`
-                \${nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}")}
-                div\${shadowSelector} {background-color: red;}
-            \`;
+    function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+        return \`\${nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}")}
+        div\${shadowSelector} {background-color: red;}\`;
         }
-
         export default [stylesheet];
     `;
 
@@ -78,9 +75,7 @@ describe('custom properties', () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
             function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return \`
-                div\${shadowSelector} {color: var(--bg-color);}
-                \`;
+                return \`div\${shadowSelector} {color: var(--bg-color);}\`;
             }
 
             export default [stylesheet];
@@ -107,9 +102,7 @@ describe('custom properties', () => {
         const expected = `
         import varResolver from "@customProperties";
         function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-        return \`
-        div\${shadowSelector} {color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}
-        \`;
+            return \`div\${shadowSelector} {color: \${varResolver("--bg-color")};font-size: \${varResolver("--font-size","16px")};margin: \${varResolver("--margin-small",varResolver("--margin-medium","20px"))};border-bottom: 1px solid \${varResolver("--lwc-border")};}\`;
         }
         export default [stylesheet];
         `;
@@ -161,13 +154,7 @@ describe('custom properties', () => {
 describe('regressions', () => {
     it('should escape grave accents', async () => {
         const actual = `/* Comment with grave accents \`#\` */`;
-        const expected = `
-            function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return \`\`;
-            }
-
-            export default [stylesheet];
-        `;
+        const expected = `export default [];`;
 
         const { code } = await transform(actual, 'foo.css', COMPILER_OPTIONS);
         expect(pretify(code)).toBe(pretify(expected));
@@ -177,9 +164,7 @@ describe('regressions', () => {
         const actual = `.foo { content: "x\\x"; }`;
         const expected = `
             function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-                return \`
-                .foo\${shadowSelector} {content: "x\\\\x";}
-                \`;
+                return \`.foo\${shadowSelector} {content: "x\\\\x";}\`;
             }
 
             export default [stylesheet];

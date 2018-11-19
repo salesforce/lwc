@@ -9,16 +9,17 @@ const styledTemplate = compileTemplate(`
     </template>
 `);
 
-styledTemplate.stylesheets = {
+styledTemplate.stylesheetTokens = {
     hostAttribute: 'test-host',
     shadowAttribute: 'test',
-    stylesheets: [(hostToken, shadowToken) => {
-        return `
-            ${hostToken} { color: red; }
-            section${shadowToken} { color: blue; }
-        `;
-    }],
 };
+
+styledTemplate.stylesheets = [(hostToken, shadowToken) => {
+    return `
+        ${hostToken} { color: red; }
+        section${shadowToken} { color: blue; }
+    `;
+}];
 
 const unstyledTemplate = compileTemplate(`
     <template>
@@ -119,10 +120,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl1</section>
             </template>
         `);
-        tmpl1.stylesheets = {
+        tmpl1.stylesheets = [() => ``];
+        tmpl1.stylesheetTokens = {
             hostAttribute: 'tmpl1-host',
             shadowAttribute: 'tmpl1',
-            stylesheets: [() => ``],
         };
 
         const tmpl2 = compileTemplate(`
@@ -130,10 +131,10 @@ describe('synthetic shadow', () => {
                 <section>tmpl2</section>
             </template>
         `);
-        tmpl2.stylesheets = {
+        tmpl2.stylesheets = [() => ``];
+        tmpl2.stylesheetTokens = {
             hostAttribute: 'tmpl2-host',
             shadowAttribute: 'tmpl2',
-            stylesheets: [() => ``],
         };
 
         class Component extends LightningElement {
@@ -144,6 +145,8 @@ describe('synthetic shadow', () => {
         Component.publicProps = {
             tmpl: 0,
         };
+
+        debugger;
 
         const elm = createElement('x-cmp', { is: Component });
         elm.tmpl = tmpl1;

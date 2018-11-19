@@ -1,8 +1,6 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return `
-h1${shadowSelector} > a${shadowSelector} {}
+  return `h1${shadowSelector} > a${shadowSelector} {}
 h1${shadowSelector} + a${shadowSelector} {}
-div.active${shadowSelector} > p${shadowSelector} {}
-`;
+div.active${shadowSelector} > p${shadowSelector} {}`;
 }
 export default [stylesheet];
