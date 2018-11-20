@@ -1,6 +1,6 @@
 import { registerTemplate, registerComponent, LightningElement } from 'lwc';
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-    return `h1${shadowSelector} {}`;
+    return "h1" + shadowSelector + " {}\n";
 }
 var _implicitStylesheets = [stylesheet];
 function tmpl($api, $cmp, $slotset, $ctx) {

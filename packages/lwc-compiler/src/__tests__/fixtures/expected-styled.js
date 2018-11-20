@@ -1,9 +1,7 @@
 import _xFoo from 'x/foo';
 import { registerTemplate, registerComponent, LightningElement } from 'lwc';
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-return `${nativeShadow ? (":host {color: blue;}") : (hostSelector + " {color: blue;}")}
-div${shadowSelector} {color: red;}
-x-foo${shadowSelector} {color: green;}`;
+    return "\n" + nativeShadow ? (":host {color: blue;}") : (hostSelector + " {color: blue;}") + "\ndiv" + shadowSelector + " {color: red;}\nx-foo" + shadowSelector + " {color: green;}\n";
 }
 var _implicitStylesheets = [stylesheet];
 function tmpl($api, $cmp, $slotset, $ctx) {
