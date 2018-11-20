@@ -11,7 +11,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-export function retarget(refNode: Node, path: Node[]): EventTarget | undefined {
+export function retarget(refNode: Node, path: Node[]): EventTarget | null {
     // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
     // shadow-including inclusive ancestor, return ANCESTOR.
     const refNodePath = pathComposer(refNode, true);
@@ -27,4 +27,5 @@ export function retarget(refNode: Node, path: Node[]): EventTarget | undefined {
             return ancestor;
         }
     }
+    return null;
 }
