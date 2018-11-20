@@ -46,10 +46,6 @@ export function isCustomElement(node: IRNode): boolean {
     return !!(node as IRElement).component;
 }
 
-export function isText(node: IRNode): node is IRText {
-    return node.type === 'text';
-}
-
 export function traverse(node: IRNode, visitor: Visitor): void {
     const nodeVisitor = visitor[node.type] || {};
     const { enter, exit } = nodeVisitor;

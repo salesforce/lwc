@@ -49,7 +49,14 @@ export const ParserDiagnostics = {
     INVALID_STYLE_TAG_POSITION: {
         code: 1001,
 
-        message: "Style tag can only be placed as a firs child of your root",
+        message: "Incorrectly positioned <style> element. The <style> element must be the first element in your template.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+    INVALID_STYLE_TAG_FUNCTION_FORMAT: {
+        code: 1001,
+
+        message: "compileToFunction doesn't support style tag",
         level: DiagnosticLevel.Error,
         url: ""
     },

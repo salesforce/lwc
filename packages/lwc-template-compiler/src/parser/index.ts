@@ -35,6 +35,7 @@ import {
 import {
     parseStyleText,
     parseClassNames,
+    parseInlineStyle,
 } from './style';
 
 import {
@@ -85,17 +86,18 @@ import {
     generateCompilerDiagnostic,
     LWCErrorInfo,
     normalizeToDiagnostic,
-    ParserDiagnostics
+    ParserDiagnostics,
+    TransformerErrors
 } from 'lwc-errors';
-import { isUndefined } from 'util';
 
 function getKeyGenerator() {
     let count = 1;
     return () => count++;
 }
 
-function isStyleElement(element: IRElement) {
-    return element.tag !== 'style';
+function isStyleElement(irElement: IRElement) {
+    const element = irElement.__original as parse5.AST.Default.Element;
+    return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
 }
 
 function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
@@ -184,7 +186,6 @@ export default function parse(source: string, state: State): {
                 const element = stack.pop() as IRElement;
                 // Apply lwc directive on way out to ensure the element is empty
                 applyLwcDirective(element);
-                validateStylesheet(element);
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
@@ -414,29 +415,40 @@ export default function parse(source: string, state: State): {
         }
     }
 
-    function validateStylesheet(element: IRElement) {
-        if (isStyleElement(element)) {
-            return;
-        }
-
-        if (isUndefined(element.inlineStyles)) {
-            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, element.__original);
-        }
-
-        const parentElement = element.parent;
-        if (!parentElement || parentElement.tag !== 'template' || parentElement.children[0] !== element) {
-            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, element.__original);
-        }
-    }
-
     function applyStylesheet(element: IRElement, node: parse5.AST.Default.Element) {
-        if (isStyleElement(element)) {
+        if (!isStyleElement(element)) {
             return;
         }
 
-        const inlineStyles = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
-        element.inlineStyles = inlineStyles;
-        node.childNodes = []; // clear the textNodes
+        const src = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
+
+        if (src.length === 0) {
+            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, node);
+        }
+
+        if (state.config.format === 'function') {
+            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_FUNCTION_FORMAT, node);
+        }
+
+        const isAtRoot = stack.length === 1;
+        const isFirstChildElement = element.parent!.children[0] === element;
+        if (!isAtRoot || !isFirstChildElement) {
+            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, node);
+        }
+
+        try {
+            element.inlineStyles = parseInlineStyle(src, state.config);
+        } catch (error) {
+            let message = error.message;
+            if (error.name === 'CssSyntaxError') {
+                message = error.reason;
+            }
+
+            return warnOnElement(TransformerErrors.CSS_IN_HTML_ERROR, node, [message]);
+        } finally {
+            // Clear all the nodes.
+            node.childNodes = [];
+        }
     }
 
     function applyForEach(element: IRElement) {
