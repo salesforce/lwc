@@ -31,7 +31,7 @@ it('should apply transformation for stylesheet file', async () => {
 
     const expected = `
         function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-            return "\\n" + nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}") + "\\ndiv" + shadowSelector + " {background-color: red;}\\n";
+            return "\\n" + (nativeShadow ? (":host {color: red;}") : (hostSelector + " {color: red;}")) + "\\ndiv" + shadowSelector + " {background-color: red;}\\n";
         }
         export default [stylesheet];
     `;

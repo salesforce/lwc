@@ -117,7 +117,7 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken})`
+                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken}))`
                 });
 
                 tmpHostExpression = null;
