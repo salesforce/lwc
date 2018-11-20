@@ -60,13 +60,13 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
                 getShadowRoot(originalCurrentTarget as HTMLElement) :
                 originalCurrentTarget;
 
-            return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true)) as EventTarget;
+            return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true));
         },
         enumerable: true,
         configurable: true,
     },
     target: {
-        get(this: ComposableEvent): EventTarget {
+        get(this: ComposableEvent): EventTarget | null {
             const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
             const composedPath = pathComposer(originalTarget as Node, this.composed);
@@ -81,7 +81,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
             const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                 getShadowRoot(originalCurrentTarget as HTMLElement) :
                 originalCurrentTarget;
-            return retarget(currentTarget as Node, composedPath) as EventTarget;
+            return retarget(currentTarget as Node, composedPath);
         },
         enumerable: true,
         configurable: true,

@@ -371,6 +371,54 @@ describe('events', () => {
                 expect(target).toBe(anchor);
             });
         });
+
+        it('should retarget events created manually', () => {
+            expect.assertions(3);
+            class Child extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+                renderedCallback() {
+                    let domEvent;
+                    this.addEventListener("change", (e) => {
+                        domEvent = e;
+                        expect(e.target).toBe(this.template.host);
+                    });
+                    const event = document.createEvent("HTMLEvents");
+                    event.initEvent("change", false, true);
+                    this.dispatchEvent(event);
+                    expect(domEvent).toBe(event);
+                    expect(domEvent.target).toBe(null); // because the event is not composed
+                }
+            }
+
+            const childHTML = compileTemplate(`
+                <template></template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+        });
     });
 
     describe('template listener', () => {
