@@ -9,14 +9,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return `
-
-${
+  return `${
     nativeShadow
       ? ":host {color: var(--color);}"
       : hostSelector + " {color: var(--color);}"
-  }
-`;
+  }`;
 }
 
 const stylesheets = [stylesheet];

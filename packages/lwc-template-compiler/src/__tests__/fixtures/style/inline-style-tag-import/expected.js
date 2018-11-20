@@ -9,10 +9,5 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
-
-function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return ``;
-}
-
-const stylesheets = [stylesheet0, stylesheet1, stylesheet];
+const stylesheets = [stylesheet0, stylesheet1];
 tmpl.stylesheets = stylesheets;
