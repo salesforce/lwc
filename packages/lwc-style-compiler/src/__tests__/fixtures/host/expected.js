@@ -1,4 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return `${nativeShadow ? (":host {}") : (hostSelector + " {}")}`;
+  return "\n" + nativeShadow ? (":host {}") : (hostSelector + " {}") + "\n";
 }
 export default [stylesheet];
