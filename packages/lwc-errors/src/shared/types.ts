@@ -21,6 +21,6 @@ export interface LWCErrorInfo {
 export interface Location {
     line: number;
     column: number;
-    start?: number;
-    length?: number;
+    start: number;
+    length: number;
 }
