@@ -22,7 +22,7 @@ describe('accessibility', () => {
                 const elm = createElement('x-parent', { is: Foo });
                 document.body.appendChild(elm);
                 elm.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('input'));
                 });
@@ -57,7 +57,7 @@ describe('accessibility', () => {
                 const elm = createElement('x-parent', { is: Parent });
                 document.body.appendChild(elm);
                 elm.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child'));
                     expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input'));
@@ -85,10 +85,10 @@ describe('accessibility', () => {
                 const dos = elm.shadowRoot.querySelector('input.dos');
                 // focussing on the second input before attempting to set the focus on the host
                 dos.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     elm.focus();
-                    return Promise.resolve(() => {
+                    return Promise.resolve().then(() => {
                         // jsdom has some timing issues with the manual focusing process
                         expect(elm.shadowRoot.activeElement).toBe(dos);
                     });
@@ -115,10 +115,10 @@ describe('accessibility', () => {
                 const input = elm.shadowRoot.querySelector('input');
                 // focussing on the input before attempting to blur the host
                 input.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     elm.blur();
-                    return Promise.resolve(() => {
+                    return Promise.resolve().then(() => {
                         // jsdom has some timing issues with the manual focusing process
                         expect(elm.shadowRoot.activeElement).toBe(null);
                     });
@@ -143,7 +143,7 @@ describe('accessibility', () => {
                 elm.tabIndex = -1;
                 document.body.appendChild(elm);
                 elm.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.tabIndex).toBe(-1);
                     expect(elm.shadowRoot.activeElement).toBe(null);
@@ -167,7 +167,7 @@ describe('accessibility', () => {
                 const elm = createElement('x-parent', { is: Foo });
                 document.body.appendChild(elm);
                 elm.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(null);
                     expect(document.activeElement).toBe(elm);
@@ -212,7 +212,7 @@ describe('accessibility', () => {
                 const elm = createElement('x-parent', { is: Foo });
                 document.body.appendChild(elm);
                 elm.focus();
-                return Promise.resolve(() => {
+                return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(null);
                 });

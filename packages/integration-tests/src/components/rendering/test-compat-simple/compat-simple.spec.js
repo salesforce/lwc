@@ -24,7 +24,7 @@ describe('Testing component: compat-simple', () => {
             var el = document.querySelector('integration-compat-simple');
             el.changeComputedText();
         });
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             assert.equal(element.getText(), 'default#changed');
         });
 

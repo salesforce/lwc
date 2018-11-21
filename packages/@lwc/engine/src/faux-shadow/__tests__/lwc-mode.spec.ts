@@ -22,7 +22,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('p')).toBe(p);
         });
     });
@@ -45,7 +45,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(getRootNodeGetter.call(elm.shadowRoot.querySelector('p'))).toBe(elm.shadowRoot);
         });
     });
@@ -69,7 +69,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('p')).toBe(null);
         });
     });
@@ -93,7 +93,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('p').previousElementSibling).toBe(elm.shadowRoot.querySelector('span'));
         });
     });
@@ -117,7 +117,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('p')).toBe(null);
             expect(elm.shadowRoot.querySelector('span')).not.toBe(null);
         });
@@ -144,12 +144,12 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(getRootNodeGetter.call(elm.shadowRoot.querySelector('p'))).toBe(elm.shadowRoot);
         });
     });
 
-    it('lwc:dom="manual" inserted elements should get correct shadow stylesheet key', () => {
+    it.only('lwc:dom="manual" inserted elements should get correct shadow stylesheet key', () => {
         const p = document.createElement('p');
         const header = document.createElement('header');
         header.appendChild(p);
@@ -159,7 +159,7 @@ describe('lwc:dom', () => {
             </template>
         `);
 
-        html.stylesheets = [];
+        html.stylesheets = [function noop() {/* empty */}];
         html.stylesheetTokens = {
             hostAttribute: "hostattribute",
             shadowAttribute: "shadowattribute"
@@ -176,7 +176,10 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
+            // template driven
+            expect(elm.shadowRoot.querySelector('div').hasAttribute('shadowattribute')).toBe(true);
+            // manual driven
             expect(elm.shadowRoot.querySelector('p').hasAttribute('shadowattribute')).toBe(true);
         });
     });
@@ -333,7 +336,7 @@ describe('lwc:dom', () => {
 
         const elm = createElement('x-foo', { is: Cmp });
         document.body.appendChild(elm);
-        return Promise.resolve(() => {
+        return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('p')).toBe(null);
             expect(elm.shadowRoot.querySelector('span')).not.toBe(null);
         });
