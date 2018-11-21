@@ -7,10 +7,10 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull } from "../shared/language";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull, getPropertyDescriptor } from "../shared/language";
 import { getRootNodeGetter } from "./traverse";
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-root";
-import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from "../env/dom";
+import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
 
@@ -47,52 +47,57 @@ type ComposableEvent = (Event & {
     composed: boolean
 });
 
-const EventPatchDescriptors: PropertyDescriptorMap = {
-    relatedTarget: {
-        get(this: ComposableEvent): EventTarget | null {
-            const eventContext = eventToContextMap.get(this);
-            const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-            const relatedTarget = focusEventRelatedTargetGetter.call(this);
-            if (isNull(relatedTarget)) {
-                return null;
-            }
-            const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
-                getShadowRoot(originalCurrentTarget as HTMLElement) :
-                originalCurrentTarget;
-
-            return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true));
-        },
-        enumerable: true,
-        configurable: true,
-    },
-    target: {
-        get(this: ComposableEvent): EventTarget | null {
-            const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-            const originalTarget: EventTarget = eventTargetGetter.call(this);
-            const composedPath = pathComposer(originalTarget as Node, this.composed);
-
-            // Handle cases where the currentTarget is null (for async events),
-            // and when an event has been added to Window
-            if (!(originalCurrentTarget instanceof Node)) {
-                return retarget(document, composedPath) as EventTarget;
-            }
-
-            const eventContext = eventToContextMap.get(this);
-            const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
-                getShadowRoot(originalCurrentTarget as HTMLElement) :
-                originalCurrentTarget;
-            return retarget(currentTarget as Node, composedPath);
-        },
-        enumerable: true,
-        configurable: true,
-    },
-};
-
 export function patchEvent(event: Event) {
-    if (!eventToContextMap.has(event)) {
-        defineProperties(event, EventPatchDescriptors);
-        eventToContextMap.set(event, 0);
+    if (eventToContextMap.has(event)) {
+        return; // already patched
     }
+    // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
+    // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
+    const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
+    defineProperties(event, {
+        relatedTarget: {
+            get(this: ComposableEvent): EventTarget | null | undefined {
+                const eventContext = eventToContextMap.get(this);
+                const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+                if (isUndefined(originalRelatedTargetDescriptor)) {
+                    return undefined;
+                }
+                const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
+                if (isNull(relatedTarget)) {
+                    return null;
+                }
+                const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+                    getShadowRoot(originalCurrentTarget as HTMLElement) :
+                    originalCurrentTarget;
+
+                return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true));
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        target: {
+            get(this: ComposableEvent): EventTarget | null {
+                const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+                const originalTarget: EventTarget = eventTargetGetter.call(this);
+                const composedPath = pathComposer(originalTarget as Node, this.composed);
+
+                // Handle cases where the currentTarget is null (for async events),
+                // and when an event has been added to Window
+                if (!(originalCurrentTarget instanceof Node)) {
+                    return retarget(document, composedPath) as EventTarget;
+                }
+
+                const eventContext = eventToContextMap.get(this);
+                const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+                    getShadowRoot(originalCurrentTarget as HTMLElement) :
+                    originalCurrentTarget;
+                return retarget(currentTarget as Node, composedPath);
+            },
+            enumerable: true,
+            configurable: true,
+        },
+    });
+    eventToContextMap.set(event, 0);
 }
 
 interface ListenerMap {
