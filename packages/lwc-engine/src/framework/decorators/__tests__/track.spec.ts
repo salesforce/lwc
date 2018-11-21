@@ -295,10 +295,14 @@ describe('track.ts', () => {
 
         it('should produce a trackable object', () => {
             let counter = 0;
+            const html = compileTemplate(`<template>{foo.bar}</template>`);
             class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.foo = track({ bar: 1 });
+                }
+                render() {
+                    return html;
                 }
                 renderedCallback() {
                     this.foo.bar = 2;
@@ -307,7 +311,7 @@ describe('track.ts', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(counter).toBe(2); // two rendering phases due to the mutation of this.foo
             });
         });

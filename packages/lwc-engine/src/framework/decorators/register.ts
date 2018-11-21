@@ -34,7 +34,7 @@ export interface WireHash {
 export interface RegisterDecoratorMeta {
     readonly publicMethods?: string[];
     readonly publicProps?: PropsDef;
-    readonly track?: string[];
+    readonly track?: TrackDef;
     readonly wire?: WireHash;
 }
 
@@ -85,7 +85,7 @@ export function getDecoratorsRegisteredMeta(Ctor: ComponentConstructor): Decorat
     return signedDecoratorToMetaMap.get(Ctor);
 }
 
-function getTrackHash(target: ComponentConstructor, track: string[] | undefined): TrackDef {
+function getTrackHash(target: ComponentConstructor, track: TrackDef | undefined): TrackDef {
     if (isUndefined(track) || getOwnPropertyNames(track).length === 0) {
         return EmptyObject;
     }

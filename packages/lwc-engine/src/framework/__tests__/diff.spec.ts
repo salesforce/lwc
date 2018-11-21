@@ -1,6 +1,5 @@
 import { compileTemplate } from 'test-utils';
-
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 
 const adjectives = [
     "pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain",
@@ -173,7 +172,7 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = store.data;
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(2000);
                 const [r1, r2, r3] = template.querySelectorAll('x-row');
                 expect(r1).toBe(e1);
@@ -191,7 +190,7 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [a, c, b];
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(3);
                 const [r1, r2, r3] = template.querySelectorAll('x-row');
                 expect(r2).toBe(e3);
@@ -208,7 +207,7 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [c, b, a];
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(3);
                 const [r1, r2, r3] = template.querySelectorAll('x-row');
                 expect(r1).toBe(e3);
@@ -226,7 +225,7 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2, e3] = template.querySelectorAll('x-row');
             elm.rows = [c, b, d];
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(3);
                 const [r1, r2, r3] = template.querySelectorAll('x-row');
                 expect(r2).toBe(e2);
@@ -243,8 +242,8 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2] = template.querySelectorAll('x-row');
             elm.rows = [a, b, c, d]; // inserting new items first
-            return Promise.resolve(() => {
-                expect(template.querySelectorAll('x-row').length).toBe(3);
+            return Promise.resolve().then(() => {
+                expect(template.querySelectorAll('x-row').length).toBe(4);
                 const [r1, r2, r3, r4] = template.querySelectorAll('x-row');
                 expect(r3).toBe(e1);
                 expect(r4).toBe(e2);
@@ -260,11 +259,62 @@ describe('diff algo', () => {
             const template = elm.shadowRoot;
             const [e1, e2] = template.querySelectorAll('x-row');
             elm.rows = [a, b, c, d]; // inserting new items at the end
-            return Promise.resolve(() => {
-                expect(template.querySelectorAll('x-row').length).toBe(3);
+            return Promise.resolve().then(() => {
+                expect(template.querySelectorAll('x-row').length).toBe(4);
                 const [r1, r2, r3, r4] = template.querySelectorAll('x-row');
                 expect(r1).toBe(e1);
                 expect(r2).toBe(e2);
+            });
+        });
+    });
+    describe('patching', () => {
+        it('should not patch elements twice', () => {
+            const tableHTML = compileTemplate(`<template>
+                <table>
+                    <template for:each={items} for:item="item">
+                        <tr key={item.id}>
+                            <td>{item.value}</td>
+                        </tr>
+                    </template>
+                </table>
+            </template>`);
+            class App extends LightningElement {
+                items = [
+                    { id: 'a', value: 5 },
+                    { id: 'b', value: 4 },
+                    { id: 'c', value: 1 },
+                    { id: 'd', value: 3 },
+                ];
+                sortDir = 'ASC';
+                sort(dir) {
+                    const clone = Array.from(this.items);
+                    this.sortDir = dir;
+                    clone.sort((a, b) => {
+                        if (this.sortDir === 'DESC') {
+                            return b.value - a.value;
+                        }
+                        return a.value - b.value;
+                    });
+                    this.items = clone;
+                }
+                render() {
+                    return tableHTML;
+                }
+            }
+            registerDecorators(App, {
+                track: { items: 1, sortDir: 1 },
+                publicMethods: ['sort']
+            });
+            const elm = createElement('x-foo', { is: App });
+            document.body.appendChild(elm);
+            expect(elm.shadowRoot.textContent).toBe('5413');
+            elm.sort('DESC');
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.textContent).toBe('5431');
+                elm.sort('ASC');
+                return Promise.resolve().then(() => {
+                    expect(elm.shadowRoot.textContent).toBe('1345');
+                });
             });
         });
     });
