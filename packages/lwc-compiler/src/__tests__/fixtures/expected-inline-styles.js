@@ -5,7 +5,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 var _tmpl = registerTemplate(tmpl);
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-    return `h1${shadowSelector} {}`;
+    return "h1" + shadowSelector + " {}\n";
 }
 const stylesheets = [stylesheet0, stylesheet];
 tmpl.stylesheets = stylesheets;
