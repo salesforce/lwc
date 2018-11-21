@@ -13,14 +13,7 @@ export { default as templateCompiler } from "lwc-template-compiler";
  * @param diagnostic
  */
 function temporaryAdapterForTypesafety(diagnostic: CompilerDiagnostic): Diagnostic {
-    const diag = diagnostic as any;
-
-    if (diagnostic.location) {
-        const { line, column } = diagnostic.location;
-        diag.location = { line, column, start: -1, length: -1 };
-    }
-
-    return diag as Diagnostic;
+    return diagnostic as Diagnostic;
 }
 
 export interface CompilerOutput {

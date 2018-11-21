@@ -11,7 +11,9 @@ const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
 
 const EXPECTED_LOCATION = expect.objectContaining({
     line: expect.any(Number),
-    column: expect.any(Number)
+    column: expect.any(Number),
+    start: expect.any(Number),
+    length: expect.any(Number)
 });
 
 function parseTemplate(src: string): any {
@@ -171,7 +173,7 @@ describe('locator parsing', () => {
             code: 1001,
             level: DiagnosticLevel.Error,
             message: 'LWC1001: locator:context must be used with locator:id',
-            location: { line: 2, column: 13 }
+            location: { line: 2, column: 13, start: 23, length: 40 }
         });
     });
 
@@ -185,7 +187,7 @@ describe('locator parsing', () => {
             code: 1001,
             level: DiagnosticLevel.Error,
             message: "LWC1001: locator:id directive is expected to be a string.",
-            location: {column: 25, line: 3},
+            location: {column: 25, line: 3, start: 48, length: 18},
         });
     });
 
@@ -199,7 +201,7 @@ describe('locator parsing', () => {
             code: 1001,
             level: DiagnosticLevel.Error,
             message: "LWC1001: locator:context directive is expected to be an expression.",
-            location: {column: 44, line: 3},
+            location: {column: 44, line: 3, start: 67, length: 21},
         });
     });
 
@@ -213,7 +215,7 @@ describe('locator parsing', () => {
             code: 1001,
             level: DiagnosticLevel.Error,
             message: "LWC1001: locator:context cannot be a member expression. It can only be functions on the component",
-            location: {line: 3, column: 44},
+            location: {line: 3, column: 44, start: 67, length: 25},
         });
     });
 });

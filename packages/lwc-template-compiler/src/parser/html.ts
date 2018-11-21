@@ -26,13 +26,18 @@ export function parseHTML(source: string) {
     const parsingErrors: CompilerDiagnostic[] = [];
 
     const onParseError = (err: parse5.Errors.ParsingError) => {
-        const { code, startLine, startCol } = err;
+        const { code, startLine, startCol, startOffset, endOffset } = err;
 
         parsingErrors.push(
             generateCompilerDiagnostic(ParserDiagnostics.INVALID_HTML_SYNTAX, {
                 messageArgs: [code],
                 origin: {
-                    location: { line: startLine, column: startCol }
+                    location: {
+                        line: startLine,
+                        column: startCol,
+                        start: startOffset,
+                        length: endOffset - startOffset
+                    }
                 }
             })
         );
@@ -54,7 +59,9 @@ export function parseHTML(source: string) {
                     origin: {
                         location: {
                             line: startTag.startLine || startTag.line,
-                            column: startTag.startCol || startTag.col
+                            column: startTag.startCol || startTag.col,
+                            start: startTag.startOffset,
+                            length: startTag.endOffset - startTag.startOffset
                         }
                     }
                 })
