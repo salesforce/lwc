@@ -1518,28 +1518,12 @@ acorn-globals@^4.1.0:
   dependencies:
     acorn "^5.0.0"
 
-<<<<<<< HEAD
-acorn-jsx@^3.0.0:
-  version "3.0.1"
-  resolved "http://npm.lwcjs.org/acorn-jsx/-/acorn-jsx-3.0.1/afdf9488fb1ecefc8348f6fb22f464e32a58b36b.tgz#afdf9488fb1ecefc8348f6fb22f464e32a58b36b"
-  integrity sha1-r9+UiPsezvyDSPb7IvRk4ypYs2s=
-  dependencies:
-    acorn "^3.0.4"
-
 acorn@^2.4.0:
   version "2.7.0"
   resolved "http://npm.lwcjs.org/acorn/-/acorn-2.7.0/ab6e7d9d886aaca8b085bc3312b79a198433f0e7.tgz#ab6e7d9d886aaca8b085bc3312b79a198433f0e7"
   integrity sha1-q259nYhqrKiwhbwzEreaGYQz8Oc=
 
-acorn@^3.0.4:
-  version "3.3.0"
-  resolved "http://npm.lwcjs.org/acorn/-/acorn-3.3.0/45e37fb39e8da3f25baee3ff5369e2bb5f22017a.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
-  integrity sha1-ReN/s56No/JbruP/U2niu18iAXo=
-
-acorn@^5.0.0, acorn@^5.4.0:
-=======
-acorn@^5.0.0, acorn@^5.3.0:
->>>>>>> wip: updating deps
+acorn@^5.0.0:
   version "5.4.1"
   resolved "http://npm.lwcjs.org/acorn/-/acorn-5.4.1/fdc58d9d17f4a4e98d102ded826a9b9759125102.tgz#fdc58d9d17f4a4e98d102ded826a9b9759125102"
   integrity sha512-XLmq3H/BVvW6/GbxKryGxWORz1ebilSsUDlyC27bXhWGWAZWkGwS6FLHjOlwFXNFoWFQEO/Df4u0YYd0K3BQgQ==
@@ -3936,31 +3920,7 @@ dir-glob@^2.0.0:
     arrify "^1.0.1"
     path-type "^3.0.0"
 
-<<<<<<< HEAD
-doctrine@1.5.0:
-  version "1.5.0"
-  resolved "http://npm.lwcjs.org/doctrine/-/doctrine-1.5.0/379dce730f6166f76cefa4e6707a159b02c5a6fa.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
-  integrity sha1-N53Ocw9hZvds76TmcHoVmwLFpvo=
-  dependencies:
-    esutils "^2.0.2"
-    isarray "^1.0.0"
-
-doctrine@^2.0.2:
-  version "2.1.0"
-  resolved "http://npm.lwcjs.org/doctrine/-/doctrine-2.1.0/5cd01fc101621b42c4cd7f5d1a66243716d3f39d.tgz#5cd01fc101621b42c4cd7f5d1a66243716d3f39d"
-  integrity sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==
-  dependencies:
-    esutils "^2.0.2"
-
-domain-browser@^1.1.1:
-  version "1.2.0"
-  resolved "http://npm.lwcjs.org/domain-browser/-/domain-browser-1.2.0/3d31f50191a6749dd1375a7f522e823d42e54eda.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
-  integrity sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==
-
 domexception@^1.0.1:
-=======
-domexception@^1.0.0:
->>>>>>> wip: updating deps
   version "1.0.1"
   resolved "http://npm.lwcjs.org/domexception/-/domexception-1.0.1/937442644ca6a31261ef36e3ec677fe805582c90.tgz#937442644ca6a31261ef36e3ec677fe805582c90"
   integrity sha512-raigMkn7CJNNo6Ihro1fzG7wr3fHuYVytzquZKX5n0yizGsTcYgzdIUwj1X9pK0VvjeihV+XiclP+DjwbsSKug==
@@ -4185,7 +4145,7 @@ estraverse@^4.2.0:
   resolved "http://npm.lwcjs.org/estraverse/-/estraverse-4.2.0/0dee3fed31fcd469618ce7342099fc1afa0bdb13.tgz#0dee3fed31fcd469618ce7342099fc1afa0bdb13"
   integrity sha1-De4/7TH81GlhjOc0IJn8GvoL2xM=
 
-estree-walker@^0.2.1:
+estree-walker@^0.2.0, estree-walker@^0.2.1:
   version "0.2.1"
   resolved "http://npm.lwcjs.org/estree-walker/-/estree-walker-0.2.1/bdafe8095383d8414d5dc2ecf4c9173b6db9412e.tgz#bdafe8095383d8414d5dc2ecf4c9173b6db9412e"
   integrity sha1-va/oCVOD2EFNXcLs9MkXO225QS4=
@@ -5232,7 +5192,7 @@ hawk@~6.0.2:
     hoek "4.x.x"
     sntp "2.x.x"
 
-he@1.1.1, he@^1.1.1, he@~1.1.1:
+he@1.1.1, he@^1.1.1:
   version "1.1.1"
   resolved "http://npm.lwcjs.org/he/-/he-1.1.1/93410fd21b009735151f8868c2f271f3427e23fd.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
   integrity sha1-k0EP0hsAlzUVH4howvJx80J+I/0=
@@ -6617,22 +6577,10 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-<<<<<<< HEAD
-leb@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/leb/-/leb-0.3.0/32bee9fad168328d6aea8522d833f4180eed1da3.tgz#32bee9fad168328d6aea8522d833f4180eed1da3"
-  integrity sha1-Mr7p+tFoMo1q6oUi2DP0GA7tHaM=
-
 left-pad@^1.3.0:
   version "1.3.0"
   resolved "http://npm.lwcjs.org/left-pad/-/left-pad-1.3.0/5b8a3a7765dfe001261dde915589e782f8c94d1e.tgz#5b8a3a7765dfe001261dde915589e782f8c94d1e"
   integrity sha512-XI5MPzVNApjAyhQzphX8BkmKsKUxD4LdyK24iZeQGinBN9yTQT3bFlCBy/aVx2HrNcqQGsdot8ghrjyrvMCoEA==
-=======
-left-pad@^1.2.0:
-  version "1.2.0"
-  resolved "http://npm.lwcjs.org/left-pad/-/left-pad-1.2.0/d30a73c6b8201d8f7d8e7956ba9616087a68e0ee.tgz#d30a73c6b8201d8f7d8e7956ba9616087a68e0ee"
-  integrity sha1-0wpzxrggHY99jnlWupYWCHpo4O4=
->>>>>>> wip: updating deps
 
 lerna@3.4.3:
   version "3.4.3"
@@ -6917,6 +6865,13 @@ lwc-jest-transformer@0.17.15:
     babel-preset-jest "^22.1.0"
     babel-template "^6.26.0"
     deasync "0.1.12"
+
+magic-string@^0.10.0:
+  version "0.10.2"
+  resolved "http://npm.lwcjs.org/magic-string/-/magic-string-0.10.2/f25f1c3d9e484f0d8ad606d6c2faf404a3b6cf9d.tgz#f25f1c3d9e484f0d8ad606d6c2faf404a3b6cf9d"
+  integrity sha1-8l8cPZ5ITw2K1gbWwvr0BKO2z50=
+  dependencies:
+    vlq "^0.2.1"
 
 magic-string@^0.22.4:
   version "0.22.4"
@@ -7880,7 +7835,7 @@ parse-passwd@^1.0.0:
   resolved "http://npm.lwcjs.org/parse-passwd/-/parse-passwd-1.0.0/6d5b934a456993b23d37f40a382d6f1666a8e5c6.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
   integrity sha1-bVuTSkVpk7I9N/QKOC1vFmao5cY=
 
-parse5-with-errors@4.0.1:
+parse5-with-errors@^4.0.1:
   version "4.0.1"
   resolved "http://npm.lwcjs.org/parse5-with-errors/-/parse5-with-errors-4.0.1/3a99709acba0e495d3d0cf79542386c362e7e6a3.tgz#3a99709acba0e495d3d0cf79542386c362e7e6a3"
   integrity sha1-Oplwmsug5JXT0M95VCOGw2Ln5qM=
@@ -9046,30 +9001,25 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.
   dependencies:
     glob "^7.0.5"
 
-<<<<<<< HEAD
-ripemd160@^2.0.0, ripemd160@^2.0.1:
-  version "2.0.1"
-  resolved "http://npm.lwcjs.org/ripemd160/-/ripemd160-2.0.1/0f4584295c53a3628af7e6d79aca21ce57d1c6e7.tgz#0f4584295c53a3628af7e6d79aca21ce57d1c6e7"
-  integrity sha1-D0WEKVxTo2KK9+bXmsohzlfRxuc=
-  dependencies:
-    hash-base "^2.0.0"
-    inherits "^2.0.1"
-
 rollup-plugin-compat@0.21.0:
   version "0.21.0"
   resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.21.0/867e573822a8664d42cf2ff4aa6d4467b4c0bcf8.tgz#867e573822a8664d42cf2ff4aa6d4467b4c0bcf8"
   integrity sha512-4ABcklh7Urhg9rbjHrAg3no4jfxr9n/m0ICJ+FxK/25a94CqA4k6IsZXaYmL//nj/4fSUrxAHSJUYyanSZpYGw==
-=======
-rollup-plugin-compat@0.20.8:
-  version "0.20.8"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.20.8/cff4c26c5e7d0b4197cac04e33b31f58fdb0ecbb.tgz#cff4c26c5e7d0b4197cac04e33b31f58fdb0ecbb"
-  integrity sha512-p6zCMmNJrKSYHF5kFmvLu45/oTqlUyQE8VSQuF8KwT3nLFcyUqalIKviRxaJtN/aoHucQX2Hrdh4JQIBBRCqWw==
->>>>>>> wip: updating deps
   dependencies:
     "@babel/core" "7.1.0"
     es5-proxy-compat "0.21.0"
     magic-string "~0.25.1"
     rollup-pluginutils "~2.0.1"
+
+rollup-plugin-inject@^1.4.1:
+  version "1.4.1"
+  resolved "http://npm.lwcjs.org/rollup-plugin-inject/-/rollup-plugin-inject-1.4.1/14825236259485981f6b8118404408acd22b1d54.tgz#14825236259485981f6b8118404408acd22b1d54"
+  integrity sha1-FIJSNiWUhZgfa4EYQEQIrNIrHVQ=
+  dependencies:
+    acorn "^2.4.0"
+    estree-walker "^0.2.0"
+    magic-string "^0.10.0"
+    rollup-pluginutils "^1.2.0"
 
 rollup-plugin-node-resolve@^3.0.2:
   version "3.0.2"
@@ -9100,7 +9050,7 @@ rollup-plugin-typescript@^0.8.1:
     tippex "^2.1.1"
     typescript "^1.8.9"
 
-rollup-pluginutils@^1.3.1:
+rollup-pluginutils@^1.2.0, rollup-pluginutils@^1.3.1:
   version "1.5.2"
   resolved "http://npm.lwcjs.org/rollup-pluginutils/-/rollup-pluginutils-1.5.2/1e156e778f94b7255bfa1b3d0178be8f5c552408.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
   integrity sha1-HhVud4+UtyVb+hs9AXi+j1xVJAg=
@@ -9576,7 +9526,7 @@ source-map@^0.5.0, source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, sour
   resolved "http://npm.lwcjs.org/source-map/-/source-map-0.5.7/8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-source-map@^0.6.0, source-map@^0.6.1:
+source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "http://npm.lwcjs.org/source-map/-/source-map-0.6.1/74722af32e9614e9c287a8d0bbde48b5e2f1a263.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
@@ -10756,26 +10706,7 @@ write-pkg@^3.1.0:
     sort-keys "^2.0.0"
     write-json-file "^2.2.0"
 
-<<<<<<< HEAD
-write@^0.2.1:
-  version "0.2.1"
-  resolved "http://npm.lwcjs.org/write/-/write-0.2.1/5fc03828e264cea3fe91455476f7a3c566cb0757.tgz#5fc03828e264cea3fe91455476f7a3c566cb0757"
-  integrity sha1-X8A4KOJkzqP+kUVUdvejxWbLB1c=
-  dependencies:
-    mkdirp "^0.5.1"
-
 ws@^5.1.1, ws@^5.2.0:
-=======
-ws@^4.0.0:
-  version "4.1.0"
-  resolved "http://npm.lwcjs.org/ws/-/ws-4.1.0/a979b5d7d4da68bf54efe0408967c324869a7289.tgz#a979b5d7d4da68bf54efe0408967c324869a7289"
-  integrity sha512-ZGh/8kF9rrRNffkLFV4AzhvooEclrOH0xaugmqGsIfFgOE/pIz4fMc4Ef+5HSQqTEug2S9JZIWDR47duDSLfaA==
-  dependencies:
-    async-limiter "~1.0.0"
-    safe-buffer "~5.1.0"
-
-ws@^5.1.1:
->>>>>>> wip: updating deps
   version "5.2.2"
   resolved "http://npm.lwcjs.org/ws/-/ws-5.2.2/dffef14866b8e8dc9133582514d1befaf96e980f.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
   integrity sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
