@@ -122,7 +122,7 @@ export function updateDynamicChildren(
         } else if (sameVnode(oldStartVnode, newEndVnode)) {
             // Vnode moved right
             patchVnode(oldStartVnode, newEndVnode);
-            newEndVnode.hook.insert(
+            newEndVnode.hook.move(
                 oldStartVnode,
                 parentElm,
                 // TODO: resolve this, but using dot notation for nextSibling for now
@@ -133,7 +133,7 @@ export function updateDynamicChildren(
         } else if (sameVnode(oldEndVnode, newStartVnode)) {
             // Vnode moved left
             patchVnode(oldEndVnode, newStartVnode);
-            newStartVnode.hook.insert(
+            newStartVnode.hook.move(
                 oldEndVnode,
                 parentElm,
                 oldStartVnode.elm as Node,
@@ -175,7 +175,7 @@ export function updateDynamicChildren(
                             newStartVnode,
                         );
                         oldCh[idxInOld] = undefined as any;
-                        newStartVnode.hook.insert(
+                        newStartVnode.hook.move(
                             elmToMove,
                             parentElm,
                             oldStartVnode.elm as Node,

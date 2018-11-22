@@ -117,8 +117,7 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
         return getHost(this).baseURI;
     }
     get isConnected(this: SyntheticShadowRootInterface) {
-        // @ts-ignore remove this after upgrading ts 3.x
-        return getHost(this).isConnected;
+        return (compareDocumentPosition.call(document, getHost(this)) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
     }
     get host(this: SyntheticShadowRootInterface) {
         return getHost(this);

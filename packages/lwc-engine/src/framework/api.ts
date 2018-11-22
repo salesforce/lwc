@@ -85,6 +85,7 @@ const TextHook: Hooks = {
     },
     update: updateNodeHook,
     insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
     destroy: noop,
 };
@@ -100,6 +101,7 @@ const CommentHook: Hooks = {
     },
     update: updateNodeHook,
     insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for comment nodes
     remove: removeNodeHook,
     destroy: noop,
 };
@@ -131,6 +133,9 @@ const ElementHook: Hooks = {
     insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
         insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
         createChildrenHook(vnode);
+    },
+    move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
+        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
         removeChild.call(parentNode, vnode.elm as Node);
@@ -167,6 +172,9 @@ const CustomElementHook: Hooks = {
         insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
         createChildrenHook(vnode);
         insertCustomElmHook(vnode);
+    },
+    move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
+        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
         removeChild.call(parentNode, vnode.elm as Node);

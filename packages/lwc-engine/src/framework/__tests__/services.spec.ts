@@ -69,7 +69,7 @@ describe('services', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
-            return Promise.resolve(() => {
+            return Promise.resolve().then(() => {
                 expect(r).toBe(1);
                 expect(c).toBe(1);
                 expect(d).toBe(1);
