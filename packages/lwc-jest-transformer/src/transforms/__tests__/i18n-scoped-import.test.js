@@ -9,9 +9,9 @@ describe('@salesforce/i18n import', () => {
         let lang;
 
         try {
-          lang = require('@salesforce/i18n/lang').default;
+          lang = require("@salesforce/i18n/lang").default;
         } catch (e) {
-          lang = 'en';
+          lang = "en";
         }
     `);
 
@@ -21,9 +21,9 @@ describe('@salesforce/i18n import', () => {
         let shortDateFormat;
 
         try {
-          shortDateFormat = require('@salesforce/i18n/dateTime.shortDateFormat').default;
+          shortDateFormat = require("@salesforce/i18n/dateTime.shortDateFormat").default;
         } catch (e) {
-          shortDateFormat = 'M/d/yyyy';
+          shortDateFormat = "M/d/yyyy";
         }
     `);
 
@@ -35,9 +35,9 @@ describe('@salesforce/i18n import', () => {
         let lang;
 
         try {
-          lang = require('@salesforce/i18n/lang').default;
+          lang = require("@salesforce/i18n/lang").default;
         } catch (e) {
-          lang = 'en';
+          lang = "en";
         }
     `);
 

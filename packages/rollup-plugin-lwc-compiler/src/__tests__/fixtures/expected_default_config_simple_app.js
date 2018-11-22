@@ -6,7 +6,6 @@
         d: api_dynamic,
         h: api_element
       } = $api;
-
       return [api_element("div", {
         key: 2
       }, [api_dynamic($cmp.x)])];
@@ -44,7 +43,6 @@
         c: api_custom_element,
         h: api_element
       } = $api;
-
       return [api_element("div", {
         classMap: {
           "container": true

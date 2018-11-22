@@ -1,6 +1,6 @@
-import traverse from 'babel-traverse';
-import * as types from 'babel-types';
-import * as babylon from 'babylon';
+import traverse from '@babel/traverse';
+import * as types from '@babel/types';
+import * as babylon from '@babel/parser';
 import * as esutils from 'esutils';
 
 import { ParserDiagnostics, invariant, generateCompilerError } from 'lwc-errors';

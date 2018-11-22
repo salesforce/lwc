@@ -1,19 +1,18 @@
 {
   "extends": "../../tsconfig.json",
+
   "compilerOptions": {
-      "experimentalDecorators": true,
-      "allowJs": true,
-      "baseUrl": ".",
-      "paths": {
-        "engine": ["../lwc-engine/"],
-        "wire-service": ["dist/modules/es2017/wire-service.js"]
+    "noImplicitAny": false,
+
+    "outDir": "lib",
+
+    "baseUrl": ".",
+    "paths": {
+      "lwc": ["../lwc-engine"],
     }
   },
-  "include": [
-    "src/**/*",
-    "playground/**/*",
-  ],
-  "exclude": [
 
+  "include": [
+    "src/",
   ]
 }

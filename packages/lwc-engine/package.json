@@ -6,12 +6,14 @@
   "module": "dist/modules/es2017/engine.js",
   "typings": "types/engine.d.ts",
   "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
-    "build:umd:dev": "rollup -c scripts/rollup/rollup.config.umd.dev.js",
-    "build:umd:prod": "rollup -c scripts/rollup/rollup.config.umd.prod.js",
-    "build:es-and-cjs": "rollup -c scripts/rollup/rollup.config.es-and-cjs.js",
-    "test": "jest"
+    "clean": "rm -rf dist/ lib/",
+    "lint": "tslint -p ./tsconfig.json",
+    "test": "jest",
+    "build": "tsc",
+    "postbuild": "concurrently --raw \"rollup -c scripts/rollup/rollup.config.umd.dev.js\" \"rollup -c scripts/rollup/rollup.config.umd.prod.js\" \"rollup -c scripts/rollup/rollup.config.es-and-cjs.js\""
+  },
+  "dependencies": {
+    "observable-membrane": "0.25.0"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
@@ -25,8 +27,5 @@
     "modules": {
       "lwc": "dist/modules/es2017/engine.js"
     }
-  },
-  "dependencies": {
-    "observable-membrane": "0.25.0"
   }
 }

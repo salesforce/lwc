@@ -9,9 +9,9 @@ describe('@salesforce/label import', () => {
         let myLabel;
 
         try {
-          myLabel = require('@salesforce/label/c.foo').default;
+          myLabel = require("@salesforce/label/c.foo").default;
         } catch (e) {
-          myLabel = 'c.foo';
+          myLabel = "c.foo";
         }
     `);
 
@@ -23,9 +23,9 @@ describe('@salesforce/label import', () => {
         let myLabel;
 
         try {
-          myLabel = require('@salesforce/label/c.foo').default;
+          myLabel = require("@salesforce/label/c.foo").default;
         } catch (e) {
-          myLabel = 'c.foo';
+          myLabel = "c.foo";
         }
     `);
 

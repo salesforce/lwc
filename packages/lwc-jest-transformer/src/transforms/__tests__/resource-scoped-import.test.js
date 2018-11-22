@@ -9,9 +9,9 @@ describe('@salesforce/resourceUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/resourceUrl/foo').default;
+          myResource = require("@salesforce/resourceUrl/foo").default;
         } catch (e) {
-          myResource = 'foo';
+          myResource = "foo";
         }
     `);
 
@@ -21,9 +21,9 @@ describe('@salesforce/resourceUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/resourceUrl/ns__foo').default;
+          myResource = require("@salesforce/resourceUrl/ns__foo").default;
         } catch (e) {
-          myResource = 'ns__foo';
+          myResource = "ns__foo";
         }
     `);
 
@@ -35,9 +35,9 @@ describe('@salesforce/resourceUrl import', () => {
         let myResource;
 
         try {
-          myResource = require('@salesforce/resourceUrl/foo').default;
+          myResource = require("@salesforce/resourceUrl/foo").default;
         } catch (e) {
-          myResource = 'foo';
+          myResource = "foo";
         }
     `);
 
