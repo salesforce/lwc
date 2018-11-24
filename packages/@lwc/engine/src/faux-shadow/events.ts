@@ -15,6 +15,7 @@ import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-r
 import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
+import { triggerAsyncId } from "async_hooks";
 
 import "../polyfills/event-listener/main";
 
@@ -58,21 +59,65 @@ type ComposableEvent = (Event & {
     composed: boolean
 });
 
+function targetGetter(this: ComposableEvent): EventTarget | null {
+    const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+    const originalTarget: EventTarget = eventTargetGetter.call(this);
+    const composedPath = pathComposer(originalTarget as Node, this.composed);
+
+    // Handle cases where the currentTarget is null (for async events),
+    // and when an event has been added to Window
+    if (!(originalCurrentTarget instanceof Node)) {
+        return retarget(document, composedPath) as EventTarget;
+    }
+
+    const eventContext = eventToContextMap.get(this);
+    const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
+        getShadowRoot(originalCurrentTarget as HTMLElement) :
+        originalCurrentTarget;
+    return retarget(currentTarget as Node, composedPath);
+}
+
+function composedPathValue(this: ComposableEvent): EventTarget[] {
+    const originalTarget: EventTarget = eventTargetGetter.call(this);
+    return pathComposer(originalTarget as Node, this.composed);
+}
+
 export function patchEvent(event: Event) {
     if (eventToContextMap.has(event)) {
         return; // already patched
     }
+    defineProperties(event, {
+        target: {
+            get: targetGetter,
+            enumerable: true,
+            configurable: true,
+        },
+        composedPath: {
+            value: composedPathValue,
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        },
+        // non-standard but important accessor
+        srcElement: {
+            get: targetGetter,
+            enumerable: true,
+            configurable: true,
+        },
+        path: {
+            get: composedPathValue,
+            enumerable: true,
+            configurable: true,
+        },
+    });
     // not all events implement the relatedTarget getter, that's why we need to extract it from the instance
     // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
     const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
-    defineProperties(event, {
-        relatedTarget: {
+    if (!isUndefined(originalRelatedTargetDescriptor)) {
+        defineProperty(event, 'relatedTarget', {
             get(this: ComposableEvent): EventTarget | null | undefined {
                 const eventContext = eventToContextMap.get(this);
                 const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-                if (isUndefined(originalRelatedTargetDescriptor)) {
-                    return undefined;
-                }
                 const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
                 if (isNull(relatedTarget)) {
                     return null;
@@ -85,29 +130,8 @@ export function patchEvent(event: Event) {
             },
             enumerable: true,
             configurable: true,
-        },
-        target: {
-            get(this: ComposableEvent): EventTarget | null {
-                const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-                const originalTarget: EventTarget = eventTargetGetter.call(this);
-                const composedPath = pathComposer(originalTarget as Node, this.composed);
-
-                // Handle cases where the currentTarget is null (for async events),
-                // and when an event has been added to Window
-                if (!(originalCurrentTarget instanceof Node)) {
-                    return retarget(document, composedPath) as EventTarget;
-                }
-
-                const eventContext = eventToContextMap.get(this);
-                const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
-                    getShadowRoot(originalCurrentTarget as HTMLElement) :
-                    originalCurrentTarget;
-                return retarget(currentTarget as Node, composedPath);
-            },
-            enumerable: true,
-            configurable: true,
-        },
-    });
+        });
+    }
     eventToContextMap.set(event, 0);
 }
 
