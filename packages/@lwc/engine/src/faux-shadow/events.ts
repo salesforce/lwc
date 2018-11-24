@@ -15,7 +15,6 @@ import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-r
 import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
-import { triggerAsyncId } from "async_hooks";
 
 import "../polyfills/event-listener/main";
 
