@@ -1,4 +1,4 @@
-import * as styleCompiler from "lwc-style-compiler";
+import * as styleCompiler from "@lwc/style-compiler";
 import { normalizeToCompilerError, TransformerErrors } from "@lwc/errors";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";

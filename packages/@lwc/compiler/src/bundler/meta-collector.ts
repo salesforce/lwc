@@ -5,7 +5,7 @@ import {
     WireDecorator,
     Location,
     ClassMember
-} from "babel-plugin-transform-lwc-class";
+} from "@lwc/babel-plugin-component";
 
 import { TemplateModuleDependency } from "@lwc/template-compiler";
 

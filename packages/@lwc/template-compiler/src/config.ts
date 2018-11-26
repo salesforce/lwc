@@ -1,5 +1,5 @@
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { Config as StylesheetConfig } from "lwc-style-compiler/";
+import { Config as StylesheetConfig } from "@lwc/style-compiler/";
 
 export type Format = 'module' | 'function';
 

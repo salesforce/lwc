@@ -1,4 +1,4 @@
-import { transform as transformStyle } from "lwc-style-compiler";
+import { transform as transformStyle } from "@lwc/style-compiler";
 
 import { ResolvedConfig } from "../config";
 
