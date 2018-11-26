@@ -2,7 +2,7 @@ import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
 import { ModuleDependency } from "./shared/types";
-import { Statement, ImportDeclaration } from 'babel-types';
+import { Statement, ImportDeclaration } from '@babel/types';
 
 export interface IdAttributeData {
     key: number;

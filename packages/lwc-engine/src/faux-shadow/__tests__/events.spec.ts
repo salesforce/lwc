@@ -146,6 +146,89 @@ describe('events', () => {
             expect(dispatched).toHaveLength(0);
         });
     });
+    describe('relatedTarget', () => {
+        it('should report correct the retargeted value', () => {
+            let relatedTarget;
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+                handleFocus(e) {
+                    relatedTarget = e.relatedTarget;
+                }
+            }
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent></x-parent>
+                    <input onfocus={handleFocus} />
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
+            const parentHTML = compileTemplate(`
+                <template>
+                    <input />
+                </template>
+            `);
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('x-parent').shadowRoot.querySelector('input').focus();
+            // jsdom has some timing issue with focusing
+            return Promise.resolve().then(() => {
+                elm.shadowRoot.querySelector('input').focus();
+                return Promise.resolve().then(() => {
+                    expect(relatedTarget).toBe(elm.shadowRoot.querySelector('x-parent'));
+                });
+            });
+        });
+
+        it('should return undefined if the event does not have relatedTarget getter', () => {
+            let relatedTarget;
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+                handleFocus(e) {
+                    relatedTarget = e.relatedTarget;
+                }
+            }
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent></x-parent>
+                    <input onfocus={handleFocus} />
+                </template>
+            `, {
+                modules: { 'x-parent': Parent },
+            });
+            const parentHTML = compileTemplate(`
+                <template>
+                    <input />
+                </template>
+            `);
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('x-parent').shadowRoot.querySelector('input').focus();
+            // jsdom has some timing issue with focusing
+            return Promise.resolve().then(() => {
+                const e = new CustomEvent('focus');
+                elm.shadowRoot.querySelector('input').dispatchEvent(e);
+                return Promise.resolve().then(() => {
+                    expect(relatedTarget).toBe(undefined);
+                });
+            });
+        });
+    });
+
     describe('retargeting', () => {
         it('should report correct target when slotted through multiple components', () => {
             class Root extends LightningElement {
@@ -209,9 +292,6 @@ describe('events', () => {
                 handleClick(evt) {
                     // event handler is here to trigger patching of the event
                 }
-                render() {
-                    return rootHTML;
-                }
             }
             const rootHTML = compileTemplate(`
                 <template>
@@ -250,9 +330,6 @@ describe('events', () => {
                 }
                 handleClick(evt) {
                     // event handler is here to trigger patching of the event
-                }
-                render() {
-                    return rootHTML;
                 }
             }
             const rootHTML = compileTemplate(`
@@ -370,6 +447,54 @@ describe('events', () => {
                 anchor.click();
                 expect(target).toBe(anchor);
             });
+        });
+
+        it('should retarget events created manually', () => {
+            expect.assertions(3);
+            class Child extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+                renderedCallback() {
+                    let domEvent;
+                    this.addEventListener("change", (e) => {
+                        domEvent = e;
+                        expect(e.target).toBe(this.template.host);
+                    });
+                    const event = document.createEvent("HTMLEvents");
+                    event.initEvent("change", false, true);
+                    this.dispatchEvent(event);
+                    expect(domEvent).toBe(event);
+                    expect(domEvent.target).toBe(null); // because the event is not composed
+                }
+            }
+
+            const childHTML = compileTemplate(`
+                <template></template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
         });
     });
 

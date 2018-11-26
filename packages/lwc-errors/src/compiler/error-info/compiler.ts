@@ -159,7 +159,7 @@ export const TransformerErrors = {
     },
     CSS_IN_HTML_ERROR: {
         code: 1001,
-        message: "An error ocurred parsing inline CSS",
+        message: "An error ocurred parsing inline CSS. {0}",
         level: DiagnosticLevel.Error,
         url: ""
     },

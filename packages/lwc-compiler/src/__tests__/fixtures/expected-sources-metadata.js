@@ -14,6 +14,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 var _tmpl = registerTemplate(tmpl);
+tmpl.stylesheets = [];
+tmpl.stylesheetTokens = {
+    hostAttribute: "x-foo_foo-host",
+    shadowAttribute: "x-foo_foo"
+};
 
 class Metadata extends LightningElement {
     constructor(...args) {

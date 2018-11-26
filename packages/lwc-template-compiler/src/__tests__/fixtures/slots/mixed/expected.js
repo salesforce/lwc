@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     f: api_flatten,
     c: api_custom_element
   } = $api;
-
   return [
     api_element(
       "div",
@@ -46,3 +45,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

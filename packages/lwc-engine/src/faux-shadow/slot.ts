@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { addEventListener } from "../env/element";
+import { getAttribute, childrenGetter } from "../env/element";
 import {
     createFieldName,
     getInternalField,
@@ -9,13 +9,24 @@ import { dispatchEvent } from "../env/dom";
 import {
     ArrayIndexOf,
     ArrayPush,
-    defineProperties,
     forEach,
+    isUndefined,
+    isTrue,
+    ArrayFilter,
+    isNull,
+    ArrayReduce,
 } from "../shared/language";
 import {
     MutationObserverObserve,
     MutationObserver,
 } from "../env/window";
+import { PatchedElement, isSlotElement, isNodeOwnedBy, getNodeOwner, getAllMatches, getFilteredChildNodes } from "./traverse";
+import { HTMLSlotElementConstructor } from "../framework/base-bridge-element";
+import {
+    childNodesGetter as nativeChildNodesGetter,
+} from "../env/node";
+import { createStaticNodeList } from "../shared/static-node-list";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -25,21 +36,6 @@ let observer;
 
 const observerConfig: MutationObserverInit = { childList: true };
 const SlotChangeKey = createFieldName('slotchange');
-
-function addEventListenerPatchedValue(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
-        if (process.env.NODE_ENV === 'test') {
-            /* tslint:disable-next-line:no-console */
-            console.warn('The "slotchange" event is not supported in our jest test environment.');
-        }
-        setInternalField(this, SlotChangeKey, true);
-        if (!observer) {
-            observer = initSlotObserver();
-        }
-        MutationObserverObserve.call(observer, this as Node, observerConfig);
-    }
-    addEventListener.call(this as HTMLSlotElement, type, listener, options);
-}
 
 function initSlotObserver() {
     return new MutationObserver(mutations => {
@@ -62,14 +58,83 @@ function initSlotObserver() {
     });
 }
 
-const HTMLSlotElementPatchDescriptors: PropertyDescriptorMap = {
-    addEventListener: {
-        value: addEventListenerPatchedValue,
-        configurable: true,
-        enumerable: true,
-    },
-};
+export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
+    if (isNull(owner)) {
+        return [];
+    }
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (!isNodeOwnedBy(owner, child)) {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
 
-export function patchSlotElement(elm: HTMLSlotElement) {
-    defineProperties(elm, HTMLSlotElementPatchDescriptors);
+function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (child instanceof Element && isSlotElement(child)) {
+            ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
+        } else {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
+interface AssignedNodesOptions {
+    flatten?: boolean;
+}
+
+export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstructor {
+    const Ctor = PatchedElement(elm) as HTMLSlotElementConstructor;
+    const { addEventListener: superAddEventListener } = elm;
+    return class PatchedHTMLSlotElement extends Ctor {
+        addEventListener(this: HTMLSlotElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
+                if (process.env.NODE_ENV === 'test') {
+                    /* tslint:disable-next-line:no-console */
+                    console.warn('The "slotchange" event is not supported in our jest test environment.');
+                }
+                setInternalField(this, SlotChangeKey, true);
+                if (!observer) {
+                    observer = initSlotObserver();
+                }
+                MutationObserverObserve.call(observer, this as Node, observerConfig);
+            }
+            superAddEventListener.call(this as HTMLSlotElement, type, listener, options);
+        }
+        assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            return ArrayFilter.call(nodes, node => node instanceof Element);
+        }
+        assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
+            const flatten = !isUndefined(options) && isTrue(options.flatten);
+            return flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+        }
+        get name(this: HTMLSlotElement): string {
+            // in browsers that do not support shadow dom, slot's name attribute is not reflective
+            const name = getAttribute.call(this, 'name');
+            return isNull(name) ? '' : name;
+        }
+        get childNodes(this: HTMLSlotElement): NodeListOf<Node & Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticNodeList(childNodes);
+        }
+        get children(this: HTMLSlotElement): HTMLCollectionOf<Element> {
+            // We cannot patch `children` in test mode
+            // because JSDOM uses children for its "native"
+            // querySelector implementation. If we patch this,
+            // HTMLElement.prototype.querySelector.call(element) will not
+            // return any elements from shadow, which is not what we want
+            if (process.env.NODE_ENV === 'test') {
+                return childrenGetter.call(this);
+            }
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
+        }
+    };
 }

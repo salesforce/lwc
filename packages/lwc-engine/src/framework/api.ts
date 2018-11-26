@@ -17,7 +17,6 @@ import {
     updateNodeHook,
     insertNodeHook,
     removeNodeHook,
-    createSlotElmHook,
     createElmDefaultHook,
     updateElmDefaultHook,
     createCustomElmDefaultHook,
@@ -86,6 +85,7 @@ const TextHook: Hooks = {
     },
     update: updateNodeHook,
     insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
     destroy: noop,
 };
@@ -101,6 +101,7 @@ const CommentHook: Hooks = {
     },
     update: updateNodeHook,
     insert: insertNodeHook,
+    move: insertNodeHook, // same as insert for comment nodes
     remove: removeNodeHook,
     destroy: noop,
 };
@@ -132,6 +133,9 @@ const ElementHook: Hooks = {
     insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
         insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
         createChildrenHook(vnode);
+    },
+    move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
+        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
         removeChild.call(parentNode, vnode.elm as Node);
@@ -168,6 +172,9 @@ const CustomElementHook: Hooks = {
         insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
         createChildrenHook(vnode);
         insertCustomElmHook(vnode);
+    },
+    move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
+        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
         removeChild.call(parentNode, vnode.elm as Node);
@@ -314,12 +321,6 @@ export function s(slotName: string, data: ElementCompilerData, children: VNodes,
     if (isTrue(vnode.fallback)) {
         markAsDynamicChildren(children);
     }
-    const { data: { create: originalCreate } } = vnode;
-    vnode.data.create = (newVnode: VElement) => {
-        // TODO: eventually, the compiler should add this hook directly via data.create function
-        createSlotElmHook(newVnode);
-        originalCreate(newVnode);
-    };
     return vnode;
 }
 

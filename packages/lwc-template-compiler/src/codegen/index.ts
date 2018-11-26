@@ -1,6 +1,6 @@
-import generate from 'babel-generator';
-import * as t from 'babel-types';
-import template = require('babel-template');
+import generate from '@babel/generator';
+import * as t from '@babel/types';
+import template from "@babel/template";
 
 import State from '../state';
 import { ResolvedConfig } from '../config';
@@ -137,7 +137,7 @@ function transform(
 
             exit(element: IRElement) {
                 if (isStyleSheet(element)) {
-                    codeGen.genInlineStyles(element.inlineStyles, options.stylesheetConfig);
+                    codeGen.genInlineStyles(element.inlineStyles);
                     return;
                 }
 
@@ -313,10 +313,6 @@ function transform(
         element: IRElement,
         fragmentNodes: t.Expression,
     ) {
-        if (!element.forOf) {
-            return fragmentNodes;
-        }
-
         let expression = fragmentNodes;
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
@@ -329,10 +325,6 @@ function transform(
         element: IRElement,
         fragmentNodes: t.Expression,
     ): t.Expression {
-        if (!element.forEach) {
-            return fragmentNodes;
-        }
-
         let expression = fragmentNodes;
         if (t.isArrayExpression(expression) && expression.elements.length === 1) {
             expression = expression.elements[0] as t.Expression;
@@ -533,7 +525,7 @@ function generateTemplateFunction(templateRoot: IRElement, state: State, options
         )),
     );
 
-    let slots: t.Node = t.noop();
+    let slots: t.Node | null = null;
     if (Object.keys(codeGen.usedSlots).length) {
         slots = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.SLOT_SET),
@@ -548,7 +540,7 @@ function generateTemplateFunction(templateRoot: IRElement, state: State, options
         );
     }
 
-    let context: t.Node = t.noop();
+    let context: t.Node | null = null;
     if (codeGen.memorizedIds.length) {
         context = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.CONTEXT),

@@ -1,5 +1,5 @@
-import postcss, { LazyResult } from 'postcss';
-import parseValue from 'postcss-value-parser';
+import postcss from 'postcss';
+import postcssValueParser from 'postcss-value-parser';
 
 import { Config } from './index';
 import { isImportMessage, isVarFunctionMessage } from './utils/message';
@@ -23,11 +23,10 @@ const SHADOW_DOM_ENABLED_IDENTIFIER = 'nativeShadow';
 const STYLESHEET_IDENTIFIER = 'stylesheet';
 const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
-export default function serialize(result: LazyResult, config: Config): string {
+export default function serialize(result: postcss.LazyResult, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
     const minify = Boolean(config.outputConfig && config.outputConfig.minify);
-    const eolChar = minify ? '' : '\n';
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
 
@@ -45,17 +44,21 @@ export default function serialize(result: LazyResult, config: Config): string {
         buffer += '\n';
     }
 
-    buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
-    buffer += '  return \`';
+    const stylesheetList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
+    const serializedStyle = serializeCss(result, collectVarFunctions, minify).trim();
 
-    const serializedStyle = serializeCss(result, collectVarFunctions, minify);
-    buffer += (serializedStyle ? eolChar : '') + serializedStyle + `\`;\n}\n`;
+    if (serializedStyle) {
+        // inline function
+        buffer += `function stylesheet(${HOST_SELECTOR_IDENTIFIER}, ${SHADOW_SELECTOR_IDENTIFIER}, ${SHADOW_DOM_ENABLED_IDENTIFIER}) {\n`;
+        buffer += `  return ${serializedStyle};\n`;
+        buffer += `}\n`;
 
-    buffer += 'export default [';
+        // add import at the end
+        stylesheetList.push(STYLESHEET_IDENTIFIER);
+    }
 
-    const styleList = importedStylesheets.map((_str, i) => `${STYLESHEET_IDENTIFIER + i}`);
-    styleList.push(STYLESHEET_IDENTIFIER);
-    buffer +=  styleList.join(', ') + '];';
+    // exports
+    buffer += `export default [${stylesheetList.join(', ')}];`;
 
     return buffer;
 }
@@ -81,29 +84,20 @@ function normalizeString(str: string) {
     return str.replace(/(\r\n\t|\n|\r\t)/gm, '').trim();
 }
 
-function escapeDoubleQuotes(str: string) {
-    return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
-}
-
-function escapeString(src: string): string {
-    return src.replace(/[`\\]/g, (char: string) => {
-        return '\\' + char;
-    });
-}
-
 function generateExpressionFromTokens(tokens: Token[]): string {
-    return tokens.map(({ type, value }) => (
-        type === TokenType.text ? `"${escapeDoubleQuotes(value)}"` : value
-    )).join(' + ');
+    return tokens
+        .map(({ type, value }) => type === TokenType.text ? JSON.stringify(value) : value)
+        .join(' + ');
 }
 
-function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: boolean): string {
+function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, minify: boolean): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
     let tmpHostExpression: string | null;
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
+
         // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
@@ -123,7 +117,7 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken})`
+                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken}))`
                 });
 
                 tmpHostExpression = null;
@@ -145,19 +139,20 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
         // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
+
             if (collectVarFunctions) {
                 const declTokens = tokenizeCssDeclaration(node);
                 currentRuleTokens.push(...declTokens);
                 currentRuleTokens.push({ type: TokenType.text, value: ';' });
             } else {
-                currentRuleTokens.push({
-                    type: TokenType.text,
-                    value: escapeString(part)
-                });
+                currentRuleTokens.push({ type: TokenType.text, value: part });
             }
 
-        // When inside anything else but a comment just push it
+        } else if (node && node.type === 'atrule') {
+            // If we have an @at rule we dont want to push it to the global stack rather than the current token
+            tokens.push({ type: TokenType.text, value: part });
         } else {
+            // When inside anything else but a comment just push it
             if (!node || node.type !== 'comment') {
                 currentRuleTokens.push({ type: TokenType.text, value: normalizeString(part) });
             }
@@ -166,7 +161,8 @@ function serializeCss(result: LazyResult, collectVarFunctions: boolean, minify: 
 
     const buffer =
         reduceTokens(tokens)
-        .map(t => t.type === TokenType.expression || t.type === TokenType.identifier ? '${' + t.value + '}' : t.value).join('');
+        .map(t => t.type === TokenType.text ? JSON.stringify(t.value) : t.value)
+        .join(' + ');
 
     return buffer;
 }
@@ -234,7 +230,7 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
         const { quote } = node;
         return [{
             type: TokenType.text,
-            value: quote ? (quote + escapeString(value) + quote) : value
+            value: quote ? (quote + value + quote) : value
         }];
     }
 
@@ -281,13 +277,12 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     return [{ type: TokenType.text, value }];
 }
 
-function tokenizeCssDeclaration(node: any): Token[] {
-    const tokens: Token[] = [];
-    const valueRoot = parseValue(node.value);
+function tokenizeCssDeclaration(node: postcss.Declaration): Token[] {
+    const valueRoot = postcssValueParser(node.value);
     const parsed = recursiveValueParse(valueRoot);
 
-    tokens.push({ type: TokenType.text, value: `${node.prop.trim()}: ` });
-    tokens.push(...parsed);
-
-    return tokens;
+    return [
+        { type: TokenType.text, value: `${node.prop.trim()}: ` },
+        ...parsed
+    ];
 }

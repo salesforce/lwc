@@ -48,6 +48,11 @@ describe("module resolver", () => {
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);
+                tmpl.stylesheets = [];
+                tmpl.stylesheetTokens = {
+                    hostAttribute: "x-class_and_template_class_and_template-host",
+                    shadowAttribute: "x-class_and_template_class_and_template"
+                };
 
                 class Test extends lwc.LightningElement {
                     render() {
@@ -92,6 +97,11 @@ describe("module resolver", () => {
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);
+                tmpl.stylesheets = [];
+                tmpl.stylesheetTokens = {
+                    hostAttribute: "x-class_and_template_anotherTemplate-host",
+                    shadowAttribute: "x-class_and_template_anotherTemplate"
+                };
 
                 class Test extends lwc.LightningElement {
                     render() {

@@ -13,7 +13,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     f: api_flatten
   } = $api;
-
   return api_flatten([
     api_custom_element(
       "x-subject",
@@ -108,3 +107,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

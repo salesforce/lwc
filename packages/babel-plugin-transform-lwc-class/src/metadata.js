@@ -1,4 +1,4 @@
-const { isComponentClass, isDefaultExport, getExportedNames } = require('./utils');
+const { extractValueMetadata, isComponentClass, isDefaultExport, getExportedNames } = require('./utils');
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('./constants');
 
 module.exports = function () {
@@ -21,12 +21,14 @@ module.exports = function () {
                 path.get('body').get('body').forEach(path => {
                     if (!isSynthetic(path) && (isProperty(path) || isMethod(path))) {
                         const name = path.node.key.name;
+                        const { value: valueNode } = path.node;
                         if (!isPrivate(name)) {
                             const metadata = {
                                 type: isProperty(path)? 'property': 'method',
                                 name,
                                 loc: extractLoc(path.node.loc)
                             }
+
                             const comment = extractComment(path.node);
                             if (comment) {
                                 metadata.doc = comment;
@@ -34,6 +36,12 @@ module.exports = function () {
                             const decorator = extractLWCDecorator(path.node);
                             if (decorator) {
                                 metadata.decorator = decorator;
+
+                                // only collect value metadata for public static properties
+                                if (decorator === 'api' && !path.isClassMethod()) {
+                                    metadata.value = extractValueMetadata(valueNode);
+                                }
+
                             }
 
                             if (!visitedProperties.has(name)) {

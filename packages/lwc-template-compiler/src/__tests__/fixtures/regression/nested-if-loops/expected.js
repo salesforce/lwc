@@ -8,7 +8,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     f: api_flatten
   } = $api;
-
   return $cmp.isTrue
     ? api_flatten([
         api_text("Outer"),
@@ -26,3 +25,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

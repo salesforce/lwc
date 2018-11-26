@@ -1,10 +1,12 @@
 import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
-import { PatchedElement } from './traverse';
-import { hasAttribute, tabIndexGetter } from "../env/element";
-import { isNull, isFalse, getPropertyDescriptor } from "../shared/language";
+import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
+import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
+import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
+import { createStaticNodeList } from "../shared/static-node-list";
+import { createStaticHTMLCollection } from "../shared/static-html-collection";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -56,11 +58,17 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
             if ((!hasAttr || originalValue !== newValue)) {
+                // Value has changed
                 if (newValue === -1) {
                     // add the magic to skip this element
                     handleFocusIn(this);
                 } else if (newValue === 0 && isDelegatingFocus(this)) {
+                    // Listen for focus if the new tabIndex is 0, and we are delegating focus
                     handleFocus(this);
+                } else {
+                    // TabIndex is set to 0, but we aren't delegating focus, so we can ignore everything
+                    ignoreFocusIn(this);
+                    ignoreFocus(this);
                 }
             } else if (originalValue === -1) {
                 // remove the magic
@@ -78,6 +86,24 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 }
             }
             super.blur();
+        }
+        get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticNodeList(childNodes);
+        }
+        get children(this: HTMLElement): HTMLCollectionOf<Element> {
+            // We cannot patch `children` in test mode
+            // because JSDOM uses children for its "native"
+            // querySelector implementation. If we patch this,
+            // HTMLElement.prototype.querySelector.call(element) will not
+            // return any elements from shadow, which is not what we want
+            if (process.env.NODE_ENV === 'test') {
+                return childrenGetter.call(this);
+            }
+            const owner = getNodeOwner(this);
+            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
         }
     };
 }

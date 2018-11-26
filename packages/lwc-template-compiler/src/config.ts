@@ -1,5 +1,6 @@
 import { TemplateErrors, invariant, generateCompilerError } from 'lwc-errors';
-import { Config as StylesheetConfig } from "lwc-style-compiler/dist/types/index";
+import { Config as StylesheetConfig } from "lwc-style-compiler/";
+
 export type Format = 'module' | 'function';
 
 export interface Config {
@@ -23,7 +24,7 @@ export interface ResolvedConfig {
      * Internal configuration for the output format of the template. Accepts:
      *  * "module": generates a ES module, and use import statements to reference component
      *    constructor.
-     *  * "inline": generates a function, and requires component constructor to be passed
+     *  * "function": generates a function, and requires component constructor to be passed
      *    as parameter.
      */
     format: Format;
@@ -36,7 +37,6 @@ const DEFAULT_CONFIG: ResolvedConfig = {
     stylesheetConfig: {}
 };
 
-const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
     'computedMemberExpression',
@@ -48,14 +48,6 @@ export function mergeConfig(config: Config): ResolvedConfig {
         config !== undefined && typeof config === 'object',
         TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
-
-    REQUIRED_OPTION_NAMES.forEach((requiredProperty) => {
-        invariant(
-            config.hasOwnProperty(requiredProperty),
-            TemplateErrors.MISSING_REQUIRED_PROPERTY,
-            [requiredProperty]
-        );
-    });
 
     for (const property in config) {
         if (

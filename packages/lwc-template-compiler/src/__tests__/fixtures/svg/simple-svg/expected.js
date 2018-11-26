@@ -2,7 +2,6 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element, t: api_text } = $api;
-
   return [
     api_element(
       "svg",
@@ -62,3 +61,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

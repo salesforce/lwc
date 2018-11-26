@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     c: api_custom_element
   } = $api;
-
   return [
     api_custom_element(
       "a-b",
@@ -36,3 +35,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

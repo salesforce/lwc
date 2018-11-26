@@ -82,6 +82,7 @@ export interface VNodeData {
 
 export type CreateHook = (vNode: VNode) => void;
 export type InsertHook = (vNode: VNode, parentNode: Node, referenceNode: Node | null) => void;
+export type MoveHook = (vNode: VNode, parentNode: Node, referenceNode: Node | null) => void;
 export type UpdateHook = (oldVNode: VNode, vNode: VNode) => void;
 export type RemoveHook = (vNode: VNode, parentNode: Node) => void;
 export type DestroyHook = (vNode: VNode) => void;
@@ -89,6 +90,7 @@ export type DestroyHook = (vNode: VNode) => void;
 export interface Hooks {
   create: CreateHook;
   insert: InsertHook;
+  move: MoveHook;
   update: UpdateHook;
   remove: RemoveHook;
   destroy: DestroyHook;

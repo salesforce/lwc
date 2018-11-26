@@ -6,13 +6,17 @@
         d: api_dynamic,
         h: api_element
       } = $api;
-
       return [api_element("div", {
         key: 2
       }, [api_dynamic($cmp.x)])];
     }
 
     var _tmpl = lwc.registerTemplate(tmpl);
+    tmpl.stylesheets = [];
+    tmpl.stylesheetTokens = {
+        hostAttribute: "x-foo_foo-host",
+        shadowAttribute: "x-foo_foo"
+    };
 
     class Foo extends lwc.LightningElement {
       constructor(...args) {
@@ -39,7 +43,6 @@
         c: api_custom_element,
         h: api_element
       } = $api;
-
       return [api_element("div", {
         classMap: {
           "container": true
@@ -54,6 +57,11 @@
     }
 
     var _tmpl$1 = lwc.registerTemplate(tmpl$1);
+    tmpl$1.stylesheets = [];
+    tmpl$1.stylesheetTokens = {
+        hostAttribute: "x-app_app-host",
+        shadowAttribute: "x-app_app"
+    };
 
     class App extends lwc.LightningElement {
       constructor() {

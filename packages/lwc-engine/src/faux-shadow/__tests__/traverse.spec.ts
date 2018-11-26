@@ -273,6 +273,46 @@ describe('#shadowRoot querySelector', () => {
         expect(li).toBeDefined();
     });
 
+    it('should support compound selectors', () => {
+        const childTmpl = compileTemplate(`
+            <template>
+                <div></div>
+            </template>
+        `);
+
+        class Child extends LightningElement {
+            render() {
+                return childTmpl;
+            }
+        }
+
+        const testTmpl = compileTemplate(`
+            <template>
+                <x-child></x-child>
+            </template>
+        `, {
+            modules: {
+                'x-child': Child
+            }
+        });
+        class Test extends LightningElement {
+            query() {
+                return this.template.querySelector('x-child').shadowRoot.querySelector('div,p');
+            }
+            render() {
+                return testTmpl;
+            }
+        }
+
+        Test.publicMethods = ['query'];
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+
+        const match = elm.query(0)
+        expect(match).not.toBeNull()
+    });
+
     it('should not reach into child components template when querySelector invoked on child custom element', () => {
         const myChildTmpl = compileTemplate(`
             <template>

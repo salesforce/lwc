@@ -1,5 +1,5 @@
-import * as types from 'babel-types';
-import traverse from 'babel-traverse';
+import * as types from '@babel/types';
+import traverse from '@babel/traverse';
 
 import { TEMPLATE_PARAMS } from './constants';
 import { isComponentProp } from './ir';

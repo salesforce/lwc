@@ -1,7 +1,4 @@
 function stylesheet(hostSelector, shadowSelector, nativeShadow) {
-  return `
-:checked${shadowSelector} {}
-ul${shadowSelector} li:first-child${shadowSelector} a${shadowSelector} {}
-`;
+  return ":checked" + shadowSelector + " {}\nul" + shadowSelector + " li:first-child" + shadowSelector + " a" + shadowSelector + " {}\n";
 }
 export default [stylesheet];

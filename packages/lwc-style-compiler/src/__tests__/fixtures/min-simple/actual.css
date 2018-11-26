@@ -1,0 +1,13 @@
+:host(.foo) {
+    background: linear-gradient(to top, var(--lwc-color), var(--lwc-other));
+    color: var(--piero);
+}
+
+:host {
+    content: "prost";
+}
+
+:host p span {
+    color: red;
+    background-color: aqua;
+}

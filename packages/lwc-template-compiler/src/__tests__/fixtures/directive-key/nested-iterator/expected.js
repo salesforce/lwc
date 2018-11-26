@@ -8,7 +8,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     k: api_key,
     i: api_iterator
   } = $api;
-
   return [
     api_element(
       "section",
@@ -54,3 +53,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

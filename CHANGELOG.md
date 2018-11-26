@@ -1,5 +1,54 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.1...v) (2018-11-14)
+# [](https://github.com/salesforce/lwc/compare/v0.33.6...v) (2018-11-20)
+
+
+
+<a name="0.33.6"></a>
+## [0.33.6](https://github.com/salesforce/lwc/compare/v0.33.5...v0.33.6) (2018-11-19)
+
+
+### Bug Fixes
+
+* css minification ordering issue ([#840](https://github.com/salesforce/lwc/issues/840)) ([2f579f6](https://github.com/salesforce/lwc/commit/2f579f6))
+* **engine:** fixes error when switching from tabindex -1 to 0 ([#844](https://github.com/salesforce/lwc/issues/844)) ([a16b399](https://github.com/salesforce/lwc/commit/a16b399))
+* **engine:** relatedTarget event regargeting ([#842](https://github.com/salesforce/lwc/issues/842)) ([2906ed8](https://github.com/salesforce/lwc/commit/2906ed8))
+* import inline styles ([#843](https://github.com/salesforce/lwc/issues/843)) ([c9d1809](https://github.com/salesforce/lwc/commit/c9d1809))
+* remove debugger statament ([#845](https://github.com/salesforce/lwc/issues/845)) ([6c1ce57](https://github.com/salesforce/lwc/commit/6c1ce57))
+
+
+### Performance Improvements
+
+* upgrade compat ([#847](https://github.com/salesforce/lwc/issues/847)) ([9f1ea77](https://github.com/salesforce/lwc/commit/9f1ea77))
+
+
+
+<a name="0.33.5"></a>
+## [0.33.5](https://github.com/salesforce/lwc/compare/v0.33.4...v0.33.5) (2018-11-15)
+
+
+
+<a name="0.33.4"></a>
+## [0.33.4](https://github.com/salesforce/lwc/compare/v0.33.3...v0.33.4) (2018-11-15)
+
+
+
+<a name="0.33.3"></a>
+## [0.33.3](https://github.com/salesforce/lwc/compare/v0.33.2...v0.33.3) (2018-11-15)
+
+
+### Bug Fixes
+
+* parse a-trules correctly in CSS ([#839](https://github.com/salesforce/lwc/issues/839)) ([9c1da4d](https://github.com/salesforce/lwc/commit/9c1da4d))
+
+
+### Features
+
+* **compiler:** collect default value metadata for [@api](https://github.com/api) properties ([#816](https://github.com/salesforce/lwc/issues/816)) ([c64e4b3](https://github.com/salesforce/lwc/commit/c64e4b3))
+
+
+
+<a name="0.33.2"></a>
+## [0.33.2](https://github.com/salesforce/lwc/compare/v0.33.1...v0.33.2) (2018-11-14)
 
 
 ### Bug Fixes

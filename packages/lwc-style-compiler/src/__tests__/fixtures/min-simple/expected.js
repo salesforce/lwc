@@ -1,0 +1,5 @@
+import varResolver from "custom-properties-resolver";
+function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+  return (nativeShadow ? (":host(.foo){background: linear-gradient(0deg," + varResolver("--lwc-color") + "," + varResolver("--lwc-other") + ");color: " + varResolver("--piero") + ";}") : (hostSelector + ".foo{background: linear-gradient(0deg," + varResolver("--lwc-color") + "," + varResolver("--lwc-other") + ");color: " + varResolver("--piero") + ";}")) + (nativeShadow ? (":host{content: \"prost\";}") : (hostSelector + "{content: \"prost\";}")) + (nativeShadow ? (":host p" + shadowSelector + " span" + shadowSelector + "{color: red;background-color: aqua;}") : (hostSelector + " p" + shadowSelector + " span" + shadowSelector + "{color: red;background-color: aqua;}"));
+}
+export default [stylesheet];

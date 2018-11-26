@@ -3,10 +3,7 @@ import { getTransformer, FileTransformerResult } from '../transformers/transform
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { MetadataCollector } from '../bundler/meta-collector';
 
-export default function({
-    options,
-    metadataCollector,
-}: {
+export default function({ options, metadataCollector }: {
     options: NormalizedCompilerOptions;
     metadataCollector?: MetadataCollector
 }) {

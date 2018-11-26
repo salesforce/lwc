@@ -238,7 +238,7 @@ export default class Test extends LightningElement {
             });
 
             expect(mainDefMappedToOutputPosition).toMatchObject({
-                line: 10,
+                line: 14,
                 column: 11,
             });
 
@@ -249,7 +249,7 @@ export default class Test extends LightningElement {
             });
 
             expect(stringConstantInOutputPosition).toMatchObject({
-                line: 11,
+                line: 15,
                 column: 11,
             });
 
@@ -260,7 +260,7 @@ export default class Test extends LightningElement {
             });
 
             expect(myimportDefinitionOutputPosition).toMatchObject({
-                line: 15,
+                line: 19,
                 column: 8,
             });
 
@@ -271,7 +271,7 @@ export default class Test extends LightningElement {
             });
 
             expect(mainInvocationInOutputPosition).toMatchObject({
-                line: 16,
+                line: 20,
                 column: 13,
             });
         });
@@ -299,7 +299,7 @@ describe("compiler metadata", () => {
                 {
                     type: "api",
                     targets: [
-                        { type: "property", name: "publicProp" },
+                        { type: "property", name: "publicProp", value: { type: "unresolved", value: undefined } },
                         { type: "method", name: "publicMethod" }
                     ]
                 },
@@ -331,6 +331,7 @@ describe("compiler metadata", () => {
                 {
                     name: "publicProp",
                     type: "property",
+                    value: { type: "unresolved", value: undefined },
                     decorator: "api",
                     loc: {
                         start: { column: 4, line: 6 },
@@ -388,7 +389,7 @@ describe("compiler metadata", () => {
     });
 
     it("doc", async () => {
-        const { result: { code, metadata } } = await compile({
+        const { result: { metadata } } = await compile({
             name: "foo",
             namespace: "x",
             files: {
@@ -415,7 +416,7 @@ describe("compiler metadata", () => {
                 {
                     type: "api",
                     targets: [
-                        { type: "property", name: "prop1" },
+                        { type: "property", name: "prop1", value: { type: "unresolved", value: undefined } },
                         { type: "property", name: "prop2" },
                         { type: "method", name: "method1" }
                     ]
@@ -431,6 +432,7 @@ describe("compiler metadata", () => {
                 {
                     name: "prop1",
                     type: "property",
+                    value: { type: "unresolved", value: undefined },
                     decorator: "api",
                     doc: "* prop1",
                     loc: {

@@ -2,7 +2,6 @@ import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { t: api_text, h: api_element, s: api_slot } = $api;
-
   return [
     api_element(
       "section",
@@ -52,3 +51,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 
 export default registerTemplate(tmpl);
 tmpl.slots = ["other", ""];
+tmpl.stylesheets = [];

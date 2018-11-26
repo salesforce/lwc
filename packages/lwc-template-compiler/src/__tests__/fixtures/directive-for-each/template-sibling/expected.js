@@ -9,7 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     i: api_iterator,
     f: api_flatten
   } = $api;
-
   return [
     api_element(
       "section",
@@ -48,3 +47,4 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 export default registerTemplate(tmpl);
+tmpl.stylesheets = [];

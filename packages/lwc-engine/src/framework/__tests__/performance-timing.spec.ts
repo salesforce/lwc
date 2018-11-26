@@ -40,7 +40,7 @@ class FlameChart {
         const knownMarks = new Set<string>();
         const knownMeasures = new Set<string>();
 
-        global.performance = {
+        Object.assign(global.performance, {
             mark: (name: string) => {
                 const mark: Mark = {
                     name,
@@ -72,7 +72,7 @@ class FlameChart {
 
             // tslint:disable-next-line:no-empty
             clearMeasures(name: string): void {},
-        };
+        });
     }
 
     buildFlamechart(
@@ -90,7 +90,9 @@ class FlameChart {
     }
 }
 
-describe('performance-timing', () => {
+// TODO: Those test have are not exercising the expected logic.
+// https://github.com/salesforce/lwc/commit/9cd09d41bc50907b2ee6f9ada3467a0de237db81#diff-b6e048115546dca1a7c9a1585e9b7a0c
+describe.skip('performance-timing', () => {
     let createElement: any;
     let registerTemplate: any;
     let LightningElement: any;
@@ -99,11 +101,14 @@ describe('performance-timing', () => {
     beforeEach(() => {
         // Make sure to reset module cache between each test to ensure to reset the uid.
         jest.resetModules();
-        createElement = require('../main.ts').createElement;
-        LightningElement = require('../main.ts').LightningElement;
-        registerTemplate = require('../main.ts').registerTemplate;
+
         flamechart = new FlameChart();
         flamechart.injectPolyfill();
+
+        const lwc = require('../main.ts');
+        createElement = lwc.createElement;
+        LightningElement = lwc.LightningElement;
+        registerTemplate = lwc.registerTemplate;
     });
 
     it('captures component constructor', () => {
@@ -135,7 +140,7 @@ describe('performance-timing', () => {
     });
 
     it('captures nested component tree', () => {
-        const barTmpl = compileTemplate(`<template><span></span></template>`);
+        const barTmpl = compileTemplate(`<template>{foo}<span></span></template>`);
         class Bar extends LightningElement {
             render() {
                 return registerTemplate(barTmpl);

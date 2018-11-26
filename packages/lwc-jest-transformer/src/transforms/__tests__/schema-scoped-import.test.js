@@ -9,10 +9,10 @@ describe('@salesforce/schema import', () => {
         let objectApiName;
 
         try {
-          objectApiName = require('@salesforce/schema/Opportunity').default;
+          objectApiName = require("@salesforce/schema/Opportunity").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: 'Opportunity'
+            objectApiName: "Opportunity"
           };
         }
     `);
@@ -23,11 +23,11 @@ describe('@salesforce/schema import', () => {
         let objectApiName;
 
         try {
-          objectApiName = require('@salesforce/schema/Opportunity.Account').default;
+          objectApiName = require("@salesforce/schema/Opportunity.Account").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: 'Opportunity',
-            fieldApiName: 'Account'
+            objectApiName: "Opportunity",
+            fieldApiName: "Account"
           };
         }
     `);
@@ -38,11 +38,11 @@ describe('@salesforce/schema import', () => {
         let objectApiName;
 
         try {
-          objectApiName = require('@salesforce/schema/Opportunity.Account.Name').default;
+          objectApiName = require("@salesforce/schema/Opportunity.Account.Name").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: 'Opportunity',
-            fieldApiName: 'Account.Name'
+            objectApiName: "Opportunity",
+            fieldApiName: "Account.Name"
           };
         }
     `);
@@ -55,10 +55,10 @@ describe('@salesforce/schema import', () => {
         let objectApiName;
 
         try {
-          objectApiName = require('@salesforce/schema/Opportunity').default;
+          objectApiName = require("@salesforce/schema/Opportunity").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: 'Opportunity'
+            objectApiName: "Opportunity"
           };
         }
     `);

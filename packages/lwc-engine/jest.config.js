@@ -6,6 +6,10 @@ module.exports = {
 
     displayName: 'lwc-engine',
 
+    roots: [
+        '<rootDir>/src'
+    ],
+
     // Customize setup for the engine tests.
     setupTestFrameworkScriptFile: path.resolve(__dirname, 'scripts/jest/setup-test.js'),
     moduleNameMapper: {
@@ -26,7 +30,7 @@ module.exports = {
     coverageThreshold: {
         global: {
             ...BASE_CONFIG.coverageThreshold.global,
-            branches: 70,
+            branches: 65,
         },
     },
 };

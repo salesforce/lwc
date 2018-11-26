@@ -1,8 +1,8 @@
-import * as babylon from 'babylon';
+import * as babylon from '@babel/parser';
 import * as styleCompiler from "lwc-style-compiler";
 import { normalizeToCompilerError, TransformerErrors } from "lwc-errors";
 import { Config as StylesheetConfig } from "lwc-style-compiler/dist/types/index";
-import { Statement } from 'babel-types';
+import { Statement } from '@babel/types';
 
 export default function parseInlineStyles(src: string, stylesheetConfig: StylesheetConfig): Statement[] {
     let result;
