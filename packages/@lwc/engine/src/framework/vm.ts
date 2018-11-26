@@ -4,6 +4,7 @@ import { createComponent, linkComponent, renderComponent, clearReactiveListeners
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase, isFalse } from "../shared/language";
 import { getInternalField } from "../shared/fields";
+import { getHiddenAssociation } from "../shared/associations";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
@@ -565,28 +566,13 @@ export function getCustomElementVM(elm: HTMLElement): VM {
     return getInternalField(elm, ViewModelReflection) as VM;
 }
 
-const componentToVMMap: WeakMap<ComponentInterface, VM> = new WeakMap();
 export function getComponentVM(component: ComponentInterface): VM {
-    const vm = componentToVMMap.get(component);
-    // const vm = getInternalField(component, ViewModelReflection);
+    const vm = getHiddenAssociation(component, ViewModelReflection);
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return vm as VM;
-}
-/**
- * Store the component to vm relationship.
- * Setting a field directly on the component will allow the component to reach its VM.
- * @param {ComponentInterface} component
- * @param {VM} vm
- */
-export function storeComponentVMMapping(component: ComponentInterface, vm: VM): void {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(componentToVMMap.has(component), `setComponentVM should be called once per component`);
-        assert.isFalse(isUndefined(vm), `Component cannot be associated with undefined vm`);
-    }
-    componentToVMMap.set(component, vm);
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {

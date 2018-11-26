@@ -24,9 +24,10 @@ import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
 import { setInternalField } from "../shared/fields";
+import { setHiddenAssociation } from "../shared/associations";
 import { ViewModelReflection, EmptyObject } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, setNodeKey, storeComponentVMMapping } from "./vm";
+import { getComponentVM, VM, setNodeKey } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "../env/dom";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
@@ -131,7 +132,7 @@ export function BaseLightningElement(this: ComponentInterface) {
         vm.getHook = getHook;
     }
     // linking elm, shadow root and component with the VM
-    storeComponentVMMapping(component, vm);
+    setHiddenAssociation(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
