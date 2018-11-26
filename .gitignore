@@ -14,8 +14,8 @@ packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/
 
-# packages/integration-tests/public/
-# packages/integration-tests/errorShots/
-# packages/integration-tests/results/
-# packages/integration-tests/.env
+packages/integration-tests/public/
+packages/integration-tests/errorShots/
+packages/integration-tests/results/
+packages/integration-tests/.env
 
