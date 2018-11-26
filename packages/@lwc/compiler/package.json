@@ -5,7 +5,7 @@
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/index.d.ts",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "tsc && node ./scripts/update-compiler-version.js",
