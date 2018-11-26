@@ -8,17 +8,17 @@ module.exports = {
         '^aura-storage$': require.resolve('./src/stubs/auraStorage.js'),
         '^logger$': require.resolve('./src/stubs/logger.js'),
 
-        '^lwc-test-utils$': require.resolve('lwc-test-utils'),
+        '^lwc-test-utils$': require.resolve('@lwc/test-utils'),
     },
-    resolver: require.resolve('lwc-jest-resolver'),
+    resolver: require.resolve('@lwc/jest-resolver'),
     transform: {
-        '^.+\\.(js|html|css)$': require.resolve('lwc-jest-transformer'),
+        '^.+\\.(js|html|css)$': require.resolve('@lwc/jest-transformer'),
     },
     setupFiles: [
         require.resolve('./src/setup')
     ],
     snapshotSerializers: [
-        require.resolve('lwc-jest-serializer')
+        require.resolve('@lwc/jest-serializer')
     ],
     testMatch: [
         '**/__tests__/**/?(*.)(spec|test).js'
