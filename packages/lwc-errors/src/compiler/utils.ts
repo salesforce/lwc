@@ -80,17 +80,13 @@ function getLocationFromObject(obj: any): Location | undefined {
             return obj.location;
         } else if (obj.loc) {
             return obj.loc;
-        } else if (hasLocation(obj)) {
+        } else if (
+            Number.isInteger(obj.line) &&
+            Number.isInteger(obj.column)
+        ) {
             return { line: obj.line, column: obj.column, start: obj.start, length: obj.length };
         }
     }
 
     return undefined;
-}
-
-function hasLocation(obj: any): boolean {
-    return Number.isInteger(obj.line)
-        && Number.isInteger(obj.column)
-        && Number.isInteger(obj.start)
-        && Number.isInteger(obj.length);
 }
