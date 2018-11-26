@@ -3,6 +3,7 @@
   "version": "0.33.7",
   "description": "LWC Error Utilities",
   "main": "dist/commonjs/index.js",
+  "license": "MIT",
   "typings": "dist/types/",
   "scripts": {
     "clean": "rm -rf dist/",

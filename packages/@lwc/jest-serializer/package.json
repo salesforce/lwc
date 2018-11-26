@@ -3,6 +3,7 @@
   "version": "0.33.7",
   "description": "Custom Jest snapshot serializer",
   "main": "index.js",
+  "license": "MIT",
   "keywords": [
     "jest",
     "lwc"

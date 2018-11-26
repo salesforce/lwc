@@ -2,6 +2,7 @@
   "name": "@lwc/jest-preset",
   "version": "0.33.7",
   "description": "Jest preset configuration and stubs to help test LWC",
+  "license": "MIT",
   "scripts": {
     "test": "jest"
   },
