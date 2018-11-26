@@ -16,7 +16,7 @@ Tools to assist with testing Lightning Web Components (LWC) with Jest. This proj
 
     `yarn add -D lwc-jest-transformer`
 
-1. Install `raptor-jest-resolver`. This package resolves all supported `lwc-*` imports.
+1. Install `@lwc/jest-resolver`. This package resolves all supported `lwc-*` imports.
 
     `yarn add -D lwc-jest-resolver`
 
