@@ -1,6 +1,7 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
+import { ViewModelReflection } from "../utils";
 
 describe('component', function() {
     describe('public computed props', () => {
@@ -656,5 +657,19 @@ describe('component', function() {
                 elm.removeChildAttribute();
             }).not.toThrow();
         });
+     });
+     describe('Access to vm', () => {
+        it('Cannot access vm using component', () => {
+            let instance;
+            class MyComponent extends LightningElement {
+                constructor() {
+                    super();
+                    instance = this;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(instance[ViewModelReflection]).toBeUndefined();
+        })
      });
 });

@@ -26,7 +26,7 @@ import { ComponentInterface, getWrappedComponentsListener, getComponentAsString 
 import { setInternalField } from "../shared/fields";
 import { ViewModelReflection, EmptyObject } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, setNodeKey } from "./vm";
+import { getComponentVM, VM, setNodeKey, storeComponentVMMapping } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "../env/dom";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
@@ -131,7 +131,7 @@ export function BaseLightningElement(this: ComponentInterface) {
         vm.getHook = getHook;
     }
     // linking elm, shadow root and component with the VM
-    setInternalField(component, ViewModelReflection, vm);
+    storeComponentVMMapping(component, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
