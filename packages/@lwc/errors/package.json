@@ -1,0 +1,16 @@
+{
+  "name": "@lwc/errors",
+  "version": "0.33.7",
+  "description": "LWC Error Utilities",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/types/",
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "lint": "tslint -p ./tsconfig.json",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "lwc"
+  ]
+}

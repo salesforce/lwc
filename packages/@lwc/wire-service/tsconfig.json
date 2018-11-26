@@ -1,0 +1,18 @@
+{
+  "extends": "../../../tsconfig.json",
+
+  "compilerOptions": {
+    "noImplicitAny": false,
+
+    "outDir": "lib",
+
+    "baseUrl": ".",
+    "paths": {
+      "lwc": ["../engine"],
+    }
+  },
+
+  "include": [
+    "src/",
+  ]
+}

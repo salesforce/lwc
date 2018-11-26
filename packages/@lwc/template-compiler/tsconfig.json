@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.json",
+
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+
+    "outDir": "dist/commonjs",
+    "declarationDir": "dist/types",
+  },
+
+  "include": [
+    "src/",
+    "typings/"
+  ]
+}
