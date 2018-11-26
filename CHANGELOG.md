@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.6...v) (2018-11-20)
+# [](https://github.com/salesforce/lwc/compare/v0.33.7...v) (2018-11-26)
+
+
+### Bug Fixes
+
+* Prevent Javascript injection via ${} in the CSS ([#851](https://github.com/salesforce/lwc/issues/851)) ([6760e2a](https://github.com/salesforce/lwc/commit/6760e2a))
+* **engine:** close [#849](https://github.com/salesforce/lwc/issues/849) by implementing move hook ([#852](https://github.com/salesforce/lwc/issues/852)) ([6c05d12](https://github.com/salesforce/lwc/commit/6c05d12))
+* **engine:** relatedTarget might not be present ([#857](https://github.com/salesforce/lwc/issues/857)) ([16528a5](https://github.com/salesforce/lwc/commit/16528a5))
+* **engine:** retarget to null instead of undefined ([#850](https://github.com/salesforce/lwc/issues/850)) ([058e40c](https://github.com/salesforce/lwc/commit/058e40c))
+
+
+
+<a name="0.33.7"></a>
+## [0.33.7](https://github.com/salesforce/lwc/compare/v0.33.6...v0.33.7) (2018-11-20)
 
 
 
