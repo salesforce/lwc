@@ -1,6 +1,6 @@
 const { generateError, getEngineImportSpecifiers } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_API_WHITELIST } = require('./constants');
-const { LWCClassErrors } = require('lwc-errors');
+const { LWCClassErrors } = require('@lwc/errors');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {

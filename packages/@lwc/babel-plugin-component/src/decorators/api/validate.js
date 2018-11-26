@@ -1,4 +1,4 @@
-const { DecoratorErrors } = require('lwc-errors');
+const { DecoratorErrors } = require('@lwc/errors');
 const { isApiDecorator } = require('./shared');
 const {
     AMBIGUOUS_PROP_SET,

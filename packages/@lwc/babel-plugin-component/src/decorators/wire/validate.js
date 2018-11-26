@@ -1,6 +1,6 @@
 const { isWireDecorator } = require('./shared');
 const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
-const { DecoratorErrors } = require('lwc-errors');
+const { DecoratorErrors } = require('@lwc/errors');
 const { generateError } = require('../../utils');
 
 function validateWireParameters(path) {

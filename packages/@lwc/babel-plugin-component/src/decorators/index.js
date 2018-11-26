@@ -4,7 +4,7 @@ const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const { generateError, getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
-const { DecoratorErrors } = require('lwc-errors');
+const { DecoratorErrors } = require('@lwc/errors');
 
 const DECORATOR_TRANSFORMS = [
     api,

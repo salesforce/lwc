@@ -1,5 +1,5 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
-const { LWCClassErrors, generateErrorMessage } = require('lwc-errors');
+const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
 
 const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';

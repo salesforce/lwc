@@ -1,6 +1,6 @@
 const { generateError, staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, LWC_COMPONENT_PROPERTIES } = require('../../constants');
-const { DecoratorErrors } = require('lwc-errors');
+const { DecoratorErrors } = require('@lwc/errors');
 
 const TRACK_PROPERTY_VALUE = 1;
 

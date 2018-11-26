@@ -1,4 +1,4 @@
-const { generateErrorMessage, JestTransformerErrors } = require('lwc-errors');
+const { generateErrorMessage, JestTransformerErrors } = require('@lwc/errors');
 const babelTemplate = require('@babel/template').default;
 
 const defaultTemplate = babelTemplate(`
