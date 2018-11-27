@@ -23,8 +23,7 @@ import {
 import { HTMLElementOriginalDescriptors } from "./html-properties";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from "./component";
-import { setInternalField } from "../shared/fields";
-import { setHiddenAssociation } from "../shared/associations";
+import { setInternalField, setHiddenAssociation } from "../shared/fields";
 import { ViewModelReflection, EmptyObject } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, setNodeKey } from "./vm";
