@@ -8,8 +8,8 @@
     "test": "jest"
   },
   "devDependencies": {
-    "lwc-compiler": "0.33.9",
-    "lwc-engine": "0.33.9"
+    "@lwc/compiler": "0.33.9",
+    "@lwc/engine": "0.33.9"
   },
   "dependencies": {
     "glob": "^7.1.2",

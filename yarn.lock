@@ -1961,7 +1961,7 @@ babel-core@^6.0.0, babel-core@^6.26.0:
     slash "^1.0.0"
     source-map "^0.5.6"
 
-babel-generator@^6.18.0, babel-generator@^6.26.0, babel-generator@^6.26.1:
+babel-generator@^6.18.0, babel-generator@^6.26.0:
   version "6.26.1"
   resolved "http://npm.lwcjs.org/babel-generator/-/babel-generator-6.26.1/1844408d3b8f0d35a404ea7ac180f087a601bd90.tgz#1844408d3b8f0d35a404ea7ac180f087a601bd90"
   integrity sha512-HyfwY6ApZj7BYTcJURpM5tznulaBvyio7/0d4zFOeMPUmfxkCjHocCuoLa2SAGzBI8AREcH3eP3758F672DppA==
@@ -2133,15 +2133,6 @@ babel-plugin-transform-inline-consecutive-adds@^0.5.0-alpha.5a128fd5:
   version "0.5.0-alpha.e9f96ffe"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.5.0-alpha.e9f96ffe/d485c6ca183e15e865fec5731aadc831e2083022.tgz#d485c6ca183e15e865fec5731aadc831e2083022"
   integrity sha1-1IXGyhg+Fehl/sVzGq3IMeIIMCI=
-
-babel-plugin-transform-lwc-class@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-lwc-class/-/babel-plugin-transform-lwc-class-0.33.7/31ea483704146be97190336d4975ffb9007d4d5c.tgz#31ea483704146be97190336d4975ffb9007d4d5c"
-  integrity sha512-ijma1DhBP2vHyYnk/t17An4/rzvVPz0C4ft9zvGiyuieUPaYQgkIfhpkDdpPDFFHaNglQ801Cp0NKVD1BSUEpw==
-  dependencies:
-    "@babel/helper-module-imports" "7.0.0"
-    "@babel/plugin-proposal-class-properties" "7.1.0"
-    lwc-errors "0.33.7"
 
 babel-plugin-transform-member-expression-literals@^6.10.0-alpha.5a128fd5:
   version "6.10.0-alpha.f95869d4"
@@ -2343,7 +2334,7 @@ babel-types@^6.0.0, babel-types@^6.18.0, babel-types@^6.26.0:
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
 
-babylon@^6.17.0, babylon@^6.18.0:
+babylon@^6.18.0:
   version "6.18.0"
   resolved "http://npm.lwcjs.org/babylon/-/babylon-6.18.0/af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
   integrity sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ==
@@ -6829,61 +6820,6 @@ lru-cache@^4.1.2, lru-cache@^4.1.3:
   dependencies:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
-
-lwc-compiler@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/lwc-compiler/-/lwc-compiler-0.33.7/37d553baf85903875e9ac4813813b43744558b9a.tgz#37d553baf85903875e9ac4813813b43744558b9a"
-  integrity sha512-JbWayK9W83ysK3F4ta4myQYnCpVhkt4IJ6jt6IB+phdajJMKBGp0Cfq2gXmsfv5Mf2XJSpgf4OquAKnWfsF13g==
-  dependencies:
-    "@babel/core" "7.1.0"
-    "@babel/plugin-proposal-object-rest-spread" "7.0.0"
-    "@types/chokidar" "^1.7.5"
-    babel-plugin-transform-lwc-class "0.33.7"
-    babel-preset-compat "0.21.0"
-    babel-preset-minify "0.5.0-alpha.5a128fd5"
-    lwc-errors "0.33.7"
-    lwc-style-compiler "0.33.7"
-    lwc-template-compiler "0.33.7"
-    rollup "0.66.2"
-    rollup-plugin-replace "^2.0.0"
-
-lwc-engine@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/lwc-engine/-/lwc-engine-0.33.7/787935913d8fb0d709082fcc0645715ef9908035.tgz#787935913d8fb0d709082fcc0645715ef9908035"
-  integrity sha512-qs93NQxBQNOj4vBdwxvf+Zr0BaLr/r3IYBM0d7D3MZF68ySnmaqxtwsdv5E+/yNwHz+9cycbUTtqEIANMgBqpg==
-  dependencies:
-    observable-membrane "0.25.0"
-
-lwc-errors@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/lwc-errors/-/lwc-errors-0.33.7/d5fe6515f8a28dc5841f82dfb09ad7880b487545.tgz#d5fe6515f8a28dc5841f82dfb09ad7880b487545"
-  integrity sha512-Xc4lWbUWmGb67nB0iYALVhplh0ivspUpLJqJJi7rxLZifgPlLjHT0aycvRT40icnD0b2todffIiP2BObgABAYg==
-
-lwc-style-compiler@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/lwc-style-compiler/-/lwc-style-compiler-0.33.7/7aaa0e5a51d29eb89dc6179a7e2aaae24cc2c799.tgz#7aaa0e5a51d29eb89dc6179a7e2aaae24cc2c799"
-  integrity sha512-CwVsqBF3FbTioDfb9FYa1Lw/tTayr7NrHFfmdFcJR8DHTtPK1HNUMF/0GZY+Wy1dLVziwAuamynQhpuOJbSXOw==
-  dependencies:
-    cssnano "~3.10.0"
-    postcss "~7.0.5"
-    postcss-selector-parser "3.1.1"
-    postcss-value-parser "3.3.1"
-
-lwc-template-compiler@0.33.7:
-  version "0.33.7"
-  resolved "http://npm.lwcjs.org/lwc-template-compiler/-/lwc-template-compiler-0.33.7/34f4d7e2a9d15c206412b0e444819a61e41e255f.tgz#34f4d7e2a9d15c206412b0e444819a61e41e255f"
-  integrity sha512-mu/ZNWiDz3yewQ/rdmj1PoWIS8yC7Hky0CGvVxLcCs1QGKMeSE8fjnXApW+fxyyX+dvdvNp9p5G8DOLnlQep1g==
-  dependencies:
-    babel-generator "^6.26.1"
-    babel-template "^6.26.0"
-    babel-traverse "^6.26.0"
-    babel-types "^6.26.0"
-    babylon "^6.17.0"
-    camelcase "~5.0.0"
-    he "^1.1.1"
-    lwc-errors "0.33.7"
-    lwc-style-compiler "0.33.7"
-    parse5-with-errors "^4.0.1"
 
 magic-string@^0.10.0:
   version "0.10.2"
