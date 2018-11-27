@@ -1,7 +1,8 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
-import { ViewModelReflection } from "../utils";
+import { getOwnPropertySymbols } from "../../shared/language"
+import { getComponentVM } from '../vm';
 
 describe('component', function() {
     describe('public computed props', () => {
@@ -669,7 +670,11 @@ describe('component', function() {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(instance[ViewModelReflection]).toBeUndefined();
+            const vm = getComponentVM(instance);
+            const fields = getOwnPropertySymbols(instance);
+
+            // none of the symbols on instance should give access to vm
+            expect(fields.filter((field) => instance[field]=== vm)).toEqual([]);
         })
      });
 });

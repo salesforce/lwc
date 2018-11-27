@@ -3,7 +3,7 @@ import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase, isFalse } from "../shared/language";
-import { getInternalField, getHiddenAssociation } from "../shared/fields";
+import { getInternalField, getHiddenField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
@@ -566,12 +566,11 @@ export function getCustomElementVM(elm: HTMLElement): VM {
 }
 
 export function getComponentVM(component: ComponentInterface): VM {
-    const vm = getHiddenAssociation(component, ViewModelReflection);
-    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
+        const vm = getHiddenField(component, ViewModelReflection);
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    return vm as VM;
+    return getHiddenField(component, ViewModelReflection) as VM;
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {

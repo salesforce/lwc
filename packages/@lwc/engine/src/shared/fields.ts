@@ -1,4 +1,4 @@
-import { defineProperty, create } from "./language";
+import { defineProperty, create, isUndefined } from "./language";
 
 /**
  * In IE11, symbols are expensive.
@@ -25,8 +25,8 @@ export function getInternalField(o: object, fieldName: symbol): any {
 }
 
 /**
- * Store associations that should be hidden from outside world
- * hiddenAssociations is a WeakMap.
+ * Store fields that should be hidden from outside world
+ * hiddenFieldsPerObject is a WeakMap.
  * It stores a hash of any given objects associative relationships.
  * The hash uses the fieldName as the key, the value represents the other end of the association.
  *
@@ -34,24 +34,24 @@ export function getInternalField(o: object, fieldName: symbol): any {
  *              ViewModel
  * Component-A --------------> VM-1
  * then,
- * hiddenAssociations : (Component-A, { Symbol(ViewModel) : VM-1 })
+ * hiddenFieldsPerObject : (Component-A, { Symbol(ViewModel) : VM-1 })
  *
  */
-const hiddenAssociations: WeakMap<object, object> = new WeakMap();
-export const setHiddenAssociation = hasNativeSymbolsSupport
-    ? (o: object, fieldName: symbol, value: any): void =>  {
-        let associationByField = hiddenAssociations.get(o);
-        if (!associationByField) {
-            associationByField = create(null);
-            hiddenAssociations.set(o, associationByField!);
+const hiddenFieldsMap: WeakMap<any, Record<symbol, any>> = new WeakMap();
+export const setHiddenField = hasNativeSymbolsSupport
+    ? (o: any, fieldName: symbol, value: any): void =>  {
+        let valuesByField = hiddenFieldsMap.get(o);
+        if (isUndefined(valuesByField)) {
+            valuesByField = create(null) as (Record<symbol, any>);
+            hiddenFieldsMap.set(o, valuesByField);
         }
-        associationByField![fieldName] = value;
+        valuesByField[fieldName] = value;
     }
     : setInternalField; // Fall back to symbol based approach in compat mode
 
-export const getHiddenAssociation = hasNativeSymbolsSupport
-    ? (o: object, fieldName: symbol): any => {
-        const associationByField = hiddenAssociations.get(o);
-        return associationByField && associationByField[fieldName];
+export const getHiddenField = hasNativeSymbolsSupport
+    ? (o: any, fieldName: symbol): any => {
+        const valuesByField = hiddenFieldsMap.get(o);
+        return !isUndefined(valuesByField) && valuesByField[fieldName];
     }
     : getInternalField; // Fall back to symbol based approach in compat mode
