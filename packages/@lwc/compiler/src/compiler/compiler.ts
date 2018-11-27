@@ -1,0 +1,64 @@
+import { CompilerDiagnostic, DiagnosticLevel } from "@lwc/errors";
+
+import { bundle } from "../bundler/bundler";
+import { BundleMetadata } from "../bundler/meta-collector";
+import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
+import { version } from '../index';
+
+export { default as templateCompiler } from "@lwc/template-compiler";
+
+export interface CompilerOutput {
+    success: boolean;
+    diagnostics: CompilerDiagnostic[];
+    result?: BundleResult;
+    version: string;
+}
+
+export interface BundleResult {
+    code: string;
+    map: SourceMap | null;
+    metadata: BundleMetadata;
+    outputConfig: NormalizedOutputConfig;
+}
+
+export type SourceMap = any;
+
+export async function compile(
+    options: CompilerOptions
+): Promise<CompilerOutput> {
+    validateOptions(options);
+    const normalizedOptions = normalizeOptions(options);
+
+    let result: BundleResult | undefined;
+    const diagnostics: CompilerDiagnostic[] = [];
+
+    const {
+        diagnostics: bundleDiagnostics,
+        code,
+        map,
+        metadata,
+    } = await bundle(normalizedOptions);
+
+    diagnostics.push(...bundleDiagnostics);
+
+    if (!hasError(diagnostics)) {
+        result = {
+            code,
+            map,
+            metadata,
+            outputConfig: normalizedOptions.outputConfig,
+        };
+    }
+    return {
+        version,
+        success: !hasError(diagnostics),
+        diagnostics,
+        result
+    };
+}
+
+function hasError(diagnostics: CompilerDiagnostic[]) {
+    return diagnostics.some(d => {
+        return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
+    });
+}

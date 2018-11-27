@@ -14,8 +14,8 @@ packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/
 
-packages/lwc-integration/public/
-packages/lwc-integration/errorShots/
-packages/lwc-integration/results/
-packages/lwc-integration/.env
+packages/integration-tests/public/
+packages/integration-tests/errorShots/
+packages/integration-tests/results/
+packages/integration-tests/.env
 

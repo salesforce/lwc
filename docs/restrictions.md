@@ -36,7 +36,7 @@ These are the restrictions that we are imposing up top of the standard set of re
 
 ### Nodes
 
-* [x] `node.childNodes` is discouraged since it returns a LiveNode collection. In raptor we force it to return an Array snapshot.
+* [x] `node.childNodes` is discouraged since it returns a LiveNode collection. In LWC we force it to return an Array snapshot.
 
 ### Elements
 
