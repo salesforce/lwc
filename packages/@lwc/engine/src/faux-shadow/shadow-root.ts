@@ -11,8 +11,8 @@ import { isNativeShadowRootAvailable } from "../env/dom";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 
-const HostKey = createFieldName('host');
-const ShadowRootKey = createFieldName('shadowRoot');
+export const HostKey = createFieldName('host');
+export const ShadowRootKey = createFieldName('shadowRoot');
 const { createDocumentFragment } = document;
 
 export function isDelegatingFocus(host: HTMLElement): boolean {
