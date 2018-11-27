@@ -1,10 +1,9 @@
-import {setInternalField, getInternalField } from './fields';
+import {setInternalField, getInternalField, hasNativeSymbolsSupport } from './fields';
 
-const isCompatMode =  'getKey' in Proxy;
 // Each association type will get a different WeakMap
 const associations: object = {};
 // Store associations that should be hidden from outside world
-export const setHiddenAssociation = !isCompatMode
+export const setHiddenAssociation = hasNativeSymbolsSupport
     ? (o: object, fieldName: symbol, value: any): void =>  {
         let associationMap = associations[fieldName];
         if (!associationMap) {
@@ -15,7 +14,7 @@ export const setHiddenAssociation = !isCompatMode
     }
     : setInternalField; // Fall back to symbol based approach in compat mode
 
-export const getHiddenAssociation = !isCompatMode
+export const getHiddenAssociation = hasNativeSymbolsSupport
     ? (o: object, fieldName: symbol): any => {
         const associationMap = associations[fieldName];
         return associationMap && associationMap.get(o);
