@@ -26,7 +26,7 @@ export function getInternalField(o: object, fieldName: symbol): any {
 
 /**
  * Store fields that should be hidden from outside world
- * hiddenFieldsPerObject is a WeakMap.
+ * hiddenFieldsMap is a WeakMap.
  * It stores a hash of any given objects associative relationships.
  * The hash uses the fieldName as the key, the value represents the other end of the association.
  *
@@ -34,7 +34,7 @@ export function getInternalField(o: object, fieldName: symbol): any {
  *              ViewModel
  * Component-A --------------> VM-1
  * then,
- * hiddenFieldsPerObject : (Component-A, { Symbol(ViewModel) : VM-1 })
+ * hiddenFieldsMap : (Component-A, { Symbol(ViewModel) : VM-1 })
  *
  */
 const hiddenFieldsMap: WeakMap<any, Record<symbol, any>> = new WeakMap();
