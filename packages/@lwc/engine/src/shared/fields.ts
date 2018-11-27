@@ -26,7 +26,7 @@ export function getInternalField(o: object, fieldName: symbol): any {
 
 /**
  * Store associations that should be hidden from outside world
- * privateAssociations is a WeakMap.
+ * hiddenAssociations is a WeakMap.
  * It stores a hash of any given objects associative relationships.
  * The hash uses the fieldName as the key, the value represents the other end of the association.
  *
@@ -34,16 +34,16 @@ export function getInternalField(o: object, fieldName: symbol): any {
  *              ViewModel
  * Component-A --------------> VM-1
  * then,
- * privateAssociations : (Component-A, { Symbol(ViewModel) : VM-1 })
+ * hiddenAssociations : (Component-A, { Symbol(ViewModel) : VM-1 })
  *
  */
-const privateAssociations: WeakMap<object, object> = new WeakMap();
+const hiddenAssociations: WeakMap<object, object> = new WeakMap();
 export const setHiddenAssociation = hasNativeSymbolsSupport
     ? (o: object, fieldName: symbol, value: any): void =>  {
-        let associationByField = privateAssociations.get(o);
+        let associationByField = hiddenAssociations.get(o);
         if (!associationByField) {
             associationByField = create(null);
-            privateAssociations.set(o, associationByField!);
+            hiddenAssociations.set(o, associationByField!);
         }
         associationByField![fieldName] = value;
     }
@@ -51,7 +51,7 @@ export const setHiddenAssociation = hasNativeSymbolsSupport
 
 export const getHiddenAssociation = hasNativeSymbolsSupport
     ? (o: object, fieldName: symbol): any => {
-        const associationByField = privateAssociations.get(o);
+        const associationByField = hiddenAssociations.get(o);
         return associationByField && associationByField[fieldName];
     }
     : getInternalField; // Fall back to symbol based approach in compat mode
