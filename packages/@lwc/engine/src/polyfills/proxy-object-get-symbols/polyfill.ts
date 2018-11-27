@@ -1,10 +1,13 @@
 import { ViewModelReflection } from '../../framework/utils';
 import { ShadowRootKey, HostKey } from '../../faux-shadow/shadow-root';
+import { getOwnPropertySymbols, create, getOwnPropertyNames, isUndefined } from '../../shared/language';
 
-const { getOwnPropertySymbols, getOwnPropertyNames } = Object;
-const privateSymbols = [ ViewModelReflection, ShadowRootKey, HostKey ];
+const privateSymbols = create(null);
+privateSymbols[ViewModelReflection] = true;
+privateSymbols[ShadowRootKey] = true;
+privateSymbols[HostKey] = true;
 function ObjectGetOwnPropertySymbolsProxy(o: any): symbol[] {
-    return getOwnPropertySymbols(o).filter(item => privateSymbols.indexOf(item) === -1);
+    return getOwnPropertySymbols(o).filter(item => isUndefined(privateSymbols[item]));
 }
 
 export default function apply() {
