@@ -5,7 +5,7 @@ const fs = require('fs');
 const nodeModulePaths = require('./node-modules-paths');
 
 const DEFAULT_NS = 'x';
-const PACKAGE_PATTERN = `*/package.json`;
+const PACKAGE_PATTERN = `**/*/package.json`;
 const MODULE_EXTENSION = '.js';
 const MODULE_ENTRY_PATTERN = `**/*${MODULE_EXTENSION}`;
 const LWC_CONFIG_FILE = '.lwcrc';
@@ -94,7 +94,7 @@ function resolveLwcNpmModules(options = {}) {
     const modulePaths = expandModuleDirectories(options);
 
     return modulePaths.reduce((m, nodeModulesDir) => {
-        return glob.sync(PACKAGE_PATTERN, { cwd: nodeModulesDir }).reduce((mappings, file) => {
+        return glob.sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: ['**/node_modules/**'] }).reduce((mappings, file) => {
             const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
             const lwcConfig = loadLwcConfig(moduleRoot);
 
