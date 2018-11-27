@@ -54,7 +54,7 @@ jobs:
 
       - run:
           name: Integration Test - Headless Chrome
-          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
+          command: cd packages/integration-tests && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
 
 
   integration_test_compat:
@@ -87,7 +87,7 @@ jobs:
 
       - run:
           name: Integration Test - IE11 SauceLabs
-          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
+          command: cd packages/integration-tests && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
 
 
   perf_and_compare_chrome:
@@ -126,18 +126,18 @@ jobs:
 
       - run:
           name: Preformance Test
-          working_directory: packages/benchmark
+          working_directory: packages/perf-benchmarks
           command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
           no_output_timeout: 40m
 
 
       - store_artifacts:
-          path: ~/lwc/packages/benchmark/__benchmark_results__/
+          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
           destination: benchmarks
 
       - run:
           name: Comparing Benchmarks
-          working_directory: packages/benchmark
+          working_directory: packages/perf-benchmarks
           command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
   perf_and_compare_ie11:
@@ -176,18 +176,18 @@ jobs:
 
       - run:
           name: Preformance Test
-          working_directory: packages/benchmark
+          working_directory: packages/perf-benchmarks
           command: yarn start --projects best.ie11.config.js --externalStorage=@best/store-aws --runner remote
           no_output_timeout: 40m
 
 
       - store_artifacts:
-          path: ~/lwc/packages/benchmark/__benchmark_results__/
+          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
           destination: benchmarks
 
       - run:
           name: Comparing Benchmarks
-          working_directory: packages/benchmark
+          working_directory: packages/perf-benchmarks
           command: yarn start --projects best.ie11.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 

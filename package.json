@@ -12,9 +12,9 @@
     "lint": "lerna run lint",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
-    "test:integration": "lerna exec --scope lwc-integration -- yarn sauce",
-    "test:performance": "lerna exec --scope benchmark -- best --runner remote",
-    "build": "lerna run build --ignore benchmark --ignore lwc-integration",
+    "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
+    "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",
+    "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release:ci:npm": "./scripts/release_npm.sh",
     "release:ci:changelog": "./scripts/release_changelog.sh",
@@ -59,7 +59,9 @@
     }
   },
   "workspaces": [
-    "packages/*"
+    "packages/@lwc/*",
+    "packages/integration-tests",
+    "packages/perf-benchmarks"
   ],
   "engines": {
     "node": ">=8.9.0",

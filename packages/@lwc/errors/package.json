@@ -1,0 +1,17 @@
+{
+  "name": "@lwc/errors",
+  "version": "0.33.9",
+  "description": "LWC Error Utilities",
+  "main": "dist/commonjs/index.js",
+  "license": "MIT",
+  "typings": "dist/types/",
+  "scripts": {
+    "clean": "rm -rf dist/",
+    "lint": "tslint -p ./tsconfig.json",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "lwc"
+  ]
+}
