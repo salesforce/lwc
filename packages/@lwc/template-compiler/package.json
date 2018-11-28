@@ -17,7 +17,6 @@
     "esutils": "~2.0.2"
   },
   "dependencies": {
-    "@types/babel-types": "~7.0.4",
     "@babel/generator": "~7.1.5",
     "@babel/parser": "~7.1.5",
     "@babel/template": "~7.1.2",
