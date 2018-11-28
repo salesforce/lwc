@@ -10,7 +10,6 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     parentNodeGetter as nativeParentNodeGetter,
-    cloneNode as nativeCloneNode,
 } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/window';
 import { setAttribute } from '../env/element';
