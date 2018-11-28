@@ -107,6 +107,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
         }
 
+        // https://dom.spec.whatwg.org/#concept-node-clone
         // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/Node-prototype-cloneNode.html
         // Clone node doesn't clone any elements from shadow roots
         // This may yield unexpected results upstream because some visual
