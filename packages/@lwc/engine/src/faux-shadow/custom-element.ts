@@ -1,12 +1,14 @@
 import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
-import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
+import { hasAttribute, tabIndexGetter, childrenGetter, tagNameGetter } from "../env/element";
+import { cloneNode as nativeCloneNode } from '../env/node';
 import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
+import { createVM } from "../framework/vm";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -104,6 +106,18 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
+        }
+        cloneNode(deep: boolean): Node {
+            const clone = nativeCloneNode.call(this, false);
+
+            if (deep === true) {
+                const childNodes = this.childNodes;
+                for(let i = 0, len = childNodes.length; i < len; i += 1) {
+                    clone.appendChild(childNodes[i].cloneNode(true));
+                }
+            }
+
+            return clone;
         }
     };
 }

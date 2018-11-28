@@ -1,6 +1,8 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getRootNodeGetter } from "../traverse";
+import { getOuterHTML } from '../../3rdparty/polymer/outer-html';
+
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
@@ -177,6 +179,181 @@ describe('dom', () => {
             document.body.appendChild(elm);
             const child = elm.shadowRoot.querySelector('x-foo');
             child.trigger();
+        });
+    });
+
+    describe.only('cloneNode', () => {
+        it('should not include any shadow dom elements', () => {
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <div></div>
+                </template>
+            `, {});
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.cloneNode(true);
+            expect(clone.childNodes.length).toBe(0);
+        });
+
+        it('should include slotted elements', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {});
+
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <div></div>
+                    </x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                },
+            });
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.shadowRoot.querySelector('x-child').cloneNode(true);
+            expect(clone.childNodes.length).toBe(1);
+            expect(clone.childNodes[0].tagName).toBe('DIV');
+        });
+
+        it('should not include default slotted elements', () => {
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <slot>
+                        <div></div>
+                    </slot>
+                </template>
+            `, {});
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.cloneNode(false);
+            expect(clone.childNodes.length).toBe(0);
+        });
+
+        it('should not include slotted elements if deep flag is false', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <div>No clone</div>
+                    <slot></slot>
+                </template>
+            `, {});
+
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <div></div>
+                    </x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                },
+            });
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.shadowRoot.querySelector('x-child').cloneNode(false);
+            expect(clone.childNodes.length).toBe(0);
+        });
+
+        it('should include slotted custom elements correctly', () => {
+            const grandChildTmpl = compileTemplate(`
+                <template>
+                    <div>No clone</div>
+                    <slot></slot>
+                </template>
+            `, {});
+
+            class GrandChild extends LightningElement {
+                render() {
+                    return grandChildTmpl;
+                }
+            }
+
+            const childTmpl = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {});
+
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <x-child>
+                        <x-grand>
+                            <div></div>
+                        </x-grand>
+                        <div></div>
+                    </x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child,
+                    'x-grand': GrandChild
+                },
+            });
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.shadowRoot.querySelector('x-child').cloneNode(true);
+            expect(clone.childNodes.length).toBe(2);
+            expect(clone.outerHTML).toBe('<x-child><x-grand><div></div></x-grand><div></div></x-child>');
         });
     });
 });

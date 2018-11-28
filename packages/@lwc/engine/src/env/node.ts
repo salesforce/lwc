@@ -16,6 +16,7 @@ const {
     hasChildNodes,
     replaceChild,
     compareDocumentPosition,
+    cloneNode,
 } = Node.prototype;
 
 const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
@@ -50,6 +51,7 @@ export {
     textContextSetter,
     nodeValueGetter,
     nodeValueSetter,
+    cloneNode,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,
