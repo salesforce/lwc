@@ -149,7 +149,7 @@ describe('lwc:dom', () => {
         });
     });
 
-    it.only('lwc:dom="manual" inserted elements should get correct shadow stylesheet key', () => {
+    it('lwc:dom="manual" inserted elements should get correct shadow stylesheet key', () => {
         const p = document.createElement('p');
         const header = document.createElement('header');
         header.appendChild(p);
