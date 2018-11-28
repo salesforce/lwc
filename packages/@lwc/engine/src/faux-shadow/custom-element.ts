@@ -106,6 +106,11 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
         }
+
+        // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/Node-prototype-cloneNode.html
+        // Clone node doesn't clone any elements from shadow roots
+        // This may yield unexpected results upstream because some visual
+        // Information will be lost
         cloneNode(deep: boolean): Node {
             const clone = nativeCloneNode.call(this, false);
 
