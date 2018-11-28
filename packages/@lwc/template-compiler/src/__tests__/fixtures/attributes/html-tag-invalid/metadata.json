@@ -6,7 +6,9 @@
             "level": 1,
             "location": {
                 "line": 3,
-                "column": 47
+                "column": 47,
+                "start": 71,
+                "length": 21
             }
         }
     ],

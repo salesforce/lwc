@@ -1,5 +1,4 @@
 import { CompilerDiagnostic, DiagnosticLevel } from "@lwc/errors";
-import { Diagnostic } from "../diagnostics/diagnostic";
 
 import { bundle } from "../bundler/bundler";
 import { BundleMetadata } from "../bundler/meta-collector";
@@ -8,24 +7,9 @@ import { version } from '../index';
 
 export { default as templateCompiler } from "@lwc/template-compiler";
 
-/**
- * Transforms a CompilerDiagnostic object so that it's compatible with previous Diagnostic type
- * @param diagnostic
- */
-function temporaryAdapterForTypesafety(diagnostic: CompilerDiagnostic): Diagnostic {
-    const diag = diagnostic as any;
-
-    if (diagnostic.location) {
-        const { line, column } = diagnostic.location;
-        diag.location = { line, column, start: -1, length: -1 };
-    }
-
-    return diag as Diagnostic;
-}
-
 export interface CompilerOutput {
     success: boolean;
-    diagnostics: Diagnostic[];
+    diagnostics: CompilerDiagnostic[];
     result?: BundleResult;
     version: string;
 }
@@ -68,7 +52,7 @@ export async function compile(
     return {
         version,
         success: !hasError(diagnostics),
-        diagnostics: diagnostics.map(temporaryAdapterForTypesafety),
+        diagnostics,
         result
     };
 }

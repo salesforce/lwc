@@ -6,7 +6,9 @@
             "level": 1,
             "location": {
                 "line": 2,
-                "column": 27
+                "column": 27,
+                "start": 37,
+                "length": 15
             }
         },
         {
@@ -15,7 +17,9 @@
             "level": 1,
             "location": {
                 "line": 2,
-                "column": 43
+                "column": 43,
+                "start": 53,
+                "length": 17
             }
         },
         {
@@ -24,7 +28,9 @@
             "level": 1,
             "location": {
                 "line": 3,
-                "column": 10
+                "column": 10,
+                "start": 87,
+                "length": 16
             }
         },
         {
@@ -33,7 +39,9 @@
             "level": 1,
             "location": {
                 "line": 3,
-                "column": 43
+                "column": 43,
+                "start": 120,
+                "length": 17
             }
         },
         {
@@ -42,7 +50,9 @@
             "level": 1,
             "location": {
                 "line": 4,
-                "column": 43
+                "column": 43,
+                "start": 187,
+                "length": 17
             }
         }
     ],

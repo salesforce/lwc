@@ -876,9 +876,9 @@ export default function parse(source: string, state: State): {
     }
 
     function warnOnElement(errorInfo: LWCErrorInfo, node: parse5.AST.Node, messageArgs?: any[]) {
-        const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number } => {
+        const getLocation = (toLocate?: parse5.AST.Node): { line: number, column: number, start: number, length: number } => {
             if (!toLocate) {
-                return { line: 0, column: 0 };
+                return { line: 0, column: 0, start: 0, length: 0 };
             }
 
             const location = (toLocate as parse5.AST.Default.Element).__location;
@@ -889,6 +889,8 @@ export default function parse(source: string, state: State): {
                 return {
                     line: location.line || location.startLine,
                     column: location.col || location.startCol,
+                    start: location.startOffset,
+                    length: location.endOffset - location.startOffset,
                 };
             }
         };
@@ -911,15 +913,21 @@ export default function parse(source: string, state: State): {
     }
 
     // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
-    function normalizeLocation(location?: parse5.MarkupData.Location): { line: number, column: number } {
+    function normalizeLocation(location?: parse5.MarkupData.Location): { line: number, column: number, start: number, length: number } {
         let line = 0;
         let column = 0;
+        let start = 0;
+        let length = 0;
 
         if (location) {
+            const { startOffset, endOffset } = location;
+
             line = location.line || location.startLine;
             column = location.col || location.startCol;
+            start = startOffset;
+            length = endOffset - startOffset;
         }
-        return { line, column };
+        return { line, column, start, length };
     }
 
     function addDiagnostic(diagnostic: CompilerDiagnostic) {
