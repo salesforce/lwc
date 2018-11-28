@@ -1,7 +1,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 import { getRootNodeGetter } from "../traverse";
-import { getOuterHTML } from '../../3rdparty/polymer/outer-html';
 
 
 describe('dom', () => {
@@ -182,7 +181,7 @@ describe('dom', () => {
         });
     });
 
-    describe.only('cloneNode', () => {
+    describe('cloneNode', () => {
         it('should not include any shadow dom elements', () => {
             const cmpTmpl = compileTemplate(`
                 <template>
