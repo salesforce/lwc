@@ -2,7 +2,6 @@ import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterfa
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
 import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
-import { cloneNode as nativeCloneNode } from '../env/node';
 import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
@@ -105,24 +104,6 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
-        }
-
-        // https://dom.spec.whatwg.org/#concept-node-clone
-        // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/Node-prototype-cloneNode.html
-        // Clone node doesn't clone any elements from shadow roots
-        // This may yield unexpected results upstream because some visual
-        // Information will be lost
-        cloneNode(deep: boolean): Node {
-            const clone = nativeCloneNode.call(this, false);
-
-            if (deep === true) {
-                const childNodes = this.childNodes;
-                for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                    clone.appendChild(childNodes[i].cloneNode(true));
-                }
-            }
-
-            return clone;
         }
     };
 }
