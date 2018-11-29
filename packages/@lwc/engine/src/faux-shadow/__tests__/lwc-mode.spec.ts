@@ -314,19 +314,18 @@ describe('lwc:dom', () => {
     });
 
     it('missing lwc:dom="manual" should warn replaceChild', () => {
-        const p = document.createElement('p');
         const html = compileTemplate(`
             <template>
                 <div class="manual">
                     <p></p>
                 </div>
             </template>
-        `)
+        `);
         class Cmp extends LightningElement {
             renderedCallback() {
                 expect(() => {
-                    this.template.querySelector('p');
-                    this.template.querySelector('.manual').replaceChild(document.createElement('span'), p)
+                    const p = this.template.querySelector('p');
+                    this.template.querySelector('.manual').replaceChild(document.createElement('span'), p);
                 }).toLogError('replaceChild is disallowed in Element unless `lwc:dom="manual"` directive is used in the template.')
             }
             render() {
