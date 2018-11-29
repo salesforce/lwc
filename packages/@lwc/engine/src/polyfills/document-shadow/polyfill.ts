@@ -1,21 +1,18 @@
-import { elementsFromPoint, DocumentPrototypeActiveElement } from "../../env/document";
+import { elementFromPoint, DocumentPrototypeActiveElement } from "../../env/document";
 import { getNodeOwnerKey } from "../../framework/vm";
 import { isNull, isUndefined, defineProperty } from "../../shared/language";
 import { parentElementGetter } from "../../env/node";
+import { retarget } from "../../3rdparty/polymer/retarget";
+import { pathComposer } from "../../3rdparty/polymer/path-composer";
 
 export default function apply() {
     function elemFromPoint(left: number, top: number): Element | null {
-        const elements = elementsFromPoint.call(document, left, top);
-        const { length } = elements;
-        let match = null;
-        for (let i = length - 1; i >= 0; i -= 1) {
-            const el = elements[i];
-            const ownerKey = getNodeOwnerKey(el);
-            if (isUndefined(ownerKey)) {
-                match = elements[i];
-            }
+        const element = elementFromPoint.call(document, left, top);
+        if (isNull(element)) {
+            return element;
         }
-        return match;
+
+        return retarget(document, pathComposer(element, true)) as (Element | null);
     }
 
     // https://github.com/Microsoft/TypeScript/issues/14139
