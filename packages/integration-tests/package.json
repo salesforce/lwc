@@ -1,7 +1,7 @@
 {
   "name": "integration-tests",
   "private": true,
-  "version": "0.33.9",
+  "version": "0.33.10-alpha03",
   "scripts": {
     "build": "node scripts/build.js",
     "build:dev": "MODE=dev yarn build",
@@ -21,14 +21,14 @@
     "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
+    "@lwc/compiler": "0.33.10-alpha03",
+    "@lwc/engine": "0.33.10-alpha03",
+    "@lwc/rollup-plugin": "0.33.10-alpha03",
+    "@lwc/wire-service": "0.33.10-alpha03",
     "deepmerge": "^1.5.2",
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
-    "@lwc/compiler": "0.33.9",
-    "@lwc/engine": "0.33.9",
-    "@lwc/rollup-plugin": "0.33.9",
-    "@lwc/wire-service": "0.33.9",
     "minimist": "^1.2.0",
     "wdio-junit-reporter": "^0.4.3",
     "wdio-mocha-framework": "~0.5.13",
