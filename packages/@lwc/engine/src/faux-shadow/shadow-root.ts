@@ -1,15 +1,17 @@
 import assert from "../shared/assert";
 import { isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowDomElementFromPoint, shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { createStaticNodeList } from "../shared/static-node-list";
-import { DocumentPrototypeActiveElement } from "../env/document";
+import { DocumentPrototypeActiveElement, elementFromPoint } from "../env/document";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
+import { retarget } from "../3rdparty/polymer/retarget";
+import { pathComposer } from "../3rdparty/polymer/path-composer";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -256,7 +258,11 @@ export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot 
     // but we should only return elements that the shadow owns,
     // or are ancestors of the shadow
     elementFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element | null {
-        return shadowDomElementFromPoint(getHost(this), left, top);
+        const element = elementFromPoint.call(document, left, top);
+        if (isNull(element)) {
+            return element;
+        }
+        return retarget(this, pathComposer(element, true)) as (Element | null);
     }
 
     elementsFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
