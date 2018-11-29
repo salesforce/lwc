@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.8...v) (2018-11-26)
+# [](https://github.com/salesforce/lwc/compare/v0.33.9...v) (2018-11-29)
+
+
+### Bug Fixes
+
+* **compiler:** include start and length with diagnostics ([#856](https://github.com/salesforce/lwc/issues/856)) ([b4fad21](https://github.com/salesforce/lwc/commit/b4fad21))
+* minor guard ([#863](https://github.com/salesforce/lwc/issues/863)) ([f439c16](https://github.com/salesforce/lwc/commit/f439c16))
+* **engine:** [218] implementation for clone node ([#864](https://github.com/salesforce/lwc/issues/864)) ([0f41231](https://github.com/salesforce/lwc/commit/0f41231))
+* **engine:** retargeting elementFromPoint without elementsFromPoint ([#866](https://github.com/salesforce/lwc/issues/866)) ([c665b9a](https://github.com/salesforce/lwc/commit/c665b9a))
+
+
+
+<a name="0.33.9"></a>
+## [0.33.9](https://github.com/salesforce/lwc/compare/v0.33.8...v0.33.9) (2018-11-26)
 
 
 
