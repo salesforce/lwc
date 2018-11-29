@@ -257,7 +257,7 @@ describe('dom', () => {
 
             const elm = createElement('x-foo', { is: Cmp });
             document.body.appendChild(elm);
-            const clone = elm.cloneNode(false);
+            const clone = elm.cloneNode(true);
             expect(clone.childNodes.length).toBe(0);
         });
 
@@ -394,6 +394,44 @@ describe('dom', () => {
             expect(clone.outerHTML).toBe('<div><x-child></x-child><span></span></div>');
         });
 
+        it('should not include any shadow dom elements when deep is truthy', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <span></span>
+                </template>
+            `, {});
+
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <div>
+                        <x-child></x-child>
+                        <span></span>
+                    </div>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child,
+                }
+            });
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.shadowRoot.querySelector('div').cloneNode('truthy value');
+            expect(clone.outerHTML).toBe('<div><x-child></x-child><span></span></div>');
+        });
+
         it('should have correct result on native elements when deep is false', () => {
             const childTmpl = compileTemplate(`
                 <template>
@@ -429,6 +467,44 @@ describe('dom', () => {
             const elm = createElement('x-foo', { is: Cmp });
             document.body.appendChild(elm);
             const clone = elm.shadowRoot.querySelector('div').cloneNode(false);
+            expect(clone.outerHTML).toBe('<div title="foo"></div>');
+        });
+
+        it('should have correct result on native elements when deep is falsy', () => {
+            const childTmpl = compileTemplate(`
+                <template>
+                    <span></span>
+                </template>
+            `, {});
+
+            class Child extends LightningElement {
+                render() {
+                    return childTmpl;
+                }
+            }
+
+            const cmpTmpl = compileTemplate(`
+                <template>
+                    <div title="foo">
+                        <x-child></x-child>
+                        <span></span>
+                    </div>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child,
+                }
+            });
+
+            class Cmp extends LightningElement {
+                render() {
+                    return cmpTmpl;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Cmp });
+            document.body.appendChild(elm);
+            const clone = elm.shadowRoot.querySelector('div').cloneNode(undefined);
             expect(clone.outerHTML).toBe('<div title="foo"></div>');
         });
     });

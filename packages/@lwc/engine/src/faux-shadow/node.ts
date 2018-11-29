@@ -219,7 +219,9 @@ export function PatchedNode(node: Node): NodeConstructor {
         cloneNode(deep: boolean): Node {
             const clone = nativeCloneNode.call(this, false);
 
-            if (isFalse(deep)) {
+            // Per spec, browsers only care about truthy values
+            // Not strict true or false
+            if (!deep) {
                 return clone;
             }
 
