@@ -1,4 +1,4 @@
-import * as babylon from 'babylon';
+import * as babylon from '@babel/parser';
 import * as t from '@babel/types';
 import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
