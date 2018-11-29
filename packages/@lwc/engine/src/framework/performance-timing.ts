@@ -24,7 +24,7 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(vm: VM, phase: MeasurementPhase): string {
+function getMarkName(vm: VM, phase: MeasurementPhase | GlobalMeasurementPhase): string {
     return `<${vm.def.name} (${vm.uid})> - ${phase}`;
 }
 
@@ -64,6 +64,21 @@ function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
     performance.clearMeasures(phase);
 }
 
-export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
+function _startHydrateMeasure(vm: VM) {
+    performance.mark(getMarkName(vm, GlobalMeasurementPhase.HYDRATE));
+}
 
+function _endHydrateMeasure(vm: VM) {
+    const phase = GlobalMeasurementPhase.HYDRATE;
+    const name = getMarkName(vm, phase);
+
+    performance.measure(phase, name);
+    performance.clearMarks(name);
+    performance.clearMeasures(phase);
+}
+
+export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
 export const endGlobalMeasure = isUserTimingSupported ? _endGlobalMeasure : noop;
+
+export const startHydrateMeasure = isUserTimingSupported ? _startHydrateMeasure : noop;
+export const endHydrateMeasure = isUserTimingSupported ? _endHydrateMeasure : noop;
