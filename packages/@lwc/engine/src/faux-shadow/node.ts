@@ -3,7 +3,6 @@ import {
     isNull,
     forEach,
     getPrototypeOf,
-    isFalse,
 } from '../shared/language';
 import {
     parentNodeGetter,
