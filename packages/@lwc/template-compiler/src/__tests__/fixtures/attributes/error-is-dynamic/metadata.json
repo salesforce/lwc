@@ -1,18 +1,22 @@
 {
-  "warnings": [
-      {
-          "code": 1001,
-          "message": "LWC1001: \"is\" attribute value can't be an expression",
-          "level": 1,
-          "location": {
-              "line": 2,
-              "column": 13
-          }
-      }
-  ],
-  "metadata": {
-      "definedSlots": [],
-      "templateUsedIds": ["dynamicCmp"],
-      "templateDependencies": []
-  }
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: \"is\" attribute value can't be an expression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 13,
+                "start": 23,
+                "length": 30
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "dynamicCmp"
+        ],
+        "templateDependencies": []
+    }
 }

@@ -80,8 +80,11 @@ function getLocationFromObject(obj: any): Location | undefined {
             return obj.location;
         } else if (obj.loc) {
             return obj.loc;
-        } else if (obj.line && obj.column) {
-            return { line: obj.line, column: obj.column };
+        } else if (
+            Number.isInteger(obj.line) &&
+            Number.isInteger(obj.column)
+        ) {
+            return { line: obj.line, column: obj.column, start: obj.start, length: obj.length };
         }
     }
 

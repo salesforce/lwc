@@ -6,7 +6,9 @@
             "level": 1,
             "location": {
                 "line": 2,
-                "column": 8
+                "column": 8,
+                "start": 18,
+                "length": 11
             }
         },
         {
@@ -15,7 +17,9 @@
             "level": 1,
             "location": {
                 "line": 3,
-                "column": 8
+                "column": 8,
+                "start": 43,
+                "length": 12
             }
         },
         {
@@ -24,7 +28,9 @@
             "level": 1,
             "location": {
                 "line": 4,
-                "column": 8
+                "column": 8,
+                "start": 69,
+                "length": 13
             }
         },
         {
@@ -33,7 +39,9 @@
             "level": 1,
             "location": {
                 "line": 5,
-                "column": 8
+                "column": 8,
+                "start": 96,
+                "length": 14
             }
         }
     ],

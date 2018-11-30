@@ -39,18 +39,22 @@ interface RollupWarning {
         line: number;
         column: number;
     };
+    pos?: number;
 }
 
 const DEFAULT_FORMAT = "amd";
 
 function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
-    return function onwarn({ message, loc }: RollupWarning) {
-        const origin = loc
+    return function onwarn({ message, loc, pos }: RollupWarning) {
+        // loc and pos are bundled together
+        const origin = loc && pos
             ? {
                 filename: loc.file,
                 location: {
                     line: loc.line,
-                    column: loc.column
+                    column: loc.column,
+                    start: pos,
+                    length: 0,
                 }
             } : {};
 

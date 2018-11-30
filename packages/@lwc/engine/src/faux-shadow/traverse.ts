@@ -14,7 +14,6 @@ import {
 import {
     querySelectorAll, innerHTMLSetter, tagNameGetter,
 } from "../env/element";
-import { elementsFromPoint } from "../env/document";
 import { wrapIframeWindow } from "./iframe";
 import {
     ArrayReduce,
@@ -183,10 +182,6 @@ function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | 
         }
     }
     return null;
-}
-
-export function shadowDomElementFromPoint(host: HTMLElement, left: number, top: number): Element | null {
-    return getFirstMatch(host, elementsFromPoint.call(document, left, top));
 }
 
 function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {

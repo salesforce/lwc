@@ -2,9 +2,9 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 
 const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(Document.prototype, 'activeElement')!.get as (this: Document) => Element | null;
 
-const elementsFromPoint = hasOwnProperty.call(Document.prototype, 'elementsFromPoint') ?
-    Document.prototype.elementsFromPoint :
-    (Document.prototype as any).msElementsFromPoint;  // IE11
+const elementFromPoint = hasOwnProperty.call(Document.prototype, 'elementFromPoint') ?
+Document.prototype.elementFromPoint :
+(Document.prototype as any).msElementFromPoint;  // IE11
 
 const {
     createDocumentFragment,
@@ -22,13 +22,13 @@ const {
 } = Document.prototype;
 
 export {
+    elementFromPoint,
     createDocumentFragment,
     createElement,
     createElementNS,
     createTextNode,
     createComment,
     DocumentPrototypeActiveElement,
-    elementsFromPoint,
     querySelector,
     querySelectorAll,
     getElementById,

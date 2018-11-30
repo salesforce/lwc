@@ -10,6 +10,7 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     parentNodeGetter as nativeParentNodeGetter,
+    cloneNode as nativeCloneNode,
 } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/window';
 import { setAttribute } from '../env/element';
@@ -213,6 +214,22 @@ export function PatchedNode(node: Node): NodeConstructor {
                 return false;
             }
             return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+        }
+        cloneNode(deep: boolean): Node {
+            const clone = nativeCloneNode.call(this, false);
+
+            // Per spec, browsers only care about truthy values
+            // Not strict true or false
+            if (!deep) {
+                return clone;
+            }
+
+            const childNodes = this.childNodes;
+            for (let i = 0, len = childNodes.length; i < len; i += 1) {
+                clone.appendChild(childNodes[i].cloneNode(true));
+            }
+
+            return clone;
         }
     };
 }
