@@ -81,6 +81,10 @@ export const SVG_TAG_WHITELIST = new Set([
     'use',
 ]);
 
+export const MATHML_TAG_BLACKLIST = new Set([
+    'script',
+]);
+
 export const GLOBAL_ATTRIBUTE_SET = new Set([
     'role', 'accesskey', 'class', 'contenteditable', 'contextmenu', 'dir', 'draggable', 'dropzone', 'hidden',
     'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
@@ -703,3 +707,4 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
 
 export const HTML_NAMESPACE_URI = 'http://www.w3.org/1999/xhtml';
 export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+export const MATHML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';

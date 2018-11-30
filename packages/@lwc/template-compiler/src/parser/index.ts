@@ -79,6 +79,8 @@ import {
     SVG_TAG_WHITELIST,
     SVG_NAMESPACE_URI,
     HTML_NAMESPACE_URI,
+    MATHML_TAG_BLACKLIST,
+    MATHML_NAMESPACE_URI,
 } from './constants';
 import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
@@ -726,6 +728,7 @@ export default function parse(source: string, state: State): {
             }
         } else {
             const namespace = node.namespaceURI;
+
             const isNotAllowedHtmlTag = HTML_TAG_BLACKLIST.has(tag);
             if (namespace === HTML_NAMESPACE_URI && isNotAllowedHtmlTag) {
                 return warnOnElement(
@@ -734,6 +737,7 @@ export default function parse(source: string, state: State): {
                     [tag]
                 );
             }
+
             const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
                 return warnOnElement(
@@ -742,20 +746,43 @@ export default function parse(source: string, state: State): {
                     [tag]
                 );
             }
+
+            const isNotAllowedMathMlTag = MATHML_TAG_BLACKLIST.has(tag);
+            if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
+                return warnOnElement(
+                    ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE,
+                    node,
+                    [tag]
+                );
+            }
         }
     }
 
     function validateAttributes(element: IRElement) {
-        const { attrsList } = element;
+        const { tag, attrsList } = element;
+        const node = element.__original as parse5.AST.Default.Element;
+
         attrsList.forEach(attr => {
             const attrName = attr.name;
+
             if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(
                         ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
-                        element.__original
+                        node
                     );
                 }
+            }
+
+            if (
+                node.namespaceURI === HTML_NAMESPACE_URI &&
+                tag === 'iframe' &&
+                attrName === 'srcdoc'
+            ) {
+                warnOnElement(
+                    ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE,
+                    node
+                );
             }
         });
     }

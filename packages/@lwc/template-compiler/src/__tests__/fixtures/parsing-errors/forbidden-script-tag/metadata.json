@@ -10,6 +10,28 @@
                 "start": 15,
                 "length": 31
             }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 9,
+                "start": 65,
+                "length": 31
+            }
+        },
+        {
+            "code": 1001,
+            "message": "LWC1001: Forbidden MathML namespace tag found in template: '<script>' tag is not allowed within <math>",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 9,
+                "start": 127,
+                "length": 31
+            }
         }
     ],
     "metadata": {

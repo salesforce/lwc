@@ -1,0 +1,20 @@
+{
+    "warnings": [
+        {
+            "code": 1001,
+            "message": "LWC1001: srcdoc attribute is disallowed on <iframe> for security reasons",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 56
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
+}
