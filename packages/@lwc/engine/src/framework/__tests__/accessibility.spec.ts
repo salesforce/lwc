@@ -7,7 +7,7 @@ describe('accessibility', () => {
             it('should place the focus on the first focusable child', () => {
                 const html = compileTemplate(`
                     <template>
-                        <input />
+                        <input>
                     </template>
                 `);
                 class Foo extends LightningElement {
@@ -17,11 +17,13 @@ describe('accessibility', () => {
                     render() {
                         return html;
                     }
+                    renderedCallback() {
+                        this.template.querySelector('input').focus();
+                    }
                     static delegatesFocus = true;
                 }
                 const elm = createElement('x-parent', { is: Foo });
                 document.body.appendChild(elm);
-                elm.focus();
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('input'));
@@ -31,12 +33,15 @@ describe('accessibility', () => {
             it('should place the focus on the first focusable child even if it is multiple levels down', () => {
                 const childHTML = compileTemplate(`
                     <template>
-                        <input />
+                        <input>
                     </template>
                 `);
                 class Child extends LightningElement {
                     render() {
                         return childHTML;
+                    }
+                    renderedCallback() {
+                        this.template.querySelector('input').focus();
                     }
                 }
                 const parentHTML = compileTemplate(`
@@ -56,7 +61,6 @@ describe('accessibility', () => {
                 }
                 const elm = createElement('x-parent', { is: Parent });
                 document.body.appendChild(elm);
-                elm.focus();
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child'));
@@ -67,8 +71,8 @@ describe('accessibility', () => {
             it('should do nothing if it already have a activeElement selected', () => {
                 const html = compileTemplate(`
                     <template>
-                        <input class="uno" />
-                        <input class="dos" />
+                        <input class="uno">
+                        <input class="dos">
                     </template>
                 `);
                 class Foo extends LightningElement {
@@ -98,7 +102,7 @@ describe('accessibility', () => {
             it('should blur the activeElement child', () => {
                 const html = compileTemplate(`
                     <template>
-                        <input />
+                        <input>
                     </template>
                 `);
                 class Foo extends LightningElement {
@@ -127,7 +131,7 @@ describe('accessibility', () => {
             it('should do nothing when tabindex is -1 and the focus is set programmatically', () => {
                 const html = compileTemplate(`
                     <template>
-                        <input />
+                        <input>
                     </template>
                 `);
                 class Foo extends LightningElement {
@@ -165,6 +169,7 @@ describe('accessibility', () => {
                     static delegatesFocus = true;
                 }
                 const elm = createElement('x-parent', { is: Foo });
+                elm.tabIndex = 0;
                 document.body.appendChild(elm);
                 elm.focus();
                 return Promise.resolve().then(() => {
@@ -197,7 +202,7 @@ describe('accessibility', () => {
             it('should not delegate the focus to the first focusable child', () => {
                 const html = compileTemplate(`
                     <template>
-                        <input />
+                        <input>
                     </template>
                 `);
                 class Foo extends LightningElement {
