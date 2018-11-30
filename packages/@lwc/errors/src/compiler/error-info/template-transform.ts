@@ -173,9 +173,23 @@ export const ParserDiagnostics = {
         url: ""
     },
 
+    FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE: {
+        code: 1001,
+        message: "srcdoc attribute is disallowed on <iframe> for security reasons",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
     FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE: {
         code: 1001,
         message: "Forbidden svg namespace tag found in template: '<{0}>' tag is not allowed within <svg>",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE: {
+        code: 1001,
+        message: "Forbidden MathML namespace tag found in template: '<{0}>' tag is not allowed within <math>",
         level: DiagnosticLevel.Error,
         url: ""
     },
