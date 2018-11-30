@@ -11,8 +11,12 @@ describe('Event target in slot elements', () => {
         browser.execute(function () {
             document.querySelector('integration-child').click();
         });
-        return Promise.resolve().then(() => {
-            assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');
-        });
+        return Promise.resolve()
+            .then(() => {
+                return browser.getText('.correct-event-target');
+            })
+            .then(text => {
+                assert.strictEqual(text, 'Event target is correct');
+            });
     });
 });

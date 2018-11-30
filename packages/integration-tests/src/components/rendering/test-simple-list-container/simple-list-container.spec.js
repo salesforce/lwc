@@ -15,12 +15,10 @@ describe('Testing component: simple-list-container', () => {
     });
 
     it('header item', () => {
-        const title = browser.getTitle();
         assert.strictEqual(browser.element('li.first').getText(), 'header');
     });
 
     it('footer item', () => {
-        const title = browser.getTitle();
         assert.strictEqual(browser.element('li.last').getText(), 'footer');
     });
 
@@ -29,7 +27,8 @@ describe('Testing component: simple-list-container', () => {
         browser.setValue('.mininput', 1);
         browser.setValue('.maxinput', 10);
         return Promise.resolve().then(() => {
-            const list = browser.elements('simple-list-container li.number');
+            return browser.elements('integration-simple-list-container .number');
+        }).then(list => {
             assert.ok(list.value.length <= 10 && list.value.length >= 1);
         });
     });
