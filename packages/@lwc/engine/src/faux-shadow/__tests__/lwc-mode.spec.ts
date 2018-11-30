@@ -149,41 +149,6 @@ describe('lwc:dom', () => {
         });
     });
 
-    it('lwc:dom="manual" inserted elements should get correct shadow stylesheet key', () => {
-        const p = document.createElement('p');
-        const header = document.createElement('header');
-        header.appendChild(p);
-        const html = compileTemplate(`
-            <template>
-                <div class="manual" lwc:dom="manual"></div>
-            </template>
-        `);
-
-        html.stylesheets = [function noop() {/* empty */}];
-        html.stylesheetTokens = {
-            hostAttribute: "hostattribute",
-            shadowAttribute: "shadowattribute"
-        };
-
-        class Cmp extends LightningElement {
-            renderedCallback() {
-                this.template.querySelector('.manual').appendChild(header);
-            }
-            render() {
-                return html;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: Cmp });
-        document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            // template driven
-            expect(elm.shadowRoot.querySelector('div').hasAttribute('shadowattribute')).toBe(true);
-            // manual driven
-            expect(elm.shadowRoot.querySelector('p').hasAttribute('shadowattribute')).toBe(true);
-        });
-    });
-
     it('missing lwc:dom="manual" should warn when appending', () => {
         expect.assertions(1);
         const p = document.createElement('p');
