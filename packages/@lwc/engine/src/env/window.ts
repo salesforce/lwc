@@ -26,7 +26,23 @@ if (typeof MO === 'undefined') {
 const MutationObserver = MO;
 const MutationObserverObserve = MutationObserver.prototype.observe;
 
+let {
+    addEventListener: windowAddEventListener,
+    removeEventListener: windowRemoveEventListener,
+} = window;
+
+/**
+ * This trick to try to pick up the __lwcOriginal__ out of the intrinsic is to please
+ * jsdom, who usually reuse intrinsic between different document.
+ */
+// @ts-ignore jsdom
+windowAddEventListener = windowAddEventListener.__lwcOriginal__ || windowAddEventListener;
+// @ts-ignore jsdom
+windowRemoveEventListener = windowRemoveEventListener.__lwcOriginal__ || windowRemoveEventListener;
+
 export {
     MutationObserver,
     MutationObserverObserve,
+    windowAddEventListener,
+    windowRemoveEventListener,
 };

@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { VNodes } from "../3rdparty/snabbdom/types";
-import { patchEvent } from "../faux-shadow/faux";
 import { tagNameGetter } from "../env/element";
 import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, create, isUndefined, isTrue } from "../shared/language";
@@ -99,7 +98,3 @@ export function patchCustomElementProto(elm: HTMLElement, options: { def: Compon
     setPrototypeOf(elm, patchedBridge.prototype);
     setCSSToken(elm, shadowAttribute);
 }
-
-export {
-    patchEvent,
-};
