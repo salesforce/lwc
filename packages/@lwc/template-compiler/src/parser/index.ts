@@ -776,7 +776,7 @@ export default function parse(source: string, state: State): {
 
             if (
                 node.namespaceURI === HTML_NAMESPACE_URI &&
-                tag === 'iframe',
+                tag === 'iframe' &&
                 attrName === 'srcdoc'
             ) {
                 warnOnElement(
