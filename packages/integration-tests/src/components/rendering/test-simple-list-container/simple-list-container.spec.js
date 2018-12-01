@@ -22,14 +22,13 @@ describe('Testing component: simple-list-container', () => {
         assert.strictEqual(browser.element('li.last').getText(), 'footer');
     });
 
-
     it('should render number of items between min and max', function () {
         browser.setValue('.mininput', 1);
         browser.setValue('.maxinput', 10);
-        return Promise.resolve().then(() => {
-            return browser.elements('integration-simple-list-container .number');
-        }).then(list => {
-            assert.ok(list.value.length <= 10 && list.value.length >= 1);
+        const list = browser.elements('integration-simple-list-container .number');
+        browser.waitUntil(() => {
+            return list.value.length === 9;
         });
+        assert.strictEqual(list.value.length, 9);
     });
 });

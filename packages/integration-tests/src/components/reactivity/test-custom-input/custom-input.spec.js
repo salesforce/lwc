@@ -13,19 +13,17 @@ describe('Testing component: custom-input', () => {
     });
 
     it('clicking force button should update value', function () {
-        return Promise.resolve()
-            .then(() => {
-                browser.element('button').click();
-                return browser.getText('h2');
-            })
-            .then(text => {
-                assert.strictEqual(text, '100');
-            })
-            .then(() => {
-                return browser.element('input[type="range"]').getValue();
-            })
-            .then(value => {
-                assert.strictEqual(value, '100');
-            });
+        const button = browser.element('button');
+        const input = browser.element('input[type="range"]');
+
+        button.click();
+        browser.waitUntil(() => {
+            return (
+                browser.getText('h2') === '100' &&
+                input.getValue() === '100'
+            );
+        });
+        assert.strictEqual(browser.getText('h2'), '100');
+        assert.strictEqual(input.getValue(), '100');
     });
 });
