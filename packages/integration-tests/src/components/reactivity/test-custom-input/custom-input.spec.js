@@ -5,26 +5,27 @@ describe('Testing component: custom-input', () => {
 
     before(() => {
         browser.url(URL);
-        element = browser.element('custom-input');
     });
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'custom-input');
-        assert.ok(element);
+        assert.strictEqual(title, 'custom-input');
     });
 
     it('clicking force button should update value', function () {
-        const button = browser.element('button');
-        const input = browser.element('input[type="range"]');
-        button.click();
-        const h2 = browser.element('h2');
-        assert.deepEqual(h2.getText(), '100');
-        assert.deepEqual(input.getValue(), '100');
-        browser.execute(function() {
-            var range = document.querySelector('input[type="range"]');
-            range.value = 10;
-        });
-        assert.deepEqual(input.getValue(), '10');
+        return Promise.resolve()
+            .then(() => {
+                browser.element('button').click();
+                return browser.getText('h2');
+            })
+            .then(text => {
+                assert.strictEqual(text, '100');
+            })
+            .then(() => {
+                return browser.element('input[type="range"]').getValue();
+            })
+            .then(value => {
+                assert.strictEqual(value, '100');
+            });
     });
 });
