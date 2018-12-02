@@ -75,7 +75,7 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     }
     const hostKey = getNodeKey(host);
     // just in case the provided node is not an element
-    let currentElement: Element = node instanceof HTMLElement ? node : parentElementGetter.call(node);
+    let currentElement: Element = node instanceof Element ? node : parentElementGetter.call(node);
     while (!isNull(currentElement) && currentElement !== host) {
         const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
         const parent: Element = parentElementGetter.call(currentElement);

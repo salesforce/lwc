@@ -70,7 +70,7 @@ function initPortalObserver() {
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
                 setNodeOwnerKey(node, ownerKey);
-                if (node instanceof HTMLElement) {
+                if (node instanceof Element) {
                     setCSSToken(node, shadowToken);
                 }
             }
