@@ -11,8 +11,8 @@ describe('Event target in slot elements', () => {
         browser.execute(function () {
             document.querySelector('integration-child').click();
         });
-        return Promise.resolve(() => {
-            assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');
-        });
+        const elm = browser.element('.correct-event-target');
+        elm.waitForExist();
+        assert.strictEqual(elm.getText(), 'Event target is correct');
     });
 });

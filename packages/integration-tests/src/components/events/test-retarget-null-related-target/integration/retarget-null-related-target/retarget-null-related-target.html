@@ -1,4 +1,6 @@
 <template>
-    <span if:true={relatedTargetIsNull} class="related-target-tabname">Related target is null</span>
-    <input type="text" class="focus-input" onfocus={handleFocusIn} />
+    <template if:true={relatedTargetIsNull}>
+        <span class="related-target-tabname">Related target is null</span>
+    </template>
+    <input class="focus-input" onfocus={handleFocus}>
 </template>
