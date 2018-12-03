@@ -25,10 +25,7 @@ describe('Testing component: simple-list-container', () => {
     it('should render number of items between min and max', function () {
         browser.setValue('.mininput', 1);
         browser.setValue('.maxinput', 10);
-        const list = browser.elements('integration-simple-list-container .number');
-        browser.waitUntil(() => {
-            return list.value.length === 9;
-        });
-        assert.strictEqual(list.value.length, 9);
+        browser.waitForExist('li.number[data-number="1"]');
+        assert.strictEqual(browser.elements('li.number').value.length, 9);
     });
 });

@@ -3,7 +3,7 @@
         <ul>
             <li class="first">header</li>
             <template for:index="index" for:each={data} for:item="item">
-                <li key={item} class="number" >
+                <li key={item} class="number" data-number={item}>
                     Value of X = {item}
                 </li>
             </template>
