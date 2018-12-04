@@ -67,12 +67,12 @@ function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | 
         return;
     }
     setNodeOwnerKey(node, ownerKey);
-    if (node instanceof HTMLElement) {
+    if (node instanceof Element) {
         setCSSToken(node, shadowToken);
         const { childNodes } = node;
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            const node: Node = childNodes[i];
-            patchPortalElement(node, ownerKey, shadowToken)
+            const child = childNodes[i];
+            patchPortalElement(child, ownerKey, shadowToken);
         }
     }
 }
@@ -88,7 +88,7 @@ function initPortalObserver() {
             }
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
-                patchPortalElement(node, ownerKey, shadowToken)
+                patchPortalElement(node, ownerKey, shadowToken);
             }
         });
     });
