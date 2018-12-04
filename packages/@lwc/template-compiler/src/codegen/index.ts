@@ -1,6 +1,7 @@
 import generate from '@babel/generator';
 import * as t from '@babel/types';
 import template from "@babel/template";
+import * as parse5 from 'parse5-with-errors';
 
 import State from '../state';
 import { ResolvedConfig } from '../config';
@@ -47,6 +48,7 @@ import CodeGen from './codegen';
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import { isIdReferencingAttribute, isXLinkAttribute } from '../parser/attribute';
+import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
@@ -369,6 +371,8 @@ function transform(
 
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
 
+        const { namespaceURI, tagName } = (element.__original as parse5.AST.Default.Element);
+
         switch (attr.type) {
             case IRAttributeType.Expression:
                 let { expression } = bindExpression(attr.value, element);
@@ -377,6 +381,12 @@ function transform(
                 }
                 if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
                     expression = codeGen.genScopedId(expression);
+                }
+                if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
+                    return t.callExpression(
+                        t.identifier('sanitizeAttribute'),
+                        [t.stringLiteral(tagName), t.stringLiteral(namespaceURI), t.stringLiteral(attr.name), expression]
+                    );
                 }
                 return expression;
 
@@ -387,10 +397,12 @@ function transform(
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }
-                if (isXLinkAttribute(attr.name)) {
-                    // TODO: handle expressions as well
-                    // TODO: ensure this is svg
-                    return t.callExpression(t.identifier('sanitizeXLink'), [t.stringLiteral(attr.value)]);
+
+                if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
+                    return t.callExpression(
+                        t.identifier('sanitizeAttribute'),
+                        [t.stringLiteral(tagName), t.stringLiteral(namespaceURI), t.stringLiteral(attr.name), t.stringLiteral(attr.value)]
+                    );
                 }
                 return t.stringLiteral(attr.value);
 

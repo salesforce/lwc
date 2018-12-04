@@ -688,9 +688,9 @@ export default function parse(source: string, state: State): {
                 const node = element.__original as parse5.AST.Default.Element;
 
                 // record secure import dependency if xlink attr is detected
-                if (node.namespaceURI === SVG_NAMESPACE_URI && name === 'xlink:href') {
-                    if (!state.secureDependencies.includes('sanitizeXLink')) {
-                        state.secureDependencies.push('sanitizeXLink');
+                if (name === 'xlink:href' && node.namespaceURI === SVG_NAMESPACE_URI) {
+                    if (!state.secureDependencies.includes('sanitizeAttribute')) {
+                        state.secureDependencies.push('sanitizeAttribute');
                     }
                 }
                 attrs[attrKey] = attr;

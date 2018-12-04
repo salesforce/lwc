@@ -7,11 +7,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         classMap: {
-          "slds-button__icon": true
+            "slds-icon": true
         },
         attrs: {
-          viewBox: "0 0 5 5",
-          "aria-hidden": "true"
+            "aria-hidden": "true",
+            title: "when needed"
         },
         key: 2
       },
@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             attrs: {
-              "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", "/x")
+                "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", $cmp.getXLink)
             },
             key: 3
           },

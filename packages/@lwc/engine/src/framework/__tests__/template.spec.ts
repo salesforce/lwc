@@ -14,6 +14,24 @@ function createCustomComponent(html) {
 }
 
 describe('template', () => {
+    describe('svg', () => {
+        it('xlink:href value is returned as authored (not wrapped in sanitizeAttribute function)', () => {
+            const html = compileTemplate(
+                `<template><svg><use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#case"></use></svg></template>`
+            );
+            class Foo extends LightningElement {
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            const useElm = elm.shadowRoot.querySelectorAll('use')[0];
+            expect(useElm.getAttribute('xlink:href')).toBe("/assets/icons/standard-sprite/svg/symbols.svg#case");
+        });
+    });
+
     describe('integration', () => {
         it('should render arrays correctly', function() {
             const html = compileTemplate(`
