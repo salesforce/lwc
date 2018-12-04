@@ -13,8 +13,6 @@ export interface LWCErrorInfo {
     code: number;
     message: string;
     level: DiagnosticLevel;
-    type?: string;
-    arguments?: any[];
     url?: string;
 }
 

@@ -8,13 +8,6 @@ export const TemplateErrors = {
         url: ""
     },
 
-    MISSING_REQUIRED_PROPERTY: {
-        code: 1001,
-        message: "Missing required option property {0}",
-        level: DiagnosticLevel.Error,
-        url: ""
-    },
-
     OPTIONS_MUST_BE_OBJECT: {
         code: 1001,
         message: 'Compiler options must be an object',
@@ -40,7 +33,6 @@ export const TemplateErrors = {
 export const ParserDiagnostics = {
     EMPTY_STYLE_TAG: {
         code: 1001,
-
         message: "A style tag must not be empty",
         level: DiagnosticLevel.Error,
         url: ""
@@ -48,25 +40,21 @@ export const ParserDiagnostics = {
 
     INVALID_STYLE_TAG_POSITION: {
         code: 1001,
-
         message: "Incorrectly positioned <style> element. The <style> element must be the first element in your template.",
         level: DiagnosticLevel.Error,
         url: ""
     },
     INVALID_STYLE_TAG_FUNCTION_FORMAT: {
         code: 1001,
-
         message: "compileToFunction doesn't support style tag",
         level: DiagnosticLevel.Error,
         url: ""
     },
     AMBIGUOUS_ATTRIBUTE_VALUE: {
         code: 1001,
-
         message: "Ambiguous attribute value {0}. " +
         "If you want to make it a valid identifier you should remove the surrounding quotes {1}. " +
         "If you want to make it a string you should escape it {2}.",
-
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -80,7 +68,6 @@ export const ParserDiagnostics = {
 
     BOOLEAN_ATTRIBUTE_FALSE: {
         code: 1001,
-
         message:
             "To not set a boolean attribute, try <{0}> instead of <{0} {1}=\"{2}\">. " +
             "To represent a false value, the attribute has to be omitted altogether.",
@@ -91,7 +78,6 @@ export const ParserDiagnostics = {
 
     BOOLEAN_ATTRIBUTE_TRUE: {
         code: 1001,
-
         message:
             "To set a boolean attributes, try <{0} {1}> instead of <{0} {1}=\"{2}\">. " +
             "If the attribute is present, its value must either be the empty string " +
@@ -235,12 +221,6 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    INVALID_EXPRESSION: {
-        code: 1001,
-        message: "Invalid expression {0} - {1}",
-        level: DiagnosticLevel.Error,
-        url: ""
-    },
     INVALID_HTML_ATTRIBUTE: {
         code: 1001,
         message: "{0} is not valid attribute for {1}. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{1}",
@@ -256,7 +236,6 @@ export const ParserDiagnostics = {
         url: ""
     },
 
-    // TODO: consolidate with other invalid identifier error
     INVALID_IDENTIFIER: {
         code: 1001,
         message: "{0} is not a valid identifier",

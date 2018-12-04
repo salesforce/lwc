@@ -10,7 +10,6 @@ export const CompilerValidationErrors = {
     INVALID_ALLOWDEFINITION_PROPERTY: {
         code: 1001,
         message: "Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -18,7 +17,6 @@ export const CompilerValidationErrors = {
     INVALID_COMPAT_PROPERTY: {
         code: 1001,
         message: "Expected a boolean for outputConfig.compat, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -26,7 +24,6 @@ export const CompilerValidationErrors = {
     INVALID_ENV_ENTRY_VALUE: {
         code: 1001,
         message: "Expected a string for outputConfig.env[\"{0}\"], received \"{1}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -34,7 +31,6 @@ export const CompilerValidationErrors = {
     INVALID_ENV_PROPERTY: {
         code: 1001,
         message: "Expected an object for outputConfig.env, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -42,7 +38,6 @@ export const CompilerValidationErrors = {
     INVALID_FILES_PROPERTY: {
         code: 1001,
         message: "Expected an object with files to be compiled.",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -50,7 +45,6 @@ export const CompilerValidationErrors = {
     INVALID_MINIFY_PROPERTY: {
         code: 1001,
         message: "Expected a boolean for outputConfig.minify, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -58,7 +52,6 @@ export const CompilerValidationErrors = {
     INVALID_NAME_PROPERTY: {
         code: 1001,
         message: "Expected a string for name, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -66,7 +59,6 @@ export const CompilerValidationErrors = {
     INVALID_NAMESPACE_PROPERTY: {
         code: 1001,
         message: "Expected a string for namespace, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -74,7 +66,6 @@ export const CompilerValidationErrors = {
     INVALID_RESOLUTION_PROPERTY: {
         code: 1001,
         message: "Expected an object for stylesheetConfig.customProperties.resolution, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -82,7 +73,6 @@ export const CompilerValidationErrors = {
     INVALID_SOURCEMAP_PROPERTY: {
         code: 1001,
         message: "Expected a boolean value for outputConfig.sourcemap, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -90,7 +80,6 @@ export const CompilerValidationErrors = {
     INVALID_TYPE_PROPERTY: {
         code: 1001,
         message: "Expected either \"native\" or \"module\" for stylesheetConfig.customProperties.resolution.type, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -98,7 +87,6 @@ export const CompilerValidationErrors = {
     MISSING_OPTIONS_OBJECT: {
         code: 1001,
         message: "Expected options object, received \"{0}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -106,7 +94,6 @@ export const CompilerValidationErrors = {
     UNEXPECTED_FILE_CONTENT: {
         code: 1001,
         message: "Unexpected file content for \"{0}\". Expected a string, received \"{1}\".",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -114,7 +101,6 @@ export const CompilerValidationErrors = {
     UNKNOWN_ENV_ENTRY_KEY: {
         code: 1001,
         message: "Unknown entry \"{0}\" in outputConfig.env.",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -195,7 +181,6 @@ export const TransformerErrors = {
     NO_AVAILABLE_TRANSFORMER: {
         code: 1001,
         message: "No available transformer for \"{0}\"",
-        type: "TypeError",
         level: DiagnosticLevel.Error,
         url: ""
     }

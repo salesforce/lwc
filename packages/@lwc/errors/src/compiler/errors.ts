@@ -9,17 +9,13 @@ import {
     getLocation
 } from "./utils";
 
-export * from "./error-info/lwc-class";
-export * from "./error-info/compiler";
-export * from "./error-info/jest-transformer";
-export * from "./error-info/style-transform";
-export * from "./error-info/template-transform";
-
 export {
     CompilerDiagnosticOrigin,
     CompilerDiagnostic,
     CompilerError
 } from "./utils";
+
+export * from "./error-info";
 
 // TODO: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
