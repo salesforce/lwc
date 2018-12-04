@@ -1,4 +1,4 @@
-import { registerTemplate } from "lwc";
+import { registerTemplate, sanitizeXLink } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
@@ -20,7 +20,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             attrs: {
-              "xlink:href": "/x"
+              "xlink:href": sanitizeXLink("/x")
             },
             key: 3
           },

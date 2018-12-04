@@ -23,9 +23,14 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
     );
 }
 
-function generateSecureImport(): t.ImportDeclaration {
+function generateSecureImports(additionalImports: string[]): t.ImportDeclaration {
+
+    const imports = additionalImports.map((additionalImport) => {
+        return t.importSpecifier(t.identifier(additionalImport), t.identifier(additionalImport));
+    });
+
     return t.importDeclaration(
-        [t.importSpecifier(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME))],
+        [t.importSpecifier(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME)), ...imports],
         t.stringLiteral(LWC_MODULE_NAME)
     );
 }
@@ -45,7 +50,7 @@ export function format(
 
     const metadata = generateTemplateMetadata(state);
 
-    imports.push(generateSecureImport());
+    imports.push(generateSecureImports(state.secureDependencies));
     imports.push(...generateInlineStylesImports(state));
 
     const templateBody = [

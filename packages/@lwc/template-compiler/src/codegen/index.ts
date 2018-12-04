@@ -46,7 +46,7 @@ import CodeGen from './codegen';
 
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
-import { isIdReferencingAttribute } from '../parser/attribute';
+import { isIdReferencingAttribute, isXLinkAttribute } from '../parser/attribute';
 
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
@@ -368,6 +368,7 @@ function transform(
     }
 
     function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
+
         switch (attr.type) {
             case IRAttributeType.Expression:
                 let { expression } = bindExpression(attr.value, element);
@@ -385,6 +386,11 @@ function transform(
                 }
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
+                }
+                if (isXLinkAttribute(attr.name)) {
+                    // TODO: handle expressions as well
+                    // TODO: ensure this is svg
+                    return t.callExpression(t.identifier('sanitizeXLink'), [t.stringLiteral(attr.value)]);
                 }
                 return t.stringLiteral(attr.value);
 

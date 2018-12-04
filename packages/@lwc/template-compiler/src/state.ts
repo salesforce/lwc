@@ -17,6 +17,7 @@ export default class State {
     slots: string[] = [];
     extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
+    secureDependencies: string[] = []; // imports patched by locker service at runtime
 
     inlineStyle: {
         body: Statement[],

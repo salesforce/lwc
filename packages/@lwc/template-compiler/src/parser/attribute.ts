@@ -21,6 +21,7 @@ import {
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
+    XLINK_HREF,
 } from './constants';
 
 import {
@@ -58,6 +59,10 @@ const booleanAttributes = new Set<string>([
 
 export function isIdReferencingAttribute(attrName: string): boolean {
     return ID_REFERENCING_ATTRIBUTES_SET.has(attrName);
+}
+
+export function isXLinkAttribute(attrName: string): boolean {
+    return attrName === XLINK_HREF;
 }
 
 export function normalizeAttributeValue(
