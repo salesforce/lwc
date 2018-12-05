@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.9...v) (2018-11-29)
+# [](https://github.com/salesforce/lwc/compare/v0.33.10...v) (2018-12-05)
+
+
+### Bug Fixes
+
+* **engine:** bunch of broken tests ([#853](https://github.com/salesforce/lwc/issues/853)) ([94e6d2f](https://github.com/salesforce/lwc/commit/94e6d2f))
+* hide component to vm mapping from user ([#860](https://github.com/salesforce/lwc/issues/860)) ([5010713](https://github.com/salesforce/lwc/commit/5010713))
+* restrict script in MathML and remove srcdoc on iframe ([#867](https://github.com/salesforce/lwc/issues/867)) ([11d906f](https://github.com/salesforce/lwc/commit/11d906f))
+* **engine:** deep manual dom elements fix  ([#874](https://github.com/salesforce/lwc/issues/874)) ([041eb1e](https://github.com/salesforce/lwc/commit/041eb1e))
+
+
+
+<a name="0.33.10"></a>
+## [0.33.10](https://github.com/salesforce/lwc/compare/v0.33.9...v0.33.10) (2018-11-29)
 
 
 ### Bug Fixes
