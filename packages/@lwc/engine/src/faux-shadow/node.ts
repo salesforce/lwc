@@ -58,6 +58,25 @@ const portalObserverConfig: MutationObserverInit = {
     subtree: true,
 };
 
+function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | undefined) {
+    // If node aleady has an ownerkey, we can skip
+    // Note: checking if a node as any ownerKey is not enough
+    // because this element could be moved from one
+    // shadow to another
+    if (getNodeOwnerKey(node) === ownerKey) {
+        return;
+    }
+    setNodeOwnerKey(node, ownerKey);
+    if (node instanceof Element) {
+        setCSSToken(node, shadowToken);
+        const { childNodes } = node;
+        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+            const child = childNodes[i];
+            patchPortalElement(child, ownerKey, shadowToken);
+        }
+    }
+}
+
 function initPortalObserver() {
     return new MutationObserver(mutations => {
         forEach.call(mutations, mutation => {
@@ -69,10 +88,7 @@ function initPortalObserver() {
             }
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
-                setNodeOwnerKey(node, ownerKey);
-                if (node instanceof HTMLElement) {
-                    setCSSToken(node, shadowToken);
-                }
+                patchPortalElement(node, ownerKey, shadowToken);
             }
         });
     });

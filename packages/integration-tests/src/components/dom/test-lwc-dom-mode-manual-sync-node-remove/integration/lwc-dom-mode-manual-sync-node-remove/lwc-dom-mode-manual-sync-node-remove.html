@@ -1,0 +1,9 @@
+<template>
+    <button onclick={handleClick}>Click Me</button>
+    <span class="error">{errorMessage}</span>
+    <div lwc:dom="manual" class="dom"></div>
+    <hr></hr>
+    <button class="insert-custom-element" onclick={handleManualLightningElementClick}>Click for custom element</button>
+    <span class="custome-element-error">{customElementError}</span>
+    <div lwc:dom="manual" class="custom-element-dom"></div>
+</template>
