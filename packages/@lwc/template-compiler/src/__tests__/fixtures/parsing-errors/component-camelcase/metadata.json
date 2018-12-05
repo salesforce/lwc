@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
+            "code": 1055,
+            "message": "LWC1055: myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
             "level": 1,
             "location": {
                 "line": 2,

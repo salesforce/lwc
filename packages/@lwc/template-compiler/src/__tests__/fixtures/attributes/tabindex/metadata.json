@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 2,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 3,
@@ -23,8 +23,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 4,
@@ -34,8 +34,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 5,
@@ -45,8 +45,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 10,
@@ -56,8 +56,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 11,
@@ -67,8 +67,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 12,
@@ -78,8 +78,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
             "level": 1,
             "location": {
                 "line": 13,

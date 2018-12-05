@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to \"manual\"",
+            "code": 1085,
+            "message": "LWC1085: Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to \"manual\"",
             "level": 1,
             "location": {
                 "line": 2,

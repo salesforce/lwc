@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
+            "code": 1071,
+            "message": "LWC1071: Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
             "level": 1,
             "location": {
                 "line": 3,

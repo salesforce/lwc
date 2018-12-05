@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 6,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<cursor>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<cursor>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 10,
@@ -23,8 +23,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<discard>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<discard>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 11,
@@ -34,8 +34,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<font-face>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<font-face>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 13,
@@ -45,8 +45,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<font-face-format>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<font-face-format>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 14,
@@ -56,8 +56,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<font-face-name>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<font-face-name>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 15,
@@ -67,8 +67,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<font-face-src>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<font-face-src>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 16,
@@ -78,8 +78,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<font-face-uri>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<font-face-uri>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 17,
@@ -89,8 +89,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<hatch>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<hatch>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 21,
@@ -100,8 +100,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<hatchpath>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<hatchpath>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 22,
@@ -111,8 +111,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<metadata>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<metadata>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 24,
@@ -122,8 +122,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<missing-glyph>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<missing-glyph>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 25,
@@ -133,8 +133,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<script>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 27,
@@ -144,8 +144,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<set>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<set>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 28,
@@ -155,8 +155,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<solidcolor>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<solidcolor>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 29,
@@ -166,8 +166,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
+            "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<style>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
                 "line": 30,

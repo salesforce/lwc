@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Invalid id value \"bar baz\". Id values must not contain any whitespace.",
+            "code": 1040,
+            "message": "LWC1040: Invalid id value \"bar baz\". Id values must not contain any whitespace.",
             "level": 1,
             "location": {
                 "line": 4,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Invalid id value \" boof\". Id values must not contain any whitespace.",
+            "code": 1040,
+            "message": "LWC1040: Invalid id value \" boof\". Id values must not contain any whitespace.",
             "level": 1,
             "location": {
                 "line": 5,
@@ -23,8 +23,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
             "level": 1,
             "location": {
                 "line": 7,
@@ -34,8 +34,8 @@
             }
         },
         {
-            "code": 1001,
-            "message": "LWC1001: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
+            "code": 1042,
+            "message": "LWC1042: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
             "level": 1,
             "location": {
                 "line": 3,

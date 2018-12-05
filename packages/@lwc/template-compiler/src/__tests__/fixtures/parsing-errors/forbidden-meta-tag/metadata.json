@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Forbidden tag found in template: '<meta>' tag is not allowed.",
+            "code": 1051,
+            "message": "LWC1051: Forbidden tag found in template: '<meta>' tag is not allowed.",
             "level": 1,
             "location": {
                 "line": 2,

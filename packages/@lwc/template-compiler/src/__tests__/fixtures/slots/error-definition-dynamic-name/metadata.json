@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Name attribute on slot tag can't be an expression.",
+            "code": 1076,
+            "message": "LWC1076: Name attribute on slot tag can't be an expression.",
             "level": 1,
             "location": {
                 "line": 2,

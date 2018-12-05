@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Missing root template tag",
+            "code": 1072,
+            "message": "LWC1072: Missing root template tag",
             "level": 1,
             "location": {
                 "line": 0,
