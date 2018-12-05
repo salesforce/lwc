@@ -2,6 +2,7 @@ import * as CompilerErrors from "../compiler/error-info";
 import { LWCErrorInfo } from "../shared/types";
 
 // TODO: Move somewhere more visible and documentable
+// TODO: Implement script to display next available error code
 const ERROR_CODE_RANGES = {
     compiler: {
         min: 1001,
