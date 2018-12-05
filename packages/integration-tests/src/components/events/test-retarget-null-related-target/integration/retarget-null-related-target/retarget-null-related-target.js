@@ -2,7 +2,7 @@ import { LightningElement, track } from 'lwc';
 
 export default class RetargetRelatedTarget extends LightningElement {
     @track relatedTargetIsNull;
-    handleFocusIn(evt) {
+    handleFocus(evt) {
         this.relatedTargetIsNull = evt.relatedTarget === null
     }
 }

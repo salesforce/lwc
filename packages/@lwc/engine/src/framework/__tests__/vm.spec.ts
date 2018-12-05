@@ -1,7 +1,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from "../utils";
-import { getErrorComponentStack, isNodeFromTemplate } from "../vm";
+import { getErrorComponentStack, isNodeFromTemplate, getComponentVM } from "../vm";
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -68,7 +68,7 @@ describe('vm', () => {
             class ChildComponent4 extends LightningElement {
                 constructor() {
                     super();
-                    vm2 = this[ViewModelReflection];
+                    vm2 = getComponentVM(this);
                 }
             }
 
@@ -82,7 +82,7 @@ describe('vm', () => {
             class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
-                    vm1 = this[ViewModelReflection];
+                    vm1 = getComponentVM(this);
                 }
                 render() {
                     return html;
@@ -102,7 +102,7 @@ describe('vm', () => {
             class ChildComponent5 extends LightningElement {
                 constructor() {
                     super();
-                    vm2 = this[ViewModelReflection];
+                    vm2 = getComponentVM(this);
                 }
                 render() {
                     counter++;
@@ -120,7 +120,7 @@ describe('vm', () => {
             class MyComponent5 extends LightningElement {
                 constructor() {
                     super();
-                    vm1 = this[ViewModelReflection];
+                    vm1 = getComponentVM(this);
                 }
                 render() {
                     return html;
@@ -150,7 +150,7 @@ describe('vm', () => {
             class ChildComponentCs extends LightningElement {
                 constructor() {
                     super();
-                    vm = this[ViewModelReflection];
+                    vm = getComponentVM(this);
                 }
             }
             const html  = compileTemplate(`
