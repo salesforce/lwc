@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.13...v) (2018-12-06)
+# [](https://github.com/salesforce/lwc/compare/v0.33.14...v) (2018-12-06)
+
+
+### Bug Fixes
+
+* **compiler:** convert placeholder error codes into real numbers ([#877](https://github.com/salesforce/lwc/issues/877)) ([ae92210](https://github.com/salesforce/lwc/commit/ae92210))
+
+
+
+<a name="0.33.14"></a>
+## [0.33.14](https://github.com/salesforce/lwc/compare/v0.33.13...v0.33.14) (2018-12-06)
 
 
 ### Features
