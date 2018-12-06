@@ -17,3 +17,9 @@ export function registerTemplate(tpl: Template): Template {
     signedTemplateSet.add(tpl);
     return tpl;
 }
+
+// locker-service patches this function during runtime to sanitize vulnerable attributes.
+// when ran off-core this function becomes a noop and returns the user authored value.
+export function sanitizeAttribute(tagName: string, namespaceUri: string, attrName: string, attrValue: any) {
+    return attrValue;
+}

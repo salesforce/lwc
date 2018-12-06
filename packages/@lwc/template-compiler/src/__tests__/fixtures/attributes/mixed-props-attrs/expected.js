@@ -3,7 +3,7 @@ import _nsBar from "ns/bar";
 import _nsBuzz from "ns/buzz";
 import _nsTable from "ns/table";
 import _nsInput from "ns/input";
-import { registerTemplate } from "lwc";
+import { registerTemplate, sanitizeAttribute } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { gid: api_scoped_id, c: api_custom_element, h: api_element } = $api;
@@ -77,7 +77,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             attrs: {
-              "xlink:href": "xx"
+              "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", "xx")
             },
             key: 6
           },

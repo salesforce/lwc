@@ -23,8 +23,11 @@ describe('Testing component: simple-list-container', () => {
     });
 
     it('should render number of items between min and max', function () {
-        browser.setValue('.mininput', 1);
-        browser.setValue('.maxinput', 10);
+        var rangeChangeButton = browser.element('button.rangechange');
+
+        // set min to 1 and max to 10
+        rangeChangeButton.click();
+
         browser.waitForExist('li.number[data-number="1"]');
         assert.strictEqual(browser.elements('li.number').value.length, 9);
     });

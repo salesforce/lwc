@@ -11,6 +11,11 @@ export default class SimpleListContainer extends LightningElement {
         this.max = Math.floor(Math.random() * (100 - this.min)) + this.min;
     }
 
+    handleRangeChange() {
+        this.min = 1;
+        this.max = 10;
+    }
+
     onMinChange(event) {
         this.min = event.target.value;
     }

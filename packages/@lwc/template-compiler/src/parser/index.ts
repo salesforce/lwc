@@ -685,6 +685,14 @@ export default function parse(source: string, state: State): {
 
                 // authored code for 'lwc-deprecated:is' attr maps to 'is'
                 const attrKey = isDeprecatedIsAttribute(name) ? 'is' : name;
+                const node = element.__original as parse5.AST.Default.Element;
+
+                // record secure import dependency if xlink attr is detected
+                if (name === 'xlink:href' && node.namespaceURI === SVG_NAMESPACE_URI) {
+                    if (!state.secureDependencies.includes('sanitizeAttribute')) {
+                        state.secureDependencies.push('sanitizeAttribute');
+                    }
+                }
                 attrs[attrKey] = attr;
             } else {
                 const props = element.props || (element.props = {});
@@ -857,7 +865,7 @@ export default function parse(source: string, state: State): {
         const location = nodeLocation.attrs[name.toLowerCase()];
         const rawAttribute = getSource(source, location);
 
-        // parse5 do automatically the convertion from camelcase to all lowercase. If the attributes names
+        // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
             warnAt(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, [rawAttribute, treeAdapter.getTagName(node)], location);

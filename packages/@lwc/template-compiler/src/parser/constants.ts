@@ -705,6 +705,7 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   ],
 };
 
+export const XLINK_HREF = 'xlink:href';
 export const HTML_NAMESPACE_URI = 'http://www.w3.org/1999/xhtml';
 export const SVG_NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 export const MATHML_NAMESPACE_URI = 'http://www.w3.org/1998/Math/MathML';
