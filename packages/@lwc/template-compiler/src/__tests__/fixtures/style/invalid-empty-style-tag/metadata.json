@@ -1,14 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: A style tag must not be empty",
+            "code": 1031,
+            "message": "LWC1031: A style tag must not be empty",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
-                "length": 15,
-                "start": 15
+                "start": 15,
+                "length": 15
             }
         }
     ],

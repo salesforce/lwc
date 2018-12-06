@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "Invalid expression { Math.random() } - LWC1001: Template expression doesn't allow CallExpression",
+            "code": 1060,
+            "message": "Invalid expression { Math.random() } - LWC1060: Template expression doesn't allow CallExpression",
             "level": 1,
             "location": {
                 "line": 2,

@@ -1,14 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: An error ocurred parsing inline CSS. Invalid usage of unsupported selector \":root\".",
+            "code": 1026,
+            "message": "LWC1026: An error occurred parsing inline CSS. Invalid usage of unsupported selector \":root\".",
             "level": 1,
             "location": {
                 "line": 2,
                 "column": 5,
-                "length": 72,
-                "start": 15
+                "start": 15,
+                "length": 72
             }
         }
     ],

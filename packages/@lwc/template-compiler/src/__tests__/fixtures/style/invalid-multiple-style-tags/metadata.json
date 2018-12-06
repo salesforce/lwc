@@ -1,14 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: Incorrectly positioned <style> element. The <style> element must be the first element in your template.",
+            "code": 1032,
+            "message": "LWC1032: Incorrectly positioned <style> element. The <style> element must be the first element in your template.",
             "level": 1,
             "location": {
                 "line": 5,
                 "column": 5,
-                "length": 49,
-                "start": 68
+                "start": 68,
+                "length": 49
             }
         }
     ],

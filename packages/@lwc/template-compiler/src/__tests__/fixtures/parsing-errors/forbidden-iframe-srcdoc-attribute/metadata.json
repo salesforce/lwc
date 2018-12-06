@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1001,
-            "message": "LWC1001: srcdoc attribute is disallowed on <iframe> for security reasons",
+            "code": 1048,
+            "message": "LWC1048: srcdoc attribute is disallowed on <iframe> for security reasons",
             "level": 1,
             "location": {
                 "line": 2,

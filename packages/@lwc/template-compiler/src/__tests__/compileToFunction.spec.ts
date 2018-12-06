@@ -30,7 +30,7 @@ it('should throw on invalid template', () => {
             <template>2</template>
         `);
     }).toThrowError(
-        'LWC1001: Multiple roots found'
+        'LWC1075: Multiple roots found'
     );
 });
 
@@ -44,7 +44,7 @@ it('should throw if template contains a style tag', () => {
             </template>
         `);
     }).toThrowError(
-        `LWC1001: compileToFunction doesn't support style tag`
+        `LWC1033: compileToFunction doesn't support style tag`
     );
 });
 
