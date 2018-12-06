@@ -1,6 +1,6 @@
 {
   "name": "@lwc/jest-transformer",
-  "version": "0.33.13",
+  "version": "0.33.14",
   "description": "Jest transformer for LWC and engine",
   "license": "MIT",
   "main": "src/index.js",
@@ -23,10 +23,10 @@
     "@lwc/errors": "0.33.x"
   },
   "devDependencies": {
-    "@lwc/compiler": "0.33.13",
-    "@lwc/engine": "0.33.13",
-    "@lwc/jest-resolver": "0.33.13",
-    "@lwc/jest-serializer": "0.33.13"
+    "@lwc/compiler": "0.33.14",
+    "@lwc/engine": "0.33.14",
+    "@lwc/jest-resolver": "0.33.14",
+    "@lwc/jest-serializer": "0.33.14"
   },
   "engines": {
     "node": ">=8"

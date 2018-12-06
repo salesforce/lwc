@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.12...v) (2018-12-06)
+# [](https://github.com/salesforce/lwc/compare/v0.33.13...v) (2018-12-06)
+
+
+### Features
+
+* secure wrap xlink ([#875](https://github.com/salesforce/lwc/issues/875)) ([fcfbe3f](https://github.com/salesforce/lwc/commit/fcfbe3f))
+
+
+
+<a name="0.33.13"></a>
+## [0.33.13](https://github.com/salesforce/lwc/compare/v0.33.12...v0.33.13) (2018-12-06)
 
 
 
