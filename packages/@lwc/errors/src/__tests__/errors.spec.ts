@@ -2,7 +2,7 @@ import * as CompilerErrors from "../compiler/error-info";
 import { LWCErrorInfo } from "../shared/types";
 
 // TODO: Move somewhere more visible and documentable
-// TODO: Implement script to display next available error code
+// TODO: W-5678919 - Implement script to display next available error code
 const ERROR_CODE_RANGES = {
     compiler: {
         min: 1001,
@@ -18,14 +18,14 @@ interface ExtendedMatcher extends jest.Matchers<void> {
 expect.extend({
     toBeInRange(code, min, max, key) {
         const pass = Number.isInteger(code) && code >= min && code <= max;
-        const message = () => `expected ${key}'s error code '${code}' ${pass ? 'not ' : ''}to be in the range ${min}-${max}`;
+        const message = () => `expected ${key}'s error code '${code}'${pass ? ' not ' : ' '}to be in the range ${min}-${max}`;
 
         return { message, pass };
     },
 
     toBeUniqueCode(code, key, seenErrorCodes: Set<number>) {
         const pass = !seenErrorCodes.has(code);
-        const message = () => `expected ${key}'s error code '${code}' to ${pass ? 'not ' : ''}be a unique error code`;
+        const message = () => `expected ${key}'s error code '${code}' to${pass ? ' not ' : ' '}be a unique error code`;
 
         return { message, pass };
     }

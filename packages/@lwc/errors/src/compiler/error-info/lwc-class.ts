@@ -1,5 +1,10 @@
 import { DiagnosticLevel } from "../../shared/types";
 
+/**
+ * TODO: W-5678919 - implement script to determine the next available error code
+ * In the meantime, reference and the update the value at src/compiler/error-info/index.ts
+ */
+
 export const LWCClassErrors = {
     INVALID_IMPORT_MISSING_DEFAULT_EXPORT: {
         code: 1089,
