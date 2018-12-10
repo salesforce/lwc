@@ -83,8 +83,21 @@ function initPortalObserver() {
             const { target: elm, addedNodes } = mutation;
             const ownerKey = getNodeOwnerKey(elm);
             const shadowToken = getCSSToken(elm);
+
+            // OwnerKey might be undefined at this point.
+            // We used to throw an error here, but we need to return early instead.
+            //
+            // This routine results in a mutation target that will have no key
+            // because its been removed by the time the observer runs
+
+            // const div = document.createElement('div');
+            // div.innerHTML = '<span>span</span>';
+            // const span = div.querySelector('span');
+            // manualElement.appendChild(div);
+            // span.textContent = '';
+            // span.parentNode.removeChild(span);
             if (isUndefined(ownerKey)) {
-                throw new ReferenceError(`Internal Error`);
+                return;
             }
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
