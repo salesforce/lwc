@@ -5,5 +5,5 @@
       "severity": "error"
     }
   },
-  "rulesDirectory": "lib/tslint/rules/"
+  "rulesDirectory": "lib/scripts/tslint/rules/"
 }

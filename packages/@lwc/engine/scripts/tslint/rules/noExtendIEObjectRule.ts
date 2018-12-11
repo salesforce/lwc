@@ -340,7 +340,7 @@ class NoExtendIEObject extends RuleWalker {
                 if (ILLEGAL_IDENTIFIER_SET.has(id)) {
                     this.addFailureAtNode(
                         node,
-                        `Directly extending the "${id}" global constructor causes an error to be thrown in IE11. To work around this issue, assign the constructor to a variable (e.g., Global${id}Constructor) before extending it.`
+                        `Directly extending the "${id}" global constructor causes an error to be thrown in IE11. Use prototypal inheritance instead. :sadtrombone:`
                     );
                 }
             }
