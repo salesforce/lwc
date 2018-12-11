@@ -93,8 +93,6 @@
     "babel-preset-minify/babel-plugin-minify-type-constructors": "0.5.0-alpha.e9f96ffe",
     "babel-preset-minify/babel-plugin-transform-inline-consecutive-adds": "0.5.0-alpha.e9f96ffe",
     "babel-helper-evaluate-path": "0.5.0-alpha.e9f96ffe",
-    "babel-helper-to-multiple-sequence-expressions": "0.5.0-alpha.e9f96ffe",
-    "@babel/generator": "7.0.0",
-    "babel-plugin-transform-remove-undefined": "0.5.0-alpha.e9f96ffe"
+    "babel-helper-to-multiple-sequence-expressions": "0.5.0-alpha.e9f96ffe"
   }
 }
