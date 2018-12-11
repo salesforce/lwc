@@ -20,7 +20,7 @@ fi
 
 # Command to push the packages
 CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
-CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${CANARY} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org --no-verify-access --no-verify-registry"
+CMD_PUBLISH_PACKAGES="lerna publish ${PACKAGE_VERSION} ${CANARY} --yes --exact --force-publish --no-git-tag-version --no-push --no-verify-access --no-verify-registry"
 
 # Publish the packages to npm. Note that lerna cleans the working tree after this as of 3.0.4, so we need to reapply version
 # https://github.com/lerna/lerna/blob/3cbeeabcb443d9415bb86c4539652b85cd7b4025/commands/publish/index.js#L354-L363
