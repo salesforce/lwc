@@ -74,7 +74,8 @@ export interface SyntheticShadowRootInterface extends ShadowRoot {
     delegatesFocus: boolean;
 }
 
-export class SyntheticShadowRoot extends DocumentFragment implements ShadowRoot {
+const GlobalDocumentFragmentConstructor = DocumentFragment;
+export class SyntheticShadowRoot extends GlobalDocumentFragmentConstructor implements ShadowRoot {
     mode: ShadowRootMode = ShadowRootMode.OPEN;
     delegatesFocus: boolean = false;
     constructor() {

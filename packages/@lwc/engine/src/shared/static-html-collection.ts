@@ -11,7 +11,8 @@ function getNodeHTMLCollectionName(node) {
     return node.getAttribute('id') || node.getAttribute('name');
 }
 
-class StaticHTMLCollection<T extends Element> extends HTMLCollection {
+const GlobalHTMLCollectionConstructor = HTMLCollection;
+class StaticHTMLCollection<T extends Element> extends GlobalHTMLCollectionConstructor {
     [key: number]: T;
 
     item(index: number): T {

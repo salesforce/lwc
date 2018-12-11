@@ -2,8 +2,8 @@ import { defineProperty, forEach, ArrayMap, create } from "./language";
 import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
-
-class StaticNodeList<T extends Node> extends NodeList {
+const GlobalNodeListConstructor = NodeList;
+class StaticNodeList<T extends Node> extends GlobalNodeListConstructor {
     [key: number]: T;
 
     item(index: number): T {
