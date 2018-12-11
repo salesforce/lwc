@@ -18,6 +18,6 @@ describe('LWC Dom remove element sync', () => {
 
         browser.waitUntil(() => {
             return errorMessageEl.getText() === 'No error';
-        }, 300, 'Should not have thrown an error');
+        });
     });
 });
