@@ -28,5 +28,8 @@
     "modules": {
       "lwc": "dist/modules/es2017/engine.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

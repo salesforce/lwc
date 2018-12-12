@@ -28,5 +28,8 @@
   "devDependencies": {
     "magic-string": "^0.22.4",
     "source-map": "^0.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

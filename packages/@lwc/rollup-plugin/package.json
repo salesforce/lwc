@@ -19,5 +19,8 @@
   "peerDependencies": {
     "@lwc/compiler": "0.33.x",
     "@lwc/engine": "0.33.x"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

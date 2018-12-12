@@ -19,5 +19,8 @@
     "@lwc/jest-serializer": "0.33.16",
     "@lwc/jest-transformer": "0.33.16",
     "@lwc/test-utils": "0.33.16"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
