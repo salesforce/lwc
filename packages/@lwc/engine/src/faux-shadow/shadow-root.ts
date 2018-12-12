@@ -332,10 +332,10 @@ const ParentNodePatchDescriptors = {
 
 assign(
     SyntheticShadowRootDescriptors,
-    ShadowRootDescriptors,
-    ParentNodePatchDescriptors,
     NodePatchDescriptors,
+    ParentNodePatchDescriptors,
     ElementPatchDescriptors,
+    ShadowRootDescriptors,
 );
 
 function SyntheticShadowRoot() {

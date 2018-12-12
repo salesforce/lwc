@@ -11,12 +11,12 @@ function getNodeHTMLCollectionName(node) {
     return node.getAttribute('id') || node.getAttribute('name');
 }
 
-// tslint:disable-next-line:no-empty
-function StaticHTMLCollection() {}
+function StaticHTMLCollection() {
+    throw new TypeError('Illegal constructor');
+}
 StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
     constructor: {
         writable: true,
-        enumerable: false,
         configurable: true,
         value: StaticHTMLCollection,
     },
@@ -93,7 +93,6 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
     },
     [Symbol.iterator]: {
         writable: true,
-        enumerable: false,
         configurable: true,
         value() {
             let nextIndex = 0;

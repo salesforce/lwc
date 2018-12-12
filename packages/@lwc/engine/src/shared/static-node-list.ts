@@ -4,11 +4,12 @@ import { createFieldName, getInternalField } from "./fields";
 const Items = createFieldName('items');
 
 // tslint:disable-next-line:no-empty
-function StaticNodeList() {}
+function StaticNodeList() {
+    throw new TypeError('Illegal constructor');
+}
 StaticNodeList.prototype = create(NodeList.prototype, {
     constructor: {
         writable: true,
-        enumerable: false,
         configurable: true,
         value: StaticNodeList,
     },
@@ -64,7 +65,6 @@ StaticNodeList.prototype = create(NodeList.prototype, {
     },
     [Symbol.iterator]: {
         writable: true,
-        enumerable: false,
         configurable: true,
         value() {
             let nextIndex = 0;
