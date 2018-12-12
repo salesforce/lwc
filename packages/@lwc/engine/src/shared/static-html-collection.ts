@@ -114,7 +114,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
 });
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
-    const collection = create(StaticHTMLCollection.prototype, {
+    const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype, {
         [Items]: {
             value: items,
         }

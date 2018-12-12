@@ -86,7 +86,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
 });
 
 export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> {
-    const nodeList = create(StaticNodeList.prototype, {
+    const nodeList: NodeListOf<T> = create(StaticNodeList.prototype, {
         [Items]: {
             value: items,
         }
