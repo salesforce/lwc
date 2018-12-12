@@ -163,11 +163,61 @@ const ShadowRootDescriptors = {
 };
 
 const NodePatchDescriptors = {
-    nodeType: {
+    baseURI: {
+        enumerable: true,
+        configurable: true,
+        get(this: SyntheticShadowRootInterface) {
+            return getHost(this).baseURI;
+        },
+    },
+    compareDocumentPosition: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
+            const host = getHost(this);
+            if (this === otherNode) {
+                // it is the root itself
+                return 0;
+            }
+            if (this.contains(otherNode as Node)) {
+                // it belongs to the shadow root instance
+                return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
+                // it is a child element but does not belong to the shadow root instance
+                return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            } else {
+                // it is not a descendant
+                return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            }
+        },
+    },
+    contains: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, otherNode: Node) {
+            const host = getHost(this);
+            // must be child of the host and owned by it.
+            return (
+                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+                isNodeOwnedBy(host, otherNode)
+            );
+        },
+    },
+    hasChildNodes: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface) {
+            return this.childNodes.length > 0;
+        },
+    },
+    nextSibling: {
         enumerable: true,
         configurable: true,
         value() {
-            return 11; // Node.DOCUMENT_FRAGMENT_NODE
+            return null;
         },
     },
     nodeName: {
@@ -177,6 +227,13 @@ const NodePatchDescriptors = {
             return '#document-fragment';
         },
     },
+    nodeType: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return 11; // Node.DOCUMENT_FRAGMENT_NODE
+        },
+    },
     nodeValue: {
         enumerable: true,
         configurable: true,
@@ -184,53 +241,20 @@ const NodePatchDescriptors = {
             return null;
         },
     },
-//    compareDocumentPosition(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
-//        const host = getHost(this);
-//        if (this === otherNode) {
-//            // it is the root itself
-//            return 0;
-//        }
-//        if (this.contains(otherNode as Node)) {
-//            // it belongs to the shadow root instance
-//            return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-//        } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
-//            // it is a child element but does not belong to the shadow root instance
-//            return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-//        } else {
-//            // it is not a descendant
-//            return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-//        }
-//    }
-//    contains(this: SyntheticShadowRootInterface, otherNode: Node) {
-//        const host = getHost(this);
-//        // must be child of the host and owned by it.
-//        return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
-//            isNodeOwnedBy(host, otherNode);
-//    }
-//    hasChildNodes(this: SyntheticShadowRootInterface, ) {
-//        return this.childNodes.length > 0;
-//    }
-//    get namespaceURI() {
-//        return null;
-//    }
-//    get nextSibling() {
-//        return null;
-//    }
-//    get previousSibling() {
-//        return null;
-//    }
-//    get ownerDocument(this: SyntheticShadowRootInterface) {
-//        return getHost(this).ownerDocument;
-//    }
-//    get localName() {
-//        return null;
-//    }
-//    get prefix() {
-//        return;
-//    }
-//    get baseURI(this: SyntheticShadowRootInterface) {
-//        return getHost(this).baseURI;
-//    }
+    ownerDocument: {
+        enumerable: true,
+        configurable: true,
+        get(this: SyntheticShadowRootInterface) {
+            return getHost(this).ownerDocument;
+        },
+    },
+    previousSibling: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return null;
+        },
+    },
 //    get isConnected(this: SyntheticShadowRootInterface) {
 //        return (compareDocumentPosition.call(document, getHost(this)) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
 //    }
@@ -272,12 +296,41 @@ const NodePatchDescriptors = {
 
 // TODO: Why are we adding descriptors from Element?
 const ElementPatchDescriptors = {
-//    get nextElementSibling() {
-//        return null;
-//    }
-//    get previousElementSibling() {
-//        return null;
-//    }
+    localName: {
+        enumerable: true,
+        configurable: true,
+        get() {
+            return null;
+        },
+    },
+    namespaceURI: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return null;
+        },
+    },
+    nextElementSibling: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return null;
+        },
+    },
+    prefix: {
+        enumerable: true,
+        configurable: true,
+        get() {
+            return null;
+        },
+    },
+    previousElementSibling: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return null;
+        },
+    },
 };
 
 const ParentNodePatchDescriptors = {
