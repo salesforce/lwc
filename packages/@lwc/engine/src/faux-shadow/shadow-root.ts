@@ -125,7 +125,6 @@ const ShadowRootDescriptors = {
         },
     },
     delegatesFocus: {
-        writable: true,
         enumerable: true,
         configurable: true,
         get(): boolean {
@@ -168,9 +167,8 @@ const ShadowRootDescriptors = {
         },
     },
     mode: {
-        writable: true,
         configurable: true,
-        value() {
+        get() {
             return ShadowRootMode.OPEN;
         },
     },
@@ -281,7 +279,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface) {
+        value(this: SyntheticShadowRootInterface): boolean {
             return this.childNodes.length > 0;
         },
     },
@@ -299,35 +297,35 @@ const NodePatchDescriptors = {
     nextSibling: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return null;
         },
     },
     previousSibling: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return null;
         },
     },
     nodeName: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return '#document-fragment';
         },
     },
     nodeType: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return 11; // Node.DOCUMENT_FRAGMENT_NODE
         },
     },
     nodeValue: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return null;
         },
     },
@@ -397,11 +395,11 @@ const ElementPatchDescriptors = {
     namespaceURI: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
             return null;
         },
     },
-    prefix: {
+    nextElementSibling: {
         enumerable: true,
         configurable: true,
         get() {
@@ -411,7 +409,14 @@ const ElementPatchDescriptors = {
     previousElementSibling: {
         enumerable: true,
         configurable: true,
-        value() {
+        get() {
+            return null;
+        },
+    },
+    prefix: {
+        enumerable: true,
+        configurable: true,
+        get() {
             return null;
         },
     },
@@ -478,7 +483,7 @@ assign(
     ShadowRootDescriptors
 );
 
-function SyntheticShadowRoot() {
+export function SyntheticShadowRoot() {
     throw new TypeError('Illegal constructor');
 }
 SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShadowRootDescriptors);
