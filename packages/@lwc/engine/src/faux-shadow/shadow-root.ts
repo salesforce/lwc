@@ -163,7 +163,7 @@ const ShadowRootDescriptors = {
     host: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: SyntheticShadowRootInterface): Element {
             return getHost(this);
         },
     },
@@ -228,7 +228,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
+        value(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface): number {
             const host = getHost(this);
             if (this === otherNode) {
                 // it is the root itself
@@ -334,21 +334,21 @@ const NodePatchDescriptors = {
     ownerDocument: {
         enumerable: true,
         configurable: true,
-        get(this: SyntheticShadowRootInterface) {
+        get(this: SyntheticShadowRootInterface): Document | null {
             return getHost(this).ownerDocument;
         },
     },
     parentElement: {
         enumerable: true,
         configurable: true,
-        get() {
+        get(): Element | null {
             return null;
         },
     },
     parentNode: {
         enumerable: true,
         configurable: true,
-        get() {
+        get(): Node | null {
             return null;
         },
     },
@@ -421,7 +421,7 @@ const ParentNodePatchDescriptors = {
     childElementCount: {
         enumerable: true,
         configurable: true,
-        get(this: HTMLElement) {
+        get(this: HTMLElement): number {
             return this.children.length;
         },
     },
@@ -440,14 +440,14 @@ const ParentNodePatchDescriptors = {
     firstElementChild: {
         enumerable: true,
         configurable: true,
-        get(this: Element) {
+        get(this: Element): Element | null {
             return this.children[0] || null;
         },
     },
     lastElementChild: {
         enumerable: true,
         configurable: true,
-        get(this: Element) {
+        get(this: Element): Element | null {
             const { children } = this;
             return children.item(children.length - 1) || null;
         },
