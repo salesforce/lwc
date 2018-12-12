@@ -15,12 +15,12 @@
     "@babel/core": "7.1.0",
     "@babel/plugin-transform-modules-commonjs": "7.1.0",
     "@babel/template": "~7.1.2",
+    "@lwc/errors": "0.33.17",
     "deasync": "0.1.12"
   },
   "peerDependencies": {
     "@lwc/compiler": "0.33.x",
-    "@lwc/engine": "0.33.x",
-    "@lwc/errors": "0.33.x"
+    "@lwc/engine": "0.33.x"
   },
   "devDependencies": {
     "@lwc/compiler": "0.33.17",
