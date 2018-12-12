@@ -1,6 +1,6 @@
 {
   "name": "@lwc/style-compiler",
-  "version": "0.33.16",
+  "version": "0.33.17-alpha02",
   "description": "Transform style sheet to be consumed by the LWC engine",
   "license": "MIT",
   "main": "dist/commonjs/index.js",
@@ -16,5 +16,6 @@
     "postcss": "~7.0.5",
     "postcss-selector-parser": "3.1.1",
     "postcss-value-parser": "3.3.1"
-  }
+  },
+  "gitHead": "9d260e0395b57e1e8552416befa02752c36a6c62"
 }
