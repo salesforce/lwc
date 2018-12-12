@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import assert from "../shared/assert";
 import { matches, querySelectorAll, getBoundingClientRect, addEventListener, removeEventListener, tabIndexGetter, tagNameGetter, hasAttribute, getAttribute } from '../env/element';
 import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition, DOCUMENT_POSITION_PRECEDING, DOCUMENT_POSITION_FOLLOWING } from '../env/node';
