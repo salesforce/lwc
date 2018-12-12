@@ -8,7 +8,7 @@ import { isNativeShadowRootAvailable } from "../env/dom";
 import { patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 import { patchCustomElementWithRestrictions } from "./restrictions";
-import { endGlobalMeasure, startGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
+import { startHydrateMeasure, endHydrateMeasure } from "./performance-timing";
 import { appendChild, insertBefore, replaceChild, removeChild } from "../env/node";
 
 const ConnectingSlot = createFieldName('connecting');
@@ -60,7 +60,6 @@ assign(Node.prototype, {
  * then it throws a TypeError.
  */
 export function createElement(sel: string, options: any = {}): HTMLElement {
-    startGlobalMeasure(GlobalMeasurementPhase.INIT);
     if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
@@ -98,17 +97,16 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
-        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
         const vm = getCustomElementVM(element);
+        startHydrateMeasure(vm);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         renderVM(vm);
-        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
+        endHydrateMeasure(vm);
     });
     setInternalField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);
         removeVM(vm);
     });
-    endGlobalMeasure(GlobalMeasurementPhase.INIT);
     return element;
 }
