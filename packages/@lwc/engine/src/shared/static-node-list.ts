@@ -1,4 +1,4 @@
-import { defineProperty, forEach, ArrayMap, create } from "./language";
+import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from "./language";
 import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
@@ -84,6 +84,8 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         },
     },
 });
+// prototype inheritance dance
+setPrototypeOf(StaticNodeList, NodeList);
 
 export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> {
     const nodeList: NodeListOf<T> = create(StaticNodeList.prototype, {

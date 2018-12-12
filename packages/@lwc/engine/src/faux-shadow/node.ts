@@ -3,6 +3,7 @@ import {
     isNull,
     forEach,
     getPrototypeOf,
+    setPrototypeOf,
 } from '../shared/language';
 import {
     parentNodeGetter,
@@ -14,7 +15,7 @@ import {
 } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/window';
 import { setAttribute } from '../env/element';
-import { getNodeOwner, isSlotElement, getRootNodeGetter, isNodeOwnedBy, GetRootNodeOptions } from './traverse';
+import { getNodeOwner, isSlotElement, getRootNodeGetter, isNodeOwnedBy } from './traverse';
 import { NodeConstructor } from '../framework/base-bridge-element';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot } from './shadow-root';
@@ -145,8 +146,11 @@ function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & Pa
 
 export function PatchedNode(node: Node): NodeConstructor {
     const Ctor: NodeConstructor = getPrototypeOf(node).constructor;
-    // @ts-ignore
-    return class extends Ctor {
+    class PatchedNodeClass {
+        constructor() {
+            // Patched classes are not supposed to be instantiated directly, ever!
+            throw new TypeError('Illegal constructor');
+        }
         hasChildNodes(this: Node, ) {
             return this.childNodes.length > 0;
         }
@@ -231,7 +235,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             }
             return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
         }
-        cloneNode(deep: boolean): Node {
+        cloneNode(this: Node, deep: boolean): Node {
             const clone = nativeCloneNode.call(this, false);
 
             // Per spec, browsers only care about truthy values
@@ -247,5 +251,9 @@ export function PatchedNode(node: Node): NodeConstructor {
 
             return clone;
         }
-    };
+    }
+    // prototype inheritance dance
+    setPrototypeOf(PatchedNodeClass, Ctor);
+    setPrototypeOf(PatchedNodeClass.prototype, Ctor.prototype);
+    return (PatchedNodeClass as any) as NodeConstructor;
 }

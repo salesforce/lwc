@@ -7,9 +7,10 @@ import {
     create,
     getOwnPropertyNames,
     isUndefined,
-    defineProperties,
     seal,
     ArraySlice,
+    setPrototypeOf,
+    defineProperty,
 } from "../shared/language";
 import { getCustomElementVM } from "./vm";
 import {
@@ -77,7 +78,10 @@ export interface HTMLIFrameElementConstructor {
 }
 
 export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {
-    class HTMLBridgeElement extends SuperClass {}
+    function HTMLBridgeElement() {
+        // Bridge classes are not supposed to be instantiated directly, ever!
+        throw new TypeError('Illegal constructor');
+    }
     const descriptors: PropertyDescriptorMap = create(null);
     // expose getters and setters for each public props on the new Element Bridge
     for (let i = 0, len = props.length; i < len; i += 1) {
@@ -98,8 +102,15 @@ export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, pro
             configurable: true,
         };
     }
-    defineProperties(HTMLBridgeElement.prototype, descriptors);
-    return HTMLBridgeElement;
+    HTMLBridgeElement.prototype = create(SuperClass.prototype, descriptors);
+    // prototype inheritance dance
+    setPrototypeOf(HTMLBridgeElement, SuperClass);
+    defineProperty(HTMLBridgeElement.prototype, 'constructor', {
+        writable: true,
+        configurable: true,
+        value: HTMLBridgeElement,
+    });
+    return (HTMLBridgeElement as any) as HTMLElementConstructor;
 }
 
 export const BaseBridgeElement = HTMLBridgeElementFactory(HTMLElement, getOwnPropertyNames(HTMLElementOriginalDescriptors), []);

@@ -1,4 +1,4 @@
-import { defineProperty, forEach, ArrayMap, create } from "./language";
+import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from "./language";
 import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
@@ -112,6 +112,8 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         },
     },
 });
+// prototype inheritance dance
+setPrototypeOf(StaticHTMLCollection, HTMLCollection);
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
     const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype, {

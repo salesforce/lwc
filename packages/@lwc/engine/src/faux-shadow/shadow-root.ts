@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { createStaticNodeList } from "../shared/static-node-list";
