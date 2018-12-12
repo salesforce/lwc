@@ -6,5 +6,8 @@
   "license": "MIT",
   "keywords": [
     "lwc"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

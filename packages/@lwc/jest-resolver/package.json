@@ -16,5 +16,8 @@
     "@lwc/jest-transformer": "0.33.16",
     "@lwc/module-resolver": "0.33.16",
     "@lwc/wire-service": "0.33.16"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

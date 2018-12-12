@@ -26,5 +26,8 @@
     "modules": {
       "wire-service": "dist/modules/es2017/wire.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
