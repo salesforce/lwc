@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.15...v) (2018-12-07)
+# [](https://github.com/salesforce/lwc/compare/v0.33.16...v) (2018-12-12)
+
+
+### Bug Fixes
+
+* **engine:** removing lwc:dom error when ownerkey is not defined ([#879](https://github.com/salesforce/lwc/issues/879)) ([b68a72a](https://github.com/salesforce/lwc/commit/b68a72a))
+
+
+
+<a name="0.33.16"></a>
+## [0.33.16](https://github.com/salesforce/lwc/compare/v0.33.15...v0.33.16) (2018-12-07)
 
 
 
