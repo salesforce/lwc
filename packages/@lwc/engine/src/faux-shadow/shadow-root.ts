@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
+import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter, GetRootNodeOptions } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -74,211 +74,274 @@ export interface SyntheticShadowRootInterface extends ShadowRoot {
     delegatesFocus: boolean;
 }
 
-const GlobalDocumentFragmentConstructor = DocumentFragment;
-export class SyntheticShadowRoot extends GlobalDocumentFragmentConstructor implements ShadowRoot {
-    mode: ShadowRootMode = ShadowRootMode.OPEN;
-    delegatesFocus: boolean = false;
-    constructor() {
-        super();
-        throw new TypeError('Illegal constructor');
-    }
-    get nodeType() {
-        return 11; // Node.DOCUMENT_FRAGMENT_NODE
-    }
-    get nodeName() {
-        return '#document-fragment';
-    }
-    get nodeValue() {
-        return null;
-    }
-    get namespaceURI() {
-        return null;
-    }
-    get nextSibling() {
-        return null;
-    }
-    get previousSibling() {
-        return null;
-    }
-    get nextElementSibling() {
-        return null;
-    }
-    get previousElementSibling() {
-        return null;
-    }
-    get localName() {
-        return null;
-    }
-    get prefix() {
-        return;
-    }
-    get ownerDocument(this: SyntheticShadowRootInterface) {
-        return getHost(this).ownerDocument;
-    }
-    get baseURI(this: SyntheticShadowRootInterface) {
-        return getHost(this).baseURI;
-    }
-    get isConnected(this: SyntheticShadowRootInterface) {
-        return (compareDocumentPosition.call(document, getHost(this)) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
-    }
-    get host(this: SyntheticShadowRootInterface) {
-        return getHost(this);
-    }
-    get activeElement(this: SyntheticShadowRootInterface): Element | null {
-        const activeElement = DocumentPrototypeActiveElement.call(document);
-        if (isNull(activeElement)) {
-            return activeElement;
+const SyntheticShadowRootDescriptors = {
+    constructor: {
+        writable: true,
+        enumerable: false,
+        configurable: true,
+        value: SyntheticShadowRoot,
+    },
+};
+const ShadowRootDescriptors = {
+    mode: {
+        writable: true,
+        enumerable: false,
+        configurable: true,
+        value() {
+            return ShadowRootMode.OPEN;
+        },
+    },
+    host: {
+        enumerable: true,
+        configurable: true,
+        get(this: SyntheticShadowRootInterface) {
+            return getHost(this);
         }
-        const host = getHost(this);
+    },
+//    delegatesFocus: boolean = false;
+//    toString() {
+//        return `[object ShadowRoot]`;
+//    }
+//    get innerHTML(this: SyntheticShadowRootInterface): string {
+//        const { childNodes } = this;
+//        let innerHTML = '';
+//        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+//            innerHTML += getOuterHTML(childNodes[i]);
+//        }
+//        return innerHTML;
+//    }
+//    get activeElement(this: SyntheticShadowRootInterface): Element | null {
+//        const activeElement = DocumentPrototypeActiveElement.call(document);
+//        if (isNull(activeElement)) {
+//            return activeElement;
+//        }
+//        const host = getHost(this);
+//
+//        if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
+//            return null;
+//        }
+//
+//        // activeElement must be child of the host and owned by it
+//        let node = activeElement;
+//        while (!isNodeOwnedBy(host, node)) {
+//            node = parentElementGetter.call(node);
+//        }
+//
+//        // If we have a slot element here
+//        // That means that we were dealing with an element that was passed to one of our slots
+//        // In this case, activeElement returns null
+//        if (isSlotElement(node)) {
+//            return null;
+//        }
+//        return node;
+//    }
+//    // Same functionality as document.elementFromPoint
+//    // but we should only return elements that the shadow owns,
+//    // or are ancestors of the shadow
+//    elementFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element | null {
+//        const element = elementFromPoint.call(document, left, top);
+//        if (isNull(element)) {
+//            return element;
+//        }
+//        return retarget(this, pathComposer(element, true)) as (Element | null);
+//    }
+//
+//    elementsFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
+//        // TODO: implement
+//        throw new Error();
+//    }
+//
+//    getSelection(this: SyntheticShadowRootInterface): Selection | null {
+//        throw new Error();
+//    }
+//    // TODO: remove this after upgrading TS 3.x (issue #748)
+//    stylesheets: StyleSheetList;
+//    get styleSheets(): StyleSheetList {
+//        // TODO: implement
+//        throw new Error();
+//    }
+};
 
-        if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
+const NodePatchDescriptors = {
+    nodeType: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return 11; // Node.DOCUMENT_FRAGMENT_NODE
+        },
+    },
+    nodeName: {
+        enumerable: true,
+        configurable: true,
+        value() {
+            return '#document-fragment';
+        },
+    },
+    nodeValue: {
+        enumerable: true,
+        configurable: true,
+        value() {
             return null;
-        }
+        },
+    },
+//    compareDocumentPosition(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
+//        const host = getHost(this);
+//        if (this === otherNode) {
+//            // it is the root itself
+//            return 0;
+//        }
+//        if (this.contains(otherNode as Node)) {
+//            // it belongs to the shadow root instance
+//            return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+//        } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
+//            // it is a child element but does not belong to the shadow root instance
+//            return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+//        } else {
+//            // it is not a descendant
+//            return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+//        }
+//    }
+//    contains(this: SyntheticShadowRootInterface, otherNode: Node) {
+//        const host = getHost(this);
+//        // must be child of the host and owned by it.
+//        return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+//            isNodeOwnedBy(host, otherNode);
+//    }
+//    hasChildNodes(this: SyntheticShadowRootInterface, ) {
+//        return this.childNodes.length > 0;
+//    }
+//    get namespaceURI() {
+//        return null;
+//    }
+//    get nextSibling() {
+//        return null;
+//    }
+//    get previousSibling() {
+//        return null;
+//    }
+//    get ownerDocument(this: SyntheticShadowRootInterface) {
+//        return getHost(this).ownerDocument;
+//    }
+//    get localName() {
+//        return null;
+//    }
+//    get prefix() {
+//        return;
+//    }
+//    get baseURI(this: SyntheticShadowRootInterface) {
+//        return getHost(this).baseURI;
+//    }
+//    get isConnected(this: SyntheticShadowRootInterface) {
+//        return (compareDocumentPosition.call(document, getHost(this)) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+//    }
+//    get firstChild(this: SyntheticShadowRootInterface): ChildNode | null {
+//        const { childNodes } = this;
+//        return childNodes[0] || null;
+//    }
+//    get lastChild(this: SyntheticShadowRootInterface): ChildNode | null {
+//        const { childNodes } = this;
+//        return childNodes[childNodes.length - 1] || null;
+//    }
+//    get childNodes(this: SyntheticShadowRootInterface): NodeListOf<Node & Element> {
+//        return createStaticNodeList(shadowRootChildNodes(this));
+//    }
+//    get parentNode() {
+//        return null;
+//    }
+//    get parentElement() {
+//        return null;
+//    }
+//    get textContent(this: SyntheticShadowRootInterface): string {
+//        const { childNodes } = this;
+//        let textContent = '';
+//        for (let i = 0, len = childNodes.length; i < len; i += 1) {
+//            textContent += getTextContent(childNodes[i]);
+//        }
+//        return textContent;
+//    }
+//    getRootNode(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
+//        return getRootNodeGetter.call(this, options);
+//    }
+//    addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+//        addShadowRootEventListener(this, type, listener, options);
+//    }
+//    removeEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+//        removeShadowRootEventListener(this, type, listener, options);
+//    }
+};
 
-        // activeElement must be child of the host and owned by it
-        let node = activeElement;
-        while (!isNodeOwnedBy(host, node)) {
-            node = parentElementGetter.call(node);
-        }
+// TODO: Why are we adding descriptors from Element?
+const ElementPatchDescriptors = {
+//    get nextElementSibling() {
+//        return null;
+//    }
+//    get previousElementSibling() {
+//        return null;
+//    }
+};
 
-        // If we have a slot element here
-        // That means that we were dealing with an element that was passed to one of our slots
-        // In this case, activeElement returns null
-        if (isSlotElement(node)) {
-            return null;
+const ParentNodePatchDescriptors = {
+    childElementCount: {
+        enumerable: true,
+        configurable: true,
+        get(this: HTMLElement) {
+            return this.children.length;
         }
-        return node;
-    }
-    get firstChild(this: SyntheticShadowRootInterface): ChildNode | null {
-        const { childNodes } = this;
-        return childNodes[0] || null;
-    }
-    get lastChild(this: SyntheticShadowRootInterface): ChildNode | null {
-        const { childNodes } = this;
-        return childNodes[childNodes.length - 1] || null;
-    }
-    get innerHTML(this: SyntheticShadowRootInterface): string {
-        const { childNodes } = this;
-        let innerHTML = '';
-        for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            innerHTML += getOuterHTML(childNodes[i]);
+    },
+    children: {
+        enumerable: true,
+        configurable: true,
+        get(this: SyntheticShadowRootInterface) {
+            return createStaticHTMLCollection(
+                ArrayFilter.call(shadowRootChildNodes(this), (elm: Node | Element) => elm instanceof Element)
+            );
         }
-        return innerHTML;
-    }
-    get textContent(this: SyntheticShadowRootInterface): string {
-        const { childNodes } = this;
-        let textContent = '';
-        for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            textContent += getTextContent(childNodes[i]);
+    },
+    firstElementChild: {
+        enumerable: true,
+        configurable: true,
+        get(this: Element) {
+            return this.children[0] || null;
         }
-        return textContent;
-    }
-    get children(this: SyntheticShadowRootInterface): HTMLCollectionOf<Element> {
-        return createStaticHTMLCollection(ArrayFilter.call(shadowRootChildNodes(this), (elm: Node | Element) => elm instanceof Element));
-    }
-    // ParentNode.prototype
-    get childElementCount(this: HTMLElement) {
-        return this.children.length;
-    }
-    get firstElementChild(this: Element) {
-        return this.children[0] || null;
-    }
-    get lastElementChild(this: Element) {
-        const { children } = this;
-        return children.item(children.length - 1) || null;
-    }
-    get childNodes(this: SyntheticShadowRootInterface): NodeListOf<Node & Element> {
-        return createStaticNodeList(shadowRootChildNodes(this));
-    }
-    get parentNode() {
-        return null;
-    }
-    get parentElement() {
-        return null;
-    }
-    // TODO: remove this after upgrading TS 3.x (issue #748)
-    stylesheets: StyleSheetList;
-    get styleSheets(): StyleSheetList {
-        // TODO: implement
-        throw new Error();
-    }
-    hasChildNodes(this: SyntheticShadowRootInterface, ) {
-        return this.childNodes.length > 0;
-    }
+    },
+    lastElementChild: {
+        enumerable: true,
+        configurable: true,
+        get(this: Element) {
+            const { children } = this;
+            return children.item(children.length - 1) || null;
+        }
+    },
+    querySelector: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, selectors: string): Element | null {
+            return shadowRootQuerySelector(this, selectors);
+        },
+    },
+    querySelectorAll: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<Element> {
+            return createStaticNodeList(shadowRootQuerySelectorAll(this, selectors));
+        },
+    },
+};
 
-    /**
-     * Returns the first element that is a descendant of node that
-     * matches selectors.
-     */
-    querySelector(this: SyntheticShadowRootInterface, selectors: string): Element | null {
-        return shadowRootQuerySelector(this, selectors);
-    }
-    /**
-     * Returns all element descendants of node that
-     * match selectors.
-     */
-    // querySelectorAll<K extends keyof HTMLElementTagNameMap>(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>,
-    // querySelectorAll<K extends keyof SVGElementTagNameMap>(selectors: K): NodeListOf<SVGElementTagNameMap[K]>,
-    querySelectorAll(this: SyntheticShadowRootInterface, selectors: string): NodeListOf<Element> {
-        return createStaticNodeList(shadowRootQuerySelectorAll(this, selectors));
-    }
-    addEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-        addShadowRootEventListener(this, type, listener, options);
-    }
-    removeEventListener(this: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-        removeShadowRootEventListener(this, type, listener, options);
-    }
-    compareDocumentPosition(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface) {
-        const host = getHost(this);
-        if (this === otherNode) {
-            // it is the root itself
-            return 0;
-        }
-        if (this.contains(otherNode as Node)) {
-            // it belongs to the shadow root instance
-            return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-        } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
-            // it is a child element but does not belong to the shadow root instance
-            return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-        } else {
-            // it is not a descendant
-            return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-        }
-    }
-    contains(this: SyntheticShadowRootInterface, otherNode: Node) {
-        const host = getHost(this);
-        // must be child of the host and owned by it.
-        return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
-            isNodeOwnedBy(host, otherNode);
-    }
-    toString() {
-        return `[object ShadowRoot]`;
-    }
+assign(
+    SyntheticShadowRootDescriptors,
+    ShadowRootDescriptors,
+    ParentNodePatchDescriptors,
+    NodePatchDescriptors,
+    ElementPatchDescriptors,
+);
 
-    // Same functionality as document.elementFromPoint
-    // but we should only return elements that the shadow owns,
-    // or are ancestors of the shadow
-    elementFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element | null {
-        const element = elementFromPoint.call(document, left, top);
-        if (isNull(element)) {
-            return element;
-        }
-        return retarget(this, pathComposer(element, true)) as (Element | null);
-    }
-
-    elementsFromPoint(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
-        // TODO: implement
-        throw new Error();
-    }
-
-    getSelection(this: SyntheticShadowRootInterface): Selection | null {
-        throw new Error();
-    }
-
-    getRootNode(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
-        return getRootNodeGetter.call(this, options);
-    }
+function SyntheticShadowRoot() {
+    throw new TypeError('Illegal constructor');
 }
+SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShadowRootDescriptors);
 
 // Is native ShadowDom is available on window,
 // we need to make sure that our synthetic shadow dom
