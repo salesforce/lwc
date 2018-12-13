@@ -1,5 +1,5 @@
 import assert from "../shared/assert";
-import { toString, isFunction, isUndefined } from "../shared/language";
+import { toString, isFunction } from "../shared/language";
 import ObservableMembrane from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
 
