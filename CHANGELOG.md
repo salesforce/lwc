@@ -1,5 +1,17 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.16...v) (2018-12-12)
+# [](https://github.com/salesforce/lwc/compare/v0.33.17...v) (2018-12-13)
+
+
+### Bug Fixes
+
+* **engine:** closes [#871](https://github.com/salesforce/lwc/issues/871) - support for svg manual injection ([#872](https://github.com/salesforce/lwc/issues/872)) ([4851400](https://github.com/salesforce/lwc/commit/4851400))
+* error when 2 perf markers are stacked ([#865](https://github.com/salesforce/lwc/issues/865)) ([1bce3c7](https://github.com/salesforce/lwc/commit/1bce3c7))
+* errors package as hard dep in jest-transformer ([#884](https://github.com/salesforce/lwc/issues/884)) ([9d8717c](https://github.com/salesforce/lwc/commit/9d8717c))
+
+
+
+<a name="0.33.17"></a>
+## [0.33.17](https://github.com/salesforce/lwc/compare/v0.33.16...v0.33.17) (2018-12-12)
 
 
 ### Bug Fixes
