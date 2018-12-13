@@ -18,14 +18,9 @@ import { observeMutation, notifyMutation } from "./watcher";
  *
  */
 
-function isProbablyAFunction(value: any): boolean {
-    // TODO: can this be optimized to be faster?
-    return value != null && !isUndefined(value.prototype);
-}
-
 function valueDistortion(value: any /*, obj: any, key: PropertyKey */) {
     // options 1: prevent accessing functions that are not from Arrays or Objects
-    if (isProbablyAFunction(value) && isFunction(value)) {
+    if (isFunction(value)) {
         // if (!isArray(obj) || !Array.prototype[key] === value) {
         //     return value;
         // } else if (isObject(obj) && Object.prototype[key] === value) {
