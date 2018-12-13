@@ -1,9 +1,41 @@
 import assert from "../shared/assert";
-import { toString } from "../shared/language";
+import { toString, isFunction, isUndefined } from "../shared/language";
 import ObservableMembrane from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
 
-function valueDistortion(value: any) {
+/**
+ * Distortion could allow only very specific functions, instead of the wild west
+ * to attempt to fulfill the security requirements. (E.g.: passing arguments down):
+ *
+ * var x = {};
+ * this.x.hasOwnProperty('diego');
+ *
+ * var y = [1,2,3];
+ * this.y.forEach(() => {});
+ *
+ * var z = {  forEach: () => {} };
+ * this.z.forEach; // throw
+ *
+ */
+
+function isProbablyAFunction(value: any): boolean {
+    // TODO: can this be optimized to be faster?
+    return value != null && !isUndefined(value.prototype);
+}
+
+function valueDistortion(value: any /*, obj: any, key: PropertyKey */) {
+    // options 1: prevent accessing functions that are not from Arrays or Objects
+    if (isProbablyAFunction(value) && isFunction(value)) {
+        // if (!isArray(obj) || !Array.prototype[key] === value) {
+        //     return value;
+        // } else if (isObject(obj) && Object.prototype[key] === value) {
+        //     return value;
+        // } else {
+        //     throw new TypeError(`Invalid Access`);
+        // }
+        return value; // noop to match the existing semantics, eventually we should throw
+    }
+    // option 2: hook for locker to do it
     return value;
 }
 
