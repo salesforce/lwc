@@ -1,6 +1,6 @@
 {
   "name": "@lwc/test-utils",
-  "version": "0.33.24",
+  "version": "0.33.25",
   "description": "Test utilities for LWC",
   "main": "index.js",
   "license": "MIT",

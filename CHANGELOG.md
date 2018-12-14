@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.23...v) (2018-12-13)
+# [](https://github.com/salesforce/lwc/compare/v0.33.24...v) (2018-12-14)
+
+
+### Bug Fixes
+
+* avoid directly extending constructors that are objects in ie11 ([#880](https://github.com/salesforce/lwc/issues/880)) ([04dbd20](https://github.com/salesforce/lwc/commit/04dbd20))
+
+
+
+<a name="0.33.24"></a>
+## [0.33.24](https://github.com/salesforce/lwc/compare/v0.33.23...v0.33.24) (2018-12-13)
 
 
 
