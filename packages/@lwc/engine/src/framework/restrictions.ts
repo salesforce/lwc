@@ -39,6 +39,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         appendChild: {
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
+                    // tslint:disable-next-line no-production-assert
                     assert.logError(`appendChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return appendChild.call(this, aChild);
@@ -50,6 +51,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         insertBefore: {
             value(this: Node, newNode: Node, referenceNode: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
+                    // tslint:disable-next-line no-production-assert
                     assert.logError(`insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return insertBefore.call(this, newNode, referenceNode);
@@ -61,6 +63,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         removeChild: {
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
+                    // tslint:disable-next-line no-production-assert
                     assert.logError(`removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return removeChild.call(this, aChild);
@@ -72,6 +75,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
         replaceChild: {
             value(this: Node, newChild: Node, oldChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
+                    // tslint:disable-next-line no-production-assert
                     assert.logError(`replaceChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 return replaceChild.call(this, newChild, oldChild);
@@ -87,6 +91,7 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
             set(this: Node, value: string) {
                 if (process.env.NODE_ENV !== 'production') {
                     if (this instanceof Element && options.isPortal !== true) {
+                        // tslint:disable-next-line no-production-assert
                         assert.logError(`nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                     }
                 }
@@ -152,6 +157,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
     assign(descriptors, {
         addEventListener: {
             value(this: ShadowRoot, type: string) {
+                // tslint:disable-next-line no-production-assert
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(sr)} by adding an event listener for "${type}".`);
                 return originalAddEventListener.apply(this, arguments);
             }
@@ -159,6 +165,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
         querySelector: {
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
+                // tslint:disable-next-line no-production-assert
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelector.apply(this, arguments);
             }
@@ -166,6 +173,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
         querySelectorAll: {
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
+                // tslint:disable-next-line no-production-assert
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelectorAll.apply(this, arguments);
             }
@@ -252,6 +260,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     const { elm, def: { props: propsConfig } } = vm;
 
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName) && propsConfig && propName && propsConfig[propName]) {
+        // tslint:disable-next-line no-production-assert
         assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`, elm);
     }
 }
@@ -263,6 +272,7 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     }
     const { elm } = vm;
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
+        // tslint:disable-next-line no-production-assert
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`, elm);
     }
 }
@@ -277,6 +287,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
     return assign(descriptors, {
         addEventListener: {
             value(this: ShadowRoot, type: string) {
+                // tslint:disable-next-line no-production-assert
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(elm)} by adding an event listener for "${type}".`);
                 return originalAddEventListener.apply(this, arguments);
             }
@@ -321,8 +332,10 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
                     if (info[propName] && info[propName].attribute) {
                         const { error, experimental } = info[propName];
                         if (error) {
+                            // tslint:disable-next-line no-production-assert
                             assert.logError(error, getComponentVM(this).elm);
                         } else if (experimental) {
+                            // tslint:disable-next-line no-production-assert
                             assert.logError(
                                 `Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`,
                                 getComponentVM(this).elm
@@ -380,6 +393,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object, options
                         msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                     }
                 }
+                // tslint:disable-next-line no-production-assert
                 assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
                 return; // explicit undefined
             },
