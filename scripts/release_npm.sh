@@ -11,7 +11,7 @@ if [ -z "${PACKAGE_VERSION}" ]; then
 fi
 
 # Get the current version
-version=`lerna ls --scope lwc-engine`
+version=`lerna ls --json --scope @lwc/engine`
 
 if [[ $version = *"${PACKAGE_VERSION}"* ]]; then
   echo "Version already available, skipping release."

@@ -35,11 +35,6 @@ import { createStaticNodeList } from "../shared/static-node-list";
 import { iFrameContentWindowGetter } from "../env/dom";
 import { getFilteredSlotAssignedNodes } from "./slot";
 
-// TODO: remove after TS 3.x upgrade.
-export interface GetRootNodeOptions {
-    composed?: boolean;
-}
-
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
         return null;

@@ -1,5 +1,57 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.16...v) (2018-12-12)
+# [](https://github.com/salesforce/lwc/compare/v0.33.24...v) (2018-12-14)
+
+
+### Bug Fixes
+
+* avoid directly extending constructors that are objects in ie11 ([#880](https://github.com/salesforce/lwc/issues/880)) ([04dbd20](https://github.com/salesforce/lwc/commit/04dbd20))
+
+
+
+<a name="0.33.24"></a>
+## [0.33.24](https://github.com/salesforce/lwc/compare/v0.33.23...v0.33.24) (2018-12-13)
+
+
+
+<a name="0.33.23"></a>
+## [0.33.23](https://github.com/salesforce/lwc/compare/v0.33.22...v0.33.23) (2018-12-13)
+
+
+
+<a name="0.33.22"></a>
+## [0.33.22](https://github.com/salesforce/lwc/compare/v0.33.21...v0.33.22) (2018-12-13)
+
+
+
+<a name="0.33.21"></a>
+## [0.33.21](https://github.com/salesforce/lwc/compare/v0.33.20...v0.33.21) (2018-12-13)
+
+
+
+<a name="0.33.20"></a>
+## [0.33.20](https://github.com/salesforce/lwc/compare/v0.33.19...v0.33.20) (2018-12-13)
+
+
+
+<a name="0.33.19"></a>
+## [0.33.19](https://github.com/salesforce/lwc/compare/v0.33.18...v0.33.19) (2018-12-13)
+
+
+
+<a name="0.33.18"></a>
+## [0.33.18](https://github.com/salesforce/lwc/compare/v0.33.17...v0.33.18) (2018-12-13)
+
+
+### Bug Fixes
+
+* **engine:** closes [#871](https://github.com/salesforce/lwc/issues/871) - support for svg manual injection ([#872](https://github.com/salesforce/lwc/issues/872)) ([4851400](https://github.com/salesforce/lwc/commit/4851400))
+* error when 2 perf markers are stacked ([#865](https://github.com/salesforce/lwc/issues/865)) ([1bce3c7](https://github.com/salesforce/lwc/commit/1bce3c7))
+* errors package as hard dep in jest-transformer ([#884](https://github.com/salesforce/lwc/issues/884)) ([9d8717c](https://github.com/salesforce/lwc/commit/9d8717c))
+
+
+
+<a name="0.33.17"></a>
+## [0.33.17](https://github.com/salesforce/lwc/compare/v0.33.16...v0.33.17) (2018-12-12)
 
 
 ### Bug Fixes

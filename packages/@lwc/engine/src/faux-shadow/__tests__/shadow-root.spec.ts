@@ -495,7 +495,7 @@ describe('root', () => {
             expect(shadowRoot.nextElementSibling).toBe(null);
             expect(shadowRoot.previousElementSibling).toBe(null);
             expect(shadowRoot.localName).toBe(null);
-            expect(shadowRoot.prefix).toBe(undefined);
+            expect(shadowRoot.prefix).toBe(null);
             expect(shadowRoot.ownerDocument).toBe(elem.ownerDocument);
             expect(shadowRoot.baseURI).toBe(elem.baseURI);
             expect(shadowRoot.isConnected).toBe(true);
