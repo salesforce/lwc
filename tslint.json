@@ -1,6 +1,7 @@
 {
  "extends": [
-    "tslint:recommended"
+    "tslint:recommended",
+    "lwc-tslint-rules/lwc-tslint-custom-rules"
   ],
   "rules": {
     "arrow-parens": false,
@@ -27,6 +28,7 @@
     "quotemark": [false],
     "no-unnecessary-initializer": false,
     "trailing-comma": [true],
-    "variable-name": false
+    "variable-name": false,
+    "no-production-assert": true
   }
 }
