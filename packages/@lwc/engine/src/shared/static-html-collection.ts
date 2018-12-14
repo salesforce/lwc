@@ -1,4 +1,4 @@
-import { defineProperty, forEach, ArrayMap, create } from "./language";
+import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from "./language";
 import { createFieldName, getInternalField } from "./fields";
 
 const Items = createFieldName('items');
@@ -11,70 +11,112 @@ function getNodeHTMLCollectionName(node) {
     return node.getAttribute('id') || node.getAttribute('name');
 }
 
-class StaticHTMLCollection<T extends Element> extends HTMLCollection {
-    [key: number]: T;
-
-    item(index: number): T {
-        return this[index];
-    }
-
-    // spec: https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
-    namedItem(name: string): T | null {
-        if (isValidHTMLCollectionName(name) && this[name]) {
-            return this[name];
-        }
-        const items = getInternalField(this, Items);
-        // Note: loop in reverse so that the first named item matches the named property
-        for (let len = items.length - 1; len >= 0; len -= 1) {
-            const item: T = items[len];
-            const nodeName = getNodeHTMLCollectionName(item);
-            if (nodeName === name) {
-                return item;
+function StaticHTMLCollection() {
+    throw new TypeError('Illegal constructor');
+}
+StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
+    constructor: {
+        writable: true,
+        configurable: true,
+        value: StaticHTMLCollection,
+    },
+    item: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(index: number) {
+            return this[index];
+        },
+    },
+    length: {
+        enumerable: true,
+        configurable: true,
+        get() {
+            return getInternalField(this, Items).length;
+        },
+    },
+    // https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
+    namedItem: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(name: string) {
+            if (isValidHTMLCollectionName(name) && this[name]) {
+                return this[name];
             }
-        }
-        return null;
-    }
-
-    get length() {
-        return getInternalField(this, Items).length;
-    }
+            const items = getInternalField(this, Items);
+            // Note: loop in reverse so that the first named item matches the named property
+            for (let len = items.length - 1; len >= 0; len -= 1) {
+                const item = items[len];
+                const nodeName = getNodeHTMLCollectionName(item);
+                if (nodeName === name) {
+                    return item;
+                }
+            }
+            return null;
+        },
+    },
 
     // Iterator protocol
 
-    forEach(cb, thisArg) {
-        forEach.call(getInternalField(this, Items), cb, thisArg);
-    }
-
-    entries() {
-        return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => [i, v]);
-    }
-
-    keys() {
-        return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => i);
-    }
-
-    values() {
-        return getInternalField(this, Items);
-    }
-
-    [Symbol.iterator]() {
-        let nextIndex = 0;
-        return {
-            next: () => {
-                const items = getInternalField(this, Items);
-                return nextIndex < items.length ?
-                    {
-                        value: items[nextIndex++], done: false
-                    } : {
-                        done: true
-                    };
-            }
-        };
-    }
-}
+    forEach: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(cb, thisArg) {
+            forEach.call(getInternalField(this, Items), cb, thisArg);
+        },
+    },
+    entries: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => [i, v]);
+        },
+    },
+    keys: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => i);
+        },
+    },
+    values: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value() {
+            return getInternalField(this, Items);
+        },
+    },
+    [Symbol.iterator]: {
+        writable: true,
+        configurable: true,
+        value() {
+            let nextIndex = 0;
+            return {
+                next: () => {
+                    const items = getInternalField(this, Items);
+                    return nextIndex < items.length
+                        ? {
+                              value: items[nextIndex++],
+                              done: false,
+                          }
+                        : {
+                              done: true,
+                          };
+                },
+            };
+        },
+    },
+});
+// prototype inheritance dance
+setPrototypeOf(StaticHTMLCollection, HTMLCollection);
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
-    const collection = create(StaticHTMLCollection.prototype, {
+    const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype, {
         [Items]: {
             value: items,
         }
