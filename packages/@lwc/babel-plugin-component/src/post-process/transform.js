@@ -1,4 +1,10 @@
 /*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+/*
  * After all our decorator transforms have run,
  * we have created static properties attached to the class body
  * Foo.track = {...}

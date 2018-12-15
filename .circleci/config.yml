@@ -28,6 +28,10 @@ jobs:
           command: node ./scripts/tasks/version-check.js
 
       - run:
+          name: Check license headers
+          command: node ./scripts/tasks/check-license-headers.js
+
+      - run:
           name: Run Linting
           command: yarn lint
 
