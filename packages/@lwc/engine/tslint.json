@@ -3,7 +3,8 @@
   "rules": {
     "no-extend-ie-object": {
       "severity": "error"
-    }
+    },
+    "no-production-assert": true
   },
   "rulesDirectory": "lib/scripts/tslint/rules/"
 }
