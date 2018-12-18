@@ -105,6 +105,7 @@ const GENERIC_IGNORED_PATTERNS = [
 const CUSTOM_IGNORED_PATTERNS = [
     // add anything repo specific here
     '\/fixtures\/',
+    '\/integration-karma\/test\/',
     '\/integration-tests\/src\/(.(?!.*\.spec\.js$))*$',
 ].map(createRegExp);
 

@@ -40,6 +40,34 @@ jobs:
           command: yarn test:ci
 
 
+  test_karma:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8-stretch-browsers
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v4-{{ checksum "yarn.lock" }}
+
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
+      - run:
+          name: Test standard mode
+          command: yarn build && yarn test:sauce
+          working_directory: ~/lwc/packages/integration-karma
+
+      - run:
+          name: Test compat mode
+          command: yarn build:compat && yarn test:sauce
+          working_directory: ~/lwc/packages/integration-karma
+
+
+
   integration_test:
     working_directory: ~/lwc
 
@@ -219,6 +247,10 @@ workflows:
   build_and_test:
     jobs:
       - build_and_test
+
+      - test_karma:
+          requires:
+            - build_and_test
 
       - integration_test_compat:
           requires:
