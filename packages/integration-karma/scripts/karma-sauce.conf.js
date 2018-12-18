@@ -53,6 +53,16 @@ const sauceBrowsers = {
 };
 
 module.exports = config => {
+    const username = process.env.SAUCE_USERNAME;
+    if (!username) {
+        throw new TypeError('Missing SAUCE_USERNAME environment variable');
+    }
+
+    const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+    if (!accessKey) {
+        throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
+    }
+
     localConfig(config);
 
     const { compat } = config.lwcConfig;
@@ -63,10 +73,14 @@ module.exports = config => {
 
     config.set({
         sauceLabs: {
+            username,
+            accessKey,
+
             testName: `LWC integration test - ${
                 compat ? 'COMPAT' : 'STANDARD'
             } mode`,
             recordScreenshots: false,
+
             customData: {
                 compat,
 
