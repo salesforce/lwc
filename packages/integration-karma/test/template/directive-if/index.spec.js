@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import XTest from 'x/test';
 
 it('directive if:true', () => {
+    debugger
     const elm = createElement('x-test', { is: XTest });
     document.body.appendChild(elm);
 
