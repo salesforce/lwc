@@ -39,7 +39,12 @@ export class CompilerError extends Error implements CompilerDiagnostic {
         const filename = getFilename(origin, diagnostic);
         const location = getLocation(origin, diagnostic);
 
-        return new CompilerError(code, message, filename, location);
+        const compilerError = new CompilerError(code, message, filename, location);
+
+        // The stack here is misleading and doesn't point to the cause of the original error message
+        // TODO: W-5712064 - Enhance diagnostics with useful stack trace and source code
+        compilerError.stack = undefined;
+        return compilerError;
     }
 
     toDiagnostic(): CompilerDiagnostic {
