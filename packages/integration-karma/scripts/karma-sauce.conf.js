@@ -25,7 +25,7 @@ const sauceBrowsers = {
             base: 'SauceLabs',
             browserName: 'safari',
             platform: 'OS X 10.12',
-        }
+        },
     },
     compat: {
         sl_ie11: {
@@ -60,7 +60,9 @@ module.exports = config => {
 
     const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
     if (!accessKey) {
-        throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
+        throw new TypeError(
+            'Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable',
+        );
     }
 
     localConfig(config);
@@ -95,6 +97,11 @@ module.exports = config => {
 
         customLaunchers,
         browsers: Object.keys(customLaunchers),
+
+        // avoid spamming CI output
+        reporters: process.env.CI
+            ? ['dots', 'saucelabs']
+            : ['progress', 'saucelabs'],
 
         // Force Karma to run in singleRun mode in order to shutdown the server after the tests finished to run.
         singleRun: true,
