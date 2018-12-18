@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+/* tslint:disable:no-production-assert */
 import assert from "../shared/assert";
 import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf, getPropertyDescriptor } from "../shared/language";
 import { ComponentInterface } from "./component";
