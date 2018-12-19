@@ -115,6 +115,13 @@ export const CompilerValidationErrors = {
         level: DiagnosticLevel.Error,
         url: ""
     },
+
+    UNEXPECTED_ENTRY_SYNTAX: {
+        code: 1026,
+        message: "Unexpected entry name \"{0}\". An entry must start with a lowercase character.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
 };
 
 export const ModuleResolutionErrors = {

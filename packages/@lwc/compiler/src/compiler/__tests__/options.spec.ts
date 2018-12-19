@@ -160,4 +160,32 @@ describe('compiler options', () => {
             ),
         });
     });
+
+    describe('entry + filenames case validation', () => {
+        it('should validate that entry name leading character is lowercase', async () => {
+            await expect(compile({
+                name: 'Mycmp',
+                namespace: 'c',
+                files: {
+                    'mycmp.js': ``,
+                    'mycmp.html': ``,
+                },
+            })).rejects.toMatchObject({
+                message: expect.stringContaining('Unexpected entry name "Mycmp". An entry must start with a lowercase character.'),
+            });
+        });
+
+        it('should validate that entry name leading character is lowercase in nested path', async () => {
+            await expect(compile({
+                name: 'lwc/myapp/Mycmp',
+                namespace: 'c',
+                files: {
+                    'mycmp.js': ``,
+                    'mycmp.html': ``,
+                },
+            })).rejects.toMatchObject({
+                message: expect.stringContaining('Unexpected entry name "lwc/myapp/Mycmp". An entry must start with a lowercase character.'),
+            });
+        });
+    });
 });

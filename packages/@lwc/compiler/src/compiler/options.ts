@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import * as path from "path";
+
 import { isBoolean, isString, isUndefined, isObject } from "../utils";
 import { CompilerValidationErrors, invariant } from "@lwc/errors";
 
@@ -108,6 +110,18 @@ export function validateOptions(options: CompilerOptions) {
         CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
+    // validate bundle entry case
+    if (!options.name.startsWith(".")) {
+        const entry = path.basename(options.name);
+        const upperCaseRegex = /[A-Z]/;
+
+        invariant(
+            !upperCaseRegex.test(entry),
+            CompilerValidationErrors.UNEXPECTED_ENTRY_SYNTAX,
+            [options.name]
+        );
+    }
+
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
         invariant(
@@ -115,6 +129,8 @@ export function validateOptions(options: CompilerOptions) {
             CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
             [key, value]
         );
+
+        // TODO: validate key against namesapce to ensure the case matches and disallow upper case
     }
 
     if (!isUndefined(options.stylesheetConfig)) {
