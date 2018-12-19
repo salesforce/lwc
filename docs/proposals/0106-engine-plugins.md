@@ -135,6 +135,7 @@ The following is a summary of how each service hook uses the arguments passed to
 ### API
 
 Based on existing usages, we can generalize plugins to use the following protocol:
+
     elementCreated?(element: HTMLElement, componentInstance?: ComponentInstance, context: ServiceContext)
         - Invoked after the DOM element has been created
 
@@ -225,12 +226,12 @@ import { register } from 'lwc';
 
 
 register('lwc', {
-    elementWillConnect(element, locatorContext) {
+    elementWillConnect(element, lwcContext) {
         if (lwcContext.dom && lwcContext.dom === 'manual') {
             markElementAsPortal(element)
         }
     },
-    elementWillDisconnect(element, locatorContext) {
+    elementWillDisconnect(element, lwcContext) {
         if (lwcContext.dom && lwcContext.dom === 'manual') {
             disconnectPortal(element);
         }
@@ -245,10 +246,10 @@ import { register } from 'lwc';
 
 if (process.env.NODE_ENV !== 'production') {
     register('benchmark', {
-        elementWillRender(element, instance, locatorContext) {
+        elementWillRender(element, instance, benchmarkContext) {
             startMeasure(element, 'render');
         },
-        elementDidRender(element, instance, locatorContext) {
+        elementDidRender(element, instance, benchmarkContext) {
             endMeasure(element, 'render');
         }
     })
