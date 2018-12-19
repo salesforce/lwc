@@ -64,7 +64,7 @@ All services hooks are called with the following arguments:
 
 The following is a summary of how each service hook uses the arguments passed to it:
 
-## wiring
+### wiring
 
 #### component instance
 - passed to WireEventTarget
@@ -85,7 +85,7 @@ The following is a summary of how each service hook uses the arguments passed to
     - Adds `CONTEXT_UPDATED` Object
         - Array of listeners and values
 
-## locator
+### locator
 
 #### component instance
 - unused
@@ -104,7 +104,7 @@ The following is a summary of how each service hook uses the arguments passed to
     - hostContext: return value from instance method specified on host (optional)
 
 
-## connected (wire service lifecycle method)
+### connected (wire service lifecycle method)
 
 #### component instance
 - unused
@@ -118,12 +118,12 @@ The following is a summary of how each service hook uses the arguments passed to
 #### VNode context
 - gets `CONTEXT_CONNECTED` callbacks off of `context.@wire`
 
-## disconnected (wire service lifecycle method)
+### disconnected (wire service lifecycle method)
 
 #### component instance
 - unused
 
-### vnode data
+#### vnode data
 - Unused
 
 #### component definition
@@ -132,6 +132,7 @@ The following is a summary of how each service hook uses the arguments passed to
 #### VNode context
 - gets `CONTEXT_DISCONNECTED` callbacks off of `context.@wire`
 
+### API
 
 Based on existing usages, we can generalize plugins to use the following protocol:
     elementCreated?(element: HTMLElement, componentInstance?: ComponentInstance, context: ServiceContext)
@@ -185,21 +186,26 @@ import { register } from 'lwc';
 const contextMap = new WeakMap();
 
 register('locator', {
-    elementCreated(element, locatorContext) {
+    elementCreated(element, componentInstance, locatorContext) {
         contextMap.set(element, locatorContext);
     },
-    elementWillConnect(element, locatorContext) {
+    elementWillConnect(element, componentInstance, locatorContext) {
         const orig = element.addEventListener;
-        const hostElement = getHost(element);
-        const hostContext = getHost();
-
         element.addEventListener = function (type, handler, options) {
             if (type === 'click') {
+                const hostElement = getHost(element);
+                const hostContext = contextMap.get(hostElement);
+
+                // There is no host context, bailing
+                if (!hostContext) {
+                    return;
+                }
+
                 orig.call(element, type, (evt) => {
                     const resolved = {
                         target        : locatorContext.id,
                         host          : hostContext.id,
-                        targetContext : isFunction(context) && context(),
+                        targetContext : isFunction(locatorContext.context) && locatorContext.context(),
                         hostContext   : isFunction(hostElement.context) && hostElement.context()
                     };
                 }, options);
@@ -249,6 +255,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 ```
+
+## Potential alternatives
+
+- Instead of passing component instance, maybe we can pass a facade that only exposes public component methods and properties
+
 
 ## Open Questions
 
