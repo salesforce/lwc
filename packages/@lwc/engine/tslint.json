@@ -3,6 +3,32 @@
   "rules": {
     "no-extend-ie-object": {
       "severity": "error"
+    },
+    "production-ban": {
+      "severity": "error",
+      "options": [
+        true,
+        {
+          "name": ["assert", "*"],
+          "message": "No asserts allowed in production."
+        },
+        "validateSlots",
+        "validateFields",
+        "getNodeRestrictionsDescriptors",
+        "getShadowRootRestrictionsDescriptors",
+        "getElementRestrictionsDescriptors",
+        "assertAttributeReflectionCapability",
+        "assertAttributeMutationCapability",
+        "getCustomElementRestrictionsDescriptors",
+        "getComponentRestrictionsDescriptors",
+        "getLightingElementProtypeRestrictionsDescriptors",
+        "patchNodeWithRestrictions",
+        "patchElementWithRestrictions",
+        "patchShadowRootWithRestrictions",
+        "patchCustomElementWithRestrictions",
+        "patchComponentWithRestrictions",
+        "patchLightningElementPrototypeWithRestrictions"
+      ]
     }
   },
   "rulesDirectory": "lib/scripts/tslint/rules/"
