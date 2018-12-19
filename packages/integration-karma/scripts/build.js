@@ -103,6 +103,8 @@ async function compileSuite(suite, config) {
         file: path.resolve(DIST_FOLDER, ...ancestors, `${name}.spec.js`),
         format: 'iife',
 
+        sourcemap: 'inline',
+
         // The engine is injected as UMD, and we need to indicate that the `lwc` import has to be resolved to the
         // `Engine` property assigned to the `window` object.
         globals: {
