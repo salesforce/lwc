@@ -13,7 +13,7 @@ export class Rule extends Lint.Rules.AbstractRule {
         description: 'Avoid leaking asserts into production code.',
         rationale: Lint.Utils.dedent`
             We should strip asserts when compiling the framework code for production environment.
-            For that the assertion code should be wrapped in: if (process.env.NODE_ENV === 'production') {}.
+            For that the assertion code should be wrapped in: if (process.env.NODE_ENV !== 'production') {}.
         `,
         hasFix: false,
         type: 'functionality',
