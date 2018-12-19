@@ -56,6 +56,7 @@ interface ServiceDef {
 - `rendered` - invoked sync after a component has rendered, but before `renderedCallback` had been called (lifecycle service for wire)
 
 All services hooks are called with the following arguments:
+
     - component instance
     - VNode data
     - Component Definition
@@ -65,17 +66,17 @@ The following is a summary of how each service hook uses the arguments passed to
 
 ## wiring
 
-### component instance
+#### component instance
 - passed to WireEventTarget
 - Invokes methods and populates properties
 
-### vnode data
+#### vnode data
 - Unused
 
-### component definition
+#### component definition
 - Used to initialize the wire service
 
-### VNode context
+#### VNode context
 - `Wire` services adds `@Wire` property to context
     - Adds `CONTEXT_CONNECTED` listener array
         - Array of `connected` event handlers
@@ -86,16 +87,16 @@ The following is a summary of how each service hook uses the arguments passed to
 
 ## locator
 
-### component instance
+#### component instance
 - unused
 
-### vnode data
+#### vnode data
 - Unused
 
-### component definition
+#### component definition
 - unused
 
-### VNode context
+#### VNode context
 - accesses `context.locator.resolved` which contains:
     - target: a string identifier, equal to `context.locator.id`
     - host: a string identifier, equal to the locator id for the host element
@@ -105,30 +106,30 @@ The following is a summary of how each service hook uses the arguments passed to
 
 ## connected (wire service lifecycle method)
 
-### component instance
+#### component instance
 - unused
 
-### vnode data
+#### vnode data
 - Unused
 
-### component definition
+#### component definition
 - Used to filter components that do not have `wire` defined
 
-### VNode context
+#### VNode context
 - gets `CONTEXT_CONNECTED` callbacks off of `context.@wire`
 
 ## disconnected (wire service lifecycle method)
 
-### component instance
+#### component instance
 - unused
 
 ### vnode data
 - Unused
 
-### component definition
+#### component definition
 - Used to filter components that do not have `wire` defined
 
-### VNode context
+#### VNode context
 - gets `CONTEXT_DISCONNECTED` callbacks off of `context.@wire`
 
 
