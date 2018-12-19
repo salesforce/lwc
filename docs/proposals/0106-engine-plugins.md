@@ -66,71 +66,71 @@ The following is a summary of how each service hook uses the arguments passed to
 
 ### wiring
 
-#### component instance
-- passed to WireEventTarget
-- Invokes methods and populates properties
+    component instance
+    - passed to WireEventTarget
+    - Invokes methods and populates properties
 
-#### vnode data
-- Unused
+    vnode data
+    - Unused
 
-#### component definition
-- Used to initialize the wire service
+    component definition
+    - Used to initialize the wire service
 
-#### VNode context
-- `Wire` services adds `@Wire` property to context
-    - Adds `CONTEXT_CONNECTED` listener array
-        - Array of `connected` event handlers
-    - Adds `CONTEXT_DISCONNECTED` listener array
-        - Array of `disconnected` event handlers
-    - Adds `CONTEXT_UPDATED` Object
-        - Array of listeners and values
+    VNode context
+    - `Wire` services adds `@Wire` property to context
+        - Adds `CONTEXT_CONNECTED` listener array
+            - Array of `connected` event handlers
+        - Adds `CONTEXT_DISCONNECTED` listener array
+            - Array of `disconnected` event handlers
+        - Adds `CONTEXT_UPDATED` Object
+            - Array of listeners and values
 
 ### locator
 
-#### component instance
-- unused
+    component instance
+    - unused
 
-#### vnode data
-- Unused
+    vnode data
+    - Unused
 
-#### component definition
-- unused
+    component definition
+    - unused
 
-#### VNode context
-- accesses `context.locator.resolved` which contains:
-    - target: a string identifier, equal to `context.locator.id`
-    - host: a string identifier, equal to the locator id for the host element
-    - targetContext: return value from specified instance method (optional)
-    - hostContext: return value from instance method specified on host (optional)
+    VNode context
+    - accesses `context.locator.resolved` which contains:
+        - target: a string identifier, equal to `context.locator.id`
+        - host: a string identifier, equal to the locator id for the host element
+        - targetContext: return value from specified instance method (optional)
+        - hostContext: return value from instance method specified on host (optional)
 
 
 ### connected (wire service lifecycle method)
 
-#### component instance
-- unused
+    component instance
+    - unused
 
-#### vnode data
-- Unused
+    vnode data
+    - Unused
 
-#### component definition
-- Used to filter components that do not have `wire` defined
+    component definition
+    - Used to filter components that do not have `wire` defined
 
-#### VNode context
-- gets `CONTEXT_CONNECTED` callbacks off of `context.@wire`
+    VNode context
+    - gets `CONTEXT_CONNECTED` callbacks off of `context.@wire`
 
 ### disconnected (wire service lifecycle method)
 
-#### component instance
-- unused
+    component instance
+    - unused
 
-#### vnode data
-- Unused
+    vnode data
+    - Unused
 
-#### component definition
-- Used to filter components that do not have `wire` defined
+    component definition
+    - Used to filter components that do not have `wire` defined
 
-#### VNode context
-- gets `CONTEXT_DISCONNECTED` callbacks off of `context.@wire`
+    VNode context
+    - gets `CONTEXT_DISCONNECTED` callbacks off of `context.@wire`
 
 ### API
 
