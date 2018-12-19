@@ -181,7 +181,7 @@ If an element does not have `locator` data on its context, the locator protocol 
 The following are examples on how existing services might use the plugin protocol:
 
 
-### Locators
+#### Locators
 ```
 import { register } from 'lwc';
 const contextMap = new WeakMap();
@@ -220,7 +220,7 @@ register('locator', {
 
 ```
 
-### LWC:DOM
+#### LWC:DOM
 ```
 import { register } from 'lwc';
 
@@ -240,7 +240,7 @@ register('lwc', {
 
 ```
 
-### Benchmarks
+#### Benchmarks
 ```
 import { register } from 'lwc';
 
