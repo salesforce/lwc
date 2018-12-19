@@ -34,6 +34,7 @@ function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
         const fileName = path.basename(file, MODULE_EXTENSION);
         const rootDir = path.dirname(file);
+        // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
         const rootParts = rootDir.split('/');
         const registry = {
             entry: path.join(fullPathDir, file),
