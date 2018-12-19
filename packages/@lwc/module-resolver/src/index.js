@@ -34,7 +34,7 @@ function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
         const fileName = path.basename(file, MODULE_EXTENSION);
         const rootDir = path.dirname(file);
-        const rootParts = rootDir.split(path.sep);
+        const rootParts = rootDir.split('/');
         const registry = {
             entry: path.join(fullPathDir, file),
             moduleSpecifier: null,
