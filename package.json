@@ -41,7 +41,7 @@
     "husky": "^1.0.0-rc.4",
     "isbinaryfile": "^3.0.3",
     "jest": "^23.6.0",
-    "lerna": "3.4.3",
+    "lerna": "3.7.1",
     "prettier": "~1.10.2",
     "rollup": "0.66.2",
     "rollup-plugin-compat": "0.21.0",
