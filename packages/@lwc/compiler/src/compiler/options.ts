@@ -105,23 +105,23 @@ export function validateOptions(options: CompilerOptions) {
     invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [options.name]);
     invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
 
+    // validate that files exist
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
         CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
-    // validate bundle entry case
-    if (!options.name.startsWith(".")) {
-        const entry = path.basename(options.name);
-        const upperCaseRegex = /[A-Z]/;
+    // validate that bundle entry doesn't start with upper case
+    const entry = path.basename(options.name);
+    const upperCaseRegex = /^[A-Z]/;
 
-        invariant(
-            !upperCaseRegex.test(entry),
-            CompilerValidationErrors.UNEXPECTED_ENTRY_SYNTAX,
-            [options.name]
-        );
-    }
+    invariant(
+        !upperCaseRegex.test(entry),
+        CompilerValidationErrors.ILLEGAL_ENTRY_SYNTAX,
+        [options.name]
+    );
 
+    // validate that bundle files contain value and their name case is legal
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
         invariant(
@@ -130,7 +130,16 @@ export function validateOptions(options: CompilerOptions) {
             [key, value]
         );
 
-        // TODO: validate key against namesapce to ensure the case matches and disallow upper case
+        const filename = path.parse(key).name;
+
+        // validate entry/file name case match. Only validate files that are named the same as the entry.
+        if (filename.toLowerCase() === entry.toLowerCase()) {
+            invariant(
+                filename === entry,
+                CompilerValidationErrors.UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH,
+                [key, entry],
+            );
+        }
     }
 
     if (!isUndefined(options.stylesheetConfig)) {

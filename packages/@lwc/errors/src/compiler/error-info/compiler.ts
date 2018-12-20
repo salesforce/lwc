@@ -116,9 +116,16 @@ export const CompilerValidationErrors = {
         url: ""
     },
 
-    UNEXPECTED_ENTRY_SYNTAX: {
-        code: 1026,
-        message: "Unexpected entry name \"{0}\". An entry must start with a lowercase character.",
+    ILLEGAL_ENTRY_SYNTAX: {
+        code: 1115,
+        message: "Illegal entry name \"{0}\". An entry must start with a lowercase character.",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH: {
+        code: 1116,
+        message: "Unexpected case mismatch. Component file name \"{0}\" must match the entry name \"{1}\".",
         level: DiagnosticLevel.Error,
         url: ""
     },
