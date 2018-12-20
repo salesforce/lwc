@@ -194,6 +194,25 @@ jobs:
           working_directory: packages/perf-benchmarks
           command: yarn start --projects best.ie11.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
+  push_canary_npm_artifacts:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8-stretch-browsers
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v4-{{ checksum "yarn.lock" }}
+
+      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
+      - run: yarn install --ignore-engines
+
+      - run:
+          name: Push artifacts
+          command: lerna exec -- npm pack && node scripts/release_canary_npm.js ${CIRCLE_SHA1}
 
 workflows:
   version: 2
@@ -212,6 +231,13 @@ workflows:
       - perf_and_compare_chrome:
           requires:
             - build_and_test
+
+      - push_canary_npm_artifacts:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: master
 
       # uncomment this when IE11 agent stabilizes
       # - perf_and_compare_ie11:
