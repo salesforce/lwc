@@ -14,6 +14,7 @@
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",
+    "pack:npm:all": "lerna exec -- npm pack",
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release:ci:npm": "./scripts/release_npm.sh",
