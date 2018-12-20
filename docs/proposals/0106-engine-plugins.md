@@ -180,9 +180,9 @@ If an element does not have `locator` data on its context, the locator protocol 
 
 The following are examples on how existing services might use the plugin protocol:
 
-
 ### Locators
 ```js
+=======
 import { register } from 'lwc';
 const contextMap = new WeakMap();
 
@@ -239,7 +239,6 @@ register('lwc', {
 })
 
 ```
-
 ### Benchmarks
 ```js
 import { register } from 'lwc';
