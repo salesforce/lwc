@@ -16,7 +16,7 @@ Today, locators and lwc:dom directives are defined in the component template and
 
 This document proposes that _all_ plugin be migrated to a single `context` object that is composed of `template context` and `class context`. The `context` object should be a dictionary of `PluginContext` associated by a `PluginIdentifier`:
 
-```
+```js
 {
     locators: {
         // locator specific data
@@ -39,7 +39,7 @@ The second part of this document details the Engine Plugin Protocol.
 
 The engine currently has 5 service hooks:
 
-```
+```ts
 interface ServiceDef {
     wiring?: ServiceCallback;
     locator?: ServiceCallback;
@@ -49,11 +49,11 @@ interface ServiceDef {
 }
 ```
 
-- `wiring` - invoked at component creationg time
+- `wiring` - invoked at component creation time
 - `locator` - invoked before element "click" handler is executed
 - `connected` - invoked sync after a component element has been appended, but before component has rendered (lifecycle service for wire)
 - `disconnected` - invoked sync after a component has been disconnected (lifecycle service for wire)
-- `rendered` - invoked sync after a component has rendered, but before `renderedCallback` had been called (lifecycle service for wire)
+- `rendered` - invoked sync after a component has rendered, but before `renderedCallback` had been called
 
 All services hooks are called with the following arguments:
 
@@ -173,7 +173,7 @@ register('locator', { ... });
 register('wire', { ... });
 ```
 
-If an element does not have `locator` data on its context, the locator protocol is never invoked. Likewisem if no `wire` data is defined on context, the protocol will not be invoked. This will simplify plugin code that has to do manual checks today.
+If an element does not have `locator` data on its context, the locator protocol is never invoked. Likewise, if no `wire` data is defined on context, the protocol will not be invoked. This will simplify plugin code that has to do manual checks today.
 
 
 ## Examples
@@ -182,7 +182,7 @@ The following are examples on how existing services might use the plugin protoco
 
 
 ### Locators
-```
+```js
 import { register } from 'lwc';
 const contextMap = new WeakMap();
 
@@ -206,8 +206,8 @@ register('locator', {
                     const resolved = {
                         target        : locatorContext.id,
                         host          : hostContext.id,
-                        targetContext : isFunction(locatorContext.context) && locatorContext.context(),
-                        hostContext   : isFunction(hostElement.context) && hostElement.context()
+                        targetContext : typeof locatorContext.context === 'function' && locatorContext.context(),
+                        hostContext   : typeof hostElement.context === 'function' && hostElement.context()
                     };
                 }, options);
             }
@@ -221,7 +221,7 @@ register('locator', {
 ```
 
 ### LWC:DOM
-```
+```js
 import { register } from 'lwc';
 
 
@@ -241,7 +241,7 @@ register('lwc', {
 ```
 
 ### Benchmarks
-```
+```js
 import { register } from 'lwc';
 
 if (process.env.NODE_ENV !== 'production') {
