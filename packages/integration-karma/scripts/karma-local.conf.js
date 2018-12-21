@@ -37,7 +37,7 @@ module.exports = config => {
         basePath: BASE_DIR,
         files: [
             ...files,
-            createPattern('**/*.spec.js', { watched: false }), // LWC plugin takes care of the watch
+            createPattern('**/*.spec.js'),
         ],
 
         preprocessors: {

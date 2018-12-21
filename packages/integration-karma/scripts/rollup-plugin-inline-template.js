@@ -8,16 +8,21 @@
 const babel = require('@babel/core');
 const templateCompiler = require('@lwc/template-compiler');
 
+const LWC_ENGINE_MODULE_NAME = 'Engine';
 const INLINE_TEMPLATE_TAG_NAME = 'html';
 const TEST_UTIL_MODULE_NAME = 'test-utils';
 
 function inlineTemplatePlugin({ types: t }) {
     let htmlImportSpecifier;
 
-    function isInlineTemplate(path) {
-        const { scope, node: { tag } } = path;
+    /**
+     * Returns true if the passed tagged template expression is an inline template definition.
+     */
+    function isInlineTemplate(taggedTemplateExpressionPath) {
+        const { scope, node: { tag } } = taggedTemplateExpressionPath;
 
-        const isHtmlTag = t.isIdentifier(tag) && tag.name === INLINE_TEMPLATE_TAG_NAME;
+        const isHtmlTag =
+            t.isIdentifier(tag) && tag.name === INLINE_TEMPLATE_TAG_NAME;
         if (!isHtmlTag) {
             return;
         }
@@ -41,9 +46,12 @@ function inlineTemplatePlugin({ types: t }) {
                     path.parentPath.node.source.value === TEST_UTIL_MODULE_NAME
                 ) {
                     if (htmlImportSpecifier !== undefined) {
-                        throw path.buildCodeFrameError('Multiple import of "html" from "test-utils".');
+                        throw path.buildCodeFrameError(
+                            'Multiple import of "html" from "test-utils".',
+                        );
                     }
 
+                    // We keep a reference to the imported html tag, in order to remove it later on if necessary.
                     htmlImportSpecifier = path.node;
                 }
             },
@@ -56,14 +64,26 @@ function inlineTemplatePlugin({ types: t }) {
                 }
 
                 if (node.quasi.quasis.length > 1) {
-                    throw path.buildCodeFrameError('Invalid inline template definition');
+                    throw path.buildCodeFrameError(
+                        'Invalid inline template definition',
+                    );
                 }
 
                 const templateElement = node.quasi.quasis[0];
                 const content = templateElement.value.raw;
 
-                let templateFn = templateCompiler.compileToFunction(content).toString();
-                templateFn = templateFn.replace('return tmpl;', 'return Engine.registerTemplate(tmpl);');
+                // In order to avoid compile multiple modules, we compile the template a function that can replaced
+                // inline.
+                let templateFn = templateCompiler
+                    .compileToFunction(content)
+                    .toString();
+
+                // Hack to avoid to invoke registerTemplate in the test for all the inline templates. In the generated
+                // template code, we invoke registerTemplate before returning it from the factory function.
+                templateFn = templateFn.replace(
+                    'return tmpl;',
+                    `return ${LWC_ENGINE_MODULE_NAME}.registerTemplate(tmpl);`,
+                );
 
                 path.replaceWithSourceString(templateFn);
             },
@@ -82,12 +102,14 @@ function inlineTemplatePlugin({ types: t }) {
                     path.scope.crawl();
 
                     // Remove html import if not necessary anymore
-                    const htmlBinding = path.scope.getBinding(INLINE_TEMPLATE_TAG_NAME);
+                    const htmlBinding = path.scope.getBinding(
+                        INLINE_TEMPLATE_TAG_NAME,
+                    );
                     if (htmlBinding.references === 0) {
                         htmlBinding.path.remove();
                     }
-                }
-            }
+                },
+            },
         },
     };
 }
@@ -106,11 +128,9 @@ module.exports = function inlineTemplate() {
                 },
             });
 
-            console.log(code);
-
             return {
                 code,
-                map
+                map,
             };
         },
     };

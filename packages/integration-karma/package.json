@@ -3,11 +3,8 @@
   "private": true,
   "version": "0.33.25",
   "scripts": {
-    "build": "node ./scripts/build.js",
-    "build:compat": "COMPAT=true node ./scripts/build.js",
     "start": "karma start ./scripts/karma-local.conf.js",
-    "test": "karma start ./scripts/karma-local.conf.js --single-run --browsers Chrome",
-    "test:sauce": "karma start ./scripts/karma-sauce.conf.js"
+    "test": "karma start ./scripts/karma-local.conf.js --single-run --browsers Chrome"
   },
   "devDependencies": {
     "@lwc/compiler": "0.33.25",

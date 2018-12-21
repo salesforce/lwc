@@ -15,12 +15,15 @@ const compatRollupPlugin = require('rollup-plugin-compat');
 
 const inlineTemplatePlugin = require('./rollup-plugin-inline-template');
 
-function createPreprocessor(config, emitter, logger) {
+function createPreprocessor(config, logger) {
     const { basePath, compat = false } = config;
 
     const log = logger.create("preprocessor.rollup");
 
-    const rollupPlugin = [
+    // Cache reused between each compilation for performance purposes.
+    let cache;
+
+    const plugins = [
         inlineTemplatePlugin(),
         lwcRollupPlugin({
             // Disable package resolution for now of performance reasons.
@@ -29,7 +32,7 @@ function createPreprocessor(config, emitter, logger) {
     ];
 
     if (compat) {
-        rollupPlugin.push(
+        plugins.push(
             compatRollupPlugin({
                 // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
                 // suites.
@@ -42,12 +45,15 @@ function createPreprocessor(config, emitter, logger) {
         try {
             const bundle = await rollup({
                 input: file.path,
-                plugins: rollupPlugin,
+                plugins,
+                cache,
 
                 // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
                 // globally in the page before running the tests.
                 external: ['lwc', 'test-utils'],
             });
+
+            cache = bundle.cache;
 
             let { code, map } = await bundle.generate({
                 format: 'iife',
@@ -82,7 +88,6 @@ function createPreprocessor(config, emitter, logger) {
 
 createPreprocessor.$inject = [
     "config",
-    "emitter",
     "logger"
 ];
 
