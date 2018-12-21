@@ -60,8 +60,14 @@ async function run() {
 
         for (const pkg of pkgs) {
             const [pkgName, ] = pkg.split(path.sep);
-            const { name } = require(path.join(absPath, pkgName, 'package.json'));
+            const jsonPath = path.join(absPath, pkgName, 'package.json');
+            const pkgJson = require(jsonPath);
+            const { name, version } = pkgJson;
             const fullPath = path.join(absPath, pkg);
+            pkgJson._originalversion = version;
+            pkgJson.version = `${version}-canary+${sha}`;
+
+            fs.writeFileSync(jsonPath, JSON.stringify(pkg, null, 2), { encoding: 'utf-8' });
             process.stdout.write(`Pushing package: ${pkgName}...`);
             const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
             process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
