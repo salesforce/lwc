@@ -64,25 +64,25 @@ async function run() {
     if (pkgs.length) {
         console.log('Creating package artifacts for SHA:', sha);
 
-        for (const pkg of pkgs) {
-            // get package.json
-            const [pkgName, ] = pkg.split(path.sep);
+        for (const pkgName of pkgs) {
+            // Find package.json
             const jsonPath = path.join(absPath, pkgName, 'package.json');
             const pkgJson = require(jsonPath);
 
-            // override package.json
+            // Override package.json
             const { name, version } = pkgJson;
-            const fullPath = path.join(absPath, pkg);
+            const fullPath = path.join(absPath, pkgName);
             pkgJson._originalversion = version;
             pkgJson.version = `${version}-canary+${sha}`;
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
+            // Generate tar artifact
             const tar = await exec('npm', ['pack'], { cwd: fullPath });
             const tarPath = path.join(fullPath, tar);
 
             // Push package to S3
             process.stdout.write(`Pushing package: ${pkgName}...`);
-            const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
+            const url = await pushPackage({ packageName: name, sha, packageTar : tarPath });
             process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
         }
 
