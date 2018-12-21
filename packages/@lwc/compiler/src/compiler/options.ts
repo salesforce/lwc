@@ -111,12 +111,14 @@ export function validateOptions(options: CompilerOptions) {
         CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
-    // validate that bundle entry doesn't start with upper case
-    const entry = path.basename(options.name);
+    // NOTE: if we have html components only, this logic will need to be modified as we assume
+    // that the entry point is javascript only.
+    const entry = !path.extname(options.name) ? options.name + '.js' : options.name;
     const upperCaseRegex = /^[A-Z]/;
 
+    // validate that bundle entry doesn't start with upper case
     invariant(
-        !upperCaseRegex.test(entry),
+        !upperCaseRegex.test(path.basename(entry)),
         CompilerValidationErrors.ILLEGAL_ENTRY_SYNTAX,
         [options.name]
     );
@@ -130,15 +132,20 @@ export function validateOptions(options: CompilerOptions) {
             [key, value]
         );
 
-        const filename = path.parse(key).name;
+        // only validate files in the root directory of the bundle.
+        // ignore .html and .css files
+        if (path.dirname(entry) === path.dirname(key) && path.extname(key) === '.js') {
+            const fileName = path.basename(key);
+            const entryName = path.basename(entry);
 
-        // validate entry/file name case match. Only validate files that are named the same as the entry.
-        if (filename.toLowerCase() === entry.toLowerCase()) {
-            invariant(
-                filename === entry,
-                CompilerValidationErrors.UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH,
-                [key, entry],
-            );
+            // validate entry/file name case match. Only validate files that are named the same as the entry.
+            if (entryName.toLowerCase() === fileName.toLowerCase()) {
+                invariant(
+                    fileName === entryName,
+                    CompilerValidationErrors.UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH,
+                    [key, entry],
+                );
+            }
         }
     }
 

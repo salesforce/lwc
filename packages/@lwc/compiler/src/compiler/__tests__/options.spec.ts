@@ -162,6 +162,7 @@ describe('compiler options', () => {
     });
 
     describe('entry + filenames case validation', () => {
+
         describe('bundle entry name casing validation', () => {
             it('should fail validation if entry name has a leading uppercase character', async () => {
                 await expect(compile({
@@ -173,6 +174,19 @@ describe('compiler options', () => {
                     },
                 })).rejects.toMatchObject({
                     message: expect.stringContaining('Illegal entry name "Mycmp". An entry must start with a lowercase character.'),
+                });
+            });
+
+            it('should fail validation if entry name has a leading uppercase character and a .js extension', async () => {
+                await expect(compile({
+                    name: 'Mycmp.js',
+                    namespace: 'c',
+                    files: {
+                        'mycmp.js': ``,
+                        'mycmp.html': ``,
+                    },
+                })).rejects.toMatchObject({
+                    message: expect.stringContaining('Illegal entry name "Mycmp.js". An entry must start with a lowercase character.'),
                 });
             });
 
@@ -203,7 +217,7 @@ describe('compiler options', () => {
         });
 
         describe('bundle file name casing validation', () => {
-            it('should pass validation if bundle contains uppercase files which name is different from its parent directory', async () => {
+            it('should pass validation if bundle contains an uppercase file name that is different from its entry', async () => {
                 const { success } = await compile({
                     name: 'myCmp',
                     namespace: 'c',
@@ -211,6 +225,19 @@ describe('compiler options', () => {
                         'myCmp.js': ``,
                         'myCmp.html': ``,
                         'Utils.js': ``,
+                    },
+                });
+                expect(success).toBe(true);
+            });
+
+            it ('should pass validation if .js file has the wrong casing but is located in a subdirectory directory', async () => {
+                const { success } = await compile({
+                    name: 'myCmp',
+                    namespace: 'c',
+                    files: {
+                        'myCmp.js': ``,
+                        'myCmp.html': ``,
+                        './subdirectory/MyCmp.js': ``,
                     },
                 });
                 expect(success).toBe(true);
@@ -225,48 +252,33 @@ describe('compiler options', () => {
                         'mycmp.html': ``,
                     },
                 })).rejects.toMatchObject({
-                    message: expect.stringContaining('Unexpected case mismatch. Component file name "Mycmp.js" must match the entry name "mycmp".'),
+                    message: expect.stringContaining('Unexpected case mismatch. Component file name "Mycmp.js" must match the entry name "mycmp.js".'),
                 });
             });
 
-            it('should fail validation if bundle .html file name does not match the entry name casing', async () => {
-                await expect(compile({
-                    name: 'mycmp',
-                    namespace: 'c',
-                    files: {
-                        'mycmp.js': ``,
-                        'Mycmp.html': ``,
-                    },
-                })).rejects.toMatchObject({
-                    message: expect.stringContaining('Unexpected case mismatch. Component file name "Mycmp.html" must match the entry name "mycmp".'),
-                });
-            });
-
-            it('should fail validation if bundle .css file name does not match the entry name casing', async () => {
-                await expect(compile({
-                    name: 'mycmp',
-                    namespace: 'c',
-                    files: {
-                        'mycmp.js': ``,
-                        'mycmp.html': ``,
-                        'Mycmp.css': ``,
-                    },
-                })).rejects.toMatchObject({
-                    message: expect.stringContaining('Unexpected case mismatch. Component file name "Mycmp.css" must match the entry name "mycmp".'),
-                });
-            });
-
-            it('should fail validation if bundle file name does not match the entry name', async () => {
-                await expect(compile({
-                    name: 'mycmp',
+            it ('should not validate .html file name with the same name as entry', async () => {
+                const { success } = await compile({
+                    name: 'myCmp',
                     namespace: 'c',
                     files: {
                         'myCmp.js': ``,
-                        'mycmp.html': ``,
+                        'MyCmp.html': ``,
                     },
-                })).rejects.toMatchObject({
-                    message: expect.stringContaining('Unexpected case mismatch. Component file name "myCmp.js" must match the entry name "mycmp".'),
                 });
+                expect(success).toBe(true);
+            });
+
+            it ('should not validate .css file name', async () => {
+                const { success } = await compile({
+                    name: 'myCmp',
+                    namespace: 'c',
+                    files: {
+                        'myCmp.js': ``,
+                        'myCmp.html': ``,
+                        'MyCmp.css': ``,
+                    },
+                });
+                expect(success).toBe(true);
             });
         });
     });
