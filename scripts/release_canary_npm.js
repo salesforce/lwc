@@ -25,9 +25,8 @@ const HOST = `https://${BUCKET}.s3.amazonaws.com`;
 
 async function exec(command, args, options) {
     console.log(`\n\tRunning: \`${command} ${args.join(' ')}\``);
-    let stream = await execa(command, args, options);
-    stream.stdout.pipe(process.stdout);
-    return stream;
+    const { stdout } = await execa(command, args, options);
+    return stdout;
 }
 
 function pushPackage({ sha, packageName, packageTar }) {
@@ -78,12 +77,13 @@ async function run() {
             pkgJson.version = `${version}-canary+${sha}`;
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
-            await exec('npm', ['pack'], { cwd: fullPath });
+            const tar = await exec('npm', ['pack'], { cwd: fullPath });
+            const tarPath = path.join(fullPath, tar);
 
             // Push package to S3
-            // process.stdout.write(`Pushing package: ${pkgName}...`);
-            // const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
-            // process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
+            process.stdout.write(`Pushing package: ${pkgName}...`);
+            const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
+            process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
         }
 
     } else {
