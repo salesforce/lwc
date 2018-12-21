@@ -8,7 +8,6 @@
 const fs = require('fs');
 const path = require('path');
 const AWS = require('aws-sdk');
-const glob = require('glob');
 const execa = require('execa');
 const { lookup } = require('mime-types');
 
@@ -24,9 +23,9 @@ const S3 = new AWS.S3(CONFIG);
 const PREFIX = 'public';
 const HOST = `https://${BUCKET}.s3.amazonaws.com`;
 
-function exec(command, args, options) {
+async function exec(command, args, options) {
     console.log(`\n\tRunning: \`${command} ${args.join(' ')}\``);
-    let stream = execa(command, args, options);
+    let stream = await execa(command, args, options);
     stream.stdout.pipe(process.stdout);
     return stream;
 }
@@ -77,14 +76,14 @@ async function run() {
             const fullPath = path.join(absPath, pkg);
             pkgJson._originalversion = version;
             pkgJson.version = `${version}-canary+${sha}`;
-            fs.writeFileSync(jsonPath, JSON.stringify(pkg, null, 2), { encoding: 'utf-8' });
+            fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
-            execa('npm', ['pack'], { cwd: fullPath });
+            await exec('npm', ['pack'], { cwd: fullPath });
 
             // Push package to S3
-            process.stdout.write(`Pushing package: ${pkgName}...`);
-            const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
-            process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
+            // process.stdout.write(`Pushing package: ${pkgName}...`);
+            // const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
+            // process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
         }
 
     } else {
