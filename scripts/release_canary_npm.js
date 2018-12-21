@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const AWS = require('aws-sdk');
 const glob = require('glob');
+const execa = require('execa');
 const { lookup } = require('mime-types');
 
 const CONFIG = {
@@ -22,6 +23,13 @@ const TEN_YEARS = 1000 * 60 * 60 * 24 * 365 * 10;
 const S3 = new AWS.S3(CONFIG);
 const PREFIX = 'public';
 const HOST = `https://${BUCKET}.s3.amazonaws.com`;
+
+function exec(command, args, options) {
+    console.log(`\n\tRunning: \`${command} ${args.join(' ')}\``);
+    let stream = execa(command, args, options);
+    stream.stdout.pipe(process.stdout);
+    return stream;
+}
 
 function pushPackage({ sha, packageName, packageTar }) {
     return new Promise(function (resolve, reject) {
@@ -53,25 +61,32 @@ async function run() {
         throw new Error('Pushing packages require a git sha commit to pin the package');
     }
 
-    const pkgs = glob.sync('*/*.tgz', { cwd: absPath });
+    const pkgs = fs.readdirSync(absPath);
 
     if (pkgs.length) {
         console.log('Creating package artifacts for SHA:', sha);
 
         for (const pkg of pkgs) {
+            // get package.json
             const [pkgName, ] = pkg.split(path.sep);
             const jsonPath = path.join(absPath, pkgName, 'package.json');
             const pkgJson = require(jsonPath);
+
+            // override package.json
             const { name, version } = pkgJson;
             const fullPath = path.join(absPath, pkg);
             pkgJson._originalversion = version;
             pkgJson.version = `${version}-canary+${sha}`;
-
             fs.writeFileSync(jsonPath, JSON.stringify(pkg, null, 2), { encoding: 'utf-8' });
+
+            execa('npm', ['pack'], { cwd: fullPath });
+
+            // Push package to S3
             process.stdout.write(`Pushing package: ${pkgName}...`);
             const url = await pushPackage({ packageName: name, sha, packageTar : fullPath });
             process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
         }
+
     } else {
         console.log('No packages found');
     }

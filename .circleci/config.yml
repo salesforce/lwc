@@ -212,7 +212,7 @@ jobs:
 
       - run:
           name: Push artifacts
-          command: yarn pack:npm:all && node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
+          command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
 
 workflows:
   version: 2
