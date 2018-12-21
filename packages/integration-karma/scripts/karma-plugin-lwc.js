@@ -5,26 +5,29 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+ /**
+ * This transformation is inspired from the karma-rollup-transform:
+ * https://github.com/jlmakes/karma-rollup-preprocessor/blob/master/lib/index.js
+ */
 'use strict';
 
 const path = require('path');
 
+const chokidar = require('chokidar');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
-const inlineTemplatePlugin = require('./rollup-plugin-inline-template');
-
-function createPreprocessor(config, logger) {
+function createPreprocessor(config, emitter, logger) {
     const { basePath, compat = false } = config;
 
-    const log = logger.create("preprocessor.rollup");
+    const log = logger.create('preprocessor-lwc');
+    const watcher = new Watcher(config, emitter, log);
 
     // Cache reused between each compilation for performance purposes.
     let cache;
 
     const plugins = [
-        inlineTemplatePlugin(),
         lwcRollupPlugin({
             // Disable package resolution for now of performance reasons.
             resolveFromPackages: false,
@@ -42,9 +45,11 @@ function createPreprocessor(config, logger) {
     }
 
     return async (_content, file, done) => {
+        const input = file.path;
+
         try {
             const bundle = await rollup({
-                input: file.path,
+                input,
                 plugins,
                 cache,
 
@@ -52,6 +57,8 @@ function createPreprocessor(config, logger) {
                 // globally in the page before running the tests.
                 external: ['lwc', 'test-utils'],
             });
+
+            watcher.watchSuite(input);
 
             cache = bundle.cache;
 
@@ -63,7 +70,7 @@ function createPreprocessor(config, logger) {
                 // `Engine` property assigned to the `window` object.
                 globals: {
                     lwc: 'Engine',
-                    'test-utils': 'TestUtils'
+                    'test-utils': 'TestUtils',
                 },
             });
 
@@ -76,19 +83,36 @@ function createPreprocessor(config, logger) {
         } catch (error) {
             const location = path.relative(basePath, file.path);
             log.error(
-                "Error processing “%s”\n\n%s\n",
+                'Error processing “%s”\n\n%s\n',
                 location,
-                error.stack || error.message
+                error.stack || error.message,
             );
 
             done(error, null);
         }
+    };
+}
+
+class Watcher {
+    constructor(config, emitter, logger) {
+        const { basePath } = config;
+
+        this._watcher = chokidar.watch([], {
+            ignoreInitial: true,
+        });
+
+        this._watcher.on('all', (_type, filename) => {
+            logger.info(`Change detected ${path.relative(basePath, filename)}`);
+            emitter.refreshFile(filename);
+        });
+    }
+
+    watchSuite(entry) {
+        const suiteDir = path.dirname(entry);
+        this._watcher.add(suiteDir);
     }
 }
 
-createPreprocessor.$inject = [
-    "config",
-    "logger"
-];
+createPreprocessor.$inject = ['config', 'emitter', 'logger'];
 
-module.exports = { "preprocessor:lwc": ["factory", createPreprocessor] };
+module.exports = { 'preprocessor:lwc': ['factory', createPreprocessor] };

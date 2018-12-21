@@ -1,32 +1,7 @@
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-
-import { createElement, LightningElement, api } from 'lwc';
-import { html } from 'test-utils';
+import { createElement } from 'lwc';
+import XTest from 'x/test';
 
 it('directive for:each', () => {
-    const template = html`
-        <template>
-            <ul>
-                <template for:each={items} for:item="item">
-                    <li key={item.key}>{item.value}</li>
-                </template>
-            </ul>
-        </template>
-    `;
-
-    class XTest extends LightningElement {
-        @api items = [];
-
-        render() {
-            return template();
-        }
-    }
-
     const elm = createElement('x-test', { is: XTest });
     document.body.appendChild(elm);
 
