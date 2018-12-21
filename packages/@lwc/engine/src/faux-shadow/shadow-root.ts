@@ -528,7 +528,7 @@ export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
         },
         tagName: {
             get() {
-                return '#shadowRoot';
+                return `#shadow-root (${shadowRoot.mode})`;
             },
             enumerable: true,
             configurable: true,
