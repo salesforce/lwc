@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.24...v) (2018-12-14)
+# [](https://github.com/salesforce/lwc/compare/v0.33.25...v) (2018-12-21)
+
+
+### Bug Fixes
+
+* **compiler:** remove misleading and useless stack info on CompilerError ([#893](https://github.com/salesforce/lwc/issues/893)) ([860da4f](https://github.com/salesforce/lwc/commit/860da4f))
+* **module-resolver:** wrong path separator in glob call ([#895](https://github.com/salesforce/lwc/issues/895)) ([7f1f954](https://github.com/salesforce/lwc/commit/7f1f954))
+
+
+### Features
+
+* no production assert tslint rule ([#894](https://github.com/salesforce/lwc/issues/894)) ([1e1aa91](https://github.com/salesforce/lwc/commit/1e1aa91))
+
+
+
+<a name="0.33.25"></a>
+## [0.33.25](https://github.com/salesforce/lwc/compare/v0.33.24...v0.33.25) (2018-12-14)
 
 
 ### Bug Fixes
