@@ -13,15 +13,15 @@ const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const compatRollupPlugin = require('rollup-plugin-compat');
 
+const inlineTemplatePlugin = require('./rollup-plugin-inline-template');
+
 function createPreprocessor(config, emitter, logger) {
     const { basePath, compat = false } = config;
 
     const log = logger.create("preprocessor.rollup");
 
-    // Rollup cache reused between build to speed up the process
-    let cache;
-
     const rollupPlugin = [
+        inlineTemplatePlugin(),
         lwcRollupPlugin({
             // Disable package resolution for now of performance reasons.
             resolveFromPackages: false,
@@ -38,15 +38,15 @@ function createPreprocessor(config, emitter, logger) {
         );
     }
 
-    return async (content, file, done) => {
+    return async (_content, file, done) => {
         try {
             const bundle = await rollup({
                 input: file.path,
                 plugins: rollupPlugin,
 
-                // Rollup should not attempt to resolve the engine, Karma takes care of injecting it globally in the page
-                // before running the tests.
-                external: ['lwc'],
+                // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
+                // globally in the page before running the tests.
+                external: ['lwc', 'test-utils'],
             });
 
             let { code, map } = await bundle.generate({
@@ -57,6 +57,7 @@ function createPreprocessor(config, emitter, logger) {
                 // `Engine` property assigned to the `window` object.
                 globals: {
                     lwc: 'Engine',
+                    'test-utils': 'TestUtils'
                 },
             });
 
