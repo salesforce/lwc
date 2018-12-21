@@ -11,6 +11,14 @@ const AWS = require('aws-sdk');
 const execa = require('execa');
 const { lookup } = require('mime-types');
 
+// To invoke this from the commandline you need the following to env vars to exist:
+//
+// RELEASE_BUCKET_NAME
+// RELEASE_SECRET_ACCESS_KEY
+// RELEASE_ACCESS_KEY_ID
+// RELEASE_REGION
+//
+
 const CONFIG = {
     accessKeyId: process.env.RELEASE_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.RELEASE_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
