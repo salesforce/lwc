@@ -230,7 +230,7 @@ describe('compiler options', () => {
                 expect(success).toBe(true);
             });
 
-            it ('should pass validation if .js file has the wrong casing but is located in a subdirectory directory', async () => {
+            it ('should pass validation if .js file has the wrong casing but is located in a subdirectory', async () => {
                 const { success } = await compile({
                     name: 'myCmp',
                     namespace: 'c',
