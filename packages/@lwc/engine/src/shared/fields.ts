@@ -10,7 +10,7 @@ import { defineProperty, create, isUndefined } from "./language";
  * In IE11, symbols are expensive.
  * Due to the nature of the symbol polyfill. This method abstract the
  * creation of symbols, so we can fallback to string when native symbols
- * are not supported. Note that we can't use typeof since it will fail when tranpiling.
+ * are not supported. Note that we can't use typeof since it will fail when transpiling.
  */
 const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
