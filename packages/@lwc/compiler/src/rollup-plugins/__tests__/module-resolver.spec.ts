@@ -162,5 +162,38 @@ describe("module resolver", () => {
         expect(success).toBe(false);
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
     });
+});
 
+describe('module entry validation', () => {
+    test("compiler should fail module resolution if an entry name starts with capital letter", async () => {
+        const { diagnostics, success } = await compile({
+            name: 'Mycmp',
+            namespace: 'c',
+            files: {
+                'mycmp.js': ``,
+                'mycmp.html': ``,
+            },
+        });
+
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Illegal entry name "Mycmp". An entry must start with a lowercase character.'),
+        }]);
+    });
+
+    test("compiler should not fail module resolution if an entry contains non-leading capital letter", async () => {
+        const { success } = await compile({
+            name: 'myCmp',
+            namespace: 'c',
+            files: {
+                'myCmp.js': `
+                    import { LightningElement } from 'lwc';
+                    export default class App extends LightningElement {}
+                `,
+                'myCmp.html': `<template></template>`,
+            },
+        });
+        expect(success).toBe(true);
+    });
 });

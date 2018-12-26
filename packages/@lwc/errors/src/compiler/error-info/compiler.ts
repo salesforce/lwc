@@ -114,21 +114,7 @@ export const CompilerValidationErrors = {
         message: "Unknown entry \"{0}\" in outputConfig.env.",
         level: DiagnosticLevel.Error,
         url: ""
-    },
-
-    ILLEGAL_ENTRY_SYNTAX: {
-        code: 1115,
-        message: "Illegal entry name \"{0}\". An entry must start with a lowercase character.",
-        level: DiagnosticLevel.Error,
-        url: ""
-    },
-
-    UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH: {
-        code: 1116,
-        message: "Unexpected case mismatch. Component file name \"{0}\" must match the entry name \"{1}\".",
-        level: DiagnosticLevel.Error,
-        url: ""
-    },
+    }
 };
 
 export const ModuleResolutionErrors = {
@@ -156,6 +142,13 @@ export const ModuleResolutionErrors = {
     NONEXISTENT_FILE: {
         code: 1004,
         message: "No such file {0}",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    ILLEGAL_ENTRY_SYNTAX: {
+        code: 1116,
+        message: "Illegal entry name \"{0}\". An entry must start with a lowercase character.",
         level: DiagnosticLevel.Error,
         url: ""
     },

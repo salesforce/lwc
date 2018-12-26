@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as path from "path";
-
 import { isBoolean, isString, isUndefined, isObject } from "../utils";
 import { CompilerValidationErrors, invariant } from "@lwc/errors";
 
@@ -105,25 +103,11 @@ export function validateOptions(options: CompilerOptions) {
     invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [options.name]);
     invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
 
-    // validate that files exist
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
         CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
-    // NOTE: if we have html components only, this logic will need to be modified as we assume
-    // that the entry point is javascript only.
-    const entry = !path.extname(options.name) ? options.name + '.js' : options.name;
-    const upperCaseRegex = /^[A-Z]/;
-
-    // validate that bundle entry doesn't start with upper case
-    invariant(
-        !upperCaseRegex.test(path.basename(entry)),
-        CompilerValidationErrors.ILLEGAL_ENTRY_SYNTAX,
-        [options.name]
-    );
-
-    // validate that bundle files contain value and their name case is legal
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
         invariant(
@@ -131,22 +115,6 @@ export function validateOptions(options: CompilerOptions) {
             CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
             [key, value]
         );
-
-        // only validate files in the root directory of the bundle.
-        // ignore .html and .css files
-        if (path.dirname(entry) === path.dirname(key) && path.extname(key) === '.js') {
-            const fileName = path.basename(key);
-            const entryName = path.basename(entry);
-
-            // validate entry/file name case match. Only validate files that are named the same as the entry.
-            if (entryName.toLowerCase() === fileName.toLowerCase()) {
-                invariant(
-                    fileName === entryName,
-                    CompilerValidationErrors.UNEXPECTED_ENTRY_AND_FILES_CASE_MISMATCH,
-                    [key, entry],
-                );
-            }
-        }
     }
 
     if (!isUndefined(options.stylesheetConfig)) {

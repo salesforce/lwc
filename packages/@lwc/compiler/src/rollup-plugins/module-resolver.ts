@@ -36,6 +36,11 @@ function isImplicitHTMLImport(importee: string, importer: string) {
     );
 }
 
+function isValidEntrySyntax(importee: string) {
+    const upperCaseRegex = /^[A-Z]/;
+    return importee && upperCaseRegex.test(importee);
+}
+
 function fileExists(
     fileName: string,
     { files }: NormalizedCompilerOptions
@@ -66,6 +71,13 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
         resolveId(importee: string, importer: string) {
             if (!isRelativeImport(importee) && importer) {
                 return;
+            }
+
+            if (isValidEntrySyntax(importee)) {
+                throw generateCompilerError(ModuleResolutionErrors.ILLEGAL_ENTRY_SYNTAX, {
+                        messageArgs: [ importee ],
+                    }
+                );
             }
 
             const relPath = importer ? path.dirname(importer) : options.baseDir || "";
