@@ -114,7 +114,7 @@ export const CompilerValidationErrors = {
         message: "Unknown entry \"{0}\" in outputConfig.env.",
         level: DiagnosticLevel.Error,
         url: ""
-    }
+    },
 };
 
 export const ModuleResolutionErrors = {
