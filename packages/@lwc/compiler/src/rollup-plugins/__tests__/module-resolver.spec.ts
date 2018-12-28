@@ -146,7 +146,28 @@ describe("module resolver", () => {
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.'),
+        }]);
+    });
+
+    test("compiler should report name case mismatch diagnostic for local import", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { nested } from './lib/foo';`,
+                "lib/Foo.js": ``,
+            }
+        };
+
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve "./lib/foo" from "foo.js". The import name must case match the file name in the component folder "lib/Foo".'),
+        }]);
     });
 
     test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
@@ -178,7 +199,7 @@ describe('module entry validation', () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([{
             level: 0,
-            message: expect.stringContaining('Illegal entry name "Mycmp". An entry must start with a lowercase character.'),
+            message: expect.stringContaining('Illegal folder name "Mycmp". The folder name must start with a lowercase character: "mycmp".'),
         }]);
     });
 
@@ -195,5 +216,24 @@ describe('module entry validation', () => {
             },
         });
         expect(success).toBe(true);
+    });
+});
+
+describe('module file names validation', () => {
+    test('compilation should fail when module and its ".js" file names do not case match', async () => {
+        const { diagnostics, success } = await compile({
+            name: 'mycmp',
+            namespace: 'c',
+            files: {
+                'Mycmp.js': ``,
+                'Mycmp.html': ``,
+            },
+        });
+
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".'),
+        }]);
     });
 });

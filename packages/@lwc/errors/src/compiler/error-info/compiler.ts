@@ -127,14 +127,14 @@ export const ModuleResolutionErrors = {
 
     IMPORTEE_RESOLUTION_FAILED: {
         code: 1010,
-        message: "Failed to resolve entry for module {0}",
+        message: "Failed to resolve entry for module \"{0}\".",
         level: DiagnosticLevel.Error,
         url: ""
     },
 
     IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED: {
         code: 1011,
-        message: "{0} failed to be resolved from {1}",
+        message: "Failed to resolve import \"{0}\" from \"{1}\". Please add \"{2}\" file to the component folder.",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -148,7 +148,21 @@ export const ModuleResolutionErrors = {
 
     ILLEGAL_ENTRY_SYNTAX: {
         code: 1116,
-        message: "Illegal entry name \"{0}\". An entry must start with a lowercase character.",
+        message: "Illegal folder name \"{0}\". The folder name must start with a lowercase character: \"{1}\".",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    FOLDER_AND_FILE_NAME_CASE_MISMATCH: {
+        code: 1117,
+        message: "Failed to resolve \"{0}\". The file name must case match the component folder name \"{1}\".",
+        level: DiagnosticLevel.Error,
+        url: ""
+    },
+
+    IMPORT_AND_FILE_NAME_CASE_MISMATCH: {
+        code: 1118,
+        message: "Failed to resolve \"{0}\" from \"{1}\". The import name must case match the file name in the component folder \"{2}\".",
         level: DiagnosticLevel.Error,
         url: ""
     },

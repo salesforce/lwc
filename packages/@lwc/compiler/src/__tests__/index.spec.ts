@@ -65,6 +65,6 @@ describe("test index entry points", () => {
         const { success, diagnostics }  = await compile(config);
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].message).toMatch("Failed to resolve entry for module foo");
+        expect(diagnostics[0].message).toMatch("Failed to resolve entry for module \"foo\".");
     });
 });
