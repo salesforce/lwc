@@ -36,7 +36,7 @@ function isImplicitHTMLImport(importee: string, importer: string) {
     );
 }
 
-function isValidEntrySyntax(importee: string) {
+function isInvalidEntrySyntax(importee: string) {
     const upperCaseRegex = /^[A-Z]/;
     return importee && upperCaseRegex.test(importee);
 }
@@ -124,7 +124,7 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                 return;
             }
 
-            if (isValidEntrySyntax(importee)) {
+            if (isInvalidEntrySyntax(importee)) {
                 throw generateCompilerError(ModuleResolutionErrors.ILLEGAL_ENTRY_SYNTAX, {
                         messageArgs: [ importee, importee.toLocaleLowerCase() ],
                     }

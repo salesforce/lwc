@@ -219,8 +219,8 @@ describe('module entry validation', () => {
     });
 });
 
-describe('module file names validation', () => {
-    test('compilation should fail when module and its ".js" file names do not case match', async () => {
+describe('module file name validation', () => {
+    test('compilation should fail when folder and its entry ".js" file names do not case match', async () => {
         const { diagnostics, success } = await compile({
             name: 'mycmp',
             namespace: 'c',
