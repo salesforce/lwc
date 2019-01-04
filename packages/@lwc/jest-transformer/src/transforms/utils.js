@@ -16,15 +16,6 @@ const defaultTemplate = babelTemplate(`
     }
 `);
 
-const resolvedPromiseTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = function() { return Promise.resolve(); };
-    }
-`);
-
 const schemaObjectTemplate = babelTemplate(`
     let RESOURCE_NAME;
     try {
@@ -67,7 +58,8 @@ const schemaObjectAndFieldTemplate = babelTemplate(`
  * }
  */
 function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
-    const { importSource, resourceName } = getImportInfo(path);
+    const { importSource, resourceNames } = getImportInfo(path);
+    const defaultImport = resourceNames[0];
 
     // if no fallback value provided, use the resource path from the import statement
     if (fallbackData === undefined) {
@@ -81,36 +73,28 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     }
 
     path.replaceWithMultiple(defaultTemplate({
-        RESOURCE_NAME: t.identifier(resourceName),
+        RESOURCE_NAME: t.identifier(defaultImport),
         IMPORT_SOURCE: t.stringLiteral(importSource),
         FALLBACK_DATA: fallbackData
     }));
 }
 
-function resolvedPromiseScopedImportTransform(t, path) {
-    const { importSource, resourceName } = getImportInfo(path);
-
-    path.replaceWithMultiple(resolvedPromiseTemplate({
-        RESOURCE_NAME: t.identifier(resourceName),
-        IMPORT_SOURCE: t.stringLiteral(importSource),
-    }));
-}
-
 function schemaScopedImportTransform(t, path, importIdentifier) {
-    const { importSource, resourceName } = getImportInfo(path);
+    const { importSource, resourceNames } = getImportInfo(path);
+    const defaultImport = resourceNames[0];
 
     const resourcePath = importSource.substring(importIdentifier.length + 1);
     const idx = resourcePath.indexOf('.');
 
     if (idx === -1) {
         path.replaceWithMultiple(schemaObjectTemplate({
-            RESOURCE_NAME: t.identifier(resourceName),
+            RESOURCE_NAME: t.identifier(defaultImport),
             IMPORT_SOURCE: t.stringLiteral(importSource),
             OBJECT_API_NAME: t.stringLiteral(resourcePath),
         }));
     } else {
         path.replaceWithMultiple(schemaObjectAndFieldTemplate({
-            RESOURCE_NAME: t.identifier(resourceName),
+            RESOURCE_NAME: t.identifier(defaultImport),
             IMPORT_SOURCE: t.stringLiteral(importSource),
             OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
             FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
@@ -122,18 +106,23 @@ function getImportInfo(path) {
     const importSource = path.get('source.value').node;
     const importSpecifiers = path.get('specifiers');
 
-    if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw generateError(path, {
-            errorInfo: JestTransformerErrors.INVALID_IMPORT,
-            messageArgs: [importSource]
-        });
-    }
+    // TODO(tbliss): do we even need this check anymore? If yes, clean up the apex specific check
+    // if (importSource !== '@salesforce/apex' && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
+    //     throw generateError(path, {
+    //         errorInfo: JestTransformerErrors.INVALID_IMPORT,
+    //         messageArgs: [importSource]
+    //     });
+    // }
 
-    const resourceName = importSpecifiers[0].get('local').node.name;
+    //const resourceName = importSpecifiers[0].get('local').node.name;
+    let resourceNames = [];
+    importSpecifiers.forEach(importSpecifier => {
+        resourceNames.push(importSpecifier.get('local').node.name);
+    });
 
     return {
         importSource,
-        resourceName,
+        resourceNames,
     };
 }
 
@@ -156,6 +145,6 @@ function generateError(path, { errorInfo, messageArgs } = {}) {
 
 module.exports = {
     stringScopedImportTransform,
-    resolvedPromiseScopedImportTransform,
     schemaScopedImportTransform,
+    getImportInfo,
 };
