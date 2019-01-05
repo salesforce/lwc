@@ -52,7 +52,9 @@ describe('@salesforce/apex import', () => {
         try {
           refreshApex = require("@salesforce/apex").refreshApex;
         } catch (e) {
-          refreshApex = jest.fn();
+          refreshApex = function () {
+            return Promise.resolve();
+          };
         }
 
         let getSObjectValue;
@@ -63,16 +65,4 @@ describe('@salesforce/apex import', () => {
           getSObjectValue = jest.fn();
         }
     `);
-
-    // test('throws error if using named import', `
-    //     import { Id } from '@salesforce/apex/FooController.fooMethod';
-    // `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
-
-    // test('throws error if renamed default imports', `
-    //     import { default as label } from '@salesforce/apex/FooController.fooMethod';
-    // `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
-
-    // test('throws error if renamed multiple default imports', `
-    //     import { default as label, foo } from '@salesforce/apex/FooController.fooMethod';
-    // `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
 });

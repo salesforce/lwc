@@ -24,6 +24,35 @@ const resolvedPromiseTemplate = babelTemplate(`
  * and try/catch block since we don't know how many named imports we have.
  */
 function insertNamedImportReplacement(t, path, resource) {
+    // jest.fn();
+    const jestFn = t.callExpression(
+        t.memberExpression(
+            t.identifier('jest'),
+            t.identifier('fn')
+        ),
+        []
+    );
+
+    // function() { return Promise.resolve(); };
+    const resolvedPromise = t.functionExpression(
+        null,
+        [],
+        t.blockStatement([
+            t.returnStatement(
+                t.callExpression(
+                    t.memberExpression(
+                        t.identifier('Promise'),
+                        t.identifier('resolve'),
+                    ),
+                    []
+                )
+            )
+        ])
+    );
+
+    // we know refreshApex returns a Promise, default to jest.fn() to try to be future proof
+    const fallbackValue = resource === 'refreshApex' ? resolvedPromise : jestFn;
+
     // `let refreshApex;`
     path.insertBefore(
         t.variableDeclaration(
@@ -56,13 +85,7 @@ function insertNamedImportReplacement(t, path, resource) {
                         t.assignmentExpression(
                         '=',
                         t.identifier(resource),
-                        t.callExpression(
-                            t.memberExpression(
-                                t.identifier('jest'),
-                                t.identifier('fn')
-                            ),
-                            []
-                        )
+                        fallbackValue
                     ))
                 ])
             )

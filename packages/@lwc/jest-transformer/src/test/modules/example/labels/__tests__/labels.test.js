@@ -7,11 +7,6 @@
 import { createElement } from 'lwc';
 import Labels from 'example/labels';
 
-//import { refreshApex, getSObjectValue } from '@salesforce/apex';
-import foo from '@salesforce/apex/Foo.bar';
-
-console.log('>>> foo: ', foo);
-
 jest.mock('@salesforce/label/c.mocked', () => {
     return { default: "value set in test" };
 }, { virtual: true });
