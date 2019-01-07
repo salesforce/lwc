@@ -23,6 +23,15 @@ describe('example-apex', () => {
         })
     });
 
+    it('can import and call multiple default Apex imports', () => {
+        const element = createElement('example-apex', { is: Apex });
+        document.body.appendChild(element);
+        const apexCall = element.callDefaultImport2();
+        return apexCall.then((ret) => {
+            expect(ret).toBe('from test');
+        })
+    });
+
     it('refreshApex is resolved Promise', () => {
         const element = createElement('example-apex', { is: Apex });
         document.body.appendChild(element);

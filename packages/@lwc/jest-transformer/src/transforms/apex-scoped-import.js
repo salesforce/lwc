@@ -9,13 +9,19 @@ const { getImportInfo } = require('./utils');
 
 const APEX_IMPORT_IDENTIFIER = '@salesforce/apex';
 
+/*
+ * Apex imports can be used as @wire ids or called directly. If used as a @wire
+ * id, it must be the same object in the component under test and the test case
+ * itself. Due to this requirement, we save the mock to the global object to be
+ * shared.
+ */
 const resolvedPromiseTemplate = babelTemplate(`
-    global.__lwcJestResolvedPromise = global.__lwcJestResolvedPromise || function() { return Promise.resolve(); };
+    global.MOCK_NAME = global.MOCK_NAME || function() { return Promise.resolve(); };
     let RESOURCE_NAME;
     try {
         RESOURCE_NAME = require(IMPORT_SOURCE).default;
     } catch (e) {
-        RESOURCE_NAME = global.__lwcJestResolvedPromise;
+        RESOURCE_NAME = global.MOCK_NAME;
     }
 `);
 
@@ -116,6 +122,7 @@ module.exports = function ({ types: t }) {
                     path.replaceWithMultiple(resolvedPromiseTemplate({
                         RESOURCE_NAME: t.identifier(resourceNames[0]),
                         IMPORT_SOURCE: t.stringLiteral(importSource),
+                        MOCK_NAME: `__lwcJestMock_${resourceNames[0]}`,
                     }));
                 }
             }

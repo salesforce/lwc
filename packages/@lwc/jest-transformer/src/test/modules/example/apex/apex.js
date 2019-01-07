@@ -6,14 +6,21 @@
  */
 import { LightningElement, api } from 'lwc';
 
-// these return a function that returns a resolved Promise
 import ApexMethod from '@salesforce/apex/FooClass.FooMethod';
+import ApexMethod2 from '@salesforce/apex/FooClass.FooMethod2';
 import { refreshApex, getSObjectValue } from '@salesforce/apex';
 
 export default class Apex extends LightningElement {
     @api
     callDefaultImport() {
         return ApexMethod().then(() => {
+            return 'from test';
+        });
+    }
+
+    @api
+    callDefaultImport2() {
+        return ApexMethod2().then(() => {
             return 'from test';
         });
     }

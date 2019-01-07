@@ -12,7 +12,7 @@ describe('@salesforce/apex import', () => {
     test('does default transformation', `
         import myMethod from '@salesforce/apex/FooController.fooMethod';
     `, `
-        global.__lwcJestResolvedPromise = global.__lwcJestResolvedPromise || function () {
+        global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
           return Promise.resolve();
         };
 
@@ -21,7 +21,7 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          myMethod = global.__lwcJestResolvedPromise;
+          myMethod = global.__lwcJestMock_myMethod;
         }
     `);
 
@@ -31,7 +31,7 @@ describe('@salesforce/apex import', () => {
     `, `
         import { otherNamed } from './something-valid';
 
-        global.__lwcJestResolvedPromise = global.__lwcJestResolvedPromise || function () {
+        global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
           return Promise.resolve();
         };
 
@@ -40,7 +40,7 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          myMethod = global.__lwcJestResolvedPromise;
+          myMethod = global.__lwcJestMock_myMethod;
         }
     `);
 
