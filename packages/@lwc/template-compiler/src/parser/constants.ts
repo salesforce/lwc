@@ -337,6 +337,8 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   ],
   'crossorigin': [
       'img',
+      'audio',
+      'video'
   ],
   'data': [
     'object',
