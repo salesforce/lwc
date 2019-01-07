@@ -1,12 +1,17 @@
-(function (lwc) {
+(function(varResolver, lwc) {
     'use strict';
+
+   varResolver =
+     varResolver && varResolver.hasOwnProperty("default")
+       ? varResolver["default"]
+       : varResolver;
 
    function stylesheet(hostSelector, shadowSelector, nativeShadow) {
      return (
        "\n" +
        (nativeShadow
-         ? ":host {color: var(--lwc-my-color);}"
-         : hostSelector + " {color: var(--lwc-my-color);}") +
+         ? ":host {color: " + varResolver("--lwc-my-color") + ";}"
+         : hostSelector + " {color: " + varResolver("--lwc-my-color") + ";}") +
        "\n"
      );
    }
@@ -96,4 +101,4 @@
     });
     container.appendChild(element);
 
-}(Engine));
+ })(resolveCss, Engine);
