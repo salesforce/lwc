@@ -335,6 +335,9 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   'coords': [
     'area',
   ],
+  'crossorigin': [
+      'img',
+  ],
   'data': [
     'object',
   ],
