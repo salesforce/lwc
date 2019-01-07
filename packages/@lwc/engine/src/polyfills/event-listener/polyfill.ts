@@ -11,8 +11,6 @@ import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition } from '../../e
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { patchEvent } from '../../faux-shadow/events';
 
-const guid = `__lwcEventWrapper${Date.now()}__`;
-
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
     if (originalTarget instanceof Node) {
@@ -26,9 +24,9 @@ function doesEventNeedsPatch(e: Event): boolean {
 function getEventListenerWrapper(fnOrObj): EventListener | null {
     let wrapperFn: EventListener | null = null;
     try {
-        wrapperFn = fnOrObj[guid];
+        wrapperFn = fnOrObj.$$lwcEventWrapper$$;
         if (!wrapperFn) {
-            wrapperFn = fnOrObj[guid] = function(this: EventTarget, e: Event) {
+            wrapperFn = fnOrObj.$$lwcEventWrapper$$ = function(this: EventTarget, e: Event) {
                 // we don't want to patch every event, only when the original target is coming
                 // from inside a synthetic shadow
                 if (doesEventNeedsPatch(e)) {
@@ -52,7 +50,7 @@ function windowAddEventListener(this: EventTarget, type, fnOrObj, optionsOrCaptu
         return;
     }
     const wrapperFn = getEventListenerWrapper(fnOrObj);
-    nativeWindowAddEventListener.call(this, type, wrapperFn, optionsOrCapture);
+    nativeWindowAddEventListener.call(this, type, wrapperFn as EventListener, optionsOrCapture);
 }
 
 function windowRemoveEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
@@ -71,7 +69,7 @@ function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
         return;
     }
     const wrapperFn = getEventListenerWrapper(fnOrObj);
-    nativeAddEventListener.call(this, type, wrapperFn, optionsOrCapture);
+    nativeAddEventListener.call(this, type, wrapperFn as EventListener, optionsOrCapture);
 }
 
 function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
