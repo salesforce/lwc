@@ -21,7 +21,8 @@ const resolvedPromiseTemplate = babelTemplate(`
 
 /**
  * Instead of using @babel/template, we manually build the variable declaration
- * and try/catch block since we don't know how many named imports we have.
+ * and try/catch block since we don't know how many named imports we have and
+ * each one needs it's own try/catch block.
  */
 function insertNamedImportReplacement(t, path, resource) {
     // jest.fn();
@@ -97,7 +98,7 @@ module.exports = function ({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
-                const { importSource, resourceNames } = getImportInfo(path);
+                const { importSource, resourceNames } = getImportInfo(path, true);
 
                 // if '@salesforce/apex' is the exact source that means we have named imports
                 // e.g. `import { refreshApex, getSObjectValue } from '@salesforce/apex';`

@@ -102,19 +102,27 @@ function schemaScopedImportTransform(t, path, importIdentifier) {
     }
 }
 
-function getImportInfo(path) {
+/**
+ * For an import statement we want to transform, parse out the names of the
+ * resources and the source of the import.
+ *
+ * @param {Object} path Object representation of link between nodes, from Babel
+ * @param {Boolean} noValidate true to allow named imports. Falsey values throws
+ * for any non-default imports
+ * @returns {Object} an Object with the source of the import and Array of names
+ * of the resources being imported
+ */
+function getImportInfo(path, noValidate) {
     const importSource = path.get('source.value').node;
     const importSpecifiers = path.get('specifiers');
 
-    // TODO(tbliss): do we even need this check anymore? If yes, clean up the apex specific check
-    // if (importSource !== '@salesforce/apex' && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
-    //     throw generateError(path, {
-    //         errorInfo: JestTransformerErrors.INVALID_IMPORT,
-    //         messageArgs: [importSource]
-    //     });
-    // }
+    if (!noValidate && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
+        throw generateError(path, {
+            errorInfo: JestTransformerErrors.INVALID_IMPORT,
+            messageArgs: [importSource]
+        });
+    }
 
-    //const resourceName = importSpecifiers[0].get('local').node.name;
     let resourceNames = [];
     importSpecifiers.forEach(importSpecifier => {
         resourceNames.push(importSpecifier.get('local').node.name);
