@@ -24,12 +24,13 @@ function createPreprocessor(config, emitter, logger) {
     const log = logger.create('preprocessor-lwc');
     const watcher = new Watcher(config, emitter, log);
 
-    // Cache reused between each compilation for performance purposes.
+    // Cache reused between each compilation to speed up the compilation time.
     let cache;
 
     const plugins = [
         lwcRollupPlugin({
-            // Disable package resolution for now of performance reasons.
+            // Disable package resolution to avoid lookup in the node_modules directory to boost the initial compilation
+            // time.
             resolveFromPackages: false,
         }),
     ];
@@ -47,6 +48,13 @@ function createPreprocessor(config, emitter, logger) {
     return async (_content, file, done) => {
         const input = file.path;
 
+        const suiteDir = path.dirname(input);
+
+        // Wrap all the tests into a describe block with the file stricture name
+        const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
+        const intro = ancestorDirectories.map(tag =>  `describe("${tag}", function () {`).join('\n');
+        const outro = ancestorDirectories.map(() =>  `});`).join('\n');
+
         try {
             const bundle = await rollup({
                 input,
@@ -58,7 +66,7 @@ function createPreprocessor(config, emitter, logger) {
                 external: ['lwc', 'test-utils'],
             });
 
-            watcher.watchSuite(input);
+            watcher.watchSuite(suiteDir);
 
             cache = bundle.cache;
 
@@ -70,8 +78,10 @@ function createPreprocessor(config, emitter, logger) {
                 // `Engine` property assigned to the `window` object.
                 globals: {
                     lwc: 'Engine',
-                    'test-utils': 'TestUtils',
                 },
+
+                intro,
+                outro,
             });
 
             // We need to assign the source to the original file so Karma can source map the error in the console. Add
@@ -107,8 +117,7 @@ class Watcher {
         });
     }
 
-    watchSuite(entry) {
-        const suiteDir = path.dirname(entry);
+    watchSuite(suiteDir) {
         this._watcher.add(suiteDir);
     }
 }
