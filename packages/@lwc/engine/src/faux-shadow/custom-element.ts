@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus } from "./shadow-root";
+import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus, getIE11FakeShadowRootPlaceholder } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
 import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
-import { isNull, isFalse, getPropertyDescriptor, ArrayFilter } from "../shared/language";
+import { isNull, isFalse, getPropertyDescriptor, ArrayFilter, ArrayUnshift } from "../shared/language";
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
+
+const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -96,6 +98,12 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            if (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)) {
+                // inserting a comment node as the first childNode to trick the IE11
+                // DevTool to show the content of the shadowRoot, this should only happen
+                // in dev-mode and in IE11 (which we detect by looking at the symbol).
+                ArrayUnshift.call(childNodes, getIE11FakeShadowRootPlaceholder(this));
+            }
             return createStaticNodeList(childNodes);
         }
         get children(this: HTMLElement): HTMLCollectionOf<Element> {

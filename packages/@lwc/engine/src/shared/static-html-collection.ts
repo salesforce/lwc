@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from "./language";
-import { createFieldName, getInternalField } from "./fields";
+import { createFieldName, getInternalField, setInternalField } from "./fields";
 
 const Items = createFieldName('items');
 
@@ -122,11 +122,8 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
 setPrototypeOf(StaticHTMLCollection, HTMLCollection);
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
-    const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype, {
-        [Items]: {
-            value: items,
-        }
-    });
+    const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype);
+    setInternalField(collection, Items, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(collection, index, {

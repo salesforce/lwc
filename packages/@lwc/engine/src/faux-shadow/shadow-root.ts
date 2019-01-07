@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter } from "../shared/language";
+import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { createStaticNodeList } from "../shared/static-node-list";
-import { DocumentPrototypeActiveElement, elementFromPoint } from "../env/document";
+import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from "../env/document";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
@@ -499,4 +499,40 @@ SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShad
 // passed instanceof checks against window.ShadowDom
 if (isNativeShadowRootAvailable) {
     setPrototypeOf(SyntheticShadowRoot.prototype, (window as any).ShadowRoot.prototype);
+}
+
+/**
+ * This method is only intended to be used in non-production mode in IE11
+ * and its role is to produce a 1-1 mapping between a shadowRoot instance
+ * and a comment node that is intended to use to trick the IE11 DevTools
+ * to show the content of the shadowRoot in the DOM Explorer.
+ */
+export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
+    const shadowRoot: SyntheticShadowRootInterface = getInternalField(host, ShadowRootKey);
+    // @ts-ignore this $$placeholder$$ is not a security issue because you must
+    // have access to the shadowRoot in order to extract the fake node, which give
+    // you access to the same childNodes of the shadowRoot, so, who cares.
+    let c = shadowRoot.$$placeholder$$;
+    if (!isUndefined(c)) {
+        return c;
+    }
+    // @ts-ignore $$placeholder$$ is fine, read the node above.
+    c = shadowRoot.$$placeholder$$ = createComment.call(document, '');
+    defineProperties(c, {
+        childNodes: {
+            get() {
+                return shadowRoot.childNodes;
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        tagName: {
+            get() {
+                return `#shadow-root (${shadowRoot.mode})`;
+            },
+            enumerable: true,
+            configurable: true,
+        }
+    });
+    return c;
 }

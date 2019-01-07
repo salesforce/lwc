@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from "./language";
-import { createFieldName, getInternalField } from "./fields";
+import { createFieldName, getInternalField, setInternalField } from "./fields";
 
 const Items = createFieldName('items');
 
@@ -94,11 +94,8 @@ StaticNodeList.prototype = create(NodeList.prototype, {
 setPrototypeOf(StaticNodeList, NodeList);
 
 export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> {
-    const nodeList: NodeListOf<T> = create(StaticNodeList.prototype, {
-        [Items]: {
-            value: items,
-        }
-    });
+    const nodeList: NodeListOf<T> = create(StaticNodeList.prototype);
+    setInternalField(nodeList, Items, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(nodeList, index, {
