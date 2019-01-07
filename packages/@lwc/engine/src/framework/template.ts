@@ -97,7 +97,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (html !== cmpTemplate) {
         // It is important to reset the content to avoid reusing similar elements generated from a different
         // template, because they could have similar IDs, and snabbdom just rely on the IDs.
-        resetShadowRoot(vm);
+        if (!isUndefined(cmpTemplate)) {
+            resetShadowRoot(vm);
+        }
 
         // Check that the template was built by the compiler
         if (!isTemplateRegistered(html)) {

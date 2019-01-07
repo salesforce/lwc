@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../../shared/assert";
-import { isUndefined } from "../../shared/language";
+import { isUndefined, isFalse } from "../../shared/language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { getComponentVM } from "../vm";
@@ -50,8 +50,8 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
                 vm.cmpTrack[key] = reactiveOrAnyValue;
-                if (vm.idx > 0) {
-                    // perf optimization to skip this step if not in the DOM
+                if (isFalse(vm.isDirty)) {
+                    // perf optimization to skip this step if the track property is on a component that is already dirty
                     notifyMutation(this, key);
                 }
             }

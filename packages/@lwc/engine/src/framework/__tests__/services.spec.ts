@@ -120,9 +120,9 @@ describe('services', () => {
             document.body.removeChild(elm);
 
             expect(lifecycleLog).toEqual([
+                'component render method',
                 'service connected callback',
                 'component connected callback',
-                'component render method',
                 'service rendered callback',
                 'component rendered callback',
                 'service disconnected callback',

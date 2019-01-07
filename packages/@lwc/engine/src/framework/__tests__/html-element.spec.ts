@@ -464,7 +464,7 @@ describe('html-element', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(ops).toEqual(['connected', 'render']);
+            expect(ops).toEqual(['render', 'connected']);
         });
 
         it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function() {
@@ -1518,7 +1518,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
+                `[object:vm MyComponent (121)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
             );
         });
 

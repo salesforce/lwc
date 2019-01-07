@@ -44,7 +44,7 @@ describe('invoker', () => {
             }).toThrow();
         });
 
-        it('should invoke connectedCallback() before any child is inserted into the dom', () => {
+        it('should invoke connectedCallback() after the child is inserted into the dom', () => {
             let counter = 0;
 
             const html = compileTemplate(`
@@ -55,7 +55,7 @@ describe('invoker', () => {
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     counter++;
-                    expect(this.template.querySelectorAll('p').length).toBe(0);
+                    expect(this.template.querySelectorAll('p').length).toBe(1);
                 }
                 render() {
                     return html;
@@ -260,7 +260,7 @@ describe('invoker', () => {
 
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
-            expect(lifecycle).toEqual(['connected', 'render', 'rendered']);
+            expect(lifecycle).toEqual(['render', 'connected', 'rendered']);
         });
 
         it('should decorate error thrown with component stack information', () => {

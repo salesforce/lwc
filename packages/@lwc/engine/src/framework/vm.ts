@@ -6,8 +6,8 @@
  */
 import assert from "../shared/assert";
 import { getComponentDef } from "./def";
-import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
-import { patchChildren } from "./patch";
+import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, markComponentAsDirty, ErrorCallback } from "./component";
+import { hasDynamicChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, defineProperty, StringToLowerCase, isFalse } from "../shared/language";
 import { getInternalField, getHiddenField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
@@ -15,7 +15,7 @@ import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from "../env/dom";
 
-import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import { VNodeData, VNodes, VCustomElement } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { ComponentInterface } from "./component";
@@ -23,6 +23,7 @@ import { Context } from "./context";
 import { startMeasure, endMeasure, startGlobalMeasure, endGlobalMeasure, GlobalMeasurementPhase } from "./performance-timing";
 import { tagNameGetter, innerHTMLSetter } from "../env/element";
 import { parentElementGetter, parentNodeGetter } from "../env/node";
+import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 
 // Object of type ShadowRoot for instance checks
 const NativeShadowRoot = (window as any).ShadowRoot;
@@ -32,14 +33,30 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
+export enum VMStatus {
+    created,
+    connected,
+    disconnected,
+}
+
 export interface UninitializedVM {
+    /** Component Element Back-pointer */
     readonly elm: HTMLElement;
+    /** Component Definition */
     readonly def: ComponentDef;
+    /** Component Context Object */
     readonly context: Context;
+    /** Back-pointer to the owner VM or null for root elements */
+    readonly owner: VM | null;
+    /** Component Unique Identifier (TODO: this should be removed) */
     uid: number;
+    /** Component Creation Index */
     idx: number;
+    /** Component status, analogous to Element.isConnected */
+    status: VMStatus;
     data: VNodeData;
     children: VNodes;
+    childLWC: VCustomElement[];
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
@@ -82,90 +99,58 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
-function addInsertionIndex(vm: VM) {
+export function rerenderVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.invariant(vm.idx === 0, `${vm} is already locked to a previously generated idx.`);
     }
-    vm.idx = ++idx;
-    const { connected } = Services;
-    if (connected) {
-        invokeServiceHook(vm, connected);
-    }
-    const { connectedCallback } = vm.def;
-    if (!isUndefined(connectedCallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            startMeasure('connectedCallback', vm);
-        }
-
-        invokeComponentCallback(vm, connectedCallback);
-
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('connectedCallback', vm);
-        }
-    }
+    rehydrate(vm);
 }
 
-function removeInsertionIndex(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.invariant(vm.idx > 0, `${vm} is not locked to a previously generated idx.`);
-    }
-    vm.idx = 0;
-    const { disconnected } = Services;
-    if (disconnected) {
-        invokeServiceHook(vm, disconnected);
-    }
-    const { disconnectedCallback } = vm.def;
-    if (!isUndefined(disconnectedCallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            startMeasure('disconnectedCallback', vm);
-        }
-
-        invokeComponentCallback(vm, disconnectedCallback);
-
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('disconnectedCallback', vm);
-        }
-    }
-}
-
-export function renderVM(vm: VM) {
+export function appendRootVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    if (vm.isDirty) {
-        rehydrate(vm);
-    }
+    rehydrate(vm);
+    runConnectedCallback(vm);
+    runChildrenConnectedCallback(vm);
+    // reporting first rendered
+    runRenderedCallback(vm);
 }
 
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm.status === VMStatus.created, `${vm} cannot be recycled.`);
     }
-    if (vm.idx !== 0) {
-        return; // already appended
-    }
-    addInsertionIndex(vm);
+    rehydrate(vm);
 }
 
-export function removeVM(vm: VM) {
+// just in case the component comes back, with this we guarantee re-rendering it
+// while preventing any attempt to rehydration until after reinsertion.
+function resetComponentStateWhenRemoved(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    if (vm.idx === 0) {
-        return; // already removed
+    runDisconnectedCallback(vm);
+    runChildrenDisconnectedCallback(vm);
+}
+
+// this method is triggered by the diffing algo only when a vnode from the
+// old vnode.children is removed from the DOM.
+export function removeVM(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm.status === VMStatus.connected, `${vm} must be inserted.`);
     }
-    removeInsertionIndex(vm);
-    // just in case it comes back, with this we guarantee re-rendering it
-    vm.isDirty = true;
-    clearReactiveListeners(vm);
-    // At this point we need to force the removal of all children because
-    // we don't have a way to know that children custom element were removed
-    // from the DOM. Once we move to use Custom Element APIs, we can remove this
-    // because the disconnectedCallback will be triggered automatically when
-    // removed from the DOM.
-    resetShadowRoot(vm);
+    resetComponentStateWhenRemoved(vm);
+}
+
+// this method is triggered by the removal of a root element from the DOM.
+export function removeRootVM(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    resetComponentStateWhenRemoved(vm);
 }
 
 export interface CreateVMInit {
@@ -173,6 +158,7 @@ export interface CreateVMInit {
     // custom settings for now
     fallback: boolean;
     isRoot?: boolean;
+    owner: VM | null;
 }
 
 export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
@@ -180,21 +166,26 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, fallback } = options;
+    const { isRoot, mode, fallback, owner } = options;
     const shadowRootOptions: ShadowRootInit = {
         mode,
         delegatesFocus: !!Ctor.delegatesFocus,
     };
     uid += 1;
+    idx += 1;
     const vm: UninitializedVM = {
         uid,
-        idx: 0,
+        // component creation index is defined once, and never reset, it can
+        // be preserved from one insertion to another without any issue
+        idx,
+        status: VMStatus.created,
         isScheduled: false,
         isDirty: true,
         isRoot: isTrue(isRoot),
         fallback,
         mode,
         def,
+        owner,
         elm: elm as HTMLElement,
         data: EmptyObject,
         context: create(null),
@@ -206,6 +197,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         setHook,
         getHook,
         children: EmptyArray,
+        childLWC: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -228,75 +220,50 @@ function rehydrate(vm: VM) {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
     }
-    if (vm.idx > 0 && vm.isDirty) {
+    if (vm.isDirty) {
         const children = renderComponent(vm);
-        vm.isScheduled = false;
         patchShadowRoot(vm, children);
-        processPostPatchCallbacks(vm);
     }
 }
 
-function patchErrorBoundaryVm(errorBoundaryVm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(errorBoundaryVm && "component" in errorBoundaryVm, `${errorBoundaryVm} is not a vm.`);
-        assert.isTrue(errorBoundaryVm.elm instanceof HTMLElement, `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`);
-        assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
-    }
-    const children = renderComponent(errorBoundaryVm);
-    const { elm, cmpRoot, fallback, children: oldCh } = errorBoundaryVm;
-    errorBoundaryVm.isScheduled = false;
-    errorBoundaryVm.children = children; // caching the new children collection
-
-    // patch function mutates vnodes by adding the element reference,
-    // however, if patching fails it contains partial changes.
-    // patch failures are caught in flushRehydrationQueue
-    patchChildren(elm, cmpRoot, oldCh, children, fallback);
-    processPostPatchCallbacks(errorBoundaryVm);
-}
-
-function patchShadowRoot(vm: VM, children: VNodes) {
+function patchShadowRoot(vm: VM, newCh: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm, cmpRoot, fallback, children: oldCh } = vm;
-    vm.children = children; // caching the new children collection
-    if (children.length === 0 && oldCh.length === 0) {
-        return; // nothing to do here
-    }
-    let error;
-
-    if (process.env.NODE_ENV !== 'production') {
-        startMeasure('patch', vm);
-    }
-
-    try {
+    vm.children = newCh; // caching the new children collection
+    if (newCh.length > 0 || oldCh.length > 0) {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(elm, cmpRoot, oldCh, children, fallback);
-    } catch (e) {
-        error = Object(e);
-    } finally {
-        if (process.env.NODE_ENV !== 'production') {
-            endMeasure('patch', vm);
+        if (oldCh !== newCh) {
+            const parentNode = fallback ? elm : cmpRoot;
+            const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
+            runWithBoundaryProtection(vm, vm, () => {
+                // pre
+                if (process.env.NODE_ENV !== 'production') {
+                    startMeasure('patch', vm);
+                }
+            }, () => {
+                // job
+                fn(parentNode, oldCh, newCh);
+            }, () => {
+                // post
+                if (process.env.NODE_ENV !== 'production') {
+                    endMeasure('patch', vm);
+                }
+            });
         }
-
-        if (!isUndefined(error)) {
-            const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
-            if (isUndefined(errorBoundaryVm)) {
-                throw error; // eslint-disable-line no-unsafe-finally
-            }
-            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
-
-            // synchronously render error boundary's alternative view
-            // to recover in the same tick
-            if (errorBoundaryVm.isDirty) {
-                patchErrorBoundaryVm(errorBoundaryVm);
-            }
-        }
+    }
+    if (vm.status === VMStatus.connected) {
+        // If the element is connected, that means connectedCallback was already issued, and
+        // any successive rendering should finish with the call to renderedCallback, otherwise
+        // the connectedCallback will take care of calling it in the right order at the end of
+        // the current rehydration process.
+        runRenderedCallback(vm);
     }
 }
 
-function processPostPatchCallbacks(vm: VM) {
+function runRenderedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
@@ -332,73 +299,119 @@ function flushRehydrationQueue() {
         const vm = vms[i];
         try {
             rehydrate(vm);
+            // in case new children are inserted, we need to trigger their connect hooks
+            runChildrenConnectedCallback(vm);
         } catch (error) {
-            const errorBoundaryVm = getErrorBoundaryVMFromParentElement(vm);
-            if (isUndefined(errorBoundaryVm)) {
-                if (i + 1 < len) {
-                    // pieces of the queue are still pending to be rehydrated, those should have priority
-                    if (rehydrateQueue.length === 0) {
-                        addCallbackToNextTick(flushRehydrationQueue);
-                    }
-                    ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
+            if (i + 1 < len) {
+                // pieces of the queue are still pending to be rehydrated, those should have priority
+                if (rehydrateQueue.length === 0) {
+                    addCallbackToNextTick(flushRehydrationQueue);
                 }
-                // we need to end the measure before throwing.
-                endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
+                ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
+            }
+            // we need to end the measure before throwing.
+            endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
 
-                // rethrowing the original error will break the current tick, but since the next tick is
-                // already scheduled, it should continue patching the rest.
-                throw error;
-            }
-            // we only recover if error boundary is present in the hierarchy
-            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
-            if (errorBoundaryVm.isDirty) {
-                patchErrorBoundaryVm(errorBoundaryVm);
-            }
+            // re-throwing the original error will break the current tick, but since the next tick is
+            // already scheduled, it should continue patching the rest.
+            throw error; // eslint-disable-line no-unsafe-finally
         }
     }
 
     endGlobalMeasure(GlobalMeasurementPhase.REHYDRATE);
 }
 
-function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
-    if (isUndefined(error.wcStack)) {
-        error.wcStack = getErrorComponentStack(failedVm.elm);
-    }
-    resetShadowRoot(failedVm); // remove offenders
-    const { errorCallback } = errorBoundaryVm.def;
-
+function runConnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        startMeasure('errorCallback', errorBoundaryVm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
+    const { status } = vm;
+    if (status === VMStatus.connected) {
+        return; // nothing to do since it was already connected
+    }
+    vm.status = VMStatus.connected;
+    // reporting connection
+    const { connected } = Services;
+    if (connected) {
+        invokeServiceHook(vm, connected);
+    }
+    const { connectedCallback } = vm.def;
+    if (!isUndefined(connectedCallback)) {
+        if (process.env.NODE_ENV !== 'production') {
+            startMeasure('connectedCallback', vm);
+        }
 
-    // error boundaries must have an ErrorCallback
-    invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
+        invokeComponentCallback(vm, connectedCallback);
 
-    if (process.env.NODE_ENV !== 'production') {
-        endMeasure('errorCallback', errorBoundaryVm);
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure('connectedCallback', vm);
+        }
     }
 }
 
-function destroyChildren(children: VNodes) {
-    for (let i = 0, len = children.length; i < len; i += 1) {
-        const vnode = children[i];
-        if (isNull(vnode)) {
-            continue;
+function runChildrenConnectedCallback(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    const { childLWC } = vm;
+    // reporting connection for every child
+    for (let i = 0, len = childLWC.length; i < len; i += 1) {
+        const elm = childLWC[i].elm as HTMLElement;
+        const childVM = getCustomElementVM(elm);
+        runConnectedCallback(childVM);
+        runChildrenConnectedCallback(childVM);
+        // reporting first rendered
+        runRenderedCallback(childVM);
+    }
+}
+
+function runDisconnectedCallback(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    const { status } = vm;
+    if (status === VMStatus.disconnected) {
+        return; // nothing to do since it was already disconnected
+    }
+    if (!vm.isDirty) {
+        // this guarantees that if the component is reused/reinserted,
+        // it will be re-rendered because we are disconnecting the reactivity
+        // linking, so mutations are not automatically reflected on the state
+        // of disconnected components.
+        markComponentAsDirty(vm);
+    }
+    clearReactiveListeners(vm);
+    vm.status = VMStatus.disconnected;
+    // reporting disconnection
+    const { disconnected } = Services;
+    if (disconnected) {
+        invokeServiceHook(vm, disconnected);
+    }
+    const { disconnectedCallback } = vm.def;
+    if (!isUndefined(disconnectedCallback)) {
+        if (process.env.NODE_ENV !== 'production') {
+            startMeasure('disconnectedCallback', vm);
         }
-        const { elm } = vnode;
-        if (isUndefined(elm)) {
-            continue;
+
+        invokeComponentCallback(vm, disconnectedCallback);
+
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure('disconnectedCallback', vm);
         }
-        try {
-            // if destroy fails, it really means that the service hook or disconnect hook failed,
-            // we should just log the issue and continue our destroying procedure
-            vnode.hook.destroy(vnode);
-        } catch (e) {
-            if (process.env.NODE_ENV !== 'production') {
-                const vm = getCustomElementVM(elm as HTMLElement);
-                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
-            }
-        }
+    }
+}
+
+function runChildrenDisconnectedCallback(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    const { childLWC } = vm;
+    // reporting disconnection for every child
+    for (let i = 0, len = childLWC.length; i < len; i += 1) {
+        const elm = childLWC[i].elm as HTMLElement;
+        const childVM = getCustomElementVM(elm);
+        runDisconnectedCallback(childVM);
+        runChildrenDisconnectedCallback(childVM);
     }
 }
 
@@ -410,7 +423,7 @@ export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { children: oldCh, fallback } = vm;
+    const { fallback } = vm;
     vm.children = EmptyArray;
     if (isTrue(fallback)) {
         // faux-shadow does not have a real cmpRoot instance, instead
@@ -419,8 +432,8 @@ export function resetShadowRoot(vm: VM) {
     } else {
         ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     }
-    // proper destroying mechanism for those vnodes that requires it
-    destroyChildren(oldCh);
+    // disconnecting any known custom element inside the shadow of the this vm
+    runChildrenDisconnectedCallback(vm);
 }
 
 export function scheduleRehydration(vm: VM) {
@@ -436,16 +449,7 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-    }
-    const { elm } = vm;
-    const parentElm = elm && getParentOrHostElement(elm);
-    return getErrorBoundaryVM(parentElm);
-}
-
-function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
+export function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
@@ -632,6 +636,39 @@ export function allocateInSlot(vm: VM, children: VNodes) {
                     markComponentAsDirty(vm);
                     return;
                 }
+            }
+        }
+    }
+}
+
+export function runWithBoundaryProtection(vm: VM, anchor: VM | null, pre: () => void, job: () => void, post: () => void) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    let error;
+    pre();
+    try {
+        job();
+    } catch (e) {
+        error = Object(e);
+    } finally {
+        post();
+        if (!isUndefined(error)) {
+            error.wcStack = error.wcStack || getErrorComponentStack(vm.elm);
+            const errorBoundaryVm = isNull(anchor) ? undefined : getErrorBoundaryVMFromOwnElement(anchor);
+            if (isUndefined(errorBoundaryVm)) {
+                throw error; // eslint-disable-line no-unsafe-finally
+            }
+            resetShadowRoot(vm); // remove offenders
+            const { errorCallback } = errorBoundaryVm.def;
+            if (process.env.NODE_ENV !== 'production') {
+                startMeasure('errorCallback', errorBoundaryVm);
+            }
+            // error boundaries must have an ErrorCallback
+            invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
+
+            if (process.env.NODE_ENV !== 'production') {
+                endMeasure('errorCallback', errorBoundaryVm);
             }
         }
     }

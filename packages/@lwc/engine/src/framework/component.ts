@@ -87,7 +87,7 @@ export function clearReactiveListeners(vm: VM) {
     }
     const { deps } = vm;
     const len = deps.length;
-    if (len) {
+    if (len > 0) {
         for (let i = 0; i < len; i += 1) {
             const set = deps[i];
             const pos = ArrayIndexOf.call(deps[i], vm);
@@ -100,6 +100,13 @@ export function clearReactiveListeners(vm: VM) {
     }
 }
 
+function clearChildLWC(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+    }
+    vm.childLWC = [];
+}
+
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
@@ -107,8 +114,10 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     clearReactiveListeners(vm);
+    clearChildLWC(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
+    vm.isScheduled = false;
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
