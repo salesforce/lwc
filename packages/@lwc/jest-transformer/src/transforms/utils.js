@@ -16,24 +16,6 @@ const defaultTemplate = babelTemplate(`
     }
 `);
 
-const schemaObjectTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME };
-    }
-`);
-
-const schemaObjectAndFieldTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME, fieldApiName: FIELD_API_NAME };
-    }
-`);
-
 /*
  * Transform a default import
  * statement into a try/catch that attempts to `require` the original import
@@ -77,29 +59,6 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
         IMPORT_SOURCE: t.stringLiteral(importSource),
         FALLBACK_DATA: fallbackData
     }));
-}
-
-function schemaScopedImportTransform(t, path, importIdentifier) {
-    const { importSource, resourceNames } = getImportInfo(path);
-    const defaultImport = resourceNames[0];
-
-    const resourcePath = importSource.substring(importIdentifier.length + 1);
-    const idx = resourcePath.indexOf('.');
-
-    if (idx === -1) {
-        path.replaceWithMultiple(schemaObjectTemplate({
-            RESOURCE_NAME: t.identifier(defaultImport),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath),
-        }));
-    } else {
-        path.replaceWithMultiple(schemaObjectAndFieldTemplate({
-            RESOURCE_NAME: t.identifier(defaultImport),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
-            FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
-        }));
-    }
 }
 
 /**
@@ -153,6 +112,5 @@ function generateError(path, { errorInfo, messageArgs } = {}) {
 
 module.exports = {
     stringScopedImportTransform,
-    schemaScopedImportTransform,
     getImportInfo,
 };

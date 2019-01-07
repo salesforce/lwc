@@ -26,7 +26,7 @@ describe('example-apex', () => {
     it('can import and call multiple default Apex imports', () => {
         const element = createElement('example-apex', { is: Apex });
         document.body.appendChild(element);
-        const apexCall = element.callDefaultImport2();
+        const apexCall = element.callAnotherDefaultImport();
         return apexCall.then((ret) => {
             expect(ret).toBe('from test');
         })

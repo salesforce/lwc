@@ -7,7 +7,7 @@
 import { LightningElement, api } from 'lwc';
 
 import ApexMethod from '@salesforce/apex/FooClass.FooMethod';
-import ApexMethod2 from '@salesforce/apex/FooClass.FooMethod2';
+import AnotherApexMethod from '@salesforce/apex/FooClass.AnotherFooMethod';
 import { refreshApex, getSObjectValue } from '@salesforce/apex';
 
 export default class Apex extends LightningElement {
@@ -19,8 +19,8 @@ export default class Apex extends LightningElement {
     }
 
     @api
-    callDefaultImport2() {
-        return ApexMethod2().then(() => {
+    callAnotherDefaultImport() {
+        return AnotherApexMethod().then(() => {
             return 'from test';
         });
     }
