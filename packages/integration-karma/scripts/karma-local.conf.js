@@ -50,6 +50,9 @@ module.exports = config => {
 
     const reporters = ['progress'];
 
+    // If the coverage argument is passed, we need to instrument the engine code, and add the coverage to the list of
+    // reporter. We don't want to always enable the coverage transformations, since it makes debugging the engine code
+    // harder.
     if (config.coverage) {
         preprocessors[LWC_ENGINE] = ['coverage'];
         preprocessors[LWC_ENGINE_COMPAT] = ['coverage'];
@@ -77,6 +80,11 @@ module.exports = config => {
             'karma-jasmine',
             karmaPluginLwc,
         ],
+
+        // The karma start command doesn't allow arguments passing, so we need to pass the grep arg manually.
+        client: {
+            args: ['--grep', config.grep],
+        },
 
         coverageReporter: {
             type: 'lcov',

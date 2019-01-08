@@ -98,6 +98,14 @@ module.exports = config => {
         );
     }
 
+    const sauceTestName = [
+        'LWC',
+        config.compat && 'compat',
+        config.nativeShadow && 'native shadow',
+    ]
+        .filter(Boolean)
+        .join(' - ');
+
     const browsers = matchingBrowsers.map(browser => {
         return browser.label;
     });
@@ -119,11 +127,12 @@ module.exports = config => {
             username,
             accessKey,
 
-            testName: 'LWC' + (config.compat ? ' - COMPAT' : ''),
+            testName: sauceTestName,
             recordScreenshots: false,
 
             customData: {
                 compat: config.compat,
+                nativeShadow: config.nativeShadow,
 
                 ci: !!process.env.CI,
                 build: process.env.CIRCLE_BUILD_NUM || Date.now(),
