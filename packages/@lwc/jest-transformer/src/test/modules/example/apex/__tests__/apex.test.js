@@ -14,30 +14,32 @@ afterEach(() => {
 });
 
 describe('example-apex', () => {
-    it('default import is resolved Promise', () => {
-        const element = createElement('example-apex', { is: Apex });
-        document.body.appendChild(element);
-        const apexCall = element.callDefaultImport();
-        return apexCall.then((ret) => {
-            expect(ret).toBe('from test');
-        })
-    });
+    describe('importing @salesforce/apex', () => {
+        it('returns a Promise that resolves for the default import', () => {
+            const element = createElement('example-apex', { is: Apex });
+            document.body.appendChild(element);
+            const apexCall = element.callDefaultImport();
+            return apexCall.then((ret) => {
+                expect(ret).toBe('from test');
+            })
+        });
 
-    it('can import and call multiple default Apex imports', () => {
-        const element = createElement('example-apex', { is: Apex });
-        document.body.appendChild(element);
-        const apexCall = element.callAnotherDefaultImport();
-        return apexCall.then((ret) => {
-            expect(ret).toBe('from test');
-        })
-    });
+        it('returns a Promise that resolves for a second imported Apex method', () => {
+            const element = createElement('example-apex', { is: Apex });
+            document.body.appendChild(element);
+            const apexCall = element.callAnotherDefaultImport();
+            return apexCall.then((ret) => {
+                expect(ret).toBe('from test');
+            })
+        });
 
-    it('refreshApex is resolved Promise', () => {
-        const element = createElement('example-apex', { is: Apex });
-        document.body.appendChild(element);
-        const refreshApex = element.callRefreshApex();
-        return refreshApex.then((ret) => {
-            expect(ret).toBe('from test');
+        it('returns a Promise that resolves for the refreshApex named import', () => {
+            const element = createElement('example-apex', { is: Apex });
+            document.body.appendChild(element);
+            const refreshApex = element.callRefreshApex();
+            return refreshApex.then((ret) => {
+                expect(ret).toBe('from test');
+            });
         });
     });
 });

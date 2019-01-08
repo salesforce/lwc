@@ -16,11 +16,11 @@ const APEX_IMPORT_IDENTIFIER = '@salesforce/apex';
  * shared.
  */
 const resolvedPromiseTemplate = babelTemplate(`
-    global.MOCK_NAME = global.MOCK_NAME || function() { return Promise.resolve(); };
     let RESOURCE_NAME;
     try {
         RESOURCE_NAME = require(IMPORT_SOURCE).default;
     } catch (e) {
+        global.MOCK_NAME = global.MOCK_NAME || function() { return Promise.resolve(); };
         RESOURCE_NAME = global.MOCK_NAME;
     }
 `);
