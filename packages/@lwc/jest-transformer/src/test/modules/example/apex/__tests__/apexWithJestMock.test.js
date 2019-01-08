@@ -21,7 +21,7 @@ afterEach(() => {
 });
 
 describe('example-apex', () => {
-    it('mocking @salesforce/apex.getSObjectValue allows inspection of calls from component', () => {
+    it('allows per-test mocking of @salesforce/apex.getSObjectValue', () => {
         const element = createElement('example-apex', { is: Apex });
         document.body.appendChild(element);
         element.callGetSObjectValue();

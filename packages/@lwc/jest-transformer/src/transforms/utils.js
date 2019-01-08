@@ -81,9 +81,6 @@ function getImportInfo(path, noValidate) {
         });
     }
 
-    let resourceNames = [];
-    importSpecifiers.forEach(importSpecifier => {
-        resourceNames.push(importSpecifier.get('local').node.name);
     let resourceNames = importSpecifiers.map(importSpecifier => importSpecifier.get('local').node.name);
 
     return {
