@@ -17,9 +17,11 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          myMethod = function () {
+          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
             return Promise.resolve();
           };
+
+          myMethod = global.__lwcJestMock_myMethod;
         }
     `);
 
@@ -33,21 +35,33 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          myMethod = function () {
+          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
             return Promise.resolve();
           };
+
+          myMethod = global.__lwcJestMock_myMethod;
         }
     `);
 
-    test('throws error if using named import', `
-        import { Id } from '@salesforce/apex/FooController.fooMethod';
-    `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
+    test('transforms named imports from @salesforce/apex', `
+        import { refreshApex, getSObjectValue } from '@salesforce/apex';
+    `, `
+        let refreshApex;
 
-    test('throws error if renamed default imports', `
-        import { default as label } from '@salesforce/apex/FooController.fooMethod';
-    `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
+        try {
+          refreshApex = require("@salesforce/apex").refreshApex;
+        } catch (e) {
+          refreshApex = function () {
+            return Promise.resolve();
+          };
+        }
 
-    test('throws error if renamed multiple default imports', `
-        import { default as label, foo } from '@salesforce/apex/FooController.fooMethod';
-    `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
+        let getSObjectValue;
+
+        try {
+          getSObjectValue = require("@salesforce/apex").getSObjectValue;
+        } catch (e) {
+          getSObjectValue = jest.fn();
+        }
+    `);
 });

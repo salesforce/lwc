@@ -16,33 +16,6 @@ const defaultTemplate = babelTemplate(`
     }
 `);
 
-const resolvedPromiseTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = function() { return Promise.resolve(); };
-    }
-`);
-
-const schemaObjectTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME };
-    }
-`);
-
-const schemaObjectAndFieldTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME, fieldApiName: FIELD_API_NAME };
-    }
-`);
-
 /*
  * Transform a default import
  * statement into a try/catch that attempts to `require` the original import
@@ -67,7 +40,8 @@ const schemaObjectAndFieldTemplate = babelTemplate(`
  * }
  */
 function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
-    const { importSource, resourceName } = getImportInfo(path);
+    const { importSource, resourceNames } = getImportInfo(path);
+    const defaultImport = resourceNames[0];
 
     // if no fallback value provided, use the resource path from the import statement
     if (fallbackData === undefined) {
@@ -81,59 +55,37 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     }
 
     path.replaceWithMultiple(defaultTemplate({
-        RESOURCE_NAME: t.identifier(resourceName),
+        RESOURCE_NAME: t.identifier(defaultImport),
         IMPORT_SOURCE: t.stringLiteral(importSource),
         FALLBACK_DATA: fallbackData
     }));
 }
 
-function resolvedPromiseScopedImportTransform(t, path) {
-    const { importSource, resourceName } = getImportInfo(path);
-
-    path.replaceWithMultiple(resolvedPromiseTemplate({
-        RESOURCE_NAME: t.identifier(resourceName),
-        IMPORT_SOURCE: t.stringLiteral(importSource),
-    }));
-}
-
-function schemaScopedImportTransform(t, path, importIdentifier) {
-    const { importSource, resourceName } = getImportInfo(path);
-
-    const resourcePath = importSource.substring(importIdentifier.length + 1);
-    const idx = resourcePath.indexOf('.');
-
-    if (idx === -1) {
-        path.replaceWithMultiple(schemaObjectTemplate({
-            RESOURCE_NAME: t.identifier(resourceName),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath),
-        }));
-    } else {
-        path.replaceWithMultiple(schemaObjectAndFieldTemplate({
-            RESOURCE_NAME: t.identifier(resourceName),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
-            FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
-        }));
-    }
-}
-
-function getImportInfo(path) {
+/**
+ * For an import statement we want to transform, parse out the names of the
+ * resources and the source of the import.
+ *
+ * @param {Object} path Object representation of link between nodes, from Babel
+ * @param {Boolean} noValidate true to allow named imports; false throws if non-default imports are present
+ * @returns {Object} an Object with the source of the import and Array of names
+ * of the resources being imported
+ */
+function getImportInfo(path, noValidate) {
     const importSource = path.get('source.value').node;
     const importSpecifiers = path.get('specifiers');
 
-    if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
+    if (!noValidate && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
         throw generateError(path, {
             errorInfo: JestTransformerErrors.INVALID_IMPORT,
             messageArgs: [importSource]
         });
     }
 
-    const resourceName = importSpecifiers[0].get('local').node.name;
+    let resourceNames = importSpecifiers.map(importSpecifier => importSpecifier.get('local').node.name);
 
     return {
         importSource,
-        resourceName,
+        resourceNames,
     };
 }
 
@@ -156,6 +108,5 @@ function generateError(path, { errorInfo, messageArgs } = {}) {
 
 module.exports = {
     stringScopedImportTransform,
-    resolvedPromiseScopedImportTransform,
-    schemaScopedImportTransform,
+    getImportInfo,
 };
