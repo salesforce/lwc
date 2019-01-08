@@ -166,7 +166,7 @@ describe("module resolver", () => {
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([{
             level: 0,
-            message: expect.stringContaining('Failed to resolve "./lib/foo" from "foo.js". The import name must case match the file name in the component folder "lib/Foo".'),
+            message: expect.stringContaining('Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?'),
         }]);
     });
 
@@ -188,18 +188,18 @@ describe("module resolver", () => {
 describe('module entry validation', () => {
     test("compiler should fail module resolution if an entry name starts with capital letter", async () => {
         const { diagnostics, success } = await compile({
-            name: 'Mycmp',
+            name: 'MycmpCamelcased',
             namespace: 'c',
             files: {
-                'mycmp.js': ``,
-                'mycmp.html': ``,
+                'mycmpCamelcased.js': ``,
+                'mycmpCamelcased.html': ``,
             },
         });
 
         expect(success).toBe(false);
         expect(diagnostics).toMatchObject([{
             level: 0,
-            message: expect.stringContaining('Illegal folder name "Mycmp". The folder name must start with a lowercase character: "mycmp".'),
+            message: expect.stringContaining('Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".'),
         }]);
     });
 

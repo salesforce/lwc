@@ -36,7 +36,7 @@ function isImplicitHTMLImport(importee: string, importer: string) {
     );
 }
 
-function isInvalidEntrySyntax(importee: string) {
+function isFirstCharacterUppercased(importee: string) {
     const upperCaseRegex = /^[A-Z]/;
     return importee && upperCaseRegex.test(importee);
 }
@@ -124,9 +124,13 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                 return;
             }
 
-            if (isInvalidEntrySyntax(importee)) {
-                throw generateCompilerError(ModuleResolutionErrors.ILLEGAL_ENTRY_SYNTAX, {
-                        messageArgs: [ importee, importee.toLocaleLowerCase() ],
+            if (isFirstCharacterUppercased(importee)) {
+                throw generateCompilerError(
+                    ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER,
+                    {
+                        messageArgs: [
+                            importee,
+                            importee.charAt(0).toLowerCase() + importee.slice(1) ],
                     }
                 );
             }

@@ -146,7 +146,7 @@ export const ModuleResolutionErrors = {
         url: ""
     },
 
-    ILLEGAL_ENTRY_SYNTAX: {
+    FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER: {
         code: 1116,
         message: "Illegal folder name \"{0}\". The folder name must start with a lowercase character: \"{1}\".",
         level: DiagnosticLevel.Error,
@@ -162,7 +162,7 @@ export const ModuleResolutionErrors = {
 
     IMPORT_AND_FILE_NAME_CASE_MISMATCH: {
         code: 1118,
-        message: "Failed to resolve \"{0}\" from \"{1}\". The import name must case match the file name in the component folder \"{2}\".",
+        message: "Failed to resolve \"{0}\" from \"{1}\". Did you mean \"{2}\"?",
         level: DiagnosticLevel.Error,
         url: ""
     },
