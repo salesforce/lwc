@@ -58,12 +58,17 @@ jobs:
 
       - run:
           name: Test standard mode
-          command: yarn build && yarn test:sauce
+          command: yarn sauce
+          working_directory: ~/lwc/packages/integration-karma
+
+      - run:
+          name: Test standard mode with native shadow
+          command: yarn sauce --native-shadow
           working_directory: ~/lwc/packages/integration-karma
 
       - run:
           name: Test compat mode
-          command: yarn build:compat && yarn test:sauce
+          command: yarn sauce --compat
           working_directory: ~/lwc/packages/integration-karma
 
 
