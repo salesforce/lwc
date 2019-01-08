@@ -232,7 +232,7 @@ describe('lwc:dom', () => {
             document.body.appendChild(elm);
         });
     
-        it('missing lwc:dom="manual" should warn throw on setting textContent', () => {
+        it('missing lwc:dom="manual" should throw on setting textContent', () => {
             expect.assertions(1);
             const html = compileTemplate(`
                 <template>
