@@ -7,7 +7,7 @@
 import { LightningElement, api } from 'lwc';
 
 import ApexMethod from '@salesforce/apex/FooClass.FooMethod';
-import AnotherApexMethod from '@salesforce/apex/FooClass.AnotherFooMethod';
+import AnotherApexMethod from '@salesforce/apex/Namespace.BarClass.BarMethod';
 import { refreshApex, getSObjectValue } from '@salesforce/apex';
 
 export default class Apex extends LightningElement {
