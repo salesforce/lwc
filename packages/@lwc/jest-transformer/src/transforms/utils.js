@@ -66,8 +66,7 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
  * resources and the source of the import.
  *
  * @param {Object} path Object representation of link between nodes, from Babel
- * @param {Boolean} noValidate true to allow named imports. Falsey values throws
- * for any non-default imports
+ * @param {Boolean} noValidate true to allow named imports; false throws if non-default imports are present
  * @returns {Object} an Object with the source of the import and Array of names
  * of the resources being imported
  */
@@ -85,7 +84,7 @@ function getImportInfo(path, noValidate) {
     let resourceNames = [];
     importSpecifiers.forEach(importSpecifier => {
         resourceNames.push(importSpecifier.get('local').node.name);
-    });
+    let resourceNames = importSpecifiers.map(importSpecifier => importSpecifier.get('local').node.name);
 
     return {
         importSource,
