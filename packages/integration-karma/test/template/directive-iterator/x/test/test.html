@@ -1,0 +1,11 @@
+<template>
+    <ul>
+        <template iterator:it={items}>
+            <li key={it.value} data-is-first={it.first} data-is-last={it.last}>
+                {it.index} - {it.value}
+            </li>
+        </template>
+    </ul>
+</template>
+
+

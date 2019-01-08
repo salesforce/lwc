@@ -100,8 +100,13 @@ module.exports = config => {
 
         // avoid spamming CI output
         reporters: process.env.CI
-            ? ['dots', 'saucelabs']
-            : ['progress', 'saucelabs'],
+            ? ['dots', 'saucelabs', 'coverage']
+            : ['progress', 'saucelabs', 'coverage'],
+
+        plugins: [
+            ...config.plugins,
+            'karma-sauce-launcher'
+        ],
 
         // Force Karma to run in singleRun mode in order to shutdown the server after the tests finished to run.
         singleRun: true,

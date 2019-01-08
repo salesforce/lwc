@@ -11,6 +11,7 @@ const path = require('path');
 const karmaPluginLwc = require('./karma-plugin-lwc');
 
 const BASE_DIR = path.resolve(__dirname, '../test');
+const COVERAGE_DIR = path.resolve(__dirname, '../coverage');
 
 const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
@@ -29,23 +30,39 @@ function createPattern(location, config = {}) {
  * https://karma-runner.github.io/3.0/config/configuration-file.html
  */
 module.exports = config => {
-    const files = config.compat
+    const frameworkFiles = config.compat
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
     config.set({
         basePath: BASE_DIR,
         files: [
-            ...files,
-            createPattern('**/*.spec.js'),
+            ...frameworkFiles,
+            createPattern('**/*.spec.js', { watched: false }),
         ],
 
         preprocessors: {
+            [config.compat ? LWC_ENGINE : LWC_ENGINE_COMPAT]: ['coverage'],
             '**/*.spec.js': ['lwc'],
         },
 
         frameworks: ['jasmine'],
 
-        plugins: [...config.plugins, karmaPluginLwc],
+        reporters: [
+            'progress',
+            'coverage'
+        ],
+
+        plugins: [
+            'karma-chrome-launcher',
+            'karma-coverage',
+            'karma-jasmine',
+            karmaPluginLwc,
+        ],
+
+        coverageReporter: {
+            type: 'lcov',
+            dir: COVERAGE_DIR,
+        },
     });
 };

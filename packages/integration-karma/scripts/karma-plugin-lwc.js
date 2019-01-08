@@ -66,7 +66,7 @@ function createPreprocessor(config, emitter, logger) {
                 external: ['lwc', 'test-utils'],
             });
 
-            watcher.watchSuite(suiteDir);
+            watcher.watchSuite(suiteDir, input);
 
             cache = bundle.cache;
 
@@ -107,18 +107,19 @@ class Watcher {
     constructor(config, emitter, logger) {
         const { basePath } = config;
 
-        this._watcher = chokidar.watch([], {
+        this._suites = [];
+        this._watcher = chokidar.watch(basePath, {
             ignoreInitial: true,
         });
 
         this._watcher.on('all', (_type, filename) => {
             logger.info(`Change detected ${path.relative(basePath, filename)}`);
-            emitter.refreshFile(filename);
+            emitter.refreshFiles();
         });
     }
 
     watchSuite(suiteDir) {
-        this._watcher.add(suiteDir);
+        this._suites.push(suiteDir);
     }
 }
 
