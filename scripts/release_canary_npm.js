@@ -103,11 +103,25 @@ async function run() {
             const fullPath = path.join(absPath, pkgName);
             pkgJson._originalversion = version;
             pkgJson.version = `${version}-canary+${sha}`;
-            Object.keys(pkgJson.dependencies).forEach((dep) => {
-                if (PACKAGE_DEPENDENCIES.has(dep)) {
-                    pkgJson.dependencies[dep] = path.join(HOST, generateUrl(dep, sha));
-                }
-            });
+
+            // Rewrite dependencies
+            if (pkgJson.dependencies) {
+                Object.keys(pkgJson.dependencies).forEach((dep) => {
+                    if (PACKAGE_DEPENDENCIES.has(dep)) {
+                        pkgJson.dependencies[dep] = path.join(HOST, generateUrl(dep, sha));
+                    }
+                });
+            }
+
+            // Rewrite devDependencies
+            if (pkgJson.devDependencies) {
+                Object.keys(pkgJson.devDependencies).forEach((dep) => {
+                    if (PACKAGE_DEPENDENCIES.has(dep)) {
+                        pkgJson.devDependencies[dep] = path.join(HOST, generateUrl(dep, sha));
+                    }
+                });
+            }
+
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
             // Generate tar artifact
