@@ -30,6 +30,23 @@ describe('default configuration', () => {
             expect(pretty(actual)).toBe(pretty(expected));
         });
     });
+    it(`simple app with CSS resolver`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        const rollupCompileOptions = {
+            stylesheetConfig: {
+                customProperties: {
+                    resolution: {
+                        type: 'module',
+                        name: 'myCssResolver'
+                    }
+                }
+            }
+        };
+        return doRollup(entry, { compat : false }, rollupCompileOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_default_config_simple_app_css_resolver');
+            expect(pretty(actual)).toBe(pretty(expected));
+        });
+    });
 });
 
 describe('rollup in compat mode', () => {
@@ -42,14 +59,14 @@ describe('rollup in compat mode', () => {
     });
 });
 
-const globalModules = { lwc: 'Engine' };
+const globalModules = { lwc: 'Engine', myCssResolver: 'resolveCss' };
 
-function doRollup(input, { compat } = {}) {
+function doRollup(input, { compat } = {}, rollupCompileOptions) {
     return rollup.rollup({
         input,
         external: (id) => (id in globalModules),
         plugins: [
-            rollupCompile(),
+            rollupCompile(rollupCompileOptions),
             compat && rollupCompat({ polyfills: false })
         ].filter(Boolean),
         onwarn(warn) {

@@ -83,6 +83,18 @@
 
     var __concat = Proxy.concat;
 
+   function stylesheet(hostSelector, shadowSelector, nativeShadow) {
+     return (
+       "\n" +
+       (nativeShadow
+         ? ":host {color: var(--lwc-my-color);}"
+         : hostSelector + " {color: var(--lwc-my-color);}") +
+       "\n"
+     );
+   }
+
+   var _implicitStylesheets = [stylesheet];
+
     function tmpl($api, $cmp, $slotset, $ctx) {
       var api_dynamic = $api._ES5ProxyType ? $api.get("d") : $api.d,
         api_element = $api._ES5ProxyType ? $api.get("h") : $api.h;
@@ -101,10 +113,19 @@
 
     __setKey(tmpl, "stylesheets", []);
 
-    __setKey(tmpl, "stylesheetTokens", {
-      hostAttribute: "x-foo_foo-host",
-      shadowAttribute: "x-foo_foo"
-    });
+    if (_implicitStylesheets) {
+     __callKey2(
+       (tmpl._ES5ProxyType ? tmpl.get("stylesheets") : tmpl.stylesheets).push,
+       "apply",
+       tmpl._ES5ProxyType ? tmpl.get("stylesheets") : tmpl.stylesheets,
+       _implicitStylesheets
+     );
+   }
+
+   __setKey(tmpl, "stylesheetTokens", {
+     hostAttribute: "x-foo_foo-host",
+     shadowAttribute: "x-foo_foo"
+   });
 
     var Foo =
       /*#__PURE__*/
