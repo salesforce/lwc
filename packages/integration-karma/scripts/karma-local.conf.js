@@ -17,8 +17,12 @@ const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 
-const TEST_UTILS_FAKE_SHADOW = require.resolve('../helpers/test-utils-fake-shadow');
-const TEST_UTILS_NATIVE_SHADOW = require.resolve('../helpers/test-utils-native-shadow');
+const TEST_UTILS_FAKE_SHADOW = require.resolve(
+    '../helpers/test-utils-fake-shadow',
+);
+const TEST_UTILS_NATIVE_SHADOW = require.resolve(
+    '../helpers/test-utils-native-shadow',
+);
 
 function createPattern(location, config = {}) {
     return {
@@ -36,9 +40,22 @@ module.exports = config => {
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
-    const testUtilsFiles = config.native
+    const testUtilsFiles = config.nativeShadow
         ? [createPattern(TEST_UTILS_NATIVE_SHADOW)]
-        : [createPattern(TEST_UTILS_FAKE_SHADOW)]
+        : [createPattern(TEST_UTILS_FAKE_SHADOW)];
+
+    const preprocessors = {
+        '**/*.spec.js': ['lwc'],
+    };
+
+    const reporters = ['progress'];
+
+    if (config.coverage) {
+        preprocessors[LWC_ENGINE] = ['coverage'];
+        preprocessors[LWC_ENGINE_COMPAT] = ['coverage'];
+
+        reporters.push('coverage');
+    }
 
     config.set({
         basePath: BASE_DIR,
@@ -48,17 +65,11 @@ module.exports = config => {
             createPattern('**/*.spec.js', { watched: false }),
         ],
 
-        preprocessors: {
-            [config.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE]: ['coverage'],
-            '**/*.spec.js': ['lwc'],
-        },
+        preprocessors,
+
+        reporters,
 
         frameworks: ['jasmine'],
-
-        reporters: [
-            'progress',
-            'coverage'
-        ],
 
         plugins: [
             'karma-chrome-launcher',

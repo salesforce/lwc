@@ -4,7 +4,8 @@
   "version": "0.33.25",
   "scripts": {
     "start": "karma start ./scripts/karma-local.conf.js",
-    "test": "karma start ./scripts/karma-local.conf.js --single-run --browsers Chrome"
+    "test": "karma start ./scripts/karma-local.conf.js --single-run --browsers Chrome",
+    "sauce": "karma start ./scripts/karma-sauce.conf.js --single-run"
   },
   "devDependencies": {
     "@lwc/compiler": "0.33.25",

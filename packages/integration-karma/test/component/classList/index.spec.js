@@ -25,7 +25,7 @@ it('should return of classed applied from the outside', () => {
 
     const classList = elm.getClassList();
     expect(classList.length).toBe(2);
-    expect([...classList]).toEqual(['foo', 'bar']);
+    expect(Array.from(classList)).toEqual(['foo', 'bar']);
 });
 
 it('should allow adding a class set outside from within the component', () => {
@@ -36,7 +36,7 @@ it('should allow adding a class set outside from within the component', () => {
     const classList = elm.getClassList();
     classList.add('foo');
 
-    expect([...classList]).toEqual(['bar', 'foo']);
+    expect(Array.from(classList)).toEqual(['bar', 'foo']);
     expect(elm.className).toBe('bar foo');
 });
 
@@ -48,6 +48,6 @@ it('should allow deleting a class set outside from within the component', () => 
     const classList = elm.getClassList();
     classList.remove('foo');
 
-    expect([...classList]).toEqual(['bar']);
+    expect(Array.from(classList)).toEqual(['bar']);
     expect(elm.className).toBe('bar');
 });

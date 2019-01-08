@@ -1,14 +1,14 @@
 var TestUtils = (function (lwc) {
     function createElement(name, config) {
         config = Object.assign({}, config, {
-            fallback: true,
+            fallback: true
         });
 
         return lwc.createElement(name, config);
     }
 
     return {
-        createElement,
+        createElement: createElement
     };
 })(Engine);
 

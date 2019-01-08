@@ -70,9 +70,12 @@ it('should apply the styles to inserted elements', () => {
     document.body.appendChild(root);
 
     const elm = root.shadowRoot.querySelector('.manual');
-    elm.innerHTML = '<div class="foo"><div>';
+    elm.innerHTML = '<div class="foo"></div>';
 
-    return Promise.resolve().then(() => {
-        expect(window.getComputedStyle(elm.firstElementChild).margin).toBe('10px');
+    // Using a requestAnimationFrame instead of a Promise.resolve to wait for the MutationObserver to be triggered.
+    // The Promise polyfill on COMPAT browsers is based on MutationObserver. There are some timing issues between
+    // Promise.resolve and MutationObserver callback invocation.
+    return requestAnimationFrame(() => {
+        expect(window.getComputedStyle(elm.firstElementChild).fontSize).toBe('10px');
     });
 });
