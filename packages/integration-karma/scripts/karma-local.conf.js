@@ -15,8 +15,10 @@ const COVERAGE_DIR = path.resolve(__dirname, '../coverage');
 
 const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
-
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
+
+const TEST_UTILS_FAKE_SHADOW = require.resolve('../helpers/test-utils-fake-shadow');
+const TEST_UTILS_NATIVE_SHADOW = require.resolve('../helpers/test-utils-native-shadow');
 
 function createPattern(location, config = {}) {
     return {
@@ -34,15 +36,20 @@ module.exports = config => {
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
+    const testUtilsFiles = config.native
+        ? [createPattern(TEST_UTILS_NATIVE_SHADOW)]
+        : [createPattern(TEST_UTILS_FAKE_SHADOW)]
+
     config.set({
         basePath: BASE_DIR,
         files: [
             ...frameworkFiles,
+            ...testUtilsFiles,
             createPattern('**/*.spec.js', { watched: false }),
         ],
 
         preprocessors: {
-            [config.compat ? LWC_ENGINE : LWC_ENGINE_COMPAT]: ['coverage'],
+            [config.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE]: ['coverage'],
             '**/*.spec.js': ['lwc'],
         },
 

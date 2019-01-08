@@ -74,10 +74,11 @@ function createPreprocessor(config, emitter, logger) {
                 format: 'iife',
                 sourcemap: 'inline',
 
-                // The engine is injected as UMD, and we need to indicate that the `lwc` import has to be resolved to the
-                // `Engine` property assigned to the `window` object.
+                // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
+                // referenced from the window object.
                 globals: {
                     lwc: 'Engine',
+                    'test-utils': 'TestUtils'
                 },
 
                 intro,

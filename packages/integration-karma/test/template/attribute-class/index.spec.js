@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement } from 'test-utils';
 import XTest from 'x/test';
 
 it('should render static className properly', () => {

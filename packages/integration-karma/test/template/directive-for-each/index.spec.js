@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement } from 'test-utils';
 import XTest from 'x/test';
 
 function testForEach(type, obj) {
