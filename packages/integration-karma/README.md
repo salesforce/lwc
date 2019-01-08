@@ -16,6 +16,7 @@ Run the test suite a single time on Google Chrome.
 
 On top of the standard Karma [command line options](http://karma-runner.github.io/3.0/config/configuration-file.html), this package offers extra command line options:
 
-* **`compat`:** Compile and deliver tests in COMPAT mode.
-* **`native-shadow`:** Force the components to be created with native shadow enabled.
-* **`coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
+* **`--compat`:** Compile and deliver tests in COMPAT mode.
+* **`--native-shadow`:** Force the components to be created with native shadow enabled.
+* **`--coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
+* **`--grep=<pattern>`:** Filter the spec to run based on the pattern.
