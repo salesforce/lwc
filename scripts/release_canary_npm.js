@@ -19,6 +19,23 @@ const { lookup } = require('mime-types');
 // RELEASE_REGION
 //
 
+const PACKAGE_DEPENDENCIES = new Set([
+    '@lwc/babel-plugin-component',
+    '@lwc/compiler',
+    '@lwc/engine',
+    '@lwc/errors',
+    '@lwc/jest-preset',
+    '@lwc/jest-resolver',
+    '@lwc/jest-serializer',
+    '@lwc/jest-transformer',
+    '@lwc/module-resolver',
+    '@lwc/rollup-plugin',
+    '@lwc/style-compiler',
+    '@lwc/template-compiler',
+    '@lwc/test-utils',
+    '@lwc/wire-service'
+]);
+
 const CONFIG = {
     accessKeyId: process.env.RELEASE_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.RELEASE_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
@@ -37,9 +54,13 @@ async function exec(command, args, options) {
     return stdout;
 }
 
+function generateUrl(packageName, sha) {
+    return path.join(PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`);
+}
+
 function pushPackage({ sha, packageName, packageTar }) {
     return new Promise(function (resolve, reject) {
-        const url = path.join(PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`);
+        const url = generateUrl(packageName, sha);
         S3.putObject(
             {
                 Bucket: BUCKET,
@@ -82,6 +103,11 @@ async function run() {
             const fullPath = path.join(absPath, pkgName);
             pkgJson._originalversion = version;
             pkgJson.version = `${version}-canary+${sha}`;
+            Object.keys(pkgJson.dependencies).forEach((dep) => {
+                if (PACKAGE_DEPENDENCIES.has(dep)) {
+                    pkgJson.dependencies[dep] = path.join(HOST, generateUrl(dep, sha));
+                }
+            });
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
             // Generate tar artifact
