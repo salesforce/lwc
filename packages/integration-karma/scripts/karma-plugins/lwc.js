@@ -78,7 +78,7 @@ function createPreprocessor(config, emitter, logger) {
                 // referenced from the window object.
                 globals: {
                     lwc: 'Engine',
-                    'test-utils': 'TestUtils'
+                    'test-utils': 'TestUtils',
                 },
 
                 intro,

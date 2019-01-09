@@ -27,5 +27,9 @@ module.exports = config => {
             'karma-chrome-launcher',
             'karma-mocha-reporter',
         ],
+
+        mochaReporter: {
+            output: 'autowatch'
+        }
     });
 };
