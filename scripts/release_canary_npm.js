@@ -55,7 +55,7 @@ async function exec(command, args, options) {
 }
 
 function generateUrl(packageName, sha) {
-    return path.join(PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`);
+    return HOST + '/' + [PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`].join('/');
 }
 
 function pushPackage({ sha, packageName, packageTar }) {
@@ -108,7 +108,7 @@ async function run() {
             if (pkgJson.dependencies) {
                 Object.keys(pkgJson.dependencies).forEach((dep) => {
                     if (PACKAGE_DEPENDENCIES.has(dep)) {
-                        pkgJson.dependencies[dep] = path.join(HOST, generateUrl(dep, sha));
+                        pkgJson.dependencies[dep] = generateUrl(dep, sha);
                     }
                 });
             }
@@ -117,7 +117,7 @@ async function run() {
             if (pkgJson.devDependencies) {
                 Object.keys(pkgJson.devDependencies).forEach((dep) => {
                     if (PACKAGE_DEPENDENCIES.has(dep)) {
-                        pkgJson.devDependencies[dep] = path.join(HOST, generateUrl(dep, sha));
+                        pkgJson.devDependencies[dep] = generateUrl(dep, sha);
                     }
                 });
             }
