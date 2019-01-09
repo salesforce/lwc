@@ -1,5 +1,22 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.25...v) (2018-12-21)
+# [](https://github.com/salesforce/lwc/compare/v0.33.26...v) (2019-01-09)
+
+
+### Bug Fixes
+
+* **engine:** to show shadow in IE11 devtool DOM explorer ([#904](https://github.com/salesforce/lwc/issues/904)) ([6e2817f](https://github.com/salesforce/lwc/commit/6e2817f))
+* **jest-transformer:** update [@salesforce](https://github.com/salesforce)/apex transform ([#924](https://github.com/salesforce/lwc/issues/924)) ([a3d6af5](https://github.com/salesforce/lwc/commit/a3d6af5))
+* Add crossorigin as valid img tag attribute ([#918](https://github.com/salesforce/lwc/issues/918)) ([e861600](https://github.com/salesforce/lwc/commit/e861600))
+
+
+### Features
+
+* **rollup-plugin:** add stylesheetConfig to rollup-plugin options ([#921](https://github.com/salesforce/lwc/issues/921)) ([ca43c83](https://github.com/salesforce/lwc/commit/ca43c83)), closes [#920](https://github.com/salesforce/lwc/issues/920)
+
+
+
+<a name="0.33.26"></a>
+## [0.33.26](https://github.com/salesforce/lwc/compare/v0.33.25...v0.33.26) (2018-12-21)
 
 
 ### Bug Fixes
