@@ -1,6 +1,8 @@
 // TODO: disable lwc import check for testing purposes. For now use a workaround to directly access the API from the
 // engine inject globally as UMD.
-const { LightningElement, isComponentConstructor } = window.Engine;
+const { isComponentConstructor } = window.Engine;
+
+import { LightningElement } from 'lwc';
 
 function testInvalidComponentConstructor(name, ctor) {
     it(`return false for ${name}`, () => {
