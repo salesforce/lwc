@@ -7,7 +7,7 @@
 
 'use strict';
 
-const localConfig = require('./karma-local.conf');
+const localConfig = require('./base');
 
 const SAUCE_BROWSERS = [
     // Standard browsers
@@ -65,20 +65,7 @@ const SAUCE_BROWSERS = [
     },
 ];
 
-function getMatchingBrowsers(config) {
-    const { compat = false, nativeShadow = false } = config;
-
-    return SAUCE_BROWSERS.filter(browser => {
-        return (
-            browser.compat === compat &&
-            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
-        );
-    });
-}
-
-module.exports = config => {
-    localConfig(config);
-
+function getSauceConfig(config) {
     const username = process.env.SAUCE_USERNAME;
     if (!username) {
         throw new TypeError('Missing SAUCE_USERNAME environment variable');
@@ -91,65 +78,70 @@ module.exports = config => {
         );
     }
 
-    const matchingBrowsers = getMatchingBrowsers(config);
-    if (!matchingBrowsers.length) {
+    return {
+        username,
+        accessKey,
+
+        testName: ['LWC', ...config.lwc.tags].join(' - '),
+        tags: config.lwc.tags,
+
+        customData: {
+            lwc: config.lwc,
+
+            ci: !!process.env.CI,
+            build: process.env.CIRCLE_BUILD_NUM || Date.now(),
+
+            commit: process.env.CIRCLE_SHA1,
+            branch: process.env.CIRCLE_BRANCH,
+            buildUrl: process.env.CIRCLE_BUILD_URL,
+        },
+
+        recordScreenshots: false,
+    };
+}
+
+function getMatchingBrowsers({ compat, nativeShadow }) {
+    return SAUCE_BROWSERS.filter(browser => {
+        return (
+            browser.compat === compat &&
+            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
+        );
+    });
+}
+
+module.exports = config => {
+    localConfig(config);
+
+    const sauceConfig = getSauceConfig(config);
+
+    const matchingBrowsers = getMatchingBrowsers(config.lwc);
+    if (matchingBrowsers.length === 0) {
         throw new Error(
             'No matching browser found for the passed configuration.',
         );
     }
 
-    const sauceTestName = [
-        'LWC',
-        config.compat && 'compat',
-        config.nativeShadow && 'native shadow',
-    ]
-        .filter(Boolean)
-        .join(' - ');
-
-    const browsers = matchingBrowsers.map(browser => {
-        return browser.label;
-    });
-    const customLaunchers = matchingBrowsers.reduce((acc, browser) => {
-        const { label, browserName, platform, version } = browser;
-        return {
-            ...acc,
-            [label]: {
-                base: 'SauceLabs',
-                browserName,
-                platform,
-                version,
-            },
-        };
-    }, {});
-
     config.set({
-        sauceLabs: {
-            username,
-            accessKey,
+        sauceLabs: sauceConfig,
 
-            testName: sauceTestName,
-            recordScreenshots: false,
+        browsers: matchingBrowsers.map(browser => browser.label),
+        customLaunchers: matchingBrowsers.reduce((acc, browser) => {
+            const { label, browserName, platform, version } = browser;
+            return {
+                ...acc,
+                [label]: {
+                    base: 'SauceLabs',
+                    browserName,
+                    platform,
+                    version,
+                },
+            };
+        }, {}),
 
-            customData: {
-                compat: config.compat,
-                nativeShadow: config.nativeShadow,
-
-                ci: !!process.env.CI,
-                build: process.env.CIRCLE_BUILD_NUM || Date.now(),
-
-                commit: process.env.CIRCLE_SHA1,
-                branch: process.env.CIRCLE_BRANCH,
-                buildUrl: process.env.CIRCLE_BUILD_URL,
-            },
-        },
-
-        customLaunchers,
-        browsers,
-
-        // avoid spamming CI output
+        // Use a less verbose reporter for the CI to avoid generating too much log.
         reporters: process.env.CI
-            ? ['dots', 'saucelabs', 'coverage']
-            : ['progress', 'saucelabs', 'coverage'],
+            ? [...config.reporters, 'dots', 'saucelabs']
+            : [...config.reporters, 'progress', 'saucelabs'],
 
         plugins: [...config.plugins, 'karma-sauce-launcher'],
 
