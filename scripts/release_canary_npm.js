@@ -55,7 +55,7 @@ async function exec(command, args, options) {
 }
 
 function generateUrl(packageName, sha) {
-    return HOST + '/' + [PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`].join('/');
+    return [PREFIX, 'builds', packageName, 'canary', `${sha}.tgz`].join('/');
 }
 
 function pushPackage({ sha, packageName, packageTar }) {
@@ -105,22 +105,13 @@ async function run() {
             pkgJson.version = `${version}-canary+${sha}`;
 
             // Rewrite dependencies
-            if (pkgJson.dependencies) {
-                Object.keys(pkgJson.dependencies).forEach((dep) => {
+            ['dependencies', 'devDependencies'].forEach((key) => {
+                Object.keys(pkgJson[key]).forEach((dep) => {
                     if (PACKAGE_DEPENDENCIES.has(dep)) {
-                        pkgJson.dependencies[dep] = generateUrl(dep, sha);
+                        pkgJson[key][dep] = HOST + '/' + generateUrl(dep, sha);
                     }
                 });
-            }
-
-            // Rewrite devDependencies
-            if (pkgJson.devDependencies) {
-                Object.keys(pkgJson.devDependencies).forEach((dep) => {
-                    if (PACKAGE_DEPENDENCIES.has(dep)) {
-                        pkgJson.devDependencies[dep] = generateUrl(dep, sha);
-                    }
-                });
-            }
+            });
 
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
 
