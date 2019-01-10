@@ -106,11 +106,13 @@ async function run() {
 
             // Rewrite dependencies
             ['dependencies', 'devDependencies'].forEach((key) => {
-                Object.keys(pkgJson[key]).forEach((dep) => {
-                    if (PACKAGE_DEPENDENCIES.has(dep)) {
-                        pkgJson[key][dep] = HOST + '/' + generateUrl(dep, sha);
-                    }
-                });
+                if (pkgJson[key]) {
+                    Object.keys(pkgJson[key]).forEach((dep) => {
+                        if (PACKAGE_DEPENDENCIES.has(dep)) {
+                            pkgJson[key][dep] = HOST + '/' + generateUrl(dep, sha);
+                        }
+                    });
+                }
             });
 
             fs.writeFileSync(jsonPath, JSON.stringify(pkgJson, null, 2), { encoding: 'utf-8' });
