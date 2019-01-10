@@ -63,7 +63,7 @@ export function isCircularModuleDependency(value: any): value is CircularModuleD
 export function resolveCircularModuleDependency(fn: CircularModuleDependency): any {
     if (process.env.NODE_ENV !== 'production') {
         if (!isFunction(fn)) {
-            throw new ReferenceError(`Circular module dependency must be a function.`);
+            throw new TypeError(`Circular module dependency must be a function.`);
         }
     }
     return fn();
