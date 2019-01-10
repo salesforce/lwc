@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.28-alpha3...v) (2019-01-09)
+# [](https://github.com/salesforce/lwc/compare/v0.33.28-1...v) (2019-01-10)
+
+
+### Bug Fixes
+
+* **engine:** patching events from lwc to be deterministic ([#870](https://github.com/salesforce/lwc/issues/870)) ([8d3fc9f](https://github.com/salesforce/lwc/commit/8d3fc9f))
+
+
+### Features
+
+* **compiler:** add bundle entry name + filenames case validation ([#902](https://github.com/salesforce/lwc/issues/902)) ([39b1e00](https://github.com/salesforce/lwc/commit/39b1e00))
+
+
+
+<a name="0.33.28-1"></a>
+## [0.33.28-1](https://github.com/salesforce/lwc/compare/v0.33.28-alpha3...v0.33.28-1) (2019-01-09)
 
 
 
