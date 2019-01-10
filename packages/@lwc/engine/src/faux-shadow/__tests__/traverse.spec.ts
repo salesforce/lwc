@@ -129,6 +129,153 @@ describe('#LightDom querySelectorAll()', () => {
 });
 
 describe('#LightDom querySelector()', () => {
+    describe('when dealing with nested slots', () => {
+        it('should find the slotted element when "slot > slot > div.slotted"', () => {
+            let slotted;
+            class Parent extends LightningElement {
+                renderedCallback() {
+                    slotted = this.querySelector('.slotted');
+                }
+                render() {
+                    return parentHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {
+                modules: {},
+            });
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <slot>
+                            <div class="slotted"></div>
+                        </slot>
+                    </x-parent>
+                </template>
+            `, {
+                modules: {
+                    'x-parent': Parent,
+                },
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(slotted).not.toBe(null);
+            });
+        });
+
+        it('should find the slotted element when "slot > x-child > slot > div.slotted"', () => {
+            let slotted;
+            class Child extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+            }
+            const childHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `);
+            class Parent extends LightningElement {
+                renderedCallback() {
+                    slotted = this.querySelector('.slotted');
+                }
+                render() {
+                    return parentHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {
+                modules: {},
+            });
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <x-child>
+                            <div class="slotted"></div>
+                        </x-child>
+                    </x-parent>
+                </template>
+            `, {
+                modules: {
+                    'x-parent': Parent,
+                    'x-child': Child,
+                },
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(slotted).not.toBe(null);
+            });
+        });
+
+        it('should find the slotted element when "slot > div > slot > div.slotted"', () => {
+            let slotted;
+            class Parent extends LightningElement {
+                renderedCallback() {
+                    slotted = this.querySelector('.slotted');
+                }
+                render() {
+                    return parentHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {
+                modules: {},
+            });
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <div>
+                            <slot>
+                                <div class="slotted"></div>
+                            </slot>
+                        </div>
+                    </x-parent>
+                </template>
+            `, {
+                modules: {
+                    'x-parent': Parent,
+                },
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => {
+                expect(slotted).not.toBe(null);
+            });
+        });
+    });
+
     it('should allow searching for the passed element multiple levels up', () => {
         class Root extends LightningElement {
             render() {
