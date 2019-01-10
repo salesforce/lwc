@@ -6,7 +6,7 @@ import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
 
 function testInvalidComponentInstance(name, obj) {
-    it('should return null for non-component instance', () => {
+    it(`should return ${name} for non-component instance`, () => {
         expect(getComponentConstructor(obj)).toBe(null);
     });
 }
