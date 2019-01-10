@@ -146,7 +146,28 @@ describe("module resolver", () => {
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.'),
+        }]);
+    });
+
+    test("compiler should report name case mismatch diagnostic for local import", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { nested } from './lib/foo';`,
+                "lib/Foo.js": ``,
+            }
+        };
+
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?'),
+        }]);
     });
 
     test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
@@ -162,5 +183,57 @@ describe("module resolver", () => {
         expect(success).toBe(false);
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
     });
+});
 
+describe('module entry validation', () => {
+    test("compiler should fail module resolution if an entry name starts with capital letter", async () => {
+        const { diagnostics, success } = await compile({
+            name: 'MycmpCamelcased',
+            namespace: 'c',
+            files: {
+                'mycmpCamelcased.js': ``,
+                'mycmpCamelcased.html': ``,
+            },
+        });
+
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".'),
+        }]);
+    });
+
+    test("compiler should not fail module resolution if an entry contains non-leading capital letter", async () => {
+        const { success } = await compile({
+            name: 'myCmp',
+            namespace: 'c',
+            files: {
+                'myCmp.js': `
+                    import { LightningElement } from 'lwc';
+                    export default class App extends LightningElement {}
+                `,
+                'myCmp.html': `<template></template>`,
+            },
+        });
+        expect(success).toBe(true);
+    });
+});
+
+describe('module file name validation', () => {
+    test('compilation should fail when folder and its entry ".js" file names do not case match', async () => {
+        const { diagnostics, success } = await compile({
+            name: 'mycmp',
+            namespace: 'c',
+            files: {
+                'Mycmp.js': ``,
+                'Mycmp.html': ``,
+            },
+        });
+
+        expect(success).toBe(false);
+        expect(diagnostics).toMatchObject([{
+            level: 0,
+            message: expect.stringContaining('Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".'),
+        }]);
+    });
 });

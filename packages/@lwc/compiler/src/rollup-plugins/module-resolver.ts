@@ -36,6 +36,11 @@ function isImplicitHTMLImport(importee: string, importer: string) {
     );
 }
 
+function isFirstCharacterUppercased(importee: string) {
+    const upperCaseRegex = /^[A-Z]/;
+    return importee && upperCaseRegex.test(importee);
+}
+
 function fileExists(
     fileName: string,
     { files }: NormalizedCompilerOptions
@@ -59,6 +64,57 @@ function readFile(
     }
 }
 
+function generateModuleResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+    const absPath = getAbsolutePath(importee, importer, options.baseDir);
+    const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
+
+    return caseIgnoredFilename ?
+        generateCompilerError(ModuleResolutionErrors.IMPORT_AND_FILE_NAME_CASE_MISMATCH, {
+            messageArgs: [
+                importee,
+                importer,
+                caseIgnoredFilename.substr(0, caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length),
+            ],
+            origin: { filename: importer }
+        }) :
+        generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
+            messageArgs: [ importee, importer, absPath ],
+            origin: { filename: importer }
+        });
+}
+
+function generateEntryResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+    const absPath = getAbsolutePath(importee, importer, options.baseDir);
+    const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
+
+    return caseIgnoredFilename ?
+        generateCompilerError(ModuleResolutionErrors.FOLDER_AND_FILE_NAME_CASE_MISMATCH, {
+            messageArgs: [ caseIgnoredFilename, importee ],
+            origin: { filename: importer }
+        }) :
+        generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
+            messageArgs: [importee],
+            origin: { filename: importer }
+        });
+}
+
+function getAbsolutePath(importee: string, importer: string, baseDir: string | undefined) {
+    const relPath = importer ? path.dirname(importer) : baseDir || "";
+    let absPath = path.join(relPath, importee);
+
+    if (!path.extname(importee)) {
+        absPath += ".js";
+    }
+
+    return absPath;
+}
+
+function getCaseIgnoredFilenameMatch(files: {[key: string]: string}, nameToMatch: string) {
+    return Object.keys(files).find(
+        (bundleFile: string) => bundleFile.toLowerCase() === nameToMatch
+    );
+}
+
 export default function({ options }: { options: NormalizedCompilerOptions }) {
     return {
         name: "lwc-module-resolver",
@@ -68,12 +124,18 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                 return;
             }
 
-            const relPath = importer ? path.dirname(importer) : options.baseDir || "";
-            let absPath = path.join(relPath, importee);
-
-            if (!path.extname(importee)) {
-                absPath += ".js";
+            if (isFirstCharacterUppercased(importee)) {
+                throw generateCompilerError(
+                    ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER,
+                    {
+                        messageArgs: [
+                            importee,
+                            importee.charAt(0).toLowerCase() + importee.slice(1) ],
+                    }
+                );
             }
+
+            const absPath = getAbsolutePath(importee, importer, options.baseDir);
 
             if (!fileExists(absPath, options)) {
                 if (isImplicitCssImport(importee, importer)) {
@@ -84,16 +146,9 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
 
-                if (importer) {
-                    throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
-                        messageArgs: [ importee, importer ],
-                        origin: { filename: importer }
-                    });
-                }
-                throw generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
-                    messageArgs: [importee],
-                    origin: { filename: importer }
-                });
+                throw importer ?
+                    generateModuleResolutionError(importee, importer, options) :
+                    generateEntryResolutionError(importee, importer, options);
             }
             return absPath;
         },

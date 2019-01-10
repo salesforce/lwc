@@ -137,7 +137,7 @@ describe("compiler result", () => {
         const { level, message, code } = diagnostics[0];
 
         expect(level).toBe(DiagnosticLevel.Fatal);
-        expect(message).toContain('./nothing failed to be resolved from foo.js');
+        expect(message).toContain('Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.');
         expect(code).toBe(1011);
     });
 
