@@ -18,7 +18,6 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.2",
     "karma-jasmine": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
     "karma-sauce-launcher": "^2.0.2"
   }
 }

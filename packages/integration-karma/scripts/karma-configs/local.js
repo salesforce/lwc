@@ -15,7 +15,7 @@ module.exports = config => {
     config.set({
         reporters: [
             ...config.reporters,
-            'mocha'
+            'progress'
         ],
 
         browsers: [
@@ -25,11 +25,6 @@ module.exports = config => {
         plugins: [
             ...config.plugins,
             'karma-chrome-launcher',
-            'karma-mocha-reporter',
-        ],
-
-        mochaReporter: {
-            output: 'autowatch'
-        }
+        ]
     });
 };
