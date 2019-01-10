@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-import applyPolyfill from '../polyfill';
-
-applyPolyfill();
-
 it('should correctly concatenate 2 standard arrays', () => {
     const first = [1, 2];
     const second = [3, 4];
@@ -25,7 +15,7 @@ it('should correctly concatenate all parameters', () => {
 });
 
 it('should correctly concatenate values and arrays', () => {
-    const result = ([1] as any).concat([ true ], null, { x: 'x' }, [5]);
+    const result = [1].concat([ true ], null, { x: 'x' }, [5]);
 
     expect(result.length).toBe(5);
     expect(result).toEqual([1, true, null, { x: 'x' }, 5]);
@@ -43,7 +33,7 @@ it('should respect isConcatSpreadable on arrays', () => {
 
 it('should respect isConcatSpreadable on array-like objects', () => {
     const first = [1, 2];
-    const second: any = {
+    const second = {
         [Symbol.isConcatSpreadable]: true,
         length: 2,
         0: 3,
@@ -83,25 +73,38 @@ it('should correctly concatenate 2 proxified arrays', () => {
 });
 
 it('should call all the proxy traps', () => {
-    const getTrap = jest.fn((target, key) => Reflect.get(target, key));
-    const hasTrap = jest.fn((target, key) => Reflect.has(target, key));
+    const getCalls = [];
+    const hasCalls = [];
+
     const proxyHandler = {
-        get: getTrap,
-        has: hasTrap,
+        get(target, key) {
+            getCalls.push([target, key]);
+            return target[key];
+        },
+        has(target, key) {
+            hasCalls.push([target, key]);
+            return key in target;
+        }
     };
 
     const first = [1, 2];
     const second = [3, 4];
-    const secondProxified = new Proxy([3, 4], proxyHandler);
+    const secondProxified = new Proxy(second, proxyHandler);
     const result = first.concat(secondProxified);
 
-    expect(getTrap.mock.calls).toEqual([
-        [second, Symbol.isConcatSpreadable, second],
-        [second, 'length', second],
-        [second, '0', second],
-        [second, '1', second],
+    expect(result).toEqual([
+        1,
+        2,
+        3,
+        4
     ]);
-    expect(hasTrap.mock.calls).toEqual([
+    expect(getCalls).toEqual([
+        [second, Symbol.isConcatSpreadable],
+        [second, 'length'],
+        [second, '0'],
+        [second, '1'],
+    ]);
+    expect(hasCalls).toEqual([
         [second, '0'],
         [second, '1'],
     ]);
