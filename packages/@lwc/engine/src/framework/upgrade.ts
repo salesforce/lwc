@@ -65,12 +65,20 @@ assign(Node.prototype, {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: any = {}): HTMLElement {
+export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
-        throw new TypeError();
+        throw new TypeError(`"createElement" function was invoked with invalid second parameter "${options}". Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".`);
     }
 
     let Ctor = (options as any).is as ComponentConstructor;
+
+    if (isNull(Ctor) || isUndefined(Ctor)) {
+        throw new TypeError(
+            `"createElement" function was invoked with invalid second parameter. "is" property value was "${Ctor}", but expected an object that extends LightningElement from "lwc". ` +
+            `You probably forgot to add the extend clause on the class declaration.`
+        );
+    }
+
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }

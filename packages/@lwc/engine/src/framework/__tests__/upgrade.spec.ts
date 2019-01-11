@@ -9,6 +9,42 @@ import { compileTemplate } from 'test-utils';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
+        it('should throw an error when options parameter is missing', () => {
+            expect(() => {
+                createElement('x-foo');
+            }).toThrow(
+                '"createElement" function was invoked with invalid second parameter "undefined". ' +
+                'Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".'
+            );
+        });
+
+        it('should throw an error when options parameter is null', () => {
+            expect(() => {
+                createElement('x-foo', null);
+            }).toThrow(
+                '"createElement" function was invoked with invalid second parameter "null". ' +
+                'Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".'
+            );
+        });
+
+        it('should throw an error when "is" value is null', () => {
+            expect(() => {
+                createElement('x-foo', { is: null});
+            }).toThrow(
+                '"createElement" function was invoked with invalid second parameter. "is" property value was "null", ' +
+                'but expected an object that extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.'
+            );
+        });
+
+        it('should throw an error when "is" value is undefined', () => {
+            expect(() => {
+                createElement('x-foo', { is: undefined});
+            }).toThrow(
+                '"createElement" function was invoked with invalid second parameter. "is" property value was "undefined", ' +
+                'but expected an object that extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.'
+            );
+        });
+
         it('should support constructors with circular dependencies', () => {
             const factory = () => class extends LightningElement { };
             factory.__circular__ = true;
