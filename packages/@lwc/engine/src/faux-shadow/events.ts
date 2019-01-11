@@ -283,7 +283,7 @@ function isValidEventForCustomElement(event: Event): boolean {
 
 export function addCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(elm)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        assert.invariant(isFunction(listener), `Invalid second argument for this.addEventListener() in ${toString(elm)} for event "${type}". Expected an EventListener but received ${listener}.`);
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {

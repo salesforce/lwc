@@ -180,7 +180,7 @@ BaseLightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
-            assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
+            assert.invariant(isFunction(listener), `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
         }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.addEventListener(type, wrappedListener, options);
