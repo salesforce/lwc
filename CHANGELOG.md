@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.28-1...v) (2019-01-10)
+# [](https://github.com/salesforce/lwc/compare/v0.34.0...v) (2019-01-11)
+
+
+### Bug Fixes
+
+* **engine:** regular dom nodes can use object type event listeners ([#943](https://github.com/salesforce/lwc/issues/943)) ([adf3504](https://github.com/salesforce/lwc/commit/adf3504))
+
+
+
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/salesforce/lwc/compare/v0.33.28-1...v0.34.0) (2019-01-10)
 
 
 ### Bug Fixes
