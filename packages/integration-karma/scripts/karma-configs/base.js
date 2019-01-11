@@ -19,10 +19,13 @@ const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 
-const TEST_UTILS_FAKE_SHADOW = require.resolve(
+const SETUP_SCRIPT = require.resolve(
+    '../../helpers/setup',
+);
+const TEST_UTILS_FAKE_SHADOW_SCRIPT = require.resolve(
     '../../helpers/test-utils-fake-shadow',
 );
-const TEST_UTILS_NATIVE_SHADOW = require.resolve(
+const TEST_UTILS_NATIVE_SHADOW_SCRIPT = require.resolve(
     '../../helpers/test-utils-native-shadow',
 );
 
@@ -55,10 +58,11 @@ function getFiles(lwcConfig) {
         : [createPattern(LWC_ENGINE)];
 
     const testUtilsFiles = lwcConfig.nativeShadow
-        ? [createPattern(TEST_UTILS_NATIVE_SHADOW)]
-        : [createPattern(TEST_UTILS_FAKE_SHADOW)];
+        ? [createPattern(TEST_UTILS_NATIVE_SHADOW_SCRIPT)]
+        : [createPattern(TEST_UTILS_FAKE_SHADOW_SCRIPT)];
 
     return [
+        createPattern(SETUP_SCRIPT),
         ...frameworkFiles,
         ...testUtilsFiles,
         createPattern('**/*.spec.js', { watched: false }),

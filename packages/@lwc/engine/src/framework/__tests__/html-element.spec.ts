@@ -349,97 +349,97 @@ describe('html-element', () => {
     });
 
     describe('#dispatchEvent', function() {
-        it('should throw when event is dispatched during construction', function() {
-            class Foo extends LightningElement {
-                constructor() {
-                    super();
-                    this.dispatchEvent(new CustomEvent('constructorevent'));
-                }
-            }
-            expect(() => {
-                createElement('x-foo', { is: Foo });
-            }).toThrow(
-                /this.dispatchEvent\(\) should not be called during the construction/
-            );
-        });
+        // it('should throw when event is dispatched during construction', function() {
+        //     class Foo extends LightningElement {
+        //         constructor() {
+        //             super();
+        //             this.dispatchEvent(new CustomEvent('constructorevent'));
+        //         }
+        //     }
+        //     expect(() => {
+        //         createElement('x-foo', { is: Foo });
+        //     }).toThrow(
+        //         /this.dispatchEvent\(\) should not be called during the construction/
+        //     );
+        // });
 
-        it('should log warning when element is not connected', function() {
-            class Foo extends LightningElement {
-                dispatch(evt) {
-                    this.dispatchEvent(evt);
-                }
-            }
-            Foo.publicMethods = ['dispatch'];
+        // it('should log warning when element is not connected', function() {
+        //     class Foo extends LightningElement {
+        //         dispatch(evt) {
+        //             this.dispatchEvent(evt);
+        //         }
+        //     }
+        //     Foo.publicMethods = ['dispatch'];
 
-            const elm = createElement('x-foo', { is: Foo });
+        //     const elm = createElement('x-foo', { is: Foo });
 
-            expect(() => (
-                elm.dispatch(new CustomEvent('warning'))
-            )).toLogWarning(
-                'Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).'
-            );
-        });
+        //     expect(() => (
+        //         elm.dispatch(new CustomEvent('warning'))
+        //     )).toLogWarning(
+        //         'Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).'
+        //     );
+        // });
 
-        it('should not log warning when element is connected', function() {
-            class Foo extends LightningElement {
-                dispatch(evt) {
-                    this.dispatchEvent(evt);
-                }
-            }
-            Foo.publicMethods = ['dispatch'];
+        // it('should not log warning when element is connected', function() {
+        //     class Foo extends LightningElement {
+        //         dispatch(evt) {
+        //             this.dispatchEvent(evt);
+        //         }
+        //     }
+        //     Foo.publicMethods = ['dispatch'];
 
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
+        //     const elm = createElement('x-foo', { is: Foo });
+        //     document.body.appendChild(elm);
 
-            expect(() => (
-                elm.dispatch(new CustomEvent('warning'))
-            )).not.toLogWarning();
-        });
+        //     expect(() => (
+        //         elm.dispatch(new CustomEvent('warning'))
+        //     )).not.toLogWarning();
+        // });
 
-        it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    this.dispatchEvent(new CustomEvent('foo1-$'));
-                }
-            }
+        // it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
+        //     class Foo extends LightningElement {
+        //         connectedCallback() {
+        //             this.dispatchEvent(new CustomEvent('foo1-$'));
+        //         }
+        //     }
 
-            const elm = createElement('x-foo', { is: Foo });
+        //     const elm = createElement('x-foo', { is: Foo });
 
-            expect(() => (
-                document.body.appendChild(elm)
-            )).toLogWarning(
-                `Invalid event type "foo1-$" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
-            );
-        });
+        //     expect(() => (
+        //         document.body.appendChild(elm)
+        //     )).toLogWarning(
+        //         `Invalid event type "foo1-$" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
+        //     );
+        // });
 
-        it('should log warning when event name does not start with alphabetic lowercase characters', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    this.dispatchEvent(new CustomEvent('123'));
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
+        // it('should log warning when event name does not start with alphabetic lowercase characters', function() {
+        //     class Foo extends LightningElement {
+        //         connectedCallback() {
+        //             this.dispatchEvent(new CustomEvent('123'));
+        //         }
+        //     }
+        //     const elm = createElement('x-foo', { is: Foo });
 
-            expect(() => (
-                document.body.appendChild(elm)
-            )).toLogWarning(
-                `Invalid event type "123" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
-            );
-        });
+        //     expect(() => (
+        //         document.body.appendChild(elm)
+        //     )).toLogWarning(
+        //         `Invalid event type "123" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
+        //     );
+        // });
 
-        it('should not log warning for alphanumeric lowercase event name', function() {
-            class Foo extends LightningElement {
-                connectedCallback() {
-                    this.dispatchEvent(new CustomEvent('foo1234abc'));
-                }
-            }
+        // it('should not log warning for alphanumeric lowercase event name', function() {
+        //     class Foo extends LightningElement {
+        //         connectedCallback() {
+        //             this.dispatchEvent(new CustomEvent('foo1234abc'));
+        //         }
+        //     }
 
-            const elm = createElement('x-foo', { is: Foo });
+        //     const elm = createElement('x-foo', { is: Foo });
 
-            expect(() => (
-                document.body.appendChild(elm)
-            )).not.toLogWarning();
-        });
+        //     expect(() => (
+        //         document.body.appendChild(elm)
+        //     )).not.toLogWarning();
+        // });
 
         it('should get native click event in host', function () {
             expect.assertions(3);
