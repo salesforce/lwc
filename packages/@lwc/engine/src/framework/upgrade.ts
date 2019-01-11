@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
+import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
@@ -67,15 +67,14 @@ assign(Node.prototype, {
  */
 export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
-        throw new TypeError(`"createElement" function was invoked with invalid second parameter "${options}". Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".`);
+        throw new TypeError(`"createElement" function expects an object as second parameter but received "${toString(options)}".`);
     }
 
     let Ctor = (options as any).is as ComponentConstructor;
 
-    if (isNull(Ctor) || isUndefined(Ctor)) {
+    if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"createElement" function was invoked with invalid second parameter. "is" property value was "${Ctor}", but expected an object that extends LightningElement from "lwc". ` +
-            `You probably forgot to add the extend clause on the class declaration.`
+            `"is" value must be a function but received "${toString(Ctor)}".`
         );
     }
 

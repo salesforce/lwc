@@ -13,8 +13,7 @@ describe('upgrade', () => {
             expect(() => {
                 createElement('x-foo');
             }).toThrow(
-                '"createElement" function was invoked with invalid second parameter "undefined". ' +
-                'Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".'
+                '"createElement" function expects an object as second parameter but received "undefined".'
             );
         });
 
@@ -22,8 +21,7 @@ describe('upgrade', () => {
             expect(() => {
                 createElement('x-foo', null);
             }).toThrow(
-                '"createElement" function was invoked with invalid second parameter "null". ' +
-                'Expected an object that contains property "is" mapped to an object that extends LightningElement from "lwc".'
+                '"createElement" function expects an object as second parameter but received "[object Null]".'
             );
         });
 
@@ -31,8 +29,7 @@ describe('upgrade', () => {
             expect(() => {
                 createElement('x-foo', { is: null});
             }).toThrow(
-                '"createElement" function was invoked with invalid second parameter. "is" property value was "null", ' +
-                'but expected an object that extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.'
+                '"is" value must be a function but received "[object Null]".'
             );
         });
 
@@ -40,8 +37,7 @@ describe('upgrade', () => {
             expect(() => {
                 createElement('x-foo', { is: undefined});
             }).toThrow(
-                '"createElement" function was invoked with invalid second parameter. "is" property value was "undefined", ' +
-                'but expected an object that extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.'
+                '"is" value must be a function but received "undefined".'
             );
         });
 
