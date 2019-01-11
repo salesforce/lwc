@@ -70,31 +70,65 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
 }
 
-export function isNodeSlotted(host: Element, node: Node): boolean {
+// when finding a slot in the DOM, we can fold it if it is contained
+// inside another slot.
+function foldSlotElement(slot: HTMLElement) {
+    let parent = parentElementGetter.call(slot);
+    while (!isNull(parent) && isSlotElement(parent)) {
+        slot = parent as HTMLElement;
+        parent = parentElementGetter.call(slot);
+    }
+    return slot;
+}
+
+function isNodeSlotted(host: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(host instanceof HTMLElement, `isNodeSlotted() should be called with a host as the first argument instead of ${host}`);
         assert.invariant(node instanceof Node, `isNodeSlotted() should be called with a node as the second argument instead of ${node}`);
         assert.isTrue(compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS, `isNodeSlotted() should never be called with a node that is not a child node of ${host}`);
     }
     const hostKey = getNodeKey(host);
+    // this routine assumes that the node is coming from a different shadow (it is not owned by the host)
     // just in case the provided node is not an element
     let currentElement = node instanceof Element ? node : parentElementGetter.call(node);
     while (!isNull(currentElement) && currentElement !== host) {
         const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
         const parent = parentElementGetter.call(currentElement);
         if (elmOwnerKey === hostKey) {
-            // we have reached a host's node element, and only if
+            // we have reached an element inside the host's template, and only if
             // that element is an slot, then the node is considered slotted
+            // TODO: add the examples
             return isSlotElement(currentElement);
-        } else if (!isNull(parent) && parent !== host && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
+        } else if (parent === host) {
+            return false;
+        } else if (!isNull(parent) && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
             // we are crossing a boundary of some sort since the elm and its parent
-            // have different owner key. for slotted elements, this is only possible
-            // if the parent happens to be a slot that is not owned by the host
-            if (!isSlotElement(parent)) {
+            // have different owner key. for slotted elements, this is possible
+            // if the parent happens to be a slot.
+            if (isSlotElement(parent)) {
+                /**
+                 * the slot parent might be allocated inside another slot, think of:
+                 * <x-root> (<--- root element)
+                 *    <x-parent> (<--- own by x-root)
+                 *       <x-child> (<--- own by x-root)
+                 *           <slot> (<--- own by x-child)
+                 *               <slot> (<--- own by x-parent)
+                 *                  <div> (<--- own by x-root)
+                 *
+                 * while checking if x-parent has the div slotted, we need to traverse
+                 * up, but when finding the first slot, we skip that one in favor of the
+                 * most outer slot parent before jumping into its corresponding host.
+                 */
+                currentElement = getNodeOwner(foldSlotElement(parent as HTMLElement));
+                if (currentElement === host) {
+                    return true; // if the jump is all the way to the host in question, then it is slotted node
+                }
+            } else {
                 return false;
             }
+        } else {
+            currentElement = parent;
         }
-        currentElement = parent;
     }
     return false;
 }

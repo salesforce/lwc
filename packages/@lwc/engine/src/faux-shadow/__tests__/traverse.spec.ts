@@ -6,7 +6,6 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
-import { getShadowRoot } from "../../faux-shadow/shadow-root";
 import { getRootNodeGetter } from "../traverse";
 
 describe('#LightDom querySelectorAll()', () => {
@@ -168,10 +167,7 @@ describe('#LightDom querySelector()', () => {
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(slotted).not.toBe(null);
-            });
+            expect(slotted).not.toBe(null);
         });
 
         it('should find the slotted element when "slot > x-child > slot > div.slotted"', () => {
@@ -220,13 +216,9 @@ describe('#LightDom querySelector()', () => {
                     'x-child': Child,
                 },
             });
-
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(slotted).not.toBe(null);
-            });
+            expect(slotted).not.toBe(null);
         });
 
         it('should find the slotted element when "slot > div > slot > div.slotted"', () => {
@@ -270,9 +262,7 @@ describe('#LightDom querySelector()', () => {
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => {
-                expect(slotted).not.toBe(null);
-            });
+            expect(slotted).not.toBe(null);
         });
     });
 
@@ -316,7 +306,7 @@ describe('#LightDom querySelector()', () => {
         });
         const childHTML = compileTemplate(`
             <template>
-                <div onclick={handleClick}>
+                <div>
                     <slot></slot>
                 </div>
             </template>
@@ -325,7 +315,7 @@ describe('#LightDom querySelector()', () => {
         });
         const elm = createElement('x-root', { is: Root });
         document.body.appendChild(elm);
-        const div = getShadowRoot(elm).querySelector('div');
+        const div = elm.shadowRoot.querySelector('div');
         expect(div).toBe(target);
     });
     it('should allow searching for the passed element', () => {
