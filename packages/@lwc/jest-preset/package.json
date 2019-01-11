@@ -15,10 +15,10 @@
     "jest": ">= 23.0.0"
   },
   "dependencies": {
-    "@lwc/jest-resolver": "0.34.0",
-    "@lwc/jest-serializer": "0.34.0",
-    "@lwc/jest-transformer": "0.34.0",
-    "@lwc/test-utils": "0.34.0"
+    "@lwc/jest-resolver": "0.34.x",
+    "@lwc/jest-serializer": "0.34.x",
+    "@lwc/jest-transformer": "0.34.x",
+    "@lwc/test-utils": "0.34.x"
   },
   "publishConfig": {
     "access": "public"
