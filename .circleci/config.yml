@@ -75,12 +75,12 @@ jobs:
           at: ~/lwc
 
       - run:
-        name: Install and start sauce connect
-        background: true
-        command: |
-            wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
-            tar -xzf sc-4.4.11-linux.tar.gz
-            cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+          name: Install and start sauce connect
+          background: true
+          command: |
+              wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
+              tar -xzf sc-4.4.11-linux.tar.gz
+              cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
 
       - run:
           name: Wait for sauce connect to be ready
