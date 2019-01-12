@@ -11,7 +11,7 @@ const glob = require('glob');
 const semver = require('semver');
 
 const PACKAGES_DIR = path.resolve(__dirname, '../../packages');
-const PACKAGES = glob.sync('*/package.json', {
+const PACKAGES = glob.sync('*/**/package.json', {
     absolute: true,
     cwd: PACKAGES_DIR,
 });
