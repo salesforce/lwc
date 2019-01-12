@@ -13,21 +13,21 @@ env_perf: &env_perf
 
 version: 2
 jobs:
-  build_and_test:
+  build:
     <<: *env_default
     steps:
       - checkout
 
       - restore_cache:
           keys:
-            - yarn-v4-{{ checksum "yarn.lock" }}
+            - yarn-v5-{{ checksum "yarn.lock" }}
 
       - run: yarn install --frozen-lockfile
 
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: yarn-v4-{{ checksum "yarn.lock" }}
+          key: yarn-v5-{{ checksum "yarn.lock" }}
 
       - run:
           name: Sanity checks
@@ -41,7 +41,7 @@ jobs:
 
       - persist_to_workspace:
           root: .
-          path: .
+          paths: .
 
   unit_test:
     <<: *env_default
