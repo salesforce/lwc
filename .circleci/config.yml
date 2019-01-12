@@ -11,6 +11,7 @@ env_perf: &env_perf
     - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
 
+
 version: 2
 jobs:
   build:
@@ -43,14 +44,52 @@ jobs:
           root: .
           paths: .
 
+
   test_unit:
     <<: *env_default
     steps:
       - attach_workspace:
           at: ~/lwc
+
       - run:
-          name: Run Unit Tests
+          name: Run unit tests
           command: yarn test:ci
+
+
+  test_integration:
+    <<: *env_default
+    steps:
+      - attach_workspace:
+          at: ~/lwc
+
+      - run:
+          name: Run integration test - Headless Chrome
+          command: yarn local:prod
+          working_directory: packages/integration-tests
+
+
+  test_integration_compat:
+    <<: *env_default
+    steps:
+      - attach_workspace:
+          at: ~/lwc
+
+      - run:
+        name: Install and start sauce connect
+        background: true
+        command: |
+            wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
+            tar -xzf sc-4.4.11-linux.tar.gz
+            cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+
+      - run:
+          name: Wait for sauce connect to be ready
+          command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+
+      - run:
+          name: Run integration test - IE11 SauceLabs
+          command: yarn sauce:prod_compat --browsers ie11
+          working_directory: packages/integration-tests
 
   # integration_test:
   #   <<: *env_default
@@ -201,13 +240,13 @@ workflows:
           requires:
             - build
 
-      # - integration_test_compat:
-      #     requires:
-      #       - build_and_test
+      - test_integration:
+          requires:
+            - build
 
-      # - integration_test:
-      #     requires:
-      #       - build_and_test
+      - test_integration_compat:
+          requires:
+            - build
 
       # - perf_and_compare_chrome:
       #     requires:
