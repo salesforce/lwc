@@ -120,8 +120,16 @@ function isNodeSlotted(host: Element, node: Node): boolean {
                  * most outer slot parent before jumping into its corresponding host.
                  */
                 currentElement = getNodeOwner(foldSlotElement(parent as HTMLElement));
-                if (currentElement === host) {
-                    return true; // if the jump is all the way to the host in question, then it is slotted node
+                if (!isNull(currentElement)) {
+                    if (currentElement === host) {
+                        // the slot element is a top level element inside the shadow
+                        // of a host that was allocated into host in question
+                        return true;
+                    } else if (getNodeNearestOwnerKey(currentElement) === hostKey) {
+                        // the slot element is an element inside the shadow
+                        // of a host that was allocated into host in question
+                        return true;
+                    }
                 }
             } else {
                 return false;
