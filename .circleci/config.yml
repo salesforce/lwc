@@ -1,3 +1,4 @@
+# Environment configuration
 env_default: &env_default
   working_directory: ~/lwc
   docker:
@@ -10,8 +11,117 @@ env_perf: &env_perf
     - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
     - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
+# Yarn cache
+restore_yarn_cache: &restore_yarn_cache
+  restore_cache:
+    keys:
+      - yarn-v5-{{ checksum "yarn.lock" }}
+
+save_yarn_cache: &save_yarn_cache
+  save_cache:
+    key: yarn-v5-{{ checksum "yarn.lock" }}
+    paths:
+      - ~/.cache/yarn
+
+# Workspace
+save_workspace: &save_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+load_workspace: &load_workspace
+  attach_workspace:
+    at: ~/lwc
+
+# Build
+install_and_build: &install_and_build
+  run:
+    name: Install depedencies and build
+    command: yarn install --frozen-lockfile
+
+run_sanity_checks: &run_sanity_checks
+  run:
+    name: Sanity checks
+    command: |
+      node ./scripts/tasks/version-check.js
+      node ./scripts/tasks/check-license-headers.js
+
+run_linting: &run_linting
+  run:
+    name: Run linting
+    command: yarn lint
+
+# Test
+run_unit_tests: &run_unit_tests
+  run:
+    name: Run unit tests
+    command: yarn test:ci
+
+run_integration_tests_chrome: &run_integration_tests_chrome
+  run:
+    name: Run integration test - Headless Chrome
+    command: yarn local:prod
+    working_directory: packages/integration-tests
+
+run_integration_tests_ie11: &run_integration_tests_ie11
+  run:
+    name: Run integration test - IE11 SauceLabs
+    command: yarn sauce:prod_compat --browsers ie11
+    working_directory: packages/integration-tests
+
+# Sauce connect
+install_and_start_sauce_connect: &install_and_start_sauce_connect
+  run:
+    name: Install and start sauce connect
+    background: true
+    command: |
+        wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
+        tar -xzf sc-4.4.11-linux.tar.gz
+        cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+
+wait_for_sauce_connect: &wait_for_sauce_connect
+  run:
+    name: Wait for sauce connect to be ready
+    command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+
+# BEST
+setup_best_environment: &setup_best_environment
+  run:
+    name: Setup BEST environment
+    command: |
+        echo 'export PULL_REQUEST=${CIRCLE_PULL_REQUEST}' >> $BASH_ENV
+        echo 'export REPO_NAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
+        echo 'export TARGET_COMMIT=${CIRCLE_SHA1}' >> $BASH_ENV
+        echo 'export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+
+        echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+
+run_best_chrome: &run_best_chrome
+  run:
+    name: Run BEST
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
+    no_output_timeout: 40m
+
+compat_best_results: &compat_best_results
+  run:
+    name: Comparing Benchmarks
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+
+store_best_artifacts: &store_best_artifacts
+  store_artifacts:
+    path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
+    destination: benchmarks
+
+# Canary publish
+publish_canary_artifacts: &publish_canary_artifacts
+  run:
+    name: Publish canary artifacts
+    command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
 
 
+# Jobs definition
 version: 2
 jobs:
   build:
@@ -19,121 +129,61 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-            - yarn-v5-{{ checksum "yarn.lock" }}
+      - *restore_yarn_cache
+      - *install_and_build
+      - *save_yarn_cache
 
-      - run: yarn install --frozen-lockfile
+      - *run_sanity_checks
+      - *run_linting
 
-      - save_cache:
-          paths:
-            - ~/.cache/yarn
-          key: yarn-v5-{{ checksum "yarn.lock" }}
-
-      - run:
-          name: Sanity checks
-          command: |
-            node ./scripts/tasks/version-check.js
-            node ./scripts/tasks/check-license-headers.js
-
-      - run:
-          name: Linting
-          command: yarn lint
-
-      - persist_to_workspace:
-          root: .
-          paths: .
+      - *save_workspace
 
 
   test_unit:
     <<: *env_default
     steps:
-      - attach_workspace:
-          at: ~/lwc
-
-      - run:
-          name: Run unit tests
-          command: yarn test:ci
+      - *load_workspace
+      - *run_unit_tests
 
 
   test_integration:
     <<: *env_default
     steps:
-      - attach_workspace:
-          at: ~/lwc
-
-      - run:
-          name: Run integration test - Headless Chrome
-          command: yarn local:prod
-          working_directory: packages/integration-tests
+      - *load_workspace
+      - *run_integration_tests_chrome
 
 
   test_integration_compat:
     <<: *env_default
     steps:
-      - attach_workspace:
-          at: ~/lwc
+      - *load_workspace
 
-      - run:
-          name: Install and start sauce connect
-          background: true
-          command: |
-              wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
-              tar -xzf sc-4.4.11-linux.tar.gz
-              cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+      - *install_and_start_sauce_connect
+      - *wait_for_sauce_connect
 
-      - run:
-          name: Wait for sauce connect to be ready
-          command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-
-      - run:
-          name: Run integration test - IE11 SauceLabs
-          command: yarn sauce:prod_compat --browsers ie11
-          working_directory: packages/integration-tests
+      - *run_integration_tests_chrome
 
 
-  perf_and_compare_chrome:
+  perf_and_compare:
     <<: *env_perf
     steps:
-      - attach_workspace:
-          at: ~/lwc
+      - *load_workspace
 
-      - run:
-          name: Setup dynamic environment variables
-          command:
-              echo '
-              export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
-              export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
-              export TARGET_COMMIT=${CIRCLE_SHA1}
-              export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+      - *setup_best_environment
+      - *run_best_chrome
+      - *compat_best_results
 
-      - run:
-          name: Decode PEM as environment variable
-          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+      - *store_best_artifacts
 
-      - run:
-          name: Preformance Test
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
-          no_output_timeout: 40m
-
-
-      - store_artifacts:
-          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
-          destination: benchmarks
-
-      - run:
-          name: Comparing Benchmarks
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
   push_canary_npm_artifacts:
     <<: *env_default
     steps:
-      - run:
-          name: Push artifacts
-          command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
+      - *load_workspace
+      - *publish_canary_artifacts
 
+
+# Workflows definition
 workflows:
   version: 2
   build_and_test:
@@ -152,7 +202,7 @@ workflows:
           requires:
             - build
 
-      - perf_and_compare_chrome:
+      - perf_and_compare:
           requires:
             - build
 
