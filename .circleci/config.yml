@@ -43,7 +43,7 @@ jobs:
           root: .
           paths: .
 
-  unit_test:
+  test_unit:
     <<: *env_default
     steps:
       - attach_workspace:
@@ -196,6 +196,10 @@ workflows:
   build_and_test:
     jobs:
       - build
+
+      - test_unit:
+          requires:
+            - build
 
       # - integration_test_compat:
       #     requires:
