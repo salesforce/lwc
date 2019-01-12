@@ -1,11 +1,20 @@
+env_default: &env_default
+  working_directory: ~/lwc
+  docker:
+    - image: circleci/node:10-browsers
+
+env_perf: &env_perf
+  <<: *env_default
+  environment:
+    - CUSTOM_BASH_ENV: ~/.bashrc
+    - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
+    - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+
+
 version: 2
 jobs:
   build_and_test:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
+    <<: *env_default
     steps:
       - checkout
 
@@ -40,11 +49,7 @@ jobs:
 
 
   integration_test:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
+    <<: *env_default
     steps:
       - checkout
 
@@ -60,11 +65,7 @@ jobs:
 
 
   integration_test_compat:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
+    <<: *env_default
     steps:
       - checkout
 
@@ -92,16 +93,7 @@ jobs:
 
 
   perf_and_compare_chrome:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
-    environment:
-      - CUSTOM_BASH_ENV: ~/.bashrc
-      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
-      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-
+    <<: *env_perf
     steps:
       - checkout
 
@@ -141,16 +133,7 @@ jobs:
           command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
   perf_and_compare_ie11:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
-    environment:
-      - CUSTOM_BASH_ENV: ~/.bashrc
-      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
-      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-
+    <<: *env_perf
     steps:
       - checkout
 
@@ -190,11 +173,7 @@ jobs:
           command: yarn start --projects best.ie11.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
   push_canary_npm_artifacts:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:10-stretch-browsers
-
+    <<: *env_default
     steps:
       - checkout
 
