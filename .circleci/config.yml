@@ -161,7 +161,7 @@ jobs:
       - *install_and_start_sauce_connect
       - *wait_for_sauce_connect
 
-      - *run_integration_tests_chrome
+      - *run_integration_tests_ie11
 
 
   perf_and_compare:
