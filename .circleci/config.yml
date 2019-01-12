@@ -195,7 +195,7 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_and_test
+      - build
 
       # - integration_test_compat:
       #     requires:
