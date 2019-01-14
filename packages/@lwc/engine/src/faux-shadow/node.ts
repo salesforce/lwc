@@ -229,7 +229,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             const parentNode = getShadowParent(this, value);
             // it could be that the parentNode is the shadowRoot, in which case
             // we need to return null.
-            return parentNode instanceof HTMLElement ? parentNode : null;
+            return parentNode instanceof Element ? parentNode : null;
         }
         getRootNode(this: Node, options?: GetRootNodeOptions): Node {
             return getRootNodeGetter.call(this, options);
