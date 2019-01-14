@@ -78,18 +78,25 @@ function getSauceConfig(config) {
         );
     }
 
+    const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
+
+    const tags = config.lwc.tags;
+    const testName = ['LWC', ...tags].join(' - ');
+    const build = [buildId, ...tags].join(' - ');
+
     return {
         username,
         accessKey,
 
-        testName: ['LWC', ...config.lwc.tags].join(' - '),
-        tags: config.lwc.tags,
+        build,
+        testName,
+        tags,
 
         customData: {
             lwc: config.lwc,
 
             ci: !!process.env.CI,
-            build: process.env.CIRCLE_BUILD_NUM || Date.now(),
+            build: process.env.CIRCLE_BUILD_NUM,
 
             commit: process.env.CIRCLE_SHA1,
             branch: process.env.CIRCLE_BRANCH,
