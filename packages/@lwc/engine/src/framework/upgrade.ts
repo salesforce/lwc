@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { isUndefined, assign, isNull, isObject, isTrue, isFalse } from "../shared/language";
+import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
@@ -65,12 +65,19 @@ assign(Node.prototype, {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: any = {}): HTMLElement {
+export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
-        throw new TypeError();
+        throw new TypeError(`"createElement" function expects an object as second parameter but received "${toString(options)}".`);
     }
 
     let Ctor = (options as any).is as ComponentConstructor;
+
+    if (!isFunction(Ctor)) {
+        throw new TypeError(
+            `"is" value must be a function but received "${toString(Ctor)}".`
+        );
+    }
+
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
