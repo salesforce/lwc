@@ -301,81 +301,10 @@ describe("compiler metadata", () => {
         );
 
         expect(metadata).toEqual({
-            decorators: [
-                {
-                    type: "api",
-                    targets: [
-                        { type: "property", name: "publicProp", value: { type: "unresolved", value: undefined } },
-                        { type: "method", name: "publicMethod" }
-                    ]
-                },
-                {
-                    type: "wire",
-                    targets: [
-                        {
-                            type: "property",
-                            adapter: { name: "getTodo", reference: "todo" },
-                            name: "wiredProp",
-                            params: {},
-                            static: {}
-                        },
-                        {
-                            type: "method",
-                            adapter: {
-                                name: "getHello",
-                                reference: "@schema/foo.bar"
-                            },
-                            name: "wiredMethod",
-                            params: { name: "publicProp" },
-                            static: { fields: { type: "array", value: ["one", "two"] } }
-                        }
-                    ]
-                }
-            ],
+            decorators: [],
             importLocations: [],
-            classMembers: [
-                {
-                    name: "publicProp",
-                    type: "property",
-                    value: { type: "unresolved", value: undefined },
-                    decorator: "api",
-                    loc: {
-                        start: { column: 4, line: 6 },
-                        end: { column: 15, line: 7 },
-                    },
-                },
-                {
-                    name: "publicMethod",
-                    type: "method",
-                    decorator: "api",
-                    loc: {
-                        start: { column: 4, line: 9 },
-                        end: { column: 5, line: 12 },
-                    },
-                },
-                {
-                    name: "wiredProp",
-                    type: "property",
-                    decorator: "wire",
-                    loc: {
-                        start: { column: 4, line: 14 },
-                        end: { column: 14, line: 15 },
-                    },
-                },
-                {
-                    name: "wiredMethod",
-                    type: "method",
-                    decorator: "wire",
-                    loc: {
-                        start: { column: 4, line: 17 },
-                        end: { column: 5, line: 19 },
-                    },
-                }
-            ],
-            declarationLoc: {
-                start: {column: 0, line: 5},
-                end: {column: 1, line: 20},
-            },
+            classMembers: [],
+            declarationLoc: undefined,
             experimentalTemplateDependencies: [
             {
                 moduleDependencies: [
@@ -386,11 +315,7 @@ describe("compiler metadata", () => {
                 ],
                 templatePath: "foo.html"
             }],
-            exports: [
-                { type: "ExportDefaultDeclaration" },
-                { type: "ExportNamedDeclaration", value: "HELLOWORLD" },
-                { type: "ExportNamedDeclaration", value: "ohai" },
-            ],
+            exports: [],
         });
     });
 
@@ -418,67 +343,23 @@ describe("compiler metadata", () => {
         });
 
         expect(metadata).toEqual({
-            decorators: [
-                {
-                    type: "api",
-                    targets: [
-                        { type: "property", name: "prop1", value: { type: "unresolved", value: undefined } },
-                        { type: "property", name: "prop2" },
-                        { type: "method", name: "method1" }
-                    ]
-                }
-            ],
+            decorators: [],
             importLocations: [
                 {
                     location: { length: 3, start: 18 },
                      name: "lwc"
                 }
             ],
-            classMembers: [
-                {
-                    name: "prop1",
-                    type: "property",
-                    value: { type: "unresolved", value: undefined },
-                    decorator: "api",
-                    doc: "* prop1",
-                    loc: {
-                        start: { column: 20, line: 5 },
-                        end: { column: 31, line: 5 },
-                    },
-                },
-                {
-                    name: "prop2",
-                    type: "property",
-                    decorator: "api",
-                    doc: "* prop2",
-                    loc: {
-                        start: { column: 20, line: 8 },
-                        end: { column: 21, line: 9 },
-                    },
-                },
-                {
-                    name: "method1",
-                    type: "method",
-                    decorator: "api",
-                    doc: "* method1",
-                    loc: {
-                        start: { column: 20, line: 12 },
-                        end: { column: 37, line: 12 },
-                    },
-                },
-            ],
-            declarationLoc: {
-                start: {column: 16, line: 3},
-                end: {column: 17, line: 13},
-            },
-            doc: "* class jsdoc",
+            classMembers: [],
+            declarationLoc: undefined,
+            doc: undefined,
             experimentalTemplateDependencies: [
                 {
                     moduleDependencies: [],
                     templatePath: "foo.html"
                 }
             ],
-            exports: [{ type: 'ExportDefaultDeclaration' }],
+            exports: [],
         });
     });
 });

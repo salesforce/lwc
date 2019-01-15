@@ -36,17 +36,6 @@ export default function(
     const metadata: lwcClassTransformPlugin.Metadata = (result as any)
         .metadata;
 
-    if (metadataCollector) {
-        metadata.decorators.forEach(d => metadataCollector.collectDecorator(d));
-        if (metadata.classMembers) {
-            metadata.classMembers.forEach(c => metadataCollector.collectClassMember(c));
-        }
-        metadataCollector.setDeclarationLoc(metadata.declarationLoc);
-        metadataCollector.setDoc(metadata.doc);
-
-        metadataCollector.collectExports(metadata.exports);
-    }
-
     return {
         code: result.code,
         map: result.map,

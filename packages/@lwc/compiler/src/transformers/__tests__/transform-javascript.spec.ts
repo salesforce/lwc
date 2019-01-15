@@ -37,46 +37,6 @@ it('should apply transformation for valid javascript file', async () => {
     expect(pretify(code)).toBe(pretify(expected));
 });
 
-it('outputs proper metadata', async () => {
-    const content = `
-        import { LightningElement, api } from 'lwc';
-        /** Foo doc */
-        export default class Foo extends LightningElement {
-            _privateTodo;
-
-            @api
-            get todo () {
-                return this._privateTodo;
-            }
-            set todo (val) {
-                return this._privateTodo = val;
-            }
-
-            @api
-            index;
-        }
-    `;
-
-    const result = await transform(content, 'foo.js', COMPILER_OPTIONS);
-
-    const metadata = result.metadata as Metadata;
-
-    expect(metadata.decorators).toEqual([
-        {
-            type: 'api',
-            targets: [
-                { type: 'property', name: 'todo' },
-                { type: 'property', name: 'index', value: { type: "unresolved", value: undefined } },
-            ],
-        },
-    ]);
-    expect(metadata.doc).toBe('* Foo doc');
-    expect(metadata.declarationLoc).toEqual({
-        start: { line: 4, column: 8 },
-        end: { line: 17, column: 9 },
-    });
-});
-
 it('should throw when processing an invalid javascript file', async () => {
     await expect(
         transform(`const`, 'foo.js', COMPILER_OPTIONS),
