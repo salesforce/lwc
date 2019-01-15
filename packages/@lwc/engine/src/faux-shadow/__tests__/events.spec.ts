@@ -28,7 +28,7 @@ const createComponentWithOnClickHandler = function(eventName, eventConfig) {
 }
 
 describe('global events', () => {
-    describe.only('custom event dispatched with { bubbles:true, composed:true }', () => {
+    describe('custom event dispatched with { bubbles:true, composed:true }', () => {
         it('should receive a callback for the event assigned to the "window"', () => {
             const dispatched = [];
 
