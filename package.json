@@ -64,6 +64,7 @@
   },
   "workspaces": [
     "packages/@lwc/*",
+    "packages/integration-karma",
     "packages/integration-tests",
     "packages/perf-benchmarks"
   ],
