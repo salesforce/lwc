@@ -312,7 +312,7 @@ describe('Transform property', () => {
         }
     `, {
         error: {
-            message: 'Invalid property name onChangeHandler. Properties starting with "on" are reserved for event handlers.',
+            message: 'Invalid property name "onChangeHandler". Properties starting with "on" are reserved for event handlers.',
             loc: {
                 line: 2,
                 column: 9
@@ -360,7 +360,7 @@ describe('Transform property', () => {
         }
     `, {
         error: {
-            message: 'Invalid property name dataFooBar. Properties starting with "data" are reserved attributes.',
+            message: 'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
             loc: {
                 line: 2,
                 column: 9
@@ -375,7 +375,7 @@ describe('Transform property', () => {
         }
     `, {
         error: {
-            message: 'Ambiguous attribute name tabindex. tabindex will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
+            message: 'Ambiguous attribute name "tabindex". "tabindex" will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
             loc: {
                 line: 2,
                 column: 9
@@ -390,7 +390,7 @@ describe('Transform property', () => {
         }
     `, {
         error: {
-            message: 'Ambiguous attribute name maxlength. maxlength will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
+            message: 'Ambiguous attribute name "maxlength". "maxlength" will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
             loc: {
                 line: 2,
                 column: 9
@@ -453,7 +453,7 @@ describe('Transform property', () => {
         }
     `, {
         error: {
-            message: 'Invalid property name part. "part" is a future reserved attribute for web components.',
+            message: 'Invalid property name "part". "part" is a future reserved attribute for web components.',
             loc: {
                 line: 2,
                 column: 9

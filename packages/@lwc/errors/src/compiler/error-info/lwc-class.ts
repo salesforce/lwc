@@ -142,21 +142,21 @@ export const DecoratorErrors = {
 
     PROPERTY_NAME_CANNOT_START_WITH_DATA: {
         code: 1107,
-        message: "Invalid property name {0}. Properties starting with \"data\" are reserved attributes.",
+        message: "Invalid property name \"{0}\". Properties starting with \"data\" are reserved attributes.",
         level: DiagnosticLevel.Error,
         url: ""
     },
 
     PROPERTY_NAME_CANNOT_START_WITH_ON: {
         code: 1108,
-        message: "Invalid property name {0}. Properties starting with \"on\" are reserved for event handlers.",
+        message: "Invalid property name \"{0}\". Properties starting with \"on\" are reserved for event handlers.",
         level: DiagnosticLevel.Error,
         url: ""
     },
 
     PROPERTY_NAME_IS_AMBIGUOUS: {
         code: 1109,
-        message: "Ambiguous attribute name {0}. {0} will never be called from template because its corresponding property is camel cased. Consider renaming to \"{1}\".",
+        message: "Ambiguous attribute name \"{0}\". \"{0}\" will never be called from template because its corresponding property is camel cased. Consider renaming to \"{1}\".",
         level: DiagnosticLevel.Error,
         url: ""
     },
@@ -170,7 +170,7 @@ export const DecoratorErrors = {
 
     PROPERTY_NAME_PART_IS_RESERVED: {
         code: 1111,
-        message: "Invalid property name {0}. \"part\" is a future reserved attribute for web components.",
+        message: "Invalid property name \"{0}\". \"part\" is a future reserved attribute for web components.",
         level: DiagnosticLevel.Error,
         url: ""
     },
