@@ -527,47 +527,6 @@ describe('root', () => {
             expect(shadowRoot.lastElementChild.tagName).toBe('P');
             expect(shadowRoot.childNodes.length).toBe(4);
         });
-
-        it('should compute the proper textContent', () => {
-            const myComponentTmpl = compileTemplate(`
-                <template>
-                    1
-                    <div>2</div>
-                    <p>3</p>
-                    4
-                </template>
-            `);
-            class MyComponent extends LightningElement {
-                render() {
-                    return myComponentTmpl;
-                }
-            }
-
-            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
-            document.body.appendChild(elem);
-            const { shadowRoot } = elem;
-            expect(shadowRoot.textContent).toBe(`1234`);
-        });
-        it('should compute the proper innerHTML', () => {
-            const myComponentTmpl = compileTemplate(`
-                <template>
-                    1
-                    <div>2</div>
-                    <p>3</p>
-                    4
-                </template>
-            `);
-            class MyComponent extends LightningElement {
-                render() {
-                    return myComponentTmpl;
-                }
-            }
-
-            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
-            document.body.appendChild(elem);
-            const { shadowRoot } = elem;
-            expect(shadowRoot.innerHTML).toBe(`1<div>2</div><p>3</p>4`);
-        });
     });
     describe('errors', () => {
         it('should not allow calling attachShadow twice', () => {
