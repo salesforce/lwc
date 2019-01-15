@@ -29,7 +29,7 @@ it('should output attributes', () => {
     );
 });
 
-it('should output properly void elements', () => {
+it('should output void elements properly', () => {
     const elm = createElement('x-complex', { is: Complex });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('.with-void-elements').innerHTML).toBe(
@@ -37,7 +37,7 @@ it('should output properly void elements', () => {
     );
 });
 
-it('should output properly text', () => {
+it('should output text properly', () => {
     const elm = createElement('x-complex', { is: Complex });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('.with-text').innerHTML).toBe(
