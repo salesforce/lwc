@@ -7,6 +7,129 @@
 import { createElement, LightningElement } from '../../framework/main';
 import { compileTemplate } from 'test-utils';
 
+const createComponentWithOnClickHandler = function(eventName, eventConfig) {
+    const tmpl = compileTemplate(`
+        <template>
+            <button onclick={handleClick}></button>
+        </template>
+    `);
+    class MyComponent extends LightningElement {
+        handleClick(e) {
+            const event = new CustomEvent(eventName, eventConfig);
+            this.dispatchEvent(event);
+        }
+
+        render() {
+            return tmpl;
+        }
+    }
+
+    return createElement('x-global-escape', { is: MyComponent });
+}
+
+describe('global events', () => {
+    describe.only('custom event dispatched with { bubbles:true, composed:true }', () => {
+        it('should receive a callback for the event assigned to the "window"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': true });
+            window.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched).toMatchObject(['escape']);
+        });
+
+        it('should receive a callback for the event assigned to the "document"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': true });
+            document.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched).toMatchObject(['escape']);
+        });
+
+        it('should receive a callback for the event assigned to the "body"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': true });
+            document.body.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched).toMatchObject(['escape']);
+        });
+
+        it('should receive a callback for the event assigned to the "div"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': true });
+            const divWrapperElm = document.createElement('div');
+
+            divWrapperElm.appendChild(elm);
+            divWrapperElm.addEventListener('escape', (e) => { dispatched.push('escape') });
+
+            document.body.appendChild(divWrapperElm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched).toMatchObject(['escape']);
+        });
+    });
+
+    describe('custom event dispatched with { bubbles:true, composed:false }', () => {
+        it('should not receive a callback for the event assigned to the "window"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': false });
+            window.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched.length).toBe(0);
+        });
+
+        it('should not receive a callback for the event assigned to the "document"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': false });
+            document.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched.length).toBe(0);
+        });
+
+        it('should not receive a callback for the event assigned to the "body"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': false });
+            document.body.addEventListener('escape', (e) => { dispatched.push('escape')});
+            document.body.appendChild(elm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched.length).toBe(0);
+        });
+
+        it('should not receive a callback for the event assigned to the "div"', () => {
+            const dispatched = [];
+
+            const elm = createComponentWithOnClickHandler('escape', {'bubbles': true, 'composed': false });
+            const divWrapperElm = document.createElement('div');
+
+            divWrapperElm.appendChild(elm);
+            divWrapperElm.addEventListener('escape', (e) => { dispatched.push('escape') });
+
+            document.body.appendChild(divWrapperElm);
+            elm.shadowRoot.querySelector('button').click();
+
+            expect(dispatched.length).toBe(0);
+        });
+    });
+
+});
+
 describe('events', () => {
     describe('log messages', () => {
         it('should log warning when adding existing listener to the custom element', () => {
@@ -590,7 +713,7 @@ describe('events', () => {
             span.addEventListener('click', eventListener);
             document.body.appendChild(span);
             elm.click();
-            expect(target).toBe(elm);    
+            expect(target).toBe(elm);
         });
         it('Issue#941: an object type EventListener works on standard html nodes in the template', () => {
             expect.assertions(2);
