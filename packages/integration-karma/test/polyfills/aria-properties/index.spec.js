@@ -4,6 +4,17 @@ function testAriaProperty(property, attribute) {
             expect(Element.prototype.hasOwnProperty(property)).toBe(true);
         });
 
+        it(`should return null if the value is not set`, () => {
+            const el = document.createElement('div');
+            expect(el[property]).toBe(null);
+        });
+
+        it('should return the right value from the getter', () => {
+            const el = document.createElement('div');
+            el[property] = 'foo';
+            expect(el[property]).toBe('foo');
+        });
+
         it('should reflect the property to the associated attribute', () => {
             const el = document.createElement('div');
             el[property] = 'foo';
