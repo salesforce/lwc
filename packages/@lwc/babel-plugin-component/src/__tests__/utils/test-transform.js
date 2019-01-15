@@ -57,9 +57,6 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
                     expect(normalizedActual).toBe(normalizedExpected);
                 }
             }
-            if (expected.output.metadata) {
-                expect(output.metadata).toEqual(expected.output.metadata);
-            }
         } else {
             throw new TypeError(`Transform test expect an object with either error or output.`);
         }

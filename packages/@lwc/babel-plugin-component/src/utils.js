@@ -198,100 +198,6 @@ function markAsLWCNode(node) {
     node._lwcNode = true;
 }
 
-function extractValueMetadata(valueNode) {
-
-    let valueMetadata = {
-        type: 'unresolved',
-        value: undefined,
-    };
-
-    if (!valueNode) {
-        return valueMetadata;
-    }
-
-    const { type } = valueNode;
-
-    if (type === 'StringLiteral') {
-        valueMetadata = extractStringValueMeta(valueNode);
-    } else if (type === 'NumericLiteral') {
-        valueMetadata = extractNumberValueMeta(valueNode);
-    } else if (type === 'BooleanLiteral') {
-        valueMetadata = extractBooleanValueMeta(valueNode);
-    } else if (type === 'NullLiteral') {
-        valueMetadata = {
-            type: "null",
-            value: null,
-        };
-    } else if (type === 'ObjectExpression') {
-        valueMetadata = extractObjectValueMeta(valueNode);
-    } else if (type === 'ArrayExpression') {
-        valueMetadata = extractArrayValueMeta(valueNode);
-    }
-
-    return valueMetadata;
-}
-
-function extractStringValueMeta(valueNode) {
-    return {
-        type: 'string',
-        value: valueNode && valueNode.value || undefined,
-    }
-}
-
-function extractNumberValueMeta(valueNode) {
-    let value = valueNode && valueNode.value;
-    return {
-        type: 'number',
-        value: value === null ? undefined : value
-    }
-}
-
-function extractBooleanValueMeta(valueNode) {
-    let value = valueNode && valueNode.value;
-    return {
-        type: 'boolean',
-        value: !!(valueNode && valueNode.value),
-    }
-}
-
-function extractArrayValueMeta(valueNode) {
-    const arrayValueMeta = {
-        type: 'array',
-        value: [],
-    }
-
-    if (!valueNode) {
-        return arrayValueMeta;
-    }
-
-    return {
-        type: 'array',
-        value: valueNode.elements.map((elem) => extractValueMetadata(elem)),
-    }
-}
-
-function extractObjectValueMeta(valueNode) {
-    const objectValueMeta = {
-        type: 'object',
-        value: {},
-    }
-
-    if (!valueNode) {
-        return objectValueMeta;
-    }
-
-    const values = {};
-
-    valueNode.properties.forEach(({key, value}) => {
-        values[key.name] = extractValueMetadata(value);
-    });
-
-    return {
-        type: 'object',
-        value: values,
-    }
-}
-
 module.exports = {
     isLWCNode,
     markAsLWCNode,
@@ -305,5 +211,4 @@ module.exports = {
     isComponentClass,
     isDefaultExport,
     getExportedNames,
-    extractValueMetadata,
 };

@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const metadata = require('./metadata');
 const component = require('./component');
 const { decorators } = require('./decorators');
 const { exit } = require('./program');
@@ -23,7 +22,6 @@ module.exports = function LwcClassTransform(api) {
             parserOpts.plugins.push('dynamicImport');
         },
         visitor: mergeVisitors([
-            metadata(api),
             decorators(api),
             component(api),
             exit(api),

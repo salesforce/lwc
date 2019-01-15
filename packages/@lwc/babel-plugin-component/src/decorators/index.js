@@ -107,17 +107,11 @@ function validate(klass, decorators) {
     DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(klass, decorators));
 }
 
-/** Transform the decorators and returns the metadata */
+/** Transform the decorators */
 function transform(t, klass, decorators) {
-    return DECORATOR_TRANSFORMS.reduce((metadata, { transform }) => {
-        const decoratorMetadata = transform(t, klass, decorators);
-
-        if (decoratorMetadata) {
-            metadata.push(decoratorMetadata);
-        }
-
-        return metadata;
-    }, []);
+    return DECORATOR_TRANSFORMS.forEach(({ transform }) => {
+        transform(t, klass, decorators);
+    });
 }
 
 /** Remove all the decorators */
@@ -159,16 +153,11 @@ function decorators({ types: t }) {
             ));
 
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
-            state.file.metadata = Object.assign({}, state.file.metadata, { decorators: [] });
             const grouped = groupDecorator(decorators);
 
             for (let [klass, decorators] of grouped) {
                 validate(klass, decorators);
-
-                // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
-                // last class will be returned
-                const metadata = transform(t, klass, decorators);
-                state.file.metadata.decorators.push(...metadata);
+                transform(t, klass, decorators);
             }
 
             state.decorators = decorators;
@@ -176,7 +165,6 @@ function decorators({ types: t }) {
         },
 
         Class(path, state) {
-            // don't remove decorators until metadata.js had the chance to visit the Class node
             removeDecorators(state.decorators);
             removeImportSpecifiers(state.decoratorImportSpecifiers);
             state.decorators = [];

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const { isApiDecorator } = require('./shared');
-const { extractValueMetadata, markAsLWCNode, staticClassProperty } = require('../../utils');
+const { markAsLWCNode, staticClassProperty } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
@@ -87,26 +87,6 @@ function transformPublicProps(t, klassBody, apiDecorators) {
         markAsLWCNode(staticProp);
         klassBody.pushContainer('body', staticProp);
     }
-
-    return publicProps.filter((node) => {
-        const { type } = node;
-        return type === 'getter' || type === 'setter' || type === 'property';
-    }).map((node) => {
-        const { path, type } = node;
-        const parentNode = path.parent;
-        const parentValue = parentNode && parentNode.value;
-
-        const meta = {
-            type: 'property',
-            name: path.parentPath.get('key.name').node,
-        }
-
-        if (type === 'property') {
-            meta.value = extractValueMetadata(parentValue);
-        }
-
-        return meta;
-    });
 }
 
 /** Transform class public methods and returns the list of public methods  */
@@ -123,24 +103,13 @@ function transformPublicMethods(t, klassBody, apiDecorators) {
         markAsLWCNode(classProp);
         klassBody.pushContainer('body', classProp);
     }
-
-    return publicMethods.map(({ path }) => ({
-        type: 'method',
-        name: path.parentPath.get('key.name').node
-    }));
 }
 
 module.exports = function transform(t, klass, decorators) {
     const klassBody = klass.get('body');
     const apiDecorators = decorators.filter(isApiDecorator);
 
-    const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
-    const apiMethods = transformPublicMethods(t, klassBody, apiDecorators);
+    transformPublicProps(t, klassBody, apiDecorators);
+    transformPublicMethods(t, klassBody, apiDecorators);
 
-    if ((apiProperties.length + apiMethods.length) > 0) {
-        return {
-            type: 'api',
-            targets: [...apiProperties, ...apiMethods]
-        };
-    }
 }
