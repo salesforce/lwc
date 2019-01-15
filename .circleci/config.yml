@@ -7,8 +7,6 @@ env_default: &env_default
 env_perf: &env_perf
   <<: *env_default
   environment:
-    - CUSTOM_BASH_ENV: ~/.bashrc
-    - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
     - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
 # Yarn cache
@@ -51,6 +49,21 @@ run_linting: &run_linting
     name: Run linting
     command: yarn lint
 
+# Sauce connect
+install_and_start_sauce_connect: &install_and_start_sauce_connect
+  run:
+    name: Install and start sauce connect
+    background: true
+    command: |
+        wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
+        tar -xzf sc-4.4.11-linux.tar.gz
+        cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+
+wait_for_sauce_connect: &wait_for_sauce_connect
+  run:
+    name: Wait for sauce connect to be ready
+    command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+
 # Test
 run_unit_tests: &run_unit_tests
   run:
@@ -68,21 +81,6 @@ run_integration_tests_ie11: &run_integration_tests_ie11
     name: Run integration test - IE11 SauceLabs
     command: yarn sauce:prod_compat --browsers ie11
     working_directory: packages/integration-tests
-
-# Sauce connect
-install_and_start_sauce_connect: &install_and_start_sauce_connect
-  run:
-    name: Install and start sauce connect
-    background: true
-    command: |
-        wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
-        tar -xzf sc-4.4.11-linux.tar.gz
-        cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
-
-wait_for_sauce_connect: &wait_for_sauce_connect
-  run:
-    name: Wait for sauce connect to be ready
-    command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
 
 # BEST
 setup_best_environment: &setup_best_environment
