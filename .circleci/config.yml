@@ -70,6 +70,24 @@ run_unit_tests: &run_unit_tests
     name: Run unit tests
     command: yarn test:ci
 
+run_karma_tests: &run_karma_tests
+  run:
+    name: Run karma tests
+    command: yarn sauce
+    working_directory: packages/integration-karma
+
+run_karma_tests_native: &run_karma_tests_native
+  run:
+    name: Run karma tests - native shadow
+    command: yarn sauce --native-shadow
+    working_directory: packages/integration-karma
+
+run_karma_tests_compat: &run_karma_tests_compat
+  run:
+    name: Run karma tests - compat
+    command: yarn sauce --compat
+    working_directory: packages/integration-karma
+
 run_integration_tests_chrome: &run_integration_tests_chrome
   run:
     name: Run integration test - Headless Chrome
@@ -144,11 +162,20 @@ jobs:
       - *run_unit_tests
 
 
+  test_karma:
+    <<: *env_default
+    steps:
+      - *load_workspace
+      - *run_unit_tests
+
+
   test_integration:
     <<: *env_default
     steps:
       - *load_workspace
-      - *run_integration_tests_chrome
+      - *run_karma_tests
+      - *run_karma_tests_native
+      - *run_karma_tests_compat
 
 
   test_integration_compat:
@@ -189,6 +216,10 @@ workflows:
       - build
 
       - test_unit:
+          requires:
+            - build
+
+      - test_karma:
           requires:
             - build
 

@@ -9,6 +9,38 @@ import { compileTemplate } from 'test-utils';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
+        it('should throw an error when options parameter is missing', () => {
+            expect(() => {
+                createElement('x-foo');
+            }).toThrow(
+                '"createElement" function expects an object as second parameter but received "undefined".'
+            );
+        });
+
+        it('should throw an error when options parameter is null', () => {
+            expect(() => {
+                createElement('x-foo', null);
+            }).toThrow(
+                '"createElement" function expects an object as second parameter but received "[object Null]".'
+            );
+        });
+
+        it('should throw an error when "is" value is null', () => {
+            expect(() => {
+                createElement('x-foo', { is: null});
+            }).toThrow(
+                '"is" value must be a function but received "[object Null]".'
+            );
+        });
+
+        it('should throw an error when "is" value is undefined', () => {
+            expect(() => {
+                createElement('x-foo', { is: undefined});
+            }).toThrow(
+                '"is" value must be a function but received "undefined".'
+            );
+        });
+
         it('should support constructors with circular dependencies', () => {
             const factory = () => class extends LightningElement { };
             factory.__circular__ = true;

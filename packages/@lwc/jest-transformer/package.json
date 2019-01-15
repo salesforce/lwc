@@ -19,8 +19,8 @@
     "deasync": "0.1.12"
   },
   "peerDependencies": {
-    "@lwc/compiler": "0.33.x",
-    "@lwc/engine": "0.33.x"
+    "@lwc/compiler": "0.35.x",
+    "@lwc/engine": "0.35.x"
   },
   "devDependencies": {
     "@lwc/compiler": "0.35.1",
@@ -33,6 +33,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "0f7e222a61afa3df1557291ea373e68be8eef8a8"
+  }
 }
