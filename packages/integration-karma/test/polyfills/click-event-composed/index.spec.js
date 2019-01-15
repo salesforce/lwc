@@ -30,6 +30,3 @@ it('should let the event bubble throws the shadow root when invoking click() on 
     expect(clickEvent instanceof Event).toBe(true);
     expect(clickEvent.composed).toBe(true);
 });
-
-
-// TODO: Need to migrate the 2 remaining tests. I don't understand why/what they are testing.
