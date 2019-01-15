@@ -1,282 +1,243 @@
+# Environment configuration
+env_default: &env_default
+  working_directory: ~/lwc
+  docker:
+    - image: circleci/node:10-browsers
+
+env_perf: &env_perf
+  <<: *env_default
+  environment:
+    - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
+
+# Yarn cache
+restore_yarn_cache: &restore_yarn_cache
+  restore_cache:
+    keys:
+      - yarn-v5-{{ checksum "yarn.lock" }}
+
+save_yarn_cache: &save_yarn_cache
+  save_cache:
+    key: yarn-v5-{{ checksum "yarn.lock" }}
+    paths:
+      - ~/.cache/yarn
+
+# Workspace
+save_workspace: &save_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+load_workspace: &load_workspace
+  attach_workspace:
+    at: ~/lwc
+
+# Build
+install_and_build: &install_and_build
+  run:
+    name: Install depedencies and build
+    command: yarn install --frozen-lockfile
+
+run_sanity_checks: &run_sanity_checks
+  run:
+    name: Sanity checks
+    command: |
+      node ./scripts/tasks/version-check.js
+      node ./scripts/tasks/check-license-headers.js
+
+run_linting: &run_linting
+  run:
+    name: Run linting
+    command: yarn lint
+
+# Sauce connect
+install_and_start_sauce_connect: &install_and_start_sauce_connect
+  run:
+    name: Install and start sauce connect
+    background: true
+    command: |
+        wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
+        tar -xzf sc-4.4.11-linux.tar.gz
+        cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
+
+wait_for_sauce_connect: &wait_for_sauce_connect
+  run:
+    name: Wait for sauce connect to be ready
+    command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+
+# Test
+run_unit_tests: &run_unit_tests
+  run:
+    name: Run unit tests
+    command: yarn test:ci
+
+run_karma_tests: &run_karma_tests
+  run:
+    name: Run karma tests
+    command: yarn sauce
+    working_directory: packages/integration-karma
+
+run_karma_tests_native: &run_karma_tests_native
+  run:
+    name: Run karma tests - native shadow
+    command: yarn sauce --native-shadow
+    working_directory: packages/integration-karma
+
+run_karma_tests_compat: &run_karma_tests_compat
+  run:
+    name: Run karma tests - compat
+    command: yarn sauce --compat
+    working_directory: packages/integration-karma
+
+run_integration_tests_chrome: &run_integration_tests_chrome
+  run:
+    name: Run integration test - Headless Chrome
+    command: yarn local:prod
+    working_directory: packages/integration-tests
+
+run_integration_tests_ie11: &run_integration_tests_ie11
+  run:
+    name: Run integration test - IE11 SauceLabs
+    command: yarn sauce:prod_compat --browsers ie11
+    working_directory: packages/integration-tests
+
+# BEST
+setup_best_environment: &setup_best_environment
+  run:
+    name: Setup BEST environment
+    command: |
+        echo 'export PULL_REQUEST=${CIRCLE_PULL_REQUEST}' >> $BASH_ENV
+        echo 'export REPO_NAME=${CIRCLE_PROJECT_REPONAME}' >> $BASH_ENV
+        echo 'export TARGET_COMMIT=${CIRCLE_SHA1}' >> $BASH_ENV
+        echo 'export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+
+        echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+
+run_best_chrome: &run_best_chrome
+  run:
+    name: Run BEST
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
+    no_output_timeout: 40m
+
+compat_best_results: &compat_best_results
+  run:
+    name: Comparing Benchmarks
+    working_directory: packages/perf-benchmarks
+    command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+
+store_best_artifacts: &store_best_artifacts
+  store_artifacts:
+    path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
+    destination: benchmarks
+
+# Canary publish
+publish_canary_artifacts: &publish_canary_artifacts
+  run:
+    name: Publish canary artifacts
+    command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
+
+
+# Jobs definition
 version: 2
 jobs:
-  build_and_test:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
+  build:
+    <<: *env_default
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
+      - *restore_yarn_cache
+      - *install_and_build
+      - *save_yarn_cache
 
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --frozen-lockfile --ignore-engines
+      - *run_sanity_checks
+      - *run_linting
 
-      - save_cache:
-          paths:
-            - ~/.cache/yarn
-            - node_modules
-            - packages/*/node_modules
-          key: yarn-v4-{{ checksum "yarn.lock" }}
+      - *save_workspace
 
-      - run:
-          name: Validation package versions
-          command: node ./scripts/tasks/version-check.js
 
-      - run:
-          name: Check license headers
-          command: node ./scripts/tasks/check-license-headers.js
-
-      - run:
-          name: Run Linting
-          command: yarn lint
-
-      - run:
-          name: Run Unit Tests
-          command: yarn test:ci
+  test_unit:
+    <<: *env_default
+    steps:
+      - *load_workspace
+      - *run_unit_tests
 
 
   test_karma:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
+    <<: *env_default
     steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
-
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Test standard mode
-          command: yarn sauce
-          working_directory: ~/lwc/packages/integration-karma
-
-      - run:
-          name: Test standard mode with native shadow
-          command: yarn sauce --native-shadow
-          working_directory: ~/lwc/packages/integration-karma
-
-      - run:
-          name: Test compat mode
-          command: yarn sauce --compat
-          working_directory: ~/lwc/packages/integration-karma
+      - *load_workspace
+      - *run_unit_tests
 
 
-
-  integration_test:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
+  test_integration:
+    <<: *env_default
     steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
-
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Integration Test - Headless Chrome
-          command: cd packages/integration-tests && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
+      - *load_workspace
+      - *run_karma_tests
+      - *run_karma_tests_native
+      - *run_karma_tests_compat
 
 
-  integration_test_compat:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
+  test_integration_compat:
+    <<: *env_default
     steps:
-      - checkout
+      - *load_workspace
 
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
+      - *install_and_start_sauce_connect
+      - *wait_for_sauce_connect
 
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Install and start sauce connect
-          background: true
-          command: |
-              wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
-              tar -xzf sc-4.4.11-linux.tar.gz
-              cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
-
-      - run:
-          name: Wait for sauce connect to be ready
-          command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-
-      - run:
-          name: Integration Test - IE11 SauceLabs
-          command: cd packages/integration-tests && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
+      - *run_integration_tests_ie11
 
 
-  perf_and_compare_chrome:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
-    environment:
-      - CUSTOM_BASH_ENV: ~/.bashrc
-      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
-      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-
+  perf_and_compare:
+    <<: *env_perf
     steps:
-      - checkout
+      - *load_workspace
 
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
+      - *setup_best_environment
+      - *run_best_chrome
+      - *compat_best_results
 
-      - run:
-          name: Setup dynamic environment variables
-          command:
-              echo '
-              export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
-              export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
-              export TARGET_COMMIT=${CIRCLE_SHA1}
-              export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+      - *store_best_artifacts
 
-      - run:
-          name: Decode PEM as environment variable
-          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
-
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Preformance Test
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote
-          no_output_timeout: 40m
-
-
-      - store_artifacts:
-          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
-          destination: benchmarks
-
-      - run:
-          name: Comparing Benchmarks
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.headless.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
-
-  perf_and_compare_ie11:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
-    environment:
-      - CUSTOM_BASH_ENV: ~/.bashrc
-      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
-      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
-
-      - run:
-          name: Setup dynamic environment variables
-          command:
-              echo '
-              export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
-              export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
-              export TARGET_COMMIT=${CIRCLE_SHA1}
-              export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
-
-      - run:
-          name: Decode PEM as environment variable
-          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
-
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Preformance Test
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.ie11.config.js --externalStorage=@best/store-aws --runner remote
-          no_output_timeout: 40m
-
-
-      - store_artifacts:
-          path: ~/lwc/packages/perf-benchmarks/__benchmark_results__/
-          destination: benchmarks
-
-      - run:
-          name: Comparing Benchmarks
-          working_directory: packages/perf-benchmarks
-          command: yarn start --projects best.ie11.config.js --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
   push_canary_npm_artifacts:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8-stretch-browsers
-
+    <<: *env_default
     steps:
-      - checkout
+      - *load_workspace
+      - *publish_canary_artifacts
 
-      - restore_cache:
-          keys:
-          - yarn-v4-{{ checksum "yarn.lock" }}
 
-      # TODO: Remove --ignore-engines flag once circleci/node image includes a version of yarn >=1.10.1
-      - run: yarn install --ignore-engines
-
-      - run:
-          name: Push artifacts
-          command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
-
+# Workflows definition
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build_and_test
+      - build
+
+      - test_unit:
+          requires:
+            - build
 
       - test_karma:
           requires:
-            - build_and_test
+            - build
 
-      - integration_test_compat:
+      - test_integration:
           requires:
-            - build_and_test
+            - build
 
-      - integration_test:
+      - test_integration_compat:
           requires:
-            - build_and_test
+            - build
 
-      - perf_and_compare_chrome:
+      - perf_and_compare:
           requires:
-            - build_and_test
+            - build
 
       - push_canary_npm_artifacts:
           requires:
-            - build_and_test
+            - build
           filters:
             branches:
               only: master
-
-      # uncomment this when IE11 agent stabilizes
-      # - perf_and_compare_ie11:
-      #     requires:
-      #       - build_and_test
