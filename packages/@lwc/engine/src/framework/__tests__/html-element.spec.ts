@@ -1214,39 +1214,6 @@ describe('html-element', () => {
 
     describe('Aria Properties', () => {
         describe('#role', () => {
-            it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-reflect-aria-role', { is: MyComponent });
-                element.role = 'tab';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
-            });
-
-            it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-role', { is: MyComponent });
-                element.role = 'tab';
-                expect(element.role).toBe('tab');
-            });
-
-            it('should return correct value when nothing has been set', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-role', { is: MyComponent });
-                expect(element.role).toBe(null);
-            });
-
-            it('should return null by default', () => {
-                class MyComponent extends LightningElement {}
-                const element = createElement('prop-getter-aria-role', { is: MyComponent });
-                document.body.appendChild(element);
-                expect(element.role).toBe(null);
-            });
-
             it('should call setter when defined', () => {
                 let called = 0;
                 class MyComponent extends LightningElement {
@@ -1262,62 +1229,6 @@ describe('html-element', () => {
                 document.body.appendChild(element);
                 element.role = 'tab';
                 expect(called).toBe(1);
-            });
-        });
-
-        describe('#ariaChecked', () => {
-            it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-reflect-aria-checked', { is: MyComponent });
-                element.ariaChecked = 'true';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
-            });
-
-            it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
-                element.ariaChecked = 'true';
-                expect(element.ariaChecked).toBe('true');
-            });
-
-            it('should return correct value when nothing has been set', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
-                expect(element.ariaChecked).toBe(null);
-            });
-        });
-
-        describe('#ariaLabel', () => {
-            it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-reflect-aria-label', { is: MyComponent });
-                element.ariaLabel = 'label';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-label')).toBe('label');
-            });
-
-            it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-label', { is: MyComponent });
-                element.ariaLabel = 'label';
-                expect(element.ariaLabel).toBe('label');
-            });
-
-            it('should return correct value when nothing has been set', () => {
-                class MyComponent extends LightningElement {
-
-                }
-                const element = createElement('prop-getter-aria-label', { is: MyComponent });
-                expect(element.ariaLabel).toBe(null);
             });
         });
     });

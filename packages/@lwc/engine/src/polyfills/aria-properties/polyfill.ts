@@ -10,7 +10,8 @@ import { setAttribute, removeAttribute, getAttribute, hasAttribute } from '../..
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
 
-type AriaPropMap = Record<string, any>;
+type NormalizedAttributeValue = string | null;
+type AriaPropMap = Record<string, NormalizedAttributeValue>;
 
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
 const { hasOwnProperty } = Object.prototype;
@@ -21,14 +22,16 @@ const {
 
 function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
     let map = nodeToAriaPropertyValuesMap.get(elm);
+
     if (map === undefined) {
-        map = { host: {}, sr: {} };
+        map = {};
         nodeToAriaPropertyValuesMap.set(elm, map);
     }
+
     return map;
 }
 
-function getNormalizedAriaPropertyValue(propName: string, value: any): any {
+function getNormalizedAriaPropertyValue(value: any): NormalizedAttributeValue {
     return value == null ? null : value + '';
 }
 
@@ -36,16 +39,20 @@ function createAriaPropertyPropertyDescriptor(propName: string, attrName: string
     return {
         get(this: HTMLElement): any {
             const map = getAriaPropertyMap(this);
+
             if (hasOwnProperty.call(map, propName)) {
                 return map[propName];
             }
+
             // otherwise just reflect what's in the attribute
             return hasAttribute.call(this, attrName) ? getAttribute.call(this, attrName) : null;
         },
         set(this: HTMLElement, newValue: any) {
-            newValue = getNormalizedAriaPropertyValue(propName, newValue);
+            const normalizedValue = getNormalizedAriaPropertyValue(newValue);
+
             const map = getAriaPropertyMap(this);
-            map[propName] = newValue;
+            map[propName] = normalizedValue;
+
             // reflect into the corresponding attribute
             if (newValue === null) {
                 removeAttribute.call(this, attrName);
