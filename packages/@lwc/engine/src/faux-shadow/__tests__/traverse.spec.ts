@@ -373,31 +373,6 @@ describe('#shadowRoot querySelector', () => {
         expect(li);
     });
 
-    it('should adopt elements not defined in template as part of the shadow', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <ul lwc:dom="manual"></ul>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const ul = elm.shadowRoot.querySelector('ul');
-        expect(ul);
-        ul.appendChild(document.createElement('li'));
-        const li1 = ul.querySelectorAll('li')[0];
-        expect(li1).toBeDefined();
-        const li2 = ul.querySelector('li');
-        expect(li2).toBe(li1);
-        const li3 = ul.childNodes[0];
-        expect(li3).toBe(li1);
-    });
-
     it('should not throw error if querySelector does not match any elements', () => {
         const myComponentTmpl = compileTemplate(`
             <template>
@@ -554,26 +529,6 @@ describe('proxy', () => {
         const root = elm.shadowRoot;
         root.querySelector('div').id = 'something';
         expect(root.querySelector('div').getAttribute('id')).toBe('something');
-    });
-    it('should allow setting innerHTML manually', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <span lwc:dom="manual"></span>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-            renderedCallback() {
-                this.template.querySelector('span').innerHTML = '<i>something</i>';
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        expect(root.querySelector('span').textContent).toBe('something');
     });
     it('should unwrap arguments when invoking a method on a proxy', () => {
         const myComponentTmpl = compileTemplate(`
@@ -1262,27 +1217,6 @@ describe('Node.getRootNode on patched elements', () => {
             return Promise.resolve().then(() => {
                 const spanInChildCmp = elm.shadowRoot.querySelector('.child-cmp-slotted-span');
                 expect(spanInChildCmp!.getRootNode()).toBe(elm.shadowRoot);
-            });
-        });
-
-        it('should return correct shadow on non patched elements', () => {
-            const cmpHtml = compileTemplate(`<template><div class="container" lwc:dom="manual"></div></template>`);
-            let injectedElement;
-            class InjectContanerComponent extends LightningElement {
-                renderedCallback() {
-                    this.template.querySelector('.container').innerHTML = '<span><p class="injected">injected element</p></span>';
-                    injectedElement = this.template.querySelector('p.injected');
-                }
-                render() {
-                    return cmpHtml;
-                }
-            }
-
-            const elm = createElement('x-container', { is: InjectContanerComponent });
-            document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(getRootNodeGetter.call(injectedElement)).toBe(elm.shadowRoot);
             });
         });
     });
