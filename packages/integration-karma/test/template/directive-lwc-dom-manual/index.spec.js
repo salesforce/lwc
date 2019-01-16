@@ -50,14 +50,6 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
         const span = elm.firstElementChild;
         elm.replaceChild(child, span);
     });
-
-    testErrorOnDomMutation('innerHTML', (elm) => {
-        elm.innerHTML = `<div></div>`
-    });
-
-    testErrorOnDomMutation('textContent', (elm) => {
-        elm.textContent = `foo`
-    });
 });
 
 describe('dom mutation with the lwc:dom="manual" directive', () => {

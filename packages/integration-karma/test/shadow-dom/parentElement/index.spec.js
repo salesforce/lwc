@@ -26,3 +26,10 @@ it('should return the right parentElement when node is slotted', () => {
         elm.shadowRoot.querySelector('x-container'),
     );
 });
+
+it('should return null for the shadowRoot first child', () => {
+    const elm = createElement('x-test', { is: Test });
+    document.body.appendChild(elm);
+
+    expect(elm.shadowRoot.firstChild.parentElement).toBe(null);
+});
