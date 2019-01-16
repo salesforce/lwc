@@ -136,6 +136,7 @@ describe('adopt node in the shadow', () => {
         expect(inner.parentElement.parentElement).toBe(elm);
     });
 
+    // TODO: #971 - Elements insert manually in lwc:dom="manual" are not patched with synthetic shadow polyfill
     xit('should return the right shadowRoot when invoking getRootNode() on inserted elements', () => {
         const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
@@ -164,8 +165,6 @@ describe('adopt node in the shadow', () => {
 
         const svgElm = root.shadowRoot.querySelector('svg');
         svgElm.innerHTML = '<rect></rect>';
-
-        debugger;
 
         return waitForStyleToBeApplied().then(() => {
             // Use firstChild instead of firstElementChild since accessing firstElementChild in an SVG element on
