@@ -6,6 +6,8 @@ it('should set the composed property to true when invoking click() on an element
     let clickEvent;
 
     const elm = document.createElement('div');
+    document.body.appendChild(elm);
+
     elm.addEventListener('click', evt => {
         clickEvent = evt;
     });
