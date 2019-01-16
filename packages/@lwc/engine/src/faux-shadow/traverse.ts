@@ -9,6 +9,7 @@ import {
     getNodeKey,
     getNodeNearestOwnerKey,
     PatchedNode,
+    getInternalChildNodes,
 } from "./node";
 import {
     childNodesGetter as nativeChildNodesGetter,
@@ -268,7 +269,7 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
             return createStaticNodeList(lightDomQuerySelectorAll(this, selectors));
         }
         get innerHTML(this: Element): string {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             let innerHTML = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 innerHTML += getOuterHTML(childNodes[i]);

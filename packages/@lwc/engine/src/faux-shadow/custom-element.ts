@@ -13,8 +13,7 @@ import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocu
 import { HTMLElementConstructor } from "../framework/base-bridge-element";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
-
-const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
+import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from "./node";
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -98,10 +97,11 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
             const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            if (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)) {
+            if (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport) && isExternalChildNodeAccessorFlagOn()) {
                 // inserting a comment node as the first childNode to trick the IE11
                 // DevTool to show the content of the shadowRoot, this should only happen
                 // in dev-mode and in IE11 (which we detect by looking at the symbol).
+                // Plus it should only be in place if we know it is an external actuator.
                 ArrayUnshift.call(childNodes, getIE11FakeShadowRootPlaceholder(this));
             }
             return createStaticNodeList(childNodes);

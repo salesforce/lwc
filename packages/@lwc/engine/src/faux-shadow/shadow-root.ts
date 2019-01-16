@@ -18,6 +18,7 @@ import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { retarget } from "../3rdparty/polymer/retarget";
 import { pathComposer } from "../3rdparty/polymer/path-composer";
+import { getInternalChildNodes } from "./node";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -269,7 +270,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface): ChildNode | null {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             return childNodes[0] || null;
         },
     },
@@ -277,7 +278,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface): ChildNode | null {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             return childNodes[childNodes.length - 1] || null;
         },
     },
@@ -286,7 +287,8 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface): boolean {
-            return this.childNodes.length > 0;
+            const childNodes = getInternalChildNodes(this);
+            return childNodes.length > 0;
         },
     },
     isConnected: {
@@ -360,7 +362,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface): string {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             let textContent = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 textContent += getTextContent(childNodes[i]);
@@ -383,7 +385,7 @@ const ElementPatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface): string {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             let innerHTML = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 innerHTML += getOuterHTML(childNodes[i]);

@@ -10,6 +10,7 @@ import {
     forEach,
     getPrototypeOf,
     setPrototypeOf,
+    isFalse,
 } from '../shared/language';
 import {
     parentNodeGetter,
@@ -30,6 +31,8 @@ import { getShadowRoot } from './shadow-root';
 // these two values need to be in sync with framework/vm.ts
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
+
+export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
@@ -66,7 +69,7 @@ const portalObserverConfig: MutationObserverInit = {
 };
 
 function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | undefined) {
-    // If node aleady has an ownerkey, we can skip
+    // If node already has an ownerKey, we can skip
     // Note: checking if a node as any ownerKey is not enough
     // because this element could be moved from one
     // shadow to another
@@ -76,7 +79,7 @@ function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | 
     setNodeOwnerKey(node, ownerKey);
     if (node instanceof Element) {
         setCSSToken(node, shadowToken);
-        const { childNodes } = node;
+        const childNodes = getInternalChildNodes(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
             const child = childNodes[i];
             patchPortalElement(child, ownerKey, shadowToken);
@@ -171,17 +174,17 @@ export function PatchedNode(node: Node): NodeConstructor {
             throw new TypeError('Illegal constructor');
         }
         hasChildNodes(this: Node, ) {
-            return this.childNodes.length > 0;
+            return getInternalChildNodes(this).length > 0;
         }
         // @ts-ignore until ts@3.x
         get firstChild(this: Node): ChildNode | null {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             // @ts-ignore until ts@3.x
             return childNodes[0] || null;
         }
         // @ts-ignore until ts@3.x
         get lastChild(this: Node): ChildNode | null {
-            const { childNodes } = this;
+            const childNodes = getInternalChildNodes(this);
             // @ts-ignore until ts@3.x
             return childNodes[childNodes.length - 1] || null;
         }
@@ -263,7 +266,7 @@ export function PatchedNode(node: Node): NodeConstructor {
                 return clone;
             }
 
-            const childNodes = this.childNodes;
+            const childNodes = getInternalChildNodes(this);
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 clone.appendChild(childNodes[i].cloneNode(true));
             }
@@ -276,3 +279,36 @@ export function PatchedNode(node: Node): NodeConstructor {
     setPrototypeOf(PatchedNodeClass.prototype, Ctor.prototype);
     return (PatchedNodeClass as any) as NodeConstructor;
 }
+
+let setInternalChildNodeAccessorFlag = false;
+
+/**
+ * These 2 methods are providing a machinery to understand who is accessing the
+ * .childNode member property of a node. If it is used from inside the synthetic shadow
+ * or from an external actuator. This helps to produce the right output in one very peculiar
+ * case, the IE11 debugging comment for shadowRoot representation on the devtool.
+ */
+export function isExternalChildNodeAccessorFlagOn(): boolean {
+    return !setInternalChildNodeAccessorFlag;
+}
+export const getInternalChildNodes = (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)) ?
+    function(node: Node): NodeListOf<ChildNode> {
+        setInternalChildNodeAccessorFlag = true;
+        let childNodes;
+        let error = null;
+        try {
+            childNodes = node.childNodes;
+        } catch (e) {
+            // childNode accessor should never throw, but just in case!
+            error = e;
+        } finally {
+            setInternalChildNodeAccessorFlag = false;
+            if (!isNull(error)) {
+                // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
+                throw error; // tslint:disable-line
+            }
+        }
+        return childNodes;
+    } : function getExternalChildNodes(node: Node): NodeListOf<ChildNode> {
+        return node.childNodes;
+    };
