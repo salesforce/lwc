@@ -1,6 +1,6 @@
 {
   "name": "@lwc/jest-resolver",
-  "version": "0.33.28-1",
+  "version": "0.33.28-4",
   "description": "Jest resolver to resolve LWC specific packages",
   "main": "src/index.js",
   "scripts": {
@@ -12,10 +12,10 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@lwc/engine": "0.33.28-1",
-    "@lwc/jest-transformer": "0.33.28-1",
-    "@lwc/module-resolver": "0.33.28-1",
-    "@lwc/wire-service": "0.33.28-1"
+    "@lwc/engine": "0.33.28-4",
+    "@lwc/jest-transformer": "0.33.28-4",
+    "@lwc/module-resolver": "0.33.28-4",
+    "@lwc/wire-service": "0.33.28-4"
   },
   "publishConfig": {
     "access": "public"
