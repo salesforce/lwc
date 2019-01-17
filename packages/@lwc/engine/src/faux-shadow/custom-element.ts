@@ -101,7 +101,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 // inserting a comment node as the first childNode to trick the IE11
                 // DevTool to show the content of the shadowRoot, this should only happen
                 // in dev-mode and in IE11 (which we detect by looking at the symbol).
-                // Plus it should only be in place if we know it is an external actuator.
+                // Plus it should only be in place if we know it is an external invoker.
                 ArrayUnshift.call(childNodes, getIE11FakeShadowRootPlaceholder(this));
             }
             return createStaticNodeList(childNodes);

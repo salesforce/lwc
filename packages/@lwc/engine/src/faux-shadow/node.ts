@@ -291,7 +291,7 @@ let internalChildNodeAccessorFlag = false;
 /**
  * These 2 methods are providing a machinery to understand who is accessing the
  * .childNodes member property of a node. If it is used from inside the synthetic shadow
- * or from an external actuator. This helps to produce the right output in one very peculiar
+ * or from an external invoker. This helps to produce the right output in one very peculiar
  * case, the IE11 debugging comment for shadowRoot representation on the devtool.
  */
 export function isExternalChildNodeAccessorFlagOn(): boolean {
