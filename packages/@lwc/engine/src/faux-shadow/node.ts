@@ -43,12 +43,18 @@ export function setNodeOwnerKey(node: Node, key: number) {
 }
 
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
-    let ownerKey: number | undefined;
+    let ownerNode: Node | null = node;
     // search for the first element with owner identity (just in case of manually inserted elements)
-    while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
-        node = parentNodeGetter.call(node);
+    while (!isNull(ownerNode)) {
+        if (!isUndefined(ownerNode[OwnerKey])) {
+            return ownerNode[OwnerKey];
+        } else if (!isUndefined(ownerNode[OwnKey])) {
+            // perf optimization:
+            // root elements have ownKey but not ownerKey, we don't need to walk up anymore
+            return;
+        }
+        ownerNode = parentNodeGetter.call(ownerNode);
     }
-    return ownerKey;
 }
 
 export function getNodeKey(node: Node): number | undefined {
@@ -205,7 +211,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             return children.item(children.length - 1) || null;
         }
         get assignedSlot(this: Node): HTMLElement | null {
-            const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
+            const parentNode = nativeParentNodeGetter.call(this);
             /**
              * if it doesn't have a parent node,
              * or the parent is not an slot element
