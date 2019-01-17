@@ -286,35 +286,35 @@ export function PatchedNode(node: Node): NodeConstructor {
     return (PatchedNodeClass as any) as NodeConstructor;
 }
 
-let setInternalChildNodeAccessorFlag = false;
+let internalChildNodeAccessorFlag = false;
 
 /**
  * These 2 methods are providing a machinery to understand who is accessing the
- * .childNode member property of a node. If it is used from inside the synthetic shadow
+ * .childNodes member property of a node. If it is used from inside the synthetic shadow
  * or from an external actuator. This helps to produce the right output in one very peculiar
  * case, the IE11 debugging comment for shadowRoot representation on the devtool.
  */
 export function isExternalChildNodeAccessorFlagOn(): boolean {
-    return !setInternalChildNodeAccessorFlag;
+    return !internalChildNodeAccessorFlag;
 }
 export const getInternalChildNodes = (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)) ?
     function(node: Node): NodeListOf<ChildNode> {
-        setInternalChildNodeAccessorFlag = true;
+        internalChildNodeAccessorFlag = true;
         let childNodes;
         let error = null;
         try {
             childNodes = node.childNodes;
         } catch (e) {
-            // childNode accessor should never throw, but just in case!
+            // childNodes accessor should never throw, but just in case!
             error = e;
         } finally {
-            setInternalChildNodeAccessorFlag = false;
+            internalChildNodeAccessorFlag = false;
             if (!isNull(error)) {
                 // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
                 throw error; // tslint:disable-line
             }
         }
         return childNodes;
-    } : function getExternalChildNodes(node: Node): NodeListOf<ChildNode> {
+    } : function(node: Node): NodeListOf<ChildNode> {
         return node.childNodes;
     };
