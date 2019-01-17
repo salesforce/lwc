@@ -6,6 +6,10 @@
  */
 import assert from "../shared/assert";
 import {
+    addEventListener,
+    removeEventListener,
+} from "../env/element";
+import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
@@ -15,15 +19,6 @@ import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-r
 import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
-
-import "../polyfills/event-listener/main";
-
-// intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
-// due to the issues with JSDOM patching hazard.
-const {
-    addEventListener,
-    removeEventListener,
-} = Node.prototype;
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -207,6 +202,7 @@ function domListener(evt: Event) {
         enumerable: true,
         configurable: true,
     });
+    patchEvent(evt);
     // in case a listener adds or removes other listeners during invocation
     const bookkeeping: WrappedListener[] = ArraySlice.call(listeners);
 

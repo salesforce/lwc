@@ -334,10 +334,13 @@ describe('events', () => {
                 render() {
                     return rootHTML;
                 }
+                handleClick(evt) {
+                    // event handler is here to trigger patching of the event
+                }
             }
             const rootHTML = compileTemplate(`
                 <template>
-                    <div></div>
+                    <div onclick={handleClick}></div>
                 </template>
             `);
 
