@@ -6,6 +6,10 @@
  */
 import assert from "../shared/assert";
 import {
+    addEventListener,
+    removeEventListener,
+} from "../env/element";
+import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
 } from "../env/node";
@@ -15,15 +19,6 @@ import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-r
 import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
 import { pathComposer } from "./../3rdparty/polymer/path-composer";
 import { retarget } from "./../3rdparty/polymer/retarget";
-
-import "../polyfills/event-listener/main";
-
-// intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
-// due to the issues with JSDOM patching hazard.
-const {
-    addEventListener,
-    removeEventListener,
-} = Node.prototype;
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -207,6 +202,7 @@ function domListener(evt: Event) {
         enumerable: true,
         configurable: true,
     });
+    patchEvent(evt);
     // in case a listener adds or removes other listeners during invocation
     const bookkeeping: WrappedListener[] = ArraySlice.call(listeners);
 
@@ -283,7 +279,7 @@ function isValidEventForCustomElement(event: Event): boolean {
 
 export function addCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isFunction(listener), `Invalid second argument for this.addEventListener() in ${toString(elm)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(elm)} for event "${type}". Expected an EventListener but received ${listener}.`);
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {

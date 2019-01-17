@@ -7,6 +7,8 @@
 import { hasOwnProperty, getOwnPropertyDescriptor } from "../shared/language";
 
 const {
+    addEventListener,
+    removeEventListener,
     hasAttribute,
     getAttribute,
     getAttributeNS,
@@ -21,20 +23,6 @@ const {
     getElementsByClassName,
     getElementsByTagNameNS,
 } = Element.prototype;
-
-let {
-    addEventListener,
-    removeEventListener,
-} = Element.prototype;
-
-/**
- * This trick to try to pick up the __lwcOriginal__ out of the intrinsic is to please
- * jsdom, who usually reuse intrinsic between different document.
- */
-// @ts-ignore jsdom
-addEventListener = addEventListener.__lwcOriginal__ || addEventListener;
-// @ts-ignore jsdom
-removeEventListener = removeEventListener.__lwcOriginal__ || removeEventListener;
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
     getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set! :
