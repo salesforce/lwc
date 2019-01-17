@@ -44,15 +44,16 @@ export function getNodeOwner(node: Node): HTMLElement | null {
     if (isUndefined(ownerKey)) {
         return null;
     }
+    let nodeOwner: Node | null = node;
     // At this point, node is a valid node with owner identity, now we need to find the owner node
     // search for a custom element with a VM that owns the first element with owner identity attached to it
-    while (!isNull(node) && (getNodeKey(node) !== ownerKey)) {
-        node = parentNodeGetter.call(node);
+    while (!isNull(nodeOwner) && (getNodeKey(nodeOwner) !== ownerKey)) {
+        nodeOwner = parentNodeGetter.call(nodeOwner);
     }
-    if (isNull(node)) {
+    if (isNull(nodeOwner)) {
         return null;
     }
-    return node as HTMLElement;
+    return nodeOwner as HTMLElement;
 }
 
 export function isSlotElement(elm: Element): boolean {
@@ -77,15 +78,15 @@ export function isNodeSlotted(host: Element, node: Node): boolean {
     }
     const hostKey = getNodeKey(host);
     // just in case the provided node is not an element
-    let currentElement: Element = node instanceof Element ? node : parentElementGetter.call(node);
+    let currentElement = node instanceof Element ? node : parentElementGetter.call(node);
     while (!isNull(currentElement) && currentElement !== host) {
         const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
-        const parent: Element = parentElementGetter.call(currentElement);
+        const parent = parentElementGetter.call(currentElement);
         if (elmOwnerKey === hostKey) {
             // we have reached a host's node element, and only if
             // that element is an slot, then the node is considered slotted
             return isSlotElement(currentElement);
-        } else if (parent !== host && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
+        } else if (!isNull(parent) && parent !== host && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
             // we are crossing a boundary of some sort since the elm and its parent
             // have different owner key. for slotted elements, this is only possible
             // if the parent happens to be a slot that is not owned by the host
