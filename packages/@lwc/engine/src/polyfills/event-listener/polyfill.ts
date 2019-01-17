@@ -32,14 +32,13 @@ function getEventListenerWrapper(fnOrObj): EventListener | null {
     try {
         wrapperFn = fnOrObj.$$lwcEventWrapper$$;
         if (!wrapperFn) {
-            const isHandlerFunction = typeof fnOrObj === 'function';
             wrapperFn = fnOrObj.$$lwcEventWrapper$$ = function(this: EventTarget, e: Event) {
                 // we don't want to patch every event, only when the original target is coming
                 // from inside a synthetic shadow
                 if (doesEventNeedsPatch(e)) {
                     patchEvent(e);
                 }
-                return isHandlerFunction ? fnOrObj.call(this, e) : fnOrObj.handleEvent && fnOrObj.handleEvent(e);
+                return fnOrObj.call(this, e);
             };
         }
     } catch (e) { /** ignore */ }
