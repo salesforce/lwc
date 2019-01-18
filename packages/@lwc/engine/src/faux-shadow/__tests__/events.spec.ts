@@ -248,9 +248,11 @@ describe('events', () => {
                 }
             }
             let target;
+            let srcElement;
             class Child extends LightningElement {
                 handleClick(evt) {
                     target = evt.target;
+                    srcElement = evt.srcElement;
                 }
                  render() {
                     return childHTML;
@@ -288,6 +290,7 @@ describe('events', () => {
             const div = elm.shadowRoot.querySelector('div');
             div.click();
             expect(target).toBe(div);
+            expect(srcElement).toBe(div);
         });
 
         it('should report the target as the custom element when the handler is on an element not owned by a custom element', () => {
@@ -498,6 +501,99 @@ describe('events', () => {
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
+        });
+    });
+
+    describe('composed path', () => {
+        it('should report correct composedPath for event.composed=true', () => {
+            expect.assertions(4);
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            let event;
+            class Child extends LightningElement {
+                handleClick(evt) {
+                    event = evt;
+                    // div, child's shadow, x-child, parent's shadow, x-parent, body, html, document, window
+                    expect(evt.composedPath().length).toBe(9);
+                    expect(evt.path.length).toBe(9);
+                }
+                 render() {
+                    return childHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            const childHTML = compileTemplate(`
+                <template>
+                    <div onclick={handleClick}>
+                    </div>
+                </template>
+            `, {
+                modules: {},
+            });
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
+            const div = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
+            div.click();
+            // checking the value after the dispatch mechanism has finished
+            const composedPath = event.composedPath();
+            const path = event.path;
+            // div, child's shadow, x-child, parent's shadow, x-parent, body, html, document, window
+            expect(composedPath.length).toBe(9);
+            expect(path.length).toBe(9);
+        });
+        it('should report correct composedPath for event.composed=false', () => {
+            expect.assertions(4);
+            class Parent extends LightningElement {
+                render() {
+                    return parentHTML;
+                }
+            }
+            let event;
+            class Child extends LightningElement {
+                handleFoo(evt) {
+                    event = evt;
+                    // div, child's shadow
+                    expect(evt.composedPath().length).toBe(2);
+                    expect(evt.path.length).toBe(2);
+                }
+                 render() {
+                    return childHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: { 'x-child': Child },
+            });
+            const childHTML = compileTemplate(`
+                <template>
+                    <div onfoo={handleFoo}>
+                    </div>
+                </template>
+            `, {
+                modules: {},
+            });
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
+            const div = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
+            div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: false }));
+            // checking the value after the dispatch mechanism has finished
+            const composedPath = event.composedPath();
+            const path = event.path;
+            // div, child's shadow
+            expect(composedPath.length).toBe(2);
+            expect(path.length).toBe(2);
         });
     });
 
