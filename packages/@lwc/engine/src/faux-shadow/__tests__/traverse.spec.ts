@@ -128,7 +128,61 @@ describe('#LightDom querySelectorAll()', () => {
 });
 
 describe('#LightDom querySelector()', () => {
-    describe('when dealing with nested slots', () => {
+    describe('nested slots', () => {
+        it('should find the slotted element when "slot > x-child > slot > slot > div.slotted"', () => {
+            let slotted;
+            class Child extends LightningElement {
+                render() {
+                    return childHTML;
+                }
+            }
+            const childHTML = compileTemplate(`
+                <template>
+                    <slot name="full">
+                        <slot name="first">default first</slot>
+                        <slot name="last">default last</slot>
+                    </slot>
+                </template>
+            `);
+            class Parent extends LightningElement {
+                renderedCallback() {
+                    slotted = this.querySelector('.slotted');
+                }
+                render() {
+                    return parentHTML;
+                }
+            }
+            const parentHTML = compileTemplate(`
+                <template>
+                    <slot></slot>
+                </template>
+            `, {
+                modules: {},
+            });
+            class Root extends LightningElement {
+                render() {
+                    return rootHTML;
+                }
+            }
+            const rootHTML = compileTemplate(`
+                <template>
+                    <x-parent>
+                        <x-child>
+                            <div slot="first" class="slotted">my first name</div>
+                        </x-child>
+                    </x-parent>
+                </template>
+            `, {
+                modules: {
+                    'x-parent': Parent,
+                    'x-child': Child,
+                },
+            });
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+            expect(slotted).not.toBe(null);
+        });
         it('should find the slotted element when "slot > slot > div.slotted"', () => {
             let slotted;
             class Parent extends LightningElement {
@@ -1015,7 +1069,6 @@ describe('#childNodes', () => {
         expect(childNodes[1].textContent).toBe('text');
     });
 });
-
 
 describe('assignedSlot', () => {
     it('should return null when custom element is not in slot', () => {
