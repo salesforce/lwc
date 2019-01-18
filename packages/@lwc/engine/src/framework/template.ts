@@ -100,7 +100,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         // Check that the template was built by the compiler
         if (!isTemplateRegistered(html)) {
-            throw new ReferenceError(`Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned: ${toString(html)}.`);
+            throw new TypeError(`Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned: ${toString(html)}.`);
         }
 
         vm.cmpTemplate = html;
