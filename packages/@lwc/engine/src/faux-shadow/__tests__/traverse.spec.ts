@@ -473,44 +473,6 @@ describe('#shadowRoot querySelector', () => {
     });
 });
 
-describe('#parentNode and #parentElement', () => {
-    it('should allow walking back to the shadow root', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <div></div>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        expect(root.querySelector('div').parentNode).toBe(root);
-    });
-
-    it('should not allow walking back to the shadow root via parentElement', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <div></div>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        expect(root.querySelector('div').parentElement).toBe(null);
-    });
-});
-
 describe('proxy', () => {
     it('should allow setting properties manually', () => {
         const myComponentTmpl = compileTemplate(`

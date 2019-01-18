@@ -149,7 +149,7 @@ export function isPortalElement(elm: Element): boolean {
     return portals.has(elm);
 }
 
-function getShadowParent(node: Node, value: undefined | HTMLElement): (Node & ParentNode) | null {
+function getShadowParent(node: Node, value: undefined | Element): (Node & ParentNode) | null {
     const owner = getNodeOwner(node);
     if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
@@ -230,21 +230,15 @@ export function PatchedNode(node: Node): NodeConstructor {
             }
             return getShadowParent(this, value);
         }
-        get parentElement(this: Node): HTMLElement | null {
-            const parentNode: HTMLElement | null = nativeParentNodeGetter.call(this);
-            if (isNull(parentNode)) {
+        get parentElement(this: Node): Element | null {
+            const value = nativeParentNodeGetter.call(this);
+            if (isNull(value)) {
                 return null;
             }
-            const nodeOwner = getNodeOwner(this);
-            if (isNull(nodeOwner)) {
-                return parentNode;
-            }
-            // If we have traversed to the host element,
-            // we need to return null
-            if (nodeOwner === parentNode) {
-                return null;
-            }
-            return parentNode;
+            const parentNode = getShadowParent(this, value);
+            // it could be that the parentNode is the shadowRoot, in which case
+            // we need to return null.
+            return parentNode instanceof Element ? parentNode : null;
         }
         getRootNode(this: Node, options?: GetRootNodeOptions): Node {
             return getRootNodeGetter.call(this, options);
