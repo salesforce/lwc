@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.34.0...v) (2019-01-11)
+# [](https://github.com/salesforce/lwc/compare/v0.35.1...v) (2019-01-18)
+
+
+### Bug Fixes
+
+* **engine:** closes [#958](https://github.com/salesforce/lwc/issues/958) after fixing parentElement ref in slotted node ([#959](https://github.com/salesforce/lwc/issues/959)) ([0ec65ea](https://github.com/salesforce/lwc/commit/0ec65ea)), closes [#967](https://github.com/salesforce/lwc/issues/967)
+* **engine:** correct error type from Reference to Type ([#945](https://github.com/salesforce/lwc/issues/945)) ([42fd8d7](https://github.com/salesforce/lwc/commit/42fd8d7))
+* **engine:** fixes [#973](https://github.com/salesforce/lwc/issues/973) to support cloneNode with ie11 devtool comment ([#974](https://github.com/salesforce/lwc/issues/974)) ([4931eec](https://github.com/salesforce/lwc/commit/4931eec))
+* **engine:** fixes issue [#129](https://github.com/salesforce/lwc/issues/129) - removal of dangerousObjectMutation ([#831](https://github.com/salesforce/lwc/issues/831)) ([b65c1f6](https://github.com/salesforce/lwc/commit/b65c1f6))
+* **engine:** implement composedPath, srcElement and path for events ([#859](https://github.com/salesforce/lwc/issues/859)) ([c415ece](https://github.com/salesforce/lwc/commit/c415ece))
+* **engine:** to use the later version of observable membrane ([#848](https://github.com/salesforce/lwc/issues/848)) ([9f63a10](https://github.com/salesforce/lwc/commit/9f63a10))
+* should always have access to slotted elements ([#939](https://github.com/salesforce/lwc/issues/939)) ([b767131](https://github.com/salesforce/lwc/commit/b767131))
+
+
+### Features
+
+* **compiler:** improve error message consistency ([#969](https://github.com/salesforce/lwc/issues/969)) ([5c16e22](https://github.com/salesforce/lwc/commit/5c16e22))
+* **engine:** improve createElement() second parameter error messages ([#944](https://github.com/salesforce/lwc/issues/944)) ([8dc263b](https://github.com/salesforce/lwc/commit/8dc263b))
+
+
+
+<a name="0.35.1"></a>
+## [0.35.1](https://github.com/salesforce/lwc/compare/v0.34.0...v0.35.1) (2019-01-11)
 
 
 ### Bug Fixes
