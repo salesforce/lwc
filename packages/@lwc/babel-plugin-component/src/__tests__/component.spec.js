@@ -77,7 +77,6 @@ describe('Element import', () => {
             createElement,
             LightningElement,
             buildCustomElementConstructor,
-            dangerousObjectMutation,
             getComponentDef,
             getComponentConstructor,
             isComponentConstructor,
@@ -87,7 +86,7 @@ describe('Element import', () => {
         } from "lwc";
     `, {
         output: {
-            code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, dangerousObjectMutation, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`
+            code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`
         }
     });
 });

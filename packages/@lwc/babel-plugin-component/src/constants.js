@@ -65,7 +65,6 @@ const LWC_PACKAGE_EXPORTS = {
 const LWC_API_WHITELIST = new Set([
     'buildCustomElementConstructor',
     'createElement',
-    'dangerousObjectMutation',
     'getComponentDef',
     'getComponentConstructor',
     'isComponentConstructor',
