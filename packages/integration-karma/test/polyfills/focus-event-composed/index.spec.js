@@ -24,20 +24,3 @@ if (isFocusEventConstructorSupported()) {
     });
 }
 
-it('should make trusted FocusEvent composed', (done) => {
-    const input = document.createElement('input');
-    document.body.appendChild(input);
-
-    // IE11 is the only browser dispatching the event asynchronously, so we need to make the assertion in the event
-    // handler instead of after the input.focus() invocation.
-    input.addEventListener('focus', event => {
-        expect(event instanceof FocusEvent).toBe(true);
-        expect(event.composed).toBe(true);
-
-        done();
-    });
-
-    input.focus();
-});
-
-
