@@ -11,7 +11,11 @@ function testCloneNodeShadowRoot(deep) {
 
         expect(elm.shadowRoot).toBeDefined();
 
-        expect(elm.cloneNode(deep).shadowRoot).toBeNull();
+        // Depending if ShadowRoot is implemented natively by the browser Element.shadowRoot could be undefined. Since
+        // LWC is not globally patching the Element prototype, we need to check if shadowRoot is either null or
+        // undefined.
+        const clone = elm.cloneNode(deep);
+        expect(clone.shadowRoot === null || clone.shadowRoot === undefined).toBe(true);
     });
 
     it(`should throw when invoking cloneNode on a shadowRoot with deep=${deep}`, () => {
