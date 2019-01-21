@@ -29,11 +29,10 @@ export function isBeingConstructed(vm: VM): boolean {
 }
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
-    const { component, callHook } = vm;
-    const { context } = vm;
+    const { component, callHook, context, owner } = vm;
     const ctx = currentContext;
     let result;
-    runWithBoundaryProtection(vm, vm.owner, () => {
+    runWithBoundaryProtection(vm, owner, () => {
         // pre
         establishContext(context);
     }, () => {
@@ -60,7 +59,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
     }
     vmBeingConstructed = vm;
     /**
-     * Constructor don't need to be wrapped with a boundary because for root elements
+     * Constructors don't need to be wrapped with a boundary because for root elements
      * it should throw, while elements from template are already wrapped by a boundary
      * associated to the diffing algo.
      */
@@ -84,16 +83,14 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
-    const { def: { render }, callHook } = vm;
-    const { component } = vm;
-    const { context } = vm;
+    const { def: { render }, callHook, component, context, owner } = vm;
     const ctx = currentContext;
     const isRenderingInception = isRendering;
     const vmBeingRenderedInception = vmBeingRendered;
     isRendering = true;
     vmBeingRendered = vm;
     let result;
-    runWithBoundaryProtection(vm, vm.owner, () => {
+    runWithBoundaryProtection(vm, owner, () => {
         // pre
         establishContext(context);
         if (process.env.NODE_ENV !== 'production') {
@@ -118,20 +115,22 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
 }
 
 export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | ComponentInterface, event: Event) {
-    const { callHook } = vm;
-    const { context } = vm;
+    const { callHook, owner, context } = vm;
     const ctx = currentContext;
-    runWithBoundaryProtection(vm, vm.owner, () => {
-        // pre
-        establishContext(context);
-    }, () => {
-        // job
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(fn), `Invalid event handler for event '${event.type}' on ${vm}.`);
-        }
-        callHook(thisValue, fn, [event]);
-    }, () => {
-        // post
-        establishContext(ctx);
-    });
+    runWithBoundaryProtection(vm, owner,
+        () => {
+            // pre
+            establishContext(context);
+        },
+        () => {
+            // job
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(isFunction(fn), `Invalid event handler for event '${event.type}' on ${vm}.`);
+            }
+            callHook(thisValue, fn, [event]);
+        },
+        () => {
+            // post
+            establishContext(ctx);
+        });
 }

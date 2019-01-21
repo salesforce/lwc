@@ -86,7 +86,7 @@ export function createElmHook(vnode: VElement) {
     setNodeOwnerKey(elm, owner.uid);
     if (isTrue(owner.fallback)) {
         const { data: { context } } = vnode;
-        const { shadowAttribute } = vnode.owner.context;
+        const { shadowAttribute } = owner.context;
         const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
@@ -150,7 +150,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
     if (isTrue(fallback)) {
-        const { shadowAttribute } = vnode.owner.context;
+        const { shadowAttribute } = owner.context;
         patchCustomElementProto(elm, {
             def,
             shadowAttribute,
@@ -220,7 +220,7 @@ export function updateCustomElmDefaultHook(oldVnode: VCustomElement, vnode: VCus
 }
 
 export function removeElmHook(vnode: VElement) {
-    // this method only needs to search on child vnodes recursively
+    // this method only needs to search on child vnodes from template
     // to trigger the remove hook just in case some of those children
     // are custom elements.
     const { children, elm } = vnode;

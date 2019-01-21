@@ -33,7 +33,7 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export enum VMStatus {
+export enum VMState {
     created,
     connected,
     disconnected,
@@ -48,15 +48,15 @@ export interface UninitializedVM {
     readonly context: Context;
     /** Back-pointer to the owner VM or null for root elements */
     readonly owner: VM | null;
-    /** Component Unique Identifier (TODO: this should be removed) */
+    /** Component Unique Identifier (TODO: this should be removed - Issue #951) */
     uid: number;
     /** Component Creation Index */
     idx: number;
-    /** Component status, analogous to Element.isConnected */
-    status: VMStatus;
+    /** Component state, analogous to Element.isConnected */
+    state: VMState;
     data: VNodeData;
     children: VNodes;
-    childLWC: VCustomElement[];
+    velements: VCustomElement[];
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
@@ -110,18 +110,16 @@ export function appendRootVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    rehydrate(vm);
     runConnectedCallback(vm);
-    runChildrenConnectedCallback(vm);
-    // reporting first rendered
-    runRenderedCallback(vm);
+    rehydrate(vm);
 }
 
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.status === VMStatus.created, `${vm} cannot be recycled.`);
+        assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
+    runConnectedCallback(vm);
     rehydrate(vm);
 }
 
@@ -140,7 +138,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.status === VMStatus.connected, `${vm} must be inserted.`);
+        assert.isTrue(vm.state === VMState.connected, `${vm} must be inserted.`);
     }
     resetComponentStateWhenRemoved(vm);
 }
@@ -178,7 +176,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         // component creation index is defined once, and never reset, it can
         // be preserved from one insertion to another without any issue
         idx,
-        status: VMStatus.created,
+        state: VMState.created,
         isScheduled: false,
         isDirty: true,
         isRoot: isTrue(isRoot),
@@ -197,7 +195,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         setHook,
         getHook,
         children: EmptyArray,
-        childLWC: EmptyArray,
+        velements: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -220,7 +218,7 @@ function rehydrate(vm: VM) {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
     }
-    if (vm.isDirty) {
+    if (isTrue(vm.isDirty)) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
     }
@@ -254,7 +252,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
             });
         }
     }
-    if (vm.status === VMStatus.connected) {
+    if (vm.state === VMState.connected) {
         // If the element is connected, that means connectedCallback was already issued, and
         // any successive rendering should finish with the call to renderedCallback, otherwise
         // the connectedCallback will take care of calling it in the right order at the end of
@@ -299,8 +297,6 @@ function flushRehydrationQueue() {
         const vm = vms[i];
         try {
             rehydrate(vm);
-            // in case new children are inserted, we need to trigger their connect hooks
-            runChildrenConnectedCallback(vm);
         } catch (error) {
             if (i + 1 < len) {
                 // pieces of the queue are still pending to be rehydrated, those should have priority
@@ -325,11 +321,11 @@ function runConnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { status } = vm;
-    if (status === VMStatus.connected) {
+    const { state } = vm;
+    if (state === VMState.connected) {
         return; // nothing to do since it was already connected
     }
-    vm.status = VMStatus.connected;
+    vm.state = VMState.connected;
     // reporting connection
     const { connected } = Services;
     if (connected) {
@@ -349,31 +345,15 @@ function runConnectedCallback(vm: VM) {
     }
 }
 
-function runChildrenConnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-    }
-    const { childLWC } = vm;
-    // reporting connection for every child
-    for (let i = 0, len = childLWC.length; i < len; i += 1) {
-        const elm = childLWC[i].elm as HTMLElement;
-        const childVM = getCustomElementVM(elm);
-        runConnectedCallback(childVM);
-        runChildrenConnectedCallback(childVM);
-        // reporting first rendered
-        runRenderedCallback(childVM);
-    }
-}
-
 function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { status } = vm;
-    if (status === VMStatus.disconnected) {
+    const { state } = vm;
+    if (state === VMState.disconnected) {
         return; // nothing to do since it was already disconnected
     }
-    if (!vm.isDirty) {
+    if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
@@ -381,7 +361,7 @@ function runDisconnectedCallback(vm: VM) {
         markComponentAsDirty(vm);
     }
     clearReactiveListeners(vm);
-    vm.status = VMStatus.disconnected;
+    vm.state = VMState.disconnected;
     // reporting disconnection
     const { disconnected } = Services;
     if (disconnected) {
@@ -405,7 +385,7 @@ function runChildrenDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
-    const { childLWC } = vm;
+    const { velements: childLWC } = vm;
     // reporting disconnection for every child
     for (let i = 0, len = childLWC.length; i < len; i += 1) {
         const elm = childLWC[i].elm as HTMLElement;
@@ -615,7 +595,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         vnode.key = `@${slotName}:${vnode.key}`;
         ArrayPush.call(vnodes, vnode);
     }
-    if (!vm.isDirty) {
+    if (isFalse(vm.isDirty)) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
         const oldKeys = keys(oldSlots);
@@ -641,7 +621,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
     }
 }
 
-export function runWithBoundaryProtection(vm: VM, anchor: VM | null, pre: () => void, job: () => void, post: () => void) {
+export function runWithBoundaryProtection(vm: VM, owner: VM | null, pre: () => void, job: () => void, post: () => void) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
@@ -655,7 +635,7 @@ export function runWithBoundaryProtection(vm: VM, anchor: VM | null, pre: () => 
         post();
         if (!isUndefined(error)) {
             error.wcStack = error.wcStack || getErrorComponentStack(vm.elm);
-            const errorBoundaryVm = isNull(anchor) ? undefined : getErrorBoundaryVMFromOwnElement(anchor);
+            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVMFromOwnElement(owner);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }

@@ -192,14 +192,12 @@ function addNS(vnode: VElement) {
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
     if (process.env.NODE_ENV !== 'production') {
-        // TODO: enable this after refactoring all failing tests
+        // TODO: remove this condition after refactoring all failing tests
         if (isNull(vmBeingRendered)) {
             return;
         }
-        // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentShadowToken().`);
     }
-    // TODO: remove this condition after refactoring all failing tests
-    ArrayPush.call((vmBeingRendered as VM).childLWC, vnode);
+    ArrayPush.call((vmBeingRendered as VM).velements, vnode);
 }
 
 // [h]tml node

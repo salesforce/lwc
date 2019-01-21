@@ -92,7 +92,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
             // not need to wrap or check the value since that is happening somewhere else
             vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
 
-            // avoid notification of observability while constructing the instance
+            // avoid notification of observability if the instance is already dirty
             if (isFalse(vm.isDirty)) {
                 // perf optimization to skip this step if the component is dirty already.
                 notifyMutation(this, key);

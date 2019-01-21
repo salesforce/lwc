@@ -99,11 +99,11 @@ describe('patch', () => {
 
             expect(calls).toEqual([
                 'root:constructor',
+                'root:connectedCallback',
                 'root:render',
                 'child:constructor',
-                'child:render',
-                'root:connectedCallback',
                 'child:connectedCallback',
+                'child:render',
                 'child:renderedCallback',
                 'root:renderedCallback',
             ]);
@@ -175,10 +175,10 @@ describe('patch', () => {
                     expect(calls).toEqual([
                         'root:render',
                         'child:constructor',
-                        'child:render',
-                        'root:renderedCallback',
                         'child:connectedCallback',
+                        'child:render',
                         'child:renderedCallback',
+                        'root:renderedCallback',
                         'root:render',
                         'child:disconnectedCallback',
                         'root:renderedCallback'
@@ -244,10 +244,10 @@ describe('patch', () => {
                 expect(calls).toEqual([
                     'root:render',
                     'child:constructor',
-                    'child:render',
-                    'root:renderedCallback',
                     'child:connectedCallback',
+                    'child:render',
                     'child:renderedCallback',
+                    'root:renderedCallback',
                 ]);
             });
         });

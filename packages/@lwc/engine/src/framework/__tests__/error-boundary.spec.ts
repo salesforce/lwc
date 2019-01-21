@@ -8,10 +8,7 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { querySelector, querySelectorAll } from "../../env/element";
 
-const emptyTemplate = compileTemplate(`
-<template>
-    </template>
-`);
+const emptyTemplate = compileTemplate(`<template></template>`);
 
 function createBoundaryComponent({ name, ctor }) {
     const baseTmpl = compileTemplate(`
@@ -104,7 +101,7 @@ describe('error boundary component', () => {
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
-            it('should unmount the component that throws inside constructor', () => {
+            it('should unmount every descendent if a child constructor throws', () => {
                 class SecondLevelChild extends LightningElement {}
 
                 const firstChildTmpl = compileTemplate(`
@@ -194,10 +191,10 @@ describe('error boundary component', () => {
                 expect(boundaryElm.getError()).toBe("Child Render Throw");
             }),
 
-            it('should capture error from its own render method', () => {
+            it('should not capture error from its own render method', () => {
                 class Boundary extends LightningElement {
-                    errorCallback(error) {
-                        throw error;
+                    errorCallback() {
+                        throw new Error('This should not be called');
                     }
                     render() {
                         throw new Error('Boundary Render Throw');
@@ -208,7 +205,7 @@ describe('error boundary component', () => {
 
                 expect( () => {
                     document.body.appendChild(boundaryElm);
-                }).toThrow();
+                }).toThrow(`Boundary Render Throw`);
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside render', () => {
@@ -685,8 +682,8 @@ describe('error boundary component', () => {
                     modules: { 'pre-error-child-content': PreErrorChildContent },
                 });
                 class InnerErrorBoundary extends LightningElement {
-                    errorCallback(error) {
-                        throw error; // propagate error because it has no ways to recover
+                    errorCallback() {
+                        throw new Error(`Boundary failed to recover`); // propagate error because it has no ways to recover
                     }
                     render() {
                         return baseTmpl;
@@ -697,7 +694,7 @@ describe('error boundary component', () => {
 
                 expect( () => {
                     document.body.appendChild(elm);
-                }).toThrowError();
+                }).toThrowError(`Boundary failed to recover`);
             }),
 
             it('should show alternative view after initial error', () => {
@@ -752,6 +749,7 @@ describe('error boundary component', () => {
                     // waiting for the alternative view to kick in
                     const p = elm.shadowRoot.querySelector('post-error-child-content').shadowRoot.querySelector('p');
                     expect(p).toBeInstanceOf(HTMLElement);
+                    expect(p.textContent).toBe(`recovered`);
                 });
             }),
 
@@ -838,7 +836,11 @@ describe('error boundary component', () => {
                         throw new Error("Pre-Failure Child Content Throws in handler");
                     }
                     renderedCallback() {
-                        this.template.querySelector('a').click();
+                        // simulating that the click happens at some point in the future, just
+                        // to make sure that the error is not because of the renderedCallback protection
+                        return Promise.resolve().then(() => {
+                            this.template.querySelector('a').click();
+                        });
                     }
                 }
                 const buttonTmpl = compileTemplate(`
@@ -872,7 +874,11 @@ describe('error boundary component', () => {
                 // the inner boundary should be getting this because it is the inner component the one providing an invalid handler
                 const preErrorElm = hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelector('pre-error-child-content');
                 expect(preErrorElm).toBeInstanceOf(HTMLElement);
-                expect(preErrorElm.shadowRoot.querySelectorAll('*')).toHaveLength(0);
+                return Promise.resolve().then(() => {
+                    // waiting for the next tick to validate that the state is still the same...
+                    expect(preErrorElm).toBeInstanceOf(HTMLElement);
+                    expect(preErrorElm.shadowRoot.querySelectorAll('*')).toHaveLength(0);
+                });
             }),
 
             it('should clean up the content of the inner error boundary if an error in a setter occur', () => {
@@ -928,7 +934,9 @@ describe('error boundary component', () => {
                 }
                 const baseTmpl = compileTemplate(`
                     <template>
+                        <p>before</p>
                         <pre-error-child-content></pre-error-child-content>
+                        <p>after</p>
                     </template>
                 `, {
                     modules: { 'pre-error-child-content': PreErrorChildContent },

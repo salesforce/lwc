@@ -33,7 +33,7 @@ import { ComponentInterface, getWrappedComponentsListener, getComponentAsString 
 import { setInternalField, setHiddenField } from "../shared/fields";
 import { ViewModelReflection, EmptyObject } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, setNodeKey, VMStatus } from "./vm";
+import { getComponentVM, VM, setNodeKey, VMState } from "./vm";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "../env/dom";
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
@@ -166,7 +166,7 @@ BaseLightningElement.prototype = {
             const { type: evtName } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${getComponentAsString(this)} because no one is listening for the event "${evtName}" just yet.`);
 
-            if (vm.status !== VMStatus.connected) {
+            if (vm.state !== VMState.connected) {
                 assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(this)}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`, elm);
             }
 

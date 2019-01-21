@@ -6,7 +6,7 @@
  */
 import assert from "../shared/assert";
 import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from "../shared/language";
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, getNodeKey, VMStatus } from "./vm";
+import { createVM, removeRootVM, appendRootVM, getCustomElementVM, getNodeKey, VMState } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
@@ -112,7 +112,7 @@ export function createElement(sel: string, options: any): HTMLElement {
     setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        if (vm.status === VMStatus.connected) {
+        if (vm.state === VMState.connected) {
             // usually means moving the element from one place to another, which is observable via life-cycle hooks
             removeRootVM(vm);
         }
