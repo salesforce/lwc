@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.33.28-1...v) (2019-01-10)
+# [](https://github.com/salesforce/lwc/compare/v0.34.0...v) (2019-01-21)
+
+
+### Bug Fixes
+
+* **engine:** closes [#958](https://github.com/salesforce/lwc/issues/958) after fixing parentElement ref in slotted node ([#981](https://github.com/salesforce/lwc/issues/981)) ([eb77ec8](https://github.com/salesforce/lwc/commit/eb77ec8))
+* **engine:** fixes [#973](https://github.com/salesforce/lwc/issues/973) to support cloneNode with ie11 devtool comment ([#974](https://github.com/salesforce/lwc/issues/974)) ([#980](https://github.com/salesforce/lwc/issues/980)) ([2caa4a2](https://github.com/salesforce/lwc/commit/2caa4a2))
+* **engine:** regular dom nodes can use object type event listeners ([#943](https://github.com/salesforce/lwc/issues/943)) ([#950](https://github.com/salesforce/lwc/issues/950)) ([faf5bf4](https://github.com/salesforce/lwc/commit/faf5bf4))
+* should always have access to slotted elements ([#939](https://github.com/salesforce/lwc/issues/939)) ([#982](https://github.com/salesforce/lwc/issues/982)) ([2a72188](https://github.com/salesforce/lwc/commit/2a72188))
+
+
+
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/salesforce/lwc/compare/v0.33.28-1...v0.34.0) (2019-01-10)
 
 
 ### Bug Fixes
