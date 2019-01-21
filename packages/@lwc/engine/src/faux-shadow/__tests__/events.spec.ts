@@ -334,13 +334,10 @@ describe('events', () => {
                 render() {
                     return rootHTML;
                 }
-                handleClick(evt) {
-                    // event handler is here to trigger patching of the event
-                }
             }
             const rootHTML = compileTemplate(`
                 <template>
-                    <div onclick={handleClick}></div>
+                    <div></div>
                 </template>
             `);
 
@@ -573,6 +570,60 @@ describe('events', () => {
                 expect(listenerCalled).toBe(true);
                 expect(target).toBe(expectedTarget);
             });
+        });
+    });
+    describe('event patching preserves standard listener specs', () => {
+        it('Issue#941: an object type EventListener works on standard html nodes outside custom element', () => {
+            let target;
+            const eventListener = {
+                handleEvent: function(evt) {
+                    expect(this).toBe(eventListener);
+                    target = evt.target;
+                }
+            };
+
+            class MyComponent extends LightningElement {
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
+            const span = document.createElement('span');
+            span.appendChild(elm);
+            span.addEventListener('click', eventListener);
+            document.body.appendChild(span);
+            elm.click();
+            expect(target).toBe(elm);    
+        });
+        it('Issue#941: an object type EventListener works on standard html nodes in the template', () => {
+            expect.assertions(2);
+            const tpl = compileTemplate(`
+                <template>
+                    <button>click me</button>
+                </template>
+            `);
+
+            class MyComponent extends LightningElement {
+                renderedCallback() {
+                    const button = this.template.querySelector('button');
+                    const eventListener = {
+                        handleEvent: function(evt) {
+                            expect(this).toBe(eventListener);
+                            expect(evt.target).toBe(button);
+                        }
+                    };
+                    button.addEventListener('click', eventListener);
+                }
+
+                triggerInternalClick() {
+                    this.template.querySelector('button').click();
+                }
+
+                render() {
+                    return tpl;
+                }
+            }
+            MyComponent.publicMethods = ['triggerInternalClick'];
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            elm.triggerInternalClick();
         });
     });
 });
