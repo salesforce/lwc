@@ -22,7 +22,7 @@ function testCloneNodeShadowRoot(deep) {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        // Can't assert against Error type, since by spec cloneNode throws a `NotSupportedError` while in LWC it throws
+        // #984 - Can't assert against Error type, since by spec cloneNode throws a `NotSupportedError` while in LWC it throws
         // a standard Error.
         expect(() => {
             elm.shadowRoot.cloneNode(deep);
