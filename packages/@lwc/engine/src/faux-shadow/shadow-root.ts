@@ -53,12 +53,10 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     defineProperty(sr, 'mode', {
         get() { return mode; },
         configurable: true,
-        enumerable: true,
     });
     defineProperty(sr, 'delegatesFocus', {
         get() { return !!delegatesFocus; },
         configurable: true,
-        enumerable: true,
     });
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
@@ -132,7 +130,6 @@ const ShadowRootDescriptors = {
         },
     },
     delegatesFocus: {
-        enumerable: true,
         configurable: true,
         get(): boolean {
             return false;
