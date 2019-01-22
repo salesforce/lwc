@@ -5,20 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined } from "../shared/language";
+import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { createStaticNodeList } from "../shared/static-node-list";
 import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from "../env/document";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter } from "../env/node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter, textContextSetter, isConnected } from "../env/node";
 import { isNativeShadowRootAvailable } from "../env/dom";
 import { createStaticHTMLCollection } from "../shared/static-html-collection";
 import { getOuterHTML } from "../3rdparty/polymer/outer-html";
 import { retarget } from "../3rdparty/polymer/retarget";
 import { pathComposer } from "../3rdparty/polymer/path-composer";
 import { getInternalChildNodes } from "./node";
+import { innerHTMLSetter } from "../env/element";
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -295,11 +296,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface) {
-            return (
-                (compareDocumentPosition.call(document, getHost(this)) &
-                    DOCUMENT_POSITION_CONTAINED_BY) !==
-                0
-            );
+            return isConnected.call(getHost(this));
         },
     },
     nextSibling: {
@@ -369,6 +366,10 @@ const NodePatchDescriptors = {
             }
             return textContent;
         },
+        set(this: SyntheticShadowRootInterface, v: string) {
+            const host = getHost(this);
+            textContextSetter.call(host, v);
+        }
     },
     getRootNode: {
         writable: true,
@@ -391,6 +392,10 @@ const ElementPatchDescriptors = {
                 innerHTML += getOuterHTML(childNodes[i]);
             }
             return innerHTML;
+        },
+        set(this: SyntheticShadowRootInterface, v: string) {
+            const host = getHost(this);
+            innerHTMLSetter.call(host, v);
         },
     },
     localName: {

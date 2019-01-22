@@ -92,10 +92,8 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (process.env.NODE_ENV !== 'production') {
-                    if (this instanceof Element && options.isPortal !== true) {
-                        assert.logError(`nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
-                    }
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             }
@@ -105,10 +103,8 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (process.env.NODE_ENV !== 'production') {
-                    if (this instanceof Element && options.isPortal !== true) {
-                        assert.logError(`textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
-                    }
+                if (this instanceof Element && options.isPortal !== true) {
+                    assert.logError(`textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this as Element);
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             }
@@ -124,22 +120,31 @@ function getElementRestrictionsDescriptors(elm: HTMLElement, options: Restrictio
     }
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
+    const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     assign(descriptors, {
         innerHTML: {
             get(): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                if (process.env.NODE_ENV !== 'production') {
-                    if (options.isPortal !== true) {
-                        assert.logError(`innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this);
-                    }
+                if (options.isPortal !== true) {
+                    assert.logError(`innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`, this);
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
             enumerable: true,
             configurable: true,
-        }
+        },
+        outerHTML: {
+            get(this: HTMLElement): string {
+                return originalOuterHTMLDescriptor.get!.call(this);
+            },
+            set(this: HTMLElement, value: string) {
+                throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
     });
     return descriptors;
 }
@@ -156,7 +161,29 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
     const originalQuerySelectorAll = sr.querySelectorAll;
     const originalAddEventListener = sr.addEventListener;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr, options);
+    const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
+    const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
     assign(descriptors, {
+        innerHTML: {
+            get(this: ShadowRoot): string {
+                return originalInnerHTMLDescriptor.get!.call(this);
+            },
+            set(this: ShadowRoot, value: string) {
+                throw new TypeError(`Invalid attempt to set innerHTML on ShadowRoot.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        textContent: {
+            get(this: ShadowRoot): string {
+                return originalTextContentDescriptor.get!.call(this);
+            },
+            set(this: ShadowRoot, value: string) {
+                throw new TypeError(`Invalid attempt to set textContent on ShadowRoot.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
         addEventListener: {
             value(this: ShadowRoot, type: string) {
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(sr)} by adding an event listener for "${type}".`);
@@ -281,9 +308,42 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
     }
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm, options);
     const originalAddEventListener = elm.addEventListener;
+    const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
+    const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
+    const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
     return assign(descriptors, {
+        innerHTML: {
+            get(this: HTMLElement): string {
+                return originalInnerHTMLDescriptor.get!.call(this);
+            },
+            set(this: HTMLElement, value: string) {
+                throw new TypeError(`Invalid attempt to set innerHTML on HTMLElement.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        outerHTML: {
+            get(this: HTMLElement): string {
+                return originalOuterHTMLDescriptor.get!.call(this);
+            },
+            set(this: HTMLElement, value: string) {
+                throw new TypeError(`Invalid attempt to set outerHTML on HTMLElement.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
+        textContent: {
+            get(this: HTMLElement): string {
+                return originalTextContentDescriptor.get!.call(this);
+            },
+            set(this: HTMLElement, value: string) {
+                throw new TypeError(`Invalid attempt to set textContent on HTMLElement.`);
+            },
+            enumerable: true,
+            configurable: true,
+        },
         addEventListener: {
-            value(this: ShadowRoot, type: string) {
+            value(this: HTMLElement, type: string) {
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(elm)} by adding an event listener for "${type}".`);
                 return originalAddEventListener.apply(this, arguments);
             }
