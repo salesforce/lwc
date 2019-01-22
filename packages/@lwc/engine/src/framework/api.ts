@@ -32,7 +32,7 @@ import {
     createTextHook,
     createCommentHook,
 } from "./hooks";
-import { markAsDynamicChildren, patchEvent } from "./patch";
+import { markAsDynamicChildren } from "./patch";
 import {
     isNativeShadowRootAvailable,
 } from "../env/dom";
@@ -547,9 +547,6 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function(event: Event) {
-        if (vm.fallback) {
-            patchEvent(event);
-        }
         invokeEventListener(vm, fn, vm.component, event);
     };
 }
