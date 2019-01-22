@@ -376,7 +376,8 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
-            return getRootNodeGetter.call(this, options);
+            const composed: boolean = isUndefined(options) ? false : !!options.composed;
+            return isFalse(composed) ? this : getRootNodeGetter.call(getHost(this), { composed });
         },
     },
 };
