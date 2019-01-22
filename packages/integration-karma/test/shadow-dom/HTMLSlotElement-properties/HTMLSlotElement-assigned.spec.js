@@ -25,7 +25,7 @@ function extractDataIds(root) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
 
     let elm;
-    while (elm = walker.nextNode()){
+    while ((elm = walker.nextNode())) {
         processElement(elm);
     }
 
@@ -56,9 +56,7 @@ describe('ignore non direct host children', () => {
     });
 
     it('assignedNodes', () => {
-        expect(nodes.default1.assignedNodes()).toEqual([
-            nodes.slotted3,
-        ]);
+        expect(nodes.default1.assignedNodes()).toEqual([nodes.slotted3]);
         expect(nodes.slot1.assignedNodes()).toEqual([
             nodes.slotted1,
             nodes.slotted2,
@@ -71,12 +69,10 @@ describe('ignore non direct host children', () => {
             nodes.slotted1,
             nodes.slotted2,
         ]);
-    })
+    });
 
     it('assignedElements', () => {
-        expect(nodes.default1.assignedElements()).toEqual([
-            nodes.slotted3,
-        ]);
+        expect(nodes.default1.assignedElements()).toEqual([nodes.slotted3]);
         expect(nodes.slot1.assignedElements()).toEqual([
             nodes.slotted1,
             nodes.slotted2,
@@ -89,7 +85,7 @@ describe('ignore non direct host children', () => {
             nodes.slotted1,
             nodes.slotted2,
         ]);
-    })
+    });
 });
 
 describe('fallback content basic', () => {
@@ -141,16 +137,24 @@ describe('fallback content slots in slots', () => {
         expect(nodes.slot1.assignedNodes()).toEqual([]);
         expect(nodes.slot2.assignedNodes()).toEqual([]);
 
-        expect(nodes.slot1.assignedNodes({ flatten: true })).toEqual([nodes.fallback1]);
-        expect(nodes.slot2.assignedNodes({ flatten: true })).toEqual([nodes.fallback1]);
+        expect(nodes.slot1.assignedNodes({ flatten: true })).toEqual([
+            nodes.fallback1,
+        ]);
+        expect(nodes.slot2.assignedNodes({ flatten: true })).toEqual([
+            nodes.fallback1,
+        ]);
     });
 
     it('assignedElements', () => {
         expect(nodes.slot1.assignedElements()).toEqual([]);
         expect(nodes.slot2.assignedElements()).toEqual([]);
 
-        expect(nodes.slot1.assignedElements({ flatten: true })).toEqual([nodes.fallback1]);
-        expect(nodes.slot2.assignedElements({ flatten: true })).toEqual([nodes.fallback1]);
+        expect(nodes.slot1.assignedElements({ flatten: true })).toEqual([
+            nodes.fallback1,
+        ]);
+        expect(nodes.slot2.assignedElements({ flatten: true })).toEqual([
+            nodes.fallback1,
+        ]);
     });
 });
 
@@ -171,10 +175,22 @@ describe('fallback content complex', () => {
         expect(nodes.slot3.assignedNodes()).toEqual([nodes.slot2]);
         expect(nodes.slot4.assignedNodes()).toEqual([]);
 
-        expect(nodes.slot1.assignedNodes({ flatten: true })).toEqual([nodes.slotted1]);
-        expect(nodes.slot2.assignedNodes({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2]);
-        expect(nodes.slot3.assignedNodes({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2]);
-        expect(nodes.slot4.assignedNodes({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2, nodes.fallback3]);
+        expect(nodes.slot1.assignedNodes({ flatten: true })).toEqual([
+            nodes.slotted1,
+        ]);
+        expect(nodes.slot2.assignedNodes({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+        ]);
+        expect(nodes.slot3.assignedNodes({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+        ]);
+        expect(nodes.slot4.assignedNodes({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+            nodes.fallback3,
+        ]);
     });
 
     it('assignedElements', () => {
@@ -183,9 +199,21 @@ describe('fallback content complex', () => {
         expect(nodes.slot3.assignedElements()).toEqual([nodes.slot2]);
         expect(nodes.slot4.assignedElements()).toEqual([]);
 
-        expect(nodes.slot1.assignedElements({ flatten: true })).toEqual([nodes.slotted1]);
-        expect(nodes.slot2.assignedElements({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2]);
-        expect(nodes.slot3.assignedElements({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2]);
-        expect(nodes.slot4.assignedElements({ flatten: true })).toEqual([nodes.slotted1, nodes.fallback2, nodes.fallback3]);
+        expect(nodes.slot1.assignedElements({ flatten: true })).toEqual([
+            nodes.slotted1,
+        ]);
+        expect(nodes.slot2.assignedElements({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+        ]);
+        expect(nodes.slot3.assignedElements({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+        ]);
+        expect(nodes.slot4.assignedElements({ flatten: true })).toEqual([
+            nodes.slotted1,
+            nodes.fallback2,
+            nodes.fallback3,
+        ]);
     });
-})
+});
