@@ -1,5 +1,10 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.34.0...v) (2019-01-21)
+# [](https://github.com/salesforce/lwc/compare/v0.34.1...v) (2019-01-22)
+
+
+
+<a name="0.34.1"></a>
+## [0.34.1](https://github.com/salesforce/lwc/compare/v0.34.0...v0.34.1) (2019-01-21)
 
 
 ### Bug Fixes
