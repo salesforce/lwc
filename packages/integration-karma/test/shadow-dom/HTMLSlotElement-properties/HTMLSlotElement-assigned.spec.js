@@ -1,8 +1,6 @@
 import { createElement } from 'test-utils';
 
-// import Distribute from 'x/distribute';
 import NoDirectChild from 'x/noDirectChild';
-
 import Basic from 'x/basic';
 import SlotsInSlots from 'x/slotsInSlots';
 import Complex from 'x/complex';
