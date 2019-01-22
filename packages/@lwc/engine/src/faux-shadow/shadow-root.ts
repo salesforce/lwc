@@ -393,41 +393,6 @@ const ElementPatchDescriptors = {
             return innerHTML;
         },
     },
-    localName: {
-        enumerable: true,
-        configurable: true,
-        get() {
-            return null;
-        },
-    },
-    namespaceURI: {
-        enumerable: true,
-        configurable: true,
-        get() {
-            return null;
-        },
-    },
-    nextElementSibling: {
-        enumerable: true,
-        configurable: true,
-        get() {
-            return null;
-        },
-    },
-    previousElementSibling: {
-        enumerable: true,
-        configurable: true,
-        get() {
-            return null;
-        },
-    },
-    prefix: {
-        enumerable: true,
-        configurable: true,
-        get() {
-            return null;
-        },
-    },
 };
 
 const ParentNodePatchDescriptors = {
