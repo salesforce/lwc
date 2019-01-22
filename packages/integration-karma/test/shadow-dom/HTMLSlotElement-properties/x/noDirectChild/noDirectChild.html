@@ -1,9 +1,9 @@
 <template>
-    <x-slots>
-        <div class="A" slot="foo"></div>
-        <div class="B" slot="foo"></div>
-        <span>
-            <div class="C" slot="foo"></div>
+    <x-basic>
+        <div slot="slot1" data-id="slotted1"></div>
+        <div slot="slot1" data-id="slotted2"></div>
+        <span data-id="slotted3">
+            <div slot="slot1" data-id="slotted4"></div>
         </span>
-    </x-slots>
+    </x-basic>
 </template>

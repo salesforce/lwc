@@ -1,0 +1,10 @@
+<template>
+    <x-complex-bottom>
+        <slot name="slot2" slot="slot3" data-id="slot2">
+            <slot name="slot1" data-id="slot1">
+                <div data-id="fallback1"></div>
+            </slot>
+            <div data-id="fallback2"></div>
+        </slot>
+    </x-complex-bottom>
+</template>
