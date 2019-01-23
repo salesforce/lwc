@@ -5,14 +5,11 @@ import Basic from 'x/basic';
 import SlotsInSlots from 'x/slotsInSlots';
 import Complex from 'x/complex';
 
-
 // Chrome is the only browser implementing HTMLSlotElement.assignedElement natively.
 // Webkit - https://bugs.webkit.org/show_bug.cgi?id=180908
 // Gecko - https://bugzilla.mozilla.org/show_bug.cgi?id=1425685
-const SUPPORT_ASSIGNED_ELEMENTS = (
-    !nativeShadow ||
-    ('assignedElements' in document.createElement('slot'))
-);
+const SUPPORT_ASSIGNED_ELEMENTS =
+    !nativeShadow || 'assignedElements' in document.createElement('slot');
 
 function extractDataIds(root) {
     const nodes = {};
@@ -27,9 +24,23 @@ function extractDataIds(root) {
         }
     }
 
-    processElement(root);
+    function acceptNode() {
+        return NodeFilter.FILTER_ACCEPT;
+    }
 
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
+    // other browsers don't.
+    const safeFilter = acceptNode;
+    safeFilter.acceptNode = acceptNode;
+
+    const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_ELEMENT,
+        safeFilter,
+        false,
+    );
+
+    processElement(root);
 
     let elm;
     while ((elm = walker.nextNode())) {
