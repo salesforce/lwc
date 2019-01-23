@@ -15,7 +15,8 @@ var TestUtils = (function (lwc) {
     }
 
     return {
-        createElement: createElement
+        createElement: createElement,
+        nativeShadow: true,
     };
 })(Engine);
 
