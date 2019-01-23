@@ -88,6 +88,12 @@ run_karma_tests_compat: &run_karma_tests_compat
     command: yarn sauce --compat
     working_directory: packages/integration-karma
 
+run_karma_coverage: &run_karma_coverage
+  run:
+    name: Compute karma coverage
+    command: yarn coverage
+    working_directory: packages/integration-karma
+
 run_integration_tests_chrome: &run_integration_tests_chrome
   run:
     name: Run integration test - Headless Chrome
@@ -169,6 +175,7 @@ jobs:
       - *run_karma_tests
       - *run_karma_tests_native
       - *run_karma_tests_compat
+      - *run_karma_coverage
 
 
   test_integration:
