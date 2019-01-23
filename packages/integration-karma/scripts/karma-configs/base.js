@@ -22,8 +22,8 @@ const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const SETUP_SCRIPT = require.resolve(
     '../../helpers/setup',
 );
-const TEST_UTILS_FAKE_SHADOW_SCRIPT = require.resolve(
-    '../../helpers/test-utils-fake-shadow',
+const TEST_UTILS_SYNTHETIC_SHADOW_SCRIPT = require.resolve(
+    '../../helpers/test-utils-synthetic-shadow',
 );
 const TEST_UTILS_NATIVE_SHADOW_SCRIPT = require.resolve(
     '../../helpers/test-utils-native-shadow',
@@ -41,7 +41,7 @@ function getLwcConfig(config) {
     const nativeShadow = Boolean(config.nativeShadow);
 
     const tags = [
-        `${nativeShadow ? 'native' : 'fake'}-shadow`,
+        `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
         compat && 'compat',
     ].filter(Boolean);
 
@@ -59,7 +59,7 @@ function getFiles(lwcConfig) {
 
     const testUtilsFiles = lwcConfig.nativeShadow
         ? [createPattern(TEST_UTILS_NATIVE_SHADOW_SCRIPT)]
-        : [createPattern(TEST_UTILS_FAKE_SHADOW_SCRIPT)];
+        : [createPattern(TEST_UTILS_SYNTHETIC_SHADOW_SCRIPT)];
 
     return [
         createPattern(SETUP_SCRIPT),
