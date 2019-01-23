@@ -34,7 +34,7 @@ testCloneNodeShadowRoot(true);
 testCloneNodeShadowRoot(false);
 
 describe('deep=false', () => {
-    fit('should not clone shadow tree', () => {
+    it('should not clone shadow tree', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
