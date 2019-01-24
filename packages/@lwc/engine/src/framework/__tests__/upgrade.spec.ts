@@ -9,47 +9,6 @@ import { compileTemplate } from 'test-utils';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
-        it('should throw an error when options parameter is missing', () => {
-            expect(() => {
-                createElement('x-foo');
-            }).toThrow(
-                '"createElement" function expects an object as second parameter but received "undefined".'
-            );
-        });
-
-        it('should throw an error when options parameter is null', () => {
-            expect(() => {
-                createElement('x-foo', null);
-            }).toThrow(
-                '"createElement" function expects an object as second parameter but received "[object Null]".'
-            );
-        });
-
-        it('should throw an error when "is" value is null', () => {
-            expect(() => {
-                createElement('x-foo', { is: null});
-            }).toThrow(
-                '"is" value must be a function but received "[object Null]".'
-            );
-        });
-
-        it('should throw an error when "is" value is undefined', () => {
-            expect(() => {
-                createElement('x-foo', { is: undefined});
-            }).toThrow(
-                '"is" value must be a function but received "undefined".'
-            );
-        });
-
-        it('should support constructors with circular dependencies', () => {
-            const factory = () => class extends LightningElement { };
-            factory.__circular__ = true;
-
-            expect(
-                () => createElement('x-foo', { is: factory })
-            ).not.toThrow();
-        });
-
         it('should allow access to profixied default values for public props', () => {
             const x = [1, 2, 3], y = { foo: 1 };
             type MyComponentElement = HTMLElement & {
