@@ -3,7 +3,9 @@ import { LightningElement, buildCustomElementConstructor } from 'lwc';
 import Reflect from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 
-const SUPPORTS_CUSTOM_ELEMENTS = 'customElements' in window;
+// We can't register standard custom elements if we run compat because of the transformation applied to the component
+// constructor.
+const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
 function testInvalidOptions(type, obj) {
     it(`throws a ReferenceError if constructor is a ${type}`, () => {
