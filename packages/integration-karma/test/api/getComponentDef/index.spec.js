@@ -25,8 +25,8 @@ function testInvalidComponentConstructor(name, ctor) {
 // testInvalidComponentConstructor('null', null);
 // testInvalidComponentConstructor('undefined', undefined);
 
-testInvalidComponentConstructor('object', {});
-testInvalidComponentConstructor('class not extending LightningElement', class Component {});
+testInvalidComponentConstructor('Object', {});
+testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey', 'ariaActiveDescendant', 'ariaAtomic', 'ariaAutoComplete', 'ariaBusy', 'ariaChecked', 'ariaColCount',
