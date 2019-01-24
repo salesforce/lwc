@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../../shared/assert";
-import { isArray, isObject, isUndefined, toString } from "../../shared/language";
+import { isUndefined } from "../../shared/language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { getComponentVM } from "../vm";
@@ -49,14 +49,6 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
-                if (process.env.NODE_ENV !== 'production') {
-                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // Then newValue if newValue is observable (plain object or array)
-                    const isObservable = reactiveOrAnyValue !== newValue;
-                    if (!isObservable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
-                        assert.logWarning(`Property "${toString(key)}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`, vm.elm);
-                    }
-                }
                 vm.cmpTrack[key] = reactiveOrAnyValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM

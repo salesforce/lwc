@@ -141,7 +141,7 @@ describe('track.ts', () => {
         });
 
         it('should not proxify exotic objects', function() {
-            expect.assertions(2);
+            expect.assertions(1);
 
             class MyComponent extends LightningElement {
                 injectFoo(v) {
@@ -156,15 +156,11 @@ describe('track.ts', () => {
             document.body.appendChild(elm);
 
             const d = new Date();
-            expect(() => {
-                elm.injectFoo(d);
-            }).toLogWarning(
-                'is set to a non-trackable object'
-            );
+            elm.injectFoo(d);
         });
 
         it('should not proxify non-observable object', function() {
-            expect.assertions(2);
+            expect.assertions(1);
 
             class MyComponent extends LightningElement {
                 injectFoo(v) {
@@ -179,11 +175,7 @@ describe('track.ts', () => {
             document.body.appendChild(elm);
 
             const o = Object.create({});
-            expect(() => {
-                elm.injectFoo(o);
-            }).toLogWarning(
-                'is set to a non-trackable object'
-            );
+            elm.injectFoo(o);
         });
 
         it('should not throw an error if track is observable object', function() {
@@ -213,24 +205,6 @@ describe('track.ts', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toThrow();
-        });
-
-        it('should log warning when assigning non-observable object to track prop', function() {
-            const o = Object.create({});
-            class MyComponent extends LightningElement {
-                injectFoo(v) {
-                    this.foo = v;
-                }
-            }
-            MyComponent.track = { foo: {  } };
-            MyComponent.publicMethods = ['injectFoo'];
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-
-            expect(() => {
-                elm.injectFoo(o);
-            }).toLogWarning(`is set to a non-trackable object, which means changes into that object cannot be observed.`);
         });
     });
 
