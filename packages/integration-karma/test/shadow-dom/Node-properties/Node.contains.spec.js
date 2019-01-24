@@ -13,8 +13,7 @@ describe('Node.contains', () => {
         expect(elm.shadowRoot.contains(div)).toBe(false);
     });
 
-    // TODO: #976 - invoking contains on the shadowRoot itself returns false in fallback mode
-    xit('should return the right value for nodes in the same shadow tree', () => {
+    it('should return the right value for nodes in the same shadow tree', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
