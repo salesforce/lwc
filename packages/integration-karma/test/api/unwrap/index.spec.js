@@ -1,4 +1,4 @@
-import { unwrap } from 'lwc';
+import { unwrap, readonly } from 'lwc';
 import { createElement } from 'test-utils';
 
 import Wrap from 'x/wrap';
@@ -20,7 +20,7 @@ testUnwrapIdentity('Symbol', Symbol('foo'));
 testUnwrapIdentity('Set', new Set('value'));
 testUnwrapIdentity('Map', new Map([['key', 'value']]));
 
-it('unwraps api properties', () => {
+it('unwraps api objects', () => {
     const obj = { foo: true };
 
     const elm = createElement('x-wrap', { is: Wrap });
@@ -32,7 +32,7 @@ it('unwraps api properties', () => {
     expect(unwrap(wrapObj)).toBe(obj);
 });
 
-it('unwraps wrap properties', () => {
+it('unwraps track objects', () => {
     const obj = { foo: true };
 
     const elm = createElement('x-wrap', { is: Wrap });
@@ -40,5 +40,12 @@ it('unwraps wrap properties', () => {
     const wrapObj = elm.getTrackWrap(obj);
 
     expect(wrapObj).not.toBe(obj);
+    expect(unwrap(wrapObj)).toBe(obj);
+});
+
+it('unwraps readonly objects', () => {
+    const obj = { foo: true };
+    const wrapObj = readonly(obj);
+
     expect(unwrap(wrapObj)).toBe(obj);
 });
