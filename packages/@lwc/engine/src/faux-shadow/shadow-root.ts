@@ -255,6 +255,9 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, otherNode: Node) {
+            if (this === otherNode) {
+                return true;
+            }
             const host = getHost(this);
             // must be child of the host and owned by it.
             return (
