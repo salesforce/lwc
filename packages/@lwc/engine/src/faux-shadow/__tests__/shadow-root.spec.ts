@@ -489,13 +489,8 @@ describe('root', () => {
             expect(shadowRoot.nodeType).toBe(Node.DOCUMENT_FRAGMENT_NODE);
             expect(shadowRoot.nodeName).toBe('#document-fragment');
             expect(shadowRoot.nodeValue).toBe(null);
-            expect(shadowRoot.namespaceURI).toBe(null);
             expect(shadowRoot.nextSibling).toBe(null);
             expect(shadowRoot.previousSibling).toBe(null);
-            expect(shadowRoot.nextElementSibling).toBe(null);
-            expect(shadowRoot.previousElementSibling).toBe(null);
-            expect(shadowRoot.localName).toBe(null);
-            expect(shadowRoot.prefix).toBe(null);
             expect(shadowRoot.ownerDocument).toBe(elem.ownerDocument);
             expect(shadowRoot.baseURI).toBe(elem.baseURI);
             expect(shadowRoot.isConnected).toBe(true);
