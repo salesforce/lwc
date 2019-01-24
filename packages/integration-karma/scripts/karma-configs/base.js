@@ -10,6 +10,7 @@
 const path = require('path');
 
 const karmaPluginLwc = require('../karma-plugins/lwc');
+const karmaPluginEnv = require('../karma-plugins/env');
 const babelIstanbulInstrumenter = require('../karma-plugins/babel-istanbul-instrumenter');
 
 const BASE_DIR = path.resolve(__dirname, '../../test');
@@ -19,14 +20,8 @@ const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 
-const SETUP_SCRIPT = require.resolve(
-    '../../helpers/setup',
-);
-const TEST_UTILS_SYNTHETIC_SHADOW_SCRIPT = require.resolve(
-    '../../helpers/test-utils-synthetic-shadow',
-);
-const TEST_UTILS_NATIVE_SHADOW_SCRIPT = require.resolve(
-    '../../helpers/test-utils-native-shadow',
+const TEST_UTILS_SCRIPT = require.resolve(
+    '../../helpers/test-utils',
 );
 
 function createPattern(location, config = {}) {
@@ -57,14 +52,9 @@ function getFiles(lwcConfig) {
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
-    const testUtilsFiles = lwcConfig.nativeShadow
-        ? [createPattern(TEST_UTILS_NATIVE_SHADOW_SCRIPT)]
-        : [createPattern(TEST_UTILS_SYNTHETIC_SHADOW_SCRIPT)];
-
     return [
-        createPattern(SETUP_SCRIPT),
         ...frameworkFiles,
-        ...testUtilsFiles,
+        createPattern(TEST_UTILS_SCRIPT),
         createPattern('**/*.spec.js', { watched: false }),
     ];
 }
@@ -85,11 +75,12 @@ module.exports = config => {
             '**/*.spec.js': ['lwc'],
         },
 
+        // Use the env plugin to inject the right environment variables into the app
         // Use jasmine as test framework for the suite.
-        frameworks: ['jasmine'],
+        frameworks: ['env', 'jasmine'],
 
         // Specify what plugin should be registered by Karma.
-        plugins: ['karma-jasmine', karmaPluginLwc],
+        plugins: ['karma-jasmine', karmaPluginLwc, karmaPluginEnv],
 
         // Leave the reporter empty on purpose. Extending configuration need to pick the right reporter they want
         // to use.

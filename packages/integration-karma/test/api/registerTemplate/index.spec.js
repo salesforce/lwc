@@ -24,7 +24,7 @@ it('should throw if a component tries to use a template that is not registered',
         document.body.appendChild(elm);
     }).toThrowError(
         TypeError,
-        /Invalid template returned by the render\(\) method on \[.*\]\. It must return an imported template \(e\.g\.: `import html from "\.\/Test.html"`\), instead, it has returned.*\./
+        /Invalid template returned by the render\(\) method on \[.*\]\./
     );
 });
 
