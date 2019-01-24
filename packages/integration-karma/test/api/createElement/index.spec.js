@@ -12,9 +12,9 @@ function testInvalidOptions(type, option) {
 
 testInvalidOptions('undefined', undefined);
 testInvalidOptions('null', null);
-testInvalidOptions('string', 'x-component');
-testInvalidOptions('class not extending LightningElement', class Component {});
-testInvalidOptions('object without the is property', {});
+testInvalidOptions('String', 'x-component');
+testInvalidOptions('Class not extending LightningElement', class Component {});
+testInvalidOptions('Object without the is property', {});
 
 it('returns an HTMLElement', () => {
     const elm = createElement('x-component', { is: Component });

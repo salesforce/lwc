@@ -9,7 +9,7 @@ function testInvalidComponentInstance(name, obj) {
 
 testInvalidComponentInstance('null', null);
 testInvalidComponentInstance('undefined', undefined);
-testInvalidComponentInstance('object', {});
+testInvalidComponentInstance('Object', {});
 testInvalidComponentInstance('HTMLElement', document.createElement('div'));
 
 it('should return the component constructor for the created element', () => {
