@@ -1,7 +1,5 @@
 import { LightningElement, createElement } from 'lwc';
 
-const SUPPORT_NATIVE_SHADOW = document.head.attachShadow;
-
 class Component extends LightningElement {}
 
 function testInvalidOptions(type, option) {
@@ -36,7 +34,7 @@ it('supports component constructors in circular dependency', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-if (SUPPORT_NATIVE_SHADOW) {
+if (process.env.NATIVE_SHADOW) {
     it('should create an element with a native shadow root if fallback is false', () => {
         const elm = createElement('x-component', {
             is: Component,
