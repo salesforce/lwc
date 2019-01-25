@@ -23,4 +23,3 @@ if (isFocusEventConstructorSupported()) {
         expect(nonComposedEvt.composed).toBe(false);
     });
 }
-
