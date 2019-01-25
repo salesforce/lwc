@@ -15,7 +15,7 @@ if (isFocusEventConstructorSupported()) {
         expect(focusEvent.composed).toBe(false);
     });
 
-    fit('should set composed to the value specified in the option', () => {
+    it('should set composed to the value specified in the option', () => {
         const composedEvt = new FocusEvent('focus', { composed: true });
         expect(composedEvt.composed).toBe(true);
 

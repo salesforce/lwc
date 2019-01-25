@@ -32,9 +32,22 @@ const config = istanbul.config.loadObject({
     reporting: {
         dir: path.resolve(COVERAGE_DIR, COMBINED_COVERAGE_DIR),
     },
+
+    check: {
+        global: {
+            statements: 50,
+            lines: 50,
+        },
+    }
 });
 
 const reporter = istanbul.createReporter(config);
 reporter.addAll(['html', 'json', 'text']);
-
 reporter.write(coverageMap);
+
+istanbul.checkCoverage.run(config, (err) => {
+    if (err) {
+        console.log(err);
+        process.exit(1);
+    }
+})
