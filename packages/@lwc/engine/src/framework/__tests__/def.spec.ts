@@ -139,6 +139,7 @@ describe('def', () => {
                 ariaRowCount: null,
                 ariaRowIndex: null,
                 ariaRowSpan: null,
+                ariaColSpan: null,
                 dir: null,
                 // draggable: null, // this is not supported in jsdom just yet (https://github.com/jsdom/jsdom/issues/2268)
                 hidden: null,
