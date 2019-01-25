@@ -17,10 +17,17 @@ declare module 'lwc' {
         dispatchEvent(evt: ComposableEvent): boolean;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-        getAttribute(name: string): string | null;
+        setAttributeNS(ns: string, attrName: string, value: any);
+        removeAttributeNS(ns: string, attrName: string);
+        removeAttribute(attrName: string);
+        setAttribute(attrName: string, value: any);
+        getAttribute(attrName: string): string | null;
+        getAttributeNS(ns: string, attrName: string);
         getBoundingClientRect(): ClientRect;
-        querySelector(selectors: string): HTMLElement | null
-        querySelectorAll(selectors: string): NodeListOf<HTMLElement>
+        querySelector<E extends Element = Element>(selectors: string): E | null;
+        querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
+        getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element>;
+        getElementsByClassName(names: string): HTMLCollectionOf<Element>;
         readonly tagName: string
         readonly classList: DOMTokenList;
 
@@ -40,7 +47,7 @@ declare module 'lwc' {
         ariaCurrent: string | null;
         ariaDisabled: string | null;
         ariaExpanded: string | null;
-        ariaHasPopUp: string | null;
+        ariaHasPopup: string | null;
         ariaHidden: string | null;
         ariaInvalid: string | null;
         ariaLabel: string | null;
@@ -80,12 +87,13 @@ declare module 'lwc' {
         ariaRowCount: string | null;
         ariaRowIndex: string | null;
         ariaRowSpan: string | null;
+        ariaColSpan: string | null;
         role: string | null;
     }
 
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
-        readonly host: null;
+        readonly host: HTMLElement;
         readonly firstChild: Node | null,
         readonly lastChild: Node | null,
         readonly innerHTML: string,
@@ -97,54 +105,6 @@ declare module 'lwc' {
         hasChildNodes(): boolean;
         compareDocumentPosition(otherNode: Node): number;
         contains(otherNode: Node): boolean;
-
-        // Aria Properties
-        ariaAutoComplete: string | null;
-        ariaChecked: string | null;
-        ariaCurrent: string | null;
-        ariaDisabled: string | null;
-        ariaExpanded: string | null;
-        ariaHasPopUp: string | null;
-        ariaHidden: string | null;
-        ariaInvalid: string | null;
-        ariaLabel: string | null;
-        ariaLevel: string | null;
-        ariaMultiLine: string | null;
-        ariaMultiSelectable: string | null;
-        ariaOrientation: string | null;
-        ariaPressed: string | null;
-        ariaReadOnly: string | null;
-        ariaRequired: string | null;
-        ariaSelected: string | null;
-        ariaSort: string | null;
-        ariaValueMax: string | null;
-        ariaValueMin: string | null;
-        ariaValueNow: string | null;
-        ariaValueText: string | null;
-        ariaLive: string | null;
-        ariaRelevant: string | null;
-        ariaAtomic: string | null;
-        ariaBusy: string | null;
-        ariaActiveDescendant: string | null;
-        ariaControls: string | null;
-        ariaDescribedBy: string | null;
-        ariaFlowTo: string | null;
-        ariaLabelledBy: string | null;
-        ariaOwns: string | null;
-        ariaPosInSet: string | null;
-        ariaSetSize: string | null;
-        ariaColCount: string | null;
-        ariaColIndex: string | null;
-        ariaDetails: string | null;
-        ariaErrorMessage: string | null;
-        ariaKeyShortcuts: string | null;
-        ariaModal: string | null;
-        ariaPlaceholder: string | null;
-        ariaRoleDescription: string | null;
-        ariaRowCount: string | null;
-        ariaRowIndex: string | null;
-        ariaRowSpan: string | null;
-        role: string | null;
     }
 
     /**
@@ -170,7 +130,7 @@ declare module 'lwc' {
         /**
          * Called when a descendant component throws an error in one of its lifecycle hooks
          */
-        errorCallback(error: any, stack: string): void;
+        errorCallback(error: Error, stack: string): void;
 
         readonly template: ShadowRootTheGoodPart;
         readonly shadowRoot: null;
