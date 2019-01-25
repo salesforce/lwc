@@ -15,7 +15,7 @@ export const ElementPrototypeAriaPropertyNames = [
     'ariaCurrent',
     'ariaDisabled',
     'ariaExpanded',
-    'ariaHasPopUp',
+    'ariaHasPopup',
     'ariaHidden',
     'ariaInvalid',
     'ariaLabel',
@@ -55,8 +55,14 @@ export const ElementPrototypeAriaPropertyNames = [
     'ariaRowCount',
     'ariaRowIndex',
     'ariaRowSpan',
+    'ariaColSpan',
     'role',
 ];
+
+/**
+ * Note: Attributes aria-dropeffect and aria-grabbed were deprecated in
+ * ARIA 1.1 and do not have corresponding IDL attributes.
+ */
 
 for (let i = 0, len = ElementPrototypeAriaPropertyNames.length; i < len; i += 1) {
     const propName = ElementPrototypeAriaPropertyNames[i];

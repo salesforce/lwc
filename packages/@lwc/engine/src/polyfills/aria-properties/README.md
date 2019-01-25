@@ -1,6 +1,6 @@
-# aria properties polyfill
+# aria reflection polyfill
 
-This polyfill implements the additions to existing specifications which will make it possible for web authors to programmatically express Element semantics in two ways:
+This polyfill implements the additions to the ARIA 1.2 specification which will make it possible for web authors to programmatically express Element semantics via an IDL interface.
 
-* as reflected IDL attributes on Elements, or
-* as non-reflected IDL attributes on an attached ShadowRoot.
+Spec:
+* https://wicg.github.io/aom/spec/aria-reflection.html
