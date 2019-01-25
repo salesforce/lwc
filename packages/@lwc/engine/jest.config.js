@@ -35,7 +35,8 @@ module.exports = {
     // the threshold as well.
     coverageThreshold: {
         global: {
-            ...BASE_CONFIG.coverageThreshold.global,
+            functions: 80,
+            lines: 80,
             branches: 65,
         },
     },
