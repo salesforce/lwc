@@ -43,6 +43,16 @@ const nodeValueSetter: (this: Node, value: string) => void = nodeValueDescriptor
 
 const nodeValueGetter: (this: Node) => string = nodeValueDescriptor.get!;
 
+const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected') ?
+    getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get! :
+    function(this: Node): boolean { // IE11
+        return (
+            (compareDocumentPosition.call(document, this) &
+                DOCUMENT_POSITION_CONTAINED_BY) !==
+            0
+        );
+    };
+
 export {
     // Node.prototype
     compareDocumentPosition,
@@ -58,6 +68,7 @@ export {
     nodeValueGetter,
     nodeValueSetter,
     cloneNode,
+    isConnected,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,
