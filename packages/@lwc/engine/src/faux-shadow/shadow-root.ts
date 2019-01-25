@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined } from "../shared/language";
+import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
