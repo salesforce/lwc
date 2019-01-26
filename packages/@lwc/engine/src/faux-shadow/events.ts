@@ -59,7 +59,8 @@ type ComposableEvent = (Event & {
 });
 
 function targetGetter(this: ComposableEvent): EventTarget | null {
-    const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+    // currentTarget is always defined
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this) as EventTarget;
     const originalTarget: EventTarget = eventTargetGetter.call(this);
     const composedPath = pathComposer(originalTarget as Node, this.composed);
 
@@ -115,12 +116,13 @@ export function patchEvent(event: Event) {
     if (!isUndefined(originalRelatedTargetDescriptor)) {
         defineProperty(event, 'relatedTarget', {
             get(this: ComposableEvent): EventTarget | null | undefined {
-                const eventContext = eventToContextMap.get(this);
-                const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+                // currentTarget is always defined
+                const originalCurrentTarget = eventCurrentTargetGetter.call(this) as EventTarget;
                 const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
                 if (isNull(relatedTarget)) {
                     return null;
                 }
+                const eventContext = eventToContextMap.get(this);
                 const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                     getShadowRoot(originalCurrentTarget as HTMLElement) :
                     originalCurrentTarget;
@@ -209,7 +211,8 @@ function domListener(evt: Event) {
     let immediatePropagationStopped = false;
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
-    const currentTarget = eventCurrentTargetGetter.call(evt);
+    // currentTarget is always defined
+    const currentTarget = eventCurrentTargetGetter.call(evt) as HTMLElement;
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
