@@ -19,6 +19,7 @@ import {
     isUndefined,
     isTrue,
     ArrayFilter,
+    ArraySlice,
     isNull,
     ArrayReduce,
 } from "../shared/language";
@@ -69,7 +70,11 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    // Typescript is inferring the wrong function type for this particular
+    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+    // @ts-ignore type-mismatch
+    return ArrayReduce.call(childNodes, (seed, child) => {
         if (!isNodeOwnedBy(owner, child)) {
             ArrayPush.call(seed, child);
         }
@@ -78,7 +83,11 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    // Typescript is inferring the wrong function type for this particular
+    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+    // @ts-ignore type-mismatch
+    return ArrayReduce.call(childNodes, (seed, child) => {
         if (child instanceof Element && isSlotElement(child)) {
             ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
         } else {
