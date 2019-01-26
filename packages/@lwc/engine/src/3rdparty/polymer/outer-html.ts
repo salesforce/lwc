@@ -36,6 +36,8 @@ function escapeReplace(c) {
             return '&quot;';
         case '\u00A0':
             return '&nbsp;';
+        default:
+            return '';
     }
 }
 
