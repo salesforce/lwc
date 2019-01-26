@@ -16,13 +16,13 @@ export interface Config {
      *        {list[0].name}
      *    </template>
      */
-    computedMemberExpression?: boolean;
+    experimentalComputedMemberExpression?: boolean;
     secure?: boolean;
     stylesheetConfig?: StylesheetConfig;
 }
 
 export interface ResolvedConfig {
-    computedMemberExpression: boolean;
+    experimentalComputedMemberExpression: boolean;
     secure: boolean;
     stylesheetConfig: StylesheetConfig;
 
@@ -38,14 +38,14 @@ export interface ResolvedConfig {
 
 const DEFAULT_CONFIG: ResolvedConfig = {
     secure: false,
-    computedMemberExpression: false,
+    experimentalComputedMemberExpression: false,
     format: 'module',
     stylesheetConfig: {}
 };
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
-    'computedMemberExpression',
+    'experimentalComputedMemberExpression',
     'stylesheetConfig'
 ]);
 
