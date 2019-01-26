@@ -116,7 +116,7 @@ interface QuerySegments {
 
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
-    const inner = querySelectorAll.call(host, TabbableElementsQuery);
+    const inner = ArraySlice.call(querySelectorAll.call(host, TabbableElementsQuery));
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(tabIndexGetter.call(host) === -1 || isDelegatingFocus(host), `The focusin event is only relevant when the tabIndex property is -1 on the host.`);
     }
@@ -139,7 +139,7 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     };
 }
 
-export function getActiveElement(host: HTMLElement): HTMLElement | null {
+export function getActiveElement(host: HTMLElement): Element | null {
     const activeElement = DocumentPrototypeActiveElement.call(document);
     if (isNull(activeElement)) {
         return activeElement;
@@ -204,8 +204,9 @@ function isLastTabbableChild(target: EventTarget, segments: QuerySegments): bool
 }
 
 function keyboardFocusHandler(event: FocusEvent) {
-    const host: EventTarget = eventCurrentTargetGetter.call(event);
-    const target: EventTarget = eventTargetGetter.call(event);
+    // currentTarget should always be defined
+    const host = eventCurrentTargetGetter.call(event) as EventTarget;
+    const target = eventTargetGetter.call(event);
 
     // Ideally, we would be able to use a "focus" event that doesn't bubble
     // but, IE11 doesn't support relatedTarget on focus events so we have to use
@@ -216,7 +217,7 @@ function keyboardFocusHandler(event: FocusEvent) {
         return;
     }
 
-    const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event);
 
     if (isNull(relatedTarget)) {
         return;
@@ -245,9 +246,10 @@ function keyboardFocusHandler(event: FocusEvent) {
 // via keyboard navigation (tab or shift+tab)
 // Focusing via mouse should be disqualified before this gets called
 function keyboardFocusInHandler(event: FocusEvent) {
-    const host: EventTarget = eventCurrentTargetGetter.call(event);
-    const target: EventTarget = eventTargetGetter.call(event);
-    const relatedTarget: EventTarget = focusEventRelatedTargetGetter.call(event);
+    // currentTarget should always be defined
+    const host = eventCurrentTargetGetter.call(event) as EventTarget;
+    const target = eventTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event);
     const segments = getTabbableSegments(host as HTMLElement);
     const isFirstFocusableChildReceivingFocus = isFirstTabbableChild(target, segments);
     const isLastFocusableChildReceivingFocus = isLastTabbableChild(target, segments);
@@ -295,6 +297,7 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 }
 
 function stopFocusIn(evt) {
+    // currentTarget should always be defined
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
     setTimeout(() => {
@@ -307,10 +310,14 @@ function stopFocusIn(evt) {
 
 function handleFocusMouseDown(evt) {
     const target = eventTargetGetter.call(evt);
+    if (isNull(target)) {
+        return;
+    }
+    const elm = target as HTMLElement;
     // If we are mouse down in an element that can be focused
     // and the currentTarget's activeElement is not element we are mouse-ing down in
     // We can bail out and let the browser do its thing.
-    if (willTriggerFocusInEvent(target)) {
+    if (willTriggerFocusInEvent(elm)) {
         addEventListener.call(eventCurrentTargetGetter.call(evt), 'focusin', stopFocusIn, true);
     }
 }
