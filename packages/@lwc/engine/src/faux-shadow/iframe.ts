@@ -7,16 +7,20 @@
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
-            return win.postMessage.apply(win, arguments);
+            const args = arguments as unknown;
+            return win.postMessage.apply(win, args as any[]);
         },
         blur() {
-            return win.blur.apply(win, arguments);
+            const args = arguments as unknown;
+            return win.blur.apply(win, args as any[]);
         },
         close() {
-            return win.close.apply(win, arguments);
+            const args = arguments as unknown;
+            return win.close.apply(win, args as any[]);
         },
         focus() {
-            return win.focus.apply(win, arguments);
+            const args = arguments as unknown;
+            return win.focus.apply(win, args as any[]);
         },
         get closed() {
             return win.closed;
