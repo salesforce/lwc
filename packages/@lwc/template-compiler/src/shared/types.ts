@@ -145,7 +145,7 @@ export interface CompilationWarning {
 
 export interface CompilationOptions {
     token: string;
-    computedMemberExpression?: boolean;
+    experimentalComputedMemberExpression?: boolean;
 }
 
 export interface DependencyParameter {

@@ -65,7 +65,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
             MemberExpression: {
                 exit(path) {
-                    const shouldReportComputed = !state.config.computedMemberExpression
+                    const shouldReportComputed = !state.config.experimentalComputedMemberExpression
                         && (path.node as types.MemberExpression).computed;
                     invariant(!shouldReportComputed, ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED);
 
