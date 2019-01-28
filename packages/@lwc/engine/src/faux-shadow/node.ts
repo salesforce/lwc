@@ -47,7 +47,7 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(ownerNode) && isUndefined(ownerKey = ownerNode[OwnerKey])) {
-        ownerNode = parentNodeGetter.call(node);
+        ownerNode = parentNodeGetter.call(ownerNode);
     }
     return ownerKey;
 }
