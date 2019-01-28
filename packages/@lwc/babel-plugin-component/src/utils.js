@@ -11,18 +11,6 @@ const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
 const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
 const EXPORT_NAMED_DECLARATION = 'ExportNamedDeclaration';
 
-function findClassMethod(path, name, properties = {}) {
-    path.assertClassBody();
-
-    return path.get('body').find(path => (
-        isClassMethod(path, {
-            name,
-            kind: properties.kind || 'method',
-            static: properties.static
-        })
-    ));
-}
-
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
     return classMethod.isClassMethod({ kind }) &&
@@ -59,63 +47,6 @@ function getEngineImportsStatements(path) {
         const source = node.get('source');
         return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }))
     });
-}
-
-function getExportedNames(path) {
-    const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
-
-    return exports = programPath.get('body').reduce((names, node) => {
-        const exportSource = getExportSrc(node && node.node.source);
-
-        // export default class App {}
-        if (node.isExportDefaultDeclaration()) {
-            names.push(createModuleExportInfo({ type: EXPORT_DEFAULT_DECLARATION, source: exportSource }));
-
-        // export * from 'external-module'
-        } else if (node.isExportDeclaration() && node.type === EXPORT_ALL_DECLARATION) {
-            names.push(createModuleExportInfo({ type: EXPORT_ALL_DECLARATION, source: exportSource }));
-
-        } else if (node.isExportDeclaration() && node.type === EXPORT_NAMED_DECLARATION) {
-
-            // export { method } from 'utils'
-            const specifiers = node.node.specifiers;
-
-            if (Array.isArray(specifiers)) {
-                specifiers.forEach(specifier => {
-                    const exportValue = specifier.exported.name;
-                    names.push(createModuleExportInfo({
-                        type: EXPORT_NAMED_DECLARATION,
-                        value: exportValue,
-                        source: exportSource
-                    }));
-                });
-            }
-
-            const declaration = node.node.declaration;
-            if (declaration) {
-
-                // export const version = 0;
-                if (declaration.type === 'VariableDeclaration' && Array.isArray(declaration.declarations)) {
-                    declaration.declarations.forEach(nameDeclaration => {
-                        exportValue = nameDeclaration.id.name;
-                    });
-
-                // export class Inner {};
-                } else if (declaration.type === 'ClassDeclaration'
-                    || declaration.type === 'FunctionDeclaration') {
-                        exportValue = declaration.id.name;
-                }
-
-                names.push(createModuleExportInfo({
-                    type: EXPORT_NAMED_DECLARATION,
-                    value: exportValue,
-                    source: exportSource
-                }));
-            }
-        }
-        return names;
-    }, []);
-
 }
 
 function getExportSrc(src) {
@@ -166,22 +97,6 @@ function getEngineImportSpecifiers(path) {
     }, []);
 }
 
-function isComponentClass(classPath, componentBaseClassImports) {
-    const superClass = classPath.get('superClass');
-
-    return superClass.isIdentifier() && componentBaseClassImports
-        && componentBaseClassImports.some(componentBaseClassImport => (
-            classPath.scope.bindingIdentifierEquals(
-                superClass.node.name,
-                componentBaseClassImport.node
-            )
-        ));
-}
-
-function isDefaultExport(path) {
-    return path.parentPath.isExportDefaultDeclaration();
-}
-
 function generateError(source, { errorInfo, messageArgs } = {}) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
@@ -201,14 +116,10 @@ function markAsLWCNode(node) {
 module.exports = {
     isLWCNode,
     markAsLWCNode,
-    findClassMethod,
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
     staticClassProperty,
     getEngineImportSpecifiers,
     generateError,
-    isComponentClass,
-    isDefaultExport,
-    getExportedNames,
 };
