@@ -1,4 +1,4 @@
-import { createElement, nativeShadow } from 'test-utils';
+import { createElement } from 'test-utils';
 
 import Slotted from 'x/slotted';
 
@@ -42,6 +42,6 @@ describe('Node.childNodes', () => {
         // With native shadow the fallback slot content is rendered regardless if the slot has assigned nodes or not.
         // While with synthetic shadow, the fallback slot content is only rendered only when the slot has no assigned
         // nodes.
-        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(nativeShadow ? 1 : 0);
+        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(process.env.NATIVE_SHADOW ? 1 : 0);
     });
 });
