@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement, nativeShadow } from 'test-utils';
 
 import Slotted from 'x/slotted';
 
@@ -39,6 +39,9 @@ describe('Node.childNodes', () => {
         expect(container.shadowRoot.childNodes.length).toBe(3);
         expect(container.shadowRoot.childNodes[1]).toBe(container.shadowRoot.querySelector('.container'));
 
-        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(0);
+        // With native shadow the fallback slot content is rendered regardless if the slot has assigned nodes or not.
+        // While with synthetic shadow, the fallback slot content is only rendered only when the slot has no assigned
+        // nodes.
+        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(nativeShadow ? 1 : 0);
     });
 });

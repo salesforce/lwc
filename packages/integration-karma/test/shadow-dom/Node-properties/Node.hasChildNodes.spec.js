@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement, nativeShadow } from 'test-utils';
 
 import Slotted from 'x/slotted';
 
@@ -25,6 +25,6 @@ describe('Node.hasChildNodes', () => {
         const container = shadowRoot.querySelector('x-container');
 
         expect(container.shadowRoot.querySelector('.container').hasChildNodes()).toBe(true);
-        expect(container.shadowRoot.querySelector('slot').hasChildNodes()).toBe(false);
+        expect(container.shadowRoot.querySelector('slot').hasChildNodes()).toBe(nativeShadow);
     });
 });

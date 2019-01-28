@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement, nativeShadow } from 'test-utils';
 
 import Slotted from 'x/slotted';
 
@@ -22,8 +22,8 @@ describe('Node.textContent - getter', () => {
         document.body.appendChild(elm);
 
         const container = elm.shadowRoot.querySelector('x-container');
-        expect(container.shadowRoot.textContent).toBe('Before[]After');
-        expect(container.shadowRoot.querySelector('slot').textContent).toBe('');
+        expect(container.shadowRoot.textContent).toBe(nativeShadow ? 'Before[default-slotted]After' : 'Before[]After');
+        expect(container.shadowRoot.querySelector('slot').textContent).toBe(nativeShadow ? 'default-slotted' : '');
     });
 });
 
