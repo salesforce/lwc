@@ -30,14 +30,14 @@ testInvalidComponentConstructor('Class not extending LightningElement', class Co
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey', 'ariaActiveDescendant', 'ariaAtomic', 'ariaAutoComplete', 'ariaBusy', 'ariaChecked', 'ariaColCount',
-    'ariaColIndex', 'ariaControls', 'ariaCurrent', 'ariaDescribedBy', 'ariaDetails', 'ariaDisabled', 'ariaErrorMessage',
-    'ariaExpanded', 'ariaFlowTo', 'ariaHasPopUp', 'ariaHidden', 'ariaInvalid', 'ariaKeyShortcuts', 'ariaLabel',
-    'ariaLabelledBy', 'ariaLevel', 'ariaLive', 'ariaModal', 'ariaMultiLine', 'ariaMultiSelectable', 'ariaOrientation',
-    'ariaOwns', 'ariaPlaceholder', 'ariaPosInSet', 'ariaPressed', 'ariaReadOnly', 'ariaRelevant', 'ariaRequired',
-    'ariaRoleDescription', 'ariaRowCount', 'ariaRowIndex', 'ariaRowSpan', 'ariaSelected', 'ariaSetSize', 'ariaSort',
-    'ariaValueMax', 'ariaValueMin', 'ariaValueNow', 'ariaValueText', 'dir', 'draggable', 'hidden', 'id', 'lang', 'role',
-    'tabIndex', 'title',
-];
+    'ariaColIndex', 'ariaColSpan', 'ariaControls', 'ariaCurrent', 'ariaDescribedBy', 'ariaDetails', 'ariaDisabled',
+    'ariaErrorMessage', 'ariaExpanded', 'ariaFlowTo', 'ariaHasPopup', 'ariaHidden', 'ariaInvalid', 'ariaKeyShortcuts',
+    'ariaLabel', 'ariaLabelledBy', 'ariaLevel', 'ariaLive', 'ariaModal', 'ariaMultiLine', 'ariaMultiSelectable',
+    'ariaOrientation', 'ariaOwns', 'ariaPlaceholder', 'ariaPosInSet', 'ariaPressed', 'ariaReadOnly', 'ariaRelevant',
+    'ariaRequired', 'ariaRoleDescription', 'ariaRowCount', 'ariaRowIndex', 'ariaRowSpan', 'ariaSelected', 'ariaSetSize',
+    'ariaSort', 'ariaValueMax', 'ariaValueMin', 'ariaValueNow', 'ariaValueText', 'dir', 'draggable', 'hidden', 'id',
+    'lang', 'role', 'tabIndex', 'title',
+].sort();
 
 it('it should return the global HTML attributes in props', () => {
     class Component extends LightningElement {}
