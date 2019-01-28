@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.2...v) (2019-01-19)
+# [](https://github.com/salesforce/lwc/compare/v0.35.4...v) (2019-01-28)
+
+
+### Bug Fixes
+
+* **engine:** aria reflection new prop and typo ([#1012](https://github.com/salesforce/lwc/issues/1012)) ([87d211c](https://github.com/salesforce/lwc/commit/87d211c))
+* **engine:** fixes issue [#972](https://github.com/salesforce/lwc/issues/972) - getRootNode on shadows ([#1002](https://github.com/salesforce/lwc/issues/1002)) ([bd77365](https://github.com/salesforce/lwc/commit/bd77365))
+* **engine:** issue [#976](https://github.com/salesforce/lwc/issues/976) ShadowRoot.contains() ([#1000](https://github.com/salesforce/lwc/issues/1000)) ([f8423e8](https://github.com/salesforce/lwc/commit/f8423e8))
+* **engine:** issue [#988](https://github.com/salesforce/lwc/issues/988) ShadowRoot unknown properties ([#999](https://github.com/salesforce/lwc/issues/999)) ([fbfa0b5](https://github.com/salesforce/lwc/commit/fbfa0b5))
+* **engine:** issue [#989](https://github.com/salesforce/lwc/issues/989) enumerable in shadowRoot ([#998](https://github.com/salesforce/lwc/issues/998)) ([9aab030](https://github.com/salesforce/lwc/commit/9aab030))
+* **engine:** issue 990 textContent and innerHTML restrictions ([#1001](https://github.com/salesforce/lwc/issues/1001)) ([514c1f5](https://github.com/salesforce/lwc/commit/514c1f5))
+* **engine:** types definition update fixes [#1006](https://github.com/salesforce/lwc/issues/1006) ([#1013](https://github.com/salesforce/lwc/issues/1013)) ([ee0ad9c](https://github.com/salesforce/lwc/commit/ee0ad9c))
+* ownerkey lookup of root ele manually injected into another lwc ele ([#1018](https://github.com/salesforce/lwc/issues/1018)) ([82669bb](https://github.com/salesforce/lwc/commit/82669bb))
+
+
+### Features
+
+* **engine:** remove non-trackable object warning ([#1003](https://github.com/salesforce/lwc/issues/1003)) ([735e8ea](https://github.com/salesforce/lwc/commit/735e8ea))
+
+
+
+<a name="0.35.4"></a>
+## [0.35.4](https://github.com/salesforce/lwc/compare/v0.35.2...v0.35.4) (2019-01-19)
 
 
 
