@@ -46,10 +46,13 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerNode: Node | null = node;
     let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
-    while (!isNull(ownerNode) && isUndefined(ownerKey = ownerNode[OwnerKey])) {
+    while (!isNull(ownerNode)) {
+        ownerKey = ownerNode[OwnerKey];
+        if (!isUndefined(ownerKey)) {
+            return ownerKey;
+        }
         ownerNode = parentNodeGetter.call(ownerNode);
     }
-    return ownerKey;
 }
 
 export function getNodeKey(node: Node): number | undefined {
