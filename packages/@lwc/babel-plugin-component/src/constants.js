@@ -4,31 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-function globalAttributeObject(propName) {
-    return {
-        propName,
-    }
-}
-
-const GLOBAL_ATTRIBUTE_MAP = new Map([
-    ['role', globalAttributeObject('role')],
-    ['accesskey', globalAttributeObject('accessKey')],
-    ['class', globalAttributeObject('class')],
-    ['contenteditable', globalAttributeObject('contentEditable')],
-    ['contextmenu', globalAttributeObject('contextmenu')],
-    ['dir', globalAttributeObject('dir')],
-    ['draggable', globalAttributeObject('draggable')],
-    ['dropzone', globalAttributeObject('dropzone')],
-    ['hidden', globalAttributeObject('hidden')],
-    ['id', globalAttributeObject('id')],
-    ['itemprop', globalAttributeObject('itemprop')],
-    ['lang', globalAttributeObject('lang')],
-    ['slot', globalAttributeObject('slot')],
-    ['spellcheck', globalAttributeObject('spellcheck')],
-    ['style', globalAttributeObject('style')],
-    ['tabindex', globalAttributeObject('tabIndex')],
-    ['title', globalAttributeObject('title')],
-]);
 
 // This set is for attributes that have a camel cased property name
 // For example, div.tabIndex.
@@ -99,12 +74,10 @@ const DECORATOR_TYPES = {
 module.exports = {
     AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
-    GLOBAL_ATTRIBUTE_MAP,
     LWC_DECORATORS,
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,
     LWC_API_WHITELIST,
-
     LWC_COMPONENT_PROPERTIES,
     DECORATOR_TYPES,
 };
