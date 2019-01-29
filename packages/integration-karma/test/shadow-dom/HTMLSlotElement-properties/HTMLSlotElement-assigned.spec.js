@@ -1,4 +1,4 @@
-import { createElement, nativeShadow } from 'test-utils';
+import { createElement } from 'test-utils';
 
 import NoDirectChild from 'x/noDirectChild';
 import Basic from 'x/basic';
@@ -9,7 +9,7 @@ import Complex from 'x/complex';
 // Webkit - https://bugs.webkit.org/show_bug.cgi?id=180908
 // Gecko - https://bugzilla.mozilla.org/show_bug.cgi?id=1425685
 const SUPPORT_ASSIGNED_ELEMENTS =
-    !nativeShadow || 'assignedElements' in document.createElement('slot');
+    !process.env.NATIVE_SHADOW || 'assignedElements' in document.createElement('slot');
 
 function extractDataIds(root) {
     const nodes = {};
