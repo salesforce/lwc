@@ -44,14 +44,12 @@ export function setNodeOwnerKey(node: Node, key: number) {
 
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let ownerNode: Node | null = node;
+    let ownerKey: number | undefined;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(ownerNode)) {
-        if (!isUndefined(ownerNode[OwnerKey])) {
-            return ownerNode[OwnerKey];
-        } else if (!isUndefined(ownerNode[OwnKey])) {
-            // perf optimization:
-            // root elements have ownKey but not ownerKey, we don't need to walk up anymore
-            return;
+        ownerKey = ownerNode[OwnerKey];
+        if (!isUndefined(ownerKey)) {
+            return ownerKey;
         }
         ownerNode = parentNodeGetter.call(ownerNode);
     }
