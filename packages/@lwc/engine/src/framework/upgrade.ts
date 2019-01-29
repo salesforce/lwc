@@ -14,7 +14,7 @@ import { isNativeShadowRootAvailable } from "../env/dom";
 import { patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 import { patchCustomElementWithRestrictions } from "./restrictions";
-import { startHydrateMeasure, endHydrateMeasure } from "./performance-timing";
+import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from "./performance-timing";
 import { appendChild, insertBefore, replaceChild, removeChild } from "../env/node";
 
 const ConnectingSlot = createFieldName('connecting');
@@ -111,11 +111,11 @@ export function createElement(sel: string, options: any): HTMLElement {
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
-        startHydrateMeasure(vm);
+        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         renderVM(vm);
-        endHydrateMeasure(vm);
+        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
     });
     setInternalField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);
