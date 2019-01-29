@@ -7,6 +7,9 @@
 import { VM, UninitializedVM } from './vm';
 import { Noop } from './utils';
 
+import { tagNameGetter } from "../env/element";
+import { StringToLowerCase } from "../shared/language";
+
 type MeasurementPhase =
     | 'constructor'
     | 'render'
@@ -22,7 +25,7 @@ export enum GlobalMeasurementPhase {
 }
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
-// JSDom (used in Jest) for example doesn't implement the UserTiming APIs
+// JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
 const isUserTimingSupported: boolean =
     typeof performance !== 'undefined' &&
     typeof performance.mark === 'function' &&
@@ -31,7 +34,7 @@ const isUserTimingSupported: boolean =
     typeof performance.clearMeasures === 'function';
 
 function getMarkName(vm: VM | UninitializedVM, phase: MeasurementPhase): string {
-    return `<${vm.elm.tagName.toLowerCase()} (${vm.uid})> - ${phase}`;
+    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))} (${vm.uid})> - ${phase}`;
 }
 
 function mark(name: string) {
