@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.34.1...v) (2019-01-22)
+# [](https://github.com/salesforce/lwc/compare/v0.34.2...v) (2019-01-29)
+
+
+### Bug Fixes
+
+* ownerkey lookup of root ele manually injected into another lwc ele ([#1018](https://github.com/salesforce/lwc/issues/1018)) ([#1019](https://github.com/salesforce/lwc/issues/1019)) ([9a0482c](https://github.com/salesforce/lwc/commit/9a0482c))
+
+
+
+<a name="0.34.2"></a>
+## [0.34.2](https://github.com/salesforce/lwc/compare/v0.34.1...v0.34.2) (2019-01-22)
 
 
 
