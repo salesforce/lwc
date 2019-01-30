@@ -9,7 +9,7 @@ import { isUndefined, create, emptyString, isArray, forEach, ArrayReduce } from 
 import { VNode } from "../3rdparty/snabbdom/types";
 
 import * as api from "./api";
-import { EmptyArray, Noop } from "./utils";
+import { EmptyArray } from "./utils";
 import { VM } from "./vm";
 import { removeAttribute, setAttribute } from "../env/element";
 import { appendChild } from "../env/node";
@@ -54,11 +54,15 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
+function noop() {
+    /** do nothing */
+}
+
 function createStyleVNode(elm: HTMLStyleElement) {
     const vnode = api.h('style', {
         key: 'style', // special key
-        create: Noop,
-        update: Noop,
+        create: noop,
+        update: noop,
     }, EmptyArray);
     // Force the diffing algo to use the cloned style.
     vnode.elm = elm;

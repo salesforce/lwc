@@ -32,7 +32,6 @@ import {
     createTextHook,
     createCommentHook,
 } from "./hooks";
-import { Noop } from "./utils";
 import { markAsDynamicChildren } from "./patch";
 import {
     isNativeShadowRootAvailable,
@@ -79,6 +78,8 @@ const CHAR_G = 103;
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
+function noop() { /* do nothing */ }
+
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
         if (isUndefined(vnode.elm)) {
@@ -92,7 +93,7 @@ const TextHook: Hooks = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
-    destroy: Noop,
+    destroy: noop,
 };
 
 const CommentHook: Hooks = {
@@ -108,7 +109,7 @@ const CommentHook: Hooks = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for comment nodes
     remove: removeNodeHook,
-    destroy: Noop,
+    destroy: noop,
 };
 
 // insert is called after update, which is used somewhere else (via a module)

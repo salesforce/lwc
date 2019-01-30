@@ -12,10 +12,6 @@ type Callback = () => void;
 let nextTickCallbackQueue: Callback[] = [];
 export const SPACE_CHAR = 32;
 
-export const Noop = function() {
-    // Do nothing
-};
-
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
 export const ViewModelReflection = createFieldName('ViewModel');

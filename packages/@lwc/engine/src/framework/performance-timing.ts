@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { VM, UninitializedVM } from './vm';
-import { Noop } from './utils';
 
 import { tagNameGetter } from "../env/element";
 import { StringToLowerCase } from "../shared/language";
@@ -50,18 +49,22 @@ function measure(name: string) {
     performance.clearMeasures(name);
 }
 
-export const startMeasure = !isUserTimingSupported ? Noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
+function noop() {
+    /* do nothing */
+}
+
+export const startMeasure = !isUserTimingSupported ? noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
     const name = getMarkName(vm, phase);
     mark(name);
 };
-export const endMeasure = !isUserTimingSupported ? Noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
+export const endMeasure = !isUserTimingSupported ? noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
     const name = getMarkName(vm, phase);
     measure(name);
 };
 
-export const startGlobalMeasure = !isUserTimingSupported ? Noop : function(phase: GlobalMeasurementPhase) {
+export const startGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase) {
     mark(phase);
 };
-export const endGlobalMeasure = !isUserTimingSupported ? Noop : function(phase: GlobalMeasurementPhase) {
+export const endGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase) {
     measure(phase);
 };
