@@ -1,7 +1,13 @@
 let root;
 let activeMeasure;
-
 const originalUserTiming = window.performance;
+
+export const isUserTimingSupported =
+    typeof performance !== 'undefined' &&
+    typeof performance.mark === 'function' &&
+    typeof performance.clearMarks === 'function' &&
+    typeof performance.measure === 'function' &&
+    typeof performance.clearMeasures === 'function';
 
 export function resetUserTiming() {
     window.performance = originalUserTiming;
