@@ -41,6 +41,22 @@ describe('LightningElement.setAttributeNS', () => {
         }).toThrowError(TypeError);
     });
 
+    it('should throw when invoking setAttributeNS in constructor', () => {
+        class Test extends LightningElement {
+            constructor() {
+                super();
+                this.setAttributeNS('foo', 'bar');
+            }
+        }
+
+        expect(() => {
+            createElement('x-test', { is: Test });
+        }).toThrowError(
+            Error,
+            /Assert Violation: Failed to construct '<x-test>': The result must not have attributes\./
+        );
+    });
+
     it('should return undefined', () => {
         const elm = createElement('x-set-attribute-ns', { is: SetAttributeNS });
         expect(elm.setComponentAttributeNS(TEST_NS, 'foo', 'bar')).toBe(undefined);

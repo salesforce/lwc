@@ -32,6 +32,22 @@ describe('LightningElement.setAttribute', () => {
         }).toThrowError(TypeError);
     });
 
+    it('should throw when invoking setAttribute in constructor', () => {
+        class Test extends LightningElement {
+            constructor() {
+                super();
+                this.setAttribute('foo', 'bar');
+            }
+        }
+
+        expect(() => {
+            createElement('x-test', { is: Test });
+        }).toThrowError(
+            Error,
+            /Assert Violation: Failed to construct '<x-test>': The result must not have attributes\./
+        );
+    });
+
     it('should return undefined', () => {
         const elm = createElement('x-set-attribute', { is: SetAttribute });
         expect(elm.setComponentAttribute('foo', 'bar')).toBe(undefined);
