@@ -12,21 +12,21 @@ class GetAttributeNS extends LightningElement {
 
 function testInvalidProperty(type, ns, name) {
     it(`should return null when passing an invalid attribute name ${type}`, () => {
-        const elm = createElement('x-get-attribute', { is: GetAttributeNS });
+        const elm = createElement('x-get-attribute-ns', { is: GetAttributeNS });
         expect(elm.getComponentAttributeNS(ns, name)).toBe(null);
     });
 }
 
 describe('LightningElement.getAttributeNS', () => {
     it('throws if no argument is passed', () => {
-        const elm = createElement('x-get-attribute', { is: GetAttributeNS });
+        const elm = createElement('x-get-attribute-ns', { is: GetAttributeNS });
         expect(() => {
             elm.getComponentAttributeNS();
         }).toThrowError(TypeError);
     });
 
     it('throws if when missing the attribute name', () => {
-        const elm = createElement('x-get-attribute', { is: GetAttributeNS });
+        const elm = createElement('x-get-attribute-ns', { is: GetAttributeNS });
         expect(() => {
             elm.getComponentAttributeNS(TEST_NS);
         }).toThrowError(TypeError);
@@ -38,7 +38,7 @@ describe('LightningElement.getAttributeNS', () => {
     testInvalidProperty('number', TEST_NS, 1);
 
     it('should return attribute on the host element', () => {
-        const elm = createElement('x-get-attribute', { is: GetAttributeNS });
+        const elm = createElement('x-get-attribute-ns', { is: GetAttributeNS });
         elm.setAttributeNS(TEST_NS, 'foo', 'bar');
 
         expect(elm.getComponentAttributeNS(TEST_NS, 'foo')).toBe('bar');

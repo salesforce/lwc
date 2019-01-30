@@ -52,17 +52,12 @@ it('should invoke the component lifecycle hooks in the right order when appendin
 
     expect(window.timingBuffer).toEqual([
         'parent:connectedCallback',
-
-        // Child #1
         'child:constructor',
         'child:connectedCallback',
         'child:renderedCallback',
-
-        // Child #2
         'child:constructor',
         'child:connectedCallback',
         'child:renderedCallback',
-
         'parent:renderedCallback'
     ]);
 });
