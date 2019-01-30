@@ -30,7 +30,6 @@ it('should return the host element dimensions', () => {
     document.body.appendChild(elm);
 
     const result = elm.getComponentBoundingClientRect();
-    expect(result instanceof DOMRect).toBe(true);
     expect(result.width).toBe(10);
     expect(result.height).toBe(10);
 });
