@@ -20,7 +20,7 @@ describe('LightningElement.getElementsByClassName', () => {
         );
     });
 
-    // TODO - Open an issue for this
+    // TODO - #1026 LightningElement.getElementsByClassName doesn't respect the shadow DOM
     xit('returns the right elements', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
