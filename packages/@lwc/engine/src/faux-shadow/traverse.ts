@@ -293,6 +293,10 @@ export function getFilteredChildNodes(node: Node): Element[] {
     if (isNull(owner)) {
         return [];
     }
+
+    // Typescript is inferring the wrong function type for this particular
+    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+    // @ts-ignore type-mismatch
     return ArrayReduce.call(children, (seed, child) => {
         if (isNodeOwnedBy(owner, child)) {
             ArrayPush.call(seed, child);
@@ -303,7 +307,6 @@ export function getFilteredChildNodes(node: Node): Element[] {
 
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
-    // @ts-ignore type-mismatch
     return class PatchedHTMLElement extends Ctor {
         querySelector(this: Element, selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
@@ -330,7 +333,9 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
 
 export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementConstructor {
     const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
+    // @ts-ignore type-mismatch
     return class PatchedHTMLIframeElement extends Ctor {
+        // @ts-ignore type-mismatch
         get contentWindow(this: HTMLIFrameElement) {
             const original = iFrameContentWindowGetter.call(this);
             if (original) {
