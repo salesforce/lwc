@@ -14,8 +14,15 @@ var TestUtils = (function (lwc) {
         return lwc.createElement(name, config);
     }
 
+    function cleanupDocument() {
+        while (document.body.firstChild) {
+            document.body.removeChild(document.body.firstChild);
+        }
+    }
+
     return {
         createElement: createElement,
+        cleanupDocument: cleanupDocument
     };
 })(Engine);
 

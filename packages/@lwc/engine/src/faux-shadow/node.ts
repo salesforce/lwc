@@ -74,7 +74,7 @@ const portalObserverConfig: MutationObserverInit = {
 
 function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | undefined) {
     // If node already has an ownerKey, we can skip
-    // Note: checking if a node as any ownerKey is not enough
+    // Note: checking if a node has any ownerKey is not enough
     // because this element could be moved from one
     // shadow to another
     if (getNodeOwnerKey(node) === ownerKey) {
