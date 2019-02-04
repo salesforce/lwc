@@ -6,7 +6,8 @@
  */
 const fs = require('fs');
 const { resolve, extname, join, dirname, basename, sep } = require('path');
-const { default: defaultResolver } = require('jest-resolve/build/default_resolver');
+// defaultResolver will be passed as param in upcoming Jest release - https://github.com/facebook/jest/commit/3f4661f141562aeca65cdad3802e930835dcf0d9
+const { default: defaultResolver } = require('jest-resolve/build/defaultResolver');
 const lwcNpmResolver = require('@lwc/module-resolver');
 
 const EMPTY_CSS_MOCK = resolve(__dirname, '..', 'resources', 'emptyStyleMock.js');
