@@ -1,4 +1,4 @@
-import { createElement, cleanupDocument } from 'test-utils';
+import { createElement } from 'test-utils';
 
 import withLwcDomManual from 'x/withLwcDomManual';
 import withoutLwcDomManual from 'x/withoutLwcDomManual';
@@ -178,9 +178,6 @@ xdescribe('nested dynamic lwc elm with dom manual', () => {
         const div = outerElem.shadowRoot.querySelector('div');
         div.appendChild(innerElem);
     });
-    afterEach(() => {
-        cleanupDocument();
-    });
 
     it('getRootNode() of inner custom element should return outer shadowRoot', () => {
         expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
@@ -191,7 +188,8 @@ xdescribe('nested dynamic lwc elm with dom manual', () => {
         expect(innerDiv.getRootNode()).toBe(innerElem.shadowRoot);
     });
 
-    xit('getRootNode() of inner shadow\'s dynamic element should return inner shadowRoot', () => {
+    // Real issue is with MutationObserver
+    it('getRootNode() of inner shadow\'s dynamic element should return inner shadowRoot', () => {
         const innerDiv = innerElem.shadowRoot.querySelector('div');
         innerDiv.innerHTML = '<p class="innerP"></p>';
 
@@ -211,13 +209,9 @@ xdescribe('nested dynamic lwc elm without dom manual', () => {
         const div = outerElem.shadowRoot.querySelector('div');
         div.appendChild(innerElem);
         // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
-        spyOn(console, 'error').and.callFake(() => {});
+        spyOn(console, 'error');
     });
-    afterEach(() => {
-        cleanupDocument();
-        console.error.reset();
-    });
-    
+
     it('getRootNode() of inner shadow element should return inner shadowRoot', () => {
         const innerDiv = innerElem.shadowRoot.querySelector('div');
         innerDiv.innerHTML = '<p class="innerP"></p>';
