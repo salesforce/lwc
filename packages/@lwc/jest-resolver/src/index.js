@@ -6,9 +6,22 @@
  */
 const fs = require('fs');
 const { resolve, extname, join, dirname, basename, sep } = require('path');
-// defaultResolver will be passed as param in upcoming Jest release - https://github.com/facebook/jest/commit/3f4661f141562aeca65cdad3802e930835dcf0d9
-const { default: defaultResolver } = require('jest-resolve/build/defaultResolver');
 const lwcNpmResolver = require('@lwc/module-resolver');
+
+/*
+ * In Jest version 24 the default resolver was renamed to camelCase. Temporarily
+ * support both file names until consumers upgrade their Jest version.
+ *
+ * Jest master branch has the default resolver passed as a param to custom
+ * resolvers like this. Once that is released we can remove this entire block.
+ * https://github.com/facebook/jest/commit/3f4661f141562aeca65cdad3802e930835dcf0d9
+ */
+let resolver;
+try {
+    resolver = require('jest-resolve/build/default_resolver').default;
+} catch (e) {
+    resolver = require('jest-resolve/build/defaultResolver').default;
+}
 
 const EMPTY_CSS_MOCK = resolve(__dirname, '..', 'resources', 'emptyStyleMock.js');
 const EMPTY_HTML_MOCK = resolve(__dirname, '..', 'resources', 'emptyHtmlMock.js');
@@ -63,5 +76,5 @@ function getLwcPath(path, options) {
 }
 
 module.exports = function (path, options) {
-    return defaultResolver(getLwcPath(path, options), options);
+    return resolver(getLwcPath(path, options), options);
 };
