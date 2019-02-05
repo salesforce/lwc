@@ -301,9 +301,7 @@ describe("compiler metadata", () => {
         );
 
         expect(metadata).toEqual({
-            decorators: [],
             importLocations: [],
-            classMembers: [],
             declarationLoc: undefined,
             experimentalTemplateDependencies: [
             {
@@ -315,51 +313,6 @@ describe("compiler metadata", () => {
                 ],
                 templatePath: "foo.html"
             }],
-            exports: [],
-        });
-    });
-
-    it("doc", async () => {
-        const { result: { metadata } } = await compile({
-            name: "foo",
-            namespace: "x",
-            files: {
-                "foo.js": `import { LightningElement, api } from 'lwc';
-                /** class jsdoc */
-                export default class Test extends LightningElement {
-                    /** prop1 */
-                    @api prop1;
-
-                    /** prop2 */
-                    @api get prop2() {
-                    }
-
-                    /** method1 */
-                    @api method1() {}
-                }
-                `,
-                "foo.html": "<template>foo</template>",
-            },
-        });
-
-        expect(metadata).toEqual({
-            decorators: [],
-            importLocations: [
-                {
-                    location: { length: 3, start: 18 },
-                     name: "lwc"
-                }
-            ],
-            classMembers: [],
-            declarationLoc: undefined,
-            doc: undefined,
-            experimentalTemplateDependencies: [
-                {
-                    moduleDependencies: [],
-                    templatePath: "foo.html"
-                }
-            ],
-            exports: [],
         });
     });
 });

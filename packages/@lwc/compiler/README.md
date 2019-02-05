@@ -2,7 +2,7 @@
 
 lwc-compiler is an open source project that enables developers to take full control of processing a single Lightning Web Component module for runtime consumption.
 
-## Installation 
+## Installation
 
 ```sh
 yarn install --save-dev lwc-compiler
@@ -32,7 +32,7 @@ const { success, diagnostics, result: { code } } = await compile(options);
 if (!success) {
     for ( let diagnostic of diagnostics ) {
         console.log(diagnostic.level + ':' + diagnostic.message);
-    }    
+    }
 }
 
 return code;
@@ -59,7 +59,7 @@ return code;
 
 ### `transform`
 
-Transform the content of individual file for manual bundling. 
+Transform the content of individual file for manual bundling.
 
 ```js
 import { transform } from 'lwc-compiler';
@@ -88,8 +88,8 @@ const { code } = await transform(source, filename, options);
 **Return**
 
 * `code` (string)- the compiled source code.
-* `metadata` (object) - the metadata collected during transformation. Includes: `decorators`, `doc`, `declarationLoc`.
-* `map` (null) - not currenlty supported. 
+* `metadata` (object) - the metadata collected during transformation. Includes: `declarationLoc`, `impotLocations`, and `experimentalTemplateDependencies`.
+* `map` (null) - not currenlty supported.
 
 ### `version`
 
@@ -107,7 +107,7 @@ console.log(version);
 
 ### Configuration Interface
 
-Compiler can be configured to produce one bundle at a time with the following configurations: 
+Compiler can be configured to produce one bundle at a time with the following configurations:
 
 ```ts
 export interface CompilerOptions {
@@ -207,33 +207,15 @@ export interface BundleResult {
 }
 
 export interface BundleMetadata {
-    decorators: MetadataDecorators;
     importLocations: ModuleImportLocation[];
-    classMembers: ClassMember[];
     declarationLoc?: Location;
-    doc?: string;
 }
-
-export type MetadataDecorators = Array<
-    ApiDecorator | TrackDecorator | WireDecorator
->;
 
 export interface ModuleImportLocation {
     name: string;
     location: Location;
+    experimentalTemplateDependencies: ModuleExports [];
 }
-
-export interface ClassMember {
-    name: string;
-    type: DecoratorTargetType;
-    decorator?: string;
-    doc?: string;
-    loc?: Location;
-}
-
-export type DecoratorTargetType = DecoratorTargetProperty | DecoratorTargetMethod;
-export type DecoratorTargetProperty = 'property';
-export type DecoratorTargetMethod = 'method';
 
 export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
@@ -255,7 +237,7 @@ There are several transformational phases that take place during compilation fol
 
 *Replace* - replace code (ex: process.env.NODE === ‘production’ will be replaced with true or false depending on the mode).
 
-*Module Resolution* - ensure that each local import in the component can be resolved. 
+*Module Resolution* - ensure that each local import in the component can be resolved.
 
 *Transformation* - apply LWC specific transformation to js, html, and css files.
 
@@ -268,5 +250,5 @@ These transformation may or may not be applied depending on the mode values spec
 
 ### Bundling
 
-The final phase of the compilation pipeline is bundling. During bundling, Rollup will ‘statically analyze and optimize the code you are importing, and will exclude anything that isn't actually used. This allows you to build on top of existing tools and modules without adding extra dependencies or bloating the size of your project’. 
+The final phase of the compilation pipeline is bundling. During bundling, Rollup will ‘statically analyze and optimize the code you are importing, and will exclude anything that isn't actually used. This allows you to build on top of existing tools and modules without adding extra dependencies or bloating the size of your project’.
 The end result of the bundler is a single javascript file in a specified format - ‘amd’ by default.
