@@ -1,7 +1,7 @@
 {
   "name": "@lwc/module-resolver",
   "description": "Resolves paths for LWC components",
-  "version": "0.34.3",
+  "version": "0.34.4",
   "main": "./src/index.js",
   "license": "MIT",
   "dependencies": {

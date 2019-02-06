@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.34.2...v) (2019-01-29)
+# [](https://github.com/salesforce/lwc/compare/v0.34.3...v) (2019-02-06)
+
+
+### Bug Fixes
+
+* fix condition for extracting children getter ([#1041](https://github.com/salesforce/lwc/issues/1041)) ([d3bbc72](https://github.com/salesforce/lwc/commit/d3bbc72))
+
+
+
+<a name="0.34.3"></a>
+## [0.34.3](https://github.com/salesforce/lwc/compare/v0.34.2...v0.34.3) (2019-01-29)
 
 
 ### Bug Fixes
