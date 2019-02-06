@@ -17,7 +17,7 @@ module.exports = {
     ],
 
     // Customize setup for the engine tests.
-    setupTestFrameworkScriptFile: path.resolve(__dirname, 'scripts/jest/setup-test.js'),
+    setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
     moduleNameMapper: {
         'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
     },
@@ -35,9 +35,9 @@ module.exports = {
     // the threshold as well.
     coverageThreshold: {
         global: {
-            functions: 80,
+            functions: 70,
             lines: 80,
-            branches: 65,
+            branches: 75,
         },
     },
 };
