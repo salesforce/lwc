@@ -12,19 +12,13 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from './invoker';
-import {
-    isArray,
-    ArrayIndexOf,
-    ArraySplice,
-    isFunction,
-    isUndefined,
-    StringToLowerCase,
-} from '../shared/language';
+import { isArray, isFunction, isUndefined, StringToLowerCase, isFalse } from '../shared/language';
 import { invokeServiceHook, Services } from './services';
-import { VM, getComponentVM, UninitializedVM } from './vm';
+import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
 import { Template } from './template';
+import { ReactiveObserver } from '@lwc/reactive-service';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -99,26 +93,20 @@ export function linkComponent(vm: VM) {
     }
 }
 
-export function clearReactiveListeners(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { deps } = vm;
-    const len = deps.length;
-    if (len > 0) {
-        for (let i = 0; i < len; i += 1) {
-            const set = deps[i];
-            const pos = ArrayIndexOf.call(deps[i], vm);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(
-                    pos > -1,
-                    `when clearing up deps, the vm must be part of the collection.`
-                );
-            }
-            ArraySplice.call(set, pos, 1);
+export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
+    return new ReactiveObserver(() => {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.invariant(
+                !isRendering,
+                `Mutating property is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
+            );
         }
-        deps.length = 0;
-    }
+        const { isDirty } = vm;
+        if (isFalse(isDirty)) {
+            markComponentAsDirty(vm);
+            scheduleRehydration(vm);
+        }
+    });
 }
 
 function clearChildLWC(vm: VM) {
@@ -134,7 +122,7 @@ export function renderComponent(vm: VM): VNodes {
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
-    clearReactiveListeners(vm);
+    vm.tro.reset();
     clearChildLWC(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;

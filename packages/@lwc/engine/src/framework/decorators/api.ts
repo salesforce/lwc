@@ -6,12 +6,13 @@
  */
 import assert from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
-import { isObject, toString, isFalse } from '../../shared/language';
-import { observeMutation, notifyMutation } from '../watcher';
+import { isObject, isTrue, toString, isFalse } from '../../shared/language';
+import { valueObserved, valueMutated, ReactiveObserver } from '@lwc/reactive-service';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { getComponentVM } from '../vm';
+import { getComponentVM, rerenderVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';
 import { getDecoratorsRegisteredMeta } from './register';
+import { addCallbackToNextTick } from '../utils';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -81,7 +82,7 @@ function createPublicPropertyDescriptor(
                 }
                 return;
             }
-            observeMutation(this, key);
+            valueObserved(this, key);
             return vm.cmpProps[key];
         },
         set(this: ComponentInterface, newValue: any) {
@@ -100,11 +101,47 @@ function createPublicPropertyDescriptor(
             // avoid notification of observability if the instance is already dirty
             if (isFalse(vm.isDirty)) {
                 // perf optimization to skip this step if the component is dirty already.
-                notifyMutation(this, key);
+                valueMutated(this, key);
             }
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
     };
+}
+
+class AccessorReactiveObserver extends ReactiveObserver {
+    private value: any;
+    private debouncing: boolean = false;
+    constructor(vm, set) {
+        super(() => {
+            if (isFalse(this.debouncing)) {
+                this.debouncing = true;
+                addCallbackToNextTick(() => {
+                    if (isTrue(this.debouncing)) {
+                        const { value } = this;
+                        const { isDirty: dirtyStateBeforeSetterCall, component, idx } = vm;
+                        set.call(component, value);
+                        // de-bouncing after the call to the original setter to prevent
+                        // infinity loop if the setter itself is mutating things that
+                        // were accessed during the previous invocation.
+                        this.debouncing = false;
+                        if (isTrue(vm.isDirty) && isFalse(dirtyStateBeforeSetterCall) && idx > 0) {
+                            // immediate rehydration due to a setter driven mutation, otherwise
+                            // the component will get rendered on the second tick, which it is not
+                            // desirable.
+                            rerenderVM(vm);
+                        }
+                    }
+                });
+            }
+        });
+    }
+    reset(value?: any) {
+        super.reset();
+        this.debouncing = false;
+        if (arguments.length > 0) {
+            this.value = value;
+        }
+    }
 }
 
 function createPublicAccessorDescriptor(
@@ -145,7 +182,18 @@ function createPublicAccessorDescriptor(
                 );
             }
             if (set) {
-                set.call(this, newValue);
+                let ro = vm.oar[key as any] as AccessorReactiveObserver;
+                if (isUndefined(ro)) {
+                    ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
+                }
+                // every time we invoke this setter from outside (through this wrapper setter)
+                // we should reset the value and then debounce just in case there is a pending
+                // invocation the next tick that is not longer relevant since the value is changing
+                // from outside.
+                ro.reset(newValue);
+                ro.observe(() => {
+                    set.call(this, newValue);
+                });
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(

@@ -1,0 +1,23 @@
+{
+    "name": "@lwc/reactive-service",
+    "version": "1.0.0",
+    "description": "LWC Reactive Service",
+    "license": "MIT",
+    "main": "dist/commonjs/es2017/reactive.js",
+    "module": "dist/modules/es2017/reactive.js",
+    "typings": "lib/index.d.ts",
+    "scripts": {
+        "clean": "rm -rf dist/ lib/",
+        "test": "jest",
+        "lint": "eslint --rulesdir=../../../scripts/eslint/rules ./src/**/*.ts",
+        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "lwc": {
+        "modules": {
+            "@lwc/reactive-service": "dist/modules/es2017/reactive.js"
+        }
+    }
+}

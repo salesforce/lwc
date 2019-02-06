@@ -7,7 +7,7 @@
 import assert from '../../shared/assert';
 import { isUndefined, isFalse } from '../../shared/language';
 import { isRendering, vmBeingRendered } from '../invoker';
-import { observeMutation, notifyMutation } from '../watcher';
+import { valueObserved, valueMutated } from '@lwc/reactive-service';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';
@@ -66,7 +66,7 @@ export function createTrackedPropertyDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             }
-            observeMutation(this, key);
+            valueObserved(this, key);
             return vm.cmpTrack[key];
         },
         set(this: ComponentInterface, newValue: any) {
@@ -85,7 +85,7 @@ export function createTrackedPropertyDescriptor(
                 vm.cmpTrack[key] = reactiveOrAnyValue;
                 if (isFalse(vm.isDirty)) {
                     // perf optimization to skip this step if the track property is on a component that is already dirty
-                    notifyMutation(this, key);
+                    valueMutated(this, key);
                 }
             }
         },

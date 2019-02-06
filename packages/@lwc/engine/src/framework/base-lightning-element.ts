@@ -33,12 +33,13 @@ import {
     ComponentInterface,
     getWrappedComponentsListener,
     getComponentAsString,
+    getTemplateReactiveObserver,
 } from './component';
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
-import { observeMutation, notifyMutation } from './watcher';
+import { valueObserved, valueMutated } from '@lwc/reactive-service';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
@@ -92,7 +93,7 @@ function createBridgeToElementDescriptor(
                 }
                 return;
             }
-            observeMutation(this, propName);
+            valueObserved(this, propName);
             return get.call(vm.elm);
         },
         set(this: ComponentInterface, newValue: any) {
@@ -119,7 +120,7 @@ function createBridgeToElementDescriptor(
                 vm.cmpProps[propName] = newValue;
                 if (isFalse(vm.isDirty)) {
                     // perf optimization to skip this step if not in the DOM
-                    notifyMutation(this, propName);
+                    valueMutated(this, propName);
                 }
             }
             return set.call(vm.elm, newValue);
@@ -165,6 +166,8 @@ export function BaseLightningElement(this: ComponentInterface) {
     } = vm;
     const component = this;
     vm.component = component;
+    vm.tro = getTemplateReactiveObserver(vm as VM);
+    vm.oar = create(null);
     // interaction hooks
     // We are intentionally hiding this argument from the formal API of LWCElement because
     // we don't want folks to know about it just yet.

@@ -5,15 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import ObservableMembrane from 'observable-membrane';
-import { observeMutation, notifyMutation } from './watcher';
+import { valueObserved, valueMutated } from '@lwc/reactive-service';
 
 function valueDistortion(value: any) {
     return value;
 }
 
 export const reactiveMembrane = new ObservableMembrane({
-    valueObserved: observeMutation,
-    valueMutated: notifyMutation,
+    valueObserved,
+    valueMutated,
     valueDistortion,
 });
 
