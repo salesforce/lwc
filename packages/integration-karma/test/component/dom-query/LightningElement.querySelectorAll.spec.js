@@ -1,22 +1,15 @@
 import { createElement } from 'test-utils';
-import { LightningElement } from 'lwc';
 
+import ConstructorQuerySelectorAll from 'x/constructorQuerySelectorAll';
 import Parent from 'x/parent';
 
 describe('LightningElement.querySelectorAll', () => {
     it('should throw when invoked in the constructor', () => {
-        class Test extends LightningElement {
-            constructor() {
-                super();
-                this.querySelectorAll('div');
-            }
-        }
-
         expect(() => {
-            createElement('x-test', { is: Test });
+            createElement('x-constructor-query-selector-all', { is: ConstructorQuerySelectorAll });
         }).toThrowError(
             Error,
-            /Assert Violation: this.querySelectorAll\(\) cannot be called during the construction of the custom element for <x-test> because no children has been added to this element yet\./
+            /Assert Violation: this.querySelectorAll\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector-all> because no children has been added to this element yet\./
         );
     });
 

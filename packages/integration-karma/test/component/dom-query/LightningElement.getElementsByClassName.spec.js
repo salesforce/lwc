@@ -1,22 +1,15 @@
 import { createElement } from 'test-utils';
-import { LightningElement } from 'lwc';
 
+import ConstructorGetElementsByClassName from 'x/constructorGetElementsByClassName';
 import Parent from 'x/parent';
 
 describe('LightningElement.getElementsByClassName', () => {
     it('should throw when invoked in the constructor', () => {
-        class Test extends LightningElement {
-            constructor() {
-                super();
-                this.getElementsByClassName('foo');
-            }
-        }
-
         expect(() => {
-            createElement('x-test', { is: Test });
+            createElement('x-constructor-get-elements-by-class-name', { is: ConstructorGetElementsByClassName });
         }).toThrowError(
             Error,
-            /Assert Violation: this.getElementsByClassName\(\) cannot be called during the construction of the custom element for <x-test> because no children has been added to this element yet\./
+            /Assert Violation: this.getElementsByClassName\(\) cannot be called during the construction of the custom element for <x-constructor-get-elements-by-class-name> because no children has been added to this element yet\./
         );
     });
 
