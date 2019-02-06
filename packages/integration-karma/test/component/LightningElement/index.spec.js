@@ -12,7 +12,7 @@ it('should throw when trying to invoke the constructor manually', () => {
     }).toThrowError(ReferenceError);
 });
 
-// TODO: Open an issue for this
+// TODO: #1034 "setAttribute" and "tagName" are enumerable attributes on the component instance
 xit('should have no property enumerable on the component instance', () => {
     let enumerableProperties = [];
 
