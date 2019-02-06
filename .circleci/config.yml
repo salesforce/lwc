@@ -169,6 +169,7 @@ jobs:
     <<: *env_default
     steps:
       - *load_workspace
+      - *start_sauce_connect
       - *run_karma_tests
       - *run_karma_tests_native
       - *run_karma_tests_compat
