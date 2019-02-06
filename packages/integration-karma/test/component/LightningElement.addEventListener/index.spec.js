@@ -1,72 +1,33 @@
 import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
 
+import EventHandler from 'x/eventHandler';
+import SameEventHandler from 'x/sameEventHandler';
+import EventHandlerOptions from 'x/eventHandlerOptions';
+
 it('should be able to attach an event listener on the host element', () => {
-    let isInvoked = false;
+    let thisValue;
+    let args;
 
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.addEventListener('click', () => {
-                isInvoked = true;
-            });
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
+    const clickHandler = function(...handlerArgs) {
+        thisValue = this;
+        args = handlerArgs;
+    };
+
+    const elm = createElement('x-event-handler', { is: EventHandler });
+    elm.clickHandler = clickHandler;
     document.body.appendChild(elm);
 
     elm.click();
 
-    expect(isInvoked).toBe(true);
-});
-
-it('should invoke the event listener with undefined as this value', () => {
-    let handleThis = false;
-
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.addEventListener('click', function() {
-                handleThis = this;
-            });
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
-
-    elm.click();
-
-    expect(handleThis).toBe(undefined);
-});
-
-it('should invoke the event listener with the event as argument', () => {
-    let handlerArgs = false;
-
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.addEventListener('click', function(...args) {
-                handlerArgs = args;
-            });
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
-
-    elm.click();
-
-    expect(handlerArgs.length).toBe(1);
-    expect(handlerArgs[0] instanceof Event).toBe(true);
-    expect(handlerArgs[0].type).toBe('click');
+    expect(thisValue).toBe(undefined);
+    expect(args.length).toBe(1);
+    expect(args[0] instanceof Event).toBe(true);
+    expect(args[0].type).toBe('click');
 });
 
 it('should warn when adding multiple times the same event handler', () => {
-    class Test extends LightningElement {
-        connectedCallback() {
-            const handler = () => {};
-
-            this.addEventListener('click', handler);
-            this.addEventListener('click', handler);
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('x-same-event-handler', { is: SameEventHandler });
 
     spyOn(console, 'warn');
     document.body.appendChild(elm);
@@ -78,14 +39,7 @@ it('should warn when adding multiple times the same event handler', () => {
 });
 
 it('should warn when passing a 3rd parameter to the event handler', () => {
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.addEventListener('click', () => {}, {
-                once: true,
-            });
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('x-event-handler-options', { is: EventHandlerOptions });
 
     spyOn(console, 'warn');
     document.body.appendChild(elm);
@@ -97,12 +51,7 @@ it('should warn when passing a 3rd parameter to the event handler', () => {
 });
 
 it('should throw an error if event handler is not a function', () => {
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.addEventListener('click');
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('x-event-handler', { is: EventHandler });
 
     expect(() => {
         document.body.appendChild(elm);

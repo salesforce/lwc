@@ -1,30 +1,18 @@
-import { LightningElement, api } from 'lwc';
 import { createElement } from 'test-utils';
 
-it('should throw when accessing during construction', () => {
-    class Test extends LightningElement {
-        constructor() {
-            super();
-            this.getBoundingClientRect();
-        }
-    }
+import Test from 'x/test';
+import ConstructorInvocation from 'x/constructorInvocation';
 
+it('should throw when accessing during construction', () => {
     expect(() => {
-        createElement('x-test', { is: Test });
+        createElement('x-constructor-invocation', { is: ConstructorInvocation });
     }).toThrowError(
         Error,
-        /Assert Violation: this\.getBoundingClientRect\(\) should not be called during the construction of the custom element for <x-test> because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks\./
+        /Assert Violation: this\.getBoundingClientRect\(\) should not be called during the construction of the custom element for <x-constructor-invocation> because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks\./
     );
 });
 
 it('should return the host element dimensions', () => {
-    class Test extends LightningElement {
-        @api
-        getComponentBoundingClientRect() {
-            return this.getBoundingClientRect();
-        }
-    }
-
     const elm = createElement('x-test', { is: Test });
     elm.style = 'display: block; width: 10px; height: 10px';
     document.body.appendChild(elm);

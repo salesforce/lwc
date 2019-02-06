@@ -1,17 +1,21 @@
-import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
+
+import Test from 'x/test';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {
         let isConnected = false;
-        class ConnectedComponent extends LightningElement {
-            connectedCallback() {
-                isConnected = true;
-            }
-        }
+        let thisValue;
 
-        const el = createElement('x-connected-component', { is: ConnectedComponent });
-        fn(el);
+        const elm = createElement('x-test', { is: Test });
+        elm.connect = function(context) {
+            isConnected = true;
+            thisValue = context;
+        };
+
+        fn(elm);
+
+        expect(thisValue instanceof Test).toBe(true);
         expect(isConnected).toBe(true);
     });
 }

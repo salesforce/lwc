@@ -1,34 +1,30 @@
-import { LightningElement, api } from 'lwc';
 import { createElement } from 'test-utils';
+
+import Test from 'x/test';
+import NonExistingEventListener from 'x/nonExistingEventListener';
 
 it('should remove existing event listeners', () => {
     let isInvoked = false;
 
-    class Test extends LightningElement {
-        _listener = () => {
-            isInvoked = true;
-        }
+    const listener = () => {
+        isInvoked = true;
+    };
 
-        connectedCallback() {
-            this.addEventListener('click', this._listener);
-            this.removeEventListener('click', this._listener);
-        }
-    }
     const elm = createElement('x-test', { is: Test });
+    elm.listener = listener;
     document.body.appendChild(elm);
 
     elm.click();
+    expect(isInvoked).toBe(true);
 
+    isInvoked = false;
+    elm.removeListener();
+    elm.click();
     expect(isInvoked).toBe(false);
 });
 
 it('should log an error message when removing a non existing event handler', () => {
-    class Test extends LightningElement {
-        connectedCallback() {
-            this.removeEventListener('click', () => {});
-        }
-    }
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('x-non-existing-event-listener', { is: NonExistingEventListener });
 
     spyOn(console, 'error');
     document.body.appendChild(elm);

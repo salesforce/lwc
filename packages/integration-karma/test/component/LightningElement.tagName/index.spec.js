@@ -1,14 +1,8 @@
-import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
 
-it('should throw when accessing the property', () => {
-    class Test extends LightningElement {
-        constructor() {
-            super()
-            this.tagName;
-        }
-    }
+import Test from 'x/test';
 
+it('should throw when accessing the property', () => {
     expect(() => {
         createElement('x-test', { is: Test })
     }).toThrowError(
