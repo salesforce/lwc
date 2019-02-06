@@ -50,19 +50,16 @@ run_linting: &run_linting
     command: yarn lint
 
 # Sauce connect
-install_and_start_sauce_connect: &install_and_start_sauce_connect
+start_sauce_connect: &start_sauce_connect
   run:
     name: Install and start sauce connect
     background: true
     command: |
-        wget https://saucelabs.com/downloads/sc-4.4.11-linux.tar.gz
-        tar -xzf sc-4.4.11-linux.tar.gz
-        cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_KEY --readyfile ~/sauce_is_ready
-
-wait_for_sauce_connect: &wait_for_sauce_connect
-  run:
-    name: Wait for sauce connect to be ready
-    command: while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+        curl https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz -o saucelabs.tar.gz
+        tar -xzf saucelabs.tar.gz
+        cd sc-*
+        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY}
+        wget --retry-connrefused --no-check-certificate -T 60 localhost:4445  # wait for app to be ready
 
 # Test
 run_unit_tests: &run_unit_tests
@@ -189,10 +186,7 @@ jobs:
     <<: *env_default
     steps:
       - *load_workspace
-
-      - *install_and_start_sauce_connect
-      - *wait_for_sauce_connect
-
+      - *start_sauce_connect
       - *run_integration_tests_ie11
 
 

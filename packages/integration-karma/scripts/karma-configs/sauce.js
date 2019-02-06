@@ -103,6 +103,8 @@ function getSauceConfig(config) {
             buildUrl: process.env.CIRCLE_BUILD_URL,
         },
 
+        startConnect: false,
+        recordVideo: false,
         recordScreenshots: false,
     };
 }
