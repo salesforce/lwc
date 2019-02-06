@@ -3,23 +3,24 @@ import { createElement } from 'test-utils';
 import Child from 'x/child';
 import Parent from 'x/parent';
 import Lifecycle from 'x/lifecycle';
+import Nested from 'x/nested';
 
 import {
     isUserTimingSupported,
-    patchUserTiming,
+    setupPerformanceObserver,
+    teardownPerformanceObserver,
     resetMeasures,
-    resetUserTiming,
     expectMeasureEquals
 } from './user-timing-utils';
 
 if (isUserTimingSupported) {
     beforeEach(() => {
-        patchUserTiming();
+        setupPerformanceObserver();
         resetMeasures();
     });
 
     afterEach(() => {
-        resetUserTiming();
+        teardownPerformanceObserver();
     });
 
     it('captures component constructor', () => {
@@ -135,5 +136,27 @@ if (isUserTimingSupported) {
         }, {
             label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
         }]);
+    });
+
+    fit('should support nested component creation', () => {
+        const elm = createElement('x-nested', { is: Nested });
+        document.body.appendChild(elm);
+
+        // expectMeasureEquals([{
+        //     label: /<x-lifecycle \(\d+\)> - constructor/,
+        // }, {
+        //     label: /lwc-hydrate/,
+        //     children: [{
+        //         label: /<x-lifecycle \(\d+\)> - connectedCallback/,
+        //     },{
+        //         label: /<x-lifecycle \(\d+\)> - render/,
+        //     }, {
+        //         label: /<x-lifecycle \(\d+\)> - patch/,
+        //     }, {
+        //         label: /<x-lifecycle \(\d+\)> - renderedCallback/,
+        //     }],
+        // }, {
+        //     label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
+        // }]);
     });
 }

@@ -9,9 +9,7 @@ export const isUserTimingSupported =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-export function resetUserTiming() {
-    window.performance = originalUserTiming;
-}
+const isPerformanceObserverSupported = 'PerformanceObserver' in window;
 
 export function resetMeasures() {
     root = {
@@ -21,29 +19,37 @@ export function resetMeasures() {
     activeMeasure = root;
 }
 
-export function patchUserTiming() {
-    window.performance = {
-        mark(name) {
-            const measure = {
-                label: null,
-                markName: name,
-                parent: activeMeasure,
-                children: [],
-            }
+export function setupPerformanceObserver() {
+    if (!isPerformanceObserverSupported) {
+        window.performance = {
+            mark(name) {
+                const measure = {
+                    label: null,
+                    markName: name,
+                    parent: activeMeasure,
+                    children: [],
+                }
 
-            activeMeasure.children.push(measure);
-            activeMeasure = measure;
-        },
-        measure(label, markName) {
-            if (markName !== activeMeasure.markName) {
-                throw new Error(`Invalid mark name ${markName} expected ${activeMeasure.markName}`);
-            }
+                activeMeasure.children.push(measure);
+                activeMeasure = measure;
+            },
+            measure(label, markName) {
+                if (markName !== activeMeasure.markName) {
+                    throw new Error(`Invalid mark name ${markName} expected ${activeMeasure.markName}`);
+                }
 
-            activeMeasure.label = label;
-            activeMeasure = activeMeasure.parent;
-        },
-        clearMarks() {},
-        clearMeasures() {}
+                activeMeasure.label = label;
+                activeMeasure = activeMeasure.parent;
+            },
+            clearMarks() {},
+            clearMeasures() {}
+        }
+    }
+}
+
+export function teardownPerformanceObserver() {
+    if (!isPerformanceObserverSupported) {
+        window.performance = originalUserTiming;
     }
 }
 
