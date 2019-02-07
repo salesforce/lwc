@@ -134,6 +134,7 @@ function transformHost(selector: Selector) {
         replaceNodeWith(selector, ...contextualSelectors);
     }
 }
+
 export default function transformSelector(
     root: Root,
     transformConfig: SelectorScopingConfig,
