@@ -2,13 +2,6 @@ import { createElement } from 'test-utils';
 
 import Test from 'x/test';
 
-it('throws an error if name is not provided', () => {
-    const elm = createElement('x-test', { is: Test });
-    expect(() => {
-        elm.removeComponentAttribute();
-    }).toThrowError(TypeError);
-});
-
 it('should not throw if the attribute is not present', () => {
     const elm = createElement('x-test', { is: Test });
     expect(() => {

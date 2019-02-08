@@ -5,27 +5,6 @@ import ConstructorInvocation from 'x/constructorInvocation';
 
 const TEST_NS = 'http://www.salesforce.com/2019/lwc';
 
-it('throws if namespace is not provided', () => {
-    const elm = createElement('x-test', { is: Test });
-    expect(() => {
-        elm.setComponentAttributeNS();
-    }).toThrowError(TypeError);
-});
-
-it('throws if name is not provided', () => {
-    const elm = createElement('x-test', { is: Test });
-    expect(() => {
-        elm.setComponentAttributeNS(TEST_NS);
-    }).toThrowError(TypeError);
-});
-
-it('throws if value is not provided', () => {
-    const elm = createElement('x-test', { is: Test });
-    expect(() => {
-        elm.setComponentAttributeNS(TEST_NS, 'foo');
-    }).toThrowError(TypeError);
-});
-
 it('should throw when invoking setAttributeNS in constructor', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
@@ -50,7 +29,10 @@ function testConvertValueToString(type, value) {
 }
 
 testConvertValueToString('undefined', undefined);
-testConvertValueToString('null', null);
+
+// IE11 doesn't convert null values to String when invoking setAttributeNS
+// testConvertValueToString('null', null);
+
 testConvertValueToString('number', 1);
 testConvertValueToString('true', true);
 testConvertValueToString('false', false);

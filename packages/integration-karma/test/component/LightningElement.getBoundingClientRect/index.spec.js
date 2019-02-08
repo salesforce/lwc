@@ -14,7 +14,7 @@ it('should throw when accessing during construction', () => {
 
 it('should return the host element dimensions', () => {
     const elm = createElement('x-test', { is: Test });
-    elm.style = 'display: block; width: 10px; height: 10px';
+    elm.setAttribute('style', 'display: block; overflow: hidden; width: 10px; height: 10px');
     document.body.appendChild(elm);
 
     const result = elm.getComponentBoundingClientRect();
