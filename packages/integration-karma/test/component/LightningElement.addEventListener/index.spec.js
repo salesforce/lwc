@@ -26,7 +26,8 @@ it('should be able to attach an event listener on the host element', () => {
     expect(args[0].type).toBe('click');
 });
 
-it('should warn when adding multiple times the same event handler', () => {
+// TODO: #1043 inconsistent restriction between native shadow and synthetic shadow
+xit('should warn when adding multiple times the same event handler', () => {
     const elm = createElement('x-same-event-handler', { is: SameEventHandler });
 
     spyOn(console, 'warn');
@@ -38,7 +39,8 @@ it('should warn when adding multiple times the same event handler', () => {
     );
 });
 
-it('should warn when passing a 3rd parameter to the event handler', () => {
+// TODO: #1043 inconsistent restriction between native shadow and synthetic shadow
+xit('should warn when passing a 3rd parameter to the event handler', () => {
     const elm = createElement('x-event-handler-options', { is: EventHandlerOptions });
 
     spyOn(console, 'warn');
