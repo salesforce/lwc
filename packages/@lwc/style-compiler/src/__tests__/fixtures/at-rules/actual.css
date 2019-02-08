@@ -1,0 +1,52 @@
+@charset "utf-8";
+
+@namespace url(http://www.w3.org/1999/xhtml);
+
+@keyframes slidein {
+    from {
+        margin-left: 100%;
+    }
+    to {
+        margin-left: 0%;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    article {
+        padding: 1rem 3rem;
+    }
+}
+
+@supports (display: grid) {
+    div {
+        display: grid;
+    }
+}
+
+@document url('https://www.example.com/') {
+    h1 {
+        color: green;
+    }
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('/fonts/OpenSans-Regular-webfont.woff2') format('woff2'),
+        url('/fonts/OpenSans-Regular-webfont.woff') format('woff');
+}
+
+@viewport {
+    width: device-width;
+}
+
+@counter-style thumbs {
+    system: cyclic;
+    symbols: '\1F44D';
+    suffix: ' ';
+}
+
+@font-feature-values Font One {
+    @styleset {
+        nice-style: 12;
+    }
+}

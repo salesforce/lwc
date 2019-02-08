@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import postcss, { Root, Result } from 'postcss';
+import postcss, { Root, Result, Rule } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
 import { Processor } from 'postcss-selector-parser';
 
@@ -23,6 +23,12 @@ export interface PluginConfig {
         collectVarFunctions?: boolean;
     };
     minify?: boolean;
+}
+
+function shouldTransformSelector(rule: Rule) {
+    // @keyframe at-rules are special, rules inside are not standard selectors and should not be scoped like
+    // any other rules.
+    return rule.parent.type !== 'atrule' || rule.parent.name !== 'keyframes';
 }
 
 function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
@@ -49,6 +55,10 @@ export default postcss.plugin('postcss-plugin-lwc', (pluginConfig: PluginConfig)
         transformCustomProperties(root, result);
 
         root.walkRules(rule => {
+            if (!shouldTransformSelector(rule)) {
+                return;
+            }
+
             // Let transform the selector with the 2 processors.
             const fakeShadowSelector = fakeShadowSelectorProcessor.processSync(rule);
             const nativeShadowSelector = nativeShadowSelectorProcessor.processSync(rule);

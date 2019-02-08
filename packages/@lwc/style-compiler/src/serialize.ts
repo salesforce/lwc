@@ -155,7 +155,13 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
             }
 
         } else if (node && node.type === 'atrule') {
-            // If we have an @at rule we dont want to push it to the global stack rather than the current token
+            // Certain atrules have declaration associated with for example @font-face. We need to add the rules tokens
+            // when it's the case.
+            if (currentRuleTokens.length) {
+                tokens.push(...currentRuleTokens);
+                currentRuleTokens = [];
+            }
+
             tokens.push({ type: TokenType.text, value: part });
         } else {
             // When inside anything else but a comment just push it
