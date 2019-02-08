@@ -399,9 +399,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
                 }
                 originalSetAttribute.apply(this, arguments);
             },
-            enumerable: true,
             configurable: true,
-            writable: true,
         },
         tagName: {
             get(this: ComponentInterface) {
@@ -409,7 +407,6 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
                     `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`,
                 );
             },
-            enumerable: true,
             configurable: true,
         },
     };
