@@ -136,7 +136,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
 
     const { styleVNode } = context;
-    if (!isUndefined(context.styleVNode)) {
+    if (styleVNode) {
         ArrayUnshift.call(vnodes, styleVNode);
     }
 
