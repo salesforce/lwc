@@ -26,15 +26,18 @@ export default function apply() {
 
     // Go until we reach to top of the LWC tree
     defineProperty(document, 'activeElement', {
-        get() {
+        get(): Element | null {
             let node = DocumentPrototypeActiveElement.call(this);
 
             if (isNull(node)) {
                 return node;
             }
 
-            while (!isUndefined(getNodeOwnerKey(node))) {
+            while (!isUndefined(getNodeOwnerKey(node as Node))) {
                 node = parentElementGetter.call(node);
+                if (isNull(node)) {
+                    return null;
+                }
             }
             if (node.tagName === 'HTML') { // IE 11. Active element should never be html element
                 node = document.body;
