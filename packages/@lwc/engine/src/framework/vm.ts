@@ -62,7 +62,7 @@ export interface VM {
 let idx: number = 0;
 let uid: number = 0;
 
-function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]): any {
+function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args: any[] = []): any {
     return fn.apply(cmp, args);
 }
 
@@ -451,8 +451,8 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
-function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined {
-    let elm: HTMLElement | null = startingElement;
+function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
+    let elm: Element | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
@@ -471,9 +471,9 @@ function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined
  *
  * @return {string} The component stack for errors.
  */
-export function getErrorComponentStack(startingElement: HTMLElement): string {
+export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
-    let elm: HTMLElement | null = startingElement;
+    let elm: Element | null = startingElement;
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
@@ -489,28 +489,24 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
 /**
  * Finds the parent of the specified element. If shadow DOM is enabled, finds
  * the host of the shadow root to escape the shadow boundary.
- * @param {HTMLElement} elm
- * @return {HTMLElement | null} the parent element, escaping any shadow root boundaries, if it exists
  */
-function getParentOrHostElement(elm: HTMLElement): HTMLElement | null {
+function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
     // If this is a shadow root, find the host instead
-    return (isNull(parentElement) &&  isNativeShadowRootAvailable) ? getHostElement(elm) : parentElement;
+    return (isNull(parentElement) && isNativeShadowRootAvailable) ? getHostElement(elm) : parentElement;
 }
 
 /**
  * Finds the host element, if it exists.
- * @param {HTMLElement} elm
- * @return {HTMLElement | null} the host element if it exists
  */
-function getHostElement(elm: HTMLElement): HTMLElement | null {
+function getHostElement(elm: Element): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isNativeShadowRootAvailable, 'getHostElement should only be called if native shadow root is available');
         assert.isTrue(isNull(parentElementGetter.call(elm)), `getHostElement should only be called if the parent element of ${elm} is null`);
     }
     const parentNode = parentNodeGetter.call(elm);
     return parentNode instanceof NativeShadowRoot
-        ? ShadowRootHostGetter.call(parentNode)
+        ? ShadowRootHostGetter.call(parentNode as unknown)
         : null;
 }
 
