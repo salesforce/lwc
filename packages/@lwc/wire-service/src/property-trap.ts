@@ -112,7 +112,7 @@ export function getReactiveParameterValue(cmp: LightningElement, reactiveParamet
  * @param reactiveParameter Reactive parameter that defines the property to monitor
  * @param configContext The service context
  */
-export function installTrap(cmp: Object, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+export function installTrap(cmp: LightningElement, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
     const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);
     const newDescriptor = getOverrideDescriptor(cmp, reactiveParameter.head, callback);
     Object.defineProperty(cmp, reactiveParameter.head, newDescriptor);
