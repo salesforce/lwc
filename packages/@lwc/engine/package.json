@@ -8,7 +8,6 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist/ lib/",
-    "lint": "tslint -p ./tsconfig.json",
     "test": "jest",
     "build": "tsc",
     "postbuild": "concurrently --raw \"rollup -c scripts/rollup/rollup.config.umd.dev.js\" \"rollup -c scripts/rollup/rollup.config.umd.prod.js\" \"rollup -c scripts/rollup/rollup.config.es-and-cjs.js\""
