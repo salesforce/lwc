@@ -1,4 +1,9 @@
 {
+    "globals": {
+        "process": true,
+        "Engine": true
+    },
+
     "env": {
         "jasmine": true,
         "browser": true

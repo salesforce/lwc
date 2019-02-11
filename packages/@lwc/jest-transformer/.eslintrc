@@ -1,0 +1,18 @@
+{
+    "env": {
+        "jest": true,
+        "node": true
+    },
+
+    "overrides": [
+        {
+            "files": [
+                "**/__tests__/**"
+            ],
+
+            "env": {
+                "browser": true
+            }
+        }
+    ]
+}

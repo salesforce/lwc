@@ -21,12 +21,26 @@
     "overrides": [
         {
             "files": [
-                "**/__tests__/*.js",
-                "**/__tests__/*.ts"
+                "**/__tests__/**"
             ],
 
             "env": {
                 "jest": true
+            }
+        },
+        {
+            "files": [
+                "**/scripts/**",
+                "**/jest.config.js"
+            ],
+
+            "env": {
+                "node": true,
+                "jest": true
+            },
+
+            "rules": {
+                "no-console": "off"
             }
         }
     ]
