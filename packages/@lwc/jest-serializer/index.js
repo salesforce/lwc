@@ -7,7 +7,7 @@
 const PrettyFormat = require('pretty-format');
 const DOMElement = PrettyFormat.plugins.DOMElement;
 
-function test({ nodeType, tagName } = {}) {
+function test({ nodeType } = {}) {
     return nodeType && (
         nodeType === 1 || // element
         nodeType === 3 || // text
@@ -15,26 +15,16 @@ function test({ nodeType, tagName } = {}) {
     );
 }
 
-const { getOwnPropertyDescriptor, defineProperty } = Object;
-const childNodesGetter = getOwnPropertyDescriptor(Node.prototype, 'childNodes').get;
+const { defineProperty } = Object;
 
 function escapeHTML(str) {
   return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function printNoopElement(printedChildren, config, indentation) {
-    return (
-        printedChildren +
-        config.spacingOuter +
-        indentation
-    );
-
-}
-
 function printText(text, config) {
     const contentColor = config.colors.content;
     return contentColor.open + escapeHTML(text) + contentColor.close;
-};
+}
 
 function printChildren(children, config, indentation, depth, refs, printer) {
     return children
@@ -50,7 +40,6 @@ function printChildren(children, config, indentation, depth, refs, printer) {
 }
 
 function serialize(node, config, indentation, depth, refs, printer) {
-    const oldDescriptor = getOwnPropertyDescriptor(node, 'childNodes');
     const lightChildren = Array.prototype.slice.call(node.childNodes);
     defineProperty(node, 'childNodes', {
         get() {

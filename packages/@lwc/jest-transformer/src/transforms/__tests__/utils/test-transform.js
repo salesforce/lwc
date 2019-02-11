@@ -14,7 +14,7 @@ const baseConfig = {
     filename: 'test.js',
     parserOpts: {
         plugins: [
-            ['decorators', { decoratorsBeforeExport: true }]
+            ['decorators', { decoratorsBeforeExport: true }],
             ['classProperties', {}],
             ['dynamicImport', {}],
         ],
