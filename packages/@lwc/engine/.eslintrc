@@ -6,5 +6,9 @@
     "globals": {
         "process": true,
         "global": true
+    },
+
+    "rules": {
+        "no-production-assert": "error"
     }
 }
