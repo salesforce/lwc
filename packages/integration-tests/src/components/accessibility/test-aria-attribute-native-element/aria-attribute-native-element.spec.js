@@ -7,7 +7,6 @@
 const assert = require('assert');
 describe('Aria attributes on native elements', () => {
     const URL = 'http://localhost:4567/aria-attribute-native-element';
-    let element;
 
     before(() => {
         browser.url(URL);

@@ -7,7 +7,6 @@
 const assert = require('assert');
 describe('Delegates focus', () => {
     const URL = 'http://localhost:4567/delegate-focus-click-input-in-negative-tabindex';
-    let element;
 
     before(() => {
         browser.url(URL);

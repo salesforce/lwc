@@ -9,7 +9,7 @@ export default class ObjectSetPrototypeOf extends LightningElement {
 
     get isProxyPrototypeDocument () {
         const proxy = new Proxy({}, {
-            setPrototypeOf(target, proto) {
+            setPrototypeOf(target) {
                 return Object.setPrototypeOf(target, document);
             }
         });
@@ -19,7 +19,7 @@ export default class ObjectSetPrototypeOf extends LightningElement {
 
     get isProxyPrototypeArray() {
         const proxy = new Proxy({}, {
-            setPrototypeOf(target, proto) {
+            setPrototypeOf(target) {
                 return Object.setPrototypeOf(target, document);
             }
         });

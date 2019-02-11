@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Composed focusin event', () => {
     const URL = 'http://localhost:4567/focusin-composed-true';
-    let element;
 
     before(() => {
         browser.url(URL);

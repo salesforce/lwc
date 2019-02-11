@@ -27,7 +27,5 @@ export default class Tree1 extends LightningElement {
         };
     }
 
-    @api setState(state) {
-
-    }
+    @api setState() {}
 }

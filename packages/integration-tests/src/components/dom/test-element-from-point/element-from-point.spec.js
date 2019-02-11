@@ -8,7 +8,6 @@ const assert = require('assert');
 
 describe('shadow root element from point should return correct element', () => {
     const URL = 'http://localhost:4567/element-from-point/';
-    let element;
 
     before(() => {
         browser.url(URL);

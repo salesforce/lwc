@@ -8,7 +8,6 @@ const assert = require('assert');
 
 describe('Tabbing into custom element proceeding an invisible button', () => {
     const URL = 'http://localhost:4567/delegates-focus-next-sibling-visibility-false';
-    let element;
 
     before(() => {
         browser.url(URL);

@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Slots with empty iterators should render', () => {
     const URL = 'http://localhost:4567/empty-slot-iterator';
-    let element;
 
     before(() => {
         browser.url(URL);

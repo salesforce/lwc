@@ -7,7 +7,6 @@
 const assert = require('assert');
 describe('Component AOM Setter', () => {
     const URL = 'http://localhost:4567/aom-setter';
-    let element;
 
     before(() => {
         browser.url(URL);

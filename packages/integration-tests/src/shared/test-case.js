@@ -21,10 +21,6 @@ export default class TestCase extends LightningElement {
         return `https://github.com/salesforce/lwc/issues/${this.issueId}`;
     }
 
-    get headerStyle() {
-        return 'font-size:0.8em;margin:0;text-align:right;position:fixed;left:0;right:0;bottom:0;z-index:1;padding-right:10px;border-top:1px solid #000';
-    }
-
     get hasPlaygroundHref() {
         return !!this.playgroundId;
     }

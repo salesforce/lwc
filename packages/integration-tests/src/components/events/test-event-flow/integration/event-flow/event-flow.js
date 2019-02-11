@@ -34,38 +34,38 @@ export default class EventFlow extends LightningElement {
         if (!this.rendered) {
             this.rendered = true;
 
-            this.addEventListener('slottedbuttonclick', event => {
+            this.addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW);
             });
-            this.addEventListener('childbuttonclick', event => {
+            this.addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW);
             });
 
-            this.template.addEventListener('slottedbuttonclick', event => {
+            this.template.addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW_ROOT);
             });
-            this.template.addEventListener('childbuttonclick', event => {
+            this.template.addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW_ROOT);
             });
 
-            this.template.querySelector('integration-parent').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('integration-parent').addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
-            this.template.querySelector('integration-parent').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('integration-parent').addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
         }
     }
 
-    handleSlottedButtonClick(event) {
+    handleSlottedButtonClick() {
         this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT);
     }
 
-    handleChildButtonClick(event) {
+    handleChildButtonClick() {
         this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT);
     }
 
-    handleClearButtonClick(event) {
+    handleClearButtonClick() {
         this._logs.length = 0;
     }
 }

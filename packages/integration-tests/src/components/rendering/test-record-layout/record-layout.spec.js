@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Testing component: record-layout', () => {
     const URL = 'http://localhost:4567/record-layout';
     let element;

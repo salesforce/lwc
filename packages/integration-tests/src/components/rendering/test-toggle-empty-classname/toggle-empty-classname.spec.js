@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Toggling to empty classname', () => {
     const URL = 'http://localhost:4567/toggle-empty-classname';
-    let element;
 
     before(() => {
         browser.url(URL);

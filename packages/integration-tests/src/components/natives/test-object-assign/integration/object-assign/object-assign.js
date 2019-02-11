@@ -2,8 +2,9 @@ import { LightningElement, track } from "lwc";
 
 export default class ObjectAssign extends LightningElement {
     @track assign = { inner: 'foo' }
+
     connectedCallback() {
-        const obj = Object.assign({}, this.assign, this.inner);
+        Object.assign({}, this.assign, this.inner);
     }
 
     get assigned() {
