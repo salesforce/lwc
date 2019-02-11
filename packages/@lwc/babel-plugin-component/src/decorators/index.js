@@ -8,7 +8,7 @@ const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
 
-const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
+const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES, LWC_DECORATORS } = require('../constants');
 const { generateError, getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
 const { DecoratorErrors } = require('@lwc/errors');
 
@@ -133,7 +133,7 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-function invalidDecorators({t: types}) {
+function invalidDecorators() {
     return {
         Decorator(path) {
             throw generateError(path.parentPath, {
