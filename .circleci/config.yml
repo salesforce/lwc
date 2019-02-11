@@ -244,14 +244,6 @@ workflows:
           requires:
             - build
 
-      - test_integration:
-          requires:
-            - build
-
-      - test_integration_compat:
-          requires:
-            - build
-
       - perf_and_compare:
           requires:
             - build
@@ -262,3 +254,13 @@ workflows:
           filters:
             branches:
               only: master
+
+      - test_integration:
+          requires:
+            - test_unit
+            - test_karma
+
+      - test_integration_compat:
+          requires:
+            - test_unit
+            - test_karma
