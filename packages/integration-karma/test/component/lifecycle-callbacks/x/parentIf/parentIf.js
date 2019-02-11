@@ -4,14 +4,14 @@ export default class ParentIf extends LightningElement {
     @api childVisible = false;
 
     connectedCallback() {
-        timingBuffer.push('parentIf:connectedCallback');
+        window.timingBuffer.push('parentIf:connectedCallback');
     }
 
     disconnectedCallback() {
-        timingBuffer.push('parentIf:disconnectedCallback');
+        window.timingBuffer.push('parentIf:disconnectedCallback');
     }
 
     renderedCallback() {
-        timingBuffer.push('parentIf:renderedCallback');
+        window.timingBuffer.push('parentIf:renderedCallback');
     }
 }

@@ -25,6 +25,7 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
             const elm = root.shadowRoot.querySelector('div');
             fn(elm);
 
+            /* eslint-disable-next-line no-console */
             const [msg] = console.error.calls.argsFor(0);
             expect(msg).toMatch(`\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`)
         });
@@ -64,6 +65,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
             const elm = root.shadowRoot.querySelector('div');
             fn(elm);
 
+            /* eslint-disable-next-line no-console */
             expect(console.error).not.toHaveBeenCalled();
         });
     }
@@ -89,6 +91,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
         elm.appendChild(child);
         elm.removeChild(child);
 
+        /* eslint-disable-next-line no-console */
         expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -108,6 +111,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
         span.textContent = '';
         span.parentNode.removeChild(span);
 
+        /* eslint-disable-next-line no-console */
         expect(console.error).not.toHaveBeenCalled();
     });
 });
@@ -182,7 +186,7 @@ xdescribe('nested dynamic lwc elm with dom manual', () => {
     it('getRootNode() of inner custom element should return outer shadowRoot', () => {
         expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
     })
-    
+
     it('getRootNode() of inner shadow\'s template element should return inner shadowRoot', () => {
         const innerDiv = innerElem.shadowRoot.querySelector('div');
         expect(innerDiv.getRootNode()).toBe(innerElem.shadowRoot);

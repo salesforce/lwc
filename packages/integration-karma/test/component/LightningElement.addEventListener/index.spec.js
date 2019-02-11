@@ -1,4 +1,3 @@
-import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
 
 import EventHandler from 'x/eventHandler';
@@ -33,7 +32,10 @@ xit('should warn when adding multiple times the same event handler', () => {
     spyOn(console, 'warn');
     document.body.appendChild(elm);
 
+    /* eslint-disable-next-line no-console */
     expect(console.warn).toHaveBeenCalledTimes(1);
+
+    /* eslint-disable-next-line no-console */
     expect(console.warn.calls.argsFor(0)[0]).toMatch(
             /\[LWC warning\]: \[object HTMLElement\] has duplicate listener for event "click"\. Instead add the event listener in the connectedCallback\(\) hook\./
     );
@@ -46,7 +48,10 @@ xit('should warn when passing a 3rd parameter to the event handler', () => {
     spyOn(console, 'warn');
     document.body.appendChild(elm);
 
+    /* eslint-disable-next-line no-console */
     expect(console.warn).toHaveBeenCalledTimes(1);
+
+    /* eslint-disable-next-line no-console */
     expect(console.warn.calls.argsFor(0)[0]).toMatch(
             /\[LWC warning\]: The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments\. Options to make the listener passive, once, or capture are not allowed/
     );

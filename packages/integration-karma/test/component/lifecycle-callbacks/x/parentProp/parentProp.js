@@ -4,14 +4,14 @@ export default class ParentProp extends LightningElement {
     @api value = 'foo';
 
     connectedCallback() {
-        timingBuffer.push('parentProp:connectedCallback');
+        window.timingBuffer.push('parentProp:connectedCallback');
     }
 
     disconnectedCallback() {
-        timingBuffer.push('parentProp:disconnectedCallback');
+        window.timingBuffer.push('parentProp:disconnectedCallback');
     }
 
     renderedCallback() {
-        timingBuffer.push('parentProp:renderedCallback');
+        window.timingBuffer.push('parentProp:renderedCallback');
     }
 }

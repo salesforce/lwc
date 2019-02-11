@@ -5,18 +5,18 @@ export default class Child extends LightningElement {
 
     constructor() {
         super();
-        timingBuffer.push('child:constructor');
+        window.timingBuffer.push('child:constructor');
     }
 
     connectedCallback() {
-        timingBuffer.push('child:connectedCallback');
+        window.timingBuffer.push('child:connectedCallback');
     }
 
     disconnectedCallback() {
-        timingBuffer.push('child:disconnectedCallback');
+        window.timingBuffer.push('child:disconnectedCallback');
     }
 
     renderedCallback() {
-        timingBuffer.push('child:renderedCallback');
+        window.timingBuffer.push('child:renderedCallback');
     }
 }

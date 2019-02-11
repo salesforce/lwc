@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement } from 'lwc';
 import { createElement } from 'test-utils';
 
 import Test from 'x/test';
@@ -56,6 +56,7 @@ it('should log warning when element is not connected', function() {
     spyOn(console, 'warn');
     elm.dispatch(new CustomEvent('event'));
 
+    /* eslint-disable-next-line no-console */
     const [msg] = console.warn.calls.argsFor(0);
     expect(msg).toMatch(
         /\[LWC warning\]: Unreachable event "event" dispatched from disconnected element <x-test>. Events can only reach the parent element after the element is connected \(via connectedCallback\) and before the element is disconnected\(via disconnectedCallback\)./
@@ -70,6 +71,7 @@ function testInvalidEvent(reason, name) {
         spyOn(console, 'warn');
         elm.dispatch(new CustomEvent(name));
 
+        /* eslint-disable-next-line no-console */
         const [msg] = console.warn.calls.argsFor(0);
         expect(msg).toMatch(
             /\[LWC warning\]: Invalid event type "\S+" dispatched in element <x-test>. Event name should only contain lowercase alphanumeric characters./
