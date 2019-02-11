@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compile } from "../../compiler/compiler";
-import { pretify, readFixture } from "../../__tests__/utils";
+import { pretify } from "../../__tests__/utils";
 import { DiagnosticLevel } from "@lwc/errors";
 
 const VALID_CONFIG = {
@@ -48,9 +48,9 @@ describe("module resolver", () => {
                         h: api_element
                     } = $api;
 
-                    return [api_element(\"p\", {
+                    return [api_element("p", {
                         key: 2
-                    }, [api_text(\"Manually Imported Template\")])];
+                    }, [api_text("Manually Imported Template")])];
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);
@@ -97,9 +97,9 @@ describe("module resolver", () => {
                         h: api_element
                     } = $api;
 
-                    return [api_element(\"p\", {
+                    return [api_element("p", {
                         key: 2
-                    }, [api_text(\"Another Template\")])];
+                    }, [api_text("Another Template")])];
                 }
 
                 var mytemplate = lwc.registerTemplate(tmpl);

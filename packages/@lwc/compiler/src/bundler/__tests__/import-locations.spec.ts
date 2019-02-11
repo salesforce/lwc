@@ -13,7 +13,6 @@ describe("import locations", () => {
     });
 
     test("location collector should return empty array if no imports were specified", () => {
-        const src = `define('x/foo', function () {});`
         const locs = collectImportLocations("debugger");
         expect(locs.length).toBe(0);
     });
