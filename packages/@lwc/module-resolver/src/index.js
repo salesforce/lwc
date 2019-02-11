@@ -30,7 +30,7 @@ function loadLwcConfig(modulePath) {
     return config;
 }
 
-function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
+function resolveModulesInDir(fullPathDir) {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
         const fileName = path.basename(file, MODULE_EXTENSION);
         const rootDir = path.dirname(file);
@@ -57,6 +57,7 @@ function resolveModulesInDir(fullPathDir, { ignoreFolderName } = {}) {
 
 function hasModuleBeenVisited(module, visited) {
     if (visited.has(module)) {
+        /* eslint-disable-next-line no-console */
         console.log(`Package ${module} already resolved`);
         return true;
     }
