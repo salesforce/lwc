@@ -43,7 +43,7 @@ export class Store {
         return data;
     }
 
-    updateData(mod = 10) {
+    updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
         var newData = [];
         for (let i = 0; i < this.data.length; i ++) {
