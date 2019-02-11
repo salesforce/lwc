@@ -10,7 +10,6 @@ import template from "@babel/template";
 import * as parse5 from 'parse5-with-errors';
 
 import State from '../state';
-import { ResolvedConfig } from '../config';
 
 import {
     TEMPLATE_PARAMS,
@@ -111,8 +110,6 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
 function transform(
     root: IRNode,
     codeGen: CodeGen,
-    state: State,
-    options: ResolvedConfig
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
@@ -380,7 +377,7 @@ function transform(
         const { namespaceURI, tagName } = (element.__original as parse5.AST.Default.Element);
 
         switch (attr.type) {
-            case IRAttributeType.Expression:
+            case IRAttributeType.Expression: {
                 let { expression } = bindExpression(attr.value, element);
                 if (attr.name === 'tabindex') {
                     expression = codeGen.genTabIndex([expression]);
@@ -395,6 +392,7 @@ function transform(
                     );
                 }
                 return expression;
+            }
 
             case IRAttributeType.String:
                 if (attr.name === 'id') {
@@ -529,9 +527,9 @@ function transform(
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-function generateTemplateFunction(templateRoot: IRElement, state: State, options: ResolvedConfig): t.FunctionDeclaration {
+function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
     const codeGen = new CodeGen();
-    const statement = transform(templateRoot, codeGen, state, options);
+    const statement = transform(templateRoot, codeGen);
 
     // Copy AST generated styles to the state
     state.inlineStyle.body = codeGen.inlineStyleBody;
@@ -597,10 +595,10 @@ function format({ config }: State) {
     }
 }
 
-export default function(templateRoot: IRElement, state: State, options: ResolvedConfig): CompilationOutput {
-    const templateFunction = generateTemplateFunction(templateRoot, state, options);
+export default function(templateRoot: IRElement, state: State): CompilationOutput {
+    const templateFunction = generateTemplateFunction(templateRoot, state);
     const formatter = format(state);
-    const program = formatter(templateFunction, state, options);
+    const program = formatter(templateFunction, state);
 
     const { code } = generate(program);
     return {

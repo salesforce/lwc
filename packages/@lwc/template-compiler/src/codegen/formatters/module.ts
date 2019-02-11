@@ -12,7 +12,6 @@ import {
     generateTemplateMetadata,
     kebabcaseToCamelcase
 } from '../helpers';
-import { ResolvedConfig } from '../../config';
 
 import {
     TEMPLATE_FUNCTION_NAME,
@@ -48,7 +47,6 @@ function generateInlineStylesImports(state: State) {
 export function format(
     templateFn: t.FunctionDeclaration,
     state: State,
-    options: ResolvedConfig
 ): t.Program {
     const imports = state.dependencies.map(cmpClassName =>
         moduleNameToImport(cmpClassName),

@@ -50,7 +50,7 @@ export default function compiler(
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const output = generate(parsingResults.root, state, options);
+            const output = generate(parsingResults.root, state);
             code = output.code;
         }
     } catch (error) {
@@ -82,10 +82,10 @@ export function compileToFunction(source: string): Function {
         if (warning.level === DiagnosticLevel.Error) {
             throw CompilerError.from(warning);
         } else if (warning.level === DiagnosticLevel.Warning) {
-            /* tslint:disable-next-line:no-console */
+            /* eslint-disable-next-line no-console */
             console.warn(warning.message);
         } else {
-            /* tslint:disable-next-line:no-console */
+            /* eslint-disable-next-line no-console */
             console.log(warning.message);
         }
     }
@@ -94,6 +94,6 @@ export function compileToFunction(source: string): Function {
         throw generateCompilerError(TemplateErrors.INVALID_TEMPLATE);
     }
 
-    const { code } = generate(parsingResults.root, state, options);
+    const { code } = generate(parsingResults.root, state);
     return new Function(TEMPLATE_MODULES_PARAMETER, code);
 }
