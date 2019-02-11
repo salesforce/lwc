@@ -23,7 +23,7 @@ function isSpreadable(O: any): boolean {
 }
 
 // https://www.ecma-international.org/ecma-262/6.0/#sec-array.prototype.concat
-function ArrayConcatPolyfill(this: any, ...args: any[][]): any[] {
+function ArrayConcatPolyfill(this: any, ..._args: any[][]): any[] {
     const O = Object(this);
     const A: any = [];
     let N = 0;

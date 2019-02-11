@@ -55,11 +55,9 @@ function validateSlots(vm: VM, html: any) {
     const { cmpSlots = EmptySlots } = vm;
     const { slots = EmptyArray } = html;
     for (const slotName in cmpSlots) {
-        // tslint:disable-next-line no-production-assert
         assert.isTrue(isArray(cmpSlots[slotName]), `Slots can only be set to an array, instead received ${toString(cmpSlots[slotName])} for slot "${slotName}" in ${vm}.`);
         if (ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
-            // tslint:disable-next-line no-production-assert
             assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`, vm.elm);
         }
     }
@@ -75,10 +73,8 @@ function validateFields(vm: VM, html: Template) {
     const { ids = [] } = html;
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
-            // tslint:disable-next-line no-production-assert
             assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`, vm.elm);
         } else if (hasOwnProperty.call(component, propName)) {
-            // tslint:disable-next-line no-production-assert
             assert.fail(`${component}'s template is accessing \`this.${toString(propName)}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(propName)}\`.`);
         }
     });

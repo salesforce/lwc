@@ -65,7 +65,7 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     setInternalField(elm, ShadowRootKey, sr);
     // expose the shadow via a hidden symbol for testing purposes
     if (process.env.NODE_ENV === 'test') {
-        elm['$$ShadowRoot$$'] = sr; // tslint:disable-line
+        elm['$$ShadowRoot$$'] = sr;
     }
     return sr as SyntheticShadowRootInterface;
 }
@@ -152,7 +152,7 @@ const ShadowRootDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, left: number, top: number): Element[] {
+        value(this: SyntheticShadowRootInterface, _left: number, _top: number): Element[] {
             throw new Error();
         },
     },

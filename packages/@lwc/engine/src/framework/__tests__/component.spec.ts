@@ -52,8 +52,6 @@ describe('component', function() {
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function() {
-            const count = 0;
-            let value;
             const propVal = { foo: 'bar' };
             class MyChild extends LightningElement {
                 m = propVal;
@@ -72,7 +70,7 @@ describe('component', function() {
             );
             class MyComponent extends LightningElement  {
                 callChildM() {
-                    value = this.template.querySelector('x-child').m;
+                    this.template.querySelector('x-child').m;
                 }
                 render() {
                     return html;
@@ -155,6 +153,7 @@ describe('component', function() {
 
                 get breakfast() {
                     context = this;
+                    return 'breakfast';
                 }
             }
 
@@ -306,7 +305,7 @@ describe('component', function() {
                 breakfast: {}
             };
 
-            const elm = createElement('x-foo', { is: MyComponent });
+            createElement('x-foo', { is: MyComponent });
 
             expect(callCount).toBe(1);
             expect(context).toBe(component);
@@ -430,7 +429,7 @@ describe('component', function() {
                     color: 'red'
                 };
 
-                updateStyle(str) {
+                updateStyle() {
                     this.customStyle = 'color:green;';
                 }
 
@@ -564,13 +563,7 @@ describe('component', function() {
         });
 
         it('should allow calling getAttribute on child when referenced with querySelector', function() {
-            let count = 0;
-            class MyChild extends LightningElement {
-                m() {
-                    count += 1;
-                }
-            }
-            MyChild.publicMethods = ['m'];
+            class MyChild extends LightningElement {}
 
             const html = compileTemplate(
                 `<template>
@@ -598,13 +591,7 @@ describe('component', function() {
         });
 
         it('should allow calling setAttribute on child when referenced with querySelector', function() {
-            let count = 0;
-            class MyChild extends LightningElement {
-                m() {
-                    count += 1;
-                }
-            }
-            MyChild.publicMethods = ['m'];
+            class MyChild extends LightningElement {}
 
             const html = compileTemplate(
                 `<template>
@@ -632,13 +619,7 @@ describe('component', function() {
         });
 
         it('should allow calling removeAttribute on child when referenced with querySelector', function() {
-            let count = 0;
-            class MyChild extends LightningElement {
-                m() {
-                    count += 1;
-                }
-            }
-            MyChild.publicMethods = ['m'];
+            class MyChild extends LightningElement {}
 
             const html = compileTemplate(
                 `<template>

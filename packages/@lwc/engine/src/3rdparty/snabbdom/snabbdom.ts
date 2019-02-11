@@ -13,8 +13,6 @@ Code distributed by Snabbdom as part of the Snabbdom project at
 https://github.com/snabbdom/snabbdom/
 */
 
-/* tslint:disable:one-variable-per-declaration*/
-
 import { VNode, VNodes, Key } from './types';
 
 function isUndef(s: any): s is undefined {

@@ -218,7 +218,7 @@ describe('events', () => {
                 render() {
                     return rootHTML;
                 }
-                handleClick(evt) {
+                handleClick() {
                     // event handler is here to trigger patching of the event
                 }
             }
@@ -537,7 +537,7 @@ describe('events', () => {
             `);
             class GrandChild extends LightningElement {
                 connectedCallback() {
-                    this.template.addEventListener('click', (evt) => {
+                    this.template.addEventListener('click', () => {
                         this.dispatchEvent(new CustomEvent('bubblesnotcomposed', {
                             bubbles:true,
                             composed: false

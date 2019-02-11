@@ -7,7 +7,6 @@
 const path = require('path');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const replace = require('rollup-plugin-replace');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');

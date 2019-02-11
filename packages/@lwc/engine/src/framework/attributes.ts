@@ -35,7 +35,7 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
+const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use `this.getBoundingClientRect()` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
 
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
@@ -241,7 +241,7 @@ export function isAttributeLocked(elm: Element, attrName: string): boolean {
     return elm !== controlledElement || attrName !== controlledAttributeName;
 }
 
-export function lockAttribute(elm: Element, key: string) {
+export function lockAttribute(_elm: Element, _key: string) {
     controlledElement = null;
     controlledAttributeName = undefined;
 }

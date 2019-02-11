@@ -9,8 +9,9 @@ let MO = (window as any).MutationObserver;
 // MutationObserver is not yet implemented in jsdom:
 // https://github.com/jsdom/jsdom/issues/639
 if (typeof MO === 'undefined') {
-    /* tslint:disable-next-line:no-empty */
+    /* eslint-disable-next-line no-inner-declarations */
     function MutationObserverMock() {}
+
     MutationObserverMock.prototype = {
         observe() {
             if (process.env.NODE_ENV !== 'production') {

@@ -20,13 +20,14 @@ import { getFilteredChildNodes } from "../../faux-shadow/traverse";
 
 export function getTextContent(node: Node): string {
     switch (node.nodeType) {
-        case Node.ELEMENT_NODE:
+        case Node.ELEMENT_NODE: {
             const childNodes = getFilteredChildNodes(node);
             let content = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
                 content += getTextContent(childNodes[i]);
             }
             return content;
+        }
         default:
             return node.nodeValue as string;
     }

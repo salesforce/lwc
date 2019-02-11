@@ -8,7 +8,7 @@ const COMPAT_SUFFIX = "_compat";
 const DEBUG_SUFFIX = "_debug";
 const PROD_SUFFIX = ".min";
 
-function generateTargetName({ format, prod, target, proddebug }){
+function generateTargetName({ prod, proddebug }){
     return [
         'engine',
         proddebug ? DEBUG_SUFFIX : '',

@@ -398,7 +398,6 @@ describe('Events on Custom Elements', () => {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        const div = elm.querySelector('div') as HTMLElement;
         elm.run();
         expect(count).toBe(1);
     });
@@ -516,7 +515,6 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                const cmp = this;
                 this.addEventListener('click', clickSpy);
             }
 
@@ -635,7 +633,7 @@ describe('Events on Custom Elements', () => {
         `);
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', (evt) => {
+                this.addEventListener('click', () => {
                     const div = this.template.querySelector('div');
                     div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
                 });
@@ -708,7 +706,7 @@ describe('Component events', () => {
 
         class MyComponent extends LightningElement {
             connectedCallback() {
-                this.addEventListener('click', (evt) => {
+                this.addEventListener('click', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
@@ -950,7 +948,7 @@ describe('Shadow Root events', () => {
         class MyComponent extends LightningElement {
             constructor() {
                 super();
-                this.template.addEventListener('foo', (evt) => {
+                this.template.addEventListener('foo', () => {
                     const div = this.template.querySelector('div');
                     div.click();
                 });

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* tslint:disable:no-production-assert */
+
 import assert from "../shared/assert";
 import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf, getPropertyDescriptor } from "../shared/language";
 import { ComponentInterface } from "./component";
@@ -139,7 +139,7 @@ function getElementRestrictionsDescriptors(elm: HTMLElement, options: Restrictio
             get(this: HTMLElement): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, value: string) {
+            set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
             },
             enumerable: true,
@@ -168,7 +168,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
             get(this: ShadowRoot): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
-            set(this: ShadowRoot, value: string) {
+            set(this: ShadowRoot, _value: string) {
                 throw new TypeError(`Invalid attempt to set innerHTML on ShadowRoot.`);
             },
             enumerable: true,
@@ -178,7 +178,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
             get(this: ShadowRoot): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
-            set(this: ShadowRoot, value: string) {
+            set(this: ShadowRoot, _value: string) {
                 throw new TypeError(`Invalid attempt to set textContent on ShadowRoot.`);
             },
             enumerable: true,
@@ -244,7 +244,7 @@ function getAttributePatched(this: HTMLElement, attrName: string): string | null
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
+function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any) {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV !== 'production') {
         assertAttributeMutationCapability(vm, attrName);
@@ -253,7 +253,7 @@ function setAttributePatched(this: HTMLElement, attrName: string, newValue: any)
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, newValue: any) {
+function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, _newValue: any) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -322,7 +322,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
             get(this: HTMLElement): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, value: string) {
+            set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set innerHTML on HTMLElement.`);
             },
             enumerable: true,
@@ -332,7 +332,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
             get(this: HTMLElement): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, value: string) {
+            set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set outerHTML on HTMLElement.`);
             },
             enumerable: true,
@@ -342,7 +342,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
             get(this: HTMLElement): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
-            set(this: HTMLElement, value: string) {
+            set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set textContent on HTMLElement.`);
             },
             enumerable: true,
@@ -380,7 +380,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
     });
 }
 
-function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: RestrictionsOptions): PropertyDescriptorMap {
+function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -388,7 +388,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
     const originalSetAttribute = cmp.setAttribute;
     return {
         setAttribute: {
-            value(this: ComponentInterface, attrName: string, value: any) {
+            value(this: ComponentInterface, attrName: string, _value: any) {
                 // logging errors for experimental and special attributes
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
@@ -422,7 +422,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
     };
 }
 
-function getLightingElementProtypeRestrictionsDescriptors(proto: object, options: RestrictionsOptions): PropertyDescriptorMap {
+function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -458,7 +458,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object, options
                 return; // explicit undefined
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
-            set() {}, // tslint:disable-line
+            set() {},
         };
     });
     return descriptors;
@@ -488,10 +488,10 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement, options: Re
     setPrototypeOf(elm, create(elmProto, restrictionsDescriptors));
 }
 
-export function patchComponentWithRestrictions(cmp: ComponentInterface, options: RestrictionsOptions) {
-    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp, options));
+export function patchComponentWithRestrictions(cmp: ComponentInterface) {
+    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
 }
 
-export function patchLightningElementPrototypeWithRestrictions(proto: object, options: RestrictionsOptions) {
-    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto, options));
+export function patchLightningElementPrototypeWithRestrictions(proto: object) {
+    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
 }

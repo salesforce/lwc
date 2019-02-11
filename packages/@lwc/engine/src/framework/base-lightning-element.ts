@@ -142,7 +142,7 @@ export function BaseLightningElement(this: ComponentInterface) {
     setInternalField(cmpRoot, ViewModelReflection, vm);
     setNodeKey(elm, uid);
     if (process.env.NODE_ENV !== 'production') {
-        patchComponentWithRestrictions(component, EmptyObject);
+        patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
     }
 }
@@ -193,7 +193,7 @@ BaseLightningElement.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
-    setAttributeNS(ns: string | null, attrName: string, value: string) {
+    setAttributeNS(ns: string | null, attrName: string, _value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
@@ -220,7 +220,7 @@ BaseLightningElement.prototype = {
         elm.removeAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    setAttribute(attrName: string, value: string) {
+    setAttribute(attrName: string, _value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
@@ -365,7 +365,7 @@ const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
 defineProperties(BaseLightningElement.prototype, baseDescriptors);
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype, EmptyObject);
+    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype);
 }
 
 freeze(BaseLightningElement);

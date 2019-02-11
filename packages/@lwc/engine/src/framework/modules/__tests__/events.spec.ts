@@ -9,7 +9,7 @@ import { createElement, LightningElement } from '../../main';
 
 describe('module/events', () => {
     it('attaches click event handler to element', function() {
-        let result: Event[] = [], cmp;
+        const result: Event[] = [];
 
         const html = compileTemplate(`
             <template>
@@ -57,8 +57,8 @@ describe('module/events', () => {
                     return secondTmpl;
                 }
             }
-            clickOne(ev: Event) { result.push(1); }
-            clickTwo(ev: Event) { result.push(2); }
+            clickOne() { result.push(1); }
+            clickTwo() { result.push(2); }
         }
         MyComponent.publicProps = {
             counter: 1
