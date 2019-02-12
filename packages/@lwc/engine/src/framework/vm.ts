@@ -32,7 +32,7 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export interface VM {
+export interface UninitializedVM {
     readonly elm: HTMLElement;
     readonly def: ComponentDef;
     readonly context: Context;
@@ -41,10 +41,8 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: any;
-    cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
     callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
@@ -54,9 +52,14 @@ export interface VM {
     isRoot: boolean;
     fallback: boolean;
     mode: string;
-    component?: ComponentInterface;
     deps: VM[][];
     toString(): string;
+}
+
+export interface VM extends UninitializedVM {
+    cmpState: Record<string, any>;
+    cmpTemplate: Template;
+    component: ComponentInterface;
 }
 
 let idx: number = 0;
@@ -183,7 +186,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         delegatesFocus: !!Ctor.delegatesFocus,
     };
     uid += 1;
-    const vm: VM = {
+    const vm: UninitializedVM = {
         uid,
         idx: 0,
         isScheduled: false,
@@ -197,14 +200,11 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         context: create(null),
         cmpProps: create(null),
         cmpTrack: create(null),
-        cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
-        cmpTemplate: undefined,
         cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
         setHook,
         getHook,
-        component: undefined,
         children: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
@@ -217,8 +217,10 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);
+
+    const initialized = vm as VM;
     // link component to the wire service
-    linkComponent(vm);
+    linkComponent(initialized);
 }
 
 function rehydrate(vm: VM) {
