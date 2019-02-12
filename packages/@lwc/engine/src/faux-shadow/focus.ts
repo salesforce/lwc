@@ -204,8 +204,7 @@ function isLastTabbableChild(target: EventTarget, segments: QuerySegments): bool
 }
 
 function keyboardFocusHandler(event: FocusEvent) {
-    // currentTarget should always be defined
-    const host = eventCurrentTargetGetter.call(event) as EventTarget;
+    const host = eventCurrentTargetGetter.call(event);
     const target = eventTargetGetter.call(event);
 
     // Ideally, we would be able to use a "focus" event that doesn't bubble
@@ -246,8 +245,7 @@ function keyboardFocusHandler(event: FocusEvent) {
 // via keyboard navigation (tab or shift+tab)
 // Focusing via mouse should be disqualified before this gets called
 function keyboardFocusInHandler(event: FocusEvent) {
-    // currentTarget should always be defined
-    const host = eventCurrentTargetGetter.call(event) as EventTarget;
+    const host = eventCurrentTargetGetter.call(event);
     const target = eventTargetGetter.call(event);
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
     const segments = getTabbableSegments(host as HTMLElement);
@@ -297,7 +295,6 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 }
 
 function stopFocusIn(evt) {
-    // currentTarget should always be defined
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
     setTimeout(() => {
@@ -309,15 +306,11 @@ function stopFocusIn(evt) {
 }
 
 function handleFocusMouseDown(evt) {
-    const target = eventTargetGetter.call(evt);
-    if (isNull(target)) {
-        return;
-    }
-    const elm = target as HTMLElement;
+    const target = eventTargetGetter.call(evt) as HTMLElement;
     // If we are mouse down in an element that can be focused
     // and the currentTarget's activeElement is not element we are mouse-ing down in
     // We can bail out and let the browser do its thing.
-    if (willTriggerFocusInEvent(elm)) {
+    if (willTriggerFocusInEvent(target)) {
         addEventListener.call(eventCurrentTargetGetter.call(evt), 'focusin', stopFocusIn, true);
     }
 }

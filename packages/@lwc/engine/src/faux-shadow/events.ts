@@ -116,13 +116,12 @@ export function patchEvent(event: Event) {
     if (!isUndefined(originalRelatedTargetDescriptor)) {
         defineProperty(event, 'relatedTarget', {
             get(this: ComposableEvent): EventTarget | null | undefined {
-                // currentTarget is always defined
-                const originalCurrentTarget = eventCurrentTargetGetter.call(this) as EventTarget;
+                const eventContext = eventToContextMap.get(this);
+                const originalCurrentTarget = eventCurrentTargetGetter.call(this);
                 const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
                 if (isNull(relatedTarget)) {
                     return null;
                 }
-                const eventContext = eventToContextMap.get(this);
                 const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
                     getShadowRoot(originalCurrentTarget as HTMLElement) :
                     originalCurrentTarget;

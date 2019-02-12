@@ -22,7 +22,7 @@ export type StylesheetFactory = (hostSelector: string, shadowSelector: string, n
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
-function createStyleElement(styleContent: string): Element {
+function createStyleElement(styleContent: string): HTMLStyleElement {
     const elm = createElement.call(document, 'style') as HTMLStyleElement;
     elm.type = 'text/css';
     elm.textContent = styleContent;

@@ -4,23 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { ArraySlice } from '../shared/language';
+
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
-            const args = arguments as unknown;
-            return win.postMessage.apply(win, args as any[]);
+            return win.postMessage.apply(win, ArraySlice.call(arguments));
         },
         blur() {
-            const args = arguments as unknown;
-            return win.blur.apply(win, args as any[]);
+            return win.blur.apply(win, ArraySlice.call(arguments));
         },
         close() {
-            const args = arguments as unknown;
-            return win.close.apply(win, args as any[]);
+            return win.close.apply(win, ArraySlice.call(arguments));
         },
         focus() {
-            const args = arguments as unknown;
-            return win.focus.apply(win, args as any[]);
+            return win.focus.apply(win, ArraySlice.call(arguments));
         },
         get closed() {
             return win.closed;
