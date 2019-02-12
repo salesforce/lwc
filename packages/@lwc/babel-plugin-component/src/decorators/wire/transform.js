@@ -80,70 +80,12 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
-const SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE = {
+const SUPPORTED_VALUE_TO_TYPE_MAP = {
     StringLiteral: 'string',
     NumericLiteral: 'number',
     BooleanLiteral: 'boolean'
 };
 
-function getWiredStaticMetadata(properties, referenceLookup) {
-    const ret = {};
-    properties.forEach(s => {
-        let result = {};
-        const valueType = s.value.type;
-        if (s.key.type === 'Identifier') {
-            if (valueType === 'ArrayExpression') {
-                // @wire(getRecord, { fields: ['Id', 'Name'] })
-                // @wire(getRecord, { data: [123, false, 'string'] })
-                const elements = s.value.elements;
-                const hasUnsupportedElement =
-                    elements.some(element => !SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[element.type]);
-                if (hasUnsupportedElement) {
-                    result = {type: 'unresolved', value: 'array_expression'};
-                } else {
-                    result = {type: 'array', value: elements.map(e => e.value)};
-                }
-            } else if (SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType]) {
-                // @wire(getRecord, { companyName: ['Acme'] })
-                // @wire(getRecord, { size: 100 })
-                // @wire(getRecord, { isAdmin: true  })
-                result = {type: SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[valueType], value: s.value.value};
-            } else if (valueType === 'Identifier') {
-                // References such as:
-                // 1. Modules
-                // import id from '@salesforce/user/id'
-                // @wire(getRecord, { userId: id })
-                //
-                // 2. 1st order constant references with string literals
-                // const userId = '123';
-                // @wire(getRecord, { userId: userId })
-                const reference = referenceLookup(s.value.name);
-                result = {value: reference.value, type: reference.type};
-                if (!result.type) {
-                    result = {type: 'unresolved', value: 'identifier'}
-                }
-            } else if (valueType === 'MemberExpression') {
-                // @wire(getRecord, { userId: recordData.Id })
-                result = {type: 'unresolved', value: 'member_expression'};
-            }
-        }
-        if (!result.type) {
-            result = {type: 'unresolved'};
-        }
-        ret[s.key.name] = result;
-    });
-    return ret;
-}
-
-function getWiredParamMetadata(properties) {
-    const ret = {};
-    properties.forEach(p => {
-        if (p.key.type === 'Identifier' && p.value.type === 'StringLiteral') {
-            ret[p.key.name] = p.value.value;
-        }
-    });
-    return ret;
-}
 
 const scopedReferenceLookup = scope => name => {
     const binding = scope.getBinding(name);
@@ -163,8 +105,8 @@ const scopedReferenceLookup = scope => name => {
         } else if (binding.kind === 'const') {
             // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
             const init = binding.path.node.init;
-            if (init && SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type]) {
-                type = SUPPORTED_VALUE_TYPE_TO_METADATA_TYPE[init.type];
+            if (init && SUPPORTED_VALUE_TO_TYPE_MAP[init.type]) {
+                type = SUPPORTED_VALUE_TO_TYPE_MAP[init.type];
                 value = init.value;
             }
         }
@@ -176,7 +118,6 @@ const scopedReferenceLookup = scope => name => {
 };
 
 module.exports = function transform(t, klass, decorators) {
-    const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({path}) => {
         const [id, config] = path.get('expression.arguments');
 
@@ -206,19 +147,6 @@ module.exports = function transform(t, klass, decorators) {
             }
         }
 
-        const wireMetadata = {
-            name: wiredValue.propertyName,
-            adapter: wiredValue.adapter,
-            type: isClassMethod ? 'method' : 'property'
-        };
-
-        if (config) {
-            wireMetadata.static = getWiredStaticMetadata(wiredValue.static, referenceLookup);
-            wireMetadata.params = getWiredParamMetadata(wiredValue.params);
-        }
-
-        metadata.push(wireMetadata);
-
         return wiredValue;
     });
 
@@ -232,12 +160,5 @@ module.exports = function transform(t, klass, decorators) {
         markAsLWCNode(staticProp);
 
         klass.get('body').pushContainer('body', staticProp);
-    }
-
-    if (metadata.length > 0) {
-        return {
-            type: 'wire',
-            targets: metadata
-        };
     }
 };

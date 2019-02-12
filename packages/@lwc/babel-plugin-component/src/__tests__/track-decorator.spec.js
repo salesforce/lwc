@@ -20,19 +20,19 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this.record = void 0;
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   track: {
                     record: 1
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -53,7 +53,7 @@ describe('Transform property', () => {
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
-                
+
                 class Test {
                   constructor() {
                     this.record = {
@@ -61,13 +61,13 @@ describe('Transform property', () => {
                     };
                   }
                 }
-                
+
                 _registerDecorators(Test, {
                   track: {
                     record: 1
                   }
                 });
-                
+
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
@@ -130,48 +130,4 @@ describe('Transform property', () => {
             }
         }
     });
-});
-
-describe('Metadata', () => {
-    pluginTest(
-        'gather metadata',
-        `
-        import { LightningElement, track } from 'lwc';
-        export default class Test extends LightningElement {
-            @track state;
-        }
-    `,
-        {
-            output: {
-                metadata: {
-                    decorators: [
-                        {
-                            type: "track",
-                            targets: [{ name: "state", type: "property" }]
-                        }
-                    ],
-                    classMembers: [
-                        {
-                            type: "property",
-                            name: "state",
-                            loc: {
-                                start: { line: 3, column: 0 },
-                                end: { line: 3, column: 13 }
-                            },
-                            decorator: "track"
-                        }
-                    ],
-                    declarationLoc: {
-                        end: { column: 1, line: 4 },
-                        start: { column: 0, line: 2 }
-                    },
-                    exports: [
-                        {
-                            type: 'ExportDefaultDeclaration',
-                        }
-                    ],
-                }
-            }
-        }
-    );
 });

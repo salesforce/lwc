@@ -50,14 +50,6 @@ function transform(t, klass, decorators) {
             'body',
             staticProp
         );
-
-        return {
-            type: 'track',
-            targets: trackProperties.map(name => ({
-                name,
-                type: 'property',
-            }))
-        };
     }
 }
 
