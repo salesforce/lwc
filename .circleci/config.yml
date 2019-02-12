@@ -61,7 +61,7 @@ start_sauce_connect: &start_sauce_connect
     name: Install and start sauce connect
     background: true
     command: |
-        curl https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz -o saucelabs.tar.gz
+        curl https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz -o saucelabs.tar.gz
         tar -xzf saucelabs.tar.gz
         cd sc-*
         bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
