@@ -4,15 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 // force non-headless Chrome on Sauce Labs for debugability
 process.env.HEADLESS_CHROME=false;
+
 const merge = require('deepmerge');
 const minimist = require('minimist');
-const base = require('./wdio.conf.js');
 
-if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_KEY) {
-    throw new Error("process.env.SAUCE_USERNAME and process.env.SAUCE_KEY are required to be set to run tests against SauceLabs");
-}
+const base = require('./wdio.conf.js');
 
 const browsers = [
     // Note that headless Chrome also needs to be updated in wdio.conf.js for non-SauceLabs runs
@@ -86,23 +85,52 @@ const compatBrowsers = [
     },
 ];
 
-const sauce = {
-    user: process.env.SAUCE_USERNAME,
-    key: process.env.SAUCE_KEY,
+const mode = process.env.MODE;
+
+const username = process.env.SAUCE_USERNAME;
+if (!username) {
+    throw new TypeError('Missing SAUCE_USERNAME environment variable');
+}
+
+const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+if (!accessKey) {
+    throw new TypeError(
+        'Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable',
+    );
+}
+
+const tunnelId = process.env.SAUCE_TUNNEL_ID;
+const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
+
+const name = ['integration-test', mode].join(' - ');
+const build = ['integration-test', buildId, mode].join(' - ');
+const tags = [mode];
+
+const customData = {
+    ci: !!process.env.CI,
+    build: process.env.CIRCLE_BUILD_NUM,
+
+    commit: process.env.CIRCLE_SHA1,
+    branch: process.env.CIRCLE_BRANCH,
+    buildUrl: process.env.CIRCLE_BUILD_URL,
+}
+
+const sauceServiceConfig = {
+    user: username,
+    key: accessKey,
 
     sauceConnect: false,
 
-    // Use Sauce Lab's "Platform Configurator" to select new browser settings
-    // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
-    capabilities: filterBrowsers()
+    capabilities: getCapabilities()
 };
 
-function filterBrowsers() {
+function getCapabilities() {
     const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
     let filtered = isCompat ? compatBrowsers : browsers;
 
     const args = minimist(process.argv.slice(2));
     const userBrowsers = args.browsers;
+
     if (userBrowsers) {
         filtered = filtered.filter(b => {
             return userBrowsers.includes(b.commonName);
@@ -113,7 +141,17 @@ function filterBrowsers() {
         }
     }
 
-    return filtered;
+    return filtered.map(capability => {
+        return {
+            ...capability,
+            tunnelIdentifier: tunnelId,
+
+            name,
+            build,
+            tags,
+            customData,
+        }
+    });
 }
 
-exports.config = merge(base.config, sauce);
+exports.config = merge(base.config, sauceServiceConfig);

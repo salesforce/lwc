@@ -81,12 +81,13 @@ function getSauceConfig(config) {
     const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
 
     const tags = config.lwc.tags;
-    const testName = ['LWC', ...tags].join(' - ');
-    const build = [buildId, ...tags].join(' - ');
+    const testName = ['integration-karma', ...tags].join(' - ');
+    const build = ['integration-karma', buildId, ...tags].join(' - ');
 
     return {
         username,
         accessKey,
+        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
 
         build,
         testName,
@@ -103,6 +104,8 @@ function getSauceConfig(config) {
             buildUrl: process.env.CIRCLE_BUILD_URL,
         },
 
+        startConnect: false,
+        recordVideo: false,
         recordScreenshots: false,
     };
 }
