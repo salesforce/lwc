@@ -109,3 +109,9 @@ describe('MutationObserver is synthetic shadow dom aware', () => {
         
     });
 });
+
+/**
+ * Tests to add
+ * 1. Verify that disconnect() works
+ * 2. Verify that takeRecords() works
+ */
