@@ -20,24 +20,24 @@ function filterMutationRecords(observer: any, records: MutationRecord[]): Mutati
     observedTargets.forEach((element: Node) => {
         observedTargetOwnerKeys.add(getNodeNearestOwnerKey(element));
     });
-    return records.filter((record: MutationRecord) => {        
+    return records.filter((record: MutationRecord) => {  
         const { target } = record;
-        if ( target ) { 
+        if ( target ) {
             return observedTargetOwnerKeys.has(getNodeNearestOwnerKey(target));
         }
         return false;
     });
 }
 
-function getWrappedCallback(callback: MutationCallback): MutationCallback {  
+function getWrappedCallback(callback: MutationCallback): MutationCallback {
     let wrappedCallback: MutationCallback | undefined = (callback as any)[wrapperLookupField];
     if (isUndefined(wrappedCallback)) {
-        wrappedCallback = (callback as any)[wrapperLookupField] = 
+        wrappedCallback = (callback as any)[wrapperLookupField] =
             (mutations: MutationRecord[], observer: MutationObserver): void => {
                 // Filter mutation records
                 const filteredRecords = filterMutationRecords(observer, mutations);
                 callback.call(undefined, filteredRecords, observer);
-            }
+            };
     }
     return wrappedCallback;
 }
@@ -54,7 +54,7 @@ function PatchedMutationObserver(this: MutationObserver, callback: MutationCallb
  * Maintain a list of all targets that the observer chooses to observe
  * @param this MutationObserver
  * @param target Node
- * @param options 
+ * @param options
  */
 function PatchedObserve(this: any, target: Node, options?: MutationObserverInit) {
     // If the observer was created by the patched constructor, this field should be defined. Adding a guard for extra safety
