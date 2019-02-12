@@ -74,7 +74,7 @@ wait_for_sauce_connect: &wait_for_sauce_connect
 stop_sauce_connect: &stop_sauce_connect
   run:
     name: Stop sauce connect
-    command: kill -9 `cat /tmp/sc_client.pid`
+    command: kill -9 `cat /tmp/sc_client-${SAUCE_TUNNEL_ID}.pid`
 
 # Test
 run_unit_tests: &run_unit_tests
