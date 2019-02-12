@@ -4,21 +4,27 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArraySlice } from '../shared/language';
-
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
-            return win.postMessage.apply(win, ArraySlice.call(arguments));
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.postMessage.apply(win, arguments);
         },
         blur() {
-            return win.blur.apply(win, ArraySlice.call(arguments));
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.blur.apply(win, arguments);
         },
         close() {
-            return win.close.apply(win, ArraySlice.call(arguments));
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.close.apply(win, arguments);
         },
         focus() {
-            return win.focus.apply(win, ArraySlice.call(arguments));
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.focus.apply(win, arguments);
         },
         get closed() {
             return win.closed;

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
+import { isArray, isFunction, isNull, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import * as api from "./api";
 import { RenderAPI } from "./api";
@@ -139,7 +139,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
 
     const { styleVNode } = context;
-    if (styleVNode) {
+    if (!isNull(styleVNode)) {
         ArrayUnshift.call(vnodes, styleVNode);
     }
 

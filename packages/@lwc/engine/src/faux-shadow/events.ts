@@ -139,9 +139,9 @@ interface ListenerMap {
     [key: string]: WrappedListener[];
 }
 
-const customElementToWrappedListeners: WeakMap<HTMLElement, ListenerMap> = new WeakMap();
+const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
 
-function getEventMap(elm: HTMLElement): ListenerMap {
+function getEventMap(elm: EventTarget): ListenerMap {
     let listenerInfo = customElementToWrappedListeners.get(elm);
     if (isUndefined(listenerInfo)) {
         listenerInfo = create(null) as ListenerMap;
@@ -211,7 +211,7 @@ function domListener(evt: Event) {
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
     // currentTarget is always defined
-    const currentTarget = eventCurrentTargetGetter.call(evt) as HTMLElement;
+    const currentTarget = eventCurrentTargetGetter.call(evt) as EventTarget;
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
