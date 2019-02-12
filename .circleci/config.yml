@@ -50,6 +50,12 @@ run_linting: &run_linting
     command: yarn lint
 
 # Sauce connect
+setup_sauce_env_variables: &setup_sauce_env_variables
+  run:
+    name: Setup sauce connect environement variables
+    command: |
+        echo 'export SAUCE_TUNNEL_ID="lwc-${CIRCLE_BUILD_NUM}"' >> $BASH_ENV
+
 start_sauce_connect: &start_sauce_connect
   run:
     name: Install and start sauce connect
@@ -58,7 +64,7 @@ start_sauce_connect: &start_sauce_connect
         curl https://saucelabs.com/downloads/sc-4.4.12-linux.tar.gz -o saucelabs.tar.gz
         tar -xzf saucelabs.tar.gz
         cd sc-*
-        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -vv -l sc.log
+        bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_KEY} -i ${SAUCE_TUNNEL_ID}
 
 wait_for_sauce_connect: &wait_for_sauce_connect
   run:
@@ -79,26 +85,26 @@ run_unit_tests: &run_unit_tests
 run_karma_tests: &run_karma_tests
   run:
     name: Run karma tests
-    command: yarn sauce --coverage
+    command: yarn sauce --coverage --tunnel-identifier=${SAUCE_TUNNEL_ID}
     working_directory: packages/integration-karma
 
 run_karma_tests_native: &run_karma_tests_native
   run:
     name: Run karma tests - native shadow
     command: yarn sauce --native-shadow --coverage
-    working_directory: packages/integration-karma
+    working_directory: packages/integration-karma --tunnel-identifier=${SAUCE_TUNNEL_ID}
 
 run_karma_tests_compat: &run_karma_tests_compat
   run:
     name: Run karma tests - compat
     command: yarn sauce --compat --coverage
-    working_directory: packages/integration-karma
+    working_directory: packages/integration-karma --tunnel-identifier=${SAUCE_TUNNEL_ID}
 
 run_karma_coverage: &run_karma_coverage
   run:
     name: Compute karma coverage
     command: yarn coverage
-    working_directory: packages/integration-karma
+    working_directory: packages/integration-karma --tunnel-identifier=${SAUCE_TUNNEL_ID}
 
 run_integration_tests_chrome: &run_integration_tests_chrome
   run:
@@ -179,6 +185,7 @@ jobs:
     steps:
       - *load_workspace
 
+      - *setup_sauce_env_variables
       - *start_sauce_connect
       - *wait_for_sauce_connect
 
@@ -202,6 +209,7 @@ jobs:
     steps:
       - *load_workspace
 
+      - *setup_sauce_env_variables
       - *start_sauce_connect
       - *wait_for_sauce_connect
 

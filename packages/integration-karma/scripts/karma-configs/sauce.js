@@ -87,6 +87,7 @@ function getSauceConfig(config) {
     return {
         username,
         accessKey,
+        tunnelIdentifier: process.env.SAUCE_TUNNEL_ID,
 
         build,
         testName,
