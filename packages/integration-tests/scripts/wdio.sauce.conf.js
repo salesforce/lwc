@@ -144,7 +144,7 @@ function getCapabilities() {
     return filtered.map(capability => {
         return {
             ...capability,
-            tunnelId,
+            tunnelIdentifier: tunnelId,
 
             name,
             build,
