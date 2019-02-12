@@ -22,6 +22,7 @@ import "../polyfills/event-composed/main";
 import "../polyfills/custom-event-composed/main";
 import "../polyfills/focus-event-composed/main";
 import "../polyfills/aria-properties/main";
+import "../polyfills/mutation-observer/main";
 
 /**
  * This is a descriptor map that contains

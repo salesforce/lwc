@@ -2,13 +2,14 @@ import { createElement } from 'test-utils';
 import parent from 'x/parent';
 import slottedChild from 'x/slottedChild';
 
-describe('MutationObserver is synthetic shadow dom aware', () => {
+xdescribe('MutationObserver is synthetic shadow dom aware', () => {
     const observerConfig = { childList: true, subtree: true };
     describe('mutations do not leak shadow boundary', ()=> {
         let globalObserverSpy;
         let container; 
         beforeEach(() => {
             globalObserverSpy = jasmine.createSpy();
+            debugger;
             // globalObserverSpy = (mutationList, observer) => {debugger;mutationList;observer;};
             const globalObserver = new MutationObserver(globalObserverSpy);
             container = document.createElement('div');

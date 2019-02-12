@@ -61,7 +61,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  */
 function PatchedMutationObserver(this: MutationObserver, callback: MutationCallback) {
     const wrappedCallback: any = getWrappedCallback(callback);
-    const observer = new MutationObserver(wrappedCallback);
+    const observer = new OriginalMutationObserver(wrappedCallback);
     defineProperty(observer, observedTargetsField, {value : []});
     return observer;
 }
