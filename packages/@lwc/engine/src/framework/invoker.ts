@@ -12,7 +12,7 @@ import {
 
 import { evaluateTemplate } from "./template";
 import { isFunction } from "../shared/language";
-import { getErrorComponentStack, VM } from "./vm";
+import { getErrorComponentStack, VM, UninitializedVM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
@@ -20,7 +20,7 @@ import { startMeasure, endMeasure } from "./performance-timing";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export let vmBeingConstructed: VM | null = null;
+export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
@@ -49,7 +49,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
+export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentConstructor) {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);

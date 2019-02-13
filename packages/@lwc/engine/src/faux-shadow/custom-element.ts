@@ -88,7 +88,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 const currentActiveElement = getActiveElement(this);
                 if (!isNull(currentActiveElement)) {
                     // if there is an active element, blur it
-                    currentActiveElement.blur();
+                    (currentActiveElement as HTMLElement).blur();
                     return;
                 }
             }

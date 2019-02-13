@@ -95,6 +95,9 @@ const assert = {
             throw new Error('error to get stacktrace');
         } catch (e) {
             // first line is the dummy message and second this function (which does not need to be there)
+            // Typescript is inferring the wrong function type for this particular
+            // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+            // @ts-ignore type-mismatch
             const stackTraceLines: string[] = StringSplit.call(e.stack, '\n').splice(2);
             console.group(msg); // tslint:disable-line
             forEach.call(stackTraceLines, (trace) => {

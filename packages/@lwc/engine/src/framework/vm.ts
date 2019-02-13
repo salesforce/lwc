@@ -32,7 +32,7 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export interface VM {
+export interface UninitializedVM {
     readonly elm: HTMLElement;
     readonly def: ComponentDef;
     readonly context: Context;
@@ -41,10 +41,8 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: any;
-    cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
     callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
@@ -54,15 +52,20 @@ export interface VM {
     isRoot: boolean;
     fallback: boolean;
     mode: string;
-    component?: ComponentInterface;
     deps: VM[][];
     toString(): string;
+}
+
+export interface VM extends UninitializedVM {
+    cmpState: Record<string, any>;
+    cmpTemplate: Template;
+    component: ComponentInterface;
 }
 
 let idx: number = 0;
 let uid: number = 0;
 
-function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]): any {
+function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args: any[] = []): any {
     return fn.apply(cmp, args);
 }
 
@@ -183,7 +186,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         delegatesFocus: !!Ctor.delegatesFocus,
     };
     uid += 1;
-    const vm: VM = {
+    const vm: UninitializedVM = {
         uid,
         idx: 0,
         isScheduled: false,
@@ -197,14 +200,11 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         context: create(null),
         cmpProps: create(null),
         cmpTrack: create(null),
-        cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
-        cmpTemplate: undefined,
         cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
         setHook,
         getHook,
-        component: undefined,
         children: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
@@ -217,8 +217,10 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);
+
+    const initialized = vm as VM;
     // link component to the wire service
-    linkComponent(vm);
+    linkComponent(initialized);
 }
 
 function rehydrate(vm: VM) {
@@ -451,8 +453,8 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
-function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined {
-    let elm: HTMLElement | null = startingElement;
+function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
+    let elm: Element | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
@@ -471,9 +473,9 @@ function getErrorBoundaryVM(startingElement: HTMLElement | null): VM | undefined
  *
  * @return {string} The component stack for errors.
  */
-export function getErrorComponentStack(startingElement: HTMLElement): string {
+export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
-    let elm: HTMLElement | null = startingElement;
+    let elm: Element | null = startingElement;
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
@@ -489,28 +491,24 @@ export function getErrorComponentStack(startingElement: HTMLElement): string {
 /**
  * Finds the parent of the specified element. If shadow DOM is enabled, finds
  * the host of the shadow root to escape the shadow boundary.
- * @param {HTMLElement} elm
- * @return {HTMLElement | null} the parent element, escaping any shadow root boundaries, if it exists
  */
-function getParentOrHostElement(elm: HTMLElement): HTMLElement | null {
+function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
     // If this is a shadow root, find the host instead
-    return (isNull(parentElement) &&  isNativeShadowRootAvailable) ? getHostElement(elm) : parentElement;
+    return (isNull(parentElement) && isNativeShadowRootAvailable) ? getHostElement(elm) : parentElement;
 }
 
 /**
  * Finds the host element, if it exists.
- * @param {HTMLElement} elm
- * @return {HTMLElement | null} the host element if it exists
  */
-function getHostElement(elm: HTMLElement): HTMLElement | null {
+function getHostElement(elm: Element): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isNativeShadowRootAvailable, 'getHostElement should only be called if native shadow root is available');
         assert.isTrue(isNull(parentElementGetter.call(elm)), `getHostElement should only be called if the parent element of ${elm} is null`);
     }
     const parentNode = parentNodeGetter.call(elm);
     return parentNode instanceof NativeShadowRoot
-        ? ShadowRootHostGetter.call(parentNode)
+        ? ShadowRootHostGetter.call(parentNode as unknown)
         : null;
 }
 

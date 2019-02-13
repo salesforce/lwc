@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { VM } from './vm';
+import { VM, UninitializedVM } from './vm';
 
 type MeasurementPhase =
     | 'constructor'
@@ -30,11 +30,11 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(vm: VM, phase: MeasurementPhase | GlobalMeasurementPhase): string {
+function getMarkName(vm: UninitializedVM, phase: MeasurementPhase | GlobalMeasurementPhase): string {
     return `<${vm.def.name} (${vm.uid})> - ${phase}`;
 }
 
-export function startMeasure(vm: VM, phase: MeasurementPhase) {
+export function startMeasure(vm: UninitializedVM, phase: MeasurementPhase) {
     if (!isUserTimingSupported) {
         return;
     }
@@ -43,7 +43,7 @@ export function startMeasure(vm: VM, phase: MeasurementPhase) {
     performance.mark(name);
 }
 
-export function endMeasure(vm: VM, phase: MeasurementPhase) {
+export function endMeasure(vm: UninitializedVM, phase: MeasurementPhase) {
     if (!isUserTimingSupported) {
         return;
     }

@@ -187,6 +187,8 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
         addEventListener: {
             value(this: ShadowRoot, type: string) {
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(sr)} by adding an event listener for "${type}".`);
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             }
         },
@@ -194,6 +196,8 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
                 return originalQuerySelector.apply(this, arguments);
             }
         },
@@ -201,6 +205,8 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: Restricti
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
                 return originalQuerySelectorAll.apply(this, arguments);
             }
         },
@@ -345,6 +351,8 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement, options: Rest
         addEventListener: {
             value(this: HTMLElement, type: string) {
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(elm)} by adding an event listener for "${type}".`);
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             }
         },
@@ -397,6 +405,8 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface, options: R
                         }
                     }
                 }
+                // Typescript does not like it when you treat the `arguments` object as an array
+                // @ts-ignore type-mismatch
                 originalSetAttribute.apply(this, arguments);
             },
             configurable: true,

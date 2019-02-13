@@ -7,15 +7,23 @@
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
             return win.postMessage.apply(win, arguments);
         },
         blur() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
             return win.blur.apply(win, arguments);
         },
         close() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
             return win.close.apply(win, arguments);
         },
         focus() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
             return win.focus.apply(win, arguments);
         },
         get closed() {

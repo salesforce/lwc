@@ -66,7 +66,11 @@ function createAriaPropertyPropertyDescriptor(propName: string, attrName: string
 }
 
 export function patch(propName: string) {
-    const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
+    // Typescript is inferring the wrong function type for this particular
+    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+    // @ts-ignore type-mismatch
+    const replaced = StringReplace.call(propName, ARIA_REGEX, 'aria-');
+    const attrName = StringToLowerCase.call(replaced);
     const descriptor = createAriaPropertyPropertyDescriptor(propName, attrName);
     Object.defineProperty(Element.prototype, propName, descriptor);
 }

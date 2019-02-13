@@ -59,7 +59,8 @@ type ComposableEvent = (Event & {
 });
 
 function targetGetter(this: ComposableEvent): EventTarget | null {
-    const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+    // currentTarget is always defined
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this) as EventTarget;
     const originalTarget: EventTarget = eventTargetGetter.call(this);
     const composedPath = pathComposer(originalTarget as Node, this.composed);
 
@@ -116,7 +117,7 @@ export function patchEvent(event: Event) {
         defineProperty(event, 'relatedTarget', {
             get(this: ComposableEvent): EventTarget | null | undefined {
                 const eventContext = eventToContextMap.get(this);
-                const originalCurrentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+                const originalCurrentTarget = eventCurrentTargetGetter.call(this);
                 const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
                 if (isNull(relatedTarget)) {
                     return null;
@@ -138,9 +139,9 @@ interface ListenerMap {
     [key: string]: WrappedListener[];
 }
 
-const customElementToWrappedListeners: WeakMap<HTMLElement, ListenerMap> = new WeakMap();
+const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
 
-function getEventMap(elm: HTMLElement): ListenerMap {
+function getEventMap(elm: EventTarget): ListenerMap {
     let listenerInfo = customElementToWrappedListeners.get(elm);
     if (isUndefined(listenerInfo)) {
         listenerInfo = create(null) as ListenerMap;
@@ -209,7 +210,8 @@ function domListener(evt: Event) {
     let immediatePropagationStopped = false;
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
-    const currentTarget = eventCurrentTargetGetter.call(evt);
+    // currentTarget is always defined
+    const currentTarget = eventCurrentTargetGetter.call(evt) as EventTarget;
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {

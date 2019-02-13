@@ -226,12 +226,19 @@ import { BaseLightningElement } from "./base-lightning-element";
 import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from "./base-bridge-element";
 import { getDecoratorsRegisteredMeta, registerDecorators, DecoratorMeta, PropsDef } from "./decorators/register";
 
-const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (props: PropsDef, propName: string): PropsDef => {
-    const attrName = getAttrNameFromPropName(propName);
-    props[propName] = {
-        config: 3,
-        type: 'any',
-        attr: attrName,
-    };
-    return props;
-}, create(null));
+// Typescript is inferring the wrong function type for this particular
+// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+// @ts-ignore type-mismatch
+const HTML_PROPS: PropsDef = ArrayReduce.call(
+    getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    (props: PropsDef, propName: string): PropsDef => {
+        const attrName = getAttrNameFromPropName(propName);
+        props[propName] = {
+            config: 3,
+            type: 'any',
+            attr: attrName,
+        };
+        return props;
+    },
+    create(null)
+);

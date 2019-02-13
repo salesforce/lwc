@@ -62,7 +62,7 @@ export interface RenderAPI {
     b(fn: EventListener): EventListener;
     fb(fn: (...args: any[]) => any): (...args: any[]) => any;
     ll(originalHandler: EventListener, id: string, provider?: () => any): EventListener;
-    k(compilerKey: number, iteratorValue: any): number | string;
+    k(compilerKey: number, iteratorValue: any): string | void;
 }
 
 const {
@@ -598,7 +598,7 @@ export function ll(originalHandler: EventListener,
 }
 
 // [k]ey function
-export function k(compilerKey: number, obj: any): number | string | void {
+export function k(compilerKey: number, obj: any): string | void {
     switch (typeof obj) {
         case 'number':
             // TODO: when obj is a numeric key, we might be able to use some

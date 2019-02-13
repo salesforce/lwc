@@ -67,7 +67,7 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
     if (process.env.NODE_ENV === 'test') {
         elm['$$ShadowRoot$$'] = sr; // tslint:disable-line
     }
-    return sr;
+    return sr as SyntheticShadowRootInterface;
 }
 
 export enum ShadowRootMode {
@@ -117,7 +117,7 @@ const ShadowRootDescriptors = {
             // activeElement must be child of the host and owned by it
             let node = activeElement;
             while (!isNodeOwnedBy(host, node)) {
-                node = parentElementGetter.call(node);
+                node = parentElementGetter.call(node) as HTMLElement;
             }
 
             // If we have a slot element here that means that we were dealing

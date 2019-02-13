@@ -22,8 +22,8 @@ export type StylesheetFactory = (hostSelector: string, shadowSelector: string, n
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
-function createStyleElement(styleContent: string): Element {
-    const elm = createElement.call(document, 'style');
+function createStyleElement(styleContent: string): HTMLStyleElement {
+    const elm = createElement.call(document, 'style') as HTMLStyleElement;
     elm.type = 'text/css';
     elm.textContent = styleContent;
     return elm;
@@ -109,17 +109,18 @@ export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttrib
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 
-        return forEach.call(stylesheets, stylesheet => {
+        forEach.call(stylesheets, stylesheet => {
             const textContent = stylesheet(hostSelector, shadowSelector, false);
             insertGlobalStyle(textContent);
         });
 
+        return null;
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
         const textContent = ArrayReduce.call(stylesheets, (buffer, stylesheet) => {
             return buffer + stylesheet(emptyString, emptyString, true);
-        }, '');
+        }, '') as string;
         return createStyleVNode(getCachedStyleElement(textContent));
     }
 }

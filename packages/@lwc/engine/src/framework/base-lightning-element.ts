@@ -126,7 +126,7 @@ export function BaseLightningElement(this: ComponentInterface) {
     const vm = vmBeingConstructed;
     const { elm, cmpRoot, uid } = vm;
     const component = this;
-    vm.component = component;
+    (vm as VM).component = component;
     // interaction hooks
     // We are intentionally hiding this argument from the formal API of LWCElement because
     // we don't want folks to know about it just yet.
@@ -193,39 +193,49 @@ BaseLightningElement.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
-    setAttributeNS(ns: string, attrName: string, value: any) {
+    setAttributeNS(ns: string | null, attrName: string, value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
         }
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         elm.setAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    removeAttributeNS(ns: string, attrName: string) {
+    removeAttributeNS(ns: string | null, attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         elm.removeAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         elm.removeAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
-    setAttribute(attrName: string, value: any) {
+    setAttribute(attrName: string, value: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`);
         }
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         elm.setAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
     },
     getAttribute(attrName: string): string | null {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         const value = elm.getAttribute.apply(elm, arguments);
         lockAttribute(elm, attrName);
         return value;
@@ -233,6 +243,8 @@ BaseLightningElement.prototype = {
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
+        // Typescript does not like it when you treat the `arguments` object as an array
+        // @ts-ignore type-mismatch
         const value = elm.getAttributeNS.apply(elm, arguments);
         lockAttribute(elm, attrName);
         return value;
@@ -335,10 +347,20 @@ BaseLightningElement.prototype = {
     },
 };
 
-const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(getOwnPropertyNames(HTMLElementOriginalDescriptors), (descriptors: PropertyDescriptorMap, propName: string): PropertyDescriptorMap => {
-    descriptors[propName] = createBridgeToElementDescriptor(propName, HTMLElementOriginalDescriptors[propName]);
-    return descriptors;
-}, create(null));
+// Typescript is inferring the wrong function type for this particular
+// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+// @ts-ignore type-mismatch
+const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
+    getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    (descriptors: PropertyDescriptorMap, propName: string) => {
+        descriptors[propName] = createBridgeToElementDescriptor(
+            propName,
+            HTMLElementOriginalDescriptors[propName]
+        );
+        return descriptors;
+    },
+    create(null)
+);
 
 defineProperties(BaseLightningElement.prototype, baseDescriptors);
 
