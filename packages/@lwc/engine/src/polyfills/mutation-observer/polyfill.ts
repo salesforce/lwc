@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, isUndefined } from '../../shared/language';
+import { ArrayIndexOf, defineProperty, isUndefined } from '../../shared/language';
 import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
@@ -23,22 +23,22 @@ const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
  * This function first gathers the OwnerKey of all the targets observed by the MutationObserver instance.
  * Next, process each MutationRecord to determine if the mutation occured in the same shadow tree as
  * one of the targets being observed.
+ * @param {MutationRecords[]} mutations
  * @param {MutationObserver} observer
- * @param {MutationRecords[]} records
  */
-function filterMutationRecords(observer: MutationObserver, records: MutationRecord[]): MutationRecord[] {
+function filterMutationRecords(mutations: MutationRecord[], observer: MutationObserver): MutationRecord[] {
     const observedTargets = observer[observedTargetsField];
-    const observedTargetOwnerKeys = new Set();
+    const observedTargetOwnerKeys: Array<(number|undefined)> = [];
     observedTargets.forEach((node: Node) => {
         // If the observed target is a shadowRoot, the ownerkey of the shadow tree will be fetched using the host
         const observedTargetOwnerKey = node instanceof SyntheticShadowRoot
             ? getNodeKey((node as ShadowRoot).host)
             : getNodeNearestOwnerKey(node);
-        observedTargetOwnerKeys.add(observedTargetOwnerKey);
+        observedTargetOwnerKeys.push(observedTargetOwnerKey);
     });
-    return records.filter((record: MutationRecord) => {
+    return mutations.filter((record: MutationRecord) => {
         const { target } = record;
-        return observedTargetOwnerKeys.has(getNodeNearestOwnerKey(target));
+        return ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
     });
 }
 
@@ -48,7 +48,11 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
         wrappedCallback = (callback as any)[wrapperLookupField] =
             (mutations: MutationRecord[], observer: MutationObserver): void => {
                 // Filter mutation records
-                const filteredRecords = filterMutationRecords(observer, mutations);
+                const filteredRecords = filterMutationRecords(mutations, observer);
+                // If not records are eligible for the observer, do not invoke callback
+                if (filteredRecords.length === 0) {
+                    return;
+                }
                 callback.call(observer, filteredRecords, observer);
             };
     }
@@ -70,7 +74,7 @@ function PatchedMutationObserver(this: MutationObserver, callback: MutationCallb
 
 function patchedDisconnect(this: MutationObserver): void {
     if (!isUndefined(this[observedTargetsField])) {
-        this[observedTargetsField] = [];
+        this[observedTargetsField].length = 0;
     }
     originalDisconnect.call(this);
 }
@@ -97,7 +101,7 @@ function patchedObserve(this: MutationObserver, target: Node, options?: Mutation
  * Patch the takeRecords() api to filter MutationRecords based on the observed targets
  */
 function patchedTakeRecords(this: MutationObserver): MutationRecord[] {
-    return filterMutationRecords(this, originalTakeRecords.call(this));
+    return filterMutationRecords(originalTakeRecords.call(this), this);
 }
 
 export default function apply() {
