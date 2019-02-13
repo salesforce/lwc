@@ -18,7 +18,7 @@ import { evaluateCSS, StylesheetFactory, applyStyleAttributes, resetStyleAttribu
 
 export { registerTemplate };
 export interface Template {
-    (api: RenderAPI, cmp: ComponentInterface, slotSet: SlotSet, ctx: Context): undefined | VNodes;
+    (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): VNodes;
 
     /**
      * The stylesheet associated with the template.
@@ -112,7 +112,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         const { stylesheets, stylesheetTokens } = html;
         if (isUndefined(stylesheets) || stylesheets.length === 0) {
-            context.styleVNode = undefined;
+            context.styleVNode = null;
         } else if (!isUndefined(stylesheetTokens)) {
             const { hostAttribute, shadowAttribute } = stylesheetTokens;
             applyStyleAttributes(vm, hostAttribute, shadowAttribute);
@@ -133,10 +133,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         // validating slots in every rendering since the allocated content might change over time
         validateSlots(vm, html);
     }
-
-    // TODO: Can `component` ever be undefined at this point?
-    // @ts-ignore type-mismatch
-    const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+    const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
 
     const { styleVNode } = context;
     if (!isNull(styleVNode)) {
