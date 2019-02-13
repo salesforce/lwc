@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+/* eslint no-production-assert: "off" */
+
 import assert from "../shared/assert";
 import { defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase, setPrototypeOf, getPrototypeOf, getPropertyDescriptor } from "../shared/language";
 import { ComponentInterface } from "./component";

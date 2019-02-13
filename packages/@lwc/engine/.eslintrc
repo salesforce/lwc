@@ -10,5 +10,15 @@
 
     "rules": {
         "no-production-assert": "error"
-    }
+    },
+
+    "overrides": [{
+        "files": [
+            "**/__tests__/**"
+        ],
+
+        "rules": {
+            "no-production-assert": "off"
+        }
+    }]
 }
