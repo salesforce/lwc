@@ -335,11 +335,11 @@ export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementC
     const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
     // @ts-ignore type-mismatch
     return class PatchedHTMLIframeElement extends Ctor {
-        // @ts-ignore type-mismatch
         get contentWindow(this: HTMLIFrameElement) {
             const original = iFrameContentWindowGetter.call(this);
             if (original) {
-                return wrapIframeWindow(original);
+                const wrapped = wrapIframeWindow(original) as unknown;
+                return wrapped as Window;
             }
             return original;
         }
