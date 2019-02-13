@@ -8,8 +8,8 @@ import { defineProperty, isUndefined } from '../../shared/language';
 import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
-const { MutationObserver: OriginalMutationObserver } = (window as any);
-const { Observe: OriginalObserve, takeRecords: OriginalTakeRecords } = OriginalMutationObserver.prototype;
+const OriginalMutationObserver: typeof MutationObserver = (window as any).MutationObserver;
+const { disconnect: originalDisconnect, observe: originalObserve, takeRecords: originalTakeRecords } = OriginalMutationObserver.prototype;
 
 // Internal fields to maintain relationships
 const observedTargetsField = '$$lwcObservedTargets$$';
@@ -26,7 +26,7 @@ const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
  * @param {MutationObserver} observer
  * @param {MutationRecords[]} records
  */
-function filterMutationRecords(observer: any, records: MutationRecord[]): MutationRecord[] {
+function filterMutationRecords(observer: MutationObserver, records: MutationRecord[]): MutationRecord[] {
     const observedTargets = observer[observedTargetsField];
     const observedTargetOwnerKeys = new Set();
     observedTargets.forEach((node: Node) => {
@@ -38,10 +38,7 @@ function filterMutationRecords(observer: any, records: MutationRecord[]): Mutati
     });
     return records.filter((record: MutationRecord) => {
         const { target } = record;
-        if ( target ) {
-            return observedTargetOwnerKeys.has(getNodeNearestOwnerKey(target));
-        }
-        return false;
+        return observedTargetOwnerKeys.has(getNodeNearestOwnerKey(target));
     });
 }
 
@@ -52,7 +49,7 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
             (mutations: MutationRecord[], observer: MutationObserver): void => {
                 // Filter mutation records
                 const filteredRecords = filterMutationRecords(observer, mutations);
-                callback.call(undefined, filteredRecords, observer);
+                callback.call(observer, filteredRecords, observer);
             };
     }
     return wrappedCallback;
@@ -64,11 +61,18 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  * 2. Add a property field to track all observed targets of the observer instance
  * @param {MutationCallback} callback
  */
-function PatchedMutationObserver(this: MutationObserver, callback: MutationCallback) {
+function PatchedMutationObserver(this: MutationObserver, callback: MutationCallback): MutationObserver {
     const wrappedCallback: any = getWrappedCallback(callback);
     const observer = new OriginalMutationObserver(wrappedCallback);
     defineProperty(observer, observedTargetsField, {value : []});
     return observer;
+}
+
+function patchedDisconnect(this: MutationObserver): void {
+    if (!isUndefined(this[observedTargetsField])) {
+        this[observedTargetsField] = [];
+    }
+    originalDisconnect.call(this);
 }
 
 /**
@@ -77,7 +81,7 @@ function PatchedMutationObserver(this: MutationObserver, callback: MutationCallb
  * @param {Node} target
  * @param {Object} options
  */
-function PatchedObserve(this: any, target: Node, options?: MutationObserverInit) {
+function patchedObserve(this: MutationObserver, target: Node, options?: MutationObserverInit): void {
     // If the observer was created by the patched constructor, this field should be defined. Adding a guard for extra safety
     if (!isUndefined(this[observedTargetsField])) {
         this[observedTargetsField].push(target);
@@ -86,20 +90,20 @@ function PatchedObserve(this: any, target: Node, options?: MutationObserverInit)
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
     }
-    return OriginalObserve.call(this, target, options);
+    return originalObserve.call(this, target, options);
 }
 
 /**
  * Patch the takeRecords() api to filter MutationRecords based on the observed targets
  */
-function PatchedTakeRecords(this: MutationObserver) {
-    const filteredRecords = filterMutationRecords(this, OriginalTakeRecords.call(this));
-    return filteredRecords;
+function patchedTakeRecords(this: MutationObserver): MutationRecord[] {
+    return filterMutationRecords(this, originalTakeRecords.call(this));
 }
 
 export default function apply() {
     (window as any).MutationObserver = PatchedMutationObserver;
     (window as any).MutationObserver.prototype = OriginalMutationObserver.prototype;
-    (window as any).MutationObserver.prototype.observe = PatchedObserve;
-    (window as any).MutationObserver.prototype.takeRecords = PatchedTakeRecords;
+    (window as any).MutationObserver.prototype.disconnect = patchedDisconnect;
+    (window as any).MutationObserver.prototype.observe = patchedObserve;
+    (window as any).MutationObserver.prototype.takeRecords = patchedTakeRecords;
 }
