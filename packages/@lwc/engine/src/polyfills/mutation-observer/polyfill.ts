@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { defineProperty, isUndefined } from '../../shared/language';
-import { getNodeNearestOwnerKey } from '../../faux-shadow/node';
+import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
+import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 const { MutationObserver: OriginalMutationObserver } = (window as any);
 const { Observe: OriginalObserve, takeRecords: OriginalTakeRecords } = OriginalMutationObserver.prototype;
@@ -28,8 +29,12 @@ const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
 function filterMutationRecords(observer: any, records: MutationRecord[]): MutationRecord[] {
     const observedTargets = observer[observedTargetsField];
     const observedTargetOwnerKeys = new Set();
-    observedTargets.forEach((element: Node) => {
-        observedTargetOwnerKeys.add(getNodeNearestOwnerKey(element));
+    observedTargets.forEach((node: Node) => {
+        // If the observed target is a shadowRoot, the ownerkey of the shadow tree will be fetched using the host
+        const observedTargetOwnerKey = node instanceof SyntheticShadowRoot
+            ? getNodeKey((node as ShadowRoot).host)
+            : getNodeNearestOwnerKey(node);
+        observedTargetOwnerKeys.add(observedTargetOwnerKey);
     });
     return records.filter((record: MutationRecord) => {
         const { target } = record;
@@ -76,6 +81,10 @@ function PatchedObserve(this: any, target: Node, options?: MutationObserverInit)
     // If the observer was created by the patched constructor, this field should be defined. Adding a guard for extra safety
     if (!isUndefined(this[observedTargetsField])) {
         this[observedTargetsField].push(target);
+    }
+    // If the target is a SyntheticShadowRoot, observer the host since the shadowRoot is an empty documentFragment
+    if (target instanceof SyntheticShadowRoot) {
+        target = (target as ShadowRoot).host;
     }
     return OriginalObserve.call(this, target, options);
 }
