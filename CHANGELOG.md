@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.5...v) (2019-02-06)
+# [](https://github.com/salesforce/lwc/compare/v0.35.6...v) (2019-02-14)
+
+
+### Bug Fixes
+
+* **style-compiler:** invalid at-rules transformations ([#1042](https://github.com/salesforce/lwc/issues/1042)) ([d97cc22](https://github.com/salesforce/lwc/commit/d97cc22))
+
+
+### Features
+
+* **babel-plugin-component:** remove decorator meta collection ([#1016](https://github.com/salesforce/lwc/issues/1016)) ([f5a3a71](https://github.com/salesforce/lwc/commit/f5a3a71))
+
+
+
+<a name="0.35.6"></a>
+## [0.35.6](https://github.com/salesforce/lwc/compare/v0.35.5...v0.35.6) (2019-02-06)
 
 
 ### Bug Fixes
