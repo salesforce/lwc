@@ -37,8 +37,32 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
         observedTargetOwnerKeys.push(observedTargetOwnerKey);
     });
     return mutations.filter((record: MutationRecord) => {
-        const { target } = record;
-        return ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
+        const { target , type, addedNodes, removedNodes } = record;
+        const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
+        // If record.type is not childList, then mutation is occurring in record.target,
+        // hence decision is purely upon information about target
+        if (mutationInScope && type !== 'childList') {
+            return mutationInScope;
+        } else if (mutationInScope) {
+            // If the mutations affected a host element, the mutation can be in the host's shadow or its slot content
+            if (getNodeKey(target)) {
+                const nodes = addedNodes || removedNodes;
+                // If atleast one of the nodes belongs to a shadow tree being watched, then the record qualifies
+                /* nodes.forEach((node) => {
+                    if (ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(node)) !== -1) {
+                        return mutationInScope;
+                    }
+                }); */
+
+                // Optimization, checking one node's ownership is sufficient, the rest of the nodes will have same ownership
+                return nodes.length > 0
+                    ? ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(nodes[0])) !== -1
+                    : false;
+            } else {
+                return mutationInScope;
+            }
+        }
+        return mutationInScope;
     });
 }
 
