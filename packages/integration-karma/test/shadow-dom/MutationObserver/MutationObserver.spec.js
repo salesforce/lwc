@@ -2,6 +2,7 @@ import { createElement } from 'test-utils';
 import parent from 'x/parent';
 import slottedChild from 'x/slottedChild';
 import nestedSlotContainer from 'x/nestedSlotContainer';
+import templateMutations from 'x/templateMutations';
 
 const observerConfig = { childList: true, subtree: true };
 
@@ -346,6 +347,77 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             parentDiv.appendChild(document.createElement('p'));
 
             return Promise.all([promise1, promise2]);
-        })
+        });
+
+        it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', (done) => {
+            const root = createElement('x-template-mutations', { is: templateMutations });
+            container.appendChild(root);
+
+            const callback = function(actualMutationRecords, actualObserver) {
+                expect(actualObserver).toBe(shadowRootObserver);
+                expect(actualMutationRecords.length).toBe(1);
+                expect(actualMutationRecords[0].target).toBe(root.shadowRoot);
+                expect(actualMutationRecords[0].addedNodes.length).toBe(1);
+                expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('DIV');
+                expect(actualMutationRecords[0].removedNodes.length).toBe(0);
+                expect(actualMutationRecords[0].type).toBe('childList');
+                done();
+            };
+
+            const globalObserverSpy = jasmine.createSpy();
+            const globalObserver = new MutationObserver(globalObserverSpy);
+            globalObserver.observe(container, observerConfig);
+            const hostSpy = jasmine.createSpy();
+            new MutationObserver(hostSpy).observe(root, observerConfig);
+            const shadowRootObserver = new MutationObserver(callback);
+            shadowRootObserver.observe(root.shadowRoot, observerConfig);
+            
+            return Promise.resolve()
+                .then(() => {
+                    // The first call will be when x-template-mutations is appended to the container
+                    globalObserverSpy.calls.reset();
+                    // Trigger a mutation directly under the shadowRoot
+                    root.addNode = true;
+                })
+                .then(() => {
+                    expect(globalObserverSpy).not.toHaveBeenCalled();
+                    expect(hostSpy).not.toHaveBeenCalled();
+                });
+        });
+
+        it('should retarget MutationRecord for mutations directly under shadowRoot - removed nodes', (done) => {
+            const root = createElement('x-template-mutations', { is: templateMutations });
+            container.appendChild(root);
+
+            const callback = function(actualMutationRecords, actualObserver) {
+                expect(actualObserver).toBe(shadowRootObserver);
+                expect(actualMutationRecords.length).toBe(1);
+                expect(actualMutationRecords[0].target).toBe(root.shadowRoot);
+                expect(actualMutationRecords[0].addedNodes.length).toBe(0);
+                expect(actualMutationRecords[0].removedNodes.length).toBe(1);
+                expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('DIV');
+                done();
+            };
+
+            const globalObserverSpy = jasmine.createSpy();
+            const globalObserver = new MutationObserver(globalObserverSpy);
+            globalObserver.observe(container, observerConfig);
+            const hostSpy = jasmine.createSpy();
+            new MutationObserver(hostSpy).observe(root, observerConfig);
+            const shadowRootObserver = new MutationObserver(callback);
+            shadowRootObserver.observe(root.shadowRoot, observerConfig);
+            
+            return Promise.resolve()
+                .then(() => {
+                    // The first call will be when x-template-mutations is appended to the container
+                    globalObserverSpy.calls.reset();
+                    // Trigger a mutation directly under the shadowRoot
+                    root.hideNode = true;
+                })
+                .then(() => {
+                    expect(globalObserverSpy).not.toHaveBeenCalled();
+                    expect(hostSpy).not.toHaveBeenCalled();
+                });
+        });
     });
 });

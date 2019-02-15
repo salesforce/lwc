@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayIndexOf, defineProperty, isUndefined } from '../../shared/language';
+import { ArrayIndexOf, defineProperty, isUndefined, defineProperties } from '../../shared/language';
 import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
@@ -14,6 +14,38 @@ const { disconnect: originalDisconnect, observe: originalObserve, takeRecords: o
 // Internal fields to maintain relationships
 const observedTargetsField = '$$lwcObservedTargets$$';
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
+
+/**
+ * Retarget the mutation record's target value to its shadowRoot
+ * @param {MutationRecord} originalRecord
+ */
+function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord {
+    const { addedNodes, removedNodes, target, type} = originalRecord;
+    const retargetedRecord = Object.create(MutationRecord.prototype);
+    defineProperties(retargetedRecord, {
+        addedNodes: {
+            get() { return addedNodes; },
+            enumerable: true,
+            configurable: true
+        },
+        removedNodes: {
+            get() { return removedNodes; },
+            enumerable: true,
+            configurable: true
+        },
+        type: {
+            get() { return type; },
+            enumerable: true,
+            configurable: true
+        },
+        target: {
+            get() { return (target as Element).shadowRoot; },
+            enumerable: true,
+            configurable: true
+        }
+    });
+    return retargetedRecord;
+}
 
 /**
  * Some basic expectations to understand the filtering logic.
@@ -36,34 +68,30 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
             : getNodeNearestOwnerKey(node);
         observedTargetOwnerKeys.push(observedTargetOwnerKey);
     });
-    return mutations.filter((record: MutationRecord) => {
-        const { target , type, addedNodes, removedNodes } = record;
-        const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
-        // If record.type is not childList, then mutation is occurring in record.target,
-        // hence decision is purely upon information about target
-        if (mutationInScope && type !== 'childList') {
-            return mutationInScope;
-        } else if (mutationInScope) {
-            // If the mutations affected a host element, the mutation can be in the host's shadow or its slot content
-            if (getNodeKey(target)) {
-                const nodes = addedNodes || removedNodes;
-                // If atleast one of the nodes belongs to a shadow tree being watched, then the record qualifies
-                /* nodes.forEach((node) => {
-                    if (ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(node)) !== -1) {
-                        return mutationInScope;
-                    }
-                }); */
-
-                // Optimization, checking one node's ownership is sufficient, the rest of the nodes will have same ownership
-                return nodes.length > 0
-                    ? ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(nodes[0])) !== -1
-                    : false;
-            } else {
-                return mutationInScope;
+    return mutations.map((record: MutationRecord) => {
+        const { target , addedNodes, removedNodes } = record;
+        // If the mutations affected a lwc host element or its shadow,
+        // because LWC uses synthetic shadow, target will be the host
+        if (getNodeKey(target)) {
+            const sampleNode: Node = addedNodes.length > 0 ? addedNodes[0] : removedNodes[0];
+            const sampleNodeOwnerKey = getNodeNearestOwnerKey(sampleNode);
+            // Is node being added/removed to a subtree that is being observed
+            if (ArrayIndexOf.call(observedTargetOwnerKeys, sampleNodeOwnerKey) !== -1) {
+                // If the target was being observed, the return record as-is
+                if (observedTargets.indexOf(target) !== -1) {
+                    return record;
+                } else { // else, must be observing the shadowRoot
+                    return retargetMutationRecord(record);
+                }
+            }
+        } else {
+            const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
+            if (mutationInScope) {
+                return record;
             }
         }
-        return mutationInScope;
-    });
+        return undefined;
+    }).filter((recordOrUndefined) => !isUndefined(recordOrUndefined)) as MutationRecord[];
 }
 
 function getWrappedCallback(callback: MutationCallback): MutationCallback {
