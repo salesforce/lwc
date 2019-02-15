@@ -95,13 +95,13 @@ function addInsertionIndex(vm: VM) {
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
-            startMeasure(vm, 'connectedCallback');
+            startMeasure('connectedCallback', vm);
         }
 
         invokeComponentCallback(vm, connectedCallback);
 
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'connectedCallback');
+            endMeasure('connectedCallback', vm);
         }
     }
 }
@@ -119,13 +119,13 @@ function removeInsertionIndex(vm: VM) {
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
-            startMeasure(vm, 'disconnectedCallback');
+            startMeasure('disconnectedCallback', vm);
         }
 
         invokeComponentCallback(vm, disconnectedCallback);
 
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'disconnectedCallback');
+            endMeasure('disconnectedCallback', vm);
         }
     }
 }
@@ -266,7 +266,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     let error;
 
     if (process.env.NODE_ENV !== 'production') {
-        startMeasure(vm, 'patch');
+        startMeasure('patch', vm);
     }
 
     try {
@@ -277,7 +277,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         error = Object(e);
     } finally {
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'patch');
+            endMeasure('patch', vm);
         }
 
         if (!isUndefined(error)) {
@@ -307,13 +307,13 @@ function processPostPatchCallbacks(vm: VM) {
     const { renderedCallback } = vm.def;
     if (!isUndefined(renderedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
-            startMeasure(vm, 'renderedCallback');
+            startMeasure('renderedCallback', vm);
         }
 
         invokeComponentCallback(vm, renderedCallback);
 
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'renderedCallback');
+            endMeasure('renderedCallback', vm);
         }
     }
 }
@@ -368,14 +368,14 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     const { errorCallback } = errorBoundaryVm.def;
 
     if (process.env.NODE_ENV !== 'production') {
-        startMeasure(errorBoundaryVm, 'errorCallback');
+        startMeasure('errorCallback', errorBoundaryVm);
     }
 
     // error boundaries must have an ErrorCallback
     invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
 
     if (process.env.NODE_ENV !== 'production') {
-        endMeasure(errorBoundaryVm, 'errorCallback');
+        endMeasure('errorCallback', errorBoundaryVm);
     }
 }
 

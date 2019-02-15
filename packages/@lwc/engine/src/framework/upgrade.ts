@@ -111,11 +111,11 @@ export function createElement(sel: string, options: any): HTMLElement {
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
-        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
+        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         renderVM(vm);
-        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE);
+        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
     setInternalField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);

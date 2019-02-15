@@ -7,20 +7,20 @@ import Nested from 'x/nested';
 
 import {
     isUserTimingSupported,
-    setupPerformanceObserver,
-    teardownPerformanceObserver,
+    patchUserTiming,
+    resetUserTiming,
     resetMeasures,
     expectMeasureEquals
 } from './user-timing-utils';
 
 if (isUserTimingSupported) {
     beforeEach(() => {
-        setupPerformanceObserver();
+        patchUserTiming();
         resetMeasures();
     });
 
     afterEach(() => {
-        teardownPerformanceObserver();
+        resetUserTiming();
     });
 
     it('captures component constructor', () => {
@@ -138,25 +138,29 @@ if (isUserTimingSupported) {
         }]);
     });
 
-    fit('should support nested component creation', () => {
+    it('should support nested component creation', () => {
         const elm = createElement('x-nested', { is: Nested });
         document.body.appendChild(elm);
 
-        // expectMeasureEquals([{
-        //     label: /<x-lifecycle \(\d+\)> - constructor/,
-        // }, {
-        //     label: /lwc-hydrate/,
-        //     children: [{
-        //         label: /<x-lifecycle \(\d+\)> - connectedCallback/,
-        //     },{
-        //         label: /<x-lifecycle \(\d+\)> - render/,
-        //     }, {
-        //         label: /<x-lifecycle \(\d+\)> - patch/,
-        //     }, {
-        //         label: /<x-lifecycle \(\d+\)> - renderedCallback/,
-        //     }],
-        // }, {
-        //     label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
-        // }]);
+        expectMeasureEquals([{
+            label: /<x-nested \(\d+\)> - constructor/,
+        }, {
+            label: /lwc-hydrate/,
+            children: [{
+                label: /<x-nested \(\d+\)> - render/,
+            }, {
+                label: /<x-nested \(\d+\)> - renderedCallback/,
+                children: [{
+                    label: /<x-child \(\d+\)> - constructor/,
+                }, {
+                    label: /lwc-hydrate/,
+                    children: [{
+                        label: /<x-child \(\d+\)> - render/,
+                    }, {
+                        label: /<x-child \(\d+\)> - patch/,
+                    }],
+                }]
+            }],
+        }]);
     });
 }

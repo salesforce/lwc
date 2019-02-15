@@ -7,7 +7,7 @@
 import { VM, UninitializedVM } from './vm';
 
 import { tagNameGetter } from "../env/element";
-import { StringToLowerCase } from "../shared/language";
+import { StringToLowerCase, isUndefined } from "../shared/language";
 
 type MeasurementPhase =
     | 'constructor'
@@ -32,39 +32,43 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(vm: VM | UninitializedVM, phase: MeasurementPhase): string {
+function getMarkName(phase: string, vm: VM | UninitializedVM): string {
     return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))} (${vm.uid})> - ${phase}`;
 }
 
-function mark(name: string) {
-    performance.mark(name);
+function start(markName: string) {
+    performance.mark(markName);
 }
 
-function measure(name: string) {
-    performance.measure(name, name);
+function end(measureName: string, markName: string) {
+    performance.measure(measureName, markName);
 
     // Clear the created marks and measure to avoid filling the performance entries buffer.
     // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
-    performance.clearMarks(name);
-    performance.clearMeasures(name);
+    performance.clearMarks(markName);
+    performance.clearMarks(measureName);
 }
 
 function noop() {
     /* do nothing */
 }
 
-export const startMeasure = !isUserTimingSupported ? noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
-    const name = getMarkName(vm, phase);
-    mark(name);
+export const startMeasure = !isUserTimingSupported ? noop : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    const markName = getMarkName(phase, vm);
+    start(markName);
 };
-export const endMeasure = !isUserTimingSupported ? noop : function(vm: VM | UninitializedVM, phase: MeasurementPhase) {
-    const name = getMarkName(vm, phase);
-    measure(name);
+export const endMeasure = !isUserTimingSupported ? noop : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    const markName = getMarkName(phase, vm);
+    end(markName, markName);
 };
 
-export const startGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase) {
-    mark(phase);
+// Global measurements can be nested into each others (e.g. nested component creation via createElement). In those cases
+// the VM is used to create unique mark names at each level.
+export const startGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    const markName = isUndefined(vm) ? phase: getMarkName(phase, vm);
+    start(markName);
 };
-export const endGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase) {
-    measure(phase);
+export const endGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    const markName = isUndefined(vm) ? phase: getMarkName(phase, vm);
+    end(phase, markName);
 };
