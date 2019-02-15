@@ -69,10 +69,10 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
         observedTargetOwnerKeys.push(observedTargetOwnerKey);
     });
     return mutations.map((record: MutationRecord) => {
-        const { target , addedNodes, removedNodes } = record;
+        const { target , addedNodes, removedNodes, type } = record;
         // If the mutations affected a lwc host element or its shadow,
         // because LWC uses synthetic shadow, target will be the host
-        if (getNodeKey(target)) {
+        if (type === 'childList' && getNodeKey(target)) {
             const sampleNode: Node = addedNodes.length > 0 ? addedNodes[0] : removedNodes[0];
             const sampleNodeOwnerKey = getNodeNearestOwnerKey(sampleNode);
             // Is node being added/removed to a subtree that is being observed
