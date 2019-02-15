@@ -1,0 +1,9 @@
+:host {
+    display: block;
+    background: #ff0000;
+}
+
+
+:host([data-styled]) {
+    background: #0000ff;
+}
