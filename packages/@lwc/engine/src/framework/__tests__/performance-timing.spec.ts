@@ -43,9 +43,6 @@ class FlameChart {
     }
 
     injectPolyfill() {
-        const knownMarks = new Set<string>();
-        const knownMeasures = new Set<string>();
-
         Object.assign(global.performance, {
             mark: (name: string) => {
                 const mark: Mark = {
@@ -73,11 +70,9 @@ class FlameChart {
                 this.activeMark = this.activeMark.parent;
             },
 
-            // tslint:disable-next-line:no-empty
-            clearMarks(name: string): void {},
+            clearMarks: () => {},
 
-            // tslint:disable-next-line:no-empty
-            clearMeasures(name: string): void {},
+            clearMeasures: () => {},
         });
     }
 
@@ -128,13 +123,8 @@ describe.skip('performance-timing', () => {
 
     it('captures all lifecycle hooks', () => {
         class Foo extends LightningElement {
-            // tslint:disable-next-line:no-empty
             connectedCallback() {}
-
-            // tslint:disable-next-line:no-empty
             renderedCallback() {}
-
-            // tslint:disable-next-line:no-empty
             disconnectedCallback() {}
         }
 
@@ -213,8 +203,6 @@ describe.skip('performance-timing', () => {
             render() {
                 return registerTemplate(fooTmpl);
             }
-
-            // tslint:disable-next-line:no-empty
             errorCallback() {}
         }
 

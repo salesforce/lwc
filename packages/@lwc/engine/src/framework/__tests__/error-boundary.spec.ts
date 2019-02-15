@@ -357,7 +357,7 @@ describe('error boundary component', () => {
                     getError() {
                         return this.error;
                     }
-                    errorCallback(error, info) {
+                    errorCallback(error) {
                         this.error = error.message;
                     }
                     renderedCallback() {
@@ -392,7 +392,7 @@ describe('error boundary component', () => {
                     getError() {
                         return this.error;
                     }
-                    errorCallback(error, info) {
+                    errorCallback() {
                         throw new Error('Child Boundary ErrorCallback Throw');
                     }
                     render() {
@@ -419,7 +419,7 @@ describe('error boundary component', () => {
                     getError() {
                         return this.error;
                     }
-                    errorCallback(error, info) {
+                    errorCallback(error) {
                         this.error = error.message;
                     }
                     renderedCallback() {
@@ -459,7 +459,7 @@ describe('error boundary component', () => {
                     getError() {
                         return this.error;
                     }
-                    errorCallback(error, info) {
+                    errorCallback(error) {
                         this.error = error.message;
                     }
                     renderedCallback() {
@@ -650,7 +650,7 @@ describe('error boundary component', () => {
                 });
                 class FirstLevelChild extends LightningElement {
                     render() {
-                        return html;
+                        return firstChildTmpl;
                     }
                 }
                 const Boundary = createBoundaryComponent({

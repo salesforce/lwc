@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    CompilerDiagnostic,
     CompilerError,
     generateCompilerError,
     generateCompilerDiagnostic,
@@ -14,7 +13,7 @@ import {
     normalizeToDiagnostic
 } from "../errors";
 
-import { Location, DiagnosticLevel } from "../../shared/types";
+import { DiagnosticLevel } from "../../shared/types";
 
 const DEFAULT_LOCATION = {
     line: 1,

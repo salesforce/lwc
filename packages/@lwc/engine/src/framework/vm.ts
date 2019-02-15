@@ -283,7 +283,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         if (!isUndefined(error)) {
             const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
             if (isUndefined(errorBoundaryVm)) {
-                throw error; // tslint:disable-line
+                throw error; // eslint-disable-line no-unsafe-finally
             }
             recoverFromLifeCycleError(vm, errorBoundaryVm, error);
 
@@ -347,7 +347,7 @@ function flushRehydrationQueue() {
 
                 // rethrowing the original error will break the current tick, but since the next tick is
                 // already scheduled, it should continue patching the rest.
-                throw error; // tslint:disable-line
+                throw error;
             }
             // we only recover if error boundary is present in the hierarchy
             recoverFromLifeCycleError(vm, errorBoundaryVm, error);

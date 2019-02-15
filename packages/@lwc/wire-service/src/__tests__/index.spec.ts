@@ -262,17 +262,17 @@ describe('wire service', () => {
 describe('register', () => {
     // most common ids are functions and symbols so explicitly test those
     it('accepts function as adapter id', () => {
-        function adapterId() { /**/ }
-        function adapterFactory(wireEventTarget) { /**/ }
+        function adapterId() {}
+        function adapterFactory() {}
         register(adapterId, adapterFactory);
     });
     it('accepts symbol as adapter id', () => {
         const adapterId = Symbol();
-        function adapterFactory(wireEventTarget) { /**/ }
+        function adapterFactory() {}
         register(adapterId, adapterFactory);
     });
     it('throws when adapter id is not truthy', () => {
-        function adapterFactory(wireEventTarget) { /**/ }
+        function adapterFactory() {}
         expect(() => register(undefined, adapterFactory)).toThrowError('adapter id must be truthy');
     });
     it('throws when adapter factory is not a function', () => {

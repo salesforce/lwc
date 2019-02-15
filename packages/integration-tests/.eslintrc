@@ -1,0 +1,11 @@
+{
+    "globals": {
+        "browser": true
+    },
+
+    "env": {
+        "browser": true,
+        "mocha": true,
+        "node": true
+    }
+}

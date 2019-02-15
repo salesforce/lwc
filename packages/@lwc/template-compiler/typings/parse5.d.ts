@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as parse5 from 'parse5-with-errors';
+import 'parse5-with-errors';
+
 declare module 'parse5-with-errors' {
     export namespace Errors {
         export class ParsingError {

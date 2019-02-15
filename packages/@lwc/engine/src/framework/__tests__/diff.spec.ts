@@ -46,7 +46,7 @@ class Store {
         return data;
     }
 
-    updateData(mod = 10) {
+    updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
         const newData = [];
         for (let i = 0; i < this.data.length; i ++) {
@@ -194,13 +194,13 @@ describe('diff algo', () => {
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
             const template = elm.shadowRoot;
-            const [e1, e2, e3] = template.querySelectorAll('x-row');
+            const e = template.querySelectorAll('x-row');
             elm.rows = [a, c, b];
             return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(3);
-                const [r1, r2, r3] = template.querySelectorAll('x-row');
-                expect(r2).toBe(e3);
-                expect(r3).toBe(e2);
+                const r = template.querySelectorAll('x-row');
+                expect(r[1]).toBe(e[2]);
+                expect(r[2]).toBe(e[1]);
             });
         });
         it('should allow reusing the first element as last', () => {
@@ -229,13 +229,13 @@ describe('diff algo', () => {
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
             const template = elm.shadowRoot;
-            const [e1, e2, e3] = template.querySelectorAll('x-row');
+            const e = template.querySelectorAll('x-row');
             elm.rows = [c, b, d];
             return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(3);
-                const [r1, r2, r3] = template.querySelectorAll('x-row');
-                expect(r2).toBe(e2);
-                expect(r1).toBe(e3);
+                const r = template.querySelectorAll('x-row');
+                expect(r[1]).toBe(e[1]);
+                expect(r[0]).toBe(e[2]);
             });
         });
         it('should allow pulldown to refresh', () => {
@@ -250,9 +250,9 @@ describe('diff algo', () => {
             elm.rows = [a, b, c, d]; // inserting new items first
             return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(4);
-                const [r1, r2, r3, r4] = template.querySelectorAll('x-row');
-                expect(r3).toBe(e1);
-                expect(r4).toBe(e2);
+                const r = template.querySelectorAll('x-row');
+                expect(r[2]).toBe(e1);
+                expect(r[3]).toBe(e2);
             });
         });
         it('should allow pagination', () => {
@@ -267,9 +267,9 @@ describe('diff algo', () => {
             elm.rows = [a, b, c, d]; // inserting new items at the end
             return Promise.resolve().then(() => {
                 expect(template.querySelectorAll('x-row').length).toBe(4);
-                const [r1, r2, r3, r4] = template.querySelectorAll('x-row');
-                expect(r1).toBe(e1);
-                expect(r2).toBe(e2);
+                const r = template.querySelectorAll('x-row');
+                expect(r[0]).toBe(e1);
+                expect(r[1]).toBe(e2);
             });
         });
     });

@@ -7,10 +7,6 @@
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
 
-const EXPORT_ALL_DECLARATION = 'ExportAllDeclaration';
-const EXPORT_DEFAULT_DECLARATION = 'ExportDefaultDeclaration';
-const EXPORT_NAMED_DECLARATION = 'ExportNamedDeclaration';
-
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
     return classMethod.isClassMethod({ kind }) &&
@@ -47,28 +43,6 @@ function getEngineImportsStatements(path) {
         const source = node.get('source');
         return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }))
     });
-}
-
-function getExportSrc(src) {
-    if (!src || !src.value) {
-        return null;
-    }
-    const value = src.value;
-
-    // only return source value for non-relative imports
-    return  (!value.startsWith('./') && !value.startsWith('../')) ? value : null;
-}
-
-function createModuleExportInfo({ type, value, source }) {
-    const moduleExport = { type };
-    if (value) {
-        moduleExport.value = value;
-    }
-    if (source) {
-        moduleExport.source = source;
-    }
-
-    return moduleExport;
 }
 
 function getEngineImportSpecifiers(path) {

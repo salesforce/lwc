@@ -103,7 +103,7 @@ describe("compiler result", () => {
     });
 
     test("should compile sources nested inside component subfolders", async () => {
-        const { result, success } = await compile({
+        const { success } = await compile({
             name: "foo",
             namespace: "x",
             files: {

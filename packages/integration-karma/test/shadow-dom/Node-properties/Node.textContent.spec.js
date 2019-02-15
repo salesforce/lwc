@@ -47,6 +47,7 @@ describe('Node.textContent - setter', () => {
         const div = elm.shadowRoot.querySelector('div');
         div.textContent = '<span>Hello World!</span>';
 
+        /* eslint-disable-next-line no-console */
         const [msg] = console.error.calls.argsFor(0);
         expect(msg).toMatch(
             `\\[LWC error\\]: textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,

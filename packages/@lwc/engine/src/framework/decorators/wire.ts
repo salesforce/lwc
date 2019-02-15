@@ -24,7 +24,7 @@ function wireDecorator(target: ComponentConstructor, prop: PropertyKey, descript
 }
 
 // @wire is a factory that when invoked, returns the wire decorator
-export default function wire(adapter: any, config: any): DecoratorFunction {
+export default function wire(_adapter: any, _config: any): DecoratorFunction {
     const len = arguments.length;
     if (len > 0 && len < 3) {
         return wireDecorator;

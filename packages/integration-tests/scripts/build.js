@@ -6,7 +6,6 @@
  */
 const fs = require('fs-extra');
 const path = require('path');
-const babel = require('@babel/core');
 const rollup = require('rollup');
 const templates = require('../src/shared/templates.js');
 const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
@@ -49,7 +48,7 @@ function getTestName(absPpath) {
 function testCaseComponentResolverPlugin() {
     return {
         name: 'test-case-resolver',
-        resolveId(id, importee) {
+        resolveId(id) {
             if (/test\/case/.test(id)) {
                 return path.resolve(`./src/shared/test-case.js`);
             }
@@ -64,7 +63,7 @@ function getTodoApp(testBundle) {
 function entryPointResolverPlugin() {
     return {
         name: 'entry-point-resolver',
-        resolveId(id, importee) {
+        resolveId(id) {
             if (id.includes(testSufix)) {
                 return id;
             }
@@ -129,7 +128,7 @@ testEntries.reduce(async (promise, test) => {
     console.log(`Building integration test: ${testName}`);
     const bundle = await rollup.rollup({ ...baseInputConfig, input: testEntry });
 
-    const result = await bundle.write({
+    await bundle.write({
         ...baseOutputConfig,
         file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`
     });

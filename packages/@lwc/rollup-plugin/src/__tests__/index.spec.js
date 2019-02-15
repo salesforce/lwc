@@ -71,6 +71,7 @@ function doRollup(input, { compat } = {}, rollupCompileOptions) {
         ].filter(Boolean),
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
+                /* eslint-disable-next-line no-console */
                 console.warn(warn.message);
             }
         }

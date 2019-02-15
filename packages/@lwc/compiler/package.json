@@ -9,7 +9,6 @@
   "scripts": {
     "clean": "rm -rf dist/",
     "build": "tsc && node ./scripts/update-compiler-version.js",
-    "lint": "tslint -p ./tsconfig.json",
     "test": "jest"
   },
   "dependencies": {

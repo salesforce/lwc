@@ -178,7 +178,7 @@ describe('api', () => {
     describe('#t()', () => {
         it('should produce a text node', () => {
             function html($api) {
-                return [$api.h('span', { key: 0 }, [$api.t('miami')]];
+                return [$api.h('span', { key: 0 }, [$api.t('miami')])];
             }
             class Foo extends LightningElement {
                 render() {
@@ -195,7 +195,7 @@ describe('api', () => {
     describe('#p()', () => {
         it('should produce a comment', () => {
             function html($api) {
-                return [$api.h('span', { key: 0 }, [api.p('miami')]];
+                return [$api.h('span', { key: 0 }, [api.p('miami')])];
             }
             class Foo extends LightningElement {
                 render() {
@@ -230,7 +230,7 @@ describe('api', () => {
 
         it('should throw when key is an object', () => {
             function html($api) {
-                const k1 = $api.k(678, {});
+                $api.k(678, {});
                 return [];
             }
             class Foo extends LightningElement {

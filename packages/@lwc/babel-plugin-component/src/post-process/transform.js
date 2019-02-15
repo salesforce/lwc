@@ -82,7 +82,7 @@ module.exports = function postProcess({ types: t }) {
         );
     }
 
-    function needsComponentRegistration(path, state) {
+    function needsComponentRegistration(path) {
         return (
             (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
             // path.isMemberExpression() || // this will probably yield more false positives than anything else

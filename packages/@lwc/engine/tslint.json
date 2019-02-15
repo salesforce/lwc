@@ -1,9 +1,0 @@
-{
-  "extends": "../../../tslint.json",
-  "defaultSeverity": "error",
-  "rules": {
-    "no-extend-ie-object": true,
-    "no-production-assert": true
-  },
-  "rulesDirectory": "lib/scripts/tslint/rules/"
-}

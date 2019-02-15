@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Issue 791: [IE11] Radio Buttons are not rendering with correct value', () => {
     const URL = 'http://localhost:4567/radio-group-value';
-    let element;
 
     before(() => {
         browser.url(URL);

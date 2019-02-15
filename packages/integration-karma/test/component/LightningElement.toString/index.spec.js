@@ -5,7 +5,6 @@ import Named from 'x/named';
 
 // TODO: #1033 with the transformation done by the compiler, the class name is removed, producing "[object undefined]"
 xit('should rely on the constructor name', () => {
-    debugger;
     const elm = createElement('x-named', { is: Named });
     expect(elm.getToString()).toBe('[object MyFancyComponent]');
 });

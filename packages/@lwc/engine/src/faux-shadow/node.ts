@@ -303,7 +303,7 @@ export const getInternalChildNodes = (process.env.NODE_ENV !== 'production' && i
             internalChildNodeAccessorFlag = false;
             if (!isNull(error)) {
                 // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
-                throw error; // tslint:disable-line
+                throw error; // eslint-disable-line no-unsafe-finally
             }
         }
         return childNodes;

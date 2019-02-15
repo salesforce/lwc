@@ -7,7 +7,6 @@
   "module": "dist/modules/es2017/wire.js",
   "scripts": {
     "clean": "rm -rf dist/ lib/",
-    "lint": "tslint -p ./tsconfig.json",
     "test": "jest",
     "build": "tsc",
     "postbuild": "concurrently --raw \"rollup -c rollup.config.umd.dev.js\" \"rollup -c rollup.config.umd.prod.js\" \"rollup -c rollup.config.es-and-cjs.js\"",

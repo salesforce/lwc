@@ -1,4 +1,4 @@
-import { api, track, LightningElement } from 'lwc';
+import { track, LightningElement } from 'lwc';
 
 export default class SlotChangeEvent extends LightningElement {
     @track state = {

@@ -57,7 +57,6 @@ export function endMeasure(vm: UninitializedVM, phase: MeasurementPhase) {
     performance.clearMeasures(name);
 }
 
-// tslint:disable-next-line:no-empty
 const noop = function() {};
 
 function _startGlobalMeasure(phase: GlobalMeasurementPhase) {

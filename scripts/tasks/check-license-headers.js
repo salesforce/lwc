@@ -79,7 +79,7 @@ const IGNORED_EXTENSIONS = [
     'ipynb',
     'htm',
     'toml',
-].map(extension => createRegExp(`\.${extension}$`));
+].map(extension => createRegExp(`.${extension}$`));
 
 const GENERIC_IGNORED_PATTERNS = [
     '(^|/)\\.[^/]+(/|$)',
@@ -104,9 +104,9 @@ const GENERIC_IGNORED_PATTERNS = [
 
 const CUSTOM_IGNORED_PATTERNS = [
     // add anything repo specific here
-    '\/fixtures\/',
-    '\/integration-tests\/src\/(.(?!.*\.spec\.js$))*$',
-    '\/integration-karma\/test\/.*$',
+    '/fixtures/',
+    '/integration-tests/src/(.(?!.*.spec.js$))*$',
+    '/integration-karma/test/.*$',
 ].map(createRegExp);
 
 const IGNORED_PATTERNS = [

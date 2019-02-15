@@ -1,5 +1,4 @@
 import { createElement } from 'test-utils';
-import { LightningElement } from 'lwc';
 
 import ConstructorQuerySelector from 'x/constructorQuerySelector';
 import Parent from 'x/parent';

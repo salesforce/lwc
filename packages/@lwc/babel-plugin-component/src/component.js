@@ -8,7 +8,7 @@ const { generateError, getEngineImportSpecifiers } = require('./utils');
 const { LWC_PACKAGE_EXPORTS, LWC_API_WHITELIST } = require('./constants');
 const { LWCClassErrors } = require('@lwc/errors');
 
-module.exports = function ({ types: t }) {
+module.exports = function () {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);

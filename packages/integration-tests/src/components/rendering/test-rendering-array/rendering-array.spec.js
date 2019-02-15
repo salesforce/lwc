@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.iterator) during the rendering', () => {
     const URL = 'http://localhost:4567/rendering-array';
     let element;

@@ -1,0 +1,13 @@
+{
+    "globals": {
+        "benchmark": true,
+        "before": true,
+        "run": true,
+        "after": true
+    },
+
+    "env": {
+        "browser": true,
+        "node": true
+    }
+}

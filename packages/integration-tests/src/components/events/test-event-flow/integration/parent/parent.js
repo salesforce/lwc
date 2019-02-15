@@ -14,18 +14,18 @@ export default class Parent extends LightningElement {
         super();
 
         // Custom element
-        this.addEventListener('slottedbuttonclick', event => {
+        this.addEventListener('slottedbuttonclick', () => {
             this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT);
         });
-        this.addEventListener('childbuttonclick', event => {
+        this.addEventListener('childbuttonclick', () => {
             this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT);
         });
 
         // Shadow root
-        this.template.addEventListener('slottedbuttonclick', event => {
+        this.template.addEventListener('slottedbuttonclick', () => {
             this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT);
         });
-        this.template.addEventListener('childbuttonclick', event => {
+        this.template.addEventListener('childbuttonclick', () => {
             this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT);
         });
     }
@@ -35,57 +35,57 @@ export default class Parent extends LightningElement {
             this.rendered = true;
 
             // Custom element
-            this.addEventListener('slottedbuttonclick', event => {
+            this.addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
-            this.addEventListener('childbuttonclick', event => {
+            this.addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
             });
 
             // Shadow root
-            this.template.addEventListener('slottedbuttonclick', event => {
+            this.template.addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT);
             });
-            this.template.addEventListener('childbuttonclick', event => {
+            this.template.addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT);
             });
 
             // Child
-            this.template.querySelector('integration-child').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('integration-child').addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
             });
-            this.template.querySelector('integration-child').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('integration-child').addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
             });
 
             // Buttons
-            this.template.querySelector('button.slotted').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('button.slotted').addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON);
             });
 
             // Wrapping div
-            this.template.querySelector('div').addEventListener('slottedbuttonclick', event => {
+            this.template.querySelector('div').addEventListener('slottedbuttonclick', () => {
                 this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV);
             });
-            this.template.querySelector('div').addEventListener('childbuttonclick', event => {
+            this.template.querySelector('div').addEventListener('childbuttonclick', () => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV);
             });
         }
     }
 
-    handleSlottedButtonClickOnDiv(event) {
+    handleSlottedButtonClickOnDiv() {
         this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV);
     }
-    handleChildButtonClickOnDiv(event) {
+    handleChildButtonClickOnDiv() {
         this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV);
     }
-    handleSlottedButtonClickOnChild(event) {
+    handleSlottedButtonClickOnChild() {
         this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD);
     }
-    handleChildButtonClickOnChild(event) {
+    handleChildButtonClickOnChild() {
         this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD);
     }
-    handleSlottedButtonClickOnSlottedButton(event) {
+    handleSlottedButtonClickOnSlottedButton() {
         this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_SLOTTED_BUTTON);
     }
 

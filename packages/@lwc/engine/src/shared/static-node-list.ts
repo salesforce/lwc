@@ -9,10 +9,10 @@ import { createFieldName, getInternalField, setInternalField } from "./fields";
 
 const Items = createFieldName('items');
 
-// tslint:disable-next-line:no-empty
 function StaticNodeList() {
     throw new TypeError('Illegal constructor');
 }
+
 StaticNodeList.prototype = create(NodeList.prototype, {
     constructor: {
         writable: true,

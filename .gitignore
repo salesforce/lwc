@@ -4,7 +4,6 @@
 dist/*.js
 node_modules/
 coverage/
-.vscode/
 .idea/
 .project/
 

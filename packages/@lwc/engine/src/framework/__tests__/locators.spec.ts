@@ -230,7 +230,7 @@ describe('Locators & Located Service', () => {
         }
 
         register({
-            locator: function(component, data, def, context) {
+            locator: function() {
                 locatedServiceTriggered = true;
             }
         });
@@ -299,7 +299,7 @@ describe("Errors in locators", () => {
         }
 
         register({
-            locator: function(component, data, def, context) {
+            locator: function() {
                 interactionLogged = true;
             }
         });

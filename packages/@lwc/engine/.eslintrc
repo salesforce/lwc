@@ -1,0 +1,24 @@
+{
+    "env": {
+        "browser": true
+    },
+
+    "globals": {
+        "process": true,
+        "global": true
+    },
+
+    "rules": {
+        "no-production-assert": "error"
+    },
+
+    "overrides": [{
+        "files": [
+            "**/__tests__/**"
+        ],
+
+        "rules": {
+            "no-production-assert": "off"
+        }
+    }]
+}

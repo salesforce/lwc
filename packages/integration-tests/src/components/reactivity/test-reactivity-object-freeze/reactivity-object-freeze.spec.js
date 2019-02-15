@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Issue 723: Freezing reactive proxy throws when trying to access properties', () => {
     const URL = 'http://localhost:4567/reactivity-object-freeze';
-    let element;
 
     before(() => {
         browser.url(URL);

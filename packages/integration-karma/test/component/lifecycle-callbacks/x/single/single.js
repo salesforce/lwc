@@ -5,18 +5,18 @@ export default class Single extends LightningElement {
 
     constructor() {
         super();
-        timingBuffer.push('single:constructor');
+        window.timingBuffer.push('single:constructor');
     }
 
     connectedCallback() {
-        timingBuffer.push('single:connectedCallback');
+        window.timingBuffer.push('single:connectedCallback');
     }
 
     disconnectedCallback() {
-        timingBuffer.push('single:disconnectedCallback');
+        window.timingBuffer.push('single:disconnectedCallback');
     }
 
     renderedCallback() {
-        timingBuffer.push('single:renderedCallback');
+        window.timingBuffer.push('single:renderedCallback');
     }
 }

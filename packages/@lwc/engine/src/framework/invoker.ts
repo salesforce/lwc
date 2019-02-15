@@ -43,7 +43,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
         if (error) {
             error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
+            throw error; // eslint-disable-line no-unsafe-finally
         }
     }
     return result;
@@ -62,7 +62,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
 
     let error;
     try {
-        new Ctor(); // tslint:disable-line
+        new Ctor();
     } catch (e) {
         error = Object(e);
     } finally {
@@ -75,7 +75,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
         if (error) {
             error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
+            throw error; // eslint-disable-line no-unsafe-finally
         }
     }
 }
@@ -113,7 +113,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         if (error) {
             error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
+            throw error; // eslint-disable-line no-unsafe-finally
         }
     }
     return result || [];
@@ -136,7 +136,7 @@ export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefi
         if (error) {
             error.wcStack = getErrorComponentStack(vm.elm);
             // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
+            throw error; // eslint-disable-line no-unsafe-finally
         }
     }
 }

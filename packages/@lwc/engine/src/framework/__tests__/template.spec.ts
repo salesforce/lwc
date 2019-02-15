@@ -124,7 +124,7 @@ describe('template', () => {
                 }
                 get y() {
                     counter += 1;
-                    return;
+                    return counter;
                 }
                 render() {
                     return html;

@@ -604,7 +604,7 @@ describe('html-element', () => {
     describe('Inheritance', () => {
         it('should inherit public getters and setters correctly', () => {
             class MyParent extends LightningElement {
-                get foo() {}
+                get foo() { return 'foo' }
                 set foo(value) {}
             }
             MyParent.publicProps = {
@@ -621,7 +621,7 @@ describe('html-element', () => {
         it('should call correct inherited public setter', () => {
             let count = 0;
             class MyParent extends LightningElement {
-                get foo() {}
+                get foo() { return 'foo' }
                 set foo(value) {
                     count += 1;
                 }
@@ -644,7 +644,7 @@ describe('html-element', () => {
             it('should call setter when defined', () => {
                 let called = 0;
                 class MyComponent extends LightningElement {
-                    get role() {}
+                    get role() { return 'role' }
                     set role(value) {
                         called += 1;
                     }
@@ -687,7 +687,7 @@ describe('html-element', () => {
                     set lang(value) {
                         count += 1;
                     }
-                    get lang() {}
+                    get lang() { return 'lang' }
                 }
                 MyComponent.publicProps = {
                     lang: {}
@@ -811,7 +811,7 @@ describe('html-element', () => {
                     set hidden(value) {
                         count += 1;
                     }
-                    get hidden() {}
+                    get hidden() { return 'hidden' }
                 }
                 MyComponent.publicProps = {
                     hidden: {}
@@ -938,7 +938,7 @@ describe('html-element', () => {
                     set dir(value) {
                         count += 1;
                     }
-                    get dir() {}
+                    get dir() { return 'dir' }
                 }
 
                 MyComponent.publicProps = {
@@ -1066,7 +1066,7 @@ describe('html-element', () => {
                     set id(value) {
                         count += 1;
                     }
-                    get id() {}
+                    get id() { return 'id' }
                 }
                 MyComponent.publicProps = {
                     id: {}
@@ -1193,7 +1193,7 @@ describe('html-element', () => {
                     set accessKey(value) {
                         count += 1;
                     }
-                    get accessKey() {}
+                    get accessKey() { return 'accessKey' }
                 }
                 MyComponent.publicProps = {
                     accessKey: {}
@@ -1316,7 +1316,7 @@ describe('html-element', () => {
                     set title(value) {
                         count += 1;
                     }
-                    get title() {}
+                    get title() { return 'title' }
                 }
                 MyComponent.publicProps = {
                     title: {}
@@ -1549,13 +1549,7 @@ describe('html-element', () => {
         });
 
         it('should correctly set child attribute', () => {
-            let childTitle = null;
-
-            class Child extends LightningElement {
-                renderedCallback() {
-                    childTitle = this.getAttribute('title');
-                }
-            }
+            class Child extends LightningElement {}
 
             const html = compileTemplate(`
                 <template>
@@ -1584,7 +1578,6 @@ describe('html-element', () => {
     describe('integration', () => {
         describe('with locker', () => {
             it('should support manual construction', () => {
-                const seed = {};
                 function SecureBase() {
                     if (this instanceof SecureBase) {
                         LightningElement.prototype.constructor.call(this);

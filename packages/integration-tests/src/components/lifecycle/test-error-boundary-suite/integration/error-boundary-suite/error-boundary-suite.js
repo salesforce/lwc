@@ -8,7 +8,6 @@ export default class RootParent extends LightningElement {
         'boundary-child-connected-throw': false,
         'boundary-child-attr-changed-throw': false,
         'boundary-child-slot-throw': false,
-        'boundary-child-slot-throw': false,
         'boundary-child-self-rehydrate-throw': false,
         'boundary-alternative-view-throw': false
     }
@@ -36,10 +35,6 @@ export default class RootParent extends LightningElement {
 
     get getBoundaryChildAttrChangedThrow() {
         return this.state['boundary-child-attr-changed-throw'];
-    }
-
-    get getBoundaryChildSlotThrow() {
-        return this.state['boundary-child-slot-throw'];
     }
 
     get getBoundaryChildSlotThrow() {

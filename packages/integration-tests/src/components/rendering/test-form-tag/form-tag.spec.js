@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Object keys', () => {
     const URL = 'http://localhost:4567/form-tag';
-    let element;
 
     before(() => {
         browser.url(URL);

@@ -274,7 +274,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
     if (isUndefined(data.update)) {
         data.update = updateElmDefaultHook;
     }
-    let text, elm, shadowAttribute; // tslint:disable-line
+    let text, elm, shadowAttribute;
     const fallback = getCurrentFallback();
     // shadowAttribute is only really needed in fallback mode
     if (fallback) {
@@ -367,7 +367,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
     if (isUndefined(data.update)) {
         data.update = updateCustomElmDefaultHook;
     }
-    let text, elm, shadowAttribute; // tslint:disable-line
+    let text, elm, shadowAttribute;
     const fallback = getCurrentFallback();
     // shadowAttribute is only really needed in fallback mode
     if (fallback) {
@@ -499,7 +499,7 @@ export function f(items: any[]): any[] {
 // [t]ext node
 export function t(text: string): VText {
     const data = EmptyObject;
-    let sel, children, key, elm; // tslint:disable-line
+    let sel, children, key, elm;
     return {
         sel,
         data,
@@ -517,7 +517,7 @@ export function t(text: string): VText {
 // comment node
 export function p(text: string): VComment {
     const data = EmptyObject;
-    let sel = '!', children, key, elm; // tslint:disable-line
+    let sel = '!', children, key, elm;
     return {
         sel,
         data,
@@ -600,9 +600,7 @@ export function ll(originalHandler: EventListener,
 // [k]ey function
 export function k(compilerKey: number, obj: any): string | void {
     switch (typeof obj) {
-        case 'number':
-            // TODO: when obj is a numeric key, we might be able to use some
-            // other strategy to combine two numbers into a new unique number
+        case 'number': // TODO: when obj is a numeric key, we might be able to use some other strategy to combine two numbers into a new unique number
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':

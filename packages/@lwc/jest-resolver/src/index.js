@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const fs = require('fs');
-const { resolve, extname, join, dirname, basename, sep } = require('path');
+const { resolve, extname, join, dirname, basename } = require('path');
 const lwcNpmResolver = require('@lwc/module-resolver');
 
 /*

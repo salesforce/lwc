@@ -8,7 +8,7 @@ export default class CustomInput extends LightningElement {
         this.value = event.target.value;
     }
 
-    handleForceValueChange(event) {
+    handleForceValueChange() {
         this.value = 100;
         this.checked = !this.checked;
     }

@@ -126,23 +126,25 @@ export class WireEventTarget {
 
     addEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
-            case CONNECT:
+            case CONNECT: {
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
                 }
                 connectedListeners.push(listener as NoArgumentListener);
                 break;
+            }
 
-            case DISCONNECT:
+            case DISCONNECT: {
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
                 }
                 disconnectedListeners.push(listener as NoArgumentListener);
                 break;
+            }
 
-            case CONFIG:
+            case CONFIG: {
                 const reactives = this._wireDef.params;
                 const statics = this._wireDef.static;
                 let reactiveKeys: string[];
@@ -177,6 +179,7 @@ export class WireEventTarget {
                 });
 
                 break;
+            }
 
             default:
                 throw new Error(`unsupported event type ${type}`);
@@ -185,17 +188,19 @@ export class WireEventTarget {
 
     removeEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
-            case CONNECT:
+            case CONNECT: {
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
                 removeListener(connectedListeners, listener);
                 break;
+            }
 
-            case DISCONNECT:
+            case DISCONNECT: {
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
                 removeListener(disconnectedListeners, listener);
                 break;
+            }
 
-            case CONFIG:
+            case CONFIG: {
                 const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED].listeners;
                 const reactives = this._wireDef.params;
                 if (reactives) {
@@ -208,6 +213,7 @@ export class WireEventTarget {
                     });
                 }
                 break;
+            }
 
             default:
                 throw new Error(`unsupported event type ${type}`);

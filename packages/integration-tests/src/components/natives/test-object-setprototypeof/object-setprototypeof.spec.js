@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
+
 describe('Set Prototype Of', () => {
     const URL = 'http://localhost:4567/object-setprototypeof';
-    let element;
 
     before(() => {
         browser.url(URL);

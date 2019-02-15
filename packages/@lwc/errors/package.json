@@ -7,7 +7,6 @@
   "typings": "dist/types/",
   "scripts": {
     "clean": "rm -rf dist/",
-    "lint": "tslint -p ./tsconfig.json",
     "build": "tsc",
     "test": "jest"
   },

@@ -322,7 +322,7 @@ export function addCustomElementEventListener(elm: HTMLElement, type: string, li
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function removeCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, _options?: boolean | AddEventListenerOptions) {
     const wrappedListener = getWrappedCustomElementListener(elm, listener);
     detachDOMListener(elm, type, wrappedListener);
 }
@@ -344,7 +344,7 @@ export function addShadowRootEventListener(sr: SyntheticShadowRootInterface, typ
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, _options?: boolean | AddEventListenerOptions) {
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);
