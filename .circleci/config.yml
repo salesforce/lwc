@@ -44,6 +44,13 @@ run_sanity_checks: &run_sanity_checks
       node ./scripts/tasks/version-check.js
       node ./scripts/tasks/check-license-headers.js
 
+run_format: &run_format
+  run:
+    name: Run format
+    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this 
+    # command checks if the files are properly formatted.
+    command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
+
 run_linting: &run_linting
   run:
     name: Run linting
@@ -189,6 +196,7 @@ jobs:
 
       - *run_sanity_checks
       - *run_linting
+      - *run_format
 
       - *save_workspace
 
