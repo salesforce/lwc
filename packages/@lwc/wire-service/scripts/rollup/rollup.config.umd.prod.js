@@ -13,11 +13,11 @@ const typescript = require('rollup-plugin-typescript');
 const rollupReplacePlugin = require('rollup-plugin-replace');
 const rollupCompatPlugin = require('rollup-plugin-compat');
 
-const { version } = require('./package.json');
-const { generateTargetName } = require('./rollup.config.util');
+const { version } = require('../../package.json');
+const { generateTargetName } = require('./util');
 
-const input = path.resolve(__dirname, 'src/index.ts');
-const outputDir = path.resolve(__dirname, 'dist/umd');
+const input = path.resolve(__dirname, '../../src/index.ts');
+const outputDir = path.resolve(__dirname, '../../dist/umd');
 
 const banner = (`/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;
