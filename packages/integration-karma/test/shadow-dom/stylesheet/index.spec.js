@@ -10,9 +10,9 @@ describe('shadow encapsulation', () => {
         document.body.appendChild(elm);
 
         const parentDiv = elm.shadowRoot.querySelector('div');
-        expect(window.getComputedStyle(parentDiv).backgroundColor).toBe('rgb(0, 255, 0)');
+        expect(window.getComputedStyle(parentDiv).marginLeft).toBe('10px');
         const childDiv = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
-        expect(window.getComputedStyle(childDiv).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+        expect(window.getComputedStyle(childDiv).marginLeft).toBe('0px');
     });
 
     it('should work with multiple templates', () => {
@@ -20,12 +20,14 @@ describe('shadow encapsulation', () => {
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');
-        expect(window.getComputedStyle(div).backgroundColor).toBe('rgb(255, 0, 0)');
+        expect(window.getComputedStyle(div).marginLeft).toBe('10px');
+        expect(window.getComputedStyle(div).marginRight).toBe('0px');
 
         elm.toggleTemplate();
         return Promise.resolve().then(() => {
             const div = elm.shadowRoot.querySelector('div');
-            expect(window.getComputedStyle(div).backgroundColor).toBe('rgb(0, 255, 0)');
+            expect(window.getComputedStyle(div).marginLeft).toBe('0px');
+            expect(window.getComputedStyle(div).marginRight).toBe('10px');
         });
     })
 });
@@ -35,7 +37,7 @@ describe(':host', () => {
         const elm = createElement('x-host', { is: Host });
         document.body.appendChild(elm);
 
-        expect(window.getComputedStyle(elm).backgroundColor).toBe('rgb(255, 0, 0)');
+        expect(window.getComputedStyle(elm).marginLeft).toBe('10px');
     });
 
     it('should apply style to the host element with the matching attributes', () => {
@@ -43,6 +45,6 @@ describe(':host', () => {
         elm.setAttribute('data-styled', true);
         document.body.appendChild(elm);
 
-        expect(window.getComputedStyle(elm).backgroundColor).toBe('rgb(0, 0, 255)');
+        expect(window.getComputedStyle(elm).marginLeft).toBe('20px');
     });
 });

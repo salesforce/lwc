@@ -1,9 +1,9 @@
 :host {
     display: block;
-    background: #ff0000;
+    margin-left: 10px;
 }
 
 
 :host([data-styled]) {
-    background: #0000ff;
+    margin-left: 20px;
 }
