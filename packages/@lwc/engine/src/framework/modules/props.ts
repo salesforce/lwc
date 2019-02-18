@@ -14,8 +14,6 @@ import { getAttrNameFromPropName } from "../attributes";
 
 const EspecialTagAndPropMap = create(null, {
     input: { value: create(null, { value: { value: 1 }, checked: { value: 1 } }) },
-    select: { value: create(null, { value: { value: 1 } }) },
-    textarea: { value: create(null, { value: { value: 1 } }) },
 });
 
 function isLiveBindingProp(sel: string, key: string): boolean {
