@@ -1,8 +1,18 @@
 import { createElement } from 'test-utils';
 
+import Static from 'x/static';
 import Dynamic from 'x/dynamic';
 
-fdescribe('dynamic class attribute', () => {
+describe('static class attribute', () => {
+    it('simple', () => {
+        const elm = createElement('x-static', { is: Static });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot.querySelector('div').className).toBe('foo bar');
+    });
+});
+
+describe('dynamic class attribute', () => {
     function createDynamicClass(className) {
         const elm = createElement('x-dynamic', { is: Dynamic });
         elm.dynamicClass = className;
@@ -54,6 +64,17 @@ fdescribe('dynamic class attribute', () => {
         host.dynamicClass = 'baz buz';
         return Promise.resolve().then(() => {
             expect(target.className).toBe('baz buz');
+        });
+    });
+
+    it('preserves manually added classes', () => {
+        const { host, target } = createDynamicClass('foo');
+        target.classList.add('bar');
+        expect(target.className).toBe('foo bar');
+
+        host.dynamicClass = 'baz';
+        return Promise.resolve().then(() => {
+            expect(target.className).toBe('bar baz');
         });
     });
 });
