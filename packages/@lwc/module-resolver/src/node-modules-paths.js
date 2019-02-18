@@ -41,4 +41,4 @@ module.exports = function nodeModulesPaths(basedir, { moduleDirectory } = {}) {
     }, []);
 
     return dirs;
-}
+};

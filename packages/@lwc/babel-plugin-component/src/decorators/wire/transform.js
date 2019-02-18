@@ -12,18 +12,19 @@ const WIRE_PARAM_PREFIX = '$';
 
 function isObservedProperty(configProperty) {
     const propertyValue = configProperty.get('value');
-    return propertyValue.isStringLiteral() &&
-        propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX);
+    return propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX);
 }
 
 function getWiredStatic(wireConfig) {
-    return wireConfig.get('properties')
+    return wireConfig
+        .get('properties')
         .filter(property => !isObservedProperty(property))
         .map(path => path.node);
 }
 
 function getWiredParams(t, wireConfig) {
-    return wireConfig.get('properties')
+    return wireConfig
+        .get('properties')
         .filter(property => isObservedProperty(property))
         .map(path => {
             // Need to clone deep the observed property to remove the param prefix
@@ -35,57 +36,35 @@ function getWiredParams(t, wireConfig) {
 }
 
 function buildWireConfigValue(t, wiredValues) {
-    return t.objectExpression(wiredValues.map(wiredValue => {
-        const wireConfig = [];
-        if (wiredValue.adapter) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('adapter'),
-                    t.identifier(wiredValue.adapter.name)
-                )
-            )
-        }
+    return t.objectExpression(
+        wiredValues.map(wiredValue => {
+            const wireConfig = [];
+            if (wiredValue.adapter) {
+                wireConfig.push(t.objectProperty(t.identifier('adapter'), t.identifier(wiredValue.adapter.name)));
+            }
 
-        if (wiredValue.params) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('params'),
-                    t.objectExpression(wiredValue.params)
-                )
-            );
-        }
+            if (wiredValue.params) {
+                wireConfig.push(t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params)));
+            }
 
-        if (wiredValue.static) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('static'),
-                    t.objectExpression(wiredValue.static)
-                )
-            )
-        }
+            if (wiredValue.static) {
+                wireConfig.push(t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static)));
+            }
 
-        if (wiredValue.isClassMethod) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('method'),
-                    t.numericLiteral(1)
-                )
-            );
-        }
+            if (wiredValue.isClassMethod) {
+                wireConfig.push(t.objectProperty(t.identifier('method'), t.numericLiteral(1)));
+            }
 
-        return t.objectProperty(
-            t.identifier(wiredValue.propertyName),
-            t.objectExpression(wireConfig)
-        );
-    }));
+            return t.objectProperty(t.identifier(wiredValue.propertyName), t.objectExpression(wireConfig));
+        }),
+    );
 }
 
 const SUPPORTED_VALUE_TO_TYPE_MAP = {
     StringLiteral: 'string',
     NumericLiteral: 'number',
-    BooleanLiteral: 'boolean'
+    BooleanLiteral: 'boolean',
 };
-
 
 const scopedReferenceLookup = scope => name => {
     const binding = scope.getBinding(name);
@@ -113,22 +92,22 @@ const scopedReferenceLookup = scope => name => {
     }
     return {
         type,
-        value
+        value,
     };
 };
 
 module.exports = function transform(t, klass, decorators) {
-    const wiredValues = decorators.filter(isWireDecorator).map(({path}) => {
+    const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
         const isClassMethod = path.parentPath.isClassMethod({
-            kind: 'method'
+            kind: 'method',
         });
 
         const wiredValue = {
             propertyName,
-            isClassMethod
+            isClassMethod,
         };
 
         if (config) {
@@ -143,19 +122,15 @@ module.exports = function transform(t, klass, decorators) {
             const reference = referenceLookup(adapterName);
             wiredValue.adapter = {
                 name: adapterName,
-                reference: reference.type === 'module' ? reference.value : undefined
-            }
+                reference: reference.type === 'module' ? reference.value : undefined,
+            };
         }
 
         return wiredValue;
     });
 
     if (wiredValues.length) {
-        const staticProp = staticClassProperty(
-            t,
-            LWC_COMPONENT_PROPERTIES.WIRE,
-            buildWireConfigValue(t, wiredValues)
-        );
+        const staticProp = staticClassProperty(t, LWC_COMPONENT_PROPERTIES.WIRE, buildWireConfigValue(t, wiredValues));
 
         markAsLWCNode(staticProp);
 

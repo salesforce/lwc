@@ -7,14 +7,17 @@
 const pluginTest = require('./utils/test-transform').pluginTest(require('../index'));
 
 describe('Transform property', () => {
-    pluginTest('transforms public props', `
+    pluginTest(
+        'transforms public props',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api test = 1;
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -37,10 +40,13 @@ describe('Transform property', () => {
                   tmpl: _tmpl
                 });
 `,
-        }
-    });
+            },
+        },
+    );
 
-    pluginTest('transform nested classes', `
+    pluginTest(
+        'transform nested classes',
+        `
         import { api } from 'lwc';
         export default class Outer {
             @api outer;
@@ -48,9 +54,10 @@ describe('Transform property', () => {
                 @api innerA;
             }
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators2 } from "lwc";
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
@@ -87,20 +94,24 @@ describe('Transform property', () => {
                 export default _registerComponent(Outer, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('transforms public getters', `
+    pluginTest(
+        'transforms public getters',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api get publicGetter() {
                 return 1;
             }
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -122,11 +133,14 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('detecting @api on both getter and a setter should produce an error', `
+    pluginTest(
+        'detecting @api on both getter and a setter should produce an error',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api
@@ -138,17 +152,21 @@ describe('Transform property', () => {
                 this.s = value;
             }
         }
-    `, {
-        error: {
-            message: '@api get something and @api set something',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: '@api get something and @api set something',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('transform pairs of setter and getter', `
+    pluginTest(
+        'transform pairs of setter and getter',
+        `
         import { api } from 'lwc';
         export default class Test {
             _a = true;
@@ -159,9 +177,10 @@ describe('Transform property', () => {
             @api get b () { return this._b; }
             set b (value) { this._b = value; }
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -203,11 +222,14 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    })
+                `,
+            },
+        },
+    );
 
-    pluginTest(`transform complex attributes`, `
+    pluginTest(
+        `transform complex attributes`,
+        `
         import { api } from 'lwc';
         export default class Text {
             @api publicProp;
@@ -221,9 +243,10 @@ describe('Transform property', () => {
             static ctor = "ctor";
             static get ctorGet () { return 1}
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -271,63 +294,80 @@ describe('Transform property', () => {
                 export default _registerComponent(Text, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('throws error if default value is true', `
+    pluginTest(
+        'throws error if default value is true',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api publicProp = true;
         }
-    `, {
-        error: {
-            message: 'Boolean public property must default to false.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Boolean public property must default to false.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws error if property name is "is"', `
+    pluginTest(
+        'throws error if property name is "is"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api is;
         }
-    `, {
-        error: {
-            message: 'Invalid property name "is". "is" is a reserved attribute.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Invalid property name "is". "is" is a reserved attribute.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws error if property name prefixed with "on"', `
+    pluginTest(
+        'throws error if property name prefixed with "on"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api onChangeHandler;
         }
-    `, {
-        error: {
-            message: 'Invalid property name "onChangeHandler". Properties starting with "on" are reserved for event handlers.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message:
+                    'Invalid property name "onChangeHandler". Properties starting with "on" are reserved for event handlers.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('does not throw error if property name is "data"', `
+    pluginTest(
+        'does not throw error if property name is "data"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api data;
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -349,63 +389,81 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('throws error if property name prefixed with "data"', `
+    pluginTest(
+        'throws error if property name prefixed with "data"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api dataFooBar;
         }
-    `, {
-        error: {
-            message: 'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws error if property name is ambiguous', `
+    pluginTest(
+        'throws error if property name is ambiguous',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api tabindex;
         }
-    `, {
-        error: {
-            message: 'Ambiguous attribute name "tabindex". "tabindex" will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message:
+                    'Ambiguous attribute name "tabindex". "tabindex" will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws correct error if property name is maxlength', `
+    pluginTest(
+        'throws correct error if property name is maxlength',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api maxlength;
         }
-    `, {
-        error: {
-            message: 'Ambiguous attribute name "maxlength". "maxlength" will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message:
+                    'Ambiguous attribute name "maxlength". "maxlength" will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('does not throw if property name prefixed with "aria"', `
+    pluginTest(
+        'does not throw if property name prefixed with "aria"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api ariaDescribedBy;
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -427,74 +485,93 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('throws error if property name conflicts with disallowed global html attribute name', `
+    pluginTest(
+        'throws error if property name conflicts with disallowed global html attribute name',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api slot;
         }
-    `, {
-        error: {
-            message: 'Invalid property name "slot". "slot" is a reserved attribute.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Invalid property name "slot". "slot" is a reserved attribute.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws error if property name is "part"', `
+    pluginTest(
+        'throws error if property name is "part"',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api part;
         }
-    `, {
-        error: {
-            message: 'Invalid property name "part". "part" is a future reserved attribute for web components.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Invalid property name "part". "part" is a future reserved attribute for web components.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws when combined with @track', `
+    pluginTest(
+        'throws when combined with @track',
+        `
         import { api, track } from 'lwc';
         export default class Test {
             @track
             @api
             apiWithTrack = 'foo';
         }
-    `, {
-        error: {
-            message: '@api method or property cannot be used with @track',
-            loc: {
-                line: 2,
-                column: 20,
+    `,
+        {
+            error: {
+                message: '@api method or property cannot be used with @track',
+                loc: {
+                    line: 2,
+                    column: 20,
+                },
             },
-        }
-    });
+        },
+    );
 
-    pluginTest('Duplicate api properties', `
+    pluginTest(
+        'Duplicate api properties',
+        `
         import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
             @api foo = 2;
         }
-    `, {
-        error: {
-            message: 'Duplicate @api property "foo".',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Duplicate @api property "foo".',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('Conflicting api properties with getter/setter', `
+    pluginTest(
+        'Conflicting api properties with getter/setter',
+        `
         import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
@@ -505,42 +582,51 @@ describe('Transform property', () => {
             get foo() { return 'foo' };
             set foo(val) { this._internal = val };
         }
-    `, {
-        error: {
-            message: 'Duplicate @api property "foo".',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Duplicate @api property "foo".',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 
-    pluginTest('Conflicting api properties with method', `
+    pluginTest(
+        'Conflicting api properties with method',
+        `
         import { api } from 'lwc';
         export default class Text {
             @api foo = 1;
             @api foo() { return 'foo'; }
         }
-    `, {
-        error: {
-            message: 'Duplicate @api property "foo".',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: 'Duplicate @api property "foo".',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 });
 
 describe('Transform method', () => {
-    pluginTest('transforms public methods', `
+    pluginTest(
+        'transforms public methods',
+        `
         import { api } from 'lwc';
         export default class Test {
             @api foo() {}
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -556,24 +642,29 @@ describe('Transform method', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-            `
-        }
-    });
+            `,
+            },
+        },
+    );
 
-    pluginTest('Does not allow computed api getters and setters', `
+    pluginTest(
+        'Does not allow computed api getters and setters',
+        `
         import { LightningElement, api } from 'lwc';
         export default class ComputedAPIProp extends LightningElement {
             @api
             set [x](value) {}
             get [x]() {}
         }
-    `, {
-        error: {
-            message: '@api cannot be applied to a computed property, getter, setter or method.',
-            loc: {
-                line: 2,
-                column: 9
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: '@api cannot be applied to a computed property, getter, setter or method.',
+                loc: {
+                    line: 2,
+                    column: 9,
+                },
+            },
+        },
+    );
 });

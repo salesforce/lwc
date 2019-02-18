@@ -27,9 +27,9 @@ const EMPTY_CSS_MOCK = resolve(__dirname, '..', 'resources', 'emptyStyleMock.js'
 const EMPTY_HTML_MOCK = resolve(__dirname, '..', 'resources', 'emptyHtmlMock.js');
 
 const WHITELISTED_LWC_PACKAGES = {
-    "lwc": "@lwc/engine",
-    "wire-service": "@lwc/wire-service",
-    "wire-service-jest-util": "lwc-wire-service-jest-util"
+    lwc: '@lwc/engine',
+    'wire-service': '@lwc/wire-service',
+    'wire-service-jest-util': 'lwc-wire-service-jest-util',
 };
 
 const lwcMap = lwcNpmResolver.resolveLwcNpmModules();
@@ -45,13 +45,12 @@ function isImplicitHTMLImport(importee, { basedir }) {
 
     return (
         isHTML && // if is an HTML file
-        fs.existsSync(jsFile) &&  // There must be a js file with the same name in the same folder
+        fs.existsSync(jsFile) && // There must be a js file with the same name in the same folder
         !fs.existsSync(absPath) // and the html must not exist
     );
 }
 
 function getLwcPath(path, options) {
-
     // If is a special LWC package, resolve it from commonjs
     if (WHITELISTED_LWC_PACKAGES[path]) {
         return require.resolve(WHITELISTED_LWC_PACKAGES[path]);
@@ -75,6 +74,6 @@ function getLwcPath(path, options) {
     return path;
 }
 
-module.exports = function (path, options) {
+module.exports = function(path, options) {
     return resolver(getLwcPath(path, options), options);
 };

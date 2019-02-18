@@ -7,9 +7,13 @@
 import { createElement } from 'lwc';
 import I18n from 'example/i18n';
 
-jest.mock('@salesforce/i18n/dir', () => {
-    return { default: 'value set in test' };
-}, { virtual: true });
+jest.mock(
+    '@salesforce/i18n/dir',
+    () => {
+        return { default: 'value set in test' };
+    },
+    { virtual: true },
+);
 
 afterEach(() => {
     while (document.body.firstChild) {
@@ -18,7 +22,6 @@ afterEach(() => {
 });
 
 describe('example-i18n', () => {
-
     it('default snapshot', () => {
         const element = createElement('example-i18n', { is: I18n });
         document.body.appendChild(element);
@@ -41,16 +44,25 @@ describe('example-i18n', () => {
     });
 
     it.each([
-        'locale', 'timeZone', 'currency', 'firstDayOfWeek',
-        'dateTime.shortDateFormat', 'dateTime.mediumDateFormat', 'dateTime.longDateFormat',
-        'dateTime.shortDateTimeFormat', 'dateTime.mediumDateTimeFormat',
-        'dateTime.shortTimeFormat', 'dateTime.mediumTimeFormat',
-        'number.numberFormat', 'number.percentFormat', 'number.currencyFormat', 'number.currencySymbol'
+        'locale',
+        'timeZone',
+        'currency',
+        'firstDayOfWeek',
+        'dateTime.shortDateFormat',
+        'dateTime.mediumDateFormat',
+        'dateTime.longDateFormat',
+        'dateTime.shortDateTimeFormat',
+        'dateTime.mediumDateTimeFormat',
+        'dateTime.shortTimeFormat',
+        'dateTime.mediumTimeFormat',
+        'number.numberFormat',
+        'number.percentFormat',
+        'number.currencyFormat',
+        'number.currencySymbol',
     ])('@salesforce/i18n/%s should be resolved as a default mock value', id => {
         const values = createElement('example-i18n', { is: I18n }).getI18nValues();
         const key = id.split('.').pop();
         expect(values[key]).toBeDefined();
         expect(values[key]).not.toEqual('');
     });
-
 });

@@ -13,7 +13,7 @@ describe('parentElement from top-level shadow element', () => {
         browser.url(URL);
     });
 
-    it('should return correct elements', function () {
+    it('should return correct elements', function() {
         assert.equal(browser.getText('.parent-is-correct'), 'Parent is correct');
     });
 });

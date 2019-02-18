@@ -10,6 +10,7 @@
     "prepare": "yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "eslint packages/ scripts/ --ext=js,ts --rulesdir=./scripts/eslint/rules",
+    "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json}'",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",

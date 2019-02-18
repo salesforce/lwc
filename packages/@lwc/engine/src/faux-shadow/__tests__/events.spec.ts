@@ -14,8 +14,12 @@ describe('events', () => {
             class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            function a() { dispatched.push('a'); }
-            function b() { dispatched.push('b'); }
+            function a() {
+                dispatched.push('a');
+            }
+            function b() {
+                dispatched.push('b');
+            }
             elm.addEventListener('click', a);
             elm.addEventListener('click', () => {
                 elm.removeEventListener('click', b);
@@ -30,8 +34,12 @@ describe('events', () => {
             class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            function a() { dispatched.push('a'); }
-            function b() { dispatched.push('b'); }
+            function a() {
+                dispatched.push('a');
+            }
+            function b() {
+                dispatched.push('b');
+            }
             elm.addEventListener('click', a);
             elm.addEventListener('click', () => {
                 elm.addEventListener('click', b);
@@ -50,7 +58,7 @@ describe('events', () => {
 
             class MyComponent extends LightningElement {
                 renderedCallback() {
-                    this.template.addEventListener('click', (event) => {
+                    this.template.addEventListener('click', event => {
                         event.stopPropagation();
                     });
                 }
@@ -66,7 +74,9 @@ describe('events', () => {
             MyComponent.publicMethods = ['triggerInternalClick'];
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            function a() { dispatched.push('a'); }
+            function a() {
+                dispatched.push('a');
+            }
             elm.addEventListener('click', a);
             elm.triggerInternalClick();
             expect(dispatched).toHaveLength(0);
@@ -88,14 +98,17 @@ describe('events', () => {
                     return parentHTML;
                 }
             }
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-parent></x-parent>
                     <input onfocus={handleFocus} />
                 </template>
-            `, {
-                modules: { 'x-parent': Parent },
-            });
+            `,
+                {
+                    modules: { 'x-parent': Parent },
+                },
+            );
             const parentHTML = compileTemplate(`
                 <template>
                     <input />
@@ -103,7 +116,10 @@ describe('events', () => {
             `);
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-            elm.shadowRoot.querySelector('x-parent').shadowRoot.querySelector('input').focus();
+            elm.shadowRoot
+                .querySelector('x-parent')
+                .shadowRoot.querySelector('input')
+                .focus();
             // jsdom has some timing issue with focusing
             return Promise.resolve().then(() => {
                 elm.shadowRoot.querySelector('input').focus();
@@ -128,14 +144,17 @@ describe('events', () => {
                     return parentHTML;
                 }
             }
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-parent></x-parent>
                     <input onfocus={handleFocus} />
                 </template>
-            `, {
-                modules: { 'x-parent': Parent },
-            });
+            `,
+                {
+                    modules: { 'x-parent': Parent },
+                },
+            );
             const parentHTML = compileTemplate(`
                 <template>
                     <input />
@@ -143,7 +162,10 @@ describe('events', () => {
             `);
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-            elm.shadowRoot.querySelector('x-parent').shadowRoot.querySelector('input').focus();
+            elm.shadowRoot
+                .querySelector('x-parent')
+                .shadowRoot.querySelector('input')
+                .focus();
             // jsdom has some timing issue with focusing
             return Promise.resolve().then(() => {
                 const e = new CustomEvent('focus');
@@ -174,37 +196,46 @@ describe('events', () => {
                     target = evt.target;
                     srcElement = evt.srcElement;
                 }
-                 render() {
+                render() {
                     return childHTML;
                 }
             }
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-parent>
                         <div></div>
                     </x-parent>
                 </template>
-            `, {
-                modules: { 'x-parent': Parent },
-            });
-            const parentHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-parent': Parent },
+                },
+            );
+            const parentHTML = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <slot></slot>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
-            const childHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
+            const childHTML = compileTemplate(
+                `
                 <template>
                     <div onclick={handleClick}>
                         <slot></slot>
                     </div>
                 </template>
-            `, {
-                modules: {},
-            });
+            `,
+                {
+                    modules: {},
+                },
+            );
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('div');
@@ -284,12 +315,12 @@ describe('events', () => {
                 changeSomething() {
                     this.newTitle = 'foo';
                 }
-                 render() {
+                render() {
                     return rootHTML;
                 }
             }
             Root.track = {
-                newTitle: 1
+                newTitle: 1,
             };
             Root.publicMethods = ['changeSomething'];
             class Parent extends LightningElement {
@@ -302,37 +333,46 @@ describe('events', () => {
                 handleClick(evt) {
                     target = evt.target;
                 }
-                 render() {
+                render() {
                     return childHTML;
                 }
             }
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-parent>
                         <div title={newTitle}></div>
                     </x-parent>
                 </template>
-            `, {
-                modules: { 'x-parent': Parent },
-            });
-            const parentHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-parent': Parent },
+                },
+            );
+            const parentHTML = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <slot></slot>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
-            const childHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
+            const childHTML = compileTemplate(
+                `
                 <template>
                     <div onclick={handleClick}>
                         <slot></slot>
                     </div>
                 </template>
-            `, {
-                modules: {},
-            });
+            `,
+                {
+                    modules: {},
+                },
+            );
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('div');
@@ -383,25 +423,28 @@ describe('events', () => {
                 }
                 renderedCallback() {
                     let domEvent;
-                    this.addEventListener("change", (e) => {
+                    this.addEventListener('change', e => {
                         domEvent = e;
                         expect(e.target).toBe(this.template.host);
                     });
-                    const event = document.createEvent("HTMLEvents");
-                    event.initEvent("change", false, true);
+                    const event = document.createEvent('HTMLEvents');
+                    event.initEvent('change', false, true);
                     this.dispatchEvent(event);
                     expect(domEvent).toBe(event);
                     expect(domEvent.target).toBe(null); // because the event is not composed
                 }
             }
 
-            const childHTML = compileTemplate(`
+            const childHTML = compileTemplate(
+                `
                 <template></template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
 
             class Root extends LightningElement {
                 render() {
@@ -409,15 +452,18 @@ describe('events', () => {
                 }
             }
 
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -440,25 +486,31 @@ describe('events', () => {
                     expect(evt.composedPath().length).toBe(9);
                     expect(evt.path.length).toBe(9);
                 }
-                 render() {
+                render() {
                     return childHTML;
                 }
             }
-            const parentHTML = compileTemplate(`
+            const parentHTML = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
-            const childHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
+            const childHTML = compileTemplate(
+                `
                 <template>
                     <div onclick={handleClick}>
                     </div>
                 </template>
-            `, {
-                modules: {},
-            });
+            `,
+                {
+                    modules: {},
+                },
+            );
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
@@ -485,25 +537,31 @@ describe('events', () => {
                     expect(evt.composedPath().length).toBe(2);
                     expect(evt.path.length).toBe(2);
                 }
-                 render() {
+                render() {
                     return childHTML;
                 }
             }
-            const parentHTML = compileTemplate(`
+            const parentHTML = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
-            const childHTML = compileTemplate(`
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
+            const childHTML = compileTemplate(
+                `
                 <template>
                     <div onfoo={handleFoo}>
                     </div>
                 </template>
-            `, {
-                modules: {},
-            });
+            `,
+                {
+                    modules: {},
+                },
+            );
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
@@ -538,10 +596,12 @@ describe('events', () => {
             class GrandChild extends LightningElement {
                 connectedCallback() {
                     this.template.addEventListener('click', () => {
-                        this.dispatchEvent(new CustomEvent('bubblesnotcomposed', {
-                            bubbles:true,
-                            composed: false
-                        }));
+                        this.dispatchEvent(
+                            new CustomEvent('bubblesnotcomposed', {
+                                bubbles: true,
+                                composed: false,
+                            }),
+                        );
                     });
                 }
                 render() {
@@ -562,10 +622,10 @@ describe('events', () => {
                 render() {
                     return rootHTML;
                 }
-
             }
 
-            const rootHTML = compileTemplate(`
+            const rootHTML = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <x-grand-child>
@@ -573,7 +633,9 @@ describe('events', () => {
                         </x-grand-child>
                     </x-child>
                 </template>
-            `, { modules: { 'x-child': Child, 'x-grand-child': GrandChild } });
+            `,
+                { modules: { 'x-child': Child, 'x-grand-child': GrandChild } },
+            );
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -595,11 +657,10 @@ describe('events', () => {
                 handleEvent: function(evt) {
                     expect(this).toBe(eventListener);
                     target = evt.target;
-                }
+                },
             };
 
-            class MyComponent extends LightningElement {
-            }
+            class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             const span = document.createElement('span');
             span.appendChild(elm);
@@ -623,7 +684,7 @@ describe('events', () => {
                         handleEvent: function(evt) {
                             expect(this).toBe(eventListener);
                             expect(evt.target).toBe(button);
-                        }
+                        },
                     };
                     button.addEventListener('click', eventListener);
                 }

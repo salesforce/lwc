@@ -4,29 +4,25 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
-import { EmptyArray, ViewModelReflection, EmptyObject } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
-import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
-import {
-    nodeValueSetter,
-    insertBefore,
-    removeChild,
-} from "../env/node";
-import modEvents from "./modules/events";
-import modAttrs from "./modules/attrs";
-import modProps from "./modules/props";
-import modComputedClassName from "./modules/computed-class-attr";
-import modComputedStyle from "./modules/computed-style-attr";
-import modStaticClassName from "./modules/static-class-attr";
-import modStaticStyle from "./modules/static-style-attr";
-import modContext from "./modules/context";
-import { hasDynamicChildren } from "./patch";
-import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
-import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
-import { getComponentDef, setElementProto } from "./def";
+import assert from '../shared/assert';
+import { isArray, isUndefined, isTrue, hasOwnProperty } from '../shared/language';
+import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
+import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from './vm';
+import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
+import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
+import modEvents from './modules/events';
+import modAttrs from './modules/attrs';
+import modProps from './modules/props';
+import modComputedClassName from './modules/computed-class-attr';
+import modComputedStyle from './modules/computed-style-attr';
+import modStaticClassName from './modules/static-class-attr';
+import modStaticStyle from './modules/static-style-attr';
+import modContext from './modules/context';
+import { hasDynamicChildren } from './patch';
+import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from './restrictions';
+import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from './patch';
+import { getComponentDef, setElementProto } from './def';
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
@@ -81,7 +77,10 @@ export function createElmHook(vnode: VElement) {
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, uid);
     if (isTrue(fallback)) {
-        const { shadowAttribute, data: { context } } = vnode;
+        const {
+            shadowAttribute,
+            data: { context },
+        } = vnode;
         const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
@@ -90,7 +89,9 @@ export function createElmHook(vnode: VElement) {
         });
     }
     if (process.env.NODE_ENV !== 'production') {
-        const { data: { context } } = vnode;
+        const {
+            data: { context },
+        } = vnode;
         const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementWithRestrictions(elm, { isPortal });
     }
@@ -114,7 +115,7 @@ export function insertCustomElmHook(vnode: VCustomElement) {
 
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children } = vnode;
-    const fn = hasDynamicChildren(children) ?  updateDynamicChildren : updateStaticChildren;
+    const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
     fn(vnode.elm as Element, oldVnode.children, children);
 }
 
@@ -155,7 +156,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     });
     const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -183,11 +184,7 @@ export function createChildrenHook(vnode: VElement) {
         const ch = children[j];
         if (ch != null) {
             ch.hook.create(ch);
-            ch.hook.insert(
-                ch,
-                elm as Element,
-                null,
-            );
+            ch.hook.insert(ch, elm as Element, null);
         }
     }
 }
@@ -195,7 +192,7 @@ export function createChildrenHook(vnode: VElement) {
 export function renderCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
     }
     renderVM(vm);

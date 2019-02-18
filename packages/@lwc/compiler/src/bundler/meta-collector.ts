@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    Location,
-} from "@lwc/babel-plugin-component";
+import { Location } from '@lwc/babel-plugin-component';
 
-import { TemplateModuleDependency } from "@lwc/template-compiler";
+import { TemplateModuleDependency } from '@lwc/template-compiler';
 
-import { ModuleImportLocation } from "./import-location-collector";
+import { ModuleImportLocation } from './import-location-collector';
 
 export interface TemplateModuleDependencies {
     templatePath: string;
@@ -37,13 +35,15 @@ export class MetadataCollector {
     }
 
     public collectExperimentalTemplateDependencies(
-        templatePath: string, templateDependencies: TemplateModuleDependency[]) {
+        templatePath: string,
+        templateDependencies: TemplateModuleDependency[],
+    ) {
         if (!this.experimentalTemplateDependencies) {
             this.experimentalTemplateDependencies = [];
         }
         this.experimentalTemplateDependencies.push({
             templatePath,
-            moduleDependencies: templateDependencies
+            moduleDependencies: templateDependencies,
         });
     }
 

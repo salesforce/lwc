@@ -1,13 +1,15 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 import { EVENT } from '../EVENT';
 
 export default class Parent extends LightningElement {
     log(guid) {
-        this.dispatchEvent(new CustomEvent('log', {
-            bubbles: true,
-            composed: true,
-            detail: { guid }
-        }));
+        this.dispatchEvent(
+            new CustomEvent('log', {
+                bubbles: true,
+                composed: true,
+                detail: { guid },
+            }),
+        );
     }
 
     constructor() {
@@ -60,7 +62,9 @@ export default class Parent extends LightningElement {
 
             // Buttons
             this.template.querySelector('button.slotted').addEventListener('slottedbuttonclick', () => {
-                this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON);
+                this.log(
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON,
+                );
             });
 
             // Wrapping div
@@ -94,7 +98,7 @@ export default class Parent extends LightningElement {
             new CustomEvent('slottedbuttonclick', {
                 bubbles: true,
                 composed: true,
-            })
+            }),
         );
     }
 }

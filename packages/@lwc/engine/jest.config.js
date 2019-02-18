@@ -12,9 +12,7 @@ module.exports = {
 
     displayName: 'lwc-engine',
 
-    roots: [
-        '<rootDir>/src'
-    ],
+    roots: ['<rootDir>/src'],
 
     // Customize setup for the engine tests.
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
@@ -28,7 +26,7 @@ module.exports = {
         '<rootDir>/src/faux-shadow/focus.ts',
         '<rootDir>/src/faux-shadow/slot.ts',
         '<rootDir>/src/polyfills',
-        '<rootDir>/src/framework/wc.ts'
+        '<rootDir>/src/framework/wc.ts',
     ],
 
     // Override global threshold for the package. As we increase the test coverage we should increase

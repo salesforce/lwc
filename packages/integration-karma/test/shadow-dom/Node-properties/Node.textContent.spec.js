@@ -9,12 +9,8 @@ describe('Node.textContent - getter', () => {
 
         expect(elm.textContent).toBe('');
         expect(elm.shadowRoot.textContent).toBe('Slotted Text');
-        expect(elm.shadowRoot.querySelector('x-container').textContent).toBe(
-            'Slotted Text',
-        );
-        expect(elm.shadowRoot.querySelector('.slotted').textContent).toBe(
-            'Slotted Text',
-        );
+        expect(elm.shadowRoot.querySelector('x-container').textContent).toBe('Slotted Text');
+        expect(elm.shadowRoot.querySelector('.slotted').textContent).toBe('Slotted Text');
     });
 
     it('should enforce the shadow DOM semantic - x-container', () => {
@@ -22,8 +18,12 @@ describe('Node.textContent - getter', () => {
         document.body.appendChild(elm);
 
         const container = elm.shadowRoot.querySelector('x-container');
-        expect(container.shadowRoot.textContent).toBe(process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After');
-        expect(container.shadowRoot.querySelector('slot').textContent).toBe(process.env.NATIVE_SHADOW ? 'default-slotted' : '');
+        expect(container.shadowRoot.textContent).toBe(
+            process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After',
+        );
+        expect(container.shadowRoot.querySelector('slot').textContent).toBe(
+            process.env.NATIVE_SHADOW ? 'default-slotted' : '',
+        );
     });
 });
 

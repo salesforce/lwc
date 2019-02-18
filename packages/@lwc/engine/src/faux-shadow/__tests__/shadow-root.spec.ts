@@ -60,15 +60,18 @@ describe('root', () => {
                 }
             }
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <p></p>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return parentTmpl;
@@ -96,15 +99,18 @@ describe('root', () => {
                 }
             }
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <p></p>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return parentTmpl;
@@ -120,7 +126,6 @@ describe('root', () => {
             expect(xChild.shadowRoot.querySelector('p')).toBeNull();
         });
 
-
         it('should expose the shadow root via $$ShadowRoot$$ when in test mode', () => {
             class MyComponent extends LightningElement {}
 
@@ -128,6 +133,5 @@ describe('root', () => {
             document.body.appendChild(elm);
             expect(elm.$$ShadowRoot$$).toBeDefined();
         });
-
     });
 });

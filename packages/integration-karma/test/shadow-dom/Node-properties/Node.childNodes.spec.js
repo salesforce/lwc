@@ -6,7 +6,7 @@ import Slotted from 'x/slotted';
 // filters this node.
 function getHostChildNodes(host) {
     return [...host.childNodes].filter(n => {
-        return n.nodeType !== Node.COMMENT_NODE && !n.tagName.startsWith('#shadow-root')
+        return n.nodeType !== Node.COMMENT_NODE && !n.tagName.startsWith('#shadow-root');
     });
 }
 

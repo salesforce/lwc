@@ -48,9 +48,7 @@ describe('Node.cloneNode', () => {
             const elm = createElement('x-slotted', { is: Slotted });
             document.body.appendChild(elm);
 
-            const clone = elm.shadowRoot
-                .querySelector('x-container')
-                .cloneNode(false);
+            const clone = elm.shadowRoot.querySelector('x-container').cloneNode(false);
             expect(clone.childNodes.length).toBe(0);
             expect(clone.outerHTML).toBe('<x-container></x-container>');
         });
@@ -70,13 +68,9 @@ describe('Node.cloneNode', () => {
             const elm = createElement('x-slotted', { is: Slotted });
             document.body.appendChild(elm);
 
-            const clone = elm.shadowRoot
-                .querySelector('x-container')
-                .cloneNode(true);
+            const clone = elm.shadowRoot.querySelector('x-container').cloneNode(true);
             expect(clone.childNodes.length).toBe(1);
-            expect(clone.outerHTML).toBe(
-                '<x-container><div class="slotted">Slotted Text</div></x-container>',
-            );
+            expect(clone.outerHTML).toBe('<x-container><div class="slotted">Slotted Text</div></x-container>');
         });
 
         it('should clone complex slotted content', () => {
@@ -100,4 +94,3 @@ describe('Node.cloneNode', () => {
         });
     });
 });
-

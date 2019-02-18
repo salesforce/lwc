@@ -5,7 +5,7 @@ function testInvalidComponentConstructor(name, ctor) {
         // TODO: #933 - isComponentConstructor throws when not passing a proper constructor instead of returning a
         // boolean.
         expect(() => isComponentConstructor(ctor)).toThrowError(
-            /Invalid prototype chain for \w+, you must extend LightningElement./
+            /Invalid prototype chain for \w+, you must extend LightningElement./,
         );
     });
 }
@@ -23,7 +23,7 @@ it('should return true if when passing a class inheriting from LightningElement'
     expect(isComponentConstructor(Component)).toBe(true);
 });
 
-it('should return true if when passing a class with LightningElement in it\'s prototype chain', () => {
+it("should return true if when passing a class with LightningElement in it's prototype chain", () => {
     class Base extends LightningElement {}
     class Component extends Base {}
     expect(isComponentConstructor(Component)).toBe(true);

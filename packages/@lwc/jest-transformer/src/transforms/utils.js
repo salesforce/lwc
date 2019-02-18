@@ -54,11 +54,13 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
         fallbackData = t.stringLiteral(fallbackData);
     }
 
-    path.replaceWithMultiple(defaultTemplate({
-        RESOURCE_NAME: t.identifier(defaultImport),
-        IMPORT_SOURCE: t.stringLiteral(importSource),
-        FALLBACK_DATA: fallbackData
-    }));
+    path.replaceWithMultiple(
+        defaultTemplate({
+            RESOURCE_NAME: t.identifier(defaultImport),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            FALLBACK_DATA: fallbackData,
+        }),
+    );
 }
 
 /**
@@ -77,7 +79,7 @@ function getImportInfo(path, noValidate) {
     if (!noValidate && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
         throw generateError(path, {
             errorInfo: JestTransformerErrors.INVALID_IMPORT,
-            messageArgs: [importSource]
+            messageArgs: [importSource],
         });
     }
 

@@ -18,17 +18,10 @@ const PACKAGES = glob.sync('*/**/package.json', {
 
 let areVersionsInSync = true;
 for (const location of PACKAGES) {
-    const {
-        name,
-        peerDependencies = {},
-        devDependencies = {},
-    } = require(location);
+    const { name, peerDependencies = {}, devDependencies = {} } = require(location);
 
     for (const dep of Object.keys(peerDependencies)) {
-        if (
-            devDependencies.hasOwnProperty(dep) &&
-            !semver.satisfies(devDependencies[dep], peerDependencies[dep])
-        ) {
+        if (devDependencies.hasOwnProperty(dep) && !semver.satisfies(devDependencies[dep], peerDependencies[dep])) {
             const error = [
                 `Peer and dev versions of ${dep} in ${name} are out of sync.`,
                 `(Expected: ${peerDependencies[dep]}, Actual: ${devDependencies[dep]})`,

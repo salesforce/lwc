@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Location, DiagnosticLevel } from "../shared/types";
+import { Location, DiagnosticLevel } from '../shared/types';
 
 export interface CompilerDiagnosticOrigin {
     filename?: string;
@@ -53,7 +53,7 @@ export class CompilerError extends Error implements CompilerDiagnostic {
             message: this.message,
             level: this.level,
             filename: this.filename,
-            location: this.location
+            location: this.location,
         };
     }
 }
@@ -91,10 +91,7 @@ function getLocationFromObject(obj: any): Location | undefined {
             return obj.location;
         } else if (obj.loc) {
             return obj.loc;
-        } else if (
-            Number.isInteger(obj.line) &&
-            Number.isInteger(obj.column)
-        ) {
+        } else if (Number.isInteger(obj.line) && Number.isInteger(obj.column)) {
             return { line: obj.line, column: obj.column, start: obj.start, length: obj.length };
         }
     }

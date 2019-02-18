@@ -9,7 +9,7 @@ describe('LightningElement.getElementsByTagName', () => {
             createElement('x-constructor-get-elements-by-tag-name', { is: ConstructorGetElementsByTagName });
         }).toThrowError(
             Error,
-            /Assert Violation: this.getElementsByTagName\(\) cannot be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because no children has been added to this element yet\./
+            /Assert Violation: this.getElementsByTagName\(\) cannot be called during the construction of the custom element for <x-constructor-get-elements-by-tag-name> because no children has been added to this element yet\./,
         );
     });
 
@@ -27,4 +27,3 @@ describe('LightningElement.getElementsByTagName', () => {
         expect(childResult[1].className).toBe('foo slotted2');
     });
 });
-

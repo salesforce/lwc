@@ -9,7 +9,7 @@ describe('LightningElement.querySelector', () => {
             createElement('x-constructor-query-selector', { is: ConstructorQuerySelector });
         }).toThrowError(
             Error,
-            /Assert Violation: this.querySelector\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector> because no children has been added to this element yet\./
+            /Assert Violation: this.querySelector\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector> because no children has been added to this element yet\./,
         );
     });
 
@@ -25,4 +25,3 @@ describe('LightningElement.querySelector', () => {
         expect(childResult.className).toBe('foo slotted1');
     });
 });
-

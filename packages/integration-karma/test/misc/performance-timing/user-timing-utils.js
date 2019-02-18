@@ -9,7 +9,6 @@ export const isUserTimingSupported =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-
 export function resetMeasures() {
     root = {
         parent: null,
@@ -25,7 +24,7 @@ export function patchUserTiming() {
                 label: null,
                 parent: activeMeasure,
                 children: [],
-            }
+            };
 
             activeMeasure.children.push(measure);
             activeMeasure = measure;

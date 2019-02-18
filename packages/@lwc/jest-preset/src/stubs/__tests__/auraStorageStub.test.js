@@ -10,11 +10,11 @@
 import storageService from 'aura-storage';
 
 describe('auraStorageStub.js', () => {
-    const storeName = "myStore";
+    const storeName = 'myStore';
     let store = {};
 
     beforeEach(() => {
-        store = storageService.initStorage({name: storeName});
+        store = storageService.initStorage({ name: storeName });
     });
 
     afterEach(() => {
@@ -24,7 +24,7 @@ describe('auraStorageStub.js', () => {
 
     describe('initStorage()', () => {
         it('sets default values', () => {
-            expect(store.getName()).toBe("myStore");
+            expect(store.getName()).toBe('myStore');
             expect(store.getSize()).toBe(0);
             expect(store.getMaxSize()).toBe(1000 * 1024);
         });
@@ -32,68 +32,74 @@ describe('auraStorageStub.js', () => {
 
     describe('getStorage()', () => {
         it('returns previously created storage', () => {
-            expect(storageService.getStorage("myStore")).toBe(store);
+            expect(storageService.getStorage('myStore')).toBe(store);
         });
 
         it('returns undefined for non-existent storage', () => {
-            expect(storageService.getStorage("nonExistent")).toBe(undefined);
+            expect(storageService.getStorage('nonExistent')).toBe(undefined);
         });
     });
 
     describe('getStorages()', () => {
         it('returns multiple previously created storage', () => {
             try {
-                const store1 = storageService.initStorage({name: "myStore1"});
-                const store2 = storageService.initStorage({name: "myStore2"});
+                const store1 = storageService.initStorage({ name: 'myStore1' });
+                const store2 = storageService.initStorage({ name: 'myStore2' });
                 const storages = storageService.getStorages();
                 expect(storages.myStore1).toBe(store1);
                 expect(storages.myStore2).toBe(store2);
             } finally {
-                storageService.deleteStorage("myStore1");
-                storageService.deleteStorage("myStore2");
+                storageService.deleteStorage('myStore1');
+                storageService.deleteStorage('myStore2');
             }
         });
     });
 
     describe('AuraStorage stub', () => {
         it('sets, gets, removes entries', () => {
-            return store.set("foo", "bar").then(() => {
-                return store.get("foo");
-            })
-                .then((val) => {
-                    expect(val).toBe("bar");
-                    return store.remove("foo");
+            return store
+                .set('foo', 'bar')
+                .then(() => {
+                    return store.get('foo');
+                })
+                .then(val => {
+                    expect(val).toBe('bar');
+                    return store.remove('foo');
                 })
                 .then(() => {
-                    return store.get("foo");
+                    return store.get('foo');
                 })
-                .then((val) => {
+                .then(val => {
                     expect(val).toBe(undefined);
                 });
         });
 
         it('getAll gets all entries when param is falsey', () => {
-            return store.set("foo", "bar").then(() => {
-                return store.set("foo2", "bar2");
-            })
+            return store
+                .set('foo', 'bar')
+                .then(() => {
+                    return store.set('foo2', 'bar2');
+                })
                 .then(() => {
                     return store.getAll();
                 })
-                .then((values) => {
+                .then(values => {
                     expect(Object.keys(values)).toHaveLength(2);
-                    expect(values.foo).toBe("bar");
-                    expect(values.foo2).toBe("bar2");
+                    expect(values.foo).toBe('bar');
+                    expect(values.foo2).toBe('bar2');
                 });
         });
 
         it('setAll sets multiple values', () => {
-            return store.setAll({ foo: "bar", foo2: "bar2" }).then(() => {
-                return store.getAll(["foo", "foo2"]);
-            })
-                .then((values) => {
+            return store
+                .setAll({ foo: 'bar', foo2: 'bar2' })
+                .then(() => {
+                    return store.getAll(['foo', 'foo2']);
+                })
+                .then(values => {
                     expect(Object.keys(values)).toHaveLength(2);
-                    expect(values.foo).toBe("bar");
-                    expect(values.foo2).toBe("bar2");
+                    expect(values.foo).toBe('bar');
+                    expect(values.foo2).toBe('bar2');
                 });
         });
     });

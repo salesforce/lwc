@@ -9,9 +9,7 @@ import { bundle } from '../bundler';
 describe('bundler', () => {
     test('throws when invoked without configurations', async () => {
         await expect(bundle()).rejects.toMatchObject({
-            message: expect.stringContaining(
-                'Expected options object, received "undefined".',
-            ),
+            message: expect.stringContaining('Expected options object, received "undefined".'),
         });
     });
 
@@ -21,20 +19,20 @@ describe('bundler', () => {
             name: 'cmp',
             namespace: 'c',
             files: {
-                'cmp.js': 'let a = 1'
+                'cmp.js': 'let a = 1',
             },
             stylesheetConfig: {
                 customProperties: {
                     allowDefinition: false,
-                    resolution: { type: 'native' }
-                }
+                    resolution: { type: 'native' },
+                },
             },
             outputConfig: {
-                    env: { NODE_ENV: 'development' },
-                    minify: false,
-                    compat: false,
-                    sourcemap: false
-            }
+                env: { NODE_ENV: 'development' },
+                minify: false,
+                compat: false,
+                sourcemap: false,
+            },
         });
 
         expect(result.map).toBeNull();
@@ -46,20 +44,20 @@ describe('bundler', () => {
             name: 'cmp',
             namespace: 'c',
             files: {
-                'cmp.js': 'const a = 1;'
+                'cmp.js': 'const a = 1;',
             },
             stylesheetConfig: {
                 customProperties: {
                     allowDefinition: false,
-                    resolution: { type: 'native' }
-                }
+                    resolution: { type: 'native' },
+                },
             },
             outputConfig: {
                 env: { NODE_ENV: 'development' },
                 minify: false,
                 compat: false,
-                sourcemap: true
-            }
+                sourcemap: true,
+            },
         });
 
         expect(result.map).not.toBeNull();

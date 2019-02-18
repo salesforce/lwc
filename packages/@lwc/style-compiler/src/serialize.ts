@@ -15,7 +15,7 @@ enum TokenType {
     text = 'text',
     expression = 'expression',
     identifier = 'identifier',
-    divider = 'divider'
+    divider = 'divider',
 }
 interface Token {
     type: TokenType;
@@ -70,20 +70,20 @@ export default function serialize(result: postcss.LazyResult, config: Config): s
 }
 
 function reduceTokens(tokens: Token[]): Token[] {
-    return [
-        { type: TokenType.text, value: '' },
-        ...tokens,
-        { type: TokenType.text, value: '' }
-    ].reduce((acc, token) => {
-        const prev = acc[acc.length - 1];
-        if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
-            prev.value += token.value;
-            return acc;
-        } else {
-            return [...acc, token];
-        }
-    }, [] as Token[])
-    .filter((t) => t.value !== '');
+    return [{ type: TokenType.text, value: '' }, ...tokens, { type: TokenType.text, value: '' }]
+        .reduce(
+            (acc, token) => {
+                const prev = acc[acc.length - 1];
+                if (token.type === TokenType.text && prev && prev.type === TokenType.text) {
+                    prev.value += token.value;
+                    return acc;
+                } else {
+                    return [...acc, token];
+                }
+            },
+            [] as Token[],
+        )
+        .filter(t => t.value !== '');
 }
 
 function normalizeString(str: string) {
@@ -91,9 +91,7 @@ function normalizeString(str: string) {
 }
 
 function generateExpressionFromTokens(tokens: Token[]): string {
-    return tokens
-        .map(({ type, value }) => type === TokenType.text ? JSON.stringify(value) : value)
-        .join(' + ');
+    return tokens.map(({ type, value }) => (type === TokenType.text ? JSON.stringify(value) : value)).join(' + ');
 }
 
 function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, minify: boolean): string {
@@ -103,12 +101,11 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
 
     // Walk though all nodes in the CSS...
     postcss.stringify(result.root, (part, node, nodePosition) => {
-
         // When consuming the beggining of a rule, first we tokenize the selector
         if (node && node.type === 'rule' && nodePosition === 'start') {
             currentRuleTokens.push(...tokenizeCssSelector(normalizeString(part)));
 
-        // When consuming the end of a rule we normalize it and produce a new one
+            // When consuming the end of a rule we normalize it and produce a new one
         } else if (node && node.type === 'rule' && nodePosition === 'end') {
             currentRuleTokens.push({ type: TokenType.text, value: part });
             currentRuleTokens = reduceTokens(currentRuleTokens);
@@ -123,11 +120,10 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
 
                 tokens.push({
                     type: TokenType.expression,
-                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken}))`
+                    value: `(${SHADOW_DOM_ENABLED_IDENTIFIER} ? (${tmpHostExpression}) : (${exprToken}))`,
                 });
 
                 tmpHostExpression = null;
-
             } else {
                 if (tmpHostExpression) {
                     throw new Error('Unexpected host rules ordering');
@@ -143,9 +139,8 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
                 tokens.push({ type: TokenType.text, value: '\n' });
             }
 
-        // When inside a declaration, tokenize it and push it to the current token list
+            // When inside a declaration, tokenize it and push it to the current token list
         } else if (node && node.type === 'decl') {
-
             if (collectVarFunctions) {
                 const declTokens = tokenizeCssDeclaration(node);
                 currentRuleTokens.push(...declTokens);
@@ -153,7 +148,6 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
             } else {
                 currentRuleTokens.push({ type: TokenType.text, value: part });
             }
-
         } else if (node && node.type === 'atrule') {
             // Certain atrules have declaration associated with for example @font-face. We need to add the rules tokens
             // when it's the case.
@@ -171,9 +165,8 @@ function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, 
         }
     });
 
-    const buffer =
-        reduceTokens(tokens)
-        .map(t => t.type === TokenType.text ? JSON.stringify(t.value) : t.value)
+    const buffer = reduceTokens(tokens)
+        .map(t => (t.type === TokenType.text ? JSON.stringify(t.value) : t.value))
         .join(' + ');
 
     return buffer;
@@ -213,9 +206,9 @@ function tokenizeCssSelector(data: string): Token[] {
 }
 
 /*
-* This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
-* and transforms its custom variables in function calls
-*/
+ * This method takes a tokenized CSS property value `1px solid var(--foo , bar)`
+ * and transforms its custom variables in function calls
+ */
 function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     const { type, nodes, value } = node;
 
@@ -232,27 +225,33 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
     }
 
     if (type === 'div') {
-        return [{
-            type: inVarExpression ? TokenType.divider : TokenType.text,
-            value
-        }];
+        return [
+            {
+                type: inVarExpression ? TokenType.divider : TokenType.text,
+                value,
+            },
+        ];
     }
 
     if (type === 'string') {
         const { quote } = node;
-        return [{
-            type: TokenType.text,
-            value: quote ? (quote + value + quote) : value
-        }];
+        return [
+            {
+                type: TokenType.text,
+                value: quote ? quote + value + quote : value,
+            },
+        ];
     }
 
     // If we are inside a var() expression use need to stringify since we are converting it into a function
     if (type === 'word') {
         const convertIdentifier = value.startsWith('--');
-        return [{
-            type: convertIdentifier ? TokenType.identifier : TokenType.text,
-            value: convertIdentifier ? `"${value}"` : value
-        }];
+        return [
+            {
+                type: convertIdentifier ? TokenType.identifier : TokenType.text,
+                value: convertIdentifier ? `"${value}"` : value,
+            },
+        ];
     }
 
     // If we inside a var() function we need to prepend and append to generate an expression
@@ -267,20 +266,22 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
             }, '');
 
             // Generate the function call for runtime evaluation
-            return [{
-                type: TokenType.expression,
-                value: `${VAR_RESOLVER_IDENTIFIER}(${exprToken})`
-            }];
-        // for any other function just do the equivalent string concatenation (no need for expressions)
+            return [
+                {
+                    type: TokenType.expression,
+                    value: `${VAR_RESOLVER_IDENTIFIER}(${exprToken})`,
+                },
+            ];
+            // for any other function just do the equivalent string concatenation (no need for expressions)
         } else {
             const tokens = nodes.reduce((acc: Token[], n: any) => {
                 acc.push(...recursiveValueParse(n, false));
                 return acc;
             }, []);
             return [
-                { type: TokenType.text, value: `${value}(`},
+                { type: TokenType.text, value: `${value}(` },
                 ...reduceTokens(tokens),
-                { type: TokenType.text, value: ')'},
+                { type: TokenType.text, value: ')' },
             ];
         }
     }
@@ -293,8 +294,5 @@ function tokenizeCssDeclaration(node: postcss.Declaration): Token[] {
     const valueRoot = postcssValueParser(node.value);
     const parsed = recursiveValueParse(valueRoot);
 
-    return [
-        { type: TokenType.text, value: `${node.prop.trim()}: ` },
-        ...parsed
-    ];
+    return [{ type: TokenType.text, value: `${node.prop.trim()}: ` }, ...parsed];
 }

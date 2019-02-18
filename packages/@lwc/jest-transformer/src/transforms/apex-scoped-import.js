@@ -32,13 +32,7 @@ const resolvedPromiseTemplate = babelTemplate(`
  */
 function insertNamedImportReplacement(t, path, resource) {
     // jest.fn();
-    const jestFn = t.callExpression(
-        t.memberExpression(
-            t.identifier('jest'),
-            t.identifier('fn')
-        ),
-        []
-    );
+    const jestFn = t.callExpression(t.memberExpression(t.identifier('jest'), t.identifier('fn')), []);
 
     // function() { return Promise.resolve(); };
     const resolvedPromise = t.functionExpression(
@@ -46,27 +40,16 @@ function insertNamedImportReplacement(t, path, resource) {
         [],
         t.blockStatement([
             t.returnStatement(
-                t.callExpression(
-                    t.memberExpression(
-                        t.identifier('Promise'),
-                        t.identifier('resolve'),
-                    ),
-                    []
-                )
-            )
-        ])
+                t.callExpression(t.memberExpression(t.identifier('Promise'), t.identifier('resolve')), []),
+            ),
+        ]),
     );
 
     // we know refreshApex returns a Promise, default to jest.fn() to try to be future proof
     const fallbackValue = resource === 'refreshApex' ? resolvedPromise : jestFn;
 
     // `let refreshApex;`
-    path.insertBefore(
-        t.variableDeclaration(
-            'let',
-            [t.VariableDeclarator(t.identifier(resource))]
-        )
-    );
+    path.insertBefore(t.variableDeclaration('let', [t.VariableDeclarator(t.identifier(resource))]));
 
     // try/catch block
     path.insertBefore(
@@ -79,28 +62,23 @@ function insertNamedImportReplacement(t, path, resource) {
                         t.identifier(resource),
                         t.memberExpression(
                             t.callExpression(t.identifier('require'), [t.stringLiteral(APEX_IMPORT_IDENTIFIER)]),
-                            t.identifier(resource)
-                        )
-                    )
-                )
+                            t.identifier(resource),
+                        ),
+                    ),
+                ),
             ]),
             // catch block: `refreshApex = jest.fn()`
             t.catchClause(
                 t.identifier('e'),
                 t.blockStatement([
-                    t.expressionStatement(
-                        t.assignmentExpression(
-                        '=',
-                        t.identifier(resource),
-                        fallbackValue
-                    ))
-                ])
-            )
-        )
+                    t.expressionStatement(t.assignmentExpression('=', t.identifier(resource), fallbackValue)),
+                ]),
+            ),
+        ),
     );
 }
 
-module.exports = function ({ types: t }) {
+module.exports = function({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
@@ -119,13 +97,15 @@ module.exports = function ({ types: t }) {
                 } else if (importSource.startsWith(APEX_IMPORT_IDENTIFIER)) {
                     // importing anything after '@salesforce/apex' means they're getting a single Apex method as the default import
                     // e.g. `import myMethod from '@salesforce/apex/FooController.fooMethod';`
-                    path.replaceWithMultiple(resolvedPromiseTemplate({
-                        RESOURCE_NAME: t.identifier(resourceNames[0]),
-                        IMPORT_SOURCE: t.stringLiteral(importSource),
-                        MOCK_NAME: `__lwcJestMock_${resourceNames[0]}`,
-                    }));
+                    path.replaceWithMultiple(
+                        resolvedPromiseTemplate({
+                            RESOURCE_NAME: t.identifier(resourceNames[0]),
+                            IMPORT_SOURCE: t.stringLiteral(importSource),
+                            MOCK_NAME: `__lwcJestMock_${resourceNames[0]}`,
+                        }),
+                    );
                 }
-            }
-        }
+            },
+        },
     };
 };

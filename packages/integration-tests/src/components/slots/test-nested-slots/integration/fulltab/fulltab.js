@@ -10,8 +10,8 @@ export default class LightningTab extends LightningElement {
             new CustomEvent('privatetabregister', {
                 cancelable: true,
                 bubbles: true,
-                composed: true
-            })
+                composed: true,
+            }),
         );
     }
 

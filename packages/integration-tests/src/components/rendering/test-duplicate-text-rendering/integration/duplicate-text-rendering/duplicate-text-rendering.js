@@ -1,27 +1,28 @@
 import { LightningElement, track } from 'lwc';
 
 export default class App extends LightningElement {
-    @track text = [{
-        text: 'a',
-        highlight: false,
-    }]
+    @track text = [
+        {
+            text: 'a',
+            highlight: false,
+        },
+    ];
 
     get hasParts() {
         return Array.isArray(this.text) && this.text.length > 0;
     }
 
     get highlight() {
-        return false
+        return false;
     }
 
     get firstPart() {
-        return this.text[0]
+        return this.text[0];
     }
 
     connectedCallback() {
         this.addEventListener('click', () => {
-            this.text = 'b'
-        })
+            this.text = 'b';
+        });
     }
-
 }

@@ -1,8 +1,8 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 function argumentsIterate() {
     const res = [];
-    for(let i = 0; i < arguments.length; i += 1) {
+    for (let i = 0; i < arguments.length; i += 1) {
         res.push(arguments[i] + 1);
     }
     return res;

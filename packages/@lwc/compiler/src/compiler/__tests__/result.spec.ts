@@ -4,93 +4,97 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { SourceMapConsumer } from "source-map";
-import { compile } from "../compiler";
-import { pretify, readFixture } from "../../__tests__/utils";
-import { DiagnosticLevel } from "@lwc/errors";
+import { SourceMapConsumer } from 'source-map';
+import { compile } from '../compiler';
+import { pretify, readFixture } from '../../__tests__/utils';
+import { DiagnosticLevel } from '@lwc/errors';
 
 const VALID_CONFIG = {
     outputConfig: {
         env: {},
         minify: false,
         compat: false,
-        format: "amd"
+        format: 'amd',
     },
-    name: "class_and_template",
-    namespace: "x",
+    name: 'class_and_template',
+    namespace: 'x',
     files: {
-        "class_and_template.js": readFixture(
-            "class_and_template/class_and_template.js"
-        ),
-        "class_and_template.html": readFixture(
-            "class_and_template/class_and_template.html"
-        )
-    }
+        'class_and_template.js': readFixture('class_and_template/class_and_template.js'),
+        'class_and_template.html': readFixture('class_and_template/class_and_template.html'),
+    },
 };
 
-describe("compiler result", () => {
-    test("compiler should return bundle result default output configuration ", async () => {
+describe('compiler result', () => {
+    test('compiler should return bundle result default output configuration ', async () => {
         const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
-        const { result: { outputConfig } } = await compile(noOutputConfig);
+        const {
+            result: { outputConfig },
+        } = await compile(noOutputConfig);
         expect(outputConfig).toMatchObject({
             env: {},
             minify: false,
-            compat: false
+            compat: false,
         });
     });
-    test("compiler should return bundle result with normalized PROD output config", async () => {
+    test('compiler should return bundle result with normalized PROD output config', async () => {
         const config = Object.assign({}, VALID_CONFIG, {
             outputConfig: {
                 minify: true,
                 compat: false,
                 env: {
-                    NODE_ENV: "production"
-                }
-            }
+                    NODE_ENV: 'production',
+                },
+            },
         });
-        const { result: { outputConfig } } = await compile(config);
+        const {
+            result: { outputConfig },
+        } = await compile(config);
         expect(outputConfig).toMatchObject({
             env: {
-                NODE_ENV: "production"
+                NODE_ENV: 'production',
             },
             minify: true,
-            compat: false
+            compat: false,
         });
     });
-    test("compiler should return bundle result with normalized COMPAT output config", async () => {
+    test('compiler should return bundle result with normalized COMPAT output config', async () => {
         const config = Object.assign({}, VALID_CONFIG, {
             outputConfig: {
                 minify: false,
-                compat: true
-            }
+                compat: true,
+            },
         });
-        const { result: { outputConfig } } = await compile(config);
+        const {
+            result: { outputConfig },
+        } = await compile(config);
         expect(outputConfig).toMatchObject({
             env: {},
             minify: false,
-            compat: true
+            compat: true,
         });
     });
-    test("compiler should return bundle result with normalized PROD_COMPAT output config", async () => {
+    test('compiler should return bundle result with normalized PROD_COMPAT output config', async () => {
         const config = Object.assign({}, VALID_CONFIG, {
             outputConfig: {
                 minify: false,
                 compat: true,
                 env: {
-                    NODE_ENV: "production"
-                }
-            }
+                    NODE_ENV: 'production',
+                },
+            },
         });
-        const { result: { outputConfig } } = await compile(config);
+        const {
+            result: { outputConfig },
+        } = await compile(config);
         expect(outputConfig).toMatchObject({
             env: {
-                NODE_ENV: "production"
+                NODE_ENV: 'production',
             },
             minify: false,
-            compat: true
+            compat: true,
         });
     });
-    test("should return output object with expected properties", async () => {
+    test('should return output object with expected properties', async () => {
         const output = await compile(VALID_CONFIG);
         const { success, diagnostics, result, version } = output;
         const { code, metadata } = result;
@@ -102,12 +106,12 @@ describe("compiler result", () => {
         expect(success).toBeDefined();
     });
 
-    test("should compile sources nested inside component subfolders", async () => {
+    test('should compile sources nested inside component subfolders', async () => {
         const { success } = await compile({
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { LightningElement } from 'lwc';
+                'foo.js': `import { LightningElement } from 'lwc';
                 import { main } from './utils/util.js';
                 export default class Test extends LightningElement {
                     get myimport() {
@@ -115,8 +119,8 @@ describe("compiler result", () => {
                     }
                 }
                 `,
-                "foo.html": readFixture("metadata/metadata.html"),
-                "utils/util.js": `export function main() { return 'here is your import'; }`,
+                'foo.html': readFixture('metadata/metadata.html'),
+                'utils/util.js': `export function main() { return 'here is your import'; }`,
             },
         });
         expect(success).toBe(true);
@@ -124,32 +128,34 @@ describe("compiler result", () => {
 
     test('compiler returns diagnostic errors when module resolution encounters an error', async () => {
         const config = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import something from './nothing';`,
+                'foo.js': `import something from './nothing';`,
             },
         };
-        const { success, diagnostics }  = await compile(config);
+        const { success, diagnostics } = await compile(config);
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
 
         const { level, message, code } = diagnostics[0];
 
         expect(level).toBe(DiagnosticLevel.Fatal);
-        expect(message).toContain('Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.');
+        expect(message).toContain(
+            'Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.',
+        );
         expect(code).toBe(1011);
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in javascript', async () => {
         const config = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `throw`,
+                'foo.js': `throw`,
             },
         };
-        const { success, diagnostics }  = await compile(config);
+        const { success, diagnostics } = await compile(config);
 
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
@@ -162,23 +168,25 @@ describe("compiler result", () => {
 
     test('compiler returns diagnostic errors when transformation encounters an error in css', async () => {
         const config = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { LightningElement } from 'lwc';
+                'foo.js': `import { LightningElement } from 'lwc';
                 export default class Test extends LightningElement {}
                 `,
-                "foo.html": `<template></template>`,
-                "foo.css": `a {`,
+                'foo.html': `<template></template>`,
+                'foo.css': `a {`,
             },
         };
-        const { success, diagnostics }  = await compile(config);
+        const { success, diagnostics } = await compile(config);
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(3);
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('LWC1002: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe(
+            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency",
+        );
 
         // check error
         expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
@@ -187,22 +195,24 @@ describe("compiler result", () => {
 
     test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
         const config = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { LightningElement } from 'lwc';
+                'foo.js': `import { LightningElement } from 'lwc';
                 export default class Test extends LightningElement {}
                 `,
-                "foo.html": `<template>`,
+                'foo.html': `<template>`,
             },
         };
-        const { success, diagnostics }  = await compile(config);
+        const { success, diagnostics } = await compile(config);
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(2);
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('LWC1002: Error in module resolution: \'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe(
+            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency",
+        );
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
@@ -210,7 +220,7 @@ describe("compiler result", () => {
         expect(diagnostics[1].message).toContain('<template> has no matching closing tag.');
     });
 
-    test("sourcemaps correctness", async () => {
+    test('sourcemaps correctness', async () => {
         const tplCode = '<template></template>';
         const cmpCode = `import { LightningElement } from 'lwc';
 import { main } from './utils/util.js';
@@ -224,16 +234,16 @@ export default class Test extends LightningElement {
   return 'here is your import';
 }`;
         const { result } = await compile({
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": cmpCode,
-                "foo.html": tplCode,
-                "utils/util.js": utilsCode,
+                'foo.js': cmpCode,
+                'foo.html': tplCode,
+                'utils/util.js': utilsCode,
             },
             outputConfig: {
-                sourcemap: true
-            }
+                sourcemap: true,
+            },
         });
 
         await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
@@ -284,35 +294,36 @@ export default class Test extends LightningElement {
     });
 });
 
-describe("compiler metadata", () => {
-    it("decorators, import locations and template dependencies", async () => {
-        const { result: { code, metadata } } = await compile({
-            name: "foo",
-            namespace: "x",
+describe('compiler metadata', () => {
+    it('decorators, import locations and template dependencies', async () => {
+        const {
+            result: { code, metadata },
+        } = await compile({
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": readFixture("metadata/metadata.js"),
-                "foo.html": readFixture("metadata/metadata.html")
+                'foo.js': readFixture('metadata/metadata.js'),
+                'foo.html': readFixture('metadata/metadata.html'),
             },
-            outputConfig: { format: "es" }
+            outputConfig: { format: 'es' },
         });
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-sources-metadata.js"))
-        );
+        expect(pretify(code)).toBe(pretify(readFixture('expected-sources-metadata.js')));
 
         expect(metadata).toEqual({
             importLocations: [],
             declarationLoc: undefined,
             experimentalTemplateDependencies: [
-            {
-                moduleDependencies: [
-                    {
-                        moduleName: "x/bar",
-                        tagName: "x-bar"
-                    }
-                ],
-                templatePath: "foo.html"
-            }],
+                {
+                    moduleDependencies: [
+                        {
+                            moduleName: 'x/bar',
+                            tagName: 'x-bar',
+                        },
+                    ],
+                    templatePath: 'foo.html',
+                },
+            ],
         });
     });
 });

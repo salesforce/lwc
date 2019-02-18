@@ -9,8 +9,8 @@ function waitForStyleToBeApplied() {
     // Using a timeout instead of a Promise.resolve to wait for the MutationObserver to be triggered.
     // The Promise polyfill on COMPAT browsers is based on MutationObserver. There are some timing issues between
     // Promise.resolve and MutationObserver callback invocation.
-    return new Promise((resolve) => {
-        setTimeout(resolve)
+    return new Promise(resolve => {
+        setTimeout(resolve);
     });
 }
 
@@ -27,27 +27,29 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
 
             /* eslint-disable-next-line no-console */
             const [msg] = console.error.calls.argsFor(0);
-            expect(msg).toMatch(`\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`)
+            expect(msg).toMatch(
+                `\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+            );
         });
     }
 
-    testErrorOnDomMutation('appendChild', (elm) => {
+    testErrorOnDomMutation('appendChild', elm => {
         const child = document.createElement('div');
         elm.appendChild(child);
     });
 
-    testErrorOnDomMutation('insertBefore', (elm) => {
+    testErrorOnDomMutation('insertBefore', elm => {
         const child = document.createElement('div');
         const span = elm.firstElementChild;
         elm.insertBefore(child, span);
     });
 
-    testErrorOnDomMutation('removeChild', (elm) => {
+    testErrorOnDomMutation('removeChild', elm => {
         const span = elm.firstElementChild;
         elm.removeChild(span);
     });
 
-    testErrorOnDomMutation('replaceChild', (elm) => {
+    testErrorOnDomMutation('replaceChild', elm => {
         const child = document.createElement('div');
         const span = elm.firstElementChild;
         elm.replaceChild(child, span);
@@ -70,13 +72,13 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
         });
     }
 
-    testAllowDomMutationWithLwcDomDirective('appendChild', (elm) => {
+    testAllowDomMutationWithLwcDomDirective('appendChild', elm => {
         const child = document.createElement('div');
         elm.appendChild(child);
     });
 
-    testAllowDomMutationWithLwcDomDirective('innerHTML', (elm) => {
-        elm.innerHTML = `<div></div>`
+    testAllowDomMutationWithLwcDomDirective('innerHTML', elm => {
+        elm.innerHTML = `<div></div>`;
     });
 
     it('#874 - should not warn when removing a node previously inserted in an element with the lwc:dom="manual" directive', () => {
@@ -176,7 +178,7 @@ xdescribe('nested dynamic lwc elm with dom manual', () => {
     let outerElem;
     let innerElem;
     beforeEach(() => {
-        outerElem = createElement('x-outer', { is: withLwcDomManual })
+        outerElem = createElement('x-outer', { is: withLwcDomManual });
         document.body.appendChild(outerElem);
         innerElem = createElement('x-inner', { is: withLwcDomManualNested });
         const div = outerElem.shadowRoot.querySelector('div');
@@ -185,15 +187,15 @@ xdescribe('nested dynamic lwc elm with dom manual', () => {
 
     it('getRootNode() of inner custom element should return outer shadowRoot', () => {
         expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
-    })
+    });
 
-    it('getRootNode() of inner shadow\'s template element should return inner shadowRoot', () => {
+    it("getRootNode() of inner shadow's template element should return inner shadowRoot", () => {
         const innerDiv = innerElem.shadowRoot.querySelector('div');
         expect(innerDiv.getRootNode()).toBe(innerElem.shadowRoot);
     });
 
     // Real issue is with MutationObserver
-    it('getRootNode() of inner shadow\'s dynamic element should return inner shadowRoot', () => {
+    it("getRootNode() of inner shadow's dynamic element should return inner shadowRoot", () => {
         const innerDiv = innerElem.shadowRoot.querySelector('div');
         innerDiv.innerHTML = '<p class="innerP"></p>';
 
@@ -207,7 +209,7 @@ xdescribe('nested dynamic lwc elm without dom manual', () => {
     let outerElem;
     let innerElem;
     beforeEach(() => {
-        outerElem = createElement('x-outer', { is: withLwcDomManual })
+        outerElem = createElement('x-outer', { is: withLwcDomManual });
         document.body.appendChild(outerElem);
         innerElem = createElement('x-inner', { is: withoutLwcDomManual });
         const div = outerElem.shadowRoot.querySelector('div');

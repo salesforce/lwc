@@ -13,7 +13,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from "../shared/assert";
+import assert from '../shared/assert';
 import {
     assign,
     freeze,
@@ -27,22 +27,12 @@ import {
     ArrayReduce,
     isUndefined,
     getOwnPropertyDescriptor,
-} from "../shared/language";
-import { getInternalField } from "../shared/fields";
-import {
-    getAttrNameFromPropName,
-} from "./attributes";
-import {
-    resolveCircularModuleDependency,
-    isCircularModuleDependency,
-    ViewModelReflection,
-    EmptyObject,
-} from "./utils";
-import {
-    ComponentConstructor, ErrorCallback, ComponentMeta,
-    getComponentRegisteredMeta,
- } from './component';
-import { Template } from "./template";
+} from '../shared/language';
+import { getInternalField } from '../shared/fields';
+import { getAttrNameFromPropName } from './attributes';
+import { resolveCircularModuleDependency, isCircularModuleDependency, ViewModelReflection, EmptyObject } from './utils';
+import { ComponentConstructor, ErrorCallback, ComponentMeta, getComponentRegisteredMeta } from './component';
+import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
@@ -61,14 +51,18 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
-        throw new ReferenceError(`Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`);
+        throw new ReferenceError(
+            `Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`,
+        );
     }
     // covering the cases where the ref is circular in AMD
     if (isCircularModuleDependency(proto)) {
         const p = resolveCircularModuleDependency(proto);
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
-                throw new ReferenceError(`Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`);
+                throw new ReferenceError(
+                    `Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`,
+                );
             }
         }
         // escape hatch for Locker and other abstractions to provide their own base class instead
@@ -86,7 +80,7 @@ function isElementComponent(Ctor: any, subclassComponentName, protoSet?: any[]):
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getCtorProto(Ctor, subclassComponentName);
-    if (proto as any === BaseLightningElement) {
+    if ((proto as any) === BaseLightningElement) {
         return true;
     }
     getComponentDef(proto, subclassComponentName); // ensuring that the prototype chain is already expanded
@@ -94,15 +88,25 @@ function isElementComponent(Ctor: any, subclassComponentName, protoSet?: any[]):
     return isElementComponent(proto, subclassComponentName, protoSet);
 }
 
-function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, subclassComponentName: string): ComponentDef {
+function createComponentDef(
+    Ctor: ComponentConstructor,
+    meta: ComponentMeta,
+    subclassComponentName: string,
+): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isElementComponent(Ctor, subclassComponentName), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
+        assert.isTrue(
+            isElementComponent(Ctor, subclassComponentName),
+            `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`,
+        );
 
         // local to dev block
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
         // assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
-        assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
+        assert.isTrue(
+            Ctor.constructor,
+            `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`,
+        );
     }
 
     const { name, template } = meta;
@@ -124,26 +128,21 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, sub
     let { props, methods, wire, track } = decoratorsMeta || EmptyObject;
     const proto = Ctor.prototype;
 
-    let {
-        connectedCallback,
-        disconnectedCallback,
-        renderedCallback,
-        errorCallback,
-        render,
-    } = proto;
+    let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } = proto;
     const superProto = getCtorProto(Ctor, subclassComponentName);
-    const superDef: ComponentDef | null = superProto as any !== BaseLightningElement ? getComponentDef(superProto, subclassComponentName) : null;
+    const superDef: ComponentDef | null =
+        (superProto as any) !== BaseLightningElement ? getComponentDef(superProto, subclassComponentName) : null;
     const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
     const bridge = HTMLBridgeElementFactory(SuperBridge, getOwnPropertyNames(props), getOwnPropertyNames(methods));
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
-        wire = (superDef.wire || wire) ? assign(create(null), superDef.wire, wire) : undefined;
+        wire = superDef.wire || wire ? assign(create(null), superDef.wire, wire) : undefined;
         track = assign(create(null), superDef.track, track);
         connectedCallback = connectedCallback || superDef.connectedCallback;
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
-        errorCallback  = errorCallback || superDef.errorCallback;
+        errorCallback = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
     }
     props = assign(create(null), HTML_PROPS, props);
@@ -171,7 +170,7 @@ function createComponentDef(Ctor: ComponentConstructor, meta: ComponentMeta, sub
 }
 
 export function isComponentConstructor(Ctor: any): boolean {
-   return isElementComponent(Ctor, Ctor.name);
+    return isElementComponent(Ctor, Ctor.name);
 }
 
 function getOwnValue(o: any, key: string): any | undefined {
@@ -221,10 +220,10 @@ export function setElementProto(elm: HTMLElement, def: ComponentDef) {
     setPrototypeOf(elm, def.bridge.prototype);
 }
 
-import { HTMLElementOriginalDescriptors } from "./html-properties";
-import { BaseLightningElement } from "./base-lightning-element";
-import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from "./base-bridge-element";
-import { getDecoratorsRegisteredMeta, registerDecorators, DecoratorMeta, PropsDef } from "./decorators/register";
+import { HTMLElementOriginalDescriptors } from './html-properties';
+import { BaseLightningElement } from './base-lightning-element';
+import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from './base-bridge-element';
+import { getDecoratorsRegisteredMeta, registerDecorators, DecoratorMeta, PropsDef } from './decorators/register';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
@@ -240,5 +239,5 @@ const HTML_PROPS: PropsDef = ArrayReduce.call(
         };
         return props;
     },
-    create(null)
+    create(null),
 );

@@ -4,31 +4,28 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { rollup } from "rollup";
+import { rollup } from 'rollup';
 
-import { MetadataCollector, BundleMetadata } from "./meta-collector";
-import rollupModuleResolver from "../rollup-plugins/module-resolver";
+import { MetadataCollector, BundleMetadata } from './meta-collector';
+import rollupModuleResolver from '../rollup-plugins/module-resolver';
 
-import rollupEnvReplacement from "../rollup-plugins/env-replacement";
-import rollupTransform from "../rollup-plugins/transform";
-import rollupCompat from "../rollup-plugins/compat";
-import rollupMinify from "../rollup-plugins/minify";
+import rollupEnvReplacement from '../rollup-plugins/env-replacement';
+import rollupTransform from '../rollup-plugins/transform';
+import rollupCompat from '../rollup-plugins/compat';
+import rollupMinify from '../rollup-plugins/minify';
 
-import {
-    NormalizedCompilerOptions,
-    validateNormalizedOptions
-} from "../compiler/options";
+import { NormalizedCompilerOptions, validateNormalizedOptions } from '../compiler/options';
 
-import { collectImportLocations } from "./import-location-collector";
-import { SourceMap } from "../compiler/compiler";
+import { collectImportLocations } from './import-location-collector';
+import { SourceMap } from '../compiler/compiler';
 import {
     CompilerError,
     CompilerDiagnostic,
     generateCompilerDiagnostic,
     DiagnosticLevel,
     ModuleResolutionErrors,
-    normalizeToDiagnostic
-} from "@lwc/errors";
+    normalizeToDiagnostic,
+} from '@lwc/errors';
 
 export interface BundleReport {
     code: string;
@@ -48,32 +45,34 @@ interface RollupWarning {
     pos?: number;
 }
 
-const DEFAULT_FORMAT = "amd";
+const DEFAULT_FORMAT = 'amd';
 
 function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
     return function onwarn({ message, loc, pos }: RollupWarning) {
         // loc and pos are bundled together
-        const origin = loc && pos
-            ? {
-                filename: loc.file,
-                location: {
-                    line: loc.line,
-                    column: loc.column,
-                    start: pos,
-                    length: 0,
-                }
-            } : {};
+        const origin =
+            loc && pos
+                ? {
+                      filename: loc.file,
+                      location: {
+                          line: loc.line,
+                          column: loc.column,
+                          start: pos,
+                          length: 0,
+                      },
+                  }
+                : {};
 
-        diagnostics.push(generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
-            messageArgs: [message],
-            origin,
-        }));
+        diagnostics.push(
+            generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
+                messageArgs: [message],
+                origin,
+            }),
+        );
     };
 }
 
-export async function bundle(
-    options: NormalizedCompilerOptions,
-): Promise<BundleReport> {
+export async function bundle(options: NormalizedCompilerOptions): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
     const { outputConfig, name, namespace } = options;
@@ -121,15 +120,15 @@ export async function bundle(
         const rollupBundler = await rollup({
             input: name,
             plugins,
-            onwarn: handleRollupWarning(diagnostics)
+            onwarn: handleRollupWarning(diagnostics),
         });
 
         const result = await rollupBundler.generate({
-            amd: { id: namespace + "/" + name },
+            amd: { id: namespace + '/' + name },
             interop: false,
             strict: false,
             sourcemap: outputConfig.sourcemap,
-            format
+            format,
         });
         code = result.code;
         map = result.map;
@@ -144,14 +143,12 @@ export async function bundle(
         diagnostics.push(diagnostic);
     }
 
-    metadataCollector.collectImportLocations(
-        collectImportLocations(code) || []
-    );
+    metadataCollector.collectImportLocations(collectImportLocations(code) || []);
 
     return {
         diagnostics,
         code,
         map,
-        metadata: metadataCollector.getMetadata()
+        metadata: metadataCollector.getMetadata(),
     };
 }

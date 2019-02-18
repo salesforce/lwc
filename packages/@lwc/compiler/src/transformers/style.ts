@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as styleCompiler from "@lwc/style-compiler";
-import { normalizeToCompilerError, TransformerErrors } from "@lwc/errors";
-import { NormalizedCompilerOptions } from "../compiler/options";
-import { FileTransformerResult } from "./transformer";
+import * as styleCompiler from '@lwc/style-compiler';
+import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { NormalizedCompilerOptions } from '../compiler/options';
+import { FileTransformerResult } from './transformer';
 
 export default function transformStyle(
     src: string,
     filename: string,
-    config: NormalizedCompilerOptions
+    config: NormalizedCompilerOptions,
 ): FileTransformerResult {
     const { minify } = config.outputConfig;
     const { customProperties } = config.stylesheetConfig;
@@ -20,15 +20,12 @@ export default function transformStyle(
     const styleCompilerConfig = {
         customProperties: {
             allowDefinition: customProperties.allowDefinition,
-            resolverModule: (
-                customProperties.resolution.type === 'module'
-                    ? customProperties.resolution.name
-                    : undefined
-            )
+            resolverModule:
+                customProperties.resolution.type === 'module' ? customProperties.resolution.name : undefined,
         },
         outputConfig: {
             minify,
-        }
+        },
     };
 
     let res;
@@ -42,6 +39,6 @@ export default function transformStyle(
     // the styles doesn't make sense, the transform returns an empty mappings.
     return {
         code: res.code,
-        map: { mappings: '' }
+        map: { mappings: '' },
     };
 }

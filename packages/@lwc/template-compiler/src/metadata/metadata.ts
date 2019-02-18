@@ -4,14 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    IRAttributeType,
-    IRElement,
-    ModuleDependency,
-    TemplateExpression,
-    TemplateIdentifier
-} from "../shared/types";
-import { kebabcaseToCamelcase } from "../shared/naming";
+import { IRAttributeType, IRElement, ModuleDependency, TemplateExpression, TemplateIdentifier } from '../shared/types';
+import { kebabcaseToCamelcase } from '../shared/naming';
 import generate from '@babel/generator';
 import * as babelTypes from '@babel/types';
 
@@ -38,7 +32,7 @@ export function getModuleMetadata(element: IRElement): ModuleDependency {
             }
             properties[name] = {
                 type: returnedType,
-                value: returnedValue
+                value: returnedValue,
             };
         }
     }

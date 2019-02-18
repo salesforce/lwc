@@ -6,10 +6,7 @@
  */
 import { Node, Container } from 'postcss-selector-parser';
 
-export function findNode(
-    container: Container,
-    predicate: (node: Node) => boolean,
-): Node | undefined {
+export function findNode(container: Container, predicate: (node: Node) => boolean): Node | undefined {
     return container && container.nodes && container.nodes.find(predicate);
 }
 

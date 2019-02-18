@@ -39,9 +39,7 @@ describe('fixtures', () => {
 
         const readFixtureFile = (fileName): string => {
             const filePath = fixtureFilePath(fileName);
-            return fs.existsSync(filePath) ?
-                fs.readFileSync(filePath, 'utf-8') :
-                null;
+            return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : null;
         };
 
         const writeFixtureFile = (fileName, content): void => {
@@ -74,14 +72,13 @@ describe('fixtures', () => {
                 // write compiled js file if doesn't exist (ie new fixture)
                 expectedCode = actual.code;
                 writeFixtureFile(EXPECTED_JS_FILENAME, prettier.format(expectedCode));
-
             }
 
             if (expectedMetaData === null) {
                 // write metadata file if doesn't exist (ie new fixture)
                 const metadata = {
                     warnings: actual.warnings,
-                    metadata: {...actualMeta},
+                    metadata: { ...actualMeta },
                 };
                 expectedMetaData = metadata;
                 writeFixtureFile(EXPECTED_META_FILENAME, JSON.stringify(expectedMetaData, null, 4));
@@ -90,11 +87,7 @@ describe('fixtures', () => {
             // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
-            expect(
-                prettier.format(actual.code),
-            ).toEqual(
-                prettier.format(expectedCode),
-            );
+            expect(prettier.format(actual.code)).toEqual(prettier.format(expectedCode));
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};

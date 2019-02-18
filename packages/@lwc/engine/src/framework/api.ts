@@ -4,13 +4,39 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from "./invoker";
-import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, create as ObjectCreate, forEach, StringCharCodeAt, isNumber, isTrue, isFalse, toString, ArraySlice } from "../shared/language";
-import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
-import { VM, SlotSet } from "./vm";
-import { ComponentConstructor } from "./component";
-import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks, Key, VCustomElement } from "../3rdparty/snabbdom/types";
+import assert from '../shared/assert';
+import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
+import {
+    isArray,
+    isUndefined,
+    isNull,
+    isFunction,
+    isObject,
+    isString,
+    ArrayPush,
+    create as ObjectCreate,
+    forEach,
+    StringCharCodeAt,
+    isNumber,
+    isTrue,
+    isFalse,
+    toString,
+    ArraySlice,
+} from '../shared/language';
+import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import { VM, SlotSet } from './vm';
+import { ComponentConstructor } from './component';
+import {
+    VNode,
+    VNodeData,
+    VNodes,
+    VElement,
+    VComment,
+    VText,
+    Hooks,
+    Key,
+    VCustomElement,
+} from '../3rdparty/snabbdom/types';
 import {
     createCustomElmHook,
     insertCustomElmHook,
@@ -31,16 +57,11 @@ import {
     allocateChildrenHook,
     createTextHook,
     createCommentHook,
-} from "./hooks";
-import { markAsDynamicChildren } from "./patch";
-import {
-    isNativeShadowRootAvailable,
-} from "../env/dom";
-import {
-    insertBefore,
-    removeChild,
-} from "../env/node";
-import { Services, invokeServiceHook } from "./services";
+} from './hooks';
+import { markAsDynamicChildren } from './patch';
+import { isNativeShadowRootAvailable } from '../env/dom';
+import { insertBefore, removeChild } from '../env/node';
+import { Services, invokeServiceHook } from './services';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -65,12 +86,7 @@ export interface RenderAPI {
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
-const {
-    createElement,
-    createElementNS,
-    createTextNode,
-    createComment,
-} = document;
+const { createElement, createElementNS, createTextNode, createComment } = document;
 
 const CHAR_S = 115;
 const CHAR_V = 118;
@@ -78,7 +94,9 @@ const CHAR_G = 103;
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
-function noop() { /* do nothing */ }
+function noop() {
+    /* do nothing */
+}
 
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
@@ -124,15 +142,15 @@ const ElementHook: Hooks = {
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
-            vnode.elm = isUndefined(ns)
-                ? createElement.call(document, sel)
-                : createElementNS.call(document, ns, sel);
+            vnode.elm = isUndefined(ns) ? createElement.call(document, sel) : createElementNS.call(document, ns, sel);
         }
         createElmHook(vnode);
         create(vnode);
     },
     update: (oldVnode: VElement, vnode: VElement) => {
-        const { data: { update } } = vnode;
+        const {
+            data: { update },
+        } = vnode;
         update(oldVnode, vnode);
         updateChildrenHook(oldVnode, vnode);
     },
@@ -152,7 +170,11 @@ const ElementHook: Hooks = {
 
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
-        const { sel, data: { create }, elm } = vnode;
+        const {
+            sel,
+            data: { create },
+            elm,
+        } = vnode;
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
@@ -163,7 +185,9 @@ const CustomElementHook: Hooks = {
         create(vnode);
     },
     update: (oldVnode: VCustomElement, vnode: VCustomElement) => {
-        const { data: { update } } = vnode;
+        const {
+            data: { update },
+        } = vnode;
         update(oldVnode, vnode);
         // in fallback mode, the allocation will always the children to
         // empty and delegate the real allocation to the slot elements
@@ -218,20 +242,21 @@ function getCurrentOwnerId(): number {
     return (vmBeingRendered as VM).uid;
 }
 
-const getCurrentFallback: () => boolean = isNativeShadowRootAvailable ?
-    function() {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return (vmBeingRendered as VM).fallback;
-    } : () => {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return true;
-    };
+const getCurrentFallback: () => boolean = isNativeShadowRootAvailable
+    ? function() {
+          if (process.env.NODE_ENV !== 'production') {
+              // TODO: enable this after refactoring all failing tests
+              // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
+          }
+          return (vmBeingRendered as VM).fallback;
+      }
+    : () => {
+          if (process.env.NODE_ENV !== 'production') {
+              // TODO: enable this after refactoring all failing tests
+              // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
+          }
+          return true;
+      };
 
 function getCurrentShadowAttribute(): string | undefined {
     if (process.env.NODE_ENV !== 'production') {
@@ -251,19 +276,34 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
-        assert.isTrue("key" in data, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
+        assert.isTrue(
+            'key' in data,
+            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`,
+        );
         // checking reserved internal data properties
-        assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+        assert.isFalse(
+            data.className && data.classMap,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+        );
         assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!.elm,
             );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
-                assert.isTrue(childVnode && "sel" in childVnode && "data" in childVnode && "children" in childVnode && "text" in childVnode && "elm" in childVnode && "key" in childVnode, `${childVnode} is not a vnode.`);
+                assert.isTrue(
+                    childVnode &&
+                        'sel' in childVnode &&
+                        'data' in childVnode &&
+                        'children' in childVnode &&
+                        'text' in childVnode &&
+                        'elm' in childVnode &&
+                        'key' in childVnode,
+                    `${childVnode} is not a vnode.`,
+                );
             }
         });
     }
@@ -293,7 +333,12 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         uid,
         fallback,
     };
-    if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
+    if (
+        sel.length === 3 &&
+        StringCharCodeAt.call(sel, 0) === CHAR_S &&
+        StringCharCodeAt.call(sel, 1) === CHAR_V &&
+        StringCharCodeAt.call(sel, 2) === CHAR_G
+    ) {
         addNS(vnode);
     }
     return vnode;
@@ -304,17 +349,27 @@ export function ti(value: any): number {
     // if value is greater than 0, we normalize to 0
     // If value is an invalid tabIndex value (null, undefined, string, etc), we let that value pass through
     // If value is less than -1, we don't care
-    const shouldNormalize = (value > 0 && !(isTrue(value) || isFalse(value)));
+    const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
         if (shouldNormalize) {
-            assert.logWarning(`Invalid tabindex value \`${toString(value)}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`, vmBeingRendered!.elm);
+            assert.logWarning(
+                `Invalid tabindex value \`${toString(
+                    value,
+                )}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`,
+                vmBeingRendered!.elm,
+            );
         }
     }
     return shouldNormalize ? 0 : value;
 }
 
 // [s]lot element node
-export function s(slotName: string, data: ElementCompilerData, children: VNodes, slotset: SlotSet | undefined): VElement {
+export function s(
+    slotName: string,
+    data: ElementCompilerData,
+    children: VNodes,
+    slotset: SlotSet | undefined,
+): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -331,7 +386,12 @@ export function s(slotName: string, data: ElementCompilerData, children: VNodes,
 }
 
 // [c]ustom element node
-export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCompilerData, children?: VNodes): VCustomElement {
+export function c(
+    sel: string,
+    Ctor: ComponentConstructor,
+    data: CustomElementCompilerData,
+    children?: VNodes,
+): VCustomElement {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
@@ -344,18 +404,30 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
         // TODO: enable this once all tests are changed to use compileTemplate utility
         // assert.isTrue("key" in compilerData, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
-        assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+        assert.isFalse(
+            data.className && data.classMap,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+        );
         assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!.elm,
             );
         }
         if (arguments.length === 4) {
             forEach.call(children, (childVnode: VNode | null | undefined) => {
                 if (childVnode != null) {
-                    assert.isTrue(childVnode && "sel" in childVnode && "data" in childVnode && "children" in childVnode && "text" in childVnode && "elm" in childVnode && "key" in childVnode, `${childVnode} is not a vnode.`);
+                    assert.isTrue(
+                        childVnode &&
+                            'sel' in childVnode &&
+                            'data' in childVnode &&
+                            'children' in childVnode &&
+                            'text' in childVnode &&
+                            'elm' in childVnode &&
+                            'key' in childVnode,
+                        `${childVnode} is not a vnode.`,
+                    );
                 }
             });
         }
@@ -374,7 +446,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
         shadowAttribute = getCurrentShadowAttribute();
     }
     const uid = getCurrentOwnerId();
-    children = arguments.length === 3 ? EmptyArray : children as VNodes;
+    children = arguments.length === 3 ? EmptyArray : (children as VNodes);
     const vnode: VCustomElement = {
         sel,
         data,
@@ -394,7 +466,10 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
 }
 
 // [i]terable node
-export function i(iterable: Iterable<any>, factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode): VNodes {
+export function i(
+    iterable: Iterable<any>,
+    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode,
+): VNodes {
     const list: VNodes = [];
     // marking the list as generated from iteration so we can optimize the diffing
     markAsDynamicChildren(list);
@@ -402,19 +477,25 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         if (process.env.NODE_ENV !== 'production') {
             assert.logWarning(
                 `Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
-                vmBeingRendered!.elm
+                vmBeingRendered!.elm,
             );
         }
         return list;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
+        assert.isFalse(
+            isUndefined(iterable[SymbolIterator]),
+            `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`,
+        );
     }
     const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(iterator && isFunction(iterator.next), `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`);
+        assert.isTrue(
+            iterator && isFunction(iterator.next),
+            `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`,
+        );
     }
 
     let next = iterator.next();
@@ -446,11 +527,17 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
                     const { key } = childVnode;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
-                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`;
+                            iterationError = `Duplicated "key" attribute value for "<${
+                                childVnode.sel
+                            }>" in ${vmBeingRendered} for item number ${j}. Key with value "${
+                                childVnode.key
+                            }" appears more than once in iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
-                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
+                        iterationError = `Invalid "key" attribute value in "<${
+                            childVnode.sel
+                        }>" in ${vmBeingRendered} for item number ${j}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
                     }
                 }
             });
@@ -517,7 +604,10 @@ export function t(text: string): VText {
 // comment node
 export function p(text: string): VComment {
     const data = EmptyObject;
-    let sel = '!', children, key, elm;
+    let sel = '!',
+        children,
+        key,
+        elm;
     return {
         sel,
         data,
@@ -563,8 +653,7 @@ export function fb(fn: (...args: any[]) => any): () => any {
 }
 
 // [l]ocator_[l]istener function
-export function ll(originalHandler: EventListener,
-                   id: string, context?: (...args: any[]) => any): EventListener {
+export function ll(originalHandler: EventListener, id: string, context?: (...args: any[]) => any): EventListener {
     if (isNull(vmBeingRendered)) {
         throw new Error();
     }
@@ -576,15 +665,17 @@ export function ll(originalHandler: EventListener,
     // then invoke the original handler.
     return function(event: Event) {
         // located service for the locator metadata
-        const { context: { locator } } = vm;
+        const {
+            context: { locator },
+        } = vm;
         if (!isUndefined(locator)) {
             const { locator: locatorService } = Services;
             if (locatorService) {
                 locator.resolved = {
-                    target        : id,
-                    host          : locator.id,
-                    targetContext : isFunction(context) && context(),
-                    hostContext   : isFunction(locator.context) && locator.context()
+                    target: id,
+                    host: locator.id,
+                    targetContext: isFunction(context) && context(),
+                    hostContext: isFunction(locator.context) && locator.context(),
                 };
                 // a registered `locator` service will be invoked with
                 // access to the context.locator.resolved, which will contain:

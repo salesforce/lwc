@@ -20,13 +20,10 @@ const AMBIGUOUS_PROP_SET = new Map([
     ['maxvalue', 'maxValue'],
 ]);
 
-
 // This set is for attributes that can never be defined
 // by users on their components.
 // We throw for these.
-const DISALLOWED_PROP_SET = new Set([
-    'is', 'class', 'slot', 'style'
-]);
+const DISALLOWED_PROP_SET = new Set(['is', 'class', 'slot', 'style']);
 
 const LWC_PACKAGE_ALIAS = 'lwc';
 
@@ -35,7 +32,7 @@ const LWC_PACKAGE_EXPORTS = {
     API_DECORATOR: 'api',
     TRACK_DECORATOR: 'track',
     WIRE_DECORATOR: 'wire',
-}
+};
 
 const LWC_API_WHITELIST = new Set([
     'buildCustomElementConstructor',
@@ -52,7 +49,7 @@ const LWC_API_WHITELIST = new Set([
 const LWC_DECORATORS = [
     LWC_PACKAGE_EXPORTS.API_DECORATOR,
     LWC_PACKAGE_EXPORTS.TRACK_DECORATOR,
-    LWC_PACKAGE_EXPORTS.WIRE_DECORATOR
+    LWC_PACKAGE_EXPORTS.WIRE_DECORATOR,
 ];
 
 const LWC_COMPONENT_PROPERTIES = {
@@ -62,14 +59,14 @@ const LWC_COMPONENT_PROPERTIES = {
     PUBLIC_METHODS: 'publicMethods',
     WIRE: 'wire',
     TRACK: 'track',
-}
+};
 
 const DECORATOR_TYPES = {
     PROPERTY: 'property',
     GETTER: 'getter',
     SETTER: 'setter',
-    METHOD: 'method'
-}
+    METHOD: 'method',
+};
 
 module.exports = {
     AMBIGUOUS_PROP_SET,

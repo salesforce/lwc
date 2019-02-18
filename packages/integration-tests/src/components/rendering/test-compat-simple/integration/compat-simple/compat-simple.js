@@ -1,7 +1,7 @@
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api, track } from 'lwc';
 export default class CompatSimple extends LightningElement {
     @track
-    state = { computed: "default" };
+    state = { computed: 'default' };
 
     @api
     changeComputedText() {
@@ -11,5 +11,4 @@ export default class CompatSimple extends LightningElement {
     get computed() {
         return this.state.computed;
     }
-
 }

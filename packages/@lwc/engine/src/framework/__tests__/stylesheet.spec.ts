@@ -20,12 +20,14 @@ styledTemplate.stylesheetTokens = {
     shadowAttribute: 'test',
 };
 
-styledTemplate.stylesheets = [(hostToken, shadowToken) => {
-    return `
+styledTemplate.stylesheets = [
+    (hostToken, shadowToken) => {
+        return `
         ${hostToken} { color: red; }
         section${shadowToken} { color: blue; }
     `;
-}];
+    },
+];
 
 const unstyledTemplate = compileTemplate(`
     <template>

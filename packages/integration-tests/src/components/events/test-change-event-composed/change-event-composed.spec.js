@@ -13,7 +13,7 @@ describe('Composed change event', () => {
         browser.url(URL);
     });
 
-    it('should be composed: false', function () {
+    it('should be composed: false', function() {
         // Force native "change" event to fire
         browser.click('input');
         browser.keys('foo');

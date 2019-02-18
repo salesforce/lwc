@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "../shared/language";
+import assert from '../shared/assert';
+import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from '../shared/language';
 
 // Typescript doesn't allow indexing using symbol. The ReactiveSymbol actual type is { [key: PropertyKey]: VM[] }.
 // Since a PropertyKey can be a Symbol, we need to make the ReactiveRecord type as any for now.
@@ -16,7 +16,12 @@ const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap()
 
 export function notifyMutation(target: object, key: PropertyKey) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(!isRendering, `Mutating property ${toString(key)} of ${toString(target)} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`);
+        assert.invariant(
+            !isRendering,
+            `Mutating property ${toString(key)} of ${toString(
+                target,
+            )} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`,
+        );
     }
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
     if (!isUndefined(reactiveRecord)) {
@@ -26,7 +31,7 @@ export function notifyMutation(target: object, key: PropertyKey) {
             for (let i = 0; i < len; i += 1) {
                 const vm = value[i];
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+                    assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 }
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
@@ -62,6 +67,6 @@ export function observeMutation(target: object, key: PropertyKey) {
     }
 }
 
-import { scheduleRehydration } from "./vm";
-import { markComponentAsDirty } from "./component";
-import { vmBeingRendered, isRendering } from "./invoker";
+import { scheduleRehydration } from './vm';
+import { markComponentAsDirty } from './component';
+import { vmBeingRendered, isRendering } from './invoker';

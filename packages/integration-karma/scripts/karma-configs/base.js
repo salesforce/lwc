@@ -20,9 +20,7 @@ const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 
-const TEST_UTILS_SCRIPT = require.resolve(
-    '../../helpers/test-utils',
-);
+const TEST_UTILS_SCRIPT = require.resolve('../../helpers/test-utils');
 
 function createPattern(location, config = {}) {
     return {
@@ -35,10 +33,7 @@ function getLwcConfig(config) {
     const compat = Boolean(config.compat);
     const nativeShadow = Boolean(config.nativeShadow);
 
-    const tags = [
-        `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
-        compat && 'compat',
-    ].filter(Boolean);
+    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(Boolean);
 
     return {
         compat,
@@ -52,11 +47,7 @@ function getFiles(lwcConfig) {
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
-    return [
-        ...frameworkFiles,
-        createPattern(TEST_UTILS_SCRIPT),
-        createPattern('**/*.spec.js', { watched: false }),
-    ];
+    return [...frameworkFiles, createPattern(TEST_UTILS_SCRIPT), createPattern('**/*.spec.js', { watched: false })];
 }
 
 /**
@@ -100,9 +91,7 @@ module.exports = config => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (config.coverage) {
         // Indicate to Karma to instrument the engine to gather code coverage.
-        config.preprocessors[
-            lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE
-        ] = ['coverage'];
+        config.preprocessors[lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

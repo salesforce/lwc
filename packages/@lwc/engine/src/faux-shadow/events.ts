@@ -4,26 +4,35 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
+import assert from '../shared/assert';
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import {
-    compareDocumentPosition,
-    DOCUMENT_POSITION_CONTAINED_BY,
-} from "../env/node";
-import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, defineProperties, toString, forEach, defineProperty, isFalse, isNull, getPropertyDescriptor } from "../shared/language";
-import { getRootNodeGetter } from "./traverse";
-import { getHost, SyntheticShadowRootInterface, getShadowRoot } from "./shadow-root";
-import { eventCurrentTargetGetter, eventTargetGetter } from "../env/dom";
-import { pathComposer } from "./../3rdparty/polymer/path-composer";
-import { retarget } from "./../3rdparty/polymer/retarget";
+    ArraySlice,
+    ArraySplice,
+    ArrayIndexOf,
+    create,
+    ArrayPush,
+    isUndefined,
+    isFunction,
+    defineProperties,
+    toString,
+    forEach,
+    defineProperty,
+    isFalse,
+    isNull,
+    getPropertyDescriptor,
+} from '../shared/language';
+import { getRootNodeGetter } from './traverse';
+import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
+import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
+import { pathComposer } from './../3rdparty/polymer/path-composer';
+import { retarget } from './../3rdparty/polymer/retarget';
 
-import "../polyfills/event-listener/main";
+import '../polyfills/event-listener/main';
 
 // intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
 // due to the issues with JSDOM patching hazard.
-const {
-    addEventListener,
-    removeEventListener,
-} = Node.prototype;
+const { addEventListener, removeEventListener } = Node.prototype;
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -54,9 +63,9 @@ function getRootNodeHost(node: Node, options): Node {
     return rootNode;
 }
 
-type ComposableEvent = (Event & {
-    composed: boolean
-});
+type ComposableEvent = Event & {
+    composed: boolean;
+};
 
 function targetGetter(this: ComposableEvent): EventTarget | null {
     // currentTarget is always defined
@@ -71,9 +80,10 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
     }
 
     const eventContext = eventToContextMap.get(this);
-    const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
-        getShadowRoot(originalCurrentTarget as HTMLElement) :
-        originalCurrentTarget;
+    const currentTarget =
+        eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
+            ? getShadowRoot(originalCurrentTarget as HTMLElement)
+            : originalCurrentTarget;
     return retarget(currentTarget as Node, composedPath);
 }
 
@@ -122,9 +132,10 @@ export function patchEvent(event: Event) {
                 if (isNull(relatedTarget)) {
                     return null;
                 }
-                const currentTarget = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ?
-                    getShadowRoot(originalCurrentTarget as HTMLElement) :
-                    originalCurrentTarget;
+                const currentTarget =
+                    eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
+                        ? getShadowRoot(originalCurrentTarget as HTMLElement)
+                        : originalCurrentTarget;
 
                 return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true));
             },
@@ -168,8 +179,10 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
             if (target !== currentTarget) {
                 const rootNode = getRootNodeHost(target, { composed });
 
-                if (isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
-                    (composed === false && rootNode === currentTarget)) {
+                if (
+                    isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
+                    (composed === false && rootNode === currentTarget)
+                ) {
                     listener.call(sr, event);
                 }
             }
@@ -268,7 +281,12 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         addEventListener.call(elm, type, domListener);
     } else if (process.env.NODE_ENV !== 'production') {
         if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-            assert.logWarning(`${toString(elm)} has duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`, elm);
+            assert.logWarning(
+                `${toString(
+                    elm,
+                )} has duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`,
+                elm,
+            );
         }
     }
     ArrayPush.call(cmpEventHandlers, wrappedListener);
@@ -278,7 +296,7 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     const listenerMap = getEventMap(elm);
     let p: number;
     let listeners: EventListener[] | undefined;
-    if (!isUndefined(listeners = listenerMap[type]) && (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
+    if (!isUndefined((listeners = listenerMap[type])) && (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
         ArraySplice.call(listeners, p, 1);
         // only remove from DOM if there is no other listener on the same placement
         if (listeners!.length === 0) {
@@ -286,8 +304,10 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         }
     } else if (process.env.NODE_ENV !== 'production') {
         assert.logError(
-            `Did not find event listener for event "${type}" executing removeEventListener on ${toString(elm)}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`,
-            elm
+            `Did not find event listener for event "${type}" executing removeEventListener on ${toString(
+                elm,
+            )}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`,
+            elm,
         );
     }
 }
@@ -306,15 +326,27 @@ function isValidEventForCustomElement(event: Event): boolean {
     );
 }
 
-export function addCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function addCustomElementEventListener(
+    elm: HTMLElement,
+    type: string,
+    listener: EventListener,
+    options?: boolean | AddEventListenerOptions,
+) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isFunction(listener), `Invalid second argument for this.addEventListener() in ${toString(elm)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        assert.invariant(
+            isFunction(listener),
+            `Invalid second argument for this.addEventListener() in ${toString(
+                elm,
+            )} for event "${type}". Expected an EventListener but received ${listener}.`,
+        );
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {
             assert.logWarning(
-                `The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(options)}`,
-                elm
+                `The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(
+                    options,
+                )}`,
+                elm,
             );
         }
     }
@@ -322,20 +354,37 @@ export function addCustomElementEventListener(elm: HTMLElement, type: string, li
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeCustomElementEventListener(elm: HTMLElement, type: string, listener: EventListener, _options?: boolean | AddEventListenerOptions) {
+export function removeCustomElementEventListener(
+    elm: HTMLElement,
+    type: string,
+    listener: EventListener,
+    _options?: boolean | AddEventListenerOptions,
+) {
     const wrappedListener = getWrappedCustomElementListener(elm, listener);
     detachDOMListener(elm, type, wrappedListener);
 }
 
-export function addShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+export function addShadowRootEventListener(
+    sr: SyntheticShadowRootInterface,
+    type: string,
+    listener: EventListener,
+    options?: boolean | AddEventListenerOptions,
+) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${toString(sr)} for event "${type}". Expected an EventListener but received ${listener}.`);
+        assert.invariant(
+            isFunction(listener),
+            `Invalid second argument for this.template.addEventListener() in ${toString(
+                sr,
+            )} for event "${type}". Expected an EventListener but received ${listener}.`,
+        );
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
         if (!isUndefined(options)) {
             assert.logWarning(
-                `The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(options)}`,
-                getHost(sr)
+                `The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(
+                    options,
+                )}`,
+                getHost(sr),
             );
         }
     }
@@ -344,7 +393,12 @@ export function addShadowRootEventListener(sr: SyntheticShadowRootInterface, typ
     attachDOMListener(elm, type, wrappedListener);
 }
 
-export function removeShadowRootEventListener(sr: SyntheticShadowRootInterface, type: string, listener: EventListener, _options?: boolean | AddEventListenerOptions) {
+export function removeShadowRootEventListener(
+    sr: SyntheticShadowRootInterface,
+    type: string,
+    listener: EventListener,
+    _options?: boolean | AddEventListenerOptions,
+) {
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);

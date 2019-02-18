@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api, track } from 'lwc';
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 35;

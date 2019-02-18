@@ -10,9 +10,7 @@ import { createElement, LightningElement } from '../main';
 const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('watcher', () => {
-
     describe('integration', () => {
-
         it('should not rerender the component if nothing changes', () => {
             let counter = 0;
             class MyComponent1 extends LightningElement {
@@ -84,7 +82,8 @@ describe('watcher', () => {
                 }
             }
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <template if:true={round}>
@@ -92,9 +91,11 @@ describe('watcher', () => {
                         </template>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Parent extends LightningElement {
                 constructor() {
                     super();
@@ -196,15 +197,17 @@ describe('watcher', () => {
 
             // x is marked as reactive since it's tracked and used in the template
             elm.updateTracked();
-            return Promise.resolve().then(() => {
-                expect(counter).toBe(2);
+            return Promise.resolve()
+                .then(() => {
+                    expect(counter).toBe(2);
 
-                // x is not longer reactive since it's not consumed in the template.
-                // Updating it's value should not trigger the rerendering anymore.
-                elm.updateTracked();
-            }).then(() => {
-                expect(counter).toBe(2);
-            });
+                    // x is not longer reactive since it's not consumed in the template.
+                    // Updating it's value should not trigger the rerendering anymore.
+                    elm.updateTracked();
+                })
+                .then(() => {
+                    expect(counter).toBe(2);
+                });
         });
 
         it('should mark public prop as reactive even if it is used via a getter', () => {
@@ -259,7 +262,6 @@ describe('watcher', () => {
             expect(newValue).toBe(2);
             expect(oldValue).toBeUndefined();
         });
-
     });
 
     describe('#reactivity()', () => {
@@ -275,7 +277,7 @@ describe('watcher', () => {
 
                 render() {
                     counter++;
-                    this.state.list.map((v) => v + 1);
+                    this.state.list.map(v => v + 1);
                     return emptyTemplate;
                 }
             }
@@ -302,7 +304,7 @@ describe('watcher', () => {
 
                 render() {
                     counter++;
-                    this.state.list.map((v) => v + 1);
+                    this.state.list.map(v => v + 1);
                     return emptyTemplate;
                 }
             }
@@ -327,7 +329,7 @@ describe('watcher', () => {
                 }
                 render() {
                     counter++;
-                    this.state.list.map((v) => v + 1);
+                    this.state.list.map(v => v + 1);
                     return emptyTemplate;
                 }
             }
@@ -351,5 +353,4 @@ describe('watcher', () => {
     describe('#notifyListeners()', () => {
         // TBD
     });
-
 });

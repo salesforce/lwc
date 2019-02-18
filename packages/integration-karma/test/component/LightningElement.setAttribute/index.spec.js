@@ -17,7 +17,7 @@ it('should throw when invoking setAttribute in constructor', () => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
     }).toThrowError(
         Error,
-        /Assert Violation: Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
+        /Assert Violation: Failed to construct '<x-constructor-invocation>': The result must not have attributes\./,
     );
 });
 

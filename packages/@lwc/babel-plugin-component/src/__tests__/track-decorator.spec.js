@@ -4,19 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const pluginTest = require('./utils/test-transform').pluginTest(
-    require('../index')
-);
+const pluginTest = require('./utils/test-transform').pluginTest(require('../index'));
 
 describe('Transform property', () => {
-    pluginTest('transform track decorator field', `
+    pluginTest(
+        'transform track decorator field',
+        `
         import { track } from 'lwc';
         export default class Test {
             @track record;
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -36,20 +37,24 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-    pluginTest('transform track decorator preserve intial value', `
+    pluginTest(
+        'transform track decorator preserve intial value',
+        `
         import { track } from 'lwc';
         export default class Test {
             @track record = {
                 value: 'test'
             };
         }
-    `, {
-        output: {
-            code: `
+    `,
+        {
+            output: {
+                code: `
                 import { registerDecorators as _registerDecorators } from "lwc";
                 import _tmpl from "./test.html";
                 import { registerComponent as _registerComponent } from "lwc";
@@ -71,29 +76,35 @@ describe('Transform property', () => {
                 export default _registerComponent(Test, {
                   tmpl: _tmpl
                 });
-                `
-        }
-    });
+                `,
+            },
+        },
+    );
 
-
-    pluginTest('throws if track decorator is applied to a getter', `
+    pluginTest(
+        'throws if track decorator is applied to a getter',
+        `
         import { track } from 'lwc';
         export default class Test {
             @track get record() {
                 return 'test';
             }
         }
-    `, {
-        error: {
-            message: '@track decorator can only be applied to class properties.',
-            loc: {
-                line: 2,
-                column: 11
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: '@track decorator can only be applied to class properties.',
+                loc: {
+                    line: 2,
+                    column: 11,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws if track decorator is applied to a setter', `
+    pluginTest(
+        'throws if track decorator is applied to a setter',
+        `
         import { track } from 'lwc';
         export default class Test {
             _record;
@@ -102,17 +113,21 @@ describe('Transform property', () => {
                 this._record = value;
             }
         }
-    `, {
-        error: {
-            message: '@track decorator can only be applied to class properties.',
-            loc: {
-                line: 4,
-                column: 11
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: '@track decorator can only be applied to class properties.',
+                loc: {
+                    line: 4,
+                    column: 11,
+                },
+            },
+        },
+    );
 
-    pluginTest('throws if track decorator is applied to a class method', `
+    pluginTest(
+        'throws if track decorator is applied to a class method',
+        `
         import { track } from 'lwc';
         export default class Test {
             _record;
@@ -121,13 +136,15 @@ describe('Transform property', () => {
                 this._record = value;
             }
         }
-    `, {
-        error: {
-            message: '@track decorator can only be applied to class properties.',
-            loc: {
-                line: 4,
-                column: 11
-            }
-        }
-    });
+    `,
+        {
+            error: {
+                message: '@track decorator can only be applied to class properties.',
+                loc: {
+                    line: 4,
+                    column: 11,
+                },
+            },
+        },
+    );
 });

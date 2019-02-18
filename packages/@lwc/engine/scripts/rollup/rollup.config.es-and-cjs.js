@@ -16,7 +16,7 @@ const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
-const banner = (`/* proxy-compat-disable */`);
+const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
@@ -25,11 +25,11 @@ function rollupConfig(config) {
     const targetName = generateTargetName(config);
     const targetDirectory = (format === 'es' ? modulesDirectory : commonJSDirectory) + `/${target}`;
 
-     return {
+    return {
         input: entry,
         onwarn: ignoreCircularDependencies,
         output: {
-            name: "Engine",
+            name: 'Engine',
             file: path.join(targetDirectory, targetName),
             format: format,
             banner: banner,
@@ -40,14 +40,14 @@ function rollupConfig(config) {
             rollupTypescriptPlugin({
                 target,
                 typescript,
-                include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
-            })
-        ]
-    }
+                include: ['*.ts', '**/*.ts', '/**/node_modules/**/*.js'],
+            }),
+        ],
+    };
 }
 
 module.exports = [
-    rollupConfig({ format:'es', target:'es2017' }),
-    rollupConfig({ format:'cjs', target:'es2017' }),
+    rollupConfig({ format: 'es', target: 'es2017' }),
+    rollupConfig({ format: 'cjs', target: 'es2017' }),
     rollupConfig({ format: 'cjs', target: 'es5' }),
 ];

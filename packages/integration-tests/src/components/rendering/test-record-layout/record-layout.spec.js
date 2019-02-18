@@ -21,26 +21,32 @@ describe('Testing component: record-layout', () => {
         assert.ok(element);
     });
 
-    describe('Record Layout section', function () {
-        it('should display titleLabel correctly', function () {
+    describe('Record Layout section', function() {
+        it('should display titleLabel correctly', function() {
             const element = browser.element('integration-record-layout-section p');
             assert.strictEqual(element.getText(), 'Section: Opportunity Information');
         });
     });
 
-    describe('Record layout leaf', function () {
-        it('should display field-api-name correctly', function () {
-            const element = browser.element('integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(3)');
+    describe('Record layout leaf', function() {
+        it('should display field-api-name correctly', function() {
+            const element = browser.element(
+                'integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(3)',
+            );
             assert.strictEqual(element.getText(), 'Field Api Name: AccountId');
         });
 
-        it('should display display-value correctly', function () {
-            const element = browser.element('integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(2)');
+        it('should display display-value correctly', function() {
+            const element = browser.element(
+                'integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(2)',
+            );
             assert.strictEqual(element.getText(), 'Display value: Acme');
         });
 
-        it('should display value correctly', function () {
-            const element = browser.element('integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(1)');
+        it('should display value correctly', function() {
+            const element = browser.element(
+                'integration-record-layout-row:nth-child(3) integration-record-layout-leaf p:nth-child(1)',
+            );
             assert.strictEqual(element.getText(), 'Value: 001xx000003DIIxAAO');
         });
     });

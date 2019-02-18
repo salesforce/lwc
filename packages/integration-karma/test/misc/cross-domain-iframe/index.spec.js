@@ -26,7 +26,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     function testContentWindowProperty(name, fn) {
         it(`should not throw when accessing ${name}`, () => {
             expect(() => fn(iframe.contentWindow)).not.toThrowError();
-        })
+        });
     }
 
     testContentWindowProperty('postMessage', contentWindow => contentWindow.postMessage('foo', '*'));
@@ -38,7 +38,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     testContentWindowProperty('length', contentWindow => contentWindow.length);
     testContentWindowProperty('location', contentWindow => {
         contentWindow.location;
-        contentWindow.location = 'http://example.com'
+        contentWindow.location = 'http://example.com';
     });
     testContentWindowProperty('opener', contentWindow => contentWindow.opener);
     testContentWindowProperty('parent', contentWindow => contentWindow.parent);

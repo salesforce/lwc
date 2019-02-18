@@ -10,9 +10,7 @@ import { createElement, LightningElement } from '../main';
 const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('invoker', () => {
-
     describe('integration', () => {
-
         beforeEach(() => {
             document.body.innerHTML = '';
         });
@@ -77,13 +75,16 @@ describe('invoker', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     stack.push('parent');
@@ -106,13 +107,16 @@ describe('invoker', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class MyComponent1 extends LightningElement {
                 disconnectedCallback() {
                     stack.push('parent');
@@ -190,13 +194,16 @@ describe('invoker', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class MyComponent3 extends LightningElement {
                 renderedCallback() {
                     cycle.push('parent');
@@ -229,7 +236,7 @@ describe('invoker', () => {
                 }
             }
             MyComponent3.publicProps = {
-                foo: {}
+                foo: {},
             };
 
             const elm = createElement('x-foo', { is: MyComponent3 });
@@ -268,7 +275,7 @@ describe('invoker', () => {
 
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
-                    (undefined).foo;
+                    undefined.foo;
                 }
             }
 
@@ -285,19 +292,22 @@ describe('invoker', () => {
 
             class MyComponent2 extends LightningElement {
                 connectedCallback() {
-                    (undefined).foo;
+                    undefined.foo;
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <section>
                         <x-bar></x-bar>
                     </section>
                 </template>
-            `, {
-                modules: { 'x-bar': MyComponent2 }
-            });
+            `,
+                {
+                    modules: { 'x-bar': MyComponent2 },
+                },
+            );
             class MyComponent1 extends LightningElement {
                 render() {
                     return html;

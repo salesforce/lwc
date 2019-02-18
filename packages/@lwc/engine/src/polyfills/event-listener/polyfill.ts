@@ -20,7 +20,10 @@ import { patchEvent } from '../../faux-shadow/events';
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
     if (originalTarget instanceof Node) {
-        if ((compareDocumentPosition.call(document, originalTarget) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 && getNodeOwnerKey(originalTarget)) {
+        if (
+            (compareDocumentPosition.call(document, originalTarget) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+            getNodeOwnerKey(originalTarget)
+        ) {
             return true;
         }
     }
@@ -42,7 +45,9 @@ function getEventListenerWrapper(fnOrObj): EventListener | null {
                 return isHandlerFunction ? fnOrObj.call(this, e) : fnOrObj.handleEvent && fnOrObj.handleEvent(e);
             };
         }
-    } catch (e) { /** ignore */ }
+    } catch (e) {
+        /** ignore */
+    }
     return wrapperFn;
 }
 

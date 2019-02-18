@@ -9,16 +9,16 @@ const assert = require('assert');
 const URL = 'http://localhost:4567/slotchange-event';
 
 function getEvents() {
-    var messages = Array.prototype.slice.call(
-        document.querySelectorAll('.message')
-    );
+    var messages = Array.prototype.slice.call(document.querySelectorAll('.message'));
     return messages
-        .map(function (message) { return message.textContent; })
+        .map(function(message) {
+            return message.textContent;
+        })
         .map(JSON.parse);
 }
 
 function getSlotNames(events) {
-    return events.map(function (event) {
+    return events.map(function(event) {
         return event.slotName;
     });
 }
@@ -113,7 +113,7 @@ describe('slotchange', () => {
             assert(
                 initialSlotNames.join('.'),
                 'belarus.china.cuba.france.india.japan.spain',
-                'Assigned nodes have been initialized as expected.'
+                'Assigned nodes have been initialized as expected.',
             );
 
             browser.click('.toggle-content');
@@ -122,7 +122,7 @@ describe('slotchange', () => {
             assert(
                 slotNames.join('.'),
                 'belarus.china.cuba.france.india.japan.spain',
-                'slotchange should not be dispatched.'
+                'slotchange should not be dispatched.',
             );
 
             browser.click('.add-slotchange');

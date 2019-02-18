@@ -4,24 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { templateString } from "../shared/utils";
-import { LWCErrorInfo } from "../shared/types";
+import { templateString } from '../shared/utils';
+import { LWCErrorInfo } from '../shared/types';
 import {
     CompilerDiagnosticOrigin,
     CompilerDiagnostic,
     CompilerError,
     getCodeFromError,
     getFilename,
-    getLocation
-} from "./utils";
+    getLocation,
+} from './utils';
 
-export {
-    CompilerDiagnosticOrigin,
-    CompilerDiagnostic,
-    CompilerError
-} from "./utils";
+export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
 
-export * from "./error-info";
+export * from './error-info';
 
 // TODO: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
@@ -32,7 +28,7 @@ export interface ErrorConfig {
 export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
     const message = Array.isArray(args) ? templateString(errorInfo.message, args) : errorInfo.message;
 
-    if (errorInfo.url && errorInfo.url !== "") {
+    if (errorInfo.url && errorInfo.url !== '') {
         // TODO: Add url info into message
     }
 
@@ -48,15 +44,12 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
  * @return {CompilerDiagnostic}
  */
-export function generateCompilerDiagnostic(
-    errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
-): CompilerDiagnostic {
+export function generateCompilerDiagnostic(errorInfo: LWCErrorInfo, config?: ErrorConfig): CompilerDiagnostic {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level: errorInfo.level
+        level: errorInfo.level,
     };
 
     if (config && config.origin) {
@@ -76,10 +69,7 @@ export function generateCompilerDiagnostic(
  * @param {ErrorConfig} config A config object providing any message arguments and origin info needed to create the error.
  * @return {CompilerError}
  */
-export function generateCompilerError(
-    errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
-): CompilerError {
+export function generateCompilerError(errorInfo: LWCErrorInfo, config?: ErrorConfig): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const error = new CompilerError(errorInfo.code, message);
 
@@ -94,7 +84,7 @@ export function generateCompilerError(
 export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
     if (!condition) {
         throw generateCompilerError(errorInfo, {
-            messageArgs: args
+            messageArgs: args,
         });
     }
 }
@@ -107,7 +97,11 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
  *
  * @return {CompilerError}
  */
-export function normalizeToCompilerError(errorInfo: LWCErrorInfo, error: any, origin?: CompilerDiagnosticOrigin): CompilerError {
+export function normalizeToCompilerError(
+    errorInfo: LWCErrorInfo,
+    error: any,
+    origin?: CompilerDiagnosticOrigin,
+): CompilerError {
     if (error instanceof CompilerError) {
         if (origin) {
             error.filename = getFilename(origin);
@@ -116,15 +110,9 @@ export function normalizeToCompilerError(errorInfo: LWCErrorInfo, error: any, or
         return error;
     }
 
-    const { code, message, filename, location } =
-        convertErrorToDiagnostic(error, errorInfo, origin);
+    const { code, message, filename, location } = convertErrorToDiagnostic(error, errorInfo, origin);
 
-    const compilerError = new CompilerError(
-        code,
-        `${error.name}: ${message}`,
-        filename,
-        location
-    );
+    const compilerError = new CompilerError(code, `${error.name}: ${message}`, filename, location);
     compilerError.stack = error.stack;
     return compilerError;
 }
@@ -136,7 +124,11 @@ export function normalizeToCompilerError(errorInfo: LWCErrorInfo, error: any, or
  *
  * @return {CompilerDiagnostic}
  */
-export function normalizeToDiagnostic(errorInfo: LWCErrorInfo, error: any, origin?: CompilerDiagnosticOrigin): CompilerDiagnostic {
+export function normalizeToDiagnostic(
+    errorInfo: LWCErrorInfo,
+    error: any,
+    origin?: CompilerDiagnosticOrigin,
+): CompilerDiagnostic {
     if (error instanceof CompilerError) {
         const diagnostic = error.toDiagnostic();
         if (origin) {
@@ -149,11 +141,13 @@ export function normalizeToDiagnostic(errorInfo: LWCErrorInfo, error: any, origi
     return convertErrorToDiagnostic(error, errorInfo, origin);
 }
 
-function convertErrorToDiagnostic(error: any, fallbackErrorInfo: LWCErrorInfo, origin?: CompilerDiagnosticOrigin): CompilerDiagnostic {
+function convertErrorToDiagnostic(
+    error: any,
+    fallbackErrorInfo: LWCErrorInfo,
+    origin?: CompilerDiagnosticOrigin,
+): CompilerDiagnostic {
     const code = getCodeFromError(error) || fallbackErrorInfo.code;
-    const message = error.lwcCode
-        ? error.message
-        : generateErrorMessage(fallbackErrorInfo, [error.message]);
+    const message = error.lwcCode ? error.message : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
     const level = error.level || fallbackErrorInfo.level;
     const filename = getFilename(origin, error);

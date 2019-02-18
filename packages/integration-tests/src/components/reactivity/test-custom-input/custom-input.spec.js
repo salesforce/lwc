@@ -18,16 +18,13 @@ describe('Testing component: custom-input', () => {
         assert.strictEqual(title, 'custom-input');
     });
 
-    it('clicking force button should update value', function () {
+    it('clicking force button should update value', function() {
         const button = browser.element('button');
         const input = browser.element('input[type="range"]');
 
         button.click();
         browser.waitUntil(() => {
-            return (
-                browser.getText('h2') === '100' &&
-                input.getValue() === '100'
-            );
+            return browser.getText('h2') === '100' && input.getValue() === '100';
         });
         assert.strictEqual(browser.getText('h2'), '100');
         assert.strictEqual(input.getValue(), '100');

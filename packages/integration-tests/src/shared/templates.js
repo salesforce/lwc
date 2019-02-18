@@ -66,7 +66,6 @@ const COMPAT = `
 `;
 
 exports.html = function(cmpName, isCompat) {
-
     return `
         <html>
             <head>
@@ -82,7 +81,6 @@ exports.html = function(cmpName, isCompat) {
 };
 
 exports.wireServiceHtml = function(cmpName, isCompat) {
-
     return `
         <html>
             <head>

@@ -15,9 +15,8 @@ const { generateTargetName, ignoreCircularDependencies } = require('./engine.rol
 const input = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
 
-const banner = (`/* proxy-compat-disable */\ntypeof process === 'undefined' && (process = { env: { NODE_ENV: 'dev' } });`);
+const banner = `/* proxy-compat-disable */\ntypeof process === 'undefined' && (process = { env: { NODE_ENV: 'dev' } });`;
 const footer = `/** version: ${version} */`;
-
 
 function rollupConfig(config) {
     const { format, target } = config;
@@ -26,24 +25,21 @@ function rollupConfig(config) {
         input: input,
         onwarn: ignoreCircularDependencies,
         output: {
-            name: "Engine",
+            name: 'Engine',
             banner: banner,
             footer: footer,
-            file: path.join(outputDir + `/${target}`,  targetName),
-            format: format
+            file: path.join(outputDir + `/${target}`, targetName),
+            format: format,
         },
         plugins: [
             nodeResolve(),
             rollupTypescriptPlugin({
                 target,
                 typescript,
-                include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
-            })
-        ]
-    }
+                include: ['*.ts', '**/*.ts', '/**/node_modules/**/*.js'],
+            }),
+        ],
+    };
 }
 
-module.exports = [
-    rollupConfig({ format:'umd', target: 'es5' }),
-    rollupConfig({ format:'umd', target: 'es2017' })
-]
+module.exports = [rollupConfig({ format: 'umd', target: 'es5' }), rollupConfig({ format: 'umd', target: 'es2017' })];

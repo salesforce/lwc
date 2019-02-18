@@ -15,14 +15,14 @@ const USER_ID_IMPORT_IDENTIFIER = '@salesforce/user/Id';
 
 const DEFAULT_ID = '005000000000000000';
 
-module.exports = function ({ types: t }) {
+module.exports = function({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
                 if (path.get('source.value').node.startsWith(USER_ID_IMPORT_IDENTIFIER)) {
                     stringScopedImportTransform(t, path, USER_ID_IMPORT_IDENTIFIER, DEFAULT_ID);
                 }
-            }
-        }
+            },
+        },
     };
 };

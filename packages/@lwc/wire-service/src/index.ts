@@ -12,16 +12,8 @@
  */
 
 import assert from './assert';
-import {
-    CONTEXT_ID,
-    CONTEXT_CONNECTED,
-    CONTEXT_DISCONNECTED,
-    CONTEXT_UPDATED
-} from './constants';
-import {
-    LightningElement,
-    ElementDef
-} from './engine';
+import { CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED, CONTEXT_UPDATED } from './constants';
+import { LightningElement, ElementDef } from './engine';
 import {
     NoArgumentListener,
     WireEventTargetListener,
@@ -60,7 +52,7 @@ function invokeListener(listeners: NoArgumentListener[]) {
  */
 const wireService = {
     wiring: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
-        const wireContext: WireContext = context[CONTEXT_ID] = Object.create(null);
+        const wireContext: WireContext = (context[CONTEXT_ID] = Object.create(null));
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
         wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
@@ -75,7 +67,10 @@ const wireService = {
 
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(wireDef.adapter, `@wire on "${wireTarget}": adapter id must be truthy`);
-                assert.isTrue(adapterFactory, `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`);
+                assert.isTrue(
+                    adapterFactory,
+                    `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`,
+                );
 
                 // enforce restrictions of reactive parameters
                 if (wireDef.params) {
@@ -83,15 +78,24 @@ const wireService = {
                         const prop = wireDef.params![param];
                         const segments = prop.split('.');
                         segments.forEach(segment => {
-                            assert.isTrue(segment.length > 0, `@wire on "${wireTarget}": reactive parameters must not be empty`);
+                            assert.isTrue(
+                                segment.length > 0,
+                                `@wire on "${wireTarget}": reactive parameters must not be empty`,
+                            );
                         });
-                        assert.isTrue(segments[0] !== wireTarget, `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`);
+                        assert.isTrue(
+                            segments[0] !== wireTarget,
+                            `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`,
+                        );
                         // restriction for dot-notation reactive parameters
                         if (segments.length > 1) {
                             // @wire emits a stream of immutable values. an emit sets the target property; it does not mutate a previously emitted value.
                             // restricting dot-notation reactive parameters to reference other @wire targets makes trapping the 'head' of the parameter
                             // sufficient to observe the value change.
-                            assert.isTrue(wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1, `@wire on "${wireTarget}": dot-notation reactive parameter "${prop}" must refer to a @wire property`);
+                            assert.isTrue(
+                                wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1,
+                                `@wire on "${wireTarget}": dot-notation reactive parameter "${prop}" must refer to a @wire property`,
+                            );
                         }
                     });
                 }
@@ -102,7 +106,7 @@ const wireService = {
                 adapterFactory({
                     dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
                     addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
-                    removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
+                    removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget),
                 } as WireEventTarget);
             }
         }
@@ -122,7 +126,7 @@ const wireService = {
             return;
         }
         invokeListener(listeners);
-    }
+    },
 };
 
 /**

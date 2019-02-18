@@ -16,7 +16,7 @@ const entry = path.resolve(__dirname, 'src/index.ts');
 const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
-const banner = (`/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`);
+const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
@@ -31,7 +31,7 @@ function rollupConfig(config) {
     const targetName = generateTargetName(config);
     const targetDirectory = (format === 'es' ? modulesDirectory : commonJSDirectory) + `/${target}`;
 
-     return {
+    return {
         input: entry,
         output: {
             file: path.join(targetDirectory, targetName),
@@ -41,11 +41,11 @@ function rollupConfig(config) {
             footer,
         },
         plugins,
-    }
+    };
 }
 
 module.exports = [
-    rollupConfig({ format:'es', target:'es2017' }),
-    rollupConfig({ format:'cjs', target:'es2017' }),
+    rollupConfig({ format: 'es', target: 'es2017' }),
+    rollupConfig({ format: 'cjs', target: 'es2017' }),
     rollupConfig({ format: 'cjs', target: 'es5' }),
 ];

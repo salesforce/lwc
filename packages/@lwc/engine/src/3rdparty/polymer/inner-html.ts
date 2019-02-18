@@ -16,8 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 // This code is inspired by Polymer ShadyDOM Polyfill
 
-import { getOuterHTML } from "./outer-html";
-import { getFilteredChildNodes } from "../../faux-shadow/traverse";
+import { getOuterHTML } from './outer-html';
+import { getFilteredChildNodes } from '../../faux-shadow/traverse';
 
 export function getInnerHTML(node: Node): string {
     let s = '';

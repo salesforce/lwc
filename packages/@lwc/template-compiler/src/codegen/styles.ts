@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as babylon from '@babel/parser';
-import * as styleCompiler from "@lwc/style-compiler";
-import { normalizeToCompilerError, TransformerErrors } from "@lwc/errors";
-import { Config as StylesheetConfig } from "@lwc/style-compiler/dist/types/index";
+import * as styleCompiler from '@lwc/style-compiler';
+import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { Config as StylesheetConfig } from '@lwc/style-compiler/dist/types/index';
 import { Statement } from '@babel/types';
 
 export default function parseInlineStyles(src: string, stylesheetConfig: StylesheetConfig): Statement[] {

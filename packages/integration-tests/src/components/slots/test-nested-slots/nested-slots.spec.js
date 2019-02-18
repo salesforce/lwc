@@ -13,8 +13,8 @@ describe('Slots with empty iterators should render', () => {
         browser.url(URL);
     });
 
-    it('should have rendered element in slot correctly', function () {
-        const result = browser.execute(function () {
+    it('should have rendered element in slot correctly', function() {
+        const result = browser.execute(function() {
             return document.querySelector('integration-nested-slots').getRegisteredTabs();
         });
         assert.ok(result);

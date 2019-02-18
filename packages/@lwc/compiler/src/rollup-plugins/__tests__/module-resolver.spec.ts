@@ -4,27 +4,27 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { compile } from "../../compiler/compiler";
-import { pretify } from "../../__tests__/utils";
-import { DiagnosticLevel } from "@lwc/errors";
+import { compile } from '../../compiler/compiler';
+import { pretify } from '../../__tests__/utils';
+import { DiagnosticLevel } from '@lwc/errors';
 
 const VALID_CONFIG = {
     isExplicitImport: true,
     outputConfig: {
         minify: false,
         compat: false,
-        format: "amd"
+        format: 'amd',
     },
-    name: "class_and_template",
-    namespace: "x"
+    name: 'class_and_template',
+    namespace: 'x',
 };
 
-describe("module resolver", () => {
-    test("compiler should resolve bundle with manually imported and rendered template", async () => {
+describe('module resolver', () => {
+    test('compiler should resolve bundle with manually imported and rendered template', async () => {
         const noOutputConfig = {
             ...VALID_CONFIG,
             files: {
-                "class_and_template.js": `
+                'class_and_template.js': `
                 import { LightningElement } from 'lwc';
                 import mytemplate from './class_and_template.html';
 
@@ -33,8 +33,8 @@ describe("module resolver", () => {
                         return mytemplate;
                     }
                 }`,
-                "class_and_template.html": `<template><p>Manually Imported Template</p></template>`
-            }
+                'class_and_template.html': `<template><p>Manually Imported Template</p></template>`,
+            },
         };
 
         const { success, result } = await compile(noOutputConfig);
@@ -67,14 +67,14 @@ describe("module resolver", () => {
                 }
 
                 return Test;
-            });`)
+            });`),
         );
     });
-    test("compiler should resolve bundle with manually imported template that does not match component name", async () => {
+    test('compiler should resolve bundle with manually imported template that does not match component name', async () => {
         const noOutputConfig = {
             ...VALID_CONFIG,
             files: {
-                "class_and_template.js": `
+                'class_and_template.js': `
                 import { LightningElement } from 'lwc';
                 import mytemplate from './anotherTemplate.html';
 
@@ -83,8 +83,8 @@ describe("module resolver", () => {
                         return mytemplate;
                     }
                 }`,
-                "anotherTemplate.html": `<template><p>Another Template</p></template>`
-            }
+                'anotherTemplate.html': `<template><p>Another Template</p></template>`,
+            },
         };
 
         const { success, result } = await compile(noOutputConfig);
@@ -116,18 +116,18 @@ describe("module resolver", () => {
                 }
 
                 return Test;
-            });`)
+            });`),
         );
     });
 
-    test("compiler should resolve bundle with local import", async () => {
+    test('compiler should resolve bundle with local import', async () => {
         const COMPILER_CONFIG_BASEDIR = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { nested } from './lib/foo';`,
-                "lib/foo.js": ``,
-            }
+                'foo.js': `import { nested } from './lib/foo';`,
+                'lib/foo.js': ``,
+            },
         };
 
         const { result, success } = await compile(COMPILER_CONFIG_BASEDIR);
@@ -135,48 +135,56 @@ describe("module resolver", () => {
         expect(result).toBeDefined();
     });
 
-    test("compiler should report fatal diagnostic if local import cannot be resolved", async () => {
+    test('compiler should report fatal diagnostic if local import cannot be resolved', async () => {
         const COMPILER_CONFIG_BASEDIR = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { nested } from './lib/foo';`,
-            }
+                'foo.js': `import { nested } from './lib/foo';`,
+            },
         };
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics).toMatchObject([{
-            level: 0,
-            message: expect.stringContaining('Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.'),
-        }]);
+        expect(diagnostics).toMatchObject([
+            {
+                level: 0,
+                message: expect.stringContaining(
+                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.',
+                ),
+            },
+        ]);
     });
 
-    test("compiler should report name case mismatch diagnostic for local import", async () => {
+    test('compiler should report name case mismatch diagnostic for local import', async () => {
         const COMPILER_CONFIG_BASEDIR = {
-            name: "foo",
-            namespace: "x",
+            name: 'foo',
+            namespace: 'x',
             files: {
-                "foo.js": `import { nested } from './lib/foo';`,
-                "lib/Foo.js": ``,
-            }
+                'foo.js': `import { nested } from './lib/foo';`,
+                'lib/Foo.js': ``,
+            },
         };
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics).toMatchObject([{
-            level: 0,
-            message: expect.stringContaining('Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?'),
-        }]);
+        expect(diagnostics).toMatchObject([
+            {
+                level: 0,
+                message: expect.stringContaining(
+                    'Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?',
+                ),
+            },
+        ]);
     });
 
-    test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
+    test('compiler should report fatal diagnostic when invalid entry path is specified', async () => {
         const COMPILER_CONFIG_BASEDIR = {
-            name: "modules/foo",
-            namespace: "x",
+            name: 'modules/foo',
+            namespace: 'x',
             files: {
-                "foo.js": ``,
-            }
+                'foo.js': ``,
+            },
         };
 
         const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
@@ -186,7 +194,7 @@ describe("module resolver", () => {
 });
 
 describe('module entry validation', () => {
-    test("compiler should fail module resolution if an entry name starts with capital letter", async () => {
+    test('compiler should fail module resolution if an entry name starts with capital letter', async () => {
         const { diagnostics, success } = await compile({
             name: 'MycmpCamelcased',
             namespace: 'c',
@@ -197,13 +205,17 @@ describe('module entry validation', () => {
         });
 
         expect(success).toBe(false);
-        expect(diagnostics).toMatchObject([{
-            level: 0,
-            message: expect.stringContaining('Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".'),
-        }]);
+        expect(diagnostics).toMatchObject([
+            {
+                level: 0,
+                message: expect.stringContaining(
+                    'Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".',
+                ),
+            },
+        ]);
     });
 
-    test("compiler should not fail module resolution if an entry contains non-leading capital letter", async () => {
+    test('compiler should not fail module resolution if an entry contains non-leading capital letter', async () => {
         const { success } = await compile({
             name: 'myCmp',
             namespace: 'c',
@@ -231,9 +243,13 @@ describe('module file name validation', () => {
         });
 
         expect(success).toBe(false);
-        expect(diagnostics).toMatchObject([{
-            level: 0,
-            message: expect.stringContaining('Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".'),
-        }]);
+        expect(diagnostics).toMatchObject([
+            {
+                level: 0,
+                message: expect.stringContaining(
+                    'Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".',
+                ),
+            },
+        ]);
     });
 });

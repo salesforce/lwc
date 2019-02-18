@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isUndefined,
-    isNull,
-    forEach,
-    getPrototypeOf,
-    setPrototypeOf,
-    isFalse,
-} from '../shared/language';
+import { isUndefined, isNull, forEach, getPrototypeOf, setPrototypeOf, isFalse } from '../shared/language';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -177,7 +170,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             // Patched classes are not supposed to be instantiated directly, ever!
             throw new TypeError('Illegal constructor');
         }
-        hasChildNodes(this: Node, ) {
+        hasChildNodes(this: Node) {
             return getInternalChildNodes(this).length > 0;
         }
         // @ts-ignore until ts@3.x
@@ -216,7 +209,11 @@ export function PatchedNode(node: Node): NodeConstructor {
              * or they both belong to the same template (default content)
              * we should assume that it is not slotted
              */
-            if (isNull(parentNode) || !isSlotElement(parentNode) || getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)) {
+            if (
+                isNull(parentNode) ||
+                !isSlotElement(parentNode) ||
+                getNodeNearestOwnerKey(parentNode) === getNodeNearestOwnerKey(this)
+            ) {
                 return null;
             }
             return parentNode as HTMLElement;
@@ -289,24 +286,26 @@ let internalChildNodeAccessorFlag = false;
 export function isExternalChildNodeAccessorFlagOn(): boolean {
     return !internalChildNodeAccessorFlag;
 }
-export const getInternalChildNodes = (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)) ?
-    function(node: Node): NodeListOf<ChildNode> {
-        internalChildNodeAccessorFlag = true;
-        let childNodes;
-        let error = null;
-        try {
-            childNodes = node.childNodes;
-        } catch (e) {
-            // childNodes accessor should never throw, but just in case!
-            error = e;
-        } finally {
-            internalChildNodeAccessorFlag = false;
-            if (!isNull(error)) {
-                // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
-                throw error; // eslint-disable-line no-unsafe-finally
-            }
-        }
-        return childNodes;
-    } : function(node: Node): NodeListOf<ChildNode> {
-        return node.childNodes;
-    };
+export const getInternalChildNodes =
+    process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport)
+        ? function(node: Node): NodeListOf<ChildNode> {
+              internalChildNodeAccessorFlag = true;
+              let childNodes;
+              let error = null;
+              try {
+                  childNodes = node.childNodes;
+              } catch (e) {
+                  // childNodes accessor should never throw, but just in case!
+                  error = e;
+              } finally {
+                  internalChildNodeAccessorFlag = false;
+                  if (!isNull(error)) {
+                      // re-throwing after restoring the state machinery for setInternalChildNodeAccessorFlag
+                      throw error; // eslint-disable-line no-unsafe-finally
+                  }
+              }
+              return childNodes;
+          }
+        : function(node: Node): NodeListOf<ChildNode> {
+              return node.childNodes;
+          };

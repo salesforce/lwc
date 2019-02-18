@@ -23,7 +23,7 @@ export default class Child extends LightningElement {
                     slotName: event.currentTarget.className,
                     assignedContents: elements.map(el => el.textContent),
                 },
-            })
+            }),
         );
     }
 }

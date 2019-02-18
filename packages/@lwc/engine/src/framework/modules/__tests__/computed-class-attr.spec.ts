@@ -13,18 +13,16 @@ describe('module/computed-class-attr', () => {
         const elm = document.createElement('p');
         const vnode = { elm, data: { className: 'foo' } };
 
-        target.update({data: {}}, vnode);
+        target.update({ data: {} }, vnode);
         expect(elm.className).toBe('foo');
     });
 
     it('should remove from oldData.className', () => {
         const elm = document.createElement('p');
         elm.className = 'baz manual';
-        const vnode = { elm,
-            data: { className: 'foo bar' },
-        };
+        const vnode = { elm, data: { className: 'foo bar' } };
 
-        target.update({data: { className: 'baz' }}, vnode);
+        target.update({ data: { className: 'baz' } }, vnode);
         expect(elm.className).toBe('manual foo bar');
     });
 
@@ -33,7 +31,7 @@ describe('module/computed-class-attr', () => {
         class Foo extends LightningElement {}
         const vnode = api.c('x-foo', Foo, { className: 'foo' });
         vnode.elm = elm;
-        target.update({data: {}}, vnode);
+        target.update({ data: {} }, vnode);
         expect(elm.className).toBe('foo');
     });
 
@@ -42,7 +40,7 @@ describe('module/computed-class-attr', () => {
         class Foo extends LightningElement {}
         const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' });
         vnode.elm = elm;
-        target.update({data: {}}, vnode);
+        target.update({ data: {} }, vnode);
         expect(elm.className).toBe('foo bar baz');
     });
 
@@ -50,7 +48,7 @@ describe('module/computed-class-attr', () => {
         const elm = document.createElement('p');
         const vnode = api.h('p', { key: 0, className: 'foo' }, []);
         vnode.elm = elm;
-        target.update({data: {}}, vnode);
+        target.update({ data: {} }, vnode);
         expect(elm.className).toBe('foo');
     });
 
@@ -58,8 +56,7 @@ describe('module/computed-class-attr', () => {
         const elm = document.createElement('p');
         const vnode = api.h('p', { key: 0, className: 'foo bar   baz' }, []);
         vnode.elm = elm;
-        target.update({data: {}}, vnode);
+        target.update({ data: {} }, vnode);
         expect(elm.className).toBe('foo bar baz');
     });
-
 });

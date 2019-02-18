@@ -14,10 +14,10 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should retarget relatedTarget from slotted custom element', () => {
-        browser.execute(function () {
+        browser.execute(function() {
             document.querySelector('.child-input').focus();
         });
         browser.keys(['Shift', 'Tab']);
-        assert.equal(browser.getText('.related-target-tagname'), 'integration-child')
+        assert.equal(browser.getText('.related-target-tagname'), 'integration-child');
     });
 });

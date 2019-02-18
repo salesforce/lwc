@@ -13,16 +13,9 @@ import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors
 
 import State from '../state';
 
-import {
-    TemplateExpression,
-    TemplateIdentifier,
-    IRNode,
-    IRElement,
-} from '../shared/types';
+import { TemplateExpression, TemplateIdentifier, IRNode, IRElement } from '../shared/types';
 
-import {
-    isBoundToIterator,
-} from '../shared/ir';
+import { isBoundToIterator } from '../shared/ir';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -49,8 +42,12 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
         traverse(parsed, {
             enter(path) {
-                const isValidNode = path.isProgram() || path.isBlockStatement() || path.isExpressionStatement() ||
-                                    path.isIdentifier() || path.isMemberExpression();
+                const isValidNode =
+                    path.isProgram() ||
+                    path.isBlockStatement() ||
+                    path.isExpressionStatement() ||
+                    path.isIdentifier() ||
+                    path.isMemberExpression();
                 invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [path.type]);
 
                 // Ensure expression doesn't contain multiple expressions: {foo;bar}
@@ -65,8 +62,9 @@ export function parseExpression(source: string, element: IRNode, state: State): 
 
             MemberExpression: {
                 exit(path) {
-                    const shouldReportComputed = !state.config.experimentalComputedMemberExpression
-                        && (path.node as types.MemberExpression).computed;
+                    const shouldReportComputed =
+                        !state.config.experimentalComputedMemberExpression &&
+                        (path.node as types.MemberExpression).computed;
                     invariant(!shouldReportComputed, ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED);
 
                     const memberExpression = path.node as types.MemberExpression;
@@ -74,7 +72,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                     const objectIdentifier = memberExpression.object as TemplateIdentifier;
                     invariant(
                         !isBoundToIterator(objectIdentifier, element) || propertyIdentifier.name !== ITERATOR_NEXT_KEY,
-                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
+                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED,
                     );
                 },
             },
@@ -92,7 +90,7 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
         return types.identifier(source);
     } else {
         throw generateCompilerError(ParserDiagnostics.INVALID_IDENTIFIER, {
-            messageArgs: [source]
+            messageArgs: [source],
         });
     }
 }

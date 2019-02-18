@@ -12,14 +12,8 @@
  * once after all property changes occur in the event loop.
  */
 
-import {
-    LightningElement,
-} from './engine';
-import {
-    ConfigListenerMetadata,
-    ConfigContext,
-    ReactiveParameter,
-} from './wiring';
+import { LightningElement } from './engine';
+import { ConfigListenerMetadata, ConfigContext, ReactiveParameter } from './wiring';
 
 /**
  * Invokes the provided change listeners with the resolved component properties.
@@ -27,7 +21,7 @@ import {
  * @param paramValues Values for all wire adapter config params
  */
 function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
-    configListenerMetadatas.forEach((metadata) => {
+    configListenerMetadatas.forEach(metadata => {
         const { listener, statics, reactives } = metadata;
 
         const reactiveValues = Object.create(null);

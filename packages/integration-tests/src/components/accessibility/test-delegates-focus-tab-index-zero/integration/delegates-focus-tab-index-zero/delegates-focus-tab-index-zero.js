@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class DelegatesFocusTabIndexZero extends LightningElement {
-
-}
+export default class DelegatesFocusTabIndexZero extends LightningElement {}

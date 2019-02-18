@@ -13,7 +13,7 @@ describe('Composed focusin event', () => {
         browser.url(URL);
     });
 
-    it('should be composed', function () {
+    it('should be composed', function() {
         browser.click('input');
         browser.click('body');
         browser.pause(50);

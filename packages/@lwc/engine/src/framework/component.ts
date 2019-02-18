@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
+import assert from '../shared/assert';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
     invokeEventListener,
-} from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined, StringToLowerCase } from "../shared/language";
-import { invokeServiceHook, Services } from "./services";
-import { VM, getComponentVM, UninitializedVM } from "./vm";
-import { VNodes } from "../3rdparty/snabbdom/types";
-import { tagNameGetter } from "../env/element";
-import { Template } from "./template";
+} from './invoker';
+import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined, StringToLowerCase } from '../shared/language';
+import { invokeServiceHook, Services } from './services';
+import { VM, getComponentVM, UninitializedVM } from './vm';
+import { VNodes } from '../3rdparty/snabbdom/types';
+import { tagNameGetter } from '../env/element';
+import { Template } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -56,7 +56,7 @@ export function getComponentRegisteredMeta(Ctor: ComponentConstructor): Componen
 
 export function createComponent(vm: UninitializedVM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
@@ -69,10 +69,12 @@ export function createComponent(vm: UninitializedVM, Ctor: ComponentConstructor)
 
 export function linkComponent(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     // wiring service
-    const { def: { wire } } = vm;
+    const {
+        def: { wire },
+    } = vm;
     if (wire) {
         const { wiring } = Services;
         if (wiring) {
@@ -83,7 +85,7 @@ export function linkComponent(vm: VM) {
 
 export function clearReactiveListeners(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     const { deps } = vm;
     const len = deps.length;
@@ -102,7 +104,7 @@ export function clearReactiveListeners(vm: VM) {
 
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
@@ -111,16 +113,25 @@ export function renderComponent(vm: VM): VNodes {
     vm.isDirty = false;
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+        assert.invariant(
+            isArray(vnodes),
+            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`,
+        );
     }
     return vnodes;
 }
 
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
-        assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isFalse(
+            vm.isDirty,
+            `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`,
+        );
+        assert.isFalse(
+            isRendering,
+            `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`,
+        );
     }
     vm.isDirty = true;
 }
@@ -129,7 +140,7 @@ const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap()
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners

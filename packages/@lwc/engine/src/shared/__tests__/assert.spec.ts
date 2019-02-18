@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert  from '../assert';
+import assert from '../assert';
 
 const _originalConsole = global.console;
 const restoreConsole = () => {
@@ -16,7 +16,7 @@ describe('assert', () => {
 
     describe('logError', () => {
         it('should prefix error messages with [LWC error]', () => {
-            global.console = {error: jest.fn()};
+            global.console = { error: jest.fn() };
 
             assert.logError('error-msg', null);
 
@@ -27,7 +27,7 @@ describe('assert', () => {
 
     describe('logWarning', () => {
         it('should prefix warning messages with [LWC warning]', () => {
-            global.console = {warn: jest.fn()};
+            global.console = { warn: jest.fn() };
 
             assert.logWarning('warning-msg', null);
 

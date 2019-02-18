@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-window.TestUtils = (function (lwc) {
+window.TestUtils = (function(lwc) {
     function createElement(name, config) {
         config = Object.assign({}, config, {
-            fallback: !process.env.NATIVE_SHADOW
+            fallback: !process.env.NATIVE_SHADOW,
         });
 
         return lwc.createElement(name, config);
@@ -18,4 +18,3 @@ window.TestUtils = (function (lwc) {
         createElement: createElement,
     };
 })(Engine);
-

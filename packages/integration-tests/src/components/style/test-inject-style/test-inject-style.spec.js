@@ -33,27 +33,17 @@ function testStyles(nativeShadow) {
     });
 
     it(`doens't leak styles on children component`, () => {
-        const parentDiv = shadowDomQuerySelector(browser, [
-            'integration-inject-style',
-            'div',
-        ]);
+        const parentDiv = shadowDomQuerySelector(browser, ['integration-inject-style', 'div']);
         const parentColor = parentDiv.getCssProperty('color');
         assert.equal(parentColor.parsed.hex, '#00ff00');
 
-        const childDiv = shadowDomQuerySelector(browser, [
-            'integration-inject-style',
-            'integration-child',
-            'div',
-        ]);
+        const childDiv = shadowDomQuerySelector(browser, ['integration-inject-style', 'integration-child', 'div']);
         const childColor = childDiv.getCssProperty('color');
         assert.notEqual(childColor.parsed.hex, '#00ff00');
     });
 
     it(`injects the style before the component is rendered`, () => {
-        const dimensionElm = shadowDomQuerySelector(browser, [
-            'integration-inject-style',
-            '.dimensions',
-        ]);
+        const dimensionElm = shadowDomQuerySelector(browser, ['integration-inject-style', '.dimensions']);
         const dimensions = dimensionElm.getText();
 
         assert.equal(dimensions, '300x300');

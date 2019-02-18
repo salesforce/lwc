@@ -4,9 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyNames, getOwnPropertyDescriptor, defineProperty, isFunction, isUndefined } from "../../shared/language";
+import {
+    getOwnPropertyNames,
+    getOwnPropertyDescriptor,
+    defineProperty,
+    isFunction,
+    isUndefined,
+} from '../../shared/language';
 
-export type DecoratorFunction = (Ctor: any, key: PropertyKey, descriptor: PropertyDescriptor | undefined) => PropertyDescriptor;
+export type DecoratorFunction = (
+    Ctor: any,
+    key: PropertyKey,
+    descriptor: PropertyDescriptor | undefined,
+) => PropertyDescriptor;
 export type DecoratorMap = Record<string, DecoratorFunction>;
 
 export default function decorate(Ctor: any, decorators: DecoratorMap): any {

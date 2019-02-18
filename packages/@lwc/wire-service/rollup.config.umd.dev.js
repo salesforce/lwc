@@ -16,7 +16,7 @@ const { generateTargetName } = require('./rollup.config.util');
 const input = path.resolve(__dirname, 'src/index.ts');
 const outputDir = path.resolve(__dirname, 'dist/umd');
 
-const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
+const banner = `/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
@@ -29,22 +29,17 @@ function rollupConfig(config) {
         isCompat && rollupCompatPlugin({ polyfills: false, disableProxyTransform: true }),
     ].filter(Boolean);
 
-
     return {
         input: input,
         output: {
-            file: path.join(outputDir + `/${target}`,  generateTargetName(config)),
-            name: "WireService",
+            file: path.join(outputDir + `/${target}`, generateTargetName(config)),
+            name: 'WireService',
             format,
             banner,
             footer,
         },
         plugins,
-    }
+    };
 }
 
-module.exports = [
-    rollupConfig({ format:'umd', target:'es5' }),
-    rollupConfig({ format:'umd', target:'es2017' })
-]
-
+module.exports = [rollupConfig({ format: 'umd', target: 'es5' }), rollupConfig({ format: 'umd', target: 'es2017' })];

@@ -12,18 +12,10 @@ import {
     CONTEXT_UPDATED,
     CONNECT,
     DISCONNECT,
-    CONFIG
+    CONFIG,
 } from './constants';
-import {
-    LightningElement,
-    ElementDef,
-    WireDef,
-    ComposableEvent
-} from './engine';
-import {
-    installTrap,
-    updated
-} from './property-trap';
+import { LightningElement, ElementDef, WireDef, ComposableEvent } from './engine';
+import { installTrap, updated } from './property-trap';
 
 export type NoArgumentListener = () => void;
 export interface ConfigListenerArgument {
@@ -55,7 +47,7 @@ export interface ConfigContext {
     };
     // map of param values
     values: {
-        [key: string]: any
+        [key: string]: any;
     };
     // mutated reactive parameters (debounced then cleared)
     mutated?: Set<ReactiveParameter>;
@@ -93,14 +85,14 @@ function buildReactiveParameter(reference: string): ReactiveParameter {
     if (!reference.includes('.')) {
         return {
             reference,
-            head: reference
+            head: reference,
         };
     }
     const segments = reference.split('.');
     return {
         reference,
         head: segments.shift() as string,
-        tail: segments
+        tail: segments,
     };
 }
 
@@ -111,12 +103,7 @@ export class WireEventTarget {
     _wireDef: WireDef;
     _wireTarget: string;
 
-    constructor(
-        cmp: LightningElement,
-        def: ElementDef,
-        context: Context,
-        wireDef: WireDef,
-        wireTarget: string) {
+    constructor(cmp: LightningElement, def: ElementDef, context: Context, wireDef: WireDef, wireTarget: string) {
         this._cmp = cmp;
         this._def = def;
         this._context = context;
@@ -129,7 +116,10 @@ export class WireEventTarget {
             case CONNECT: {
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                    assert.isFalse(
+                        connectedListeners.includes(listener as NoArgumentListener),
+                        'must not call addEventListener("connect") with the same listener',
+                    );
                 }
                 connectedListeners.push(listener as NoArgumentListener);
                 break;
@@ -138,7 +128,10 @@ export class WireEventTarget {
             case DISCONNECT: {
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                    assert.isFalse(
+                        disconnectedListeners.includes(listener as NoArgumentListener),
+                        'must not call addEventListener("disconnect") with the same listener',
+                    );
                 }
                 disconnectedListeners.push(listener as NoArgumentListener);
                 break;
@@ -159,7 +152,7 @@ export class WireEventTarget {
                 const configListenerMetadata: ConfigListenerMetadata = {
                     listener,
                     statics,
-                    reactives
+                    reactives,
                 };
 
                 // setup listeners for all reactive parameters

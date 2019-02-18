@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { Config as StylesheetConfig } from "@lwc/style-compiler/";
+import { Config as StylesheetConfig } from '@lwc/style-compiler/';
 
 export type Format = 'module' | 'function';
 
@@ -40,28 +40,18 @@ const DEFAULT_CONFIG: ResolvedConfig = {
     secure: false,
     experimentalComputedMemberExpression: false,
     format: 'module',
-    stylesheetConfig: {}
+    stylesheetConfig: {},
 };
 
-const AVAILABLE_OPTION_NAMES = new Set([
-    'secure',
-    'experimentalComputedMemberExpression',
-    'stylesheetConfig'
-]);
+const AVAILABLE_OPTION_NAMES = new Set(['secure', 'experimentalComputedMemberExpression', 'stylesheetConfig']);
 
 export function mergeConfig(config: Config): ResolvedConfig {
-    invariant(
-        config !== undefined && typeof config === 'object',
-        TemplateErrors.OPTIONS_MUST_BE_OBJECT
-    );
+    invariant(config !== undefined && typeof config === 'object', TemplateErrors.OPTIONS_MUST_BE_OBJECT);
 
     for (const property in config) {
-        if (
-            !AVAILABLE_OPTION_NAMES.has(property) &&
-            config.hasOwnProperty(property)
-        ) {
+        if (!AVAILABLE_OPTION_NAMES.has(property) && config.hasOwnProperty(property)) {
             throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
-                messageArgs: [property]
+                messageArgs: [property],
             });
         }
     }

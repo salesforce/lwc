@@ -28,10 +28,7 @@ it('should invoke all the lifecycle callback synchronously when the element is a
     resetTimingBuffer();
     document.body.appendChild(elm);
 
-    expect(window.timingBuffer).toEqual([
-        'single:connectedCallback',
-        'single:renderedCallback'
-    ]);
+    expect(window.timingBuffer).toEqual(['single:connectedCallback', 'single:renderedCallback']);
 });
 
 it('should the disconnectedCallback synchronously when removing the element from the DOM', () => {
@@ -58,7 +55,7 @@ it('should invoke the component lifecycle hooks in the right order when appendin
         'child:constructor',
         'child:connectedCallback',
         'child:renderedCallback',
-        'parent:renderedCallback'
+        'parent:renderedCallback',
     ]);
 });
 
@@ -80,30 +77,26 @@ it('should call children component lifecycle hooks when rendered dynamically via
     const elm = createElement('x-parent-if', { is: ParentIf });
     document.body.appendChild(elm);
 
-    expect(window.timingBuffer).toEqual([
-        'parentIf:connectedCallback',
-        'parentIf:renderedCallback'
-    ]);
+    expect(window.timingBuffer).toEqual(['parentIf:connectedCallback', 'parentIf:renderedCallback']);
 
     resetTimingBuffer();
     elm.childVisible = true;
 
-    return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual([
-            'child:constructor',
-            'child:connectedCallback',
-            'child:renderedCallback',
-            'parentIf:renderedCallback'
-        ]);
+    return Promise.resolve()
+        .then(() => {
+            expect(window.timingBuffer).toEqual([
+                'child:constructor',
+                'child:connectedCallback',
+                'child:renderedCallback',
+                'parentIf:renderedCallback',
+            ]);
 
-        resetTimingBuffer();
-        elm.childVisible = false;
-    }).then(() => {
-        expect(window.timingBuffer).toEqual([
-            'child:disconnectedCallback',
-            'parentIf:renderedCallback'
-        ]);
-    });
+            resetTimingBuffer();
+            elm.childVisible = false;
+        })
+        .then(() => {
+            expect(window.timingBuffer).toEqual(['child:disconnectedCallback', 'parentIf:renderedCallback']);
+        });
 });
 
 it('should call children component lifecycle hooks when a public property change', () => {
@@ -115,17 +108,14 @@ it('should call children component lifecycle hooks when a public property change
         'child:constructor',
         'child:connectedCallback',
         'child:renderedCallback',
-        'parentProp:renderedCallback'
+        'parentProp:renderedCallback',
     ]);
 
     resetTimingBuffer();
     elm.value = 'bar';
 
     return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual([
-            'child:renderedCallback',
-            'parentProp:renderedCallback'
-        ]);
+        expect(window.timingBuffer).toEqual(['child:renderedCallback', 'parentProp:renderedCallback']);
 
         resetTimingBuffer();
         elm.childVisible = false;

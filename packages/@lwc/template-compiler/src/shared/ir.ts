@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    TemplateIdentifier,
-    TemplateExpression,
-    IRNode,
-    IRText,
-    IRElement,
-    HTMLElement,
-    HTMLText,
-} from './types';
+import { TemplateIdentifier, TemplateExpression, IRNode, IRText, IRElement, HTMLElement, HTMLText } from './types';
 
 export type VisitorFn = (element: IRNode) => void;
 
@@ -79,8 +71,8 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     // Make sure the identifier is not bound to any iteration variable
     if (isElement(node)) {
         const { forEach, forOf } = node;
-        const boundToForItem = forEach && (forEach.item.name === identifier.name);
-        const boundToForIndex = forEach && forEach.index && (forEach.index.name === identifier.name);
+        const boundToForItem = forEach && forEach.item.name === identifier.name;
+        const boundToForIndex = forEach && forEach.index && forEach.index.name === identifier.name;
         const boundToForIterator = forOf && forOf.iterator.name === identifier.name;
 
         if (boundToForItem || boundToForIndex || boundToForIterator) {

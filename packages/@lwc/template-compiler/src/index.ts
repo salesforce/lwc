@@ -25,7 +25,7 @@ import { CompilationMetadata } from './shared/types';
 
 export {
     ModuleDependency as TemplateModuleDependency,
-    DependencyParameter as TemplateModuleDependencyParameter
+    DependencyParameter as TemplateModuleDependencyParameter,
 } from './shared/types';
 
 export default function compiler(
@@ -45,9 +45,7 @@ export default function compiler(
         const parsingResults = parse(source, state);
         warnings.push(...parsingResults.warnings);
 
-        const hasParsingError = parsingResults.warnings.some(
-            warning => warning.level === DiagnosticLevel.Error,
-        );
+        const hasParsingError = parsingResults.warnings.some(warning => warning.level === DiagnosticLevel.Error);
 
         if (!hasParsingError && parsingResults.root) {
             const output = generate(parsingResults.root, state);

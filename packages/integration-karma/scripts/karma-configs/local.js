@@ -13,18 +13,10 @@ module.exports = config => {
     loadBaseConfig(config);
 
     config.set({
-        reporters: [
-            ...config.reporters,
-            'progress'
-        ],
+        reporters: [...config.reporters, 'progress'],
 
-        browsers: [
-            'Chrome'
-        ],
+        browsers: ['Chrome'],
 
-        plugins: [
-            ...config.plugins,
-            'karma-chrome-launcher',
-        ]
+        plugins: [...config.plugins, 'karma-chrome-launcher'],
     });
 };

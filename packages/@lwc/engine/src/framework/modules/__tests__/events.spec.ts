@@ -57,11 +57,15 @@ describe('module/events', () => {
                     return secondTmpl;
                 }
             }
-            clickOne() { result.push(1); }
-            clickTwo() { result.push(2); }
+            clickOne() {
+                result.push(1);
+            }
+            clickTwo() {
+                result.push(2);
+            }
         }
         MyComponent.publicProps = {
-            counter: 1
+            counter: 1,
         };
 
         const elm = createElement('x-foo', { is: MyComponent });
@@ -69,7 +73,7 @@ describe('module/events', () => {
         elm.shadowRoot.querySelector('div').click();
 
         elm.counter += 1;
-        return Promise.resolve().then( () => {
+        return Promise.resolve().then(() => {
             elm.shadowRoot.querySelector('div').click();
             expect(second).toBe(true);
             expect(result).toEqual([1, 2]);
@@ -107,7 +111,7 @@ describe('module/events', () => {
             }
         }
         MyComponent.publicProps = {
-            counter: 1
+            counter: 1,
         };
 
         const elm = createElement('x-foo', { is: MyComponent });
@@ -115,7 +119,7 @@ describe('module/events', () => {
         elm.shadowRoot.querySelector('p').click();
 
         elm.counter += 1;
-        return Promise.resolve().then( () => {
+        return Promise.resolve().then(() => {
             expect(second).toBe(true);
             elm.shadowRoot.querySelector('div').click();
             expect(result).toEqual([1, 1]);
@@ -161,13 +165,16 @@ describe('module/events', () => {
 
         class MyChild extends LightningElement {}
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-child onclick={handleClick}></x-child>
             </template>
-        `, {
-            modules: { 'x-child': MyChild }
-        });
+        `,
+            {
+                modules: { 'x-child': MyChild },
+            },
+        );
         class MyComponent extends LightningElement {
             handleClick(evt) {
                 result.push(evt);
@@ -189,13 +196,16 @@ describe('module/events', () => {
 
         class MyChild extends LightningElement {}
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-child ontest={handleTest}></x-child>
             </template>
-        `, {
-            modules: { 'x-child': MyChild }
-        });
+        `,
+            {
+                modules: { 'x-child': MyChild },
+            },
+        );
         class MyComponent extends LightningElement {
             handleTest(ev) {
                 result.push(ev);
@@ -211,5 +221,4 @@ describe('module/events', () => {
 
         expect(result).toHaveLength(1);
     });
-
 });

@@ -19,7 +19,7 @@ const EXPECTED_LOCATION = expect.objectContaining({
     line: expect.any(Number),
     column: expect.any(Number),
     start: expect.any(Number),
-    length: expect.any(Number)
+    length: expect.any(Number),
 });
 
 function parseTemplate(src: string): any {
@@ -75,7 +75,7 @@ describe('parsing', () => {
 describe('class and style', () => {
     it('class attribute', () => {
         const { root } = parseTemplate(`<template><section class="foo bar   baz-fiz"></section></template>`);
-        expect(root.children[0].classMap).toMatchObject({ 'bar': true, 'foo': true, 'baz-fiz': true });
+        expect(root.children[0].classMap).toMatchObject({ bar: true, foo: true, 'baz-fiz': true });
     });
 
     it('dynamic class attribute', () => {
@@ -90,7 +90,7 @@ describe('class and style', () => {
         expect(root.children[0].styleMap).toEqual({
             fontSize: '12px',
             color: 'red',
-            margin: '10px 5px 10px'
+            margin: '10px 5px 10px',
         });
     });
 
@@ -105,7 +105,9 @@ describe('class and style', () => {
 
 describe('event handlers', () => {
     it('event handler attribute', () => {
-        const { root } = parseTemplate(`<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`);
+        const { root } = parseTemplate(
+            `<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`,
+        );
         expect(root.children[0].on).toMatchObject({
             click: { type: 'Identifier', name: 'handleClick' },
             mousemove: { type: 'Identifier', name: 'handleMouseMove' },
@@ -118,7 +120,7 @@ describe('event handlers', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('Event handler should be an expression'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -132,7 +134,9 @@ describe('for:each directives', () => {
     });
 
     it('right syntax with index', () => {
-        const { root } = parseTemplate(`<template><section for:each={items} for:item="item" for:index="i"></section></template>`);
+        const { root } = parseTemplate(
+            `<template><section for:each={items} for:item="item" for:index="i"></section></template>`,
+        );
         expect(root.children[0].forEach.expression).toMatchObject({ type: 'Identifier', name: 'items' });
         expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
         expect(root.children[0].forEach.index).toMatchObject({ type: 'Identifier', name: 'i' });
@@ -144,7 +148,7 @@ describe('for:each directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('for:each and for:item directives should be associated together.'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -154,7 +158,7 @@ describe('for:each directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('for:item directive is expected to be a string.'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -166,8 +170,8 @@ describe('locator parsing', () => {
         </template>`);
         expect(root.tag).toBe('template');
         expect(root.children[0].tag).toBe('a');
-        expect(root.children[0].locator.id).toBe("simple-link");
-        expect(root.children[0].locator.context.name).toBe("contextFn");
+        expect(root.children[0].locator.id).toBe('simple-link');
+        expect(root.children[0].locator.context.name).toBe('contextFn');
         expect(root.children[0].children[0].value).toBe('hello');
     });
 
@@ -179,7 +183,7 @@ describe('locator parsing', () => {
             code: 1068,
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('locator:context must be used with locator:id'),
-            location: { line: 2, column: 13, start: 23, length: 40 }
+            location: { line: 2, column: 13, start: 23, length: 40 },
         });
     });
 
@@ -192,8 +196,8 @@ describe('locator parsing', () => {
         expect(warnings).toContainEqual({
             code: 1070,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining("locator:id directive is expected to be a string."),
-            location: {column: 25, line: 3, start: 48, length: 18},
+            message: expect.stringContaining('locator:id directive is expected to be a string.'),
+            location: { column: 25, line: 3, start: 48, length: 18 },
         });
     });
 
@@ -206,8 +210,8 @@ describe('locator parsing', () => {
         expect(warnings).toContainEqual({
             code: 1069,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining("locator:context directive is expected to be an expression."),
-            location: {column: 44, line: 3, start: 67, length: 21},
+            message: expect.stringContaining('locator:context directive is expected to be an expression.'),
+            location: { column: 44, line: 3, start: 67, length: 21 },
         });
     });
 
@@ -220,8 +224,10 @@ describe('locator parsing', () => {
         expect(warnings).toContainEqual({
             code: 1067,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining("locator:context cannot be a member expression. It can only be functions on the component"),
-            location: {line: 3, column: 44, start: 67, length: 25},
+            message: expect.stringContaining(
+                'locator:context cannot be a member expression. It can only be functions on the component',
+            ),
+            location: { line: 3, column: 44, start: 67, length: 25 },
         });
     });
 });
@@ -239,7 +245,7 @@ describe('for:of directives', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(`iterator:it directive is expected to be an expression`),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -263,7 +269,7 @@ describe('if directive', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(`Unexpected if modifier is-true`),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -273,7 +279,7 @@ describe('if directive', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(`If directive should be an expression`),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -296,8 +302,10 @@ describe('custom component', () => {
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`),
-            location: EXPECTED_LOCATION
+            message: expect.stringContaining(
+                `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+            ),
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -309,7 +317,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('Missing root template tag'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -319,7 +327,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('Multiple roots found'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -329,7 +337,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining('Expected root tag to be template, found section'),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -339,7 +347,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(`Root template doesn't allow attributes`),
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -353,8 +361,10 @@ describe('root errors', () => {
             code: expect.any(Number),
             filename: undefined,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`),
-            location: EXPECTED_LOCATION
+            message: expect.stringContaining(
+                `is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`,
+            ),
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -365,7 +375,7 @@ describe('expression', () => {
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
             message: `Invalid expression {this.title} - LWC1060: Template expression doesn't allow ThisExpression`,
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -374,7 +384,7 @@ describe('expression', () => {
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
             message: `Invalid expression {getTitle()} - LWC1060: Template expression doesn't allow CallExpression`,
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -383,7 +393,7 @@ describe('expression', () => {
         expect(warnings[0]).toMatchObject({
             level: DiagnosticLevel.Error,
             message: `Invalid expression {foo;title} - LWC1074: Multiple expressions found`,
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -391,7 +401,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title="{myValue}" /></template>`);
         expect(warnings[0].message).toMatch(`Ambiguous attribute value title="{myValue}"`);
         expect(warnings[0]).toMatchObject({
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -409,7 +419,7 @@ describe('expression', () => {
         const { warnings } = parseTemplate(`<template><input title={myValue}checked /></template>`);
         expect(warnings[0].message).toMatch(`Ambiguous attribute value title={myValue}checked`);
         expect(warnings[0]).toMatchObject({
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 });
@@ -426,8 +436,9 @@ describe('props and attributes', () => {
                 </template>
             `);
             expect(warnings.length).toBe(1);
-            expect(warnings[0].message)
-                .toMatch(/Duplicate id value "foo" detected\. Id values must be unique within a template\./);
+            expect(warnings[0].message).toMatch(
+                /Duplicate id value "foo" detected\. Id values must be unique within a template\./,
+            );
         });
         it('custom element', () => {
             const { warnings } = parseTemplate(`
@@ -439,8 +450,9 @@ describe('props and attributes', () => {
                 </template>
             `);
             expect(warnings.length).toBe(1);
-            expect(warnings[0].message)
-                .toMatch(/Duplicate id value "bar" detected\. Id values must be unique within a template\./);
+            expect(warnings[0].message).toMatch(
+                /Duplicate id value "bar" detected\. Id values must be unique within a template\./,
+            );
         });
     });
 
@@ -448,7 +460,7 @@ describe('props and attributes', () => {
         const { warnings } = parseTemplate(`<template><div minlength="1" maxlength="5"></div></template>`);
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
         expect(warnings[0]).toMatchObject({
-            location: EXPECTED_LOCATION
+            location: EXPECTED_LOCATION,
         });
     });
 
@@ -464,7 +476,7 @@ describe('props and attributes', () => {
         const { root } = parseTemplate(`<template><p title="title" aria-hidden="true"></p></template>`);
         expect(root.children[0].attrs).toMatchObject({
             'aria-hidden': { value: 'true' },
-            'title': { value: 'title' },
+            title: { value: 'title' },
         });
     });
 
@@ -554,16 +566,16 @@ describe('metadata', () => {
                     properties: {
                         ariaDescribedBy: {
                             type: 'literal',
-                            value: 'label'
+                            value: 'label',
                         },
                         readOnly: {
                             type: 'literal',
-                            value: true
-                        }
+                            value: true,
+                        },
                     },
                     moduleName: 'x/foo',
                     tagName: 'x-foo',
-                }
+                },
             ]);
         });
 
@@ -575,7 +587,7 @@ describe('metadata', () => {
                 {
                     moduleName: 'x/foo',
                     tagName: 'x-foo',
-                }
+                },
             ]);
         });
 
@@ -588,16 +600,16 @@ describe('metadata', () => {
                     properties: {
                         myBoolean: {
                             type: 'literal',
-                            value: true
+                            value: true,
                         },
                         myString: {
                             type: 'literal',
-                            value: '123'
-                        }
+                            value: '123',
+                        },
                     },
                     moduleName: 'x/foo',
-                    tagName: 'x-foo'
-                }
+                    tagName: 'x-foo',
+                },
             ]);
         });
 
@@ -610,12 +622,12 @@ describe('metadata', () => {
                     properties: {
                         parameter: {
                             type: 'expression',
-                            value: 'p1.level1.level2'
-                        }
+                            value: 'p1.level1.level2',
+                        },
                     },
                     moduleName: 'x/foo',
                     tagName: 'x-foo',
-                }
+                },
             ]);
         });
 
@@ -628,12 +640,12 @@ describe('metadata', () => {
                     properties: {
                         property: {
                             type: 'expression',
-                            value: 'p1'
-                        }
+                            value: 'p1',
+                        },
                     },
                     moduleName: 'x/foo',
-                    tagName: 'x-foo'
-                }
+                    tagName: 'x-foo',
+                },
             ]);
         });
     });

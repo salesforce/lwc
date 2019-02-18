@@ -13,7 +13,7 @@ describe('Toggling to empty classname', () => {
         browser.url(URL);
     });
 
-    it('should have the right value', function () {
+    it('should have the right value', function() {
         const element = browser.element('integration-toggle-empty-classname');
         element.click();
 

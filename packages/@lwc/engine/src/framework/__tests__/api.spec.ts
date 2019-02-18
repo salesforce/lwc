@@ -35,7 +35,7 @@ describe('api', () => {
             expect(() => {
                 api.c('x-foo', Foo, {
                     className: 'foo',
-                    classMap: { foo: true }
+                    classMap: { foo: true },
                 });
             }).toThrowError(/className/);
         });
@@ -48,9 +48,11 @@ describe('api', () => {
 
         it('should log warning if passed style is not a string', () => {
             const style = {
-                color: 'red'
+                color: 'red',
             };
-            const factory = function() { return Foo; };
+            const factory = function() {
+                return Foo;
+            };
             // just to have a vm being rendered.
             class VmRendering extends LightningElement {
                 render() {
@@ -62,9 +64,10 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`);
+            }).toLogWarning(
+                `Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`,
+            );
         });
-
     });
 
     describe('#h()', () => {
@@ -75,11 +78,15 @@ describe('api', () => {
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
             expect(() => {
-                api.h('p', {
-                    key: 0,
-                    className: 'foo',
-                    classMap: { foo: true }
-                }, []);
+                api.h(
+                    'p',
+                    {
+                        key: 0,
+                        className: 'foo',
+                        classMap: { foo: true },
+                    },
+                    [],
+                );
             }).toThrowError(/className/);
         });
 
@@ -92,7 +99,6 @@ describe('api', () => {
                 api.h('p', {}, [undefined]);
             });
         });
-
     });
 
     describe('#i()', () => {
@@ -111,29 +117,25 @@ describe('api', () => {
         });
 
         it('should support numeric keys', () => {
-            expect(api.i([{key: 0}], () => null)).toEqual([null]);
-            expect(api.i([{key: 1}], () => null)).toEqual([null]);
+            expect(api.i([{ key: 0 }], () => null)).toEqual([null]);
+            expect(api.i([{ key: 1 }], () => null)).toEqual([null]);
         });
 
         it('should provide item and index', () => {
-            const o = {x: 1};
+            const o = { x: 1 };
             const vnodes = api.i([o], (item, index) => ({ index, item }));
             expect(vnodes).toEqual([{ index: 0, item: o }]);
         });
 
         it('should provide correct last value', () => {
-            const o = [
-                {x: 1},
-                {x: 2},
-                {x: 3}
-            ];
+            const o = [{ x: 1 }, { x: 2 }, { x: 3 }];
             const vnodes = api.i(o, (item, index, first, last) => last);
             expect(vnodes).toEqual([false, false, true]);
         });
 
         it('should handle arrays', function() {
             const o = [1, 2];
-            const vnodes = api.i(o, (item) => item + 'a');
+            const vnodes = api.i(o, item => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
@@ -141,7 +143,7 @@ describe('api', () => {
             const o = new Set();
             o.add(1);
             o.add(2);
-            const vnodes = api.i(o, (item) => item + 'a');
+            const vnodes = api.i(o, item => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
@@ -149,14 +151,14 @@ describe('api', () => {
             const o = new Map();
             o.set('foo', 1);
             o.set('bar', 2);
-            const vnodes = api.i(o, (item) => item + 'a');
+            const vnodes = api.i(o, item => item + 'a');
             expect(vnodes).toEqual(['foo,1a', 'bar,2a']);
         });
 
         it('should handle proxies objects', function() {
             const array = [1, 2];
             const o = new Proxy(array, {});
-            const vnodes = api.i(o, (item) => item + 'a');
+            const vnodes = api.i(o, item => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
@@ -171,7 +173,9 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(`Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`);
+            }).toLogWarning(
+                `Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`,
+            );
         });
     });
 
@@ -214,7 +218,7 @@ describe('api', () => {
             let k1, k2;
             function html($api) {
                 k1 = $api.k(123, 345);
-                k2 = $api.k(345, "678");
+                k2 = $api.k(345, '678');
                 return [];
             }
             class Foo extends LightningElement {
@@ -260,7 +264,9 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.');
+            }).toLogWarning(
+                'Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.',
+            );
             expect(normalized).toBe(0);
         });
 
@@ -310,7 +316,9 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.');
+            }).toLogWarning(
+                'Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.',
+            );
             expect(normalized).toBe(0);
         });
 

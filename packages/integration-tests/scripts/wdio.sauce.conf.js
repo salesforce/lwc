@@ -6,7 +6,7 @@
  */
 
 // force non-headless Chrome on Sauce Labs for debugability
-process.env.HEADLESS_CHROME=false;
+process.env.HEADLESS_CHROME = false;
 
 const merge = require('deepmerge');
 const minimist = require('minimist');
@@ -21,30 +21,27 @@ const browsers = [
         platform: 'Windows 10',
         version: '61.0',
         chromeOptions: {
-                //binary: CHROME_BIN_PATH,
-                args: [
-                    'headless',
-                    'disable-gpu',
-                ],
-            },
+            //binary: CHROME_BIN_PATH,
+            args: ['headless', 'disable-gpu'],
+        },
     },
     {
         commonName: 'edge',
         browserName: 'MicrosoftEdge',
         platform: 'Windows 10',
-        version: '15.15063'
+        version: '15.15063',
     },
     {
         commonName: 'safari',
         browserName: 'safari',
         platform: 'macOS 10.12',
-        version: '11.0'
+        version: '11.0',
     },
     {
         commonName: 'firefox',
         browserName: 'firefox',
         platform: 'macOS 10.12',
-        version: '55.0'
+        version: '55.0',
     },
 ];
 
@@ -55,7 +52,7 @@ const compatBrowsers = [
         browserName: 'internet explorer',
         platform: 'Windows 10',
         version: '11.103',
-        iedriverVersion: '3.4.0'
+        iedriverVersion: '3.4.0',
     },
     {
         // ideally this would be 10.1 (or latest 10.x available) but there is
@@ -63,25 +60,25 @@ const compatBrowsers = [
         commonName: 'safari10',
         browserName: 'safari',
         platform: 'OS X 10.11',
-        version: '10.0'
+        version: '10.0',
     },
     {
         commonName: 'safari9',
         browserName: 'safari',
         platform: 'OS X 10.11',
-        version: '9.0'
+        version: '9.0',
     },
     {
         commonName: 'chrome30',
         browserName: 'chrome',
         platform: 'Windows 8.1',
-        version: '30.0'
+        version: '30.0',
     },
     {
         commonName: 'firefox45',
         browserName: 'firefox',
         platform: 'Windows 8',
-        version: '45.0'
+        version: '45.0',
     },
 ];
 
@@ -94,9 +91,7 @@ if (!username) {
 
 const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
 if (!accessKey) {
-    throw new TypeError(
-        'Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable',
-    );
+    throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
 }
 
 const tunnelId = process.env.SAUCE_TUNNEL_ID;
@@ -113,7 +108,7 @@ const customData = {
     commit: process.env.CIRCLE_SHA1,
     branch: process.env.CIRCLE_BRANCH,
     buildUrl: process.env.CIRCLE_BUILD_URL,
-}
+};
 
 const sauceServiceConfig = {
     user: username,
@@ -121,7 +116,7 @@ const sauceServiceConfig = {
 
     sauceConnect: false,
 
-    capabilities: getCapabilities()
+    capabilities: getCapabilities(),
 };
 
 function getCapabilities() {
@@ -150,7 +145,7 @@ function getCapabilities() {
             build,
             tags,
             customData,
-        }
+        };
     });
 }
 

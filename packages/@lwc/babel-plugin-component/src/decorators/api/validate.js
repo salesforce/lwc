@@ -10,20 +10,19 @@ const {
     AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
-    DECORATOR_TYPES
+    DECORATOR_TYPES,
 } = require('../../constants');
 
 const { generateError } = require('../../utils');
 
 function validateConflict(path, decorators) {
-    const isPublicFieldTracked = decorators.some(decorator => (
-        decorator.name === TRACK_DECORATOR
-        && decorator.path.parentPath.node === path.parentPath.node
-    ));
+    const isPublicFieldTracked = decorators.some(
+        decorator => decorator.name === TRACK_DECORATOR && decorator.path.parentPath.node === path.parentPath.node,
+    );
 
     if (isPublicFieldTracked) {
         throw generateError(path, {
-            errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT
+            errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT,
         });
     }
 }
@@ -36,7 +35,7 @@ function isBooleanPropDefaultTrue(property) {
 function validatePropertyValue(property) {
     if (isBooleanPropDefaultTrue(property)) {
         throw generateError(property, {
-            errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY
+            errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY,
         });
     }
 }
@@ -44,7 +43,7 @@ function validatePropertyValue(property) {
 function validatePropertyName(property) {
     if (property.node.computed) {
         throw generateError(property, {
-            errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED
+            errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED,
         });
     }
 
@@ -53,50 +52,53 @@ function validatePropertyName(property) {
     if (propertyName === 'part') {
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
-            messageArgs: [propertyName]
+            messageArgs: [propertyName],
         });
     } else if (propertyName.startsWith('on')) {
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
-            messageArgs: [propertyName]
+            messageArgs: [propertyName],
         });
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
-            messageArgs: [propertyName]
+            messageArgs: [propertyName],
         });
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
-            messageArgs: [propertyName]
+            messageArgs: [propertyName],
         });
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
-            messageArgs: [propertyName, camelCased]
+            messageArgs: [propertyName, camelCased],
         });
     }
 }
 
 function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
-    decorators.filter(decorator => (isApiDecorator(decorator) && decorator.type === DECORATOR_TYPES.SETTER)).forEach(({ path }) => {
-        const parentPath = path.parentPath;
-        const name = parentPath.get('key.name').node;
+    decorators
+        .filter(decorator => isApiDecorator(decorator) && decorator.type === DECORATOR_TYPES.SETTER)
+        .forEach(({ path }) => {
+            const parentPath = path.parentPath;
+            const name = parentPath.get('key.name').node;
 
-        const associatedGetter = decorators.find(decorator => (
-            isApiDecorator(decorator) &&
-            decorator.type === DECORATOR_TYPES.GETTER &&
-            parentPath.get('key.name').node === name
-        ));
+            const associatedGetter = decorators.find(
+                decorator =>
+                    isApiDecorator(decorator) &&
+                    decorator.type === DECORATOR_TYPES.GETTER &&
+                    parentPath.get('key.name').node === name,
+            );
 
-        if (associatedGetter) {
-            throw generateError(parentPath, {
-                errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-                messageArgs: [name]
-            });
-        }
-    });
+            if (associatedGetter) {
+                throw generateError(parentPath, {
+                    errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                    messageArgs: [name],
+                });
+            }
+        });
 }
 
 function validateUniqueness(decorators) {
@@ -114,15 +116,14 @@ function validateUniqueness(decorators) {
             // are not part of a pair of getter/setter.
             const haveSameName = currentPropertyName === comparePropertyName;
             const isDifferentProperty = currentPath !== comparePath;
-            const isGetterSetterPair = (
+            const isGetterSetterPair =
                 (currentType === DECORATOR_TYPES.GETTER && compareType === DECORATOR_TYPES.SETTER) ||
-                (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER)
-            );
+                (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER);
 
             if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
                 throw generateError(comparePath, {
                     errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
-                    messageArgs: [currentPropertyName]
+                    messageArgs: [currentPropertyName],
                 });
             }
         }

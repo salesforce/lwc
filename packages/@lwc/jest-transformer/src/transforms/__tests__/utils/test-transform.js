@@ -13,20 +13,21 @@ const baseConfig = {
     babelrc: false,
     filename: 'test.js',
     parserOpts: {
-        plugins: [
-            ['decorators', { decoratorsBeforeExport: true }],
-            ['classProperties', {}],
-            ['dynamicImport', {}],
-        ],
+        plugins: [['decorators', { decoratorsBeforeExport: true }], ['classProperties', {}], ['dynamicImport', {}]],
     },
 };
 
 function transform(plugin, opts = {}) {
-    const testConfig = Object.assign({}, baseConfig, {
-        plugins: [plugin]
-    }, opts);
+    const testConfig = Object.assign(
+        {},
+        baseConfig,
+        {
+            plugins: [plugin],
+        },
+        opts,
+    );
 
-    return function (source) {
+    return function(source) {
         return babel.transform(unpad(source), testConfig);
     };
 }
@@ -34,7 +35,7 @@ function transform(plugin, opts = {}) {
 function makeTest(plugin, opts = {}) {
     const testTransform = transform(plugin, opts);
 
-    const pluginTest = function (name, source, expectedSource, expectedError) {
+    const pluginTest = function(name, source, expectedSource, expectedError) {
         test(name, () => {
             let res;
             let err;
@@ -62,7 +63,7 @@ function makeTest(plugin, opts = {}) {
     };
 
     // eslint-disable-next-line jest/no-disabled-tests
-    pluginTest.skip = (name) => test.skip(name);
+    pluginTest.skip = name => test.skip(name);
 
     return pluginTest;
 }

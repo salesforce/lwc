@@ -10,28 +10,28 @@ import {
     generateCompilerDiagnostic,
     generateErrorMessage,
     normalizeToCompilerError,
-    normalizeToDiagnostic
-} from "../errors";
+    normalizeToDiagnostic,
+} from '../errors';
 
-import { DiagnosticLevel } from "../../shared/types";
+import { DiagnosticLevel } from '../../shared/types';
 
 const DEFAULT_LOCATION = {
     line: 1,
     column: 22,
     start: 22,
-    length: 8
+    length: 8,
 };
 
 const ERROR_INFO = {
     code: 4,
-    message: "Test Error {0} with message {1}",
-    level: DiagnosticLevel.Error
+    message: 'Test Error {0} with message {1}',
+    level: DiagnosticLevel.Error,
 };
 
 const GENERIC_ERROR = {
     code: 100,
-    message: "Unexpected error: {0}",
-    level: DiagnosticLevel.Error
+    message: 'Unexpected error: {0}',
+    level: DiagnosticLevel.Error,
 };
 
 class CustomError extends Error {
@@ -42,14 +42,7 @@ class CustomError extends Error {
     public start?: number;
     public length?: number;
 
-    constructor(
-        message: string,
-        filename?: string,
-        line?: number,
-        column?: number,
-        start?: number,
-        length?: number
-    ) {
+    constructor(message: string, filename?: string, line?: number, column?: number, start?: number, length?: number) {
         super(message);
 
         this.name = 'CustomError';
@@ -76,7 +69,7 @@ describe('error handling', () => {
             const target = {
                 code: 4,
                 message: 'LWC4: Test Error {0} with message {1}',
-                level: DiagnosticLevel.Error
+                level: DiagnosticLevel.Error,
             };
             expect(generateCompilerDiagnostic(ERROR_INFO)).toEqual(target);
         });
@@ -87,16 +80,18 @@ describe('error handling', () => {
                 message: 'LWC4: Test Error arg1 with message 500',
                 level: DiagnosticLevel.Error,
                 filename: 'test.js',
-                location: DEFAULT_LOCATION
+                location: DEFAULT_LOCATION,
             };
 
-            expect(generateCompilerDiagnostic(ERROR_INFO, {
-                messageArgs: ['arg1', 500],
-                origin: {
-                    filename: 'test.js',
-                    location: DEFAULT_LOCATION
-                }
-            })).toEqual(target);
+            expect(
+                generateCompilerDiagnostic(ERROR_INFO, {
+                    messageArgs: ['arg1', 500],
+                    origin: {
+                        filename: 'test.js',
+                        location: DEFAULT_LOCATION,
+                    },
+                }),
+            ).toEqual(target);
         });
     });
 
@@ -110,15 +105,18 @@ describe('error handling', () => {
             const args = ['arg1', 10];
             const target = new CompilerError(4, 'LWC4: Test Error arg1 with message 10');
 
-            checkErrorEquality(generateCompilerError(ERROR_INFO, {
-                messageArgs: args
-            }), target);
+            checkErrorEquality(
+                generateCompilerError(ERROR_INFO, {
+                    messageArgs: args,
+                }),
+                target,
+            );
         });
 
         it('formats an error string properly', () => {
             const args = ['arg1', 10];
             const error = generateCompilerError(ERROR_INFO, {
-                messageArgs: args
+                messageArgs: args,
             });
 
             expect(error.message).toEqual('LWC4: Test Error arg1 with message 10');
@@ -130,7 +128,7 @@ describe('error handling', () => {
 
             const error = generateCompilerError(ERROR_INFO, {
                 messageArgs: args,
-                origin: { filename }
+                origin: { filename },
             });
             expect(error.filename).toEqual(filename);
         });
@@ -140,7 +138,7 @@ describe('error handling', () => {
 
             const error = generateCompilerError(ERROR_INFO, {
                 messageArgs: args,
-                origin: { location: DEFAULT_LOCATION }
+                origin: { location: DEFAULT_LOCATION },
             });
             expect(error.location).toEqual(DEFAULT_LOCATION);
         });
@@ -148,20 +146,33 @@ describe('error handling', () => {
 
     describe('normalizeToCompilerError', () => {
         it('preserves existing compiler error', () => {
-            const error =  new CompilerError(100, 'LWC100: test err');
+            const error = new CompilerError(100, 'LWC100: test err');
             checkErrorEquality(normalizeToCompilerError(GENERIC_ERROR, error), error);
         });
 
         it('adds origin info to an existing compiler error', () => {
-            const oldError = new CompilerError(100, 'LWC100: test error', 'old.js', { line: 1, column: 7, start: 7, length: 3 });
+            const oldError = new CompilerError(100, 'LWC100: test error', 'old.js', {
+                line: 1,
+                column: 7,
+                start: 7,
+                length: 3,
+            });
             const target = new CompilerError(100, 'LWC100: test error', 'test.js', DEFAULT_LOCATION);
 
-            checkErrorEquality(normalizeToCompilerError(GENERIC_ERROR, oldError, { filename: 'test.js', location: DEFAULT_LOCATION }), target);
+            checkErrorEquality(
+                normalizeToCompilerError(GENERIC_ERROR, oldError, { filename: 'test.js', location: DEFAULT_LOCATION }),
+                target,
+            );
         });
 
         it('normalizes a given error into a compiler error', () => {
             const error = new CustomError('test error', 'test.js', 3, 5, 16, 10);
-            const target = new CompilerError(100, 'CustomError: LWC100: Unexpected error: test error', 'test.js', { line: 3, column: 5, start: 16, length: 10 });
+            const target = new CompilerError(100, 'CustomError: LWC100: Unexpected error: test error', 'test.js', {
+                line: 3,
+                column: 5,
+                start: 16,
+                length: 10,
+            });
 
             const normalized = normalizeToCompilerError(GENERIC_ERROR, error);
             checkErrorEquality(normalized, target);
@@ -169,12 +180,20 @@ describe('error handling', () => {
 
         it('adds additional origin info into the normalized error if provided', () => {
             const error = new CustomError('test error');
-            const target = new CompilerError(100, 'CustomError: LWC100: Unexpected error: test error', 'test.js', DEFAULT_LOCATION);
+            const target = new CompilerError(
+                100,
+                'CustomError: LWC100: Unexpected error: test error',
+                'test.js',
+                DEFAULT_LOCATION,
+            );
 
-            checkErrorEquality(normalizeToCompilerError(GENERIC_ERROR, error, {
-                filename: 'test.js',
-                location: DEFAULT_LOCATION
-            }), target);
+            checkErrorEquality(
+                normalizeToCompilerError(GENERIC_ERROR, error, {
+                    filename: 'test.js',
+                    location: DEFAULT_LOCATION,
+                }),
+                target,
+            );
         });
 
         it('ignores the fallback errorInfo when an error code already exists on the error', () => {
@@ -186,15 +205,18 @@ describe('error handling', () => {
                 messageArgs: ['arg1', 10],
                 origin: {
                     filename: 'test.js',
-                    location: DEFAULT_LOCATION
-                }
+                    location: DEFAULT_LOCATION,
+                },
             });
             target.message = `CustomError: ${target.message}`;
 
-            checkErrorEquality(normalizeToCompilerError(GENERIC_ERROR, error, {
-                filename: 'test.js',
-                location: DEFAULT_LOCATION
-            }), target);
+            checkErrorEquality(
+                normalizeToCompilerError(GENERIC_ERROR, error, {
+                    filename: 'test.js',
+                    location: DEFAULT_LOCATION,
+                }),
+                target,
+            );
         });
     });
 
@@ -205,11 +227,9 @@ describe('error handling', () => {
                 message: 'LWC100: test error',
                 level: DiagnosticLevel.Error,
                 filename: 'test.js',
-                location: DEFAULT_LOCATION
+                location: DEFAULT_LOCATION,
             };
-            const error = new CompilerError(
-                target.code, target.message, target.filename, target.location
-            );
+            const error = new CompilerError(target.code, target.message, target.filename, target.location);
 
             expect(normalizeToDiagnostic(GENERIC_ERROR, error)).toEqual(target);
         });
@@ -220,16 +240,16 @@ describe('error handling', () => {
                 message: 'LWC100: test error',
                 level: DiagnosticLevel.Error,
                 filename: 'test.js',
-                location: DEFAULT_LOCATION
+                location: DEFAULT_LOCATION,
             };
-            const error = new CompilerError(
-                target.code, target.message, 'old.js', DEFAULT_LOCATION
-            );
+            const error = new CompilerError(target.code, target.message, 'old.js', DEFAULT_LOCATION);
 
-            expect(normalizeToDiagnostic(GENERIC_ERROR, error, {
-                filename: target.filename,
-                location: target.location
-            })).toEqual(target);
+            expect(
+                normalizeToDiagnostic(GENERIC_ERROR, error, {
+                    filename: target.filename,
+                    location: target.location,
+                }),
+            ).toEqual(target);
         });
 
         it('normalizes a given error into a compiler diagnostic', () => {
@@ -243,8 +263,8 @@ describe('error handling', () => {
                     line: 2,
                     column: 5,
                     start: 10,
-                    length: 5
-                }
+                    length: 5,
+                },
             };
 
             expect(normalizeToDiagnostic(GENERIC_ERROR, error)).toEqual(target);
@@ -257,13 +277,15 @@ describe('error handling', () => {
                 message: 'LWC100: Unexpected error: test error',
                 level: DiagnosticLevel.Error,
                 filename: 'test.js',
-                location: DEFAULT_LOCATION
+                location: DEFAULT_LOCATION,
             };
 
-            expect(normalizeToDiagnostic(GENERIC_ERROR, error, {
-                filename: 'test.js',
-                location: DEFAULT_LOCATION
-            })).toEqual(target);
+            expect(
+                normalizeToDiagnostic(GENERIC_ERROR, error, {
+                    filename: 'test.js',
+                    location: DEFAULT_LOCATION,
+                }),
+            ).toEqual(target);
         });
     });
 });

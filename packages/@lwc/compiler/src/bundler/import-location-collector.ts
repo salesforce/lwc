@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Location } from "../common-interfaces/location";
+import { Location } from '../common-interfaces/location';
 
 export interface ModuleImportLocation {
     name: string;
@@ -32,16 +32,16 @@ export function collectImportLocations(code: string) {
     // split result: ["'x-bar', 'x-foo'"]
     const imports = rawImports.split(/,\s*/) || [];
 
-    return imports.map((moduleImport) => {
-        const normalizedName = moduleImport.replace(/'/g, "");
+    return imports.map(moduleImport => {
+        const normalizedName = moduleImport.replace(/'/g, '');
         const position = searchSubstring.indexOf(normalizedName);
 
         return {
             name: normalizedName,
             location: {
                 start: position,
-                length: normalizedName.length
-            }
+                length: normalizedName.length,
+            },
         };
     });
 }

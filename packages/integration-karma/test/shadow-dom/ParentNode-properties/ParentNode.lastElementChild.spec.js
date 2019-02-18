@@ -14,7 +14,7 @@ describe('ParentNode.lastElementChild', () => {
         expect(elm.shadowRoot.lastElementChild).toBe(elm.shadowRoot.querySelector('p'));
     });
 
-    it('should return null if component doesn\'t have element child', () => {
+    it("should return null if component doesn't have element child", () => {
         const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.lastElementChild).toBe(null);

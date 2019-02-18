@@ -44,7 +44,7 @@ describe('modules/computed-style-attr', () => {
             }
         }
         MyComponent.publicProps = {
-            counter: 1
+            counter: 1,
         };
 
         const elm = createElement('x-cmp', { is: MyComponent });
@@ -56,5 +56,4 @@ describe('modules/computed-style-attr', () => {
             expect(elm.shadowRoot.querySelector('div').style.display).toBe('block');
         });
     });
-
 });

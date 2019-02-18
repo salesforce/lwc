@@ -1,4 +1,4 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 const DEFAULT_ITEMS = [{ label: 'P1' }, { label: 'P2' }];
 

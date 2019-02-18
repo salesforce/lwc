@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../../shared/assert";
-import { getOwnPropertyNames, isFunction, isUndefined, create, assign } from "../../shared/language";
-import { ComponentConstructor } from "../component";
-import wireDecorator from "./wire";
-import trackDecorator from "./track";
-import apiDecorator from "./api";
-import { EmptyObject } from "../utils";
-import { getAttrNameFromPropName, getGlobalHTMLPropertiesInfo } from "../attributes";
-import decorate, { DecoratorMap } from "./decorate";
+import assert from '../../shared/assert';
+import { getOwnPropertyNames, isFunction, isUndefined, create, assign } from '../../shared/language';
+import { ComponentConstructor } from '../component';
+import wireDecorator from './wire';
+import trackDecorator from './track';
+import apiDecorator from './api';
+import { EmptyObject } from '../utils';
+import { getAttrNameFromPropName, getGlobalHTMLPropertiesInfo } from '../attributes';
+import decorate, { DecoratorMap } from './decorate';
 
 export interface PropDef {
     config: number;
@@ -123,20 +123,29 @@ function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef |
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {
-                    msg.push(`"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`);
+                    msg.push(
+                        `"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`,
+                    );
                 } else {
-                    msg.push(`"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
-                    msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
+                    msg.push(
+                        `"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`,
+                    );
+                    msg.push(
+                        `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`,
+                    );
                 }
                 assert.logError(msg.join('\n'));
             }
         }
 
-        propsHash[propName] = assign({
-            config: 0,
-            type: 'any',
-            attr: attrName,
-        }, props[propName]);
+        propsHash[propName] = assign(
+            {
+                config: 0,
+                type: 'any',
+                attr: attrName,
+            },
+            props[propName],
+        );
         return propsHash;
     }, create(null));
 }
@@ -147,7 +156,12 @@ function getPublicMethodsHash(target: ComponentConstructor, publicMethods: strin
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
+            assert.isTrue(
+                isFunction(target.prototype[methodName]),
+                `Component "${target.name}" should have a method \`${methodName}\` instead of ${
+                    target.prototype[methodName]
+                }.`,
+            );
         }
         methodsHash[methodName] = target.prototype[methodName];
         return methodsHash;

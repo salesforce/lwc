@@ -17,8 +17,5 @@ module.exports = {
         format: 'iife',
         name: 'Main',
     },
-    plugins: [
-        lwcCompiler(),
-        replace({ 'process.env.NODE_ENV': JSON.stringify('development') })
-    ]
+    plugins: [lwcCompiler(), replace({ 'process.env.NODE_ENV': JSON.stringify('development') })],
 };

@@ -32,9 +32,7 @@ const CONSOLE_WHITELIST = [
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {
     for (let j = i + 1; j < CONSOLE_WHITELIST.length; j++) {
         if (CONSOLE_WHITELIST[i] === CONSOLE_WHITELIST[j]) {
-            throw new Error(
-                `Duplicate test name in whitelist "${CONSOLE_WHITELIST[i]}"`,
-            );
+            throw new Error(`Duplicate test name in whitelist "${CONSOLE_WHITELIST[i]}"`);
         }
     }
 }

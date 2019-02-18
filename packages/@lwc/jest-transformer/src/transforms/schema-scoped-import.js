@@ -35,29 +35,33 @@ function schemaScopedImportTransform(t, path) {
     const idx = resourcePath.indexOf('.');
 
     if (idx === -1) {
-        path.replaceWithMultiple(schemaObjectTemplate({
-            RESOURCE_NAME: t.identifier(defaultImport),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath),
-        }));
+        path.replaceWithMultiple(
+            schemaObjectTemplate({
+                RESOURCE_NAME: t.identifier(defaultImport),
+                IMPORT_SOURCE: t.stringLiteral(importSource),
+                OBJECT_API_NAME: t.stringLiteral(resourcePath),
+            }),
+        );
     } else {
-        path.replaceWithMultiple(schemaObjectAndFieldTemplate({
-            RESOURCE_NAME: t.identifier(defaultImport),
-            IMPORT_SOURCE: t.stringLiteral(importSource),
-            OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
-            FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
-        }));
+        path.replaceWithMultiple(
+            schemaObjectAndFieldTemplate({
+                RESOURCE_NAME: t.identifier(defaultImport),
+                IMPORT_SOURCE: t.stringLiteral(importSource),
+                OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
+                FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
+            }),
+        );
     }
 }
 
-module.exports = function ({ types: t }) {
+module.exports = function({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
                 if (path.get('source.value').node.startsWith(SCHEMA_IMPORT_IDENTIFIER)) {
                     schemaScopedImportTransform(t, path);
                 }
-            }
-        }
+            },
+        },
     };
 };

@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class NestedRenderConditional extends LightningElement {
     @track toggle = true;

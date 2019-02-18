@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isUndefined, isObject, isArray, create, ArrayPush } from "../shared/language";
+import assert from '../shared/assert';
+import { isUndefined, isObject, isArray, create, ArrayPush } from '../shared/language';
 
-import { Context } from "./context";
-import { VNodeData } from "../3rdparty/snabbdom/types";
-import { ComponentDef } from "./def";
-import { VM } from "./vm";
+import { Context } from './context';
+import { VNodeData } from '../3rdparty/snabbdom/types';
+import { ComponentDef } from './def';
+import { VM } from './vm';
 
 type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
 interface ServiceDef {
@@ -22,11 +22,11 @@ interface ServiceDef {
 }
 
 export const Services: {
-  wiring?: ServiceCallback[];
-  locator?: ServiceCallback[];
-  connected?: ServiceCallback[];
-  disconnected?: ServiceCallback[];
-  rendered?: ServiceCallback[];
+    wiring?: ServiceCallback[];
+    locator?: ServiceCallback[];
+    connected?: ServiceCallback[];
+    disconnected?: ServiceCallback[];
+    rendered?: ServiceCallback[];
 } = create(null);
 
 const hooks: Array<keyof ServiceDef> = ['wiring', 'locator', 'rendered', 'connected', 'disconnected'];
@@ -49,7 +49,7 @@ export function register(service: ServiceDef) {
 
 export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(cbs) && cbs.length > 0, `Optimize invokeServiceHook() to be invoked only when needed`);
     }
     const { component, data, def, context } = vm;

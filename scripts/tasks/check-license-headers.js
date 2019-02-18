@@ -17,10 +17,10 @@
 'use strict';
 
 const fs = require('fs');
-const {execSync} = require('child_process');
+const { execSync } = require('child_process');
 const isbinaryfile = require('isbinaryfile');
 
-const getFileContents = path => fs.readFileSync(path, {encoding: 'utf-8'});
+const getFileContents = path => fs.readFileSync(path, { encoding: 'utf-8' });
 const isDirectory = path => fs.lstatSync(path).isDirectory();
 const createRegExp = pattern => new RegExp(pattern);
 
@@ -109,44 +109,40 @@ const CUSTOM_IGNORED_PATTERNS = [
     '/integration-karma/test/.*$',
 ].map(createRegExp);
 
-const IGNORED_PATTERNS = [
-  ...IGNORED_EXTENSIONS,
-  ...GENERIC_IGNORED_PATTERNS,
-  ...CUSTOM_IGNORED_PATTERNS,
-];
+const IGNORED_PATTERNS = [...IGNORED_EXTENSIONS, ...GENERIC_IGNORED_PATTERNS, ...CUSTOM_IGNORED_PATTERNS];
 
 const INCLUDED_PATTERNS = [
-  // Any file with an extension
-  /\.[^/]+$/,
+    // Any file with an extension
+    /\.[^/]+$/,
 ];
 
 const COPYRIGHT_HEADER_RE = /Copyright (\(c\))? [0-9]{4}, (s|S)alesforce.com, inc./;
 
 function needsCopyrightHeader(file) {
-  const contents = getFileContents(file);
-  return contents.trim().length > 0 && !COPYRIGHT_HEADER_RE.test(contents);
+    const contents = getFileContents(file);
+    return contents.trim().length > 0 && !COPYRIGHT_HEADER_RE.test(contents);
 }
 
 function check() {
-  const allFiles = execSync('git ls-files', {encoding: 'utf-8'})
-    .trim()
-    .split('\n');
+    const allFiles = execSync('git ls-files', { encoding: 'utf-8' })
+        .trim()
+        .split('\n');
 
-  const invalidFiles = allFiles.filter(
-    file =>
-      INCLUDED_PATTERNS.some(pattern => pattern.test(file)) &&
-      !IGNORED_PATTERNS.some(pattern => pattern.test(file)) &&
-      !isDirectory(file) &&
-      !isbinaryfile.sync(file) &&
-      needsCopyrightHeader(file)
-  );
+    const invalidFiles = allFiles.filter(
+        file =>
+            INCLUDED_PATTERNS.some(pattern => pattern.test(file)) &&
+            !IGNORED_PATTERNS.some(pattern => pattern.test(file)) &&
+            !isDirectory(file) &&
+            !isbinaryfile.sync(file) &&
+            needsCopyrightHeader(file),
+    );
 
-  if (invalidFiles.length > 0) {
-    console.log(`Salesforce copyright header check failed for the following files:
+    if (invalidFiles.length > 0) {
+        console.log(`Salesforce copyright header check failed for the following files:
   ${invalidFiles.join('\n  ')}
 Please include the header or blacklist the files in \`scripts/checkCopyrightHeaders.js\``);
-    process.exit(1);
-  }
+        process.exit(1);
+    }
 }
 
 check();

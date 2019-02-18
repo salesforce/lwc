@@ -16,7 +16,7 @@ import wireAdapter from 'x/wireAdapter';
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
         expect(() => getComponentDef(ctor)).toThrowError(
-            /Invalid prototype chain for \w+, you must extend LightningElement./
+            /Invalid prototype chain for \w+, you must extend LightningElement./,
         );
     });
 }
@@ -29,14 +29,61 @@ testInvalidComponentConstructor('Object', {});
 testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 const GLOBAL_HTML_ATTRIBUTES = [
-    'accessKey', 'ariaActiveDescendant', 'ariaAtomic', 'ariaAutoComplete', 'ariaBusy', 'ariaChecked', 'ariaColCount',
-    'ariaColIndex', 'ariaColSpan', 'ariaControls', 'ariaCurrent', 'ariaDescribedBy', 'ariaDetails', 'ariaDisabled',
-    'ariaErrorMessage', 'ariaExpanded', 'ariaFlowTo', 'ariaHasPopup', 'ariaHidden', 'ariaInvalid', 'ariaKeyShortcuts',
-    'ariaLabel', 'ariaLabelledBy', 'ariaLevel', 'ariaLive', 'ariaModal', 'ariaMultiLine', 'ariaMultiSelectable',
-    'ariaOrientation', 'ariaOwns', 'ariaPlaceholder', 'ariaPosInSet', 'ariaPressed', 'ariaReadOnly', 'ariaRelevant',
-    'ariaRequired', 'ariaRoleDescription', 'ariaRowCount', 'ariaRowIndex', 'ariaRowSpan', 'ariaSelected', 'ariaSetSize',
-    'ariaSort', 'ariaValueMax', 'ariaValueMin', 'ariaValueNow', 'ariaValueText', 'dir', 'draggable', 'hidden', 'id',
-    'lang', 'role', 'tabIndex', 'title',
+    'accessKey',
+    'ariaActiveDescendant',
+    'ariaAtomic',
+    'ariaAutoComplete',
+    'ariaBusy',
+    'ariaChecked',
+    'ariaColCount',
+    'ariaColIndex',
+    'ariaColSpan',
+    'ariaControls',
+    'ariaCurrent',
+    'ariaDescribedBy',
+    'ariaDetails',
+    'ariaDisabled',
+    'ariaErrorMessage',
+    'ariaExpanded',
+    'ariaFlowTo',
+    'ariaHasPopup',
+    'ariaHidden',
+    'ariaInvalid',
+    'ariaKeyShortcuts',
+    'ariaLabel',
+    'ariaLabelledBy',
+    'ariaLevel',
+    'ariaLive',
+    'ariaModal',
+    'ariaMultiLine',
+    'ariaMultiSelectable',
+    'ariaOrientation',
+    'ariaOwns',
+    'ariaPlaceholder',
+    'ariaPosInSet',
+    'ariaPressed',
+    'ariaReadOnly',
+    'ariaRelevant',
+    'ariaRequired',
+    'ariaRoleDescription',
+    'ariaRowCount',
+    'ariaRowIndex',
+    'ariaRowSpan',
+    'ariaSelected',
+    'ariaSetSize',
+    'ariaSort',
+    'ariaValueMax',
+    'ariaValueMin',
+    'ariaValueNow',
+    'ariaValueText',
+    'dir',
+    'draggable',
+    'hidden',
+    'id',
+    'lang',
+    'role',
+    'tabIndex',
+    'title',
 ].sort();
 
 it('it should return the global HTML attributes in props', () => {
@@ -50,34 +97,38 @@ it('it should return the global HTML attributes in props', () => {
 describe('@api', () => {
     it('should return the public properties in the props object', () => {
         const { props } = getComponentDef(PublicProperties);
-        expect(props).toEqual(jasmine.objectContaining({
-            foo: {
-                config: 0,
-                type: 'any',
-                attr: 'foo'
-            },
-            bar: {
-                config: 0,
-                type: 'any',
-                attr: 'bar'
-            },
-        }));
+        expect(props).toEqual(
+            jasmine.objectContaining({
+                foo: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'foo',
+                },
+                bar: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'bar',
+                },
+            }),
+        );
     });
 
     it('should return the public accessors in the props object', () => {
         const { props } = getComponentDef(PublicAccessors);
-        expect(props).toEqual(jasmine.objectContaining({
-            getterOnly: {
-                config: 1,
-                type: 'any',
-                attr: 'getter-only'
-            },
-            getterAndSetter: {
-                config: 3,
-                type: 'any',
-                attr: 'getter-and-setter'
-            },
-        }));
+        expect(props).toEqual(
+            jasmine.objectContaining({
+                getterOnly: {
+                    config: 1,
+                    type: 'any',
+                    attr: 'getter-only',
+                },
+                getterAndSetter: {
+                    config: 3,
+                    type: 'any',
+                    attr: 'getter-and-setter',
+                },
+            }),
+        );
     });
 
     it('should return the public methods in the methods object', () => {
@@ -90,23 +141,25 @@ describe('@api', () => {
 
     it('should return also the public properties inherited from the base class', () => {
         const { props } = getComponentDef(PublicPropertiesInheritance);
-        expect(props).toEqual(jasmine.objectContaining({
-            parentProp: {
-                config: 0,
-                type: 'any',
-                attr: 'parent-prop'
-            },
-            childProp: {
-                config: 0,
-                type: 'any',
-                attr: 'child-prop'
-            },
-            overriddenInChild: {
-                config: 0,
-                type: 'any',
-                attr: 'overridden-in-child'
-            },
-        }));
+        expect(props).toEqual(
+            jasmine.objectContaining({
+                parentProp: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'parent-prop',
+                },
+                childProp: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'child-prop',
+                },
+                overriddenInChild: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'overridden-in-child',
+                },
+            }),
+        );
     });
 
     it('should return also the public methods inherited from the base class', () => {
@@ -114,10 +167,10 @@ describe('@api', () => {
         expect(methods).toEqual({
             parentMethod: Object.getPrototypeOf(PublicMethodsInheritance.prototype).parentMethod,
             overriddenInChild: PublicMethodsInheritance.prototype.overriddenInChild,
-            childMethod: PublicMethodsInheritance.prototype.childMethod
+            childMethod: PublicMethodsInheritance.prototype.childMethod,
         });
     });
-})
+});
 
 describe('@wire', () => {
     it('should return the wired properties in wire object', () => {
@@ -139,9 +192,9 @@ describe('@wire', () => {
                     b: true,
                 },
                 params: {
-                    c: 'foo'
+                    c: 'foo',
                 },
-            }
+            },
         });
     });
 
@@ -166,10 +219,10 @@ describe('@wire', () => {
                     b: true,
                 },
                 params: {
-                    c: 'foo'
+                    c: 'foo',
                 },
                 method: 1,
-            }
+            },
         });
     });
 
@@ -196,7 +249,7 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
-            }
+            },
         });
     });
 
@@ -209,7 +262,7 @@ describe('@wire', () => {
                     parent: true,
                 },
                 params: {},
-                method: 1
+                method: 1,
             },
             overriddenInChild: {
                 adapter: wireAdapter,
@@ -217,7 +270,7 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
-                method: 1
+                method: 1,
             },
             childMethod: {
                 adapter: wireAdapter,
@@ -225,19 +278,18 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
-                method: 1
-            }
+                method: 1,
+            },
         });
     });
 });
-
 
 describe('circular dependencies', () => {
     // Emulates an AMD module with circular dependency.
     function circularDependency(klass) {
         const ctor = function() {
             return klass;
-        }
+        };
         ctor.__circular__ = true;
 
         return ctor;
@@ -247,35 +299,35 @@ describe('circular dependencies', () => {
         const Circular = circularDependency(
             class extends LightningElement {
                 @api foo;
-            }
+            },
         );
         class Component extends Circular {
             @api bar;
         }
 
         const { props } = getComponentDef(Component);
-        expect(props).toEqual(jasmine.objectContaining({
-            foo: {
-                config: 0,
-                type: 'any',
-                attr: 'foo'
-            },
-            bar: {
-                config: 0,
-                type: 'any',
-                attr: 'bar'
-            },
-        }));
+        expect(props).toEqual(
+            jasmine.objectContaining({
+                foo: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'foo',
+                },
+                bar: {
+                    config: 0,
+                    type: 'any',
+                    attr: 'bar',
+                },
+            }),
+        );
     });
 
     it('should throw when parent class is a circular dependency not extending LightningElement', () => {
-        const Circular = circularDependency(
-            class {}
-        );
+        const Circular = circularDependency(class {});
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Invalid prototype chain for Component, you must extend LightningElement./
+            /Invalid prototype chain for Component, you must extend LightningElement./,
         );
     });
 
@@ -284,7 +336,7 @@ describe('circular dependencies', () => {
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./
+            /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./,
         );
     });
 });

@@ -14,5 +14,5 @@ const DEFAULT_OPTIONS = {
 
 module.exports = {
     DEFAULT_OPTIONS,
-    DEFAULT_MODE
+    DEFAULT_MODE,
 };

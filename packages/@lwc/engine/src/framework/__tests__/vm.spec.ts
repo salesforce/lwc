@@ -6,8 +6,8 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
-import { ViewModelReflection } from "../utils";
-import { getErrorComponentStack, getComponentVM } from "../vm";
+import { ViewModelReflection } from '../utils';
+import { getErrorComponentStack, getComponentVM } from '../vm';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -44,13 +44,16 @@ describe('vm', () => {
                 }
             }
 
-            const html  = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-bar></x-bar>
                 </template>
-            `, {
-                modules: { 'x-bar': ChildComponent4 }
-            });
+            `,
+                {
+                    modules: { 'x-bar': ChildComponent4 },
+                },
+            );
             class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
@@ -82,13 +85,16 @@ describe('vm', () => {
                 }
             }
 
-            const html  = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-bar></x-bar>
                 </template>
-            `, {
-                modules: { 'x-bar': ChildComponent5 }
-            });
+            `,
+                {
+                    modules: { 'x-bar': ChildComponent5 },
+                },
+            );
             class MyComponent5 extends LightningElement {
                 constructor() {
                     super();
@@ -113,7 +119,6 @@ describe('vm', () => {
             expect(vm2.idx).toBeGreaterThan(vm1.idx);
             expect(counter).toBe(2);
         });
-
     });
 
     describe('getComponentStack', () => {
@@ -125,13 +130,16 @@ describe('vm', () => {
                     vm = getComponentVM(this);
                 }
             }
-            const html  = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': ChildComponentCs }
-            });
+            `,
+                {
+                    modules: { 'x-child': ChildComponentCs },
+                },
+            );
             class ParentComponentCs extends LightningElement {
                 constructor() {
                     super();
@@ -172,7 +180,8 @@ describe('vm', () => {
                     }
                 }
             }
-            const parentHTML = compileTemplate(`<template>
+            const parentHTML = compileTemplate(
+                `<template>
                 <c-child>
                     <template if:true={h1}>
                         <h1 slot="">slotted</h1>
@@ -181,11 +190,13 @@ describe('vm', () => {
                         <h2 slot="foo"></h2>
                     </template>
                 </c-child>
-            </template>`, {
-                modules: {
-                    'c-child': ChildComponent
-                }
-            });
+            </template>`,
+                {
+                    modules: {
+                        'c-child': ChildComponent,
+                    },
+                },
+            );
             let parentTemplate;
             class Parent extends LightningElement {
                 constructor() {
@@ -214,7 +225,9 @@ describe('vm', () => {
                 // at this point, if we are reusing the h1 and h2 from the default content
                 // of the slots in c-child, they will have an extraneous attribute on them,
                 // which will be a problem.
-                expect(parentTemplate.querySelector('c-child').outerHTML).toBe(`<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`);
+                expect(parentTemplate.querySelector('c-child').outerHTML).toBe(
+                    `<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`,
+                );
             });
         });
     });

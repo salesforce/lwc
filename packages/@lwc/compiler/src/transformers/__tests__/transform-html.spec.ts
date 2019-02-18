@@ -16,13 +16,9 @@ const COMPILER_OPTIONS: CompilerOptions = {
 };
 
 it('should throw when processing an invalid HTML file', async () => {
-    await expect(
-        transform(`<html`, 'foo.html', COMPILER_OPTIONS),
-    ).rejects.toMatchObject({
+    await expect(transform(`<html`, 'foo.html', COMPILER_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.html',
-        message: expect.stringContaining(
-            'Invalid HTML syntax: eof-in-tag.',
-        ),
+        message: expect.stringContaining('Invalid HTML syntax: eof-in-tag.'),
     });
 });
 

@@ -1,13 +1,15 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 import { EVENT } from '../EVENT';
 
 export default class Child extends LightningElement {
     log(guid) {
-        this.dispatchEvent(new CustomEvent('log', {
-            bubbles: true,
-            composed: true,
-            detail: { guid },
-        }));
+        this.dispatchEvent(
+            new CustomEvent('log', {
+                bubbles: true,
+                composed: true,
+                detail: { guid },
+            }),
+        );
     }
 
     constructor() {
@@ -74,7 +76,7 @@ export default class Child extends LightningElement {
             new CustomEvent('childbuttonclick', {
                 bubbles: true,
                 composed: true,
-            })
+            }),
         );
     }
 }

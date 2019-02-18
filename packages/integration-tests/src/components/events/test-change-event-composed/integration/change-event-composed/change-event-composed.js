@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class ChangeEventComposed extends LightningElement {
     @track notComposed = false;

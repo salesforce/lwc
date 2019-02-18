@@ -14,7 +14,7 @@ function generateTodo(id, completed) {
         id,
         title: 'task ' + id,
         completed,
-        nextId: id + 1
+        nextId: id + 1,
     };
 }
 
@@ -27,7 +27,7 @@ const TODO = [
     generateTodo(4, true),
     // intentionally skip 5
     generateTodo(6, false),
-    generateTodo(7, false)
+    generateTodo(7, false),
 ].reduce((acc, value) => {
     acc[value.id] = value;
     return acc;
@@ -37,7 +37,7 @@ const TODO = [
  * Gets an observable for a todo.
  * @param {Object} config Configuration.
  * @return {Observable|undefined} An observable for the todo, or undefined if the configuration is insufficient.
-*/
+ */
 export default function getObservable(config) {
     if (!config || !('id' in config)) {
         return undefined;

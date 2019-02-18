@@ -11,9 +11,14 @@ const prettier = require('prettier');
 const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
 
 function transform(plugin, pluginOpts = {}, opts = {}) {
-    const testConfig = Object.assign({}, BASE_CONFIG, {
-        plugins: [[plugin, pluginOpts]]
-    }, opts);
+    const testConfig = Object.assign(
+        {},
+        BASE_CONFIG,
+        {
+            plugins: [[plugin, pluginOpts]],
+        },
+        opts,
+    );
 
     return function(source) {
         return babel.transform(prettify(source), testConfig);
@@ -21,7 +26,8 @@ function transform(plugin, pluginOpts = {}, opts = {}) {
 }
 
 function prettify(str) {
-    return str.toString()
+    return str
+        .toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
         .map(line => line.trim())
@@ -51,8 +57,7 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
                 if (normalizedActual !== normalizedExpected) {
                     // we should fail, but with style
-                    expect(prettier.format(normalizedActual))
-                        .toBe(prettier.format(normalizedExpected));
+                    expect(prettier.format(normalizedActual)).toBe(prettier.format(normalizedExpected));
                 } else {
                     expect(normalizedActual).toBe(normalizedExpected);
                 }
@@ -64,7 +69,7 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
     const pluginTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
     pluginTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
-    pluginTester.skip = (name) => test.skip(name);
+    pluginTester.skip = name => test.skip(name);
 
     return pluginTester;
 }

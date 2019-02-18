@@ -7,11 +7,7 @@
 import * as parse5 from 'parse5-with-errors';
 import * as he from 'he';
 
-import {
-    CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    ParserDiagnostics
-} from '@lwc/errors';
+import { CompilerDiagnostic, generateCompilerDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
 import { VOID_ELEMENT_SET } from './constants';
 
@@ -42,10 +38,10 @@ export function parseHTML(source: string) {
                         line: startLine,
                         column: startCol,
                         start: startOffset,
-                        length: endOffset - startOffset
-                    }
-                }
-            })
+                        length: endOffset - startOffset,
+                    },
+                },
+            }),
         );
     };
 
@@ -67,10 +63,10 @@ export function parseHTML(source: string) {
                             line: startTag.startLine || startTag.line,
                             column: startTag.startCol || startTag.col,
                             start: startTag.startOffset,
-                            length: startTag.endOffset - startTag.startOffset
-                        }
-                    }
-                })
+                            length: startTag.endOffset - startTag.startOffset,
+                        },
+                    },
+                }),
             );
         }
     };
@@ -94,10 +90,7 @@ export function parseHTML(source: string) {
     };
 }
 
-export function traverseHTML(
-    node: parse5.AST.Default.Node,
-    visitor: Visitor,
-): void {
+export function traverseHTML(node: parse5.AST.Default.Node, visitor: Visitor): void {
     let nodeVisitor: NodeVisitor;
     switch (node.nodeName) {
         case '#comment':
@@ -119,9 +112,7 @@ export function traverseHTML(
     // Node children are accessed differently depending on the node type:
     //  - standard elements have their children associated on the node itself
     //  - while the template node children are present on the content property.
-    const children = treeAdapter.getChildNodes(
-        treeAdapter.getTemplateContent(node) || node,
-    );
+    const children = treeAdapter.getChildNodes(treeAdapter.getTemplateContent(node) || node);
 
     // Traverse the node children if necessary.
     if (children !== undefined) {
@@ -135,10 +126,7 @@ export function traverseHTML(
     }
 }
 
-export function getSource(
-    source: string,
-    location: parse5.MarkupData.Location,
-): string {
+export function getSource(source: string, location: parse5.MarkupData.Location): string {
     const { startOffset, endOffset } = location;
     return source.slice(startOffset, endOffset);
 }

@@ -8,9 +8,7 @@ describe('Node.parentNode', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('x-container').parentNode).toBe(
-            elm.shadowRoot.querySelector('.outer'),
-        );
+        expect(elm.shadowRoot.querySelector('x-container').parentNode).toBe(elm.shadowRoot.querySelector('.outer'));
     });
 
     it('should return the shadowRoot when accessing parentNode from an element at the root of the shadow tree', () => {
@@ -24,18 +22,14 @@ describe('Node.parentNode', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('.slotted').parentNode).toBe(
-            elm.shadowRoot.querySelector('x-container')
-        );
+        expect(elm.shadowRoot.querySelector('.slotted').parentNode).toBe(elm.shadowRoot.querySelector('x-container'));
     });
 
     it('should return the right parent node for fallback slot nodes', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('.default-slotted').parentNode).toBe(
-            elm.shadowRoot.querySelector('slot')
-        );
+        expect(elm.shadowRoot.querySelector('.default-slotted').parentNode).toBe(elm.shadowRoot.querySelector('slot'));
     });
 
     it('should return the shadowRoot on the first child', () => {

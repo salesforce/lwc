@@ -8,16 +8,11 @@ import * as babelTypes from '@babel/types';
 import * as parse5 from 'parse5-with-errors';
 
 export type TemplateIdentifier = babelTypes.Identifier;
-export type TemplateExpression =
-    | babelTypes.MemberExpression
-    | babelTypes.Literal
-    | babelTypes.Identifier;
+export type TemplateExpression = babelTypes.MemberExpression | babelTypes.Literal | babelTypes.Identifier;
 
 export type HTMLText = parse5.AST.TextNode;
 export type HTMLElement = parse5.AST.Element;
-export type HTMLNode =
-    | HTMLElement
-    | HTMLText;
+export type HTMLNode = HTMLElement | HTMLText;
 
 export interface SlotDefinition {
     [key: string]: IRNode[];
@@ -98,9 +93,7 @@ export interface IRText {
     __original: HTMLText;
 }
 
-export type IRNode =
-    | IRElement
-    | IRText;
+export type IRNode = IRElement | IRText;
 
 export enum IRAttributeType {
     Expression,
@@ -129,10 +122,7 @@ export interface IRBooleanAttribute extends IRBaseAttribute {
     value: true;
 }
 
-export type IRAttribute =
-    | IRStringAttribute
-    | IRExpressionAttribute
-    | IRBooleanAttribute;
+export type IRAttribute = IRStringAttribute | IRExpressionAttribute | IRBooleanAttribute;
 
 export type WarningLevel = 'info' | 'warning' | 'error';
 

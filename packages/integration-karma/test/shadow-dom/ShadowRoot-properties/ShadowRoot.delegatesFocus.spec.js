@@ -15,7 +15,7 @@ describe('ShadowRoot.delegatesFocus', () => {
     // TODO - #985 delegatedFocus is only implemented the native ShadowRoot by Blink
     xit('ShadowRoot.delegatesFocus should be true if class has delegatesFocus static property set to true', () => {
         class DelegatesFocus extends LightningElement {
-            static delegatesFocus = true
+            static delegatesFocus = true;
         }
 
         const elm = createElement('x-test', { is: DelegatesFocus });

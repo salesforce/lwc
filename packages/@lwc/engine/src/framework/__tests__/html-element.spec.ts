@@ -18,9 +18,7 @@ describe('html-element', () => {
                 state = {};
             }
 
-            expect(() => (
-                createElement('x-foo', { is: MyComponent })
-            )).not.toLogWarning();
+            expect(() => createElement('x-foo', { is: MyComponent })).not.toLogWarning();
         });
         it('should not warn if component has tracked state property', function() {
             class MyComponent extends LightningElement {
@@ -28,9 +26,7 @@ describe('html-element', () => {
             }
             MyComponent.track = { state: 1 };
 
-            expect(() => (
-                createElement('x-foo-tracked-state', { is: MyComponent })
-            )).not.toLogWarning();
+            expect(() => createElement('x-foo-tracked-state', { is: MyComponent })).not.toLogWarning();
         });
         it('should be mutable during construction', () => {
             let state;
@@ -104,46 +100,48 @@ describe('html-element', () => {
             let userDefinedTabIndexValue = -1;
             class MyComponent extends LightningElement {
                 renderedCallback() {
-                    userDefinedTabIndexValue = this.getAttribute("tabindex");
+                    userDefinedTabIndexValue = this.getAttribute('tabindex');
                 }
             }
-            const elm = createElement('x-foo', {is: MyComponent});
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
 
             expect(userDefinedTabIndexValue).toBe('0');
         }),
+            // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
+            it('should log console error when user land code changes attribute via querySelector', () => {
+                jest.spyOn(assertLogger, 'logError');
 
-        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-        it('should log console error when user land code changes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
+                class Child extends LightningElement {}
 
-            class Child extends LightningElement {}
-
-            const html = compileTemplate(`
+                const html = compileTemplate(
+                    `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
+            `,
+                    {
+                        modules: {
+                            'x-child': Child,
+                        },
+                    },
+                );
+                class Parent extends LightningElement {
+                    render() {
+                        return html;
+                    }
                 }
+
+                const parentElm = createElement('x-parent', { is: Parent });
+                document.body.appendChild(parentElm);
+
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
+                childElm.setAttribute('title', 'value from parent');
+
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
             });
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            const childElm = parentElm.shadowRoot.querySelector('x-child');
-            childElm.setAttribute('title', "value from parent");
-
-            expect(assertLogger.logError).toBeCalled();
-            assertLogger.logError.mockRestore();
-        });
 
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code removes attribute via querySelector', () => {
@@ -151,15 +149,18 @@ describe('html-element', () => {
 
             class Child extends LightningElement {}
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return html;
@@ -182,15 +183,18 @@ describe('html-element', () => {
 
             class Child extends LightningElement {}
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return html;
@@ -200,10 +204,10 @@ describe('html-element', () => {
                 }
             }
 
-            const elm = createElement('x-foo', {is: Parent});
+            const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
+            return Promise.resolve().then(() => {
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
@@ -211,7 +215,7 @@ describe('html-element', () => {
 
         it('should not throw when accessing attribute in root elements', () => {
             class Parent extends LightningElement {}
-            const elm = createElement('x-foo', {is: Parent});
+            const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             elm.setAttribute('tabindex', 1);
         });
@@ -231,7 +235,7 @@ describe('html-element', () => {
         it('should allow custom instance getter and setter', () => {
             let cmp, a, ctx;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     cmp = this;
@@ -241,7 +245,7 @@ describe('html-element', () => {
                         set(value) {
                             ctx = this;
                             a = value;
-                        }
+                        },
                     });
                 }
             }
@@ -347,7 +351,6 @@ describe('html-element', () => {
             document.body.appendChild(elm);
             elm.setAttribute('tabindex', 4);
 
-
             expect(elm.tabIndex).toBe(4);
             expect(elm.getTabIndex()).toBe(4);
         });
@@ -363,9 +366,7 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrowError(
-                /render\(\) method has side effects on the state/
-            );
+            }).toThrowError(/render\(\) method has side effects on the state/);
         });
 
         it('should throw if setting tabIndex during construction', function() {
@@ -378,9 +379,7 @@ describe('html-element', () => {
 
             expect(() => {
                 createElement('x-foo', { is: MyComponent });
-            }).toThrowError(
-                /The result must not have attributes./
-            );
+            }).toThrowError(/The result must not have attributes./);
         });
 
         it('should not throw when tabIndex is not reflected to element', () => {
@@ -389,9 +388,7 @@ describe('html-element', () => {
                     return 0;
                 }
 
-                set tabIndex(value) {
-
-                }
+                set tabIndex(value) {}
             }
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -558,7 +555,7 @@ describe('html-element', () => {
             }
 
             MyComponent.publicProps = {
-                foo: {}
+                foo: {},
             };
 
             MyComponent.track = { state: 1 };
@@ -581,9 +578,7 @@ describe('html-element', () => {
             MyComponent.track = { state: 1 };
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
 
-            expect(() => (
-                document.body.appendChild(elm)
-            )).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogWarning();
         });
 
         it('should not log a warning when initializing api value to null', function() {
@@ -591,47 +586,45 @@ describe('html-element', () => {
                 foo = null;
             }
             MyComponent.publicProps = {
-                foo: {}
+                foo: {},
             };
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
-            expect(() => (
-                document.body.appendChild(elm)
-            )).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogWarning();
         });
     });
 
     describe('Inheritance', () => {
         it('should inherit public getters and setters correctly', () => {
             class MyParent extends LightningElement {
-                get foo() { return 'foo' }
+                get foo() {
+                    return 'foo';
+                }
                 set foo(value) {}
             }
             MyParent.publicProps = {
-                foo: {}
+                foo: {},
             };
-            class MyComponent extends MyParent {
-
-            }
+            class MyComponent extends MyParent {}
             expect(() => {
-                createElement('getter-inheritance', { is: MyComponent })
+                createElement('getter-inheritance', { is: MyComponent });
             }).not.toThrow();
         });
 
         it('should call correct inherited public setter', () => {
             let count = 0;
             class MyParent extends LightningElement {
-                get foo() { return 'foo' }
+                get foo() {
+                    return 'foo';
+                }
                 set foo(value) {
                     count += 1;
                 }
             }
             MyParent.publicProps = {
-                foo: {}
+                foo: {},
             };
-            class MyComponent extends MyParent {
-
-            }
+            class MyComponent extends MyParent {}
 
             const elm = createElement('getter-inheritance', { is: MyComponent });
             elm.foo = 'bar';
@@ -644,13 +637,15 @@ describe('html-element', () => {
             it('should call setter when defined', () => {
                 let called = 0;
                 class MyComponent extends LightningElement {
-                    get role() { return 'role' }
+                    get role() {
+                        return 'role';
+                    }
                     set role(value) {
                         called += 1;
                     }
                 }
                 MyComponent.publicProps = {
-                    role: {}
+                    role: {},
                 };
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
@@ -663,18 +658,14 @@ describe('html-element', () => {
     describe('global HTML Properties', () => {
         describe('#lang', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-lang', { is: MyComponent });
                 element.lang = 'en';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'lang')).toBe('en');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-lang', { is: MyComponent });
                 element.lang = 'en';
                 expect(element.lang).toBe('en');
@@ -687,10 +678,12 @@ describe('html-element', () => {
                     set lang(value) {
                         count += 1;
                     }
-                    get lang() { return 'lang' }
+                    get lang() {
+                        return 'lang';
+                    }
                 }
                 MyComponent.publicProps = {
-                    lang: {}
+                    lang: {},
                 };
 
                 const element = createElement('prop-setter-lang', { is: MyComponent });
@@ -736,7 +729,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    lang: {}
+                    lang: {},
                 };
 
                 const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
@@ -780,26 +773,20 @@ describe('html-element', () => {
                 }
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
         describe('#hidden', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-hidden', { is: MyComponent });
                 element.hidden = true;
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'hidden')).toBe('');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-hidden', { is: MyComponent });
                 element.hidden = true;
                 expect(element.hidden).toBe(true);
@@ -811,10 +798,12 @@ describe('html-element', () => {
                     set hidden(value) {
                         count += 1;
                     }
-                    get hidden() { return 'hidden' }
+                    get hidden() {
+                        return 'hidden';
+                    }
                 }
                 MyComponent.publicProps = {
-                    hidden: {}
+                    hidden: {},
                 };
 
                 const element = createElement('prop-setter-hidden', { is: MyComponent });
@@ -859,7 +848,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    hidden: {}
+                    hidden: {},
                 };
 
                 const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
@@ -905,27 +894,20 @@ describe('html-element', () => {
 
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
-
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
         describe('#dir', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-dir', { is: MyComponent });
                 element.dir = 'ltr';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'dir')).toBe('ltr');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-dir', { is: MyComponent });
                 element.dir = 'ltr';
                 expect(element.dir).toBe('ltr');
@@ -938,11 +920,13 @@ describe('html-element', () => {
                     set dir(value) {
                         count += 1;
                     }
-                    get dir() { return 'dir' }
+                    get dir() {
+                        return 'dir';
+                    }
                 }
 
                 MyComponent.publicProps = {
-                    dir: {}
+                    dir: {},
                 };
 
                 const element = createElement('prop-setter-dir', { is: MyComponent });
@@ -988,7 +972,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    dir: {}
+                    dir: {},
                 };
 
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
@@ -1033,27 +1017,20 @@ describe('html-element', () => {
                 }
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
-
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
         describe('#id', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-id', { is: MyComponent });
                 element.id = 'id';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'id')).toBe('id');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-id', { is: MyComponent });
                 element.id = 'id';
                 expect(element.id).toBe('id');
@@ -1066,10 +1043,12 @@ describe('html-element', () => {
                     set id(value) {
                         count += 1;
                     }
-                    get id() { return 'id' }
+                    get id() {
+                        return 'id';
+                    }
                 }
                 MyComponent.publicProps = {
-                    id: {}
+                    id: {},
                 };
 
                 const element = createElement('prop-setter-id', { is: MyComponent });
@@ -1115,7 +1094,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    id: {}
+                    id: {},
                 };
 
                 const element = createElement('prop-getter-id-imperative', { is: MyComponent });
@@ -1160,27 +1139,20 @@ describe('html-element', () => {
                 }
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
-
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
         describe('#accessKey', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-accessKey', { is: MyComponent });
                 element.accessKey = 'accessKey';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe('accessKey');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-accessKey', { is: MyComponent });
                 element.accessKey = 'accessKey';
                 expect(element.accessKey).toBe('accessKey');
@@ -1193,10 +1165,12 @@ describe('html-element', () => {
                     set accessKey(value) {
                         count += 1;
                     }
-                    get accessKey() { return 'accessKey' }
+                    get accessKey() {
+                        return 'accessKey';
+                    }
                 }
                 MyComponent.publicProps = {
-                    accessKey: {}
+                    accessKey: {},
                 };
 
                 const element = createElement('prop-setter-accessKey', { is: MyComponent });
@@ -1241,7 +1215,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    accessKey: {}
+                    accessKey: {},
                 };
                 const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
                 expect(element.accessKey).toBe('accessKey');
@@ -1284,27 +1258,20 @@ describe('html-element', () => {
                 }
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
-
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
         describe('#title', () => {
             it('should reflect attribute by default', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-title', { is: MyComponent });
                 element.title = 'title';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe('title');
             });
 
             it('should return correct value from getter', () => {
-                class MyComponent extends LightningElement {
-
-                }
+                class MyComponent extends LightningElement {}
                 const element = createElement('prop-getter-title', { is: MyComponent });
                 element.title = 'title';
                 expect(element.title).toBe('title');
@@ -1316,14 +1283,15 @@ describe('html-element', () => {
                     set title(value) {
                         count += 1;
                     }
-                    get title() { return 'title' }
+                    get title() {
+                        return 'title';
+                    }
                 }
                 MyComponent.publicProps = {
-                    title: {}
+                    title: {},
                 };
                 const element = createElement('prop-setter-title', { is: MyComponent });
-                element.title = {},
-                expect(count).toBe(1);
+                (element.title = {}), expect(count).toBe(1);
             });
 
             it('should not be reactive when defining own setter', () => {
@@ -1363,7 +1331,7 @@ describe('html-element', () => {
                     }
                 }
                 MyComponent.publicProps = {
-                    title: {}
+                    title: {},
                 };
 
                 const element = createElement('prop-getter-title-imperative', { is: MyComponent });
@@ -1408,10 +1376,7 @@ describe('html-element', () => {
                 }
                 expect(() => {
                     createElement('x-foo', { is: MyComponent });
-                }).toThrowError(
-                    /The result must not have attributes./
-                );
-
+                }).toThrowError(/The result must not have attributes./);
             });
         });
 
@@ -1434,47 +1399,49 @@ describe('html-element', () => {
 
             class MyComponent extends LightningElement {
                 renderedCallback() {
-                    userDefinedTabIndexValue = this.getAttribute("tabindex");
+                    userDefinedTabIndexValue = this.getAttribute('tabindex');
                 }
             }
 
-            const elm = createElement('x-foo', {is: MyComponent});
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
 
             expect(userDefinedTabIndexValue).toBe('0');
         }),
+            // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
+            it('should log console error when user land code changes attribute via querySelector', () => {
+                jest.spyOn(assertLogger, 'logError');
 
-        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
-        it('should log console error when user land code changes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
+                class Child extends LightningElement {}
 
-            class Child extends LightningElement {}
-
-            const html = compileTemplate(`
+                const html = compileTemplate(
+                    `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
+            `,
+                    {
+                        modules: {
+                            'x-child': Child,
+                        },
+                    },
+                );
+                class Parent extends LightningElement {
+                    render() {
+                        return html;
+                    }
                 }
+
+                const parentElm = createElement('x-parent', { is: Parent });
+                document.body.appendChild(parentElm);
+
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
+                childElm.setAttribute('title', 'value from parent');
+
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
             });
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            const childElm = parentElm.shadowRoot.querySelector('x-child');
-            childElm.setAttribute('title', "value from parent");
-
-            expect(assertLogger.logError).toBeCalled();
-            assertLogger.logError.mockRestore();
-        });
 
         // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code removes attribute via querySelector', () => {
@@ -1482,15 +1449,18 @@ describe('html-element', () => {
 
             class Child extends LightningElement {}
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return html;
@@ -1518,7 +1488,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
+                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`,
             );
         });
 
@@ -1526,24 +1496,24 @@ describe('html-element', () => {
         it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends LightningElement {}
-            const elm = createElement('x-foo', {is: MyComponent});
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('foo', 'something');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
+            return Promise.resolve().then(() => {
                 expect(assertLogger.logError).not.toBeCalled();
                 assertLogger.logError.mockRestore();
             });
         });
 
         it('should delete existing attribute prior rendering', () => {
-            const def = class MyComponent extends LightningElement {}
+            const def = class MyComponent extends LightningElement {};
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'parent title');
             elm.removeAttribute('title');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
+            return Promise.resolve().then(() => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
             });
         });
@@ -1551,15 +1521,18 @@ describe('html-element', () => {
         it('should correctly set child attribute', () => {
             class Child extends LightningElement {}
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child title="child title"></x-child>
                 </template>
-            `, {
-                modules: {
-                    'x-child': Child
-                }
-            });
+            `,
+                {
+                    modules: {
+                        'x-child': Child,
+                    },
+                },
+            );
             class Parent extends LightningElement {
                 render() {
                     return html;

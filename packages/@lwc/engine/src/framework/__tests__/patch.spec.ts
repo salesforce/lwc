@@ -10,9 +10,7 @@ import { createElement, LightningElement } from '../main';
 const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('patch', () => {
-
     describe('#patch()', () => {
-
         it('should call connectedCallback syncronously', () => {
             let flag = false;
             class MyComponent extends LightningElement {
@@ -70,13 +68,16 @@ describe('patch', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <x-child></x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Root extends LightningElement {
                 constructor() {
                     super();
@@ -105,7 +106,7 @@ describe('patch', () => {
                 'child:connectedCallback',
                 'child:render',
                 'child:renderedCallback',
-                'root:renderedCallback'
+                'root:renderedCallback',
             ]);
         });
 
@@ -132,19 +133,22 @@ describe('patch', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <div></div>
                     <template if:true={state.show}>
                         <x-child></x-child>
                     </template>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Root extends LightningElement {
                 state = {
-                    show: false
+                    show: false,
                 };
                 show() {
                     this.state.show = true;
@@ -181,7 +185,7 @@ describe('patch', () => {
                         'root:renderedCallback',
                         'root:render',
                         'child:disconnectedCallback',
-                        'root:renderedCallback'
+                        'root:renderedCallback',
                     ]);
                 });
             });
@@ -207,18 +211,21 @@ describe('patch', () => {
                 }
             }
 
-            const html = compileTemplate(`
+            const html = compileTemplate(
+                `
                 <template>
                     <template if:true={state.show}>
                         <x-child></x-child>
                     </template>
                 </template>
-            `, {
-                modules: { 'x-child': Child }
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                },
+            );
             class Root extends LightningElement {
                 state = {
-                    show: false
+                    show: false,
                 };
                 show() {
                     this.state.show = true;
@@ -247,7 +254,7 @@ describe('patch', () => {
                     'child:connectedCallback',
                     'child:render',
                     'child:renderedCallback',
-                    'root:renderedCallback'
+                    'root:renderedCallback',
                 ]);
             });
         });
@@ -260,7 +267,7 @@ describe('patch', () => {
             `);
             class MyComponent extends LightningElement {
                 state = {
-                    foo: 'bar'
+                    foo: 'bar',
                 };
                 renderedCallback() {
                     if (this.state.foo !== 'second') {
@@ -277,22 +284,21 @@ describe('patch', () => {
                 }
             }
             MyComponent.track = { state: 1 };
-            MyComponent.publicMethods = [
-                'triggerRender'
-            ];
+            MyComponent.publicMethods = ['triggerRender'];
 
             const element = createElement('x-parent', { is: MyComponent });
             document.body.appendChild(element);
 
-            return Promise.resolve().then(() => {
-                element.triggerRender('first');
-            })
-            .then(() => {
-                element.triggerRender('second');
-            })
-            .then(() => {
-                expect(element.shadowRoot.querySelector('span').textContent).toBe('second');
-            });
+            return Promise.resolve()
+                .then(() => {
+                    element.triggerRender('first');
+                })
+                .then(() => {
+                    element.triggerRender('second');
+                })
+                .then(() => {
+                    expect(element.shadowRoot.querySelector('span').textContent).toBe('second');
+                });
         });
 
         it('should preserve the creation order and the hook order', () => {
@@ -343,6 +349,5 @@ describe('patch', () => {
             document.body.removeChild(elm1);
             expect(chars).toBe('^connected:rendered:disconnected:');
         });
-
     });
 });

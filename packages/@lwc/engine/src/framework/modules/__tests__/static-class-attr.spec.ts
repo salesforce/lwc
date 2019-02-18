@@ -18,12 +18,9 @@ describe('module/static-class-attr', () => {
     it('should preserve other classnames', () => {
         const elm = document.createElement('p');
         elm.className = 'manual';
-        const vnode = { elm,
-            data: { classMap: { foo: true, bar: true, } },
-        };
+        const vnode = { elm, data: { classMap: { foo: true, bar: true } } };
 
         target.create(vnode);
         expect(elm.className).toBe('manual foo bar');
     });
-
 });

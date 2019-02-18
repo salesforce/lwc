@@ -48,7 +48,7 @@ describe('compiler options', () => {
             }),
         ).rejects.toMatchObject({
             message: expect.stringContaining(
-                'Unexpected file content for "foo.js". Expected a string, received "true".'
+                'Unexpected file content for "foo.js". Expected a string, received "true".',
             ),
         });
     });
@@ -64,9 +64,7 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining(
-                'Expected a boolean for outputConfig.minify, received "true".'
-            ),
+            message: expect.stringContaining('Expected a boolean for outputConfig.minify, received "true".'),
         });
     });
 
@@ -81,9 +79,7 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining(
-                'Expected a boolean for outputConfig.compat, received "true".'
-            ),
+            message: expect.stringContaining('Expected a boolean for outputConfig.compat, received "true".'),
         });
     });
 
@@ -98,9 +94,7 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining(
-                "Expected a boolean value for outputConfig.sourcemap, received \"true\"."
-            ),
+            message: expect.stringContaining('Expected a boolean value for outputConfig.sourcemap, received "true".'),
         });
     });
 
@@ -118,7 +112,7 @@ describe('compiler options', () => {
             }),
         ).rejects.toMatchObject({
             message: expect.stringContaining(
-                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".'
+                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".',
             ),
         });
     });
@@ -137,7 +131,7 @@ describe('compiler options', () => {
             }),
         ).rejects.toMatchObject({
             message: expect.stringContaining(
-                'Expected an object for stylesheetConfig.customProperties.resolution, received "true".'
+                'Expected an object for stylesheetConfig.customProperties.resolution, received "true".',
             ),
         });
     });
@@ -156,7 +150,7 @@ describe('compiler options', () => {
             }),
         ).rejects.toMatchObject({
             message: expect.stringContaining(
-                'Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "foo".'
+                'Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "foo".',
             ),
         });
     });

@@ -73,9 +73,7 @@ function getSauceConfig(config) {
 
     const accessKey = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
     if (!accessKey) {
-        throw new TypeError(
-            'Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable',
-        );
+        throw new TypeError('Missing SAUCE_ACCESS_KEY or SAUCE_KEY environment variable');
     }
 
     const buildId = process.env.CIRCLE_BUILD_NUM || Date.now();
@@ -112,10 +110,7 @@ function getSauceConfig(config) {
 
 function getMatchingBrowsers({ compat, nativeShadow }) {
     return SAUCE_BROWSERS.filter(browser => {
-        return (
-            browser.compat === compat &&
-            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
-        );
+        return browser.compat === compat && (!nativeShadow || browser.nativeShadowCompatible === nativeShadow);
     });
 }
 
@@ -126,9 +121,7 @@ module.exports = config => {
 
     const matchingBrowsers = getMatchingBrowsers(config.lwc);
     if (matchingBrowsers.length === 0) {
-        throw new Error(
-            'No matching browser found for the passed configuration.',
-        );
+        throw new Error('No matching browser found for the passed configuration.');
     }
 
     config.set({

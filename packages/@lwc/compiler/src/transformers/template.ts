@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as path from "path";
-import { CompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from "@lwc/errors";
-import compile from "@lwc/template-compiler";
-import { TemplateModuleDependency } from "@lwc/template-compiler";
+import * as path from 'path';
+import { CompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from '@lwc/errors';
+import compile from '@lwc/template-compiler';
+import { TemplateModuleDependency } from '@lwc/template-compiler';
 
-import { FileTransformer } from "./transformer";
-import { MetadataCollector } from "../bundler/meta-collector";
-import { NormalizedCompilerOptions } from "../compiler/options";
+import { FileTransformer } from './transformer';
+import { MetadataCollector } from '../bundler/meta-collector';
+import { NormalizedCompilerOptions } from '../compiler/options';
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
@@ -30,7 +30,7 @@ const transform: FileTransformer = function(
     src: string,
     filename: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector
+    metadataCollector?: MetadataCollector,
 ) {
     let result;
     let metadata;
@@ -46,7 +46,6 @@ const transform: FileTransformer = function(
         if (metadataCollector) {
             metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
         }
-
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
@@ -58,7 +57,7 @@ const transform: FileTransformer = function(
     return {
         code: serialize(code, filename, options),
         map: { mappings: '' },
-        metadata
+        metadata,
     };
 };
 

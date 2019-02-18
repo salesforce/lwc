@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const test = require('./utils/test-transform').test(
-    require('../i18n-scoped-import')
-);
+const test = require('./utils/test-transform').test(require('../i18n-scoped-import'));
 
 describe('@salesforce/i18n import', () => {
-    test('does default transformation', `
+    test(
+        'does default transformation',
+        `
         import lang from '@salesforce/i18n/lang';
-    `, `
+    `,
+        `
         let lang;
 
         try {
@@ -19,11 +20,15 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           lang = "en";
         }
-    `);
+    `,
+    );
 
-    test('does default transformation for import id with prefix', `
+    test(
+        'does default transformation for import id with prefix',
+        `
         import shortDateFormat from '@salesforce/i18n/dateTime.shortDateFormat';
-    `, `
+    `,
+        `
         let shortDateFormat;
 
         try {
@@ -31,12 +36,16 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           shortDateFormat = "M/d/yyyy";
         }
-    `);
+    `,
+    );
 
-    test('allows non-@salesforce/i18n named imports', `
+    test(
+        'allows non-@salesforce/i18n named imports',
+        `
         import { otherNamed } from './something-valid';
         import lang from '@salesforce/i18n/lang';
-    `, `
+    `,
+        `
         import { otherNamed } from './something-valid';
         let lang;
 
@@ -45,17 +54,33 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           lang = "en";
         }
-    `);
+    `,
+    );
 
-    test('throws error if using named import', `
+    test(
+        'throws error if using named import',
+        `
         import { lang } from '@salesforce/i18n/lang';
-    `, undefined, 'Invalid import from @salesforce/i18n/lang');
+    `,
+        undefined,
+        'Invalid import from @salesforce/i18n/lang',
+    );
 
-    test('throws error if renamed default imports', `
+    test(
+        'throws error if renamed default imports',
+        `
         import { default as label } from '@salesforce/i18n/lang';
-    `, undefined, 'Invalid import from @salesforce/i18n/lang');
+    `,
+        undefined,
+        'Invalid import from @salesforce/i18n/lang',
+    );
 
-    test('throws error if renamed multiple default imports', `
+    test(
+        'throws error if renamed multiple default imports',
+        `
         import { default as label, foo } from '@salesforce/i18n/lang';
-    `, undefined, 'Invalid import from @salesforce/i18n/lang');
+    `,
+        undefined,
+        'Invalid import from @salesforce/i18n/lang',
+    );
 });

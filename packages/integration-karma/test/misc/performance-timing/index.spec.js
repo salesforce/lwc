@@ -10,7 +10,7 @@ import {
     patchUserTiming,
     resetUserTiming,
     resetMeasures,
-    expectMeasureEquals
+    expectMeasureEquals,
 } from './user-timing-utils';
 
 if (isUserTimingSupported) {
@@ -27,16 +27,22 @@ if (isUserTimingSupported) {
         const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
 
-        expectMeasureEquals([{
-            label: /<x-child \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-child \(\d+\)> - render/,
-            }, {
-                label: /<x-child \(\d+\)> - patch/,
-            }],
-        }]);
+        expectMeasureEquals([
+            {
+                label: /<x-child \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-child \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-child \(\d+\)> - patch/,
+                    },
+                ],
+            },
+        ]);
     });
 
     it('component rehydration', () => {
@@ -47,14 +53,19 @@ if (isUserTimingSupported) {
         elm.value = 1;
 
         return Promise.resolve().then(() => {
-            expectMeasureEquals([{
-                label: /lwc-rehydrate/,
-                children: [{
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }],
-            }]);
+            expectMeasureEquals([
+                {
+                    label: /lwc-rehydrate/,
+                    children: [
+                        {
+                            label: /<x-child \(\d+\)> - render/,
+                        },
+                        {
+                            label: /<x-child \(\d+\)> - patch/,
+                        },
+                    ],
+                },
+            ]);
         });
     });
 
@@ -62,29 +73,42 @@ if (isUserTimingSupported) {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
-        expectMeasureEquals([{
-            label: /<x-parent \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-parent \(\d+\)> - render/,
-            }, {
-                label: /<x-parent \(\d+\)> - patch/,
-                children: [{
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }, {
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }],
-            }],
-        }]);
+        expectMeasureEquals([
+            {
+                label: /<x-parent \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-parent \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-parent \(\d+\)> - patch/,
+                        children: [
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
     });
 
     it('captures component nested component tree rehydration', () => {
@@ -95,23 +119,33 @@ if (isUserTimingSupported) {
         elm.value = 1;
 
         return Promise.resolve().then(() => {
-            expectMeasureEquals([{
-                label: /lwc-rehydrate/,
-                children: [{
-                    label: /<x-parent \(\d+\)> - render/,
-                }, {
-                    label: /<x-parent \(\d+\)> - patch/,
-                    children: [{
-                        label: /<x-child \(\d+\)> - render/,
-                    }, {
-                        label: /<x-child \(\d+\)> - patch/,
-                    }, {
-                        label: /<x-child \(\d+\)> - render/,
-                    }, {
-                        label: /<x-child \(\d+\)> - patch/,
-                    }]
-                }],
-            }]);
+            expectMeasureEquals([
+                {
+                    label: /lwc-rehydrate/,
+                    children: [
+                        {
+                            label: /<x-parent \(\d+\)> - render/,
+                        },
+                        {
+                            label: /<x-parent \(\d+\)> - patch/,
+                            children: [
+                                {
+                                    label: /<x-child \(\d+\)> - render/,
+                                },
+                                {
+                                    label: /<x-child \(\d+\)> - patch/,
+                                },
+                                {
+                                    label: /<x-child \(\d+\)> - render/,
+                                },
+                                {
+                                    label: /<x-child \(\d+\)> - patch/,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ]);
         });
     });
 
@@ -120,47 +154,68 @@ if (isUserTimingSupported) {
         document.body.appendChild(elm);
         document.body.removeChild(elm);
 
-        expectMeasureEquals([{
-            label: /<x-lifecycle \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-lifecycle \(\d+\)> - connectedCallback/,
-            },{
-                label: /<x-lifecycle \(\d+\)> - render/,
-            }, {
-                label: /<x-lifecycle \(\d+\)> - patch/,
-            }, {
-                label: /<x-lifecycle \(\d+\)> - renderedCallback/,
-            }],
-        }, {
-            label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
-        }]);
+        expectMeasureEquals([
+            {
+                label: /<x-lifecycle \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-lifecycle \(\d+\)> - connectedCallback/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - patch/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - renderedCallback/,
+                    },
+                ],
+            },
+            {
+                label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
+            },
+        ]);
     });
 
     it('should support nested component creation', () => {
         const elm = createElement('x-nested', { is: Nested });
         document.body.appendChild(elm);
 
-        expectMeasureEquals([{
-            label: /<x-nested \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-nested \(\d+\)> - render/,
-            }, {
-                label: /<x-nested \(\d+\)> - renderedCallback/,
-                children: [{
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /lwc-hydrate/,
-                    children: [{
-                        label: /<x-child \(\d+\)> - render/,
-                    }, {
-                        label: /<x-child \(\d+\)> - patch/,
-                    }],
-                }]
-            }],
-        }]);
+        expectMeasureEquals([
+            {
+                label: /<x-nested \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-nested \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-nested \(\d+\)> - renderedCallback/,
+                        children: [
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /lwc-hydrate/,
+                                children: [
+                                    {
+                                        label: /<x-child \(\d+\)> - render/,
+                                    },
+                                    {
+                                        label: /<x-child \(\d+\)> - patch/,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
     });
 }

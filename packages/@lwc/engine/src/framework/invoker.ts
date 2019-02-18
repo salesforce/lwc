@@ -4,26 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import {
-    currentContext,
-    establishContext,
-} from "./context";
+import assert from '../shared/assert';
+import { currentContext, establishContext } from './context';
 
-import { evaluateTemplate } from "./template";
-import { isFunction } from "../shared/language";
-import { getErrorComponentStack, VM, UninitializedVM } from "./vm";
-import { ComponentConstructor, ComponentInterface } from "./component";
-import { VNodes } from "../3rdparty/snabbdom/types";
-import { startMeasure, endMeasure } from "./performance-timing";
+import { evaluateTemplate } from './template';
+import { isFunction } from '../shared/language';
+import { getErrorComponentStack, VM, UninitializedVM } from './vm';
+import { ComponentConstructor, ComponentInterface } from './component';
+import { VNodes } from '../3rdparty/snabbdom/types';
+import { startMeasure, endMeasure } from './performance-timing';
 
 export let isRendering: boolean = false;
-export let vmBeingRendered: VM|null = null;
+export let vmBeingRendered: VM | null = null;
 
 export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     return vmBeingConstructed === vm;
 }
@@ -81,7 +78,10 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
-    const { def: { render }, callHook } = vm;
+    const {
+        def: { render },
+        callHook,
+    } = vm;
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -102,7 +102,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     } catch (e) {
         error = Object(e);
     } finally {
-
         if (process.env.NODE_ENV !== 'production') {
             endMeasure('render', vm);
         }
@@ -119,7 +118,12 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     return result || [];
 }
 
-export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | ComponentInterface, event: Event) {
+export function invokeEventListener(
+    vm: VM,
+    fn: EventListener,
+    thisValue: undefined | ComponentInterface,
+    event: Event,
+) {
     const { context, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);

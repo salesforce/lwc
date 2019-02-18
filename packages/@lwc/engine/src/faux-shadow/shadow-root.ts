@@ -4,22 +4,45 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
-import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
-import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
-import { getTextContent } from "../3rdparty/polymer/text-content";
-import { createStaticNodeList } from "../shared/static-node-list";
-import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from "../env/document";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter, textContextSetter, isConnected } from "../env/node";
-import { isNativeShadowRootAvailable } from "../env/dom";
-import { createStaticHTMLCollection } from "../shared/static-html-collection";
-import { getOuterHTML } from "../3rdparty/polymer/outer-html";
-import { retarget } from "../3rdparty/polymer/retarget";
-import { pathComposer } from "../3rdparty/polymer/path-composer";
-import { getInternalChildNodes } from "./node";
-import { innerHTMLSetter } from "../env/element";
+import assert from '../shared/assert';
+import {
+    assign,
+    create,
+    isNull,
+    setPrototypeOf,
+    defineProperty,
+    ArrayFilter,
+    defineProperties,
+    isUndefined,
+    isFalse,
+} from '../shared/language';
+import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    shadowRootQuerySelector,
+    shadowRootQuerySelectorAll,
+    shadowRootChildNodes,
+    isNodeOwnedBy,
+    isSlotElement,
+    getRootNodeGetter,
+} from './traverse';
+import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
+import { getTextContent } from '../3rdparty/polymer/text-content';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from '../env/document';
+import {
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
+    parentElementGetter,
+    textContextSetter,
+    isConnected,
+} from '../env/node';
+import { isNativeShadowRootAvailable } from '../env/dom';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
+import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+import { retarget } from '../3rdparty/polymer/retarget';
+import { pathComposer } from '../3rdparty/polymer/path-composer';
+import { getInternalChildNodes } from './node';
+import { innerHTMLSetter } from '../env/element';
 
 const HostKey = createFieldName('host');
 const ShadowRootKey = createFieldName('shadowRoot');
@@ -39,24 +62,33 @@ export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
 
 export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(getInternalField(elm, ShadowRootKey), `A Custom Element with a shadow attached must be provided as the first argument.`);
+        assert.invariant(
+            getInternalField(elm, ShadowRootKey),
+            `A Custom Element with a shadow attached must be provided as the first argument.`,
+        );
     }
     return getInternalField(elm, ShadowRootKey);
 }
 
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
     if (getInternalField(elm, ShadowRootKey)) {
-        throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
+        throw new Error(
+            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`,
+        );
     }
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
     const sr = createDocumentFragment.call(document);
     defineProperty(sr, 'mode', {
-        get() { return mode; },
+        get() {
+            return mode;
+        },
         configurable: true,
     });
     defineProperty(sr, 'delegatesFocus', {
-        get() { return !!delegatesFocus; },
+        get() {
+            return !!delegatesFocus;
+        },
         configurable: true,
     });
     // correcting the proto chain
@@ -71,8 +103,8 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): Synthet
 }
 
 export enum ShadowRootMode {
-    CLOSED = "closed",
-    OPEN = "open",
+    CLOSED = 'closed',
+    OPEN = 'open',
 }
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {
@@ -106,11 +138,7 @@ const ShadowRootDescriptors = {
             }
 
             const host = getHost(this);
-            if (
-                (compareDocumentPosition.call(host, activeElement) &
-                    DOCUMENT_POSITION_CONTAINED_BY) ===
-                0
-            ) {
+            if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
                 return null;
             }
 
@@ -195,7 +223,7 @@ const NodePatchDescriptors = {
             this: SyntheticShadowRootInterface,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions
+            options?: boolean | AddEventListenerOptions,
         ) {
             addShadowRootEventListener(this, type, listener, options);
         },
@@ -208,7 +236,7 @@ const NodePatchDescriptors = {
             this: SyntheticShadowRootInterface,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions
+            options?: boolean | AddEventListenerOptions,
         ) {
             removeShadowRootEventListener(this, type, listener, options);
         },
@@ -240,9 +268,7 @@ const NodePatchDescriptors = {
             if (this.contains(otherNode as Node)) {
                 // it belongs to the shadow root instance
                 return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-            } else if (
-                compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY
-            ) {
+            } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
                 // it is a child element but does not belong to the shadow root instance
                 return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             } else {
@@ -262,8 +288,8 @@ const NodePatchDescriptors = {
             const host = getHost(this);
             // must be child of the host and owned by it.
             return (
-                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !==
-                    0 && isNodeOwnedBy(host, otherNode)
+                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+                isNodeOwnedBy(host, otherNode)
             );
         },
     },
@@ -369,7 +395,7 @@ const NodePatchDescriptors = {
         set(this: SyntheticShadowRootInterface, v: string) {
             const host = getHost(this);
             textContextSetter.call(host, v);
-        }
+        },
     },
     getRootNode: {
         writable: true,
@@ -414,10 +440,7 @@ const ParentNodePatchDescriptors = {
         configurable: true,
         get(this: SyntheticShadowRootInterface) {
             return createStaticHTMLCollection(
-                ArrayFilter.call(
-                    shadowRootChildNodes(this),
-                    (elm: Node | Element) => elm instanceof Element
-                )
+                ArrayFilter.call(shadowRootChildNodes(this), (elm: Node | Element) => elm instanceof Element),
             );
         },
     },
@@ -459,7 +482,7 @@ assign(
     NodePatchDescriptors,
     ParentNodePatchDescriptors,
     ElementPatchDescriptors,
-    ShadowRootDescriptors
+    ShadowRootDescriptors,
 );
 
 export function SyntheticShadowRoot() {
@@ -505,7 +528,7 @@ export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
             },
             enumerable: true,
             configurable: true,
-        }
+        },
     });
     return c;
 }

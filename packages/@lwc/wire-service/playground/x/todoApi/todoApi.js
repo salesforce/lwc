@@ -22,7 +22,7 @@ export function getTodo(config) {
         observable.subscribe({
             next: value => resolve(value),
             error: error => reject(error),
-            complete: resolve
+            complete: resolve,
         });
     });
 }
@@ -36,7 +36,7 @@ register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
 
     const observer = {
         next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
-        error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+        error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error })),
     };
 
     wiredEventTarget.addEventListener('connect', () => {
@@ -51,7 +51,7 @@ register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
         subscription.unsubscribe();
     });
 
-    wiredEventTarget.addEventListener('config', (newConfig) => {
+    wiredEventTarget.addEventListener('config', newConfig => {
         config = newConfig;
         if (subscription) {
             subscription.unsubscribe();

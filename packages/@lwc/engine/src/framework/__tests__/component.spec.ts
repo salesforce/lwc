@@ -7,20 +7,20 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement } from '../main';
-import { getOwnPropertySymbols } from "../../shared/language"
+import { getOwnPropertySymbols } from '../../shared/language';
 import { getComponentVM } from '../vm';
 
 describe('component', function() {
     describe('public computed props', () => {
         it('should allow public getters', function() {
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 value = 'pancakes';
                 get breakfast() {
                     return this.value;
                 }
             }
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             const html = compileTemplate(
@@ -28,8 +28,8 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyComponent }
-                }
+                    modules: { 'x-child': MyComponent },
+                },
             );
             class Parent extends LightningElement {
                 value = 'salad';
@@ -42,7 +42,7 @@ describe('component', function() {
                 }
             }
             Parent.publicProps = {
-                lunch: {}
+                lunch: {},
             };
 
             const elm = createElement('x-foo', { is: Parent });
@@ -57,7 +57,7 @@ describe('component', function() {
                 m = propVal;
             }
             MyChild.publicProps = {
-                m: {}
+                m: {},
             };
 
             const html = compileTemplate(
@@ -65,10 +65,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 callChildM() {
                     this.template.querySelector('x-child').m;
                 }
@@ -86,28 +86,28 @@ describe('component', function() {
         });
 
         it('should not allow public getters to be set by owner', function() {
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 get x() {
                     return 1;
                 }
             }
 
             MyComponent.publicProps = {
-                x: {}
+                x: {},
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
             // x can't be set via props, only read via getter
-            expect(() => elm.x = 1).toThrow();
+            expect(() => (elm.x = 1)).toThrow();
         });
 
         it('should be render reactive', function() {
             const html = compileTemplate(
                 `<template>
                     <div>{validity}</div>
-                </template>`
+                </template>`,
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 state = { value: 0 };
 
                 getTextContent() {
@@ -129,7 +129,7 @@ describe('component', function() {
 
             MyComponent.track = { state: 1 };
             MyComponent.publicProps = {
-                validity: {}
+                validity: {},
             };
             MyComponent.publicMethods = ['updateTrackedValue', 'getTextContent'];
 
@@ -145,7 +145,7 @@ describe('component', function() {
             let component;
             let context;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     component = this;
@@ -158,7 +158,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -180,7 +180,7 @@ describe('component', function() {
                 }
             }
             MyChild.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             const html = compileTemplate(
@@ -188,10 +188,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -212,7 +212,7 @@ describe('component', function() {
             let context;
             let component;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     component = this;
@@ -231,7 +231,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -246,7 +246,7 @@ describe('component', function() {
             let component;
             let context;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 value = 'pancakes';
 
                 constructor() {
@@ -266,7 +266,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -281,7 +281,7 @@ describe('component', function() {
             let component;
             let context;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 value;
                 breakfast = 'pancakes';
 
@@ -302,7 +302,7 @@ describe('component', function() {
             }
 
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             createElement('x-foo', { is: MyComponent });
@@ -312,12 +312,12 @@ describe('component', function() {
         });
 
         it('should throw when configured prop is missing getter', function() {
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 set breakfast(value) {}
             }
 
             MyComponent.publicProps = {
-                breakfast: {}
+                breakfast: {},
             };
 
             expect(() => {
@@ -335,9 +335,9 @@ describe('component', function() {
                     <section style={state.customStyle}></section>
                 </template>`,
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 state = {
-                    customStyle: 'color: red'
+                    customStyle: 'color: red',
                 };
 
                 render() {
@@ -354,7 +354,7 @@ describe('component', function() {
                 set(value) {
                     calledCSSText = true;
                     return cssTextPropDef.set.call(this, value);
-                }
+                },
             });
             document.body.appendChild(elm);
             expect(elm.shadowRoot.querySelector('section').style.cssText).toBe('color: red;');
@@ -369,9 +369,9 @@ describe('component', function() {
                     <section style={state.customStyle}></section>
                 </template>`,
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 state = {
-                    customStyle: undefined
+                    customStyle: undefined,
                 };
 
                 render() {
@@ -390,7 +390,7 @@ describe('component', function() {
                         calledCSSTextWithUndefined = true;
                     }
                     return cssTextPropDef.set.call(this, value);
-                }
+                },
             });
             document.body.appendChild(elm);
             expect(elm.style.cssText).toBe('');
@@ -403,9 +403,9 @@ describe('component', function() {
                     <section style={state.customStyle}></section>
                 </template>`,
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 state = {
-                    customStyle: null
+                    customStyle: null,
                 };
 
                 render() {
@@ -424,9 +424,9 @@ describe('component', function() {
                     <section style={customStyle}></section>
                 </template>`,
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 customStyle: {
-                    color: 'red'
+                    color: 'red';
                 };
 
                 updateStyle() {
@@ -451,7 +451,6 @@ describe('component', function() {
             const setPropertyMock = jest.fn();
             section.style.setProperty = setPropertyMock;
 
-
             elm.updateStyle();
             return Promise.resolve().then(() => {
                 expect(removePropertyMock).not.toBeCalled();
@@ -464,7 +463,7 @@ describe('component', function() {
         it('should not invoke function when accessing public method', function() {
             let callCount = 0;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 m() {
                     callCount += 1;
                 }
@@ -479,7 +478,7 @@ describe('component', function() {
         it('should invoke function only once', function() {
             let callCount = 0;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 m() {
                     callCount += 1;
                 }
@@ -496,7 +495,7 @@ describe('component', function() {
             let context;
             let args;
 
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     component = this;
@@ -517,9 +516,8 @@ describe('component', function() {
         });
 
         it('should express function identity with strict equality', function() {
-            class MyComponent extends LightningElement  {
-                m() {
-                }
+            class MyComponent extends LightningElement {
+                m() {}
             }
             MyComponent.publicMethods = ['m'];
 
@@ -541,10 +539,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 callChildM() {
                     this.template.querySelector('x-child').m();
                 }
@@ -570,10 +568,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 getChildAttribute() {
                     this.template.querySelector('x-child').getAttribute('title');
                 }
@@ -598,10 +596,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 setChildAttribute() {
                     this.template.querySelector('x-child').setAttribute('title', 'foo');
                 }
@@ -626,10 +624,10 @@ describe('component', function() {
                     <x-child></x-child>
                 </template>`,
                 {
-                    modules: { "x-child": MyChild }
-                }
+                    modules: { 'x-child': MyChild },
+                },
             );
-            class MyComponent extends LightningElement  {
+            class MyComponent extends LightningElement {
                 removeChildAttribute() {
                     this.template.querySelector('x-child').removeAttribute('title');
                 }
@@ -645,8 +643,8 @@ describe('component', function() {
                 elm.removeChildAttribute();
             }).not.toThrow();
         });
-     });
-     describe('Access to vm', () => {
+    });
+    describe('Access to vm', () => {
         it('Cannot access vm using component', () => {
             let instance;
             class MyComponent extends LightningElement {
@@ -661,7 +659,7 @@ describe('component', function() {
             const fields = getOwnPropertySymbols(instance);
 
             // none of the symbols on instance should give access to vm
-            expect(fields.filter((field) => instance[field]=== vm)).toEqual([]);
-        })
-     });
+            expect(fields.filter(field => instance[field] === vm)).toEqual([]);
+        });
+    });
 });

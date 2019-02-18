@@ -41,7 +41,9 @@ describe('Node.contains', () => {
         expect(container.contains(container.shadowRoot)).toBe(false);
         expect(container.contains(container.shadowRoot.firstChild)).toBe(false);
 
-        expect(container.shadowRoot.querySelector('.container').contains(shadowRoot.querySelector('.slotted'))).toBe(false);
+        expect(container.shadowRoot.querySelector('.container').contains(shadowRoot.querySelector('.slotted'))).toBe(
+            false,
+        );
         expect(container.shadowRoot.querySelector('slot').contains(shadowRoot.querySelector('.slotted'))).toBe(false);
     });
 });

@@ -7,9 +7,7 @@
 module.exports = {
     rootDir: '../..',
 
-    testMatch: [
-        '<rootDir>/**/__tests__/*.spec.(js|ts)'
-    ],
+    testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
     projects: [
         '<rootDir>/packages/@lwc/errors',
