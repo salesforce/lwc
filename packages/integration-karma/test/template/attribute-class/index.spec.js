@@ -29,6 +29,15 @@ fdescribe('dynamic class attribute', () => {
         expect(target.className).toBe('foo bar baz');
     });
 
+    it('empty', () => {
+        const { host, target } = createDynamicClass('foo');
+
+        host.dynamicClass = '';
+        return Promise.resolve().then(() => {
+            expect(target.className).toBe('');
+        });
+    });
+
     it('partial replacement', () => {
         const { host, target } = createDynamicClass('foo bar');
 
