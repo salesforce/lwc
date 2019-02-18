@@ -6,6 +6,9 @@
  */
 import { VM, UninitializedVM } from './vm';
 
+import { tagNameGetter } from "../env/element";
+import { StringToLowerCase, isUndefined } from "../shared/language";
+
 type MeasurementPhase =
     | 'constructor'
     | 'render'
@@ -17,12 +20,11 @@ type MeasurementPhase =
 
 export enum GlobalMeasurementPhase {
     REHYDRATE = 'lwc-rehydrate',
-    INIT = 'lwc-init',
     HYDRATE = 'lwc-hydrate'
 }
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
-// JSDom (used in Jest) for example doesn't implement the UserTiming APIs
+// JSDom (used in Jest) for example doesn't implement the UserTiming APIs.
 const isUserTimingSupported: boolean =
     typeof performance !== 'undefined' &&
     typeof performance.mark === 'function' &&
@@ -30,60 +32,43 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(vm: UninitializedVM, phase: MeasurementPhase | GlobalMeasurementPhase): string {
-    return `<${vm.def.name} (${vm.uid})> - ${phase}`;
+function getMarkName(phase: string, vm: VM | UninitializedVM): string {
+    return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))} (${vm.uid})> - ${phase}`;
 }
 
-export function startMeasure(vm: UninitializedVM, phase: MeasurementPhase) {
-    if (!isUserTimingSupported) {
-        return;
-    }
-
-    const name = getMarkName(vm, phase);
-    performance.mark(name);
+function start(markName: string) {
+    performance.mark(markName);
 }
 
-export function endMeasure(vm: UninitializedVM, phase: MeasurementPhase) {
-    if (!isUserTimingSupported) {
-        return;
-    }
-
-    const name = getMarkName(vm, phase);
-    performance.measure(name, name);
+function end(measureName: string, markName: string) {
+    performance.measure(measureName, markName);
 
     // Clear the created marks and measure to avoid filling the performance entries buffer.
     // Note: Even if the entries get deleted, existing PerformanceObservers preserve a copy of those entries.
-    performance.clearMarks(name);
-    performance.clearMeasures(name);
+    performance.clearMarks(markName);
+    performance.clearMarks(measureName);
 }
 
-const noop = function() {};
-
-function _startGlobalMeasure(phase: GlobalMeasurementPhase) {
-    performance.mark(phase);
+function noop() {
+    /* do nothing */
 }
 
-function _endGlobalMeasure(phase: GlobalMeasurementPhase) {
-    performance.measure(phase, phase);
-    performance.clearMarks(phase);
-    performance.clearMeasures(phase);
-}
+export const startMeasure = !isUserTimingSupported ? noop : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    const markName = getMarkName(phase, vm);
+    start(markName);
+};
+export const endMeasure = !isUserTimingSupported ? noop : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    const markName = getMarkName(phase, vm);
+    end(markName, markName);
+};
 
-function _startHydrateMeasure(vm: VM) {
-    performance.mark(getMarkName(vm, GlobalMeasurementPhase.HYDRATE));
-}
-
-function _endHydrateMeasure(vm: VM) {
-    const phase = GlobalMeasurementPhase.HYDRATE;
-    const name = getMarkName(vm, phase);
-
-    performance.measure(phase, name);
-    performance.clearMarks(name);
-    performance.clearMeasures(phase);
-}
-
-export const startGlobalMeasure = isUserTimingSupported ? _startGlobalMeasure : noop;
-export const endGlobalMeasure = isUserTimingSupported ? _endGlobalMeasure : noop;
-
-export const startHydrateMeasure = isUserTimingSupported ? _startHydrateMeasure : noop;
-export const endHydrateMeasure = isUserTimingSupported ? _endHydrateMeasure : noop;
+// Global measurements can be nested into each others (e.g. nested component creation via createElement). In those cases
+// the VM is used to create unique mark names at each level.
+export const startGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    const markName = isUndefined(vm) ? phase: getMarkName(phase, vm);
+    start(markName);
+};
+export const endGlobalMeasure = !isUserTimingSupported ? noop : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    const markName = isUndefined(vm) ? phase: getMarkName(phase, vm);
+    end(phase, markName);
+};

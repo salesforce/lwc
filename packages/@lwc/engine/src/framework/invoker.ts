@@ -57,7 +57,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
     vmBeingConstructed = vm;
 
     if (process.env.NODE_ENV !== 'production') {
-        startMeasure(vm, 'constructor');
+        startMeasure('constructor', vm);
     }
 
     let error;
@@ -67,7 +67,7 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
         error = Object(e);
     } finally {
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'constructor');
+            endMeasure('constructor', vm);
         }
 
         establishContext(ctx);
@@ -93,7 +93,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     let error;
 
     if (process.env.NODE_ENV !== 'production') {
-        startMeasure(vm, 'render');
+        startMeasure('render', vm);
     }
 
     try {
@@ -104,7 +104,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     } finally {
 
         if (process.env.NODE_ENV !== 'production') {
-            endMeasure(vm, 'render');
+            endMeasure('render', vm);
         }
 
         establishContext(ctx);
