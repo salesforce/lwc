@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* eslint-env node */
-
 const path = require('path');
 const rollupReplacePlugin = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
