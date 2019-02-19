@@ -6,6 +6,6 @@
  */
 module.exports = [
     ...require('./rollup.config.es-and-cjs'),
-    // ...require('./rollup.config.umd.dev'),
-    // ...require('./rollup.config.umd.prod'),
+    ...require('./rollup.config.umd.dev'),
+    ...require('./rollup.config.umd.prod'),
 ];
