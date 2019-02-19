@@ -10,12 +10,12 @@
     "prepare": "yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "eslint packages/ scripts/ --ext=js,ts --rulesdir=./scripts/eslint/rules",
-    "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json}'",
+    "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
+    "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",
-    "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release:ci:npm": "./scripts/release_npm.sh",
     "release:ci:changelog": "./scripts/release_changelog.sh",
@@ -45,6 +45,7 @@
     "isbinaryfile": "^3.0.3",
     "jest": "^24.0.0",
     "lerna": "3.7.1",
+    "lint-staged": "^8.1.4",
     "mime-types": "~2.1.21",
     "prettier": "^1.16.4",
     "rollup": "0.66.2",
@@ -62,9 +63,13 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint",
+      "pre-commit": "lint-staged",
       "commit-msg": "commitlint -e $GIT_PARAMS"
     }
+  },
+  "lint-staged": {
+    "**/*.{js,ts}": ["eslint --rulesdir=./scripts/eslint/rules"],
+    "{packages,scripts}/**/*.{js,ts,json,md}": ["prettier --write", "git add"]
   },
   "workspaces": [
     "packages/@lwc/*",
