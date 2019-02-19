@@ -31,7 +31,9 @@ const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 
 export default function serialize(result: postcss.LazyResult, config: Config): string {
     const { messages } = result;
-    const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
+    const collectVarFunctions = Boolean(
+        config.customProperties && config.customProperties.resolverModule,
+    );
     const minify = Boolean(config.outputConfig && config.outputConfig.minify);
     const useVarResolver = messages.some(isVarFunctionMessage);
     const importedStylesheets = messages.filter(isImportMessage).map(message => message.id);
@@ -39,7 +41,8 @@ export default function serialize(result: postcss.LazyResult, config: Config): s
     let buffer = '';
 
     if (collectVarFunctions && useVarResolver) {
-        buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!.resolverModule!}";\n`;
+        buffer += `import ${VAR_RESOLVER_IDENTIFIER} from "${config.customProperties!
+            .resolverModule!}";\n`;
     }
 
     for (let i = 0; i < importedStylesheets.length; i++) {
@@ -91,10 +94,16 @@ function normalizeString(str: string) {
 }
 
 function generateExpressionFromTokens(tokens: Token[]): string {
-    return tokens.map(({ type, value }) => (type === TokenType.text ? JSON.stringify(value) : value)).join(' + ');
+    return tokens
+        .map(({ type, value }) => (type === TokenType.text ? JSON.stringify(value) : value))
+        .join(' + ');
 }
 
-function serializeCss(result: postcss.LazyResult, collectVarFunctions: boolean, minify: boolean): string {
+function serializeCss(
+    result: postcss.LazyResult,
+    collectVarFunctions: boolean,
+    minify: boolean,
+): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];
     let tmpHostExpression: string | null;

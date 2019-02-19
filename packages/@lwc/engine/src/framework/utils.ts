@@ -34,7 +34,9 @@ function flushCallbackQueue() {
 export function addCallbackToNextTick(callback: Callback) {
     if (process.env.NODE_ENV !== 'production') {
         if (!isFunction(callback)) {
-            throw new Error(`Internal Error: addCallbackToNextTick() can only accept a function callback`);
+            throw new Error(
+                `Internal Error: addCallbackToNextTick() can only accept a function callback`,
+            );
         }
     }
     if (nextTickCallbackQueue.length === 0) {

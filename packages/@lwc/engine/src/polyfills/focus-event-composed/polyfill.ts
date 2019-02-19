@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export default function() {
-    const originalComposedGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'composed')!.get!;
+    const originalComposedGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'composed')!
+        .get!;
     Object.defineProperties(FocusEvent.prototype, {
         composed: {
             get(this: FocusEvent) {

@@ -32,7 +32,19 @@ const adjectives = [
     'fancy',
 ];
 
-const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
+const colours = [
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange',
+];
 
 const nouns = [
     'table',
@@ -82,7 +94,9 @@ export class Store {
         var newData = [];
         for (let i = 0; i < this.data.length; i++) {
             if (i % 10 === 0) {
-                newData[i] = Object.assign({}, this.data[i], { label: this.data[i].label + ' !!!' });
+                newData[i] = Object.assign({}, this.data[i], {
+                    label: this.data[i].label + ' !!!',
+                });
             } else {
                 newData[i] = this.data[i];
             }

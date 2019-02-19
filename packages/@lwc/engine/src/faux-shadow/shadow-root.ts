@@ -55,7 +55,10 @@ export function isDelegatingFocus(host: HTMLElement): boolean {
 
 export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(root[HostKey], `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`);
+        assert.invariant(
+            root[HostKey],
+            `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`,
+        );
     }
     return root[HostKey];
 }
@@ -70,7 +73,10 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalField(elm, ShadowRootKey);
 }
 
-export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
+export function attachShadow(
+    elm: HTMLElement,
+    options: ShadowRootInit,
+): SyntheticShadowRootInterface {
     if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`,
@@ -138,7 +144,11 @@ const ShadowRootDescriptors = {
             }
 
             const host = getHost(this);
-            if ((compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) === 0) {
+            if (
+                (compareDocumentPosition.call(host, activeElement) &
+                    DOCUMENT_POSITION_CONTAINED_BY) ===
+                0
+            ) {
                 return null;
             }
 
@@ -259,7 +269,10 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface): number {
+        value(
+            this: SyntheticShadowRootInterface,
+            otherNode: Node | SyntheticShadowRootInterface,
+        ): number {
             const host = getHost(this);
             if (this === otherNode) {
                 // it is the root itself
@@ -268,7 +281,9 @@ const NodePatchDescriptors = {
             if (this.contains(otherNode as Node)) {
                 // it belongs to the shadow root instance
                 return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-            } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
+            } else if (
+                compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY
+            ) {
                 // it is a child element but does not belong to the shadow root instance
                 return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             } else {
@@ -288,8 +303,8 @@ const NodePatchDescriptors = {
             const host = getHost(this);
             // must be child of the host and owned by it.
             return (
-                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
-                isNodeOwnedBy(host, otherNode)
+                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !==
+                    0 && isNodeOwnedBy(host, otherNode)
             );
         },
     },
@@ -440,7 +455,10 @@ const ParentNodePatchDescriptors = {
         configurable: true,
         get(this: SyntheticShadowRootInterface) {
             return createStaticHTMLCollection(
-                ArrayFilter.call(shadowRootChildNodes(this), (elm: Node | Element) => elm instanceof Element),
+                ArrayFilter.call(
+                    shadowRootChildNodes(this),
+                    (elm: Node | Element) => elm instanceof Element,
+                ),
             );
         },
     },

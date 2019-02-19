@@ -12,7 +12,14 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from './invoker';
-import { isArray, ArrayIndexOf, ArraySplice, isFunction, isUndefined, StringToLowerCase } from '../shared/language';
+import {
+    isArray,
+    ArrayIndexOf,
+    ArraySplice,
+    isFunction,
+    isUndefined,
+    StringToLowerCase,
+} from '../shared/language';
 import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
@@ -45,7 +52,10 @@ export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
 
 // chaining this method as a way to wrap existing
 // assignment of component constructor easily, without too much transformation
-export function registerComponent(Ctor: ComponentConstructor, { name, tmpl: template }): ComponentConstructor {
+export function registerComponent(
+    Ctor: ComponentConstructor,
+    { name, tmpl: template },
+): ComponentConstructor {
     signedComponentToMetaMap.set(Ctor, { name, template });
     return Ctor;
 }
@@ -63,7 +73,9 @@ export function createComponent(vm: UninitializedVM, Ctor: ComponentConstructor)
 
     const initialized = vm as VM;
     if (isUndefined(initialized.component)) {
-        throw new ReferenceError(`Invalid construction for ${Ctor}, you must extend LightningElement.`);
+        throw new ReferenceError(
+            `Invalid construction for ${Ctor}, you must extend LightningElement.`,
+        );
     }
 }
 
@@ -94,7 +106,10 @@ export function clearReactiveListeners(vm: VM) {
             const set = deps[i];
             const pos = ArrayIndexOf.call(deps[i], vm);
             if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
+                assert.invariant(
+                    pos > -1,
+                    `when clearing up deps, the vm must be part of the collection.`,
+                );
             }
             ArraySplice.call(set, pos, 1);
         }

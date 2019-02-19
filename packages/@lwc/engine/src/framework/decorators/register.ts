@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../../shared/assert';
-import { getOwnPropertyNames, isFunction, isUndefined, create, assign } from '../../shared/language';
+import {
+    getOwnPropertyNames,
+    isFunction,
+    isUndefined,
+    create,
+    assign,
+} from '../../shared/language';
 import { ComponentConstructor } from '../component';
 import wireDecorator from './wire';
 import trackDecorator from './track';
@@ -53,7 +59,10 @@ export interface DecoratorMeta {
 
 const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
 
-export function registerDecorators(Ctor: ComponentConstructor, meta: RegisterDecoratorMeta): ComponentConstructor {
+export function registerDecorators(
+    Ctor: ComponentConstructor,
+    meta: RegisterDecoratorMeta,
+): ComponentConstructor {
     const decoratorMap: DecoratorMap = create(null);
     const props = getPublicPropertiesHash(Ctor, meta.publicProps);
     const methods = getPublicMethodsHash(Ctor, meta.publicMethods);
@@ -100,7 +109,10 @@ function getTrackHash(target: ComponentConstructor, track: TrackDef | undefined)
     return assign(create(null), track);
 }
 
-function getWireHash(target: ComponentConstructor, wire: WireHash | undefined): WireHash | undefined {
+function getWireHash(
+    target: ComponentConstructor,
+    wire: WireHash | undefined,
+): WireHash | undefined {
     if (isUndefined(wire) || getOwnPropertyNames(wire).length === 0) {
         return;
     }
@@ -109,7 +121,10 @@ function getWireHash(target: ComponentConstructor, wire: WireHash | undefined): 
     return assign(create(null), wire);
 }
 
-function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef | undefined): PropsDef {
+function getPublicPropertiesHash(
+    target: ComponentConstructor,
+    props: PropsDef | undefined,
+): PropsDef {
     if (isUndefined(props) || getOwnPropertyNames(props).length === 0) {
         return EmptyObject;
     }
@@ -117,7 +132,11 @@ function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef |
         const attrName = getAttrNameFromPropName(propName);
         if (process.env.NODE_ENV !== 'production') {
             const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
-            if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
+            if (
+                globalHTMLProperty &&
+                globalHTMLProperty.attribute &&
+                globalHTMLProperty.reflective === false
+            ) {
                 const { error, attribute, experimental } = globalHTMLProperty;
                 const msg: string[] = [];
                 if (error) {
@@ -150,7 +169,10 @@ function getPublicPropertiesHash(target: ComponentConstructor, props: PropsDef |
     }, create(null));
 }
 
-function getPublicMethodsHash(target: ComponentConstructor, publicMethods: string[] | undefined): MethodDef {
+function getPublicMethodsHash(
+    target: ComponentConstructor,
+    publicMethods: string[] | undefined,
+): MethodDef {
     if (isUndefined(publicMethods) || publicMethods.length === 0) {
         return EmptyObject;
     }

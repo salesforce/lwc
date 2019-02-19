@@ -17,18 +17,26 @@ export default class Child extends LightningElement {
 
         // Custom element
         this.addEventListener('slottedbuttonclick', () => {
-            this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD);
+            this.log(
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+            );
         });
         this.addEventListener('childbuttonclick', () => {
-            this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD);
+            this.log(
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+            );
         });
 
         // Shadow root
         this.template.addEventListener('slottedbuttonclick', () => {
-            this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT);
+            this.log(
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+            );
         });
         this.template.addEventListener('childbuttonclick', () => {
-            this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT);
+            this.log(
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+            );
         });
     }
 
@@ -38,37 +46,51 @@ export default class Child extends LightningElement {
 
             // Custom element
             this.addEventListener('slottedbuttonclick', () => {
-                this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
+                this.log(
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                );
             });
             this.addEventListener('childbuttonclick', () => {
-                this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD);
+                this.log(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                );
             });
 
             // Shadow root
             this.template.addEventListener('slottedbuttonclick', () => {
-                this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT);
+                this.log(
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT,
+                );
             });
             this.template.addEventListener('childbuttonclick', () => {
-                this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT);
+                this.log(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT,
+                );
             });
 
             // Button
             this.template.querySelector('button.child').addEventListener('childbuttonclick', () => {
-                this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON);
+                this.log(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON,
+                );
             });
 
             // Slot
             const slot = this.template.querySelector('slot');
             if (slot) {
                 slot.addEventListener('slottedbuttonclick', () => {
-                    this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT);
+                    this.log(
+                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT,
+                    );
                 });
             }
         }
     }
 
     handleChildButtonClick() {
-        this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_TEMPLATE_LISTENER__BOUND_TO_CHILD_BUTTON);
+        this.log(
+            EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_TEMPLATE_LISTENER__BOUND_TO_CHILD_BUTTON,
+        );
     }
 
     handleClick(event) {

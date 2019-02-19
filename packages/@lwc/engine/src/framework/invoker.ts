@@ -130,7 +130,10 @@ export function invokeEventListener(
     let error;
     try {
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(isFunction(fn), `Invalid event handler for event '${event.type}' on ${vm}.`);
+            assert.isTrue(
+                isFunction(fn),
+                `Invalid event handler for event '${event.type}' on ${vm}.`,
+            );
         }
         callHook(thisValue, fn, [event]);
     } catch (e) {

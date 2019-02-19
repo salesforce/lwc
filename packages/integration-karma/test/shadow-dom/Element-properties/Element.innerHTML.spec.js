@@ -11,7 +11,9 @@ describe('Element.innerHTML - get', () => {
         expect(elm.shadowRoot.querySelector('x-container').innerHTML).toBe(
             '<div>Slotted Text<input name="slotted"></div>',
         );
-        expect(elm.shadowRoot.querySelector('div').innerHTML).toBe('Slotted Text<input name="slotted">');
+        expect(elm.shadowRoot.querySelector('div').innerHTML).toBe(
+            'Slotted Text<input name="slotted">',
+        );
     });
 
     it('should enforce the shadow DOM semantic - x-container', () => {
@@ -19,7 +21,9 @@ describe('Element.innerHTML - get', () => {
         document.body.appendChild(elm);
 
         const container = elm.shadowRoot.querySelector('x-container');
-        expect(container.shadowRoot.querySelector('div').innerHTML).toBe('Before[<slot></slot>]After');
+        expect(container.shadowRoot.querySelector('div').innerHTML).toBe(
+            'Before[<slot></slot>]After',
+        );
         expect(container.shadowRoot.querySelector('slot').innerHTML).toBe('');
     });
 });

@@ -6,7 +6,8 @@
  */
 const assert = require('assert');
 describe('Delegates focus', () => {
-    const URL = 'http://localhost:4567/delegate-focus-tab-into-disabled-button-after-negative-tabindex';
+    const URL =
+        'http://localhost:4567/delegate-focus-tab-into-disabled-button-after-negative-tabindex';
 
     before(() => {
         browser.url(URL);

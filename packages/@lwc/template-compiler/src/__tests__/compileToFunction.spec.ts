@@ -86,7 +86,9 @@ it('should look up for rendering a component', () => {
 
     renderFn(modules)(apis);
 
-    expect(calls).toMatchObject([['api_component#1', ['x-foo', XFoo, { key: expect.any(Number) }, []]]]);
+    expect(calls).toMatchObject([
+        ['api_component#1', ['x-foo', XFoo, { key: expect.any(Number) }, []]],
+    ]);
 });
 
 it('should should attach template metadata', () => {

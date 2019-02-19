@@ -53,7 +53,7 @@ module.exports = {
     ...PRESET_CONFIG,
     moduleNameMapper: {
         ...PRESET_CONFIG.moduleNameMapper,
-        '^(mynamespace)-(.+)$': '<rootDir>/src/$1/$2/$2'
+        '^(mynamespace)-(.+)$': '<rootDir>/src/$1/$2/$2',
     },
 };
 ```

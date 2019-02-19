@@ -19,7 +19,8 @@ module.exports.getShadowRoot = function(element) {
     if (!element || !element.$$ShadowRoot$$) {
         const tagName = element && element.tagName && element.tagName.toLowerCase();
         throw new Error(
-            `Attempting to retrieve the shadow root of '${tagName || element}' but no shadowRoot property found`,
+            `Attempting to retrieve the shadow root of '${tagName ||
+                element}' but no shadowRoot property found`,
         );
     }
     return element.$$ShadowRoot$$;

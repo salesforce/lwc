@@ -41,7 +41,10 @@ const CONFIG = {
     secretAccessKey: process.env.RELEASE_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
     region: process.env.RELEASE_REGION || process.env.AWS_REGION,
 };
-const BUCKET = process.env.RELEASE_BUCKET_NAME || process.env.BUCKETEER_BUCKET_NAME || process.env.AWS_BUCKET_NAME;
+const BUCKET =
+    process.env.RELEASE_BUCKET_NAME ||
+    process.env.BUCKETEER_BUCKET_NAME ||
+    process.env.AWS_BUCKET_NAME;
 const TEN_YEARS = 1000 * 60 * 60 * 24 * 365 * 10;
 
 const S3 = new AWS.S3(CONFIG);

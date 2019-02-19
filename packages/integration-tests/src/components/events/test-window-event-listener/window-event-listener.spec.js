@@ -15,6 +15,9 @@ describe('Event Target on window event listener', () => {
 
     it('should return correct target', function() {
         browser.click('button');
-        assert.deepEqual(browser.getText('.window-event-target-tagname'), 'integration-window-event-listener');
+        assert.deepEqual(
+            browser.getText('.window-event-target-tagname'),
+            'integration-window-event-listener',
+        );
     });
 });

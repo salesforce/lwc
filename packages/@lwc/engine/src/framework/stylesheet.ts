@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import { isUndefined, create, emptyString, isArray, forEach, ArrayReduce } from '../shared/language';
+import {
+    isUndefined,
+    create,
+    emptyString,
+    isArray,
+    forEach,
+    ArrayReduce,
+} from '../shared/language';
 import { VNode } from '../3rdparty/snabbdom/types';
 
 import * as api from './api';
@@ -18,7 +25,11 @@ import { createElement, createDocumentFragment } from '../env/document';
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type StylesheetFactory = (hostSelector: string, shadowSelector: string, nativeShadow: boolean) => string;
+export type StylesheetFactory = (
+    hostSelector: string,
+    shadowSelector: string,
+    nativeShadow: boolean,
+) => string;
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 

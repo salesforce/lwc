@@ -163,7 +163,10 @@ function getEventMap(elm: EventTarget): ListenerMap {
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener: EventListener): WrappedListener {
+function getWrappedShadowRootListener(
+    sr: SyntheticShadowRootInterface,
+    listener: EventListener,
+): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -198,7 +201,10 @@ function getWrappedShadowRootListener(sr: SyntheticShadowRootInterface, listener
 
 const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedCustomElementListener(elm: HTMLElement, listener: EventListener): WrappedListener {
+function getWrappedCustomElementListener(
+    elm: HTMLElement,
+    listener: EventListener,
+): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -296,7 +302,10 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     const listenerMap = getEventMap(elm);
     let p: number;
     let listeners: EventListener[] | undefined;
-    if (!isUndefined((listeners = listenerMap[type])) && (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
+    if (
+        !isUndefined((listeners = listenerMap[type])) &&
+        (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1
+    ) {
         ArraySplice.call(listeners, p, 1);
         // only remove from DOM if there is no other listener on the same placement
         if (listeners!.length === 0) {
@@ -322,7 +331,10 @@ function isValidEventForCustomElement(event: Event): boolean {
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from a slotted element
-        isChildNode(getRootNodeHost(target, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement, currentTarget as Node)
+        isChildNode(
+            getRootNodeHost(target, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement,
+            currentTarget as Node,
+        )
     );
 }
 

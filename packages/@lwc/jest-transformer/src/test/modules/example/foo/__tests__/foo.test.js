@@ -39,7 +39,9 @@ describe('example-foo', () => {
     it('renders component from another namespace (other-bar)', () => {
         const element = createElement('example-foo', { is: Foo });
         document.body.appendChild(element);
-        const classes = element.shadowRoot.querySelector('other-bar').shadowRoot.querySelectorAll('.otherBar');
+        const classes = element.shadowRoot
+            .querySelector('other-bar')
+            .shadowRoot.querySelectorAll('.otherBar');
         expect(classes).toHaveLength(1);
     });
 

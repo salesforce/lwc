@@ -35,8 +35,10 @@ register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
     wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: undefined }));
 
     const observer = {
-        next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
-        error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error })),
+        next: data =>
+            wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+        error: error =>
+            wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error })),
     };
 
     wiredEventTarget.addEventListener('connect', () => {

@@ -66,7 +66,10 @@ const wireService = {
             const adapterFactory = adapterFactories.get(wireDef.adapter);
 
             if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(wireDef.adapter, `@wire on "${wireTarget}": adapter id must be truthy`);
+                assert.isTrue(
+                    wireDef.adapter,
+                    `@wire on "${wireTarget}": adapter id must be truthy`,
+                );
                 assert.isTrue(
                     adapterFactory,
                     `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`,
@@ -85,7 +88,9 @@ const wireService = {
                         });
                         assert.isTrue(
                             segments[0] !== wireTarget,
-                            `@wire on "${wireTarget}": reactive parameter "${segments[0]}" must not refer to self`,
+                            `@wire on "${wireTarget}": reactive parameter "${
+                                segments[0]
+                            }" must not refer to self`,
                         );
                         // restriction for dot-notation reactive parameters
                         if (segments.length > 1) {
@@ -93,7 +98,8 @@ const wireService = {
                             // restricting dot-notation reactive parameters to reference other @wire targets makes trapping the 'head' of the parameter
                             // sufficient to observe the value change.
                             assert.isTrue(
-                                wireTargets.includes(segments[0]) && wireStaticDef[segments[0]].method !== 1,
+                                wireTargets.includes(segments[0]) &&
+                                    wireStaticDef[segments[0]].method !== 1,
                                 `@wire on "${wireTarget}": dot-notation reactive parameter "${prop}" must refer to a @wire property`,
                             );
                         }

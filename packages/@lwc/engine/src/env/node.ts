@@ -25,14 +25,22 @@ const {
     cloneNode,
 } = Node.prototype;
 
-const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
+    Node.prototype,
+    'parentNode',
+)!.get!;
 
-const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement')
+const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
+    Node.prototype,
+    'parentElement',
+)
     ? getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
 
-const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(Node.prototype, 'textContent')!
-    .set!;
+const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
+    Node.prototype,
+    'textContent',
+)!.set!;
 
 const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prototype, 'childNodes')
     ? getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get!
@@ -48,7 +56,9 @@ const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
     ? getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!
     : function(this: Node): boolean {
           // IE11
-          return (compareDocumentPosition.call(document, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+          return (
+              (compareDocumentPosition.call(document, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
+          );
       };
 
 export {

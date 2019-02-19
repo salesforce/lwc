@@ -70,7 +70,9 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode(true);
             expect(clone.childNodes.length).toBe(1);
-            expect(clone.outerHTML).toBe('<x-container><div class="slotted">Slotted Text</div></x-container>');
+            expect(clone.outerHTML).toBe(
+                '<x-container><div class="slotted">Slotted Text</div></x-container>',
+            );
         });
 
         it('should clone complex slotted content', () => {

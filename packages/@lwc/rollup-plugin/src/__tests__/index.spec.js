@@ -66,9 +66,10 @@ function doRollup(input, { compat } = {}, rollupCompileOptions) {
         .rollup({
             input,
             external: id => id in globalModules,
-            plugins: [rollupCompile(rollupCompileOptions), compat && rollupCompat({ polyfills: false })].filter(
-                Boolean,
-            ),
+            plugins: [
+                rollupCompile(rollupCompileOptions),
+                compat && rollupCompat({ polyfills: false }),
+            ].filter(Boolean),
             onwarn(warn) {
                 if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
                     /* eslint-disable-next-line no-console */

@@ -74,13 +74,20 @@ describe('parsing', () => {
 
 describe('class and style', () => {
     it('class attribute', () => {
-        const { root } = parseTemplate(`<template><section class="foo bar   baz-fiz"></section></template>`);
+        const { root } = parseTemplate(
+            `<template><section class="foo bar   baz-fiz"></section></template>`,
+        );
         expect(root.children[0].classMap).toMatchObject({ bar: true, foo: true, 'baz-fiz': true });
     });
 
     it('dynamic class attribute', () => {
-        const { root } = parseTemplate(`<template><section class={dynamicClass}></section></template>`);
-        expect(root.children[0].className).toMatchObject({ type: 'Identifier', name: 'dynamicClass' });
+        const { root } = parseTemplate(
+            `<template><section class={dynamicClass}></section></template>`,
+        );
+        expect(root.children[0].className).toMatchObject({
+            type: 'Identifier',
+            name: 'dynamicClass',
+        });
     });
 
     it('style attribute', () => {
@@ -95,7 +102,9 @@ describe('class and style', () => {
     });
 
     it('dynamic style attribute', () => {
-        const { root } = parseTemplate(`<template><section style={dynamicStyle}></section></template>`);
+        const { root } = parseTemplate(
+            `<template><section style={dynamicStyle}></section></template>`,
+        );
         expect(root.children[0].style).toMatchObject({
             type: 'Identifier',
             name: 'dynamicStyle',
@@ -127,8 +136,13 @@ describe('event handlers', () => {
 
 describe('for:each directives', () => {
     it('right syntax', () => {
-        const { root } = parseTemplate(`<template><section for:each={items} for:item="item"></section></template>`);
-        expect(root.children[0].forEach.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        const { root } = parseTemplate(
+            `<template><section for:each={items} for:item="item"></section></template>`,
+        );
+        expect(root.children[0].forEach.expression).toMatchObject({
+            type: 'Identifier',
+            name: 'items',
+        });
         expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
         expect(root.children[0].forEach.index).toBeUndefined();
     });
@@ -137,23 +151,32 @@ describe('for:each directives', () => {
         const { root } = parseTemplate(
             `<template><section for:each={items} for:item="item" for:index="i"></section></template>`,
         );
-        expect(root.children[0].forEach.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(root.children[0].forEach.expression).toMatchObject({
+            type: 'Identifier',
+            name: 'items',
+        });
         expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
         expect(root.children[0].forEach.index).toMatchObject({ type: 'Identifier', name: 'i' });
     });
 
     it('error missing for:item', () => {
-        const { warnings } = parseTemplate(`<template><section for:each={items}></section></template>`);
+        const { warnings } = parseTemplate(
+            `<template><section for:each={items}></section></template>`,
+        );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining('for:each and for:item directives should be associated together.'),
+            message: expect.stringContaining(
+                'for:each and for:item directives should be associated together.',
+            ),
             location: EXPECTED_LOCATION,
         });
     });
 
     it('error expression value for for:item', () => {
-        const { warnings } = parseTemplate(`<template><section for:each={items} for:item={item}></section></template>`);
+        const { warnings } = parseTemplate(
+            `<template><section for:each={items} for:item={item}></section></template>`,
+        );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
@@ -210,7 +233,9 @@ describe('locator parsing', () => {
         expect(warnings).toContainEqual({
             code: 1069,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining('locator:context directive is expected to be an expression.'),
+            message: expect.stringContaining(
+                'locator:context directive is expected to be an expression.',
+            ),
             location: { column: 44, line: 3, start: 67, length: 21 },
         });
     });
@@ -234,17 +259,26 @@ describe('locator parsing', () => {
 
 describe('for:of directives', () => {
     it('right syntax', () => {
-        const { root } = parseTemplate(`<template><section iterator:it={items}></section></template>`);
-        expect(root.children[0].forOf.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        const { root } = parseTemplate(
+            `<template><section iterator:it={items}></section></template>`,
+        );
+        expect(root.children[0].forOf.expression).toMatchObject({
+            type: 'Identifier',
+            name: 'items',
+        });
         expect(root.children[0].forOf.iterator).toMatchObject({ type: 'Identifier', name: 'it' });
     });
 
     it('error expression value for for:iterator', () => {
-        const { warnings } = parseTemplate(`<template><section iterator:it="items"></section></template>`);
+        const { warnings } = parseTemplate(
+            `<template><section iterator:it="items"></section></template>`,
+        );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(`iterator:it directive is expected to be an expression`),
+            message: expect.stringContaining(
+                `iterator:it directive is expected to be an expression`,
+            ),
             location: EXPECTED_LOCATION,
         });
     });
@@ -457,7 +491,9 @@ describe('props and attributes', () => {
     });
 
     it('invalid html attribute error', () => {
-        const { warnings } = parseTemplate(`<template><div minlength="1" maxlength="5"></div></template>`);
+        const { warnings } = parseTemplate(
+            `<template><div minlength="1" maxlength="5"></div></template>`,
+        );
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
         expect(warnings[0]).toMatchObject({
             location: EXPECTED_LOCATION,
@@ -465,7 +501,9 @@ describe('props and attributes', () => {
     });
 
     it('element specific attribute validation', () => {
-        const { root } = parseTemplate(`<template><textarea minlength="1" maxlength="5"></textarea></template>`);
+        const { root } = parseTemplate(
+            `<template><textarea minlength="1" maxlength="5"></textarea></template>`,
+        );
         expect(root.children[0].attrs).toMatchObject({
             minlength: { value: '1' },
             maxlength: { value: '5' },
@@ -473,7 +511,9 @@ describe('props and attributes', () => {
     });
 
     it('global attribute validation', () => {
-        const { root } = parseTemplate(`<template><p title="title" aria-hidden="true"></p></template>`);
+        const { root } = parseTemplate(
+            `<template><p title="title" aria-hidden="true"></p></template>`,
+        );
         expect(root.children[0].attrs).toMatchObject({
             'aria-hidden': { value: 'true' },
             title: { value: 'title' },
@@ -481,7 +521,9 @@ describe('props and attributes', () => {
     });
 
     it('custom element props', () => {
-        const { root } = parseTemplate(`<template><x-button prop={state.prop}></x-button></template>`);
+        const { root } = parseTemplate(
+            `<template><x-button prop={state.prop}></x-button></template>`,
+        );
         expect(root.children[0].props.prop).toMatchObject({ value: TEMPLATE_EXPRESSION });
     });
 
@@ -523,7 +565,9 @@ describe('props and attributes', () => {
 
 describe('metadata', () => {
     it('usedIds simple', () => {
-        const { state } = parseTemplate(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
+        const { state } = parseTemplate(
+            `<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`,
+        );
         expect(Array.from(state.ids)).toEqual(['visible', 'titleClass', 'text']);
     });
 

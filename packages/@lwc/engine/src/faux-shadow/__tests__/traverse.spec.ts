@@ -106,7 +106,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-child-node-with-slot')
+            .shadowRoot.querySelector('slot');
         expect(slot.childNodes).toHaveLength(0);
     });
 
@@ -146,7 +148,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-child-node-with-slot')
+            .shadowRoot.querySelector('slot');
         expect(slot.childNodes).toHaveLength(1);
     });
 
@@ -478,7 +482,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const child = elm.shadowRoot.querySelector('div');
         expect(child.assignedSlot).toBe(slot);
     });
@@ -520,7 +526,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const child = elm.shadowRoot.querySelector('x-inside-slot');
         expect(child.assignedSlot).toBe(slot);
     });
@@ -608,7 +616,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const text = elm.shadowRoot.querySelector('x-native-slotted-component-child').childNodes[0];
         expect(text.assignedSlot).toBe(slot);
     });

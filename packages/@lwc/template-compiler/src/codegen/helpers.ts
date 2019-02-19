@@ -29,8 +29,13 @@ export function getMemberExpressionRoot(expression: t.MemberExpression): t.Ident
     return current as t.Identifier;
 }
 
-export function objectToAST(obj: object, valueMapper: (key: string) => t.Expression): t.ObjectExpression {
-    return t.objectExpression(Object.keys(obj).map(key => t.objectProperty(t.stringLiteral(key), valueMapper(key))));
+export function objectToAST(
+    obj: object,
+    valueMapper: (key: string) => t.Expression,
+): t.ObjectExpression {
+    return t.objectExpression(
+        Object.keys(obj).map(key => t.objectProperty(t.stringLiteral(key), valueMapper(key))),
+    );
 }
 
 /** Returns true if the passed element is a template element */
@@ -54,7 +59,9 @@ export function isSlot(element: IRElement) {
  */
 export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
-        child => isElement(child) && (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child))),
+        child =>
+            isElement(child) &&
+            (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child))),
     );
 }
 
@@ -63,7 +70,9 @@ export function destructuringAssignmentFromObject(
     keys: t.ObjectProperty[],
     type: string = 'const',
 ) {
-    return t.variableDeclaration(type as any, [t.variableDeclarator(t.objectPattern(keys as any), target)]);
+    return t.variableDeclaration(type as any, [
+        t.variableDeclarator(t.objectPattern(keys as any), target),
+    ]);
 }
 
 export function memorizeHandler(
@@ -97,7 +106,10 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
     // Generate the slots property on template function if slots are defined in the template:
     //      tmpl.slots = ['', 'x']
     if (state.slots.length) {
-        const slotsProperty = t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('slots'));
+        const slotsProperty = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier('slots'),
+        );
 
         const slotsArray = t.arrayExpression(state.slots.map(slot => t.stringLiteral(slot)));
 
@@ -109,7 +121,10 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
 
     const hasInlineStyles = state.inlineStyle.body.length;
 
-    const stylesheetsProperty = t.memberExpression(t.identifier(TEMPLATE_FUNCTION_NAME), t.identifier('stylesheets'));
+    const stylesheetsProperty = t.memberExpression(
+        t.identifier(TEMPLATE_FUNCTION_NAME),
+        t.identifier('stylesheets'),
+    );
 
     const stylesheetsMetadata = t.assignmentExpression(
         '=',

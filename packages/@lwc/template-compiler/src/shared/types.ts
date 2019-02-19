@@ -8,7 +8,10 @@ import * as babelTypes from '@babel/types';
 import * as parse5 from 'parse5-with-errors';
 
 export type TemplateIdentifier = babelTypes.Identifier;
-export type TemplateExpression = babelTypes.MemberExpression | babelTypes.Literal | babelTypes.Identifier;
+export type TemplateExpression =
+    | babelTypes.MemberExpression
+    | babelTypes.Literal
+    | babelTypes.Identifier;
 
 export type HTMLText = parse5.AST.TextNode;
 export type HTMLElement = parse5.AST.Element;

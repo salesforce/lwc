@@ -60,7 +60,11 @@ function getEngineImportSpecifiers(path) {
             if (specifier.isImportNamespaceSpecifier()) {
                 throw generateError(specifier, {
                     errorInfo: LWCClassErrors.INVALID_IMPORT_NAMESPACE_IMPORTS_NOT_ALLOWED,
-                    messageArgs: [LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS.BASE_COMPONENT, LWC_PACKAGE_ALIAS],
+                    messageArgs: [
+                        LWC_PACKAGE_ALIAS,
+                        LWC_PACKAGE_EXPORTS.BASE_COMPONENT,
+                        LWC_PACKAGE_ALIAS,
+                    ],
                 });
             } else if (specifier.isImportDefaultSpecifier()) {
                 throw generateError(specifier, {

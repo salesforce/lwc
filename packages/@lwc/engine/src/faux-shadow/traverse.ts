@@ -19,7 +19,10 @@ import { ArrayReduce, ArrayPush, isUndefined, isTrue } from '../shared/language'
 import { isNull } from '../shared/language';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { getHost, getShadowRoot, SyntheticShadowRootInterface } from './shadow-root';
-import { HTMLElementConstructor, HTMLIFrameElementConstructor } from '../framework/base-bridge-element';
+import {
+    HTMLElementConstructor,
+    HTMLIFrameElementConstructor,
+} from '../framework/base-bridge-element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { iFrameContentWindowGetter } from '../env/dom';
 import { getFilteredSlotAssignedNodes } from './slot';
@@ -152,7 +155,10 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-export function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Array<Element & Node> {
+export function getAllMatches(
+    owner: HTMLElement,
+    nodeList: NodeList | Node[],
+): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -209,7 +215,10 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Array<Node & Element> {
+function getAllSlottedMatches(
+    host: HTMLElement,
+    nodeList: NodeList | Node[],
+): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -261,13 +270,19 @@ function lightDomQuerySelector(elm: Element, selector: string): Element | null {
     }
 }
 
-export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, selector: string): Element | null {
+export function shadowRootQuerySelector(
+    root: SyntheticShadowRootInterface,
+    selector: string,
+): Element | null {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(
+    root: SyntheticShadowRootInterface,
+    selector: string,
+): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);

@@ -35,7 +35,19 @@ const adjectives = [
     'fancy',
 ];
 
-const colours = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black', 'orange'];
+const colours = [
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange',
+];
 
 const nouns = [
     'table',
@@ -85,7 +97,9 @@ class Store {
         const newData = [];
         for (let i = 0; i < this.data.length; i++) {
             if (i % 10 === 0) {
-                newData[i] = Object.assign({}, this.data[i], { label: this.data[i].label + ' !!!' });
+                newData[i] = Object.assign({}, this.data[i], {
+                    label: this.data[i].label + ' !!!',
+                });
             } else {
                 newData[i] = this.data[i];
             }
@@ -324,7 +338,12 @@ describe('diff algo', () => {
                 </table>
             </template>`);
             class App extends LightningElement {
-                items = [{ id: 'a', value: 5 }, { id: 'b', value: 4 }, { id: 'c', value: 1 }, { id: 'd', value: 3 }];
+                items = [
+                    { id: 'a', value: 5 },
+                    { id: 'b', value: 4 },
+                    { id: 'c', value: 1 },
+                    { id: 'd', value: 3 },
+                ];
                 sortDir = 'ASC';
                 sort(dir) {
                     const clone = Array.from(this.items);

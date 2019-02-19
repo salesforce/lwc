@@ -346,7 +346,10 @@ describe('component', function() {
             }
 
             const elm = createElement('x-foo', { is: MyComponent });
-            const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
+            const cssTextPropDef = Object.getOwnPropertyDescriptor(
+                CSSStyleDeclaration.prototype,
+                'cssText',
+            );
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
                 get() {
                     return cssTextPropDef.get.call(this);
@@ -380,7 +383,10 @@ describe('component', function() {
             }
 
             const elm = createElement('x-foo', { is: MyComponent });
-            const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
+            const cssTextPropDef = Object.getOwnPropertyDescriptor(
+                CSSStyleDeclaration.prototype,
+                'cssText',
+            );
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
                 get() {
                     return cssTextPropDef.get.call(this);

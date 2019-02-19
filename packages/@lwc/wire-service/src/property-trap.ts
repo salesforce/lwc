@@ -20,7 +20,10 @@ import { ConfigListenerMetadata, ConfigContext, ReactiveParameter } from './wiri
  * @param configListenerMetadatas List of config listener metadata (config listeners and their context)
  * @param paramValues Values for all wire adapter config params
  */
-function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
+function invokeConfigListeners(
+    configListenerMetadatas: Set<ConfigListenerMetadata>,
+    paramValues: any,
+) {
     configListenerMetadatas.forEach(metadata => {
         const { listener, statics, reactives } = metadata;
 
@@ -46,7 +49,11 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
  * @param reactiveParameter Reactive parameter that has changed
  * @param configContext The service context
  */
-export function updated(cmp: LightningElement, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+export function updated(
+    cmp: LightningElement,
+    reactiveParameter: ReactiveParameter,
+    configContext: ConfigContext,
+) {
     if (!configContext.mutated) {
         configContext.mutated = new Set<ReactiveParameter>();
         // collect all prop changes via a microtask
@@ -83,7 +90,10 @@ function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
  * @param cmp The component
  * @param reactiveParameter The parameter to get
  */
-export function getReactiveParameterValue(cmp: LightningElement, reactiveParameter: ReactiveParameter): any {
+export function getReactiveParameterValue(
+    cmp: LightningElement,
+    reactiveParameter: ReactiveParameter,
+): any {
     let value: any = cmp[reactiveParameter.head];
     if (!reactiveParameter.tail) {
         return value;
@@ -106,7 +116,11 @@ export function getReactiveParameterValue(cmp: LightningElement, reactiveParamet
  * @param reactiveParameter Reactive parameter that defines the property to monitor
  * @param configContext The service context
  */
-export function installTrap(cmp: LightningElement, reactiveParameter: ReactiveParameter, configContext: ConfigContext) {
+export function installTrap(
+    cmp: LightningElement,
+    reactiveParameter: ReactiveParameter,
+    configContext: ConfigContext,
+) {
     const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);
     const newDescriptor = getOverrideDescriptor(cmp, reactiveParameter.head, callback);
     Object.defineProperty(cmp, reactiveParameter.head, newDescriptor);
@@ -118,7 +132,11 @@ export function installTrap(cmp: LightningElement, reactiveParameter: ReactivePa
  * @param propName Name of property to find
  * @param protoSet Prototypes searched (to avoid circular prototype chains)
  */
-export function findDescriptor(target: any, propName: PropertyKey, protoSet?: any[]): PropertyDescriptor | null {
+export function findDescriptor(
+    target: any,
+    propName: PropertyKey,
+    protoSet?: any[],
+): PropertyDescriptor | null {
     protoSet = protoSet || [];
     if (!target || protoSet.indexOf(target) > -1) {
         return null; // null, undefined, or circular prototype definition

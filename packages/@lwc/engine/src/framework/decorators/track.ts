@@ -29,7 +29,10 @@ export default function track(target: any, prop?, descriptor?): any {
         }
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;
-            assert.isTrue(!get && !set, `Compiler Error: A @track decorator can only be applied to a public field.`);
+            assert.isTrue(
+                !get && !set,
+                `Compiler Error: A @track decorator can only be applied to a public field.`,
+            );
             assert.isTrue(
                 configurable !== false,
                 `Compiler Error: A @track decorator can only be applied to a configurable property.`,
@@ -47,7 +50,11 @@ export default function track(target: any, prop?, descriptor?): any {
     );
 }
 
-export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {
+export function createTrackedPropertyDescriptor(
+    Ctor: any,
+    key: PropertyKey,
+    enumerable: boolean,
+): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
@@ -63,7 +70,9 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(key)}`,
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(
+                        key,
+                    )}`,
                 );
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);

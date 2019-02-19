@@ -71,7 +71,11 @@ export interface UninitializedVM {
     cmpSlots: SlotSet;
     cmpTrack: any;
     cmpRoot: ShadowRoot;
-    callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    callHook: (
+        cmp: ComponentInterface | undefined,
+        fn: (...args: any[]) => any,
+        args?: any[],
+    ) => any;
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
     getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
@@ -92,7 +96,11 @@ export interface VM extends UninitializedVM {
 let idx: number = 0;
 let uid: number = 0;
 
-function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args: any[] = []): any {
+function callHook(
+    cmp: ComponentInterface | undefined,
+    fn: (...args: any[]) => any,
+    args: any[] = [],
+): any {
     return fn.apply(cmp, args);
 }
 
@@ -202,9 +210,17 @@ export interface CreateVMInit {
     isRoot?: boolean;
 }
 
-export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
+export function createVM(
+    tagName: string,
+    elm: HTMLElement,
+    Ctor: ComponentConstructor,
+    options: CreateVMInit,
+) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
+        assert.invariant(
+            elm instanceof HTMLElement,
+            `VM creation requires a DOM element instead of ${elm}.`,
+        );
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode, fallback } = options;
@@ -268,12 +284,18 @@ function rehydrate(vm: VM) {
 
 function patchErrorBoundaryVm(errorBoundaryVm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(errorBoundaryVm && 'component' in errorBoundaryVm, `${errorBoundaryVm} is not a vm.`);
+        assert.isTrue(
+            errorBoundaryVm && 'component' in errorBoundaryVm,
+            `${errorBoundaryVm} is not a vm.`,
+        );
         assert.isTrue(
             errorBoundaryVm.elm instanceof HTMLElement,
             `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`,
         );
-        assert.isTrue(errorBoundaryVm.isDirty, 'rehydration recovery should only happen if vm has updated');
+        assert.isTrue(
+            errorBoundaryVm.isDirty,
+            'rehydration recovery should only happen if vm has updated',
+        );
     }
     const children = renderComponent(errorBoundaryVm);
     const { elm, cmpRoot, fallback, children: oldCh } = errorBoundaryVm;
@@ -408,7 +430,10 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     }
 
     // error boundaries must have an ErrorCallback
-    invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
+    invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [
+        error,
+        error.wcStack,
+    ]);
 
     if (process.env.NODE_ENV !== 'production') {
         endMeasure('errorCallback', errorBoundaryVm);
@@ -432,7 +457,10 @@ function destroyChildren(children: VNodes) {
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') {
                 const vm = getCustomElementVM(elm as HTMLElement);
-                assert.logError(`Internal Error: Failed to disconnect component ${vm}. ${e}`, elm as Element);
+                assert.logError(
+                    `Internal Error: Failed to disconnect component ${vm}. ${e}`,
+                    elm as Element,
+                );
             }
         }
     }
@@ -517,7 +545,10 @@ export function getErrorComponentStack(startingElement: Element): string {
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
-            ArrayPush.call(wcStack, `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`);
+            ArrayPush.call(
+                wcStack,
+                `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`,
+            );
         }
         elm = getParentOrHostElement(elm);
     } while (!isNull(elm));
@@ -531,7 +562,9 @@ export function getErrorComponentStack(startingElement: Element): string {
 function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
     // If this is a shadow root, find the host instead
-    return isNull(parentElement) && isNativeShadowRootAvailable ? getHostElement(elm) : parentElement;
+    return isNull(parentElement) && isNativeShadowRootAvailable
+        ? getHostElement(elm)
+        : parentElement;
 }
 
 /**
@@ -549,7 +582,9 @@ function getHostElement(elm: Element): Element | null {
         );
     }
     const parentNode = parentNodeGetter.call(elm);
-    return parentNode instanceof NativeShadowRoot ? ShadowRootHostGetter.call(parentNode as unknown) : null;
+    return parentNode instanceof NativeShadowRoot
+        ? ShadowRootHostGetter.call(parentNode as unknown)
+        : null;
 }
 
 export function isNodeFromTemplate(node: Node): boolean {

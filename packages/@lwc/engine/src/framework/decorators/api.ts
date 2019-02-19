@@ -93,7 +93,9 @@ function createPublicPropertyDescriptor(
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(key)}`,
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
+                        key,
+                    )}`,
                 );
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
@@ -151,7 +153,9 @@ function createPublicAccessorDescriptor(
             assert.fail(
                 `Invalid attempt to create public property descriptor ${toString(
                     key,
-                )} in ${Ctor}. It is missing the getter declaration with @api get ${toString(key)}() {} syntax.`,
+                )} in ${Ctor}. It is missing the getter declaration with @api get ${toString(
+                    key,
+                )}() {} syntax.`,
             );
         }
         throw new TypeError();
@@ -170,7 +174,9 @@ function createPublicAccessorDescriptor(
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
                     !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(key)}`,
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
+                        key,
+                    )}`,
                 );
             }
             if (vm.isRoot || isBeingConstructed(vm)) {

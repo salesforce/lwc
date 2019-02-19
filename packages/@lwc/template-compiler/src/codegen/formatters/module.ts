@@ -7,9 +7,17 @@
 import * as t from '@babel/types';
 
 import State from '../../state';
-import { identifierFromComponentName, generateTemplateMetadata, kebabcaseToCamelcase } from '../helpers';
+import {
+    identifierFromComponentName,
+    generateTemplateMetadata,
+    kebabcaseToCamelcase,
+} from '../helpers';
 
-import { TEMPLATE_FUNCTION_NAME, SECURE_REGISTER_TEMPLATE_METHOD_NAME, LWC_MODULE_NAME } from '../../shared/constants';
+import {
+    TEMPLATE_FUNCTION_NAME,
+    SECURE_REGISTER_TEMPLATE_METHOD_NAME,
+    LWC_MODULE_NAME,
+} from '../../shared/constants';
 
 function moduleNameToImport(name: string): t.ImportDeclaration {
     const localIdentifier = identifierFromComponentName(name);

@@ -19,9 +19,13 @@ const isCompat = /compat/.test(mode);
 const isProd = /prod/.test(mode);
 
 const engineModeFile = path.join(
-    require.resolve(`@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`),
+    require.resolve(
+        `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`,
+    ),
 );
-const wireServicePath = path.join(require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`));
+const wireServicePath = path.join(
+    require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`),
+);
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
 const testSufix = '.test.js';
@@ -44,7 +48,9 @@ const testEntries = functionalTests.reduce((seed, functionalFolder) => {
 // -- Plugins & Helpers -------------------------------------
 
 function getTestName(absPpath) {
-    return path.basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js').replace(testPrefix, '');
+    return path
+        .basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js')
+        .replace(testPrefix, '');
 }
 
 function testCaseComponentResolverPlugin() {
@@ -73,7 +79,9 @@ function entryPointResolverPlugin() {
         load(id) {
             if (id.includes(testSufix)) {
                 const testBundle = getTestName(id);
-                return testBundle.startsWith('wired-') ? getTodoApp(testBundle) : templates.app(testBundle);
+                return testBundle.startsWith('wired-')
+                    ? getTodoApp(testBundle)
+                    : templates.app(testBundle);
             }
         },
     };

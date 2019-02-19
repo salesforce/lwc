@@ -132,7 +132,9 @@ function getCapabilities() {
         });
 
         if (filtered.length === 0) {
-            throw new Error('No target browsers after filtering for the following browsers: ' + userBrowsers);
+            throw new Error(
+                'No target browsers after filtering for the following browsers: ' + userBrowsers,
+            );
         }
     }
 

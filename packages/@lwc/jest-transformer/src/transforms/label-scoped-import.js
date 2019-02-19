@@ -15,7 +15,9 @@ module.exports = function({ types: t }) {
             ImportDeclaration(path) {
                 if (path.get('source.value').node.startsWith(LABEL_IMPORT_IDENTIFIER)) {
                     stringScopedImportTransform(t, path, LABEL_IMPORT_IDENTIFIER);
-                } else if (path.get('source.value').node.startsWith(LEGACY_LABEL_IMPORT_IDENTIFIER)) {
+                } else if (
+                    path.get('source.value').node.startsWith(LEGACY_LABEL_IMPORT_IDENTIFIER)
+                ) {
                     stringScopedImportTransform(t, path, LEGACY_LABEL_IMPORT_IDENTIFIER);
                 }
             },

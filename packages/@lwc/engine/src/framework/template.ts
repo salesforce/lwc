@@ -26,7 +26,12 @@ import { SlotSet, VM, resetShadowRoot } from './vm';
 import { EmptyArray } from './utils';
 import { ComponentInterface } from './component';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
-import { evaluateCSS, StylesheetFactory, applyStyleAttributes, resetStyleAttributes } from './stylesheet';
+import {
+    evaluateCSS,
+    StylesheetFactory,
+    applyStyleAttributes,
+    resetStyleAttributes,
+} from './stylesheet';
 
 export { registerTemplate };
 export interface Template {
@@ -119,7 +124,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isFunction(html),
-            `evaluateTemplate() second argument must be an imported template instead of ${toString(html)}`,
+            `evaluateTemplate() second argument must be an imported template instead of ${toString(
+                html,
+            )}`,
         );
     }
 
@@ -181,7 +188,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
+        assert.invariant(
+            isArray(vnodes),
+            `Compiler should produce html functions that always return an array.`,
+        );
     }
     return vnodes;
 }

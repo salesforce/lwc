@@ -45,7 +45,9 @@ export default function compiler(
         const parsingResults = parse(source, state);
         warnings.push(...parsingResults.warnings);
 
-        const hasParsingError = parsingResults.warnings.some(warning => warning.level === DiagnosticLevel.Error);
+        const hasParsingError = parsingResults.warnings.some(
+            warning => warning.level === DiagnosticLevel.Error,
+        );
 
         if (!hasParsingError && parsingResults.root) {
             const output = generate(parsingResults.root, state);

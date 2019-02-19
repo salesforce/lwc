@@ -80,9 +80,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": adapter id must be truthy',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": adapter id must be truthy');
         });
         it('throws when adapter factory is not found', () => {
             let wireService;
@@ -99,9 +99,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": unknown adapter id: ',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": unknown adapter id: ');
         });
         it('throws when dot-notation reactive parameter refers to non-@wire target', () => {
             let wireService;
@@ -120,7 +120,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError(
                 '@wire on "target": dot-notation reactive parameter "x.y" must refer to a @wire property',
             );
         });
@@ -145,7 +147,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError(
                 '@wire on "target": dot-notation reactive parameter "x.y" must refer to a @wire property',
             );
         });
@@ -166,9 +170,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": reactive parameter "target" must not refer to self',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": reactive parameter "target" must not refer to self');
         });
         it('throws when reactive parameter is empty', () => {
             let wireService;
@@ -187,9 +191,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": reactive parameters must not be empty',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": reactive parameters must not be empty');
         });
         it('throws when reactive parameter contains empty segment', () => {
             let wireService;
@@ -208,9 +212,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": reactive parameters must not be empty',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": reactive parameters must not be empty');
         });
         it('throws when reactive parameter ends with empty segment', () => {
             let wireService;
@@ -229,9 +233,9 @@ describe('wire service', () => {
                     },
                 },
             };
-            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError(
-                '@wire on "target": reactive parameters must not be empty',
-            );
+            expect(() =>
+                wireService.wiring({} as Element, {}, mockDef, {} as Context),
+            ).toThrowError('@wire on "target": reactive parameters must not be empty');
         });
     });
     describe('connected handling', () => {

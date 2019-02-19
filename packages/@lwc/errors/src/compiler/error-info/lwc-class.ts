@@ -38,7 +38,8 @@ export const LWCClassErrors = {
 export const DecoratorErrors = {
     ADAPTER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1092,
-        message: '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
+        message:
+            '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -94,7 +95,8 @@ export const DecoratorErrors = {
 
     INVALID_DECORATOR: {
         code: 1100,
-        message: 'Invalid decorator usage. Supported decorators ({0}) should be imported from "{1}"',
+        message:
+            'Invalid decorator usage. Supported decorators ({0}) should be imported from "{1}"',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -108,7 +110,8 @@ export const DecoratorErrors = {
 
     INVALID_DECORATOR_WITH_NAME: {
         code: 1102,
-        message: 'Invalid \'{0}\' decorator usage. Supported decorators ({1}) should be imported from "{2}"',
+        message:
+            'Invalid \'{0}\' decorator usage. Supported decorators ({1}) should be imported from "{2}"',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -143,14 +146,16 @@ export const DecoratorErrors = {
 
     PROPERTY_NAME_CANNOT_START_WITH_DATA: {
         code: 1107,
-        message: 'Invalid property name "{0}". Properties starting with "data" are reserved attributes.',
+        message:
+            'Invalid property name "{0}". Properties starting with "data" are reserved attributes.',
         level: DiagnosticLevel.Error,
         url: '',
     },
 
     PROPERTY_NAME_CANNOT_START_WITH_ON: {
         code: 1108,
-        message: 'Invalid property name "{0}". Properties starting with "on" are reserved for event handlers.',
+        message:
+            'Invalid property name "{0}". Properties starting with "on" are reserved for event handlers.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -172,7 +177,8 @@ export const DecoratorErrors = {
 
     PROPERTY_NAME_PART_IS_RESERVED: {
         code: 1111,
-        message: 'Invalid property name "{0}". "part" is a future reserved attribute for web components.',
+        message:
+            'Invalid property name "{0}". "part" is a future reserved attribute for web components.',
         level: DiagnosticLevel.Error,
         url: '',
     },

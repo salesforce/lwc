@@ -5,7 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
-import { CompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from '@lwc/errors';
+import {
+    CompilerError,
+    normalizeToCompilerError,
+    DiagnosticLevel,
+    TransformerErrors,
+} from '@lwc/errors';
 import compile from '@lwc/template-compiler';
 import { TemplateModuleDependency } from '@lwc/template-compiler';
 
@@ -44,7 +49,10 @@ const transform: FileTransformer = function(
 
         metadata = result.metadata;
         if (metadataCollector) {
-            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
+            metadataCollector.collectExperimentalTemplateDependencies(
+                filename,
+                metadata.templateDependencies,
+            );
         }
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
@@ -61,9 +69,16 @@ const transform: FileTransformer = function(
     };
 };
 
-function serialize(code: string, filename: string, { namespace, name }: NormalizedCompilerOptions): string {
+function serialize(
+    code: string,
+    filename: string,
+    { namespace, name }: NormalizedCompilerOptions,
+): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
-    const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+    const scopingAttribute = `${namespace}-${name}_${path.basename(
+        filename,
+        path.extname(filename),
+    )}`;
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += code;

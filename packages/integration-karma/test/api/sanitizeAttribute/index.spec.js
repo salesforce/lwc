@@ -22,7 +22,12 @@ it('receives the right parameters', () => {
     const elm = createElement('x-link', { is: Xlink });
     document.body.appendChild(elm);
 
-    expect(Engine.sanitizeAttribute).toHaveBeenCalledWith('use', 'http://www.w3.org/2000/svg', 'xlink:href', '/foo');
+    expect(Engine.sanitizeAttribute).toHaveBeenCalledWith(
+        'use',
+        'http://www.w3.org/2000/svg',
+        'xlink:href',
+        '/foo',
+    );
 });
 
 it('replace the original attribute value with the returned value', () => {

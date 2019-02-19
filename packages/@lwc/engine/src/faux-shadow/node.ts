@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, forEach, getPrototypeOf, setPrototypeOf, isFalse } from '../shared/language';
+import {
+    isUndefined,
+    isNull,
+    forEach,
+    getPrototypeOf,
+    setPrototypeOf,
+    isFalse,
+} from '../shared/language';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -250,7 +257,10 @@ export function PatchedNode(node: Node): NodeConstructor {
                 // it is from another shadow
                 return false;
             }
-            return (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
+            return (
+                (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !==
+                0
+            );
         }
         cloneNode(this: Node, deep: boolean): Node {
             const clone = nativeCloneNode.call(this, false);

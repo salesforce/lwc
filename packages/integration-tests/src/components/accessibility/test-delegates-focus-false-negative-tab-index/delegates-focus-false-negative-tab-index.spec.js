@@ -22,7 +22,10 @@ describe('Tabbing into custom element with delegates focus', () => {
                     return document.activeElement;
                 });
 
-                return activeFromDocument.getTagName() === 'integration-delegates-focus-false-negative-tab-index';
+                return (
+                    activeFromDocument.getTagName() ===
+                    'integration-delegates-focus-false-negative-tab-index'
+                );
             },
             500,
             'expect integration-delegates-focus-false-negative-tab-index to be focused',

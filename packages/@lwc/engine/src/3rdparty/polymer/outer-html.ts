@@ -69,7 +69,16 @@ const voidElements = new Set([
     'WBR',
 ]);
 
-const plaintextParents = new Set(['STYLE', 'SCRIPT', 'XMP', 'IFRAME', 'NOEMBED', 'NOFRAMES', 'PLAINTEXT', 'NOSCRIPT']);
+const plaintextParents = new Set([
+    'STYLE',
+    'SCRIPT',
+    'XMP',
+    'IFRAME',
+    'NOEMBED',
+    'NOFRAMES',
+    'PLAINTEXT',
+    'NOSCRIPT',
+]);
 
 export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
@@ -88,7 +97,10 @@ export function getOuterHTML(node: Node): string {
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
-            if (parentNode instanceof Element && plaintextParents.has(tagNameGetter.call(parentNode))) {
+            if (
+                parentNode instanceof Element &&
+                plaintextParents.has(tagNameGetter.call(parentNode))
+            ) {
                 return data;
             }
             return escapeData(data);

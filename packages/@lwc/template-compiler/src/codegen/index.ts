@@ -17,7 +17,14 @@ import { bindExpression, rewriteIteratorToArguments } from '../shared/scope';
 
 import { traverse, isCustomElement } from '../shared/ir';
 
-import { IRNode, IRElement, IRText, IRAttribute, IRAttributeType, CompilationOutput } from '../shared/types';
+import {
+    IRNode,
+    IRElement,
+    IRText,
+    IRAttribute,
+    IRAttributeType,
+    CompilationOutput,
+} from '../shared/types';
 
 import Stack from '../shared/stack';
 
@@ -78,10 +85,18 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
         if (locator.context) {
             let locatorContextFunction = bindExpression(locator.context, element).expression;
             locatorContextFunction = codeGen.genFunctionBind(locatorContextFunction);
-            locatorContextFunction = memorizeHandler(codeGen, element, locator.context, locatorContextFunction);
+            locatorContextFunction = memorizeHandler(
+                codeGen,
+                element,
+                locator.context,
+                locatorContextFunction,
+            );
             locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
         }
-        const contextObj = t.objectProperty(t.identifier('locator'), t.objectExpression(locatorObject));
+        const contextObj = t.objectProperty(
+            t.identifier('locator'),
+            t.objectExpression(locatorObject),
+        );
         contextExpressions.push(contextObj);
     }
 
@@ -128,7 +143,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 }
 
                 // Applied the transformation to itself
-                isTemplate(element) ? transformTemplate(element, children) : transformElement(element, children);
+                isTemplate(element)
+                    ? transformTemplate(element, children)
+                    : transformElement(element, children);
             },
         },
     });
@@ -292,7 +309,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             const { expression: testExpression } = bindExpression(element.if!, element);
 
             return t.arrayExpression(
-                fragmentNodes.elements.map((child: t.Expression) => applyInlineIf(element, child, testExpression)),
+                fragmentNodes.elements.map((child: t.Expression) =>
+                    applyInlineIf(element, child, testExpression),
+                ),
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
@@ -300,7 +319,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         }
     }
 
-    function generateScopedIdFunctionForIdRefAttr(idRef: string): t.CallExpression | t.TemplateLiteral {
+    function generateScopedIdFunctionForIdRefAttr(
+        idRef: string,
+    ): t.CallExpression | t.TemplateLiteral {
         const expressions: t.CallExpression[] = idRef
             .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
             .map(codeGen.genScopedId.bind(codeGen));
@@ -361,7 +382,18 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
     function elementDataBag(element: IRElement): t.ObjectExpression {
         const data: t.ObjectProperty[] = [];
-        const { classMap, className, style, styleMap, attrs, props, on, forKey, locator, lwc } = element;
+        const {
+            classMap,
+            className,
+            style,
+            styleMap,
+            attrs,
+            props,
+            on,
+            forKey,
+            locator,
+            lwc,
+        } = element;
 
         // Class attibute defined via string
         if (className) {

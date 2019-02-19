@@ -58,7 +58,11 @@ function readFile(filename: string, options: NormalizedCompilerOptions): string 
     }
 }
 
-function generateModuleResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+function generateModuleResolutionError(
+    importee: string,
+    importer: string,
+    options: NormalizedCompilerOptions,
+) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
@@ -67,7 +71,10 @@ function generateModuleResolutionError(importee: string, importer: string, optio
               messageArgs: [
                   importee,
                   importer,
-                  caseIgnoredFilename.substr(0, caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length),
+                  caseIgnoredFilename.substr(
+                      0,
+                      caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length,
+                  ),
               ],
               origin: { filename: importer },
           })
@@ -77,7 +84,11 @@ function generateModuleResolutionError(importee: string, importer: string, optio
           });
 }
 
-function generateEntryResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+function generateEntryResolutionError(
+    importee: string,
+    importer: string,
+    options: NormalizedCompilerOptions,
+) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
@@ -104,7 +115,9 @@ function getAbsolutePath(importee: string, importer: string, baseDir: string | u
 }
 
 function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMatch: string) {
-    return Object.keys(files).find((bundleFile: string) => bundleFile.toLowerCase() === nameToMatch);
+    return Object.keys(files).find(
+        (bundleFile: string) => bundleFile.toLowerCase() === nameToMatch,
+    );
 }
 
 export default function({ options }: { options: NormalizedCompilerOptions }) {
@@ -117,9 +130,15 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
             }
 
             if (isFirstCharacterUppercased(importee)) {
-                throw generateCompilerError(ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER, {
-                    messageArgs: [importee, importee.charAt(0).toLowerCase() + importee.slice(1)],
-                });
+                throw generateCompilerError(
+                    ModuleResolutionErrors.FOLDER_NAME_STARTS_WITH_CAPITAL_LETTER,
+                    {
+                        messageArgs: [
+                            importee,
+                            importee.charAt(0).toLowerCase() + importee.slice(1),
+                        ],
+                    },
+                );
             }
 
             const absPath = getAbsolutePath(importee, importer, options.baseDir);

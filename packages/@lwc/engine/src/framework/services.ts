@@ -12,7 +12,12 @@ import { VNodeData } from '../3rdparty/snabbdom/types';
 import { ComponentDef } from './def';
 import { VM } from './vm';
 
-type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
+type ServiceCallback = (
+    component: object,
+    data: VNodeData,
+    def: ComponentDef,
+    context: Context,
+) => void;
 interface ServiceDef {
     wiring?: ServiceCallback;
     locator?: ServiceCallback;
@@ -29,11 +34,20 @@ export const Services: {
     rendered?: ServiceCallback[];
 } = create(null);
 
-const hooks: Array<keyof ServiceDef> = ['wiring', 'locator', 'rendered', 'connected', 'disconnected'];
+const hooks: Array<keyof ServiceDef> = [
+    'wiring',
+    'locator',
+    'rendered',
+    'connected',
+    'disconnected',
+];
 
 export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isObject(service), `Invalid service declaration, ${service}: service must be an object`);
+        assert.isTrue(
+            isObject(service),
+            `Invalid service declaration, ${service}: service must be an object`,
+        );
     }
     for (let i = 0; i < hooks.length; ++i) {
         const hookName = hooks[i];
@@ -50,7 +64,10 @@ export function register(service: ServiceDef) {
 export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(isArray(cbs) && cbs.length > 0, `Optimize invokeServiceHook() to be invoked only when needed`);
+        assert.isTrue(
+            isArray(cbs) && cbs.length > 0,
+            `Optimize invokeServiceHook() to be invoked only when needed`,
+        );
     }
     const { component, data, def, context } = vm;
     for (let i = 0, len = cbs.length; i < len; ++i) {

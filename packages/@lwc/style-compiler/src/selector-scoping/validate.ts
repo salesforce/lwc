@@ -47,7 +47,11 @@ function validateAttribute(root: Root) {
 
             // Let's check if the attribute name is either a Global HTML attribute, an ARIA attribute
             // or a data-* attribute since those are available on all the elements.
-            if (isGlobalAttribute(attributeName) || isAriaAttribute(attributeName) || isDataAttribute(attributeName)) {
+            if (
+                isGlobalAttribute(attributeName) ||
+                isAriaAttribute(attributeName) ||
+                isDataAttribute(attributeName)
+            ) {
                 return;
             }
 

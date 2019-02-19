@@ -6,7 +6,14 @@
  */
 import * as parse5 from 'parse5-with-errors';
 
-import { treeAdapter, parseHTML, traverseHTML, getSource, cleanTextNode, decodeTextContent } from './html';
+import {
+    treeAdapter,
+    parseHTML,
+    traverseHTML,
+    getSource,
+    cleanTextNode,
+    decodeTextContent,
+} from './html';
 
 import {
     isAttribute,
@@ -89,7 +96,10 @@ function isStyleElement(irElement: IRElement) {
     return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
 }
 
-function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
+function attributeExpressionReferencesForOfIndex(
+    attribute: IRExpressionAttribute,
+    forOf: ForIterator,
+): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
     if (!isMemberExpression(value)) {
@@ -108,7 +118,10 @@ function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribut
     return property.name === 'index';
 }
 
-function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttribute, forEach: ForEach): boolean {
+function attributeExpressionReferencesForEachIndex(
+    attribute: IRExpressionAttribute,
+    forEach: ForEach,
+): boolean {
     const { index } = forEach;
     const { value } = attribute;
 
@@ -215,9 +228,13 @@ export default function parse(
                             value = parseTemplateExpression(parent, token);
                         } catch (error) {
                             addDiagnostic(
-                                normalizeToDiagnostic(ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR, error, {
-                                    location: normalizeLocation(location),
-                                }),
+                                normalizeToDiagnostic(
+                                    ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
+                                    error,
+                                    {
+                                        location: normalizeLocation(location),
+                                    },
+                                ),
                             );
                             return;
                         }
@@ -242,14 +259,17 @@ export default function parse(
         const validRoots = documentFragment.childNodes.filter(
             child =>
                 treeAdapter.isElementNode(child) ||
-                (treeAdapter.isTextNode(child) && treeAdapter.getTextNodeContent(child).trim().length),
+                (treeAdapter.isTextNode(child) &&
+                    treeAdapter.getTextNodeContent(child).trim().length),
         );
 
         if (validRoots.length > 1) {
             warnOnElement(ParserDiagnostics.MULTIPLE_ROOTS_FOUND, documentFragment.childNodes[1]);
         }
 
-        const templateTag = documentFragment.childNodes.find(child => treeAdapter.isElementNode(child));
+        const templateTag = documentFragment.childNodes.find(child =>
+            treeAdapter.isElementNode(child),
+        );
 
         if (!templateTag) {
             warnAt(ParserDiagnostics.MISSING_ROOT_TEMPLATE_TAG);
@@ -288,12 +308,20 @@ export default function parse(
             removeAttribute(element, eventHandlerAttribute.name);
 
             if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION, [], eventHandlerAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.EVENT_HANDLER_SHOULD_BE_EXPRESSION,
+                    [],
+                    eventHandlerAttribute.location,
+                );
             }
 
             let eventName = eventHandlerAttribute.name;
             if (!eventName.match(EVENT_HANDLER_NAME_RE)) {
-                return warnAt(ParserDiagnostics.INVALID_EVENT_NAME, [eventName], eventHandlerAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.INVALID_EVENT_NAME,
+                    [eventName],
+                    eventHandlerAttribute.location,
+                );
             }
 
             // Strip the `on` prefix from the event handler name
@@ -312,12 +340,20 @@ export default function parse(
             removeAttribute(element, IF_RE);
 
             if (ifAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION, [], ifAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.IF_DIRECTIVE_SHOULD_BE_EXPRESSION,
+                    [],
+                    ifAttribute.location,
+                );
             }
 
             const [, modifier] = ifAttribute.name.split(':');
             if (!VALID_IF_MODIFIER.has(modifier)) {
-                return warnAt(ParserDiagnostics.UNEXPECTED_IF_MODIFIER, [modifier], ifAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.UNEXPECTED_IF_MODIFIER,
+                    [modifier],
+                    ifAttribute.location,
+                );
             }
 
             element.if = ifAttribute.value;
@@ -335,13 +371,18 @@ export default function parse(
         removeAttribute(element, lwcDomAttribute.name);
 
         if (isCustomElement(element)) {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT, element.__original, [
-                `<${element.tag}>`,
-            ]);
+            return warnOnElement(
+                ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT,
+                element.__original,
+                [`<${element.tag}>`],
+            );
         }
 
         if (element.tag === 'slot') {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, element.__original);
+            return warnOnElement(
+                ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT,
+                element.__original,
+            );
         }
 
         if (
@@ -351,7 +392,9 @@ export default function parse(
             const possibleValues = Object.keys(LWCDirectiveDomMode)
                 .map(value => `"${value}"`)
                 .join(', or ');
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [possibleValues]);
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
+                possibleValues,
+            ]);
         }
 
         if (element.children.length > 0) {
@@ -373,7 +416,10 @@ export default function parse(
 
         if (!locatorIdAttribute && locatorContextAttribute) {
             removeAttribute(element, locatorContextAttribute.name);
-            return warnOnElement(ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID, element.__original);
+            return warnOnElement(
+                ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID,
+                element.__original,
+            );
         }
 
         if (locatorIdAttribute) {
@@ -383,7 +429,11 @@ export default function parse(
             }
 
             if (locatorIdAttribute.type !== IRAttributeType.String) {
-                return warnAt(ParserDiagnostics.LOCATOR_ID_SHOULD_BE_STRING, [], locatorIdAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.LOCATOR_ID_SHOULD_BE_STRING,
+                    [],
+                    locatorIdAttribute.location,
+                );
             }
             const id = locatorIdAttribute.value;
 
@@ -465,9 +515,17 @@ export default function parse(
             removeAttribute(element, forItemAttribute.name);
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION, [], forEachAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION,
+                    [],
+                    forEachAttribute.location,
+                );
             } else if (forItemAttribute.type !== IRAttributeType.String) {
-                return warnAt(ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING, [], forItemAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.FOR_ITEM_DIRECTIVE_SHOULD_BE_STRING,
+                    [],
+                    forItemAttribute.location,
+                );
             }
 
             let item: TemplateIdentifier;
@@ -485,7 +543,11 @@ export default function parse(
             if (forIndex) {
                 removeAttribute(element, forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
-                    return warnAt(ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING, [], forIndex.location);
+                    return warnAt(
+                        ParserDiagnostics.FOR_INDEX_DIRECTIVE_SHOULD_BE_STRING,
+                        [],
+                        forIndex.location,
+                    );
                 }
 
                 try {
@@ -552,7 +614,11 @@ export default function parse(
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             if (keyAttribute.type !== IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION, [], keyAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.KEY_ATTRIBUTE_SHOULD_BE_EXPRESSION,
+                    [],
+                    keyAttribute.location,
+                );
             }
 
             const forOfParent = getForOfParent(element);
@@ -566,7 +632,9 @@ export default function parse(
                     );
                 }
             } else if (forEachParent) {
-                if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
+                if (
+                    attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)
+                ) {
                     const name = 'name' in keyAttribute.value && keyAttribute.value.name;
                     return warnAt(
                         ParserDiagnostics.KEY_SHOULDNT_REFERENCE_FOR_EACH_INDEX,
@@ -594,7 +662,11 @@ export default function parse(
         const isAttr = getTemplateAttribute(element, 'lwc-deprecated:is');
         if (isAttr) {
             if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], isAttr.location);
+                return warnAt(
+                    ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION,
+                    [],
+                    isAttr.location,
+                );
             }
 
             // Don't remove the is, because passed as attribute
@@ -616,7 +688,11 @@ export default function parse(
         const slotAttribute = getTemplateAttribute(element, 'slot');
         if (slotAttribute) {
             if (slotAttribute.type === IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION, [], slotAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.SLOT_ATTRIBUTE_CANNOT_BE_EXPRESSION,
+                    [],
+                    slotAttribute.location,
+                );
             }
         }
 
@@ -626,7 +702,10 @@ export default function parse(
         }
 
         if (element.forEach || element.forOf || element.if) {
-            return warnOnElement(ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES, element.__original);
+            return warnOnElement(
+                ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES,
+                element.__original,
+            );
         }
 
         // Default slot have empty string name
@@ -635,7 +714,11 @@ export default function parse(
         const nameAttribute = getTemplateAttribute(element, 'name');
         if (nameAttribute) {
             if (nameAttribute.type === IRAttributeType.Expression) {
-                return warnAt(ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION, [], nameAttribute.location);
+                return warnAt(
+                    ParserDiagnostics.NAME_ON_SLOT_CANNOT_BE_EXPRESSION,
+                    [],
+                    nameAttribute.location,
+                );
             } else if (nameAttribute.type === IRAttributeType.String) {
                 name = nameAttribute.value;
             }
@@ -682,7 +765,11 @@ export default function parse(
                         warnAt(ParserDiagnostics.INVALID_ID_ATTRIBUTE, [attr.value], location);
                     }
                     if (isInIteration(element)) {
-                        warnAt(ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION, [attr.value], location);
+                        warnAt(
+                            ParserDiagnostics.INVALID_STATIC_ID_IN_ITERATION,
+                            [attr.value],
+                            location,
+                        );
                     }
                     state.idAttrData.push({
                         key: element.key!,
@@ -753,12 +840,18 @@ export default function parse(
 
             const isNotAllowedSvgTag = !SVG_TAG_WHITELIST.has(tag);
             if (namespace === SVG_NAMESPACE_URI && isNotAllowedSvgTag) {
-                return warnOnElement(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, node, [tag]);
+                return warnOnElement(ParserDiagnostics.FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE, node, [
+                    tag,
+                ]);
             }
 
             const isNotAllowedMathMlTag = MATHML_TAG_BLACKLIST.has(tag);
             if (namespace === MATHML_NAMESPACE_URI && isNotAllowedMathMlTag) {
-                return warnOnElement(ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE, node, [tag]);
+                return warnOnElement(
+                    ParserDiagnostics.FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE,
+                    node,
+                    [tag],
+                );
             }
         }
     }
@@ -776,7 +869,11 @@ export default function parse(
                 }
             }
 
-            if (node.namespaceURI === HTML_NAMESPACE_URI && tag === 'iframe' && attrName === 'srcdoc') {
+            if (
+                node.namespaceURI === HTML_NAMESPACE_URI &&
+                tag === 'iframe' &&
+                attrName === 'srcdoc'
+            ) {
                 warnOnElement(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, node);
             }
         });
@@ -788,8 +885,14 @@ export default function parse(
             for (const propName in props) {
                 const { name: attrName, type, value } = props[propName];
                 if (isTabIndexAttribute(attrName)) {
-                    if (type !== IRAttributeType.Expression && !isValidTabIndexAttributeValue(value)) {
-                        warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, element.__original);
+                    if (
+                        type !== IRAttributeType.Expression &&
+                        !isValidTabIndexAttributeValue(value)
+                    ) {
+                        warnOnElement(
+                            ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
+                            element.__original,
+                        );
                     }
                 }
             }
@@ -826,7 +929,10 @@ export default function parse(
         return expression;
     }
 
-    function getTemplateAttribute(el: IRElement, pattern: string | RegExp): IRAttribute | undefined {
+    function getTemplateAttribute(
+        el: IRElement,
+        pattern: string | RegExp,
+    ): IRAttribute | undefined {
         const node = el.__original as parse5.AST.Default.Element;
         const nodeLocation = node.__location!;
 
@@ -845,13 +951,21 @@ export default function parse(
         // parse5 automatically converts the casing from camelcase to all lowercase. If the attribute name
         // is not the same before and after the parsing, then the attribute name contains capital letters
         if (!rawAttribute.startsWith(name)) {
-            warnAt(ParserDiagnostics.INVALID_ATTRIBUTE_CASE, [rawAttribute, treeAdapter.getTagName(node)], location);
+            warnAt(
+                ParserDiagnostics.INVALID_ATTRIBUTE_CASE,
+                [rawAttribute, treeAdapter.getTagName(node)],
+                location,
+            );
             return;
         }
 
         try {
             const isBooleanAttribute = !rawAttribute.includes('=');
-            const { value, escapedExpression } = normalizeAttributeValue(matching, rawAttribute, el.tag);
+            const { value, escapedExpression } = normalizeAttributeValue(
+                matching,
+                rawAttribute,
+                el.tag,
+            );
             if (isExpression(value) && !escapedExpression) {
                 return {
                     name,
@@ -919,7 +1033,11 @@ export default function parse(
         );
     }
 
-    function warnAt(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: parse5.MarkupData.Location) {
+    function warnAt(
+        errorInfo: LWCErrorInfo,
+        messageArgs?: any[],
+        location?: parse5.MarkupData.Location,
+    ) {
         addDiagnostic(
             generateCompilerDiagnostic(errorInfo, {
                 messageArgs,

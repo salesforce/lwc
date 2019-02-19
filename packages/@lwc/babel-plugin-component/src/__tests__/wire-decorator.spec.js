@@ -111,7 +111,8 @@ describe('Transform property', () => {
     `,
         {
             error: {
-                message: '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
+                message:
+                    '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
                 loc: {
                     line: 2,
                     column: 4,

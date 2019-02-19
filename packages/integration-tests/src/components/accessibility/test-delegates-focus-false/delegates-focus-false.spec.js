@@ -22,7 +22,9 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-false');
         const activeFromShadow = browser.execute(function() {
-            return document.querySelector('integration-delegates-focus-false').shadowRoot.activeElement;
+            return document.querySelector(
+                'integration-delegates-focus-false',
+            ).shadowRoot.activeElement;
         });
         assert.equal(activeFromShadow.getTagName(), 'integration-child');
         browser.keys(['Tab']);

@@ -29,7 +29,9 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
         });
     }
 
-    testContentWindowProperty('postMessage', contentWindow => contentWindow.postMessage('foo', '*'));
+    testContentWindowProperty('postMessage', contentWindow =>
+        contentWindow.postMessage('foo', '*'),
+    );
     testContentWindowProperty('focus', contentWindow => contentWindow.focus());
     testContentWindowProperty('blur', contentWindow => contentWindow.blur());
     testContentWindowProperty('close', contentWindow => contentWindow.close());

@@ -25,7 +25,10 @@ describe('Composed focusout event', () => {
         browser.click('button');
         browser.waitUntil(
             () => {
-                return browser.getText('.custom-focus-out-not-composed') === 'Custom Focus Out Not Composed';
+                return (
+                    browser.getText('.custom-focus-out-not-composed') ===
+                    'Custom Focus Out Not Composed'
+                );
             },
             500,
             'Expect focus out to be composed',

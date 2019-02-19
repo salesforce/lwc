@@ -404,7 +404,8 @@ describe('Transform property', () => {
     `,
         {
             error: {
-                message: 'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
+                message:
+                    'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
                 loc: {
                     line: 2,
                     column: 9,
@@ -519,7 +520,8 @@ describe('Transform property', () => {
     `,
         {
             error: {
-                message: 'Invalid property name "part". "part" is a future reserved attribute for web components.',
+                message:
+                    'Invalid property name "part". "part" is a future reserved attribute for web components.',
                 loc: {
                     line: 2,
                     column: 9,

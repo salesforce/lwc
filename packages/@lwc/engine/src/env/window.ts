@@ -16,7 +16,9 @@ if (typeof MO === 'undefined') {
         observe() {
             if (process.env.NODE_ENV !== 'production') {
                 if (process.env.NODE_ENV !== 'test') {
-                    throw new Error(`MutationObserver should not be mocked outside of the jest test environment`);
+                    throw new Error(
+                        `MutationObserver should not be mocked outside of the jest test environment`,
+                    );
                 }
             }
         },
@@ -27,7 +29,10 @@ if (typeof MO === 'undefined') {
 const MutationObserver = MO;
 const MutationObserverObserve = MutationObserver.prototype.observe;
 
-let { addEventListener: windowAddEventListener, removeEventListener: windowRemoveEventListener } = window;
+let {
+    addEventListener: windowAddEventListener,
+    removeEventListener: windowRemoveEventListener,
+} = window;
 
 /**
  * This trick to try to pick up the __lwcOriginal__ out of the intrinsic is to please
@@ -38,4 +43,9 @@ windowAddEventListener = windowAddEventListener.__lwcOriginal__ || windowAddEven
 // @ts-ignore jsdom
 windowRemoveEventListener = windowRemoveEventListener.__lwcOriginal__ || windowRemoveEventListener;
 
-export { MutationObserver, MutationObserverObserve, windowAddEventListener, windowRemoveEventListener };
+export {
+    MutationObserver,
+    MutationObserverObserve,
+    windowAddEventListener,
+    windowRemoveEventListener,
+};

@@ -40,7 +40,10 @@ describe('rollup plugin lwc-minify', () => {
             expect(varPosition.line).toBe(3);
             expect(varPosition.column).toBe(4);
 
-            const variableNamePosition = sourceMapConsumer.originalPositionFor({ line: 1, column: 4 });
+            const variableNamePosition = sourceMapConsumer.originalPositionFor({
+                line: 1,
+                column: 4,
+            });
             expect(variableNamePosition.line).toBe(3);
             expect(variableNamePosition.column).toBe(8);
             expect(variableNamePosition.name).toBe('a');

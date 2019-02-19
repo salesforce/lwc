@@ -96,8 +96,12 @@ export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
 
 export function validateOptions(options: CompilerOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
-    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [options.name]);
-    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
+    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
+        options.name,
+    ]);
+    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
+        options.namespace,
+    ]);
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
@@ -106,10 +110,11 @@ export function validateOptions(options: CompilerOptions) {
 
     for (const key of Object.keys(options.files)) {
         const value = options.files[key];
-        invariant(!isUndefined(value) && isString(value), CompilerValidationErrors.UNEXPECTED_FILE_CONTENT, [
-            key,
-            value,
-        ]);
+        invariant(
+            !isUndefined(value) && isString(value),
+            CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
+            [key, value],
+        );
     }
 
     if (!isUndefined(options.stylesheetConfig)) {
@@ -134,10 +139,16 @@ function validateStylesheetConfig(config: StylesheetConfig) {
         );
 
         if (!isUndefined(resolution)) {
-            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [resolution]);
+            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
+                resolution,
+            ]);
 
             const { type } = resolution;
-            invariant(type === 'native' || type === 'module', CompilerValidationErrors.INVALID_TYPE_PROPERTY, [type]);
+            invariant(
+                type === 'native' || type === 'module',
+                CompilerValidationErrors.INVALID_TYPE_PROPERTY,
+                [type],
+            );
         }
     }
 }
@@ -147,21 +158,36 @@ function isUndefinedOrBoolean(property: any): boolean {
 }
 
 function validateOutputConfig(config: OutputConfig) {
-    invariant(isUndefinedOrBoolean(config.minify), CompilerValidationErrors.INVALID_MINIFY_PROPERTY, [config.minify]);
+    invariant(
+        isUndefinedOrBoolean(config.minify),
+        CompilerValidationErrors.INVALID_MINIFY_PROPERTY,
+        [config.minify],
+    );
 
-    invariant(isUndefinedOrBoolean(config.compat), CompilerValidationErrors.INVALID_COMPAT_PROPERTY, [config.compat]);
+    invariant(
+        isUndefinedOrBoolean(config.compat),
+        CompilerValidationErrors.INVALID_COMPAT_PROPERTY,
+        [config.compat],
+    );
 
-    invariant(isUndefinedOrBoolean(config.sourcemap), CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY, [
-        config.sourcemap,
-    ]);
+    invariant(
+        isUndefinedOrBoolean(config.sourcemap),
+        CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
+        [config.sourcemap],
+    );
 
     if (!isUndefined(config.env)) {
-        invariant(isObject(config.env), CompilerValidationErrors.INVALID_ENV_PROPERTY, [config.env]);
+        invariant(isObject(config.env), CompilerValidationErrors.INVALID_ENV_PROPERTY, [
+            config.env,
+        ]);
 
         for (const [key, value] of Object.entries(config.env)) {
             invariant(KNOWN_ENV.has(key), CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY, [key]);
 
-            invariant(isString(value), CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE, [key, value]);
+            invariant(isString(value), CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE, [
+                key,
+                value,
+            ]);
         }
     }
 }

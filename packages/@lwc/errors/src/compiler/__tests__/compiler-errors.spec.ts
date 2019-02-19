@@ -42,7 +42,14 @@ class CustomError extends Error {
     public start?: number;
     public length?: number;
 
-    constructor(message: string, filename?: string, line?: number, column?: number, start?: number, length?: number) {
+    constructor(
+        message: string,
+        filename?: string,
+        line?: number,
+        column?: number,
+        start?: number,
+        length?: number,
+    ) {
         super(message);
 
         this.name = 'CustomError';
@@ -157,22 +164,35 @@ describe('error handling', () => {
                 start: 7,
                 length: 3,
             });
-            const target = new CompilerError(100, 'LWC100: test error', 'test.js', DEFAULT_LOCATION);
+            const target = new CompilerError(
+                100,
+                'LWC100: test error',
+                'test.js',
+                DEFAULT_LOCATION,
+            );
 
             checkErrorEquality(
-                normalizeToCompilerError(GENERIC_ERROR, oldError, { filename: 'test.js', location: DEFAULT_LOCATION }),
+                normalizeToCompilerError(GENERIC_ERROR, oldError, {
+                    filename: 'test.js',
+                    location: DEFAULT_LOCATION,
+                }),
                 target,
             );
         });
 
         it('normalizes a given error into a compiler error', () => {
             const error = new CustomError('test error', 'test.js', 3, 5, 16, 10);
-            const target = new CompilerError(100, 'CustomError: LWC100: Unexpected error: test error', 'test.js', {
-                line: 3,
-                column: 5,
-                start: 16,
-                length: 10,
-            });
+            const target = new CompilerError(
+                100,
+                'CustomError: LWC100: Unexpected error: test error',
+                'test.js',
+                {
+                    line: 3,
+                    column: 5,
+                    start: 16,
+                    length: 10,
+                },
+            );
 
             const normalized = normalizeToCompilerError(GENERIC_ERROR, error);
             checkErrorEquality(normalized, target);
@@ -229,7 +249,12 @@ describe('error handling', () => {
                 filename: 'test.js',
                 location: DEFAULT_LOCATION,
             };
-            const error = new CompilerError(target.code, target.message, target.filename, target.location);
+            const error = new CompilerError(
+                target.code,
+                target.message,
+                target.filename,
+                target.location,
+            );
 
             expect(normalizeToDiagnostic(GENERIC_ERROR, error)).toEqual(target);
         });
@@ -242,7 +267,12 @@ describe('error handling', () => {
                 filename: 'test.js',
                 location: DEFAULT_LOCATION,
             };
-            const error = new CompilerError(target.code, target.message, 'old.js', DEFAULT_LOCATION);
+            const error = new CompilerError(
+                target.code,
+                target.message,
+                'old.js',
+                DEFAULT_LOCATION,
+            );
 
             expect(
                 normalizeToDiagnostic(GENERIC_ERROR, error, {

@@ -44,7 +44,9 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     }
 
     const allowDefinition = !config.customProperties || config.customProperties.allowDefinition;
-    const collectVarFunctions = Boolean(config.customProperties && config.customProperties.resolverModule);
+    const collectVarFunctions = Boolean(
+        config.customProperties && config.customProperties.resolverModule,
+    );
     const minify = config.outputConfig && config.outputConfig.minify;
 
     const plugins = [

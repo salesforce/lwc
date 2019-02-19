@@ -77,7 +77,9 @@ describe('WireEventTarget', () => {
                 );
                 expect(() => {
                     wireEventTarget.addEventListener(DISCONNECT, dupeListener);
-                }).toThrowError('must not call addEventListener("disconnect") with the same listener');
+                }).toThrowError(
+                    'must not call addEventListener("disconnect") with the same listener',
+                );
             });
 
             it('adds listener to the queue', () => {
@@ -367,7 +369,9 @@ describe('WireEventTarget', () => {
             const mockConfigListenerMetadata = { listener };
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
-            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { prop: [mockConfigListenerMetadata] } };
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = {
+                listeners: { prop: [mockConfigListenerMetadata] },
+            };
             const mockWireDef: WireDef = {
                 adapter: {},
                 params: {
@@ -391,7 +395,9 @@ describe('WireEventTarget', () => {
             const mockConfigListenerMetadata = { listener };
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
-            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { x: [mockConfigListenerMetadata] } };
+            mockContext[CONTEXT_ID][CONTEXT_UPDATED] = {
+                listeners: { x: [mockConfigListenerMetadata] },
+            };
             const mockWireDef: WireDef = {
                 adapter: {},
                 params: {

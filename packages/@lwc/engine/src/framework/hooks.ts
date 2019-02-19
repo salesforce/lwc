@@ -7,7 +7,15 @@
 import assert from '../shared/assert';
 import { isArray, isUndefined, isTrue, hasOwnProperty } from '../shared/language';
 import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from './vm';
+import {
+    renderVM,
+    createVM,
+    appendVM,
+    removeVM,
+    getCustomElementVM,
+    allocateInSlot,
+    setNodeOwnerKey,
+} from './vm';
 import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
 import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
 import modEvents from './modules/events';
@@ -21,7 +29,12 @@ import modContext from './modules/context';
 import { hasDynamicChildren } from './patch';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from './restrictions';
-import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from './patch';
+import {
+    patchElementProto,
+    patchTextNodeProto,
+    patchCommentNodeProto,
+    patchCustomElementProto,
+} from './patch';
 import { getComponentDef, setElementProto } from './def';
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
@@ -81,7 +94,10 @@ export function createElmHook(vnode: VElement) {
             shadowAttribute,
             data: { context },
         } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
+        const isPortal =
+            !isUndefined(context) &&
+            !isUndefined(context.lwc) &&
+            context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
             isPortal,
@@ -92,7 +108,10 @@ export function createElmHook(vnode: VElement) {
         const {
             data: { context },
         } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
+        const isPortal =
+            !isUndefined(context) &&
+            !isUndefined(context.lwc) &&
+            context.lwc.dom === LWCDOMMode.manual;
         patchElementWithRestrictions(elm, { isPortal });
     }
 }
@@ -157,7 +176,10 @@ export function createCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        assert.isTrue(
+            isArray(vnode.children),
+            `Invalid vnode for a custom element, it must have children defined.`,
+        );
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm, EmptyObject);
@@ -193,7 +215,10 @@ export function renderCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        assert.isTrue(
+            isArray(vnode.children),
+            `Invalid vnode for a custom element, it must have children defined.`,
+        );
     }
     renderVM(vm);
 }

@@ -22,12 +22,12 @@ Every time the test suite runs with the `--coverage` flag it produces a folder b
 
 This set of options applies to the `start` and `test` commands. On top of the standard Karma [command line options](http://karma-runner.github.io/3.0/config/configuration-file.html), this package offers extra command line options:
 
-* **`--compat`:** Compile and deliver tests in COMPAT mode.
-* **`--native-shadow`:** Force the components to be created with native shadow enabled.
-* **`--coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
-* **`--grep=<pattern>`:** Filter the spec to run based on the pattern.
+-   **`--compat`:** Compile and deliver tests in COMPAT mode.
+-   **`--native-shadow`:** Force the components to be created with native shadow enabled.
+-   **`--coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
+-   **`--grep=<pattern>`:** Filter the spec to run based on the pattern.
 
 ## Contributing
 
-* The test suite uses jasmine for test runner. You can find more details about jasmine here: https://jasmine.github.io/api/3.3/global
-* You should rather import `createElement` from `test-utils` instead of `lwc`. The `createElement` element from `test-utils` set `fallback` to false if the `--native-shadow` flag is passed to the command.
+-   The test suite uses jasmine for test runner. You can find more details about jasmine here: https://jasmine.github.io/api/3.3/global
+-   You should rather import `createElement` from `test-utils` instead of `lwc`. The `createElement` element from `test-utils` set `fallback` to false if the `--native-shadow` flag is passed to the command.

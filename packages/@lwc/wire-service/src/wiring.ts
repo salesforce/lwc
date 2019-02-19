@@ -72,7 +72,10 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
     }
 }
 
-function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[], toRemove: ConfigListener) {
+function removeConfigListener(
+    configListenerMetadatas: ConfigListenerMetadata[],
+    toRemove: ConfigListener,
+) {
     for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
         if (configListenerMetadatas[i].listener === toRemove) {
             configListenerMetadatas.splice(i, 1);
@@ -103,7 +106,13 @@ export class WireEventTarget {
     _wireDef: WireDef;
     _wireTarget: string;
 
-    constructor(cmp: LightningElement, def: ElementDef, context: Context, wireDef: WireDef, wireTarget: string) {
+    constructor(
+        cmp: LightningElement,
+        def: ElementDef,
+        context: Context,
+        wireDef: WireDef,
+        wireTarget: string,
+    ) {
         this._cmp = cmp;
         this._def = def;
         this._context = context;
@@ -194,12 +203,14 @@ export class WireEventTarget {
             }
 
             case CONFIG: {
-                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED].listeners;
+                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED]
+                    .listeners;
                 const reactives = this._wireDef.params;
                 if (reactives) {
                     Object.keys(reactives).forEach(key => {
                         const reactiveParameter = buildReactiveParameter(reactives[key]);
-                        const configListenerMetadatas = paramToConfigListenerMetadata[reactiveParameter.head];
+                        const configListenerMetadatas =
+                            paramToConfigListenerMetadata[reactiveParameter.head];
                         if (configListenerMetadatas) {
                             removeConfigListener(configListenerMetadatas, listener);
                         }

@@ -110,7 +110,10 @@ function getSauceConfig(config) {
 
 function getMatchingBrowsers({ compat, nativeShadow }) {
     return SAUCE_BROWSERS.filter(browser => {
-        return browser.compat === compat && (!nativeShadow || browser.nativeShadowCompatible === nativeShadow);
+        return (
+            browser.compat === compat &&
+            (!nativeShadow || browser.nativeShadowCompatible === nativeShadow)
+        );
     });
 }
 

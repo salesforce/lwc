@@ -32,7 +32,10 @@ const resolvedPromiseTemplate = babelTemplate(`
  */
 function insertNamedImportReplacement(t, path, resource) {
     // jest.fn();
-    const jestFn = t.callExpression(t.memberExpression(t.identifier('jest'), t.identifier('fn')), []);
+    const jestFn = t.callExpression(
+        t.memberExpression(t.identifier('jest'), t.identifier('fn')),
+        [],
+    );
 
     // function() { return Promise.resolve(); };
     const resolvedPromise = t.functionExpression(
@@ -40,7 +43,10 @@ function insertNamedImportReplacement(t, path, resource) {
         [],
         t.blockStatement([
             t.returnStatement(
-                t.callExpression(t.memberExpression(t.identifier('Promise'), t.identifier('resolve')), []),
+                t.callExpression(
+                    t.memberExpression(t.identifier('Promise'), t.identifier('resolve')),
+                    [],
+                ),
             ),
         ]),
     );
@@ -61,7 +67,9 @@ function insertNamedImportReplacement(t, path, resource) {
                         '=',
                         t.identifier(resource),
                         t.memberExpression(
-                            t.callExpression(t.identifier('require'), [t.stringLiteral(APEX_IMPORT_IDENTIFIER)]),
+                            t.callExpression(t.identifier('require'), [
+                                t.stringLiteral(APEX_IMPORT_IDENTIFIER),
+                            ]),
                             t.identifier(resource),
                         ),
                     ),
@@ -71,7 +79,9 @@ function insertNamedImportReplacement(t, path, resource) {
             t.catchClause(
                 t.identifier('e'),
                 t.blockStatement([
-                    t.expressionStatement(t.assignmentExpression('=', t.identifier(resource), fallbackValue)),
+                    t.expressionStatement(
+                        t.assignmentExpression('=', t.identifier(resource), fallbackValue),
+                    ),
                 ]),
             ),
         ),

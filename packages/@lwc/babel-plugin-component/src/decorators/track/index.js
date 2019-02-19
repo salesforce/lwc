@@ -43,7 +43,11 @@ function transform(t, klass, decorators) {
             return acc;
         }, {});
 
-        const staticProp = staticClassProperty(t, LWC_COMPONENT_PROPERTIES.TRACK, t.valueToNode(trackConfig));
+        const staticProp = staticClassProperty(
+            t,
+            LWC_COMPONENT_PROPERTIES.TRACK,
+            t.valueToNode(trackConfig),
+        );
         markAsLWCNode(staticProp);
 
         klass.get('body').pushContainer('body', staticProp);

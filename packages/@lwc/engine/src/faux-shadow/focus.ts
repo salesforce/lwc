@@ -22,9 +22,24 @@ import {
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
 } from '../env/node';
-import { ArraySlice, ArrayIndexOf, isFalse, isNull, toString, ArrayReverse, hasOwnProperty } from '../shared/language';
-import { DocumentPrototypeActiveElement, querySelectorAll as documentQuerySelectorAll } from '../env/document';
-import { eventCurrentTargetGetter, eventTargetGetter, focusEventRelatedTargetGetter } from '../env/dom';
+import {
+    ArraySlice,
+    ArrayIndexOf,
+    isFalse,
+    isNull,
+    toString,
+    ArrayReverse,
+    hasOwnProperty,
+} from '../shared/language';
+import {
+    DocumentPrototypeActiveElement,
+    querySelectorAll as documentQuerySelectorAll,
+} from '../env/document';
+import {
+    eventCurrentTargetGetter,
+    eventTargetGetter,
+    focusEventRelatedTargetGetter,
+} from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
 
 const TabbableElementsQuery = `
@@ -141,7 +156,8 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     const firstChildIndex = hostIndex > -1 ? hostIndex : ArrayIndexOf.call(all, firstChild);
 
     // Account for an empty inner list
-    const lastChildIndex = inner.length === 0 ? firstChildIndex + 1 : ArrayIndexOf.call(all, lastChild) + 1;
+    const lastChildIndex =
+        inner.length === 0 ? firstChildIndex + 1 : ArrayIndexOf.call(all, lastChild) + 1;
     const prev = ArraySlice.call(all, 0, firstChildIndex);
     const next = ArraySlice.call(all, lastChildIndex);
     return {
@@ -157,7 +173,8 @@ export function getActiveElement(host: HTMLElement): Element | null {
         return activeElement;
     }
     // activeElement must be child of the host and owned by it
-    return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
+    return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !==
+        0
         ? activeElement
         : null;
 }
@@ -270,7 +287,8 @@ function keyboardFocusInHandler(event: FocusEvent) {
         // If we receive a focusin event that is not focusing on the first or last
         // element inside of a shadow, we can assume that the user is tabbing between
         // elements inside of the custom element shadow, so we do nothing
-        (isFalse(isFirstFocusableChildReceivingFocus) && isFalse(isLastFocusableChildReceivingFocus)) ||
+        (isFalse(isFirstFocusableChildReceivingFocus) &&
+            isFalse(isLastFocusableChildReceivingFocus)) ||
         // If related target is null, user is probably tabbing into the document from the browser chrome (location bar?)
         // If relatedTarget is null, we can't do much here because we don't know what direction the user is tabbing
         // This is a bit of an edge case, and only comes up if the custom element is the very first or very last
@@ -284,14 +302,20 @@ function keyboardFocusInHandler(event: FocusEvent) {
     const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
     switch (post) {
         case 1: // focus is probably coming from above
-            if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousTabbableElement(segments)) {
+            if (
+                isFirstFocusableChildReceivingFocus &&
+                relatedTarget === getPreviousTabbableElement(segments)
+            ) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnNextOrBlur(target, segments);
             }
             break;
         case 2: // focus is probably coming from below
-            if (isLastFocusableChildReceivingFocus && relatedTarget === getNextTabbableElement(segments)) {
+            if (
+                isLastFocusableChildReceivingFocus &&
+                relatedTarget === getNextTabbableElement(segments)
+            ) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnPrevOrBlur(target, segments);
@@ -377,7 +401,9 @@ export function ignoreFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             tabIndexGetter.call(elm) !== -1,
-            `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(elm)} should not have tabIndex -1`,
+            `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(
+                elm,
+            )} should not have tabIndex -1`,
         );
     }
     removeEventListener.call(elm, 'focusin', keyboardFocusInHandler);

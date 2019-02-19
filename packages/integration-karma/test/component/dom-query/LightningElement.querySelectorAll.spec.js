@@ -20,7 +20,9 @@ describe('LightningElement.querySelectorAll', () => {
         const parentResult = elm.componentQuerySelectorAll('div');
         expect(parentResult.length).toBe(0);
 
-        const childResult = elm.shadowRoot.querySelector('x-child').componentQuerySelectorAll('div');
+        const childResult = elm.shadowRoot
+            .querySelector('x-child')
+            .componentQuerySelectorAll('div');
         expect(childResult.length).toBe(2);
         expect(childResult[0].className).toBe('foo slotted1');
         expect(childResult[1].className).toBe('foo slotted2');

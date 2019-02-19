@@ -120,7 +120,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
             if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
                 if (process.env.NODE_ENV === 'test') {
                     /* eslint-disable-next-line no-console */
-                    console.warn('The "slotchange" event is not supported in our jest test environment.');
+                    console.warn(
+                        'The "slotchange" event is not supported in our jest test environment.',
+                    );
                 }
                 setInternalField(this, SlotChangeKey, true);
                 if (!observer) {
@@ -132,7 +134,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
         }
         assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
             const flatten = !isUndefined(options) && isTrue(options.flatten);
-            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            const nodes = flatten
+                ? getFilteredSlotFlattenNodes(this)
+                : getFilteredSlotAssignedNodes(this);
             return ArrayFilter.call(nodes, node => node instanceof Element);
         }
         assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
@@ -146,7 +150,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
         }
         get childNodes(this: HTMLSlotElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticNodeList(childNodes);
         }
         get children(this: HTMLSlotElement): HTMLCollectionOf<Element> {
@@ -159,7 +165,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
                 return childrenGetter.call(this);
             }
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(
                 ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element),
             );

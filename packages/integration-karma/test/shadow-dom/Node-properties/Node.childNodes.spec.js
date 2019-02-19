@@ -22,8 +22,12 @@ describe('Node.childNodes', () => {
         expect(elm.shadowRoot.childNodes[0]).toBe(elm.shadowRoot.querySelector('.outer'));
 
         expect(elm.shadowRoot.querySelector('.slotted').childNodes.length).toBe(1);
-        expect(elm.shadowRoot.querySelector('.slotted').childNodes[0].nodeType).toBe(Node.TEXT_NODE);
-        expect(elm.shadowRoot.querySelector('.slotted').childNodes[0].textContent).toBe('Slotted Text');
+        expect(elm.shadowRoot.querySelector('.slotted').childNodes[0].nodeType).toBe(
+            Node.TEXT_NODE,
+        );
+        expect(elm.shadowRoot.querySelector('.slotted').childNodes[0].textContent).toBe(
+            'Slotted Text',
+        );
     });
 
     it('should return the right children Nodes - x-container', () => {
@@ -37,11 +41,15 @@ describe('Node.childNodes', () => {
         expect(hostChildNodes[0]).toBe(elm.shadowRoot.querySelector('.slotted'));
 
         expect(container.shadowRoot.childNodes.length).toBe(3);
-        expect(container.shadowRoot.childNodes[1]).toBe(container.shadowRoot.querySelector('.container'));
+        expect(container.shadowRoot.childNodes[1]).toBe(
+            container.shadowRoot.querySelector('.container'),
+        );
 
         // With native shadow the fallback slot content is rendered regardless if the slot has assigned nodes or not.
         // While with synthetic shadow, the fallback slot content is only rendered only when the slot has no assigned
         // nodes.
-        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(process.env.NATIVE_SHADOW ? 1 : 0);
+        expect(container.shadowRoot.querySelector('slot').childNodes.length).toBe(
+            process.env.NATIVE_SHADOW ? 1 : 0,
+        );
     });
 });

@@ -23,13 +23,26 @@ import {
     getPropertyDescriptor,
 } from '../shared/language';
 import { ComponentInterface } from './component';
-import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from './attributes';
+import {
+    getGlobalHTMLPropertiesInfo,
+    getPropNameFromAttrName,
+    isAttributeLocked,
+} from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getShadowRootVM, getCustomElementVM, VM, getNodeOwnerKey, getComponentVM } from './vm';
-import { getAttribute, setAttribute, setAttributeNS, removeAttribute, removeAttributeNS } from '../env/element';
+import {
+    getAttribute,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+} from '../env/element';
 import { create } from './../shared/language';
 
-function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions): PropertyDescriptorMap {
+function getNodeRestrictionsDescriptors(
+    node: Node,
+    options: RestrictionsOptions,
+): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -129,7 +142,10 @@ function getNodeRestrictionsDescriptors(node: Node, options: RestrictionsOptions
     };
 }
 
-function getElementRestrictionsDescriptors(elm: HTMLElement, options: RestrictionsOptions): PropertyDescriptorMap {
+function getElementRestrictionsDescriptors(
+    elm: HTMLElement,
+    options: RestrictionsOptions,
+): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -168,7 +184,10 @@ function getElementRestrictionsDescriptors(elm: HTMLElement, options: Restrictio
     return descriptors;
 }
 
-function getShadowRootRestrictionsDescriptors(sr: ShadowRoot, options: RestrictionsOptions): PropertyDescriptorMap {
+function getShadowRootRestrictionsDescriptors(
+    sr: ShadowRoot,
+    options: RestrictionsOptions,
+): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -283,7 +302,12 @@ function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, _newValue: any) {
+function setAttributeNSPatched(
+    this: HTMLElement,
+    attrNameSpace: string,
+    attrName: string,
+    _newValue: any,
+) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -318,7 +342,9 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const propName = isString(attrName) ? getPropNameFromAttrName(StringToLowerCase.call(attrName)) : null;
+    const propName = isString(attrName)
+        ? getPropNameFromAttrName(StringToLowerCase.call(attrName))
+        : null;
     const {
         elm,
         def: { props: propsConfig },
@@ -492,7 +518,9 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
             get(this: ComponentInterface) {
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
-                msg.push(`Accessing the global HTML property "${propName}" in ${this} is disabled.`);
+                msg.push(
+                    `Accessing the global HTML property "${propName}" in ${this} is disabled.`,
+                );
                 if (error) {
                     msg.push(error);
                 } else {

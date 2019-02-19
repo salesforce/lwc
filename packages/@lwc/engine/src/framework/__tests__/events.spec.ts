@@ -777,7 +777,9 @@ describe('Component events', () => {
         buttonEl.click();
 
         expect(errorHandler.mock.calls).toHaveLength(1);
-        expect(errorHandler.mock.calls[0][0].message).toMatch(/Invalid event handler for event 'click'/);
+        expect(errorHandler.mock.calls[0][0].message).toMatch(
+            /Invalid event handler for event 'click'/,
+        );
 
         window.removeEventListener('error', errorHandler);
     });
@@ -907,8 +909,12 @@ describe('Shadow Root events', () => {
         );
         class MyComponent extends LightningElement {
             handleClick(evt) {
-                expect(evt.target.tagName.toLowerCase()).toBe('correct-nested-root-event-target-child');
-                expect(evt.target).toBe(this.template.querySelector('correct-nested-root-event-target-child'));
+                expect(evt.target.tagName.toLowerCase()).toBe(
+                    'correct-nested-root-event-target-child',
+                );
+                expect(evt.target).toBe(
+                    this.template.querySelector('correct-nested-root-event-target-child'),
+                );
             }
 
             clickChildDiv() {
@@ -1004,7 +1010,9 @@ describe('Shadow Root events', () => {
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
-        elm.shadowRoot.querySelector('div').dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
+        elm.shadowRoot
+            .querySelector('div')
+            .dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
     });
 });
 

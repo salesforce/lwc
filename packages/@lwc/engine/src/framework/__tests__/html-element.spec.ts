@@ -26,7 +26,9 @@ describe('html-element', () => {
             }
             MyComponent.track = { state: 1 };
 
-            expect(() => createElement('x-foo-tracked-state', { is: MyComponent })).not.toLogWarning();
+            expect(() =>
+                createElement('x-foo-tracked-state', { is: MyComponent }),
+            ).not.toLogWarning();
         });
         it('should be mutable during construction', () => {
             let state;
@@ -1148,7 +1150,9 @@ describe('html-element', () => {
                 class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-accessKey', { is: MyComponent });
                 element.accessKey = 'accessKey';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe('accessKey');
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe(
+                    'accessKey',
+                );
             });
 
             it('should return correct value from getter', () => {
@@ -1197,7 +1201,9 @@ describe('html-element', () => {
                     }
                 }
 
-                const element = createElement('prop-setter-accessKey-reactive', { is: MyComponent });
+                const element = createElement('prop-setter-accessKey-reactive', {
+                    is: MyComponent,
+                });
                 document.body.appendChild(element);
 
                 element.accessKey = 'accessKey';
@@ -1217,7 +1223,9 @@ describe('html-element', () => {
                 MyComponent.publicProps = {
                     accessKey: {},
                 };
-                const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
+                const element = createElement('prop-getter-accessKey-imperative', {
+                    is: MyComponent,
+                });
                 expect(element.accessKey).toBe('accessKey');
                 expect(count).toBe(1);
             });
@@ -1267,7 +1275,9 @@ describe('html-element', () => {
                 class MyComponent extends LightningElement {}
                 const element = createElement('prop-reflect-title', { is: MyComponent });
                 element.title = 'title';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe('title');
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe(
+                    'title',
+                );
             });
 
             it('should return correct value from getter', () => {

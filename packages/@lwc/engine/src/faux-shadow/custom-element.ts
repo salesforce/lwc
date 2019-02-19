@@ -15,7 +15,13 @@ import {
 import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
 import { hasAttribute, tabIndexGetter, childrenGetter } from '../env/element';
-import { isNull, isFalse, getPropertyDescriptor, ArrayFilter, ArrayUnshift } from '../shared/language';
+import {
+    isNull,
+    isFalse,
+    getPropertyDescriptor,
+    ArrayFilter,
+    ArrayUnshift,
+} from '../shared/language';
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
 import { HTMLElementConstructor } from '../framework/base-bridge-element';
 import { createStaticNodeList } from '../shared/static-node-list';
@@ -112,7 +118,9 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         }
         get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
             if (
                 process.env.NODE_ENV !== 'production' &&
                 isFalse(hasNativeSymbolsSupport) &&
@@ -136,7 +144,9 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 return childrenGetter.call(this);
             }
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(
                 ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element),
             );

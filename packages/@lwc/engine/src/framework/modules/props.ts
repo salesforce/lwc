@@ -22,7 +22,10 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     // For special whitelisted properties (e.g., `checked` and `value`), we
     // check against the actual property value on the DOM element instead of
     // relying on tracked property values.
-    return hasOwnProperty.call(EspecialTagAndPropMap, sel) && hasOwnProperty.call(EspecialTagAndPropMap[sel], key);
+    return (
+        hasOwnProperty.call(EspecialTagAndPropMap, sel) &&
+        hasOwnProperty.call(EspecialTagAndPropMap[sel], key)
+    );
 }
 
 function update(oldVnode: VNode, vnode: VNode) {
@@ -63,7 +66,10 @@ function update(oldVnode: VNode, vnode: VNode) {
         }
 
         // if it is the first time this element is patched, or the current value is different to the previous value...
-        if (isFirstPatch || cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])) {
+        if (
+            isFirstPatch ||
+            cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])
+        ) {
             if (isCustomElement) {
                 prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
             }

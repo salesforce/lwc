@@ -57,7 +57,9 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
                 if (normalizedActual !== normalizedExpected) {
                     // we should fail, but with style
-                    expect(prettier.format(normalizedActual)).toBe(prettier.format(normalizedExpected));
+                    expect(prettier.format(normalizedActual)).toBe(
+                        prettier.format(normalizedExpected),
+                    );
                 } else {
                     expect(normalizedActual).toBe(normalizedExpected);
                 }
@@ -67,8 +69,10 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
         }
     };
 
-    const pluginTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
-    pluginTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
+    const pluginTester = (name, actual, expected) =>
+        test(name, () => transformTest(actual, expected));
+    pluginTester.only = (name, actual, expected) =>
+        test.only(name, () => transformTest(actual, expected));
     pluginTester.skip = name => test.skip(name);
 
     return pluginTester;

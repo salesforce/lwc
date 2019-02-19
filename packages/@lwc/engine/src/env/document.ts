@@ -6,9 +6,10 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
 
-const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(Document.prototype, 'activeElement')!.get as (
-    this: Document,
-) => Element | null;
+const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(
+    Document.prototype,
+    'activeElement',
+)!.get as (this: Document) => Element | null;
 
 const elementFromPoint = hasOwnProperty.call(Document.prototype, 'elementFromPoint')
     ? Document.prototype.elementFromPoint

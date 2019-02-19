@@ -32,7 +32,9 @@ describe('accessibility', () => {
                 document.body.appendChild(elm);
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
-                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('input'));
+                    expect(elm.shadowRoot.activeElement).toBe(
+                        elm.shadowRoot.querySelector('input'),
+                    );
                 });
             });
 
@@ -72,7 +74,9 @@ describe('accessibility', () => {
                 document.body.appendChild(elm);
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
-                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child'));
+                    expect(elm.shadowRoot.activeElement).toBe(
+                        elm.shadowRoot.querySelector('x-child'),
+                    );
                     expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(
                         elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input'),
                     );

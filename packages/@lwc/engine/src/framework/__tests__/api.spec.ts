@@ -245,7 +245,9 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.');
+            }).toThrow(
+                'Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.',
+            );
         });
     });
 

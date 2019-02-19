@@ -74,7 +74,9 @@ describe('test shape of the bundle in different modes and environments', () => {
             name: 'class_and_template',
             files: {
                 'class_and_template.js': readFixture('./class_and_template/class_and_template.js'),
-                'class_and_template.html': readFixture('./class_and_template/class_and_template.html'),
+                'class_and_template.html': readFixture(
+                    './class_and_template/class_and_template.html',
+                ),
             },
             outputConfig: {
                 minify: true,

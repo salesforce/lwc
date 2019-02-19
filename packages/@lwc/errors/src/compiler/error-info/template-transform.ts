@@ -74,7 +74,8 @@ export const ParserDiagnostics = {
 
     AMBIGUOUS_ATTRIBUTE_VALUE_STRING: {
         code: 1035,
-        message: 'Ambiguous attribute value {0}. If you want to make it a string you should escape it {1}',
+        message:
+            'Ambiguous attribute value {0}. If you want to make it a string you should escape it {1}',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -182,14 +183,16 @@ export const ParserDiagnostics = {
 
     FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE: {
         code: 1049,
-        message: "Forbidden svg namespace tag found in template: '<{0}>' tag is not allowed within <svg>",
+        message:
+            "Forbidden svg namespace tag found in template: '<{0}>' tag is not allowed within <svg>",
         level: DiagnosticLevel.Error,
         url: '',
     },
 
     FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE: {
         code: 1050,
-        message: "Forbidden MathML namespace tag found in template: '<{0}>' tag is not allowed within <math>",
+        message:
+            "Forbidden MathML namespace tag found in template: '<{0}>' tag is not allowed within <math>",
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -230,7 +233,8 @@ export const ParserDiagnostics = {
     },
     INVALID_EVENT_NAME: {
         code: 1056,
-        message: 'Invalid event name {0}. Event name can only contain lower-case alphabetic characters',
+        message:
+            'Invalid event name {0}. Event name can only contain lower-case alphabetic characters',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -310,7 +314,8 @@ export const ParserDiagnostics = {
 
     LOCATOR_CONTEXT_CANNOT_BE_MEMBER_EXPRESSION: {
         code: 1067,
-        message: 'locator:context cannot be a member expression. It can only be functions on the component',
+        message:
+            'locator:context cannot be a member expression. It can only be functions on the component',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -381,7 +386,8 @@ export const ParserDiagnostics = {
 
     NO_DIRECTIVE_FOUND_ON_TEMPLATE: {
         code: 1077,
-        message: 'Invalid template tag. A directive is expected to be associated with the template tag.',
+        message:
+            'Invalid template tag. A directive is expected to be associated with the template tag.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -451,7 +457,8 @@ export const ParserDiagnostics = {
 
     LWC_DOM_INVALID_CUSTOM_ELEMENT: {
         code: 1087,
-        message: 'Invalid directive "lwc:dom" on element {0}. "lwc:dom" cannot be added to a custom element',
+        message:
+            'Invalid directive "lwc:dom" on element {0}. "lwc:dom" cannot be added to a custom element',
         level: DiagnosticLevel.Error,
         url: '',
     },

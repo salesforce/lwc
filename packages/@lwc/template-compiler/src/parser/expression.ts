@@ -51,7 +51,8 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                 invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [path.type]);
 
                 // Ensure expression doesn't contain multiple expressions: {foo;bar}
-                const hasMultipleExpressions = path.isBlock() && (path.get('body') as any).length !== 1;
+                const hasMultipleExpressions =
+                    path.isBlock() && (path.get('body') as any).length !== 1;
                 invariant(!hasMultipleExpressions, ParserDiagnostics.MULTIPLE_EXPRESSIONS);
 
                 // Retrieve the first expression and set it as return value
@@ -65,13 +66,17 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                     const shouldReportComputed =
                         !state.config.experimentalComputedMemberExpression &&
                         (path.node as types.MemberExpression).computed;
-                    invariant(!shouldReportComputed, ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED);
+                    invariant(
+                        !shouldReportComputed,
+                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
+                    );
 
                     const memberExpression = path.node as types.MemberExpression;
                     const propertyIdentifier = memberExpression.property as TemplateIdentifier;
                     const objectIdentifier = memberExpression.object as TemplateIdentifier;
                     invariant(
-                        !isBoundToIterator(objectIdentifier, element) || propertyIdentifier.name !== ITERATOR_NEXT_KEY,
+                        !isBoundToIterator(objectIdentifier, element) ||
+                            propertyIdentifier.name !== ITERATOR_NEXT_KEY,
                         ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED,
                     );
                 },

@@ -21,7 +21,9 @@ export default function transformStyle(
         customProperties: {
             allowDefinition: customProperties.allowDefinition,
             resolverModule:
-                customProperties.resolution.type === 'module' ? customProperties.resolution.name : undefined,
+                customProperties.resolution.type === 'module'
+                    ? customProperties.resolution.name
+                    : undefined,
         },
         outputConfig: {
             minify,

@@ -91,6 +91,9 @@ export function buildCustomElementConstructor(
         }
         // collecting all attribute names from all public props to apply
         // the reflection from attributes to props via attributeChangedCallback.
-        static observedAttributes = ArrayMap.call(getOwnPropertyNames(props), propName => props[propName].attr);
+        static observedAttributes = ArrayMap.call(
+            getOwnPropertyNames(props),
+            propName => props[propName].attr,
+        );
     };
 }

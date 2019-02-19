@@ -5,7 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from '../shared/language';
+import {
+    isUndefined,
+    assign,
+    isNull,
+    isObject,
+    isTrue,
+    isFalse,
+    isFunction,
+    toString,
+} from '../shared/language';
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from './vm';
 import { ComponentConstructor } from './component';
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
@@ -68,7 +77,9 @@ assign(Node.prototype, {
 export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
-            `"createElement" function expects an object as second parameter but received "${toString(options)}".`,
+            `"createElement" function expects an object as second parameter but received "${toString(
+                options,
+            )}".`,
         );
     }
 

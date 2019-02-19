@@ -30,8 +30,18 @@ import {
 } from '../shared/language';
 import { getInternalField } from '../shared/fields';
 import { getAttrNameFromPropName } from './attributes';
-import { resolveCircularModuleDependency, isCircularModuleDependency, ViewModelReflection, EmptyObject } from './utils';
-import { ComponentConstructor, ErrorCallback, ComponentMeta, getComponentRegisteredMeta } from './component';
+import {
+    resolveCircularModuleDependency,
+    isCircularModuleDependency,
+    ViewModelReflection,
+    EmptyObject,
+} from './utils';
+import {
+    ComponentConstructor,
+    ErrorCallback,
+    ComponentMeta,
+    getComponentRegisteredMeta,
+} from './component';
 import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
@@ -128,12 +138,24 @@ function createComponentDef(
     let { props, methods, wire, track } = decoratorsMeta || EmptyObject;
     const proto = Ctor.prototype;
 
-    let { connectedCallback, disconnectedCallback, renderedCallback, errorCallback, render } = proto;
+    let {
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+        render,
+    } = proto;
     const superProto = getCtorProto(Ctor, subclassComponentName);
     const superDef: ComponentDef | null =
-        (superProto as any) !== BaseLightningElement ? getComponentDef(superProto, subclassComponentName) : null;
+        (superProto as any) !== BaseLightningElement
+            ? getComponentDef(superProto, subclassComponentName)
+            : null;
     const SuperBridge = isNull(superDef) ? BaseBridgeElement : superDef.bridge;
-    const bridge = HTMLBridgeElementFactory(SuperBridge, getOwnPropertyNames(props), getOwnPropertyNames(methods));
+    const bridge = HTMLBridgeElementFactory(
+        SuperBridge,
+        getOwnPropertyNames(props),
+        getOwnPropertyNames(methods),
+    );
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -178,7 +200,10 @@ function getOwnValue(o: any, key: string): any | undefined {
     return d && d.value;
 }
 
-export function getComponentDef(Ctor: ComponentConstructor, subclassComponentName?: string): ComponentDef {
+export function getComponentDef(
+    Ctor: ComponentConstructor,
+    subclassComponentName?: string,
+): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
         return def;
@@ -222,8 +247,17 @@ export function setElementProto(elm: HTMLElement, def: ComponentDef) {
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { BaseLightningElement } from './base-lightning-element';
-import { BaseBridgeElement, HTMLBridgeElementFactory, HTMLElementConstructor } from './base-bridge-element';
-import { getDecoratorsRegisteredMeta, registerDecorators, DecoratorMeta, PropsDef } from './decorators/register';
+import {
+    BaseBridgeElement,
+    HTMLBridgeElementFactory,
+    HTMLElementConstructor,
+} from './base-bridge-element';
+import {
+    getDecoratorsRegisteredMeta,
+    registerDecorators,
+    DecoratorMeta,
+    PropsDef,
+} from './decorators/register';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972

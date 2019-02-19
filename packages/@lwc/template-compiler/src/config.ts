@@ -43,10 +43,17 @@ const DEFAULT_CONFIG: ResolvedConfig = {
     stylesheetConfig: {},
 };
 
-const AVAILABLE_OPTION_NAMES = new Set(['secure', 'experimentalComputedMemberExpression', 'stylesheetConfig']);
+const AVAILABLE_OPTION_NAMES = new Set([
+    'secure',
+    'experimentalComputedMemberExpression',
+    'stylesheetConfig',
+]);
 
 export function mergeConfig(config: Config): ResolvedConfig {
-    invariant(config !== undefined && typeof config === 'object', TemplateErrors.OPTIONS_MUST_BE_OBJECT);
+    invariant(
+        config !== undefined && typeof config === 'object',
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT,
+    );
 
     for (const property in config) {
         if (!AVAILABLE_OPTION_NAMES.has(property) && config.hasOwnProperty(property)) {

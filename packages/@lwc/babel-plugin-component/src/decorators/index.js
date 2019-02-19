@@ -64,7 +64,9 @@ function getLwcDecorators(importSpecifiers) {
             // If the the decorator is:
             //   - an identifier @track : the decorator is the parent of the identifier
             //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
-            let decorator = reference.parentPath.isDecorator() ? reference.parentPath : reference.parentPath.parentPath;
+            let decorator = reference.parentPath.isDecorator()
+                ? reference.parentPath
+                : reference.parentPath.parentPath;
 
             if (!decorator.isDecorator()) {
                 throw generateError(decorator, {
@@ -140,7 +142,11 @@ function invalidDecorators() {
         Decorator(path) {
             throw generateError(path.parentPath, {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                messageArgs: [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
+                messageArgs: [
+                    path.node.expression.name,
+                    LWC_DECORATORS.join(', '),
+                    LWC_PACKAGE_ALIAS,
+                ],
             });
         },
     };
@@ -150,7 +156,9 @@ function decorators({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
-            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => isLwcDecoratorName(name));
+            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
+                isLwcDecoratorName(name),
+            );
 
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
             const grouped = groupDecorator(decorators);

@@ -13,7 +13,11 @@ const baseConfig = {
     babelrc: false,
     filename: 'test.js',
     parserOpts: {
-        plugins: [['decorators', { decoratorsBeforeExport: true }], ['classProperties', {}], ['dynamicImport', {}]],
+        plugins: [
+            ['decorators', { decoratorsBeforeExport: true }],
+            ['classProperties', {}],
+            ['dynamicImport', {}],
+        ],
     },
 };
 

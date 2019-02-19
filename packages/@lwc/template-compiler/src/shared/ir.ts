@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { TemplateIdentifier, TemplateExpression, IRNode, IRText, IRElement, HTMLElement, HTMLText } from './types';
+import {
+    TemplateIdentifier,
+    TemplateExpression,
+    IRNode,
+    IRText,
+    IRElement,
+    HTMLElement,
+    HTMLText,
+} from './types';
 
 export type VisitorFn = (element: IRNode) => void;
 

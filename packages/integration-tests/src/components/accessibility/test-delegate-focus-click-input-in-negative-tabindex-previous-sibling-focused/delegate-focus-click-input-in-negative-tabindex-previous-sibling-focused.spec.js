@@ -10,7 +10,8 @@ const assert = require('assert');
 // the previous sibling to the custom element
 
 describe('Delegates focus', () => {
-    const URL = 'http://localhost:4567/delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused';
+    const URL =
+        'http://localhost:4567/delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused';
 
     before(() => {
         browser.url(URL);

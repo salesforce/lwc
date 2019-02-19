@@ -92,8 +92,12 @@ describe('fixtures', () => {
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
 
-                expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);
-                expect(Array.from(actualMeta.templateDependencies)).toEqual(expectMeta.templateDependencies || []);
+                expect(Array.from(actualMeta.templateUsedIds)).toEqual(
+                    expectMeta.templateUsedIds || [],
+                );
+                expect(Array.from(actualMeta.templateDependencies)).toEqual(
+                    expectMeta.templateDependencies || [],
+                );
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }
         });

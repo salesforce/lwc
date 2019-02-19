@@ -56,21 +56,33 @@ export default class EventFlow extends LightningElement {
                 );
             });
 
-            this.template.querySelector('integration-parent').addEventListener('slottedbuttonclick', () => {
-                this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
-            });
-            this.template.querySelector('integration-parent').addEventListener('childbuttonclick', () => {
-                this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT);
-            });
+            this.template
+                .querySelector('integration-parent')
+                .addEventListener('slottedbuttonclick', () => {
+                    this.log(
+                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    );
+                });
+            this.template
+                .querySelector('integration-parent')
+                .addEventListener('childbuttonclick', () => {
+                    this.log(
+                        EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    );
+                });
         }
     }
 
     handleSlottedButtonClick() {
-        this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT);
+        this.log(
+            EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT,
+        );
     }
 
     handleChildButtonClick() {
-        this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT);
+        this.log(
+            EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT,
+        );
     }
 
     handleClearButtonClick() {

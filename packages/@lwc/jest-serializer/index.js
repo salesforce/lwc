@@ -76,7 +76,13 @@ function serialize(node, config, indentation, depth, refs, printer) {
                     ),
                 ].join('');
             }
-            return printer(currentNode, currentConfig, currentIndentation, currentDepth, currentRefs);
+            return printer(
+                currentNode,
+                currentConfig,
+                currentIndentation,
+                currentDepth,
+                currentRefs,
+            );
         },
     );
     delete node.childNodes;

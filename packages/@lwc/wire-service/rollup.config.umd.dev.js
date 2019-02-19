@@ -42,4 +42,7 @@ function rollupConfig(config) {
     };
 }
 
-module.exports = [rollupConfig({ format: 'umd', target: 'es5' }), rollupConfig({ format: 'umd', target: 'es2017' })];
+module.exports = [
+    rollupConfig({ format: 'umd', target: 'es5' }),
+    rollupConfig({ format: 'umd', target: 'es2017' }),
+];

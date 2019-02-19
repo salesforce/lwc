@@ -41,7 +41,9 @@ afterEach(() => {
             if (!didTestLogged) {
                 const message = [
                     `This test used to used to log a warning or an error, but don't log anymore.`,
-                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold('test-whitelist.js')}"`,
+                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold(
+                        'test-whitelist.js',
+                    )}"`,
                 ].join('\n');
 
                 throw new Error(message);
@@ -51,9 +53,9 @@ afterEach(() => {
                 const message = [
                     `Expect test not to log an error or a warning.\n`,
                     `If the message expected, make sure you asserts against those logs in the tests.\n`,
-                    `Use instead: ${chalk.green.bold(`expect(<function>).toLogError(<message>)`)} or ${chalk.green.bold(
-                        `expect(<function>).toLogWarning(<message>)`,
-                    )}`,
+                    `Use instead: ${chalk.green.bold(
+                        `expect(<function>).toLogError(<message>)`,
+                    )} or ${chalk.green.bold(`expect(<function>).toLogWarning(<message>)`)}`,
                 ].join('\n');
 
                 throw new Error(message);

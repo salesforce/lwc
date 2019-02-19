@@ -61,7 +61,10 @@ module.exports = {
         return crypto
             .createHash('md5')
             .update(JSON.stringify(options), 'utf8')
-            .update(fileData + filePath + configStr + NODE_ENV + compilerVersion + engineVersion, 'utf8')
+            .update(
+                fileData + filePath + configStr + NODE_ENV + compilerVersion + engineVersion,
+                'utf8',
+            )
             .digest('hex');
     },
 };

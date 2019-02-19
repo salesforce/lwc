@@ -20,6 +20,9 @@ describe('Composed focusin event', () => {
         assert.deepEqual(browser.getText('.focus-in-composed'), 'Focus In Composed');
 
         browser.click('button');
-        assert.deepEqual(browser.getText('.custom-focus-in-not-composed'), 'Custom Focus In Not Composed');
+        assert.deepEqual(
+            browser.getText('.custom-focus-in-not-composed'),
+            'Custom Focus In Not Composed',
+        );
     });
 });

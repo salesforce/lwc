@@ -109,7 +109,11 @@ const CUSTOM_IGNORED_PATTERNS = [
     '/integration-karma/test/.*$',
 ].map(createRegExp);
 
-const IGNORED_PATTERNS = [...IGNORED_EXTENSIONS, ...GENERIC_IGNORED_PATTERNS, ...CUSTOM_IGNORED_PATTERNS];
+const IGNORED_PATTERNS = [
+    ...IGNORED_EXTENSIONS,
+    ...GENERIC_IGNORED_PATTERNS,
+    ...CUSTOM_IGNORED_PATTERNS,
+];
 
 const INCLUDED_PATTERNS = [
     // Any file with an extension

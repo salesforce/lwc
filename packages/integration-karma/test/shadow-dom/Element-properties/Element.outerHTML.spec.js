@@ -11,7 +11,9 @@ describe('Element.outerHTML - get', () => {
         expect(elm.shadowRoot.querySelector('x-container').outerHTML).toBe(
             '<x-container><div>Slotted Text<input name="slotted"></div></x-container>',
         );
-        expect(elm.shadowRoot.querySelector('div').outerHTML).toBe('<div>Slotted Text<input name="slotted"></div>');
+        expect(elm.shadowRoot.querySelector('div').outerHTML).toBe(
+            '<div>Slotted Text<input name="slotted"></div>',
+        );
     });
 
     it('should enforce the shadow DOM semantic - x-container', () => {

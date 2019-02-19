@@ -33,7 +33,9 @@ function getLwcConfig(config) {
     const compat = Boolean(config.compat);
     const nativeShadow = Boolean(config.nativeShadow);
 
-    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(Boolean);
+    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
+        Boolean,
+    );
 
     return {
         compat,
@@ -47,7 +49,11 @@ function getFiles(lwcConfig) {
         ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
         : [createPattern(LWC_ENGINE)];
 
-    return [...frameworkFiles, createPattern(TEST_UTILS_SCRIPT), createPattern('**/*.spec.js', { watched: false })];
+    return [
+        ...frameworkFiles,
+        createPattern(TEST_UTILS_SCRIPT),
+        createPattern('**/*.spec.js', { watched: false }),
+    ];
 }
 
 /**

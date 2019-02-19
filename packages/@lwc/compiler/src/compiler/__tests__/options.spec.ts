@@ -21,7 +21,9 @@ describe('compiler options', () => {
 
     it('should validate bundle namespace option', async () => {
         await expect(compile({ name: 'foo' })).rejects.toMatchObject({
-            message: expect.stringContaining('Expected a string for namespace, received "undefined".'),
+            message: expect.stringContaining(
+                'Expected a string for namespace, received "undefined".',
+            ),
         });
     });
 
@@ -64,7 +66,9 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining('Expected a boolean for outputConfig.minify, received "true".'),
+            message: expect.stringContaining(
+                'Expected a boolean for outputConfig.minify, received "true".',
+            ),
         });
     });
 
@@ -79,7 +83,9 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining('Expected a boolean for outputConfig.compat, received "true".'),
+            message: expect.stringContaining(
+                'Expected a boolean for outputConfig.compat, received "true".',
+            ),
         });
     });
 
@@ -94,7 +100,9 @@ describe('compiler options', () => {
                 },
             }),
         ).rejects.toMatchObject({
-            message: expect.stringContaining('Expected a boolean value for outputConfig.sourcemap, received "true".'),
+            message: expect.stringContaining(
+                'Expected a boolean value for outputConfig.sourcemap, received "true".',
+            ),
         });
     });
 

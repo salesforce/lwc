@@ -25,7 +25,11 @@ function testForEach(type, obj) {
     });
 }
 
-testForEach('Array', [{ key: 1, value: 'one' }, { key: 2, value: 'two' }, { key: 3, value: 'three' }]);
+testForEach('Array', [
+    { key: 1, value: 'one' },
+    { key: 2, value: 'two' },
+    { key: 3, value: 'three' },
+]);
 
 function* itemGenerator() {
     yield { key: 1, value: 'one' };

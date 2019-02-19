@@ -23,7 +23,12 @@ import {
     toString,
     ArraySlice,
 } from '../shared/language';
-import { EmptyArray, resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import {
+    EmptyArray,
+    resolveCircularModuleDependency,
+    isCircularModuleDependency,
+    EmptyObject,
+} from './utils';
 import { VM, SlotSet } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -74,7 +79,12 @@ export interface CustomElementCompilerData extends ElementCompilerData {
 export interface RenderAPI {
     s(slotName: string, data: ElementCompilerData, children: VNodes, slotset: SlotSet): VNode;
     h(tagName: string, data: ElementCompilerData, children: VNodes): VNode;
-    c(tagName: string, Ctor: ComponentConstructor, data: CustomElementCompilerData, children?: VNodes): VNode;
+    c(
+        tagName: string,
+        Ctor: ComponentConstructor,
+        data: CustomElementCompilerData,
+        children?: VNodes,
+    ): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
     f(items: any[]): any[];
     t(text: string): VText;
@@ -142,7 +152,9 @@ const ElementHook: Hooks = {
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
-            vnode.elm = isUndefined(ns) ? createElement.call(document, sel) : createElementNS.call(document, ns, sel);
+            vnode.elm = isUndefined(ns)
+                ? createElement.call(document, sel)
+                : createElementNS.call(document, ns, sel);
         }
         createElmHook(vnode);
         create(vnode);
@@ -285,7 +297,10 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             data.className && data.classMap,
             `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
         );
-        assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+        assert.isFalse(
+            data.styleMap && data.style,
+            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`,
+        );
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
@@ -375,7 +390,11 @@ export function s(
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
-    if (!isUndefined(slotset) && !isUndefined(slotset[slotName]) && slotset[slotName].length !== 0) {
+    if (
+        !isUndefined(slotset) &&
+        !isUndefined(slotset[slotName]) &&
+        slotset[slotName].length !== 0
+    ) {
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
@@ -400,7 +419,10 @@ export function c(
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
-        assert.isTrue(arguments.length === 3 || isArray(children), `c() 4nd argument data must be an array.`);
+        assert.isTrue(
+            arguments.length === 3 || isArray(children),
+            `c() 4nd argument data must be an array.`,
+        );
         // TODO: enable this once all tests are changed to use compileTemplate utility
         // assert.isTrue("key" in compilerData, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
@@ -408,7 +430,10 @@ export function c(
             data.className && data.classMap,
             `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
         );
-        assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+        assert.isFalse(
+            data.styleMap && data.style,
+            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`,
+        );
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
@@ -653,7 +678,11 @@ export function fb(fn: (...args: any[]) => any): () => any {
 }
 
 // [l]ocator_[l]istener function
-export function ll(originalHandler: EventListener, id: string, context?: (...args: any[]) => any): EventListener {
+export function ll(
+    originalHandler: EventListener,
+    id: string,
+    context?: (...args: any[]) => any,
+): EventListener {
     if (isNull(vmBeingRendered)) {
         throw new Error();
     }
@@ -696,7 +725,9 @@ export function k(compilerKey: number, obj: any): string | void {
             return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
-                assert.fail(`Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`);
+                assert.fail(
+                    `Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`,
+                );
             }
     }
 }
@@ -705,7 +736,10 @@ export function k(compilerKey: number, obj: any): string | void {
 export function gid(id: any): string | null | undefined {
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(`Invalid id value "${id}". Expected a non-empty string.`, vmBeingRendered!.elm);
+            assert.logError(
+                `Invalid id value "${id}". Expected a non-empty string.`,
+                vmBeingRendered!.elm,
+            );
         }
         return id;
     }

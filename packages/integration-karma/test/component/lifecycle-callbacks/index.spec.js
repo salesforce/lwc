@@ -77,7 +77,10 @@ it('should call children component lifecycle hooks when rendered dynamically via
     const elm = createElement('x-parent-if', { is: ParentIf });
     document.body.appendChild(elm);
 
-    expect(window.timingBuffer).toEqual(['parentIf:connectedCallback', 'parentIf:renderedCallback']);
+    expect(window.timingBuffer).toEqual([
+        'parentIf:connectedCallback',
+        'parentIf:renderedCallback',
+    ]);
 
     resetTimingBuffer();
     elm.childVisible = true;
@@ -95,7 +98,10 @@ it('should call children component lifecycle hooks when rendered dynamically via
             elm.childVisible = false;
         })
         .then(() => {
-            expect(window.timingBuffer).toEqual(['child:disconnectedCallback', 'parentIf:renderedCallback']);
+            expect(window.timingBuffer).toEqual([
+                'child:disconnectedCallback',
+                'parentIf:renderedCallback',
+            ]);
         });
 });
 
@@ -115,7 +121,10 @@ it('should call children component lifecycle hooks when a public property change
     elm.value = 'bar';
 
     return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual(['child:renderedCallback', 'parentProp:renderedCallback']);
+        expect(window.timingBuffer).toEqual([
+            'child:renderedCallback',
+            'parentProp:renderedCallback',
+        ]);
 
         resetTimingBuffer();
         elm.childVisible = false;

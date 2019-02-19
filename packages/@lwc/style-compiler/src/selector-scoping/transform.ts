@@ -51,7 +51,9 @@ function scopeSelector(selector: Selector) {
     for (const compoundSelector of compoundSelectors) {
         // Compound selectors containing :host have a special treatment and should not be scoped like the rest of the
         // complex selectors.
-        const shouldScopeCompoundSelector = compoundSelector.every(node => !isHostPseudoClass(node));
+        const shouldScopeCompoundSelector = compoundSelector.every(
+            node => !isHostPseudoClass(node),
+        );
 
         if (shouldScopeCompoundSelector) {
             let nodeToScope: Node | undefined;

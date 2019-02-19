@@ -8,7 +8,9 @@ describe('Node.parentElement', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('x-container').parentElement).toBe(elm.shadowRoot.querySelector('.outer'));
+        expect(elm.shadowRoot.querySelector('x-container').parentElement).toBe(
+            elm.shadowRoot.querySelector('.outer'),
+        );
     });
 
     it('should return null when retrieving parentElement from an element at the root of the shadow tree', () => {

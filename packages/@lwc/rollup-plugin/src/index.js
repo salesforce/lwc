@@ -40,8 +40,12 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             modulePaths = {};
             const entry = rollupOptions.input || rollupOptions.entry;
             const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
-            const externalPaths = resolveFromPackages ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions) : {};
-            const sourcePaths = resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions) : {};
+            const externalPaths = resolveFromPackages
+                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
+                : {};
+            const sourcePaths = resolveFromSource
+                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
+                : {};
             Object.assign(modulePaths, externalPaths, sourcePaths);
         },
 

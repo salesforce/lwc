@@ -41,7 +41,8 @@ function getSiblingGetSetPair(propertyPath, propertyName, type) {
     );
 
     if (siblingNode) {
-        const decoratorType = siblingType === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
+        const decoratorType =
+            siblingType === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
         return { type: decoratorType, path: siblingNode };
     }
 }
@@ -93,7 +94,11 @@ function transformPublicMethods(t, klassBody, apiDecorators) {
 
     if (publicMethods.length) {
         const publicMethodsConfig = computePublicMethodsConfig(publicMethods);
-        const classProp = staticClassProperty(t, PUBLIC_METHODS, t.valueToNode(publicMethodsConfig));
+        const classProp = staticClassProperty(
+            t,
+            PUBLIC_METHODS,
+            t.valueToNode(publicMethodsConfig),
+        );
         markAsLWCNode(classProp);
         klassBody.pushContainer('body', classProp);
     }

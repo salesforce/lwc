@@ -29,7 +29,10 @@ it('should throw an error if the parameter is not an instance of Event', () => {
 
     expect(() => {
         elm.dispatch('event');
-    }).toThrowError(Error, /Failed to execute 'dispatchEvent' on <x-test>: parameter 1 is not of type 'Event'./);
+    }).toThrowError(
+        Error,
+        /Failed to execute 'dispatchEvent' on <x-test>: parameter 1 is not of type 'Event'./,
+    );
 });
 
 it('should throw when event is dispatched during construction', function() {

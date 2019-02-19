@@ -12,7 +12,9 @@ const WIRE_PARAM_PREFIX = '$';
 
 function isObservedProperty(configProperty) {
     const propertyValue = configProperty.get('value');
-    return propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX);
+    return (
+        propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX)
+    );
 }
 
 function getWiredStatic(wireConfig) {
@@ -40,22 +42,34 @@ function buildWireConfigValue(t, wiredValues) {
         wiredValues.map(wiredValue => {
             const wireConfig = [];
             if (wiredValue.adapter) {
-                wireConfig.push(t.objectProperty(t.identifier('adapter'), t.identifier(wiredValue.adapter.name)));
+                wireConfig.push(
+                    t.objectProperty(
+                        t.identifier('adapter'),
+                        t.identifier(wiredValue.adapter.name),
+                    ),
+                );
             }
 
             if (wiredValue.params) {
-                wireConfig.push(t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params)));
+                wireConfig.push(
+                    t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params)),
+                );
             }
 
             if (wiredValue.static) {
-                wireConfig.push(t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static)));
+                wireConfig.push(
+                    t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static)),
+                );
             }
 
             if (wiredValue.isClassMethod) {
                 wireConfig.push(t.objectProperty(t.identifier('method'), t.numericLiteral(1)));
             }
 
-            return t.objectProperty(t.identifier(wiredValue.propertyName), t.objectExpression(wireConfig));
+            return t.objectProperty(
+                t.identifier(wiredValue.propertyName),
+                t.objectExpression(wireConfig),
+            );
         }),
     );
 }
@@ -130,7 +144,11 @@ module.exports = function transform(t, klass, decorators) {
     });
 
     if (wiredValues.length) {
-        const staticProp = staticClassProperty(t, LWC_COMPONENT_PROPERTIES.WIRE, buildWireConfigValue(t, wiredValues));
+        const staticProp = staticClassProperty(
+            t,
+            LWC_COMPONENT_PROPERTIES.WIRE,
+            buildWireConfigValue(t, wiredValues),
+        );
 
         markAsLWCNode(staticProp);
 

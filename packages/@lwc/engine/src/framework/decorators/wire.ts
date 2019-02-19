@@ -18,7 +18,10 @@ function wireDecorator(
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;
-            assert.isTrue(!get && !set, `Compiler Error: A @wire decorator can only be applied to a public field.`);
+            assert.isTrue(
+                !get && !set,
+                `Compiler Error: A @wire decorator can only be applied to a public field.`,
+            );
             assert.isTrue(
                 configurable !== false,
                 `Compiler Error: A @wire decorator can only be applied to a configurable property.`,
@@ -30,7 +33,11 @@ function wireDecorator(
         }
     }
     // TODO: eventually this decorator should have its own logic
-    return createTrackedPropertyDescriptor(target, prop, isObject(descriptor) ? descriptor.enumerable === true : true);
+    return createTrackedPropertyDescriptor(
+        target,
+        prop,
+        isObject(descriptor) ? descriptor.enumerable === true : true,
+    );
 }
 
 // @wire is a factory that when invoked, returns the wire decorator

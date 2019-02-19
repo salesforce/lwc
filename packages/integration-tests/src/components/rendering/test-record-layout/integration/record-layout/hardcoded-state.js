@@ -647,7 +647,8 @@ export const mockState = {
         avatars: {
             Account: {
                 backgroundColor: '7F8DE1',
-                iconUrl: 'https://dval-wsm.internal.salesforce.com:7443/img/icon/t4v35/standard/account_120.png',
+                iconUrl:
+                    'https://dval-wsm.internal.salesforce.com:7443/img/icon/t4v35/standard/account_120.png',
                 recordId: '001xx000003DIIxAAO',
                 type: 'Theme',
             },

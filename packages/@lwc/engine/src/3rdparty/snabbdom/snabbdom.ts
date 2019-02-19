@@ -47,7 +47,13 @@ function createKeyToOldIdx(children: VNodes, beginIdx: number, endIdx: number): 
     return map;
 }
 
-function addVnodes(parentElm: Node, before: Node | null, vnodes: VNodes, startIdx: number, endIdx: number) {
+function addVnodes(
+    parentElm: Node,
+    before: Node | null,
+    vnodes: VNodes,
+    startIdx: number,
+    endIdx: number,
+) {
     for (; startIdx <= endIdx; ++startIdx) {
         const ch = vnodes[startIdx];
         if (isVNode(ch)) {
@@ -130,7 +136,11 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
                     if (elmToMove.sel !== newStartVnode.sel) {
                         // New element
                         newStartVnode.hook.create(newStartVnode);
-                        newStartVnode.hook.insert(newStartVnode, parentElm, oldStartVnode.elm as Node);
+                        newStartVnode.hook.insert(
+                            newStartVnode,
+                            parentElm,
+                            oldStartVnode.elm as Node,
+                        );
                     } else {
                         patchVnode(elmToMove, newStartVnode);
                         oldCh[idxInOld] = undefined as any;

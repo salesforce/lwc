@@ -28,7 +28,11 @@ import {
 } from '../shared/language';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
-import { ComponentInterface, getWrappedComponentsListener, getComponentAsString } from './component';
+import {
+    ComponentInterface,
+    getWrappedComponentsListener,
+    getComponentAsString,
+} from './component';
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
@@ -48,7 +52,10 @@ const GlobalEvent = Event; // caching global reference to avoid poisoning
  * determines what kind of capabilities the Base Lightning Element should support. When producing the new descriptors
  * for the Base Lightning Element, it also include the reactivity bit, so the standard property is reactive.
  */
-function createBridgeToElementDescriptor(propName: string, descriptor: PropertyDescriptor): PropertyDescriptor {
+function createBridgeToElementDescriptor(
+    propName: string,
+    descriptor: PropertyDescriptor,
+): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -96,7 +103,9 @@ function createBridgeToElementDescriptor(propName: string, descriptor: PropertyD
                 );
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`,
+                    `Failed to construct '${getComponentAsString(
+                        this,
+                    )}': The result must not have attributes.`,
                 );
                 assert.invariant(
                     !isObject(newValue) || isNull(newValue),
@@ -136,7 +145,10 @@ export function BaseLightningElement(this: ComponentInterface) {
         throw new ReferenceError();
     }
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vmBeingConstructed && 'cmpRoot' in vmBeingConstructed, `${vmBeingConstructed} is not a vm.`);
+        assert.isTrue(
+            vmBeingConstructed && 'cmpRoot' in vmBeingConstructed,
+            `${vmBeingConstructed} is not a vm.`,
+        );
         assert.invariant(
             vmBeingConstructed.elm instanceof HTMLElement,
             `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`,
@@ -217,7 +229,11 @@ BaseLightningElement.prototype = {
         }
         return dispatchEvent.call(elm, event);
     },
-    addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+    addEventListener(
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions,
+    ) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -233,7 +249,11 @@ BaseLightningElement.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.addEventListener(type, wrappedListener, options);
     },
-    removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+    removeEventListener(
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions,
+    ) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -246,7 +266,9 @@ BaseLightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(getComponentVM(this)),
-                `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`,
+                `Failed to construct '${getComponentAsString(
+                    this,
+                )}': The result must not have attributes.`,
             );
         }
         unlockAttribute(elm, attrName);
@@ -276,7 +298,9 @@ BaseLightningElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
                 isBeingConstructed(getComponentVM(this)),
-                `Failed to construct '${getComponentAsString(this)}': The result must not have attributes.`,
+                `Failed to construct '${getComponentAsString(
+                    this,
+                )}': The result must not have attributes.`,
             );
         }
         unlockAttribute(elm, attrName);
@@ -435,7 +459,10 @@ BaseLightningElement.prototype = {
 const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
     (descriptors: PropertyDescriptorMap, propName: string) => {
-        descriptors[propName] = createBridgeToElementDescriptor(propName, HTMLElementOriginalDescriptors[propName]);
+        descriptors[propName] = createBridgeToElementDescriptor(
+            propName,
+            HTMLElementOriginalDescriptors[propName],
+        );
         return descriptors;
     },
     create(null),

@@ -12,7 +12,9 @@ const { default: assert } = require('../../../src/shared/assert');
 function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {
         if (typeof fn !== 'function') {
-            throw new TypeError(`Expected a first argument to be a function, received ${typeof fn}`);
+            throw new TypeError(
+                `Expected a first argument to be a function, received ${typeof fn}`,
+            );
         }
 
         const receivedMessages = [];
@@ -52,7 +54,8 @@ function createMatcher(methodName) {
             } else {
                 if (receivedMessages.length === 0) {
                     return {
-                        message: () => `Expect no message for:\n${this.utils.printExpected(expectedMessage)}`,
+                        message: () =>
+                            `Expect no message for:\n${this.utils.printExpected(expectedMessage)}`,
                         pass: false,
                     };
                 } else if (receivedMessages.length === 1) {
@@ -81,7 +84,8 @@ function createMatcher(methodName) {
                         .join('\n\n');
 
                     return {
-                        message: () => `Expect a single message but received multiples:\n\n${formattedMessages}`,
+                        message: () =>
+                            `Expect a single message but received multiples:\n\n${formattedMessages}`,
                         pass: false,
                     };
                 }

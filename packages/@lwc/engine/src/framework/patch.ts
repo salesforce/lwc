@@ -105,7 +105,10 @@ interface PatchedComponentDef extends ComponentDef {
     patchedBridge?: HTMLElementConstructor;
 }
 
-export function patchCustomElementProto(elm: HTMLElement, options: { def: ComponentDef; shadowAttribute?: string }) {
+export function patchCustomElementProto(
+    elm: HTMLElement,
+    options: { def: ComponentDef; shadowAttribute?: string },
+) {
     const { def, shadowAttribute } = options;
     let patchedBridge = (def as PatchedComponentDef).patchedBridge;
     if (isUndefined(patchedBridge)) {

@@ -9,15 +9,28 @@ describe('Node.compareDocumentPosition', () => {
 
         const { shadowRoot } = elm;
 
-        expect(elm.compareDocumentPosition(shadowRoot) & Node.DOCUMENT_POSITION_DISCONNECTED).not.toBe(0);
-        expect(elm.compareDocumentPosition(shadowRoot) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC).not.toBe(0);
+        expect(
+            elm.compareDocumentPosition(shadowRoot) & Node.DOCUMENT_POSITION_DISCONNECTED,
+        ).not.toBe(0);
+        expect(
+            elm.compareDocumentPosition(shadowRoot) &
+                Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC,
+        ).not.toBe(0);
 
-        expect(shadowRoot.compareDocumentPosition(document) & Node.DOCUMENT_POSITION_DISCONNECTED).not.toBe(0);
-        expect(shadowRoot.compareDocumentPosition(document) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC).not.toBe(
-            0,
-        );
-        expect(shadowRoot.compareDocumentPosition(elm) & Node.DOCUMENT_POSITION_DISCONNECTED).not.toBe(0);
-        expect(shadowRoot.compareDocumentPosition(elm) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC).not.toBe(0);
+        expect(
+            shadowRoot.compareDocumentPosition(document) & Node.DOCUMENT_POSITION_DISCONNECTED,
+        ).not.toBe(0);
+        expect(
+            shadowRoot.compareDocumentPosition(document) &
+                Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC,
+        ).not.toBe(0);
+        expect(
+            shadowRoot.compareDocumentPosition(elm) & Node.DOCUMENT_POSITION_DISCONNECTED,
+        ).not.toBe(0);
+        expect(
+            shadowRoot.compareDocumentPosition(elm) &
+                Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC,
+        ).not.toBe(0);
     });
 
     // TODO: #978 - compare a node from a shadow tree with its root always return that the 2 nodes are identical
@@ -99,7 +112,11 @@ describe('Node.compareDocumentPosition', () => {
         const slot = container.shadowRoot.querySelector('slot');
         const slotted = elm.shadowRoot.querySelector('.slotted');
 
-        expect(slot.compareDocumentPosition(slotted) & Node.DOCUMENT_POSITION_DISCONNECTED).not.toBe(0);
-        expect(slot.compareDocumentPosition(slotted) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC).not.toBe(0);
+        expect(
+            slot.compareDocumentPosition(slotted) & Node.DOCUMENT_POSITION_DISCONNECTED,
+        ).not.toBe(0);
+        expect(
+            slot.compareDocumentPosition(slotted) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC,
+        ).not.toBe(0);
     });
 });

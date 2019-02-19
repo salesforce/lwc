@@ -29,7 +29,10 @@ async function updateVersion(version) {
 }
 
 if (!version || typeof version !== 'string') {
-    throw new Error('Failed to update compiler version. Expected version value as a string, received: ' + version);
+    throw new Error(
+        'Failed to update compiler version. Expected version value as a string, received: ' +
+            version,
+    );
 }
 
 updateVersion(version);

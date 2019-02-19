@@ -9,7 +9,12 @@ import camelcase from 'camelcase';
 
 import { ParserDiagnostics, generateCompilerError } from '@lwc/errors';
 
-import { EXPRESSION_SYMBOL_END, EXPRESSION_SYMBOL_START, isExpression, isPotentialExpression } from './expression';
+import {
+    EXPRESSION_SYMBOL_END,
+    EXPRESSION_SYMBOL_START,
+    isExpression,
+    isPotentialExpression,
+} from './expression';
 
 import { IRElement } from '../shared/types';
 
@@ -106,7 +111,9 @@ export function normalizeAttributeValue(
     } else if (!isEscaped && isPotentialExpression(value)) {
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
         const isExpressionNextToSelfClosing =
-            value.startsWith(EXPRESSION_SYMBOL_START) && value.endsWith(`${EXPRESSION_SYMBOL_END}/`) && !isQuoted;
+            value.startsWith(EXPRESSION_SYMBOL_START) &&
+            value.endsWith(`${EXPRESSION_SYMBOL_END}/`) &&
+            !isQuoted;
 
         if (isExpressionNextToSelfClosing) {
             // <input value={myValue}/>
@@ -140,15 +147,22 @@ export function attributeName(attr: parse5.AST.Default.Attribute): string {
     return prefix ? `${prefix}:${name}` : name;
 }
 
-export function getAttribute(el: IRElement, pattern: string | RegExp): parse5.AST.Default.Attribute | undefined {
+export function getAttribute(
+    el: IRElement,
+    pattern: string | RegExp,
+): parse5.AST.Default.Attribute | undefined {
     return el.attrsList.find(attr =>
-        typeof pattern === 'string' ? attributeName(attr) === pattern : !!attributeName(attr).match(pattern),
+        typeof pattern === 'string'
+            ? attributeName(attr) === pattern
+            : !!attributeName(attr).match(pattern),
     );
 }
 
 export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
     el.attrsList = el.attrsList.filter(attr =>
-        typeof pattern === 'string' ? attributeName(attr) !== pattern : !attributeName(attr).match(pattern),
+        typeof pattern === 'string'
+            ? attributeName(attr) !== pattern
+            : !attributeName(attr).match(pattern),
     );
 }
 
@@ -186,7 +200,12 @@ function isFmkAttribute(attrName: string): boolean {
 }
 
 function isCustomElementAttribute(attrName: string): boolean {
-    return attrName === 'lwc-deprecated:is' || attrName === 'key' || attrName === 'slot' || !!attrName.match(DATA_RE);
+    return (
+        attrName === 'lwc-deprecated:is' ||
+        attrName === 'key' ||
+        attrName === 'slot' ||
+        !!attrName.match(DATA_RE)
+    );
 }
 
 function isInputStateAttribute(element: IRElement, attrName: string) {
