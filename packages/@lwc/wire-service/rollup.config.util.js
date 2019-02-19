@@ -5,17 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 /* eslint-env node */
-const COMPAT_SUFFIX = '_compat';
-const DEBUG_SUFFIX = '_debug';
-const PROD_SUFFIX = '.min';
 
 function generateTargetName({ prod, proddebug }) {
-    return ['wire', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
+    return ['wire', proddebug ? '_debug' : '', prod ? '.min' : '', '.js'].join('');
 }
 
 module.exports = {
-    COMPAT_SUFFIX,
-    DEBUG_SUFFIX,
-    PROD_SUFFIX,
     generateTargetName: generateTargetName,
 };

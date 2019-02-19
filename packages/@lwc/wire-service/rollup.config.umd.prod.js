@@ -11,7 +11,6 @@ const babel = require('@babel/core');
 const minify = require('babel-preset-minify');
 const typescript = require('rollup-plugin-typescript');
 const rollupReplacePlugin = require('rollup-plugin-replace');
-const rollupCompatPlugin = require('rollup-plugin-compat');
 
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
@@ -39,14 +38,6 @@ function inlineMinifyPlugin() {
 
 function rollupConfig(config) {
     const { format, target, prod } = config;
-    const isCompat = target === 'es5';
-
-    const plugins = [
-        typescript({ target: target, typescript: require('typescript') }),
-        rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-        isCompat && rollupCompatPlugin({ polyfills: false, disableProxyTransform: true }),
-        prod && inlineMinifyPlugin({}),
-    ].filter(Boolean);
 
     return {
         input: input,
@@ -57,7 +48,11 @@ function rollupConfig(config) {
             banner,
             footer,
         },
-        plugins,
+        plugins: [
+            typescript({ target, typescript: require('typescript') }),
+            rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+            prod && inlineMinifyPlugin({}),
+        ].filter(Boolean),
     };
 }
 

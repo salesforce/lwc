@@ -9,7 +9,6 @@
 const path = require('path');
 const rollupReplacePlugin = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
-const rollupCompatPlugin = require('rollup-plugin-compat');
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
 
@@ -21,13 +20,6 @@ const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
     const { format, target } = config;
-    const isCompat = target === 'es5';
-
-    const plugins = [
-        typescript({ target: target, typescript: require('typescript') }),
-        rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') }),
-        isCompat && rollupCompatPlugin({ polyfills: false, disableProxyTransform: true }),
-    ].filter(Boolean);
 
     return {
         input: input,
@@ -38,7 +30,10 @@ function rollupConfig(config) {
             banner,
             footer,
         },
-        plugins,
+        plugins: [
+            typescript({ target: target, typescript: require('typescript') }),
+            rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') }),
+        ],
     };
 }
 
