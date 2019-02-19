@@ -93,7 +93,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('P');
                 done();
             };
-
             // Start observing the parent and child shadow trees
             const parentHostSpy = jasmine.createSpy();
             new MutationObserver(parentHostSpy).observe(root, observerConfig);
@@ -137,7 +136,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
 
             return Promise.resolve()
                 .then(() => {
-                    const slottedDiv = grandChild.querySelector('div.manual'); // query from light dom
+                    const slottedDiv = root.shadowRoot.querySelector('div.manual');
                     slottedDiv.appendChild(document.createElement('p'));
                 })
                 .then(() => {
@@ -322,7 +321,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             const promise2 = new Promise((resolve) => {
                 secondObserverCallback = resolve;
             });
-
             const parentDiv = root.shadowRoot.querySelector('div');
             const observer1 = new MutationObserver(function(actualMutationRecords, actualObserver) {
                 expect(actualObserver).toBe(observer1);

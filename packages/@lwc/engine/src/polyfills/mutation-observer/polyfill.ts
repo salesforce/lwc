@@ -63,7 +63,7 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
     const observedTargetOwnerKeys: Array<(number|undefined)> = [];
     forEach.call(observedTargets, (node: Node) => {
         // If the observed target is a shadowRoot, the ownerkey of the shadow tree will be fetched using the host
-        const observedTargetOwnerKey = node instanceof SyntheticShadowRoot
+        const observedTargetOwnerKey = node instanceof (window as any).ShadowRoot
             ? getNodeKey((node as ShadowRoot).host)
             : getNodeNearestOwnerKey(node);
         ArrayPush.call(observedTargetOwnerKeys, observedTargetOwnerKey);
@@ -81,7 +81,7 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
                 const sampleNodeOwnerKey = getNodeNearestOwnerKey(sampleNode);
                 // Is node being added/removed to a subtree that is being observed
                 if (ArrayIndexOf.call(observedTargetOwnerKeys, sampleNodeOwnerKey) !== -1) {
-                    // If the target was being observed, the return record as-is
+                    // If the target was being observed, then return record as-is
                     if (observedTargets.indexOf(target) !== -1) {
                         ArrayPush.call(filteredSet, record);
                     } else { // else, must be observing the shadowRoot
@@ -89,7 +89,12 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
                     }
                 }
             } else {
-                const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, getNodeNearestOwnerKey(target)) !== -1;
+                // if target is shadowRoot, then fetch key of shadow tree from the host
+                // this should never be the case when synthetic shadow is on, only when running in native
+                const recordTargetOwnerKey = target instanceof (window as any).ShadowRoot
+                ? getNodeKey((target as ShadowRoot).host)
+                : getNodeNearestOwnerKey(target);
+                const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, recordTargetOwnerKey) !== -1;
                 if (mutationInScope) {
                     ArrayPush.call(filteredSet, record);
                 }
@@ -146,7 +151,7 @@ function patchedObserve(this: MutationObserver, target: Node, options?: Mutation
     if (!isUndefined(this[observedTargetsField])) {
         ArrayPush.call(this[observedTargetsField], target);
     }
-    // If the target is a SyntheticShadowRoot, observer the host since the shadowRoot is an empty documentFragment
+    // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
     }
