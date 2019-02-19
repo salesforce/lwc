@@ -12,7 +12,9 @@ const rollupCompile = require('../index');
 const rollupCompat = require('rollup-plugin-compat');
 
 function pretty(str) {
-    return prettier.format(str);
+    return prettier.format(str, {
+        parser: 'babel',
+    });
 }
 
 function fsExpected(fileName) {

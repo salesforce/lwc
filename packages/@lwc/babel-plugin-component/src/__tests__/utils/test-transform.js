@@ -57,8 +57,8 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
 
                 if (normalizedActual !== normalizedExpected) {
                     // we should fail, but with style
-                    expect(prettier.format(normalizedActual)).toBe(
-                        prettier.format(normalizedExpected),
+                    expect(prettier.format(normalizedActual, { parser: 'babel' })).toBe(
+                        prettier.format(normalizedExpected, { parser: 'babel' }),
                     );
                 } else {
                     expect(normalizedActual).toBe(normalizedExpected);

@@ -71,7 +71,12 @@ describe('fixtures', () => {
             if (expectedCode === null) {
                 // write compiled js file if doesn't exist (ie new fixture)
                 expectedCode = actual.code;
-                writeFixtureFile(EXPECTED_JS_FILENAME, prettier.format(expectedCode));
+                writeFixtureFile(
+                    EXPECTED_JS_FILENAME,
+                    prettier.format(expectedCode, {
+                        parser: 'babel',
+                    }),
+                );
             }
 
             if (expectedMetaData === null) {
@@ -87,7 +92,9 @@ describe('fixtures', () => {
             // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
-            expect(prettier.format(actual.code)).toEqual(prettier.format(expectedCode));
+            expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
+                prettier.format(expectedCode, { parser: 'babel' }),
+            );
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
