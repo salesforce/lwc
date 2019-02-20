@@ -1879,10 +1879,10 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/babel-compat/-/babel-compat-0.21.2.tgz#d74d50e206c6b3f02492ff79308285ffd610508e"
-  integrity sha512-lrEijibniHA9OefkVziQGy6/ZTrCqTzurE3rS+ANlexkHTxlLMY33DZZ2jSgE9HKqmb/tdaVzpt5QU8l/Fu5Ag==
+babel-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/babel-compat/-/babel-compat-0.21.3.tgz#e001c2903463b45571a45d88e71d2bdd1aaad931"
+  integrity sha512-cbWiyqEt8k3oVVlDt3VyJmYVjIOif4a2v7qCPYfGSR4OzYTJQzUjAVESjP7LoA0uiBtiWbst+N6vMeZBIm0jiw==
 
 babel-core@^6.0.0, babel-core@^6.26.0:
   version "6.26.3"
@@ -2104,17 +2104,10 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.5a128fd5:
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-transform-proxy-compat@0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.21.0.tgz#e509c87b0b01f413244dc4a3290cf44644eb538f"
-  integrity sha512-NYUrnD3CWDVlM3GVEVpDB6pkeWRoWJQsq8J6BPS7i4odIUBbR2Z4+sTCzJCHN4+vwifUzdg8tyb/LJazzJhrHw==
-  dependencies:
-    "@babel/types" "7.0.0"
-
-babel-plugin-transform-proxy-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.21.2.tgz#aaadff3f301a7171337efeeab3b70f9ee5bc65dc"
-  integrity sha512-eL6bMP3uBeaIVyHUTK/Jy7ql3dQJrQ5PdvPihP+oVLB4XJKGcFlAL/DVd9HPRb/5EXP+HROMJbGcp+uGxwd+AQ==
+babel-plugin-transform-proxy-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.21.3.tgz#6ff1aea7a0bdd0cc62a617e404c6bd0a225f3774"
+  integrity sha512-BdhgF0wgyCnYx2kvJhshME79Nk2eGwTyL6xttPTouEeyhH9kTEetZ/5wwBSd/VSY3EZjQcJi1BpWnKoGMrbt7w==
   dependencies:
     "@babel/types" "7.0.0"
 
@@ -2159,10 +2152,10 @@ babel-polyfill@6.26.0:
     core-js "^2.5.0"
     regenerator-runtime "^0.10.5"
 
-babel-preset-compat@0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-compat/-/babel-preset-compat-0.21.0.tgz#ab5ab03d4bcd88a4f08f0762710e17df7393e7e9"
-  integrity sha512-o9S0QB4sDemrqlWffJ3jDYh0oO1RZFMnBDljnLHaMkpvQ7mEdfLliofs90yxDwbUctddz3T5DIaiNxxfEiJGxA==
+babel-preset-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/babel-preset-compat/-/babel-preset-compat-0.21.3.tgz#9b583e7499e7d70ffdf3bfae345e9aaa9e3a3861"
+  integrity sha512-89RqoVlRhmR1iFIbj0qtPKqnwjI5mltV4P67Fqr85XoXtUhRyTQUQYdxlFUiidZCmvyzHigQ9KsTJHiZxql7eg==
   dependencies:
     "@babel/plugin-proposal-class-properties" "7.1.0"
     "@babel/plugin-proposal-object-rest-spread" "7.0.0"
@@ -2193,43 +2186,7 @@ babel-preset-compat@0.21.0:
     "@babel/plugin-transform-template-literals" "7.0.0"
     "@babel/plugin-transform-typeof-symbol" "7.0.0"
     "@babel/plugin-transform-unicode-regex" "7.0.0"
-    babel-plugin-transform-proxy-compat "0.21.0"
-
-babel-preset-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/babel-preset-compat/-/babel-preset-compat-0.21.2.tgz#b7ef9e5217f06fa75413c7084a921fb373cd5524"
-  integrity sha512-algSTSBjYkRNRgAK6KhL9Eai9X7nUKSpfts68cDwKmPA6TSeAM6aDMjCIaq20jyYR1auw/4mou1UVGmIHLHWqA==
-  dependencies:
-    "@babel/plugin-proposal-class-properties" "7.1.0"
-    "@babel/plugin-proposal-object-rest-spread" "7.0.0"
-    "@babel/plugin-transform-arrow-functions" "7.0.0"
-    "@babel/plugin-transform-async-to-generator" "7.1.0"
-    "@babel/plugin-transform-block-scoped-functions" "7.0.0"
-    "@babel/plugin-transform-block-scoping" "7.0.0"
-    "@babel/plugin-transform-classes" "7.1.0"
-    "@babel/plugin-transform-computed-properties" "7.0.0"
-    "@babel/plugin-transform-destructuring" "7.0.0"
-    "@babel/plugin-transform-duplicate-keys" "7.0.0"
-    "@babel/plugin-transform-exponentiation-operator" "7.1.0"
-    "@babel/plugin-transform-for-of" "7.0.0"
-    "@babel/plugin-transform-function-name" "7.1.0"
-    "@babel/plugin-transform-instanceof" "7.0.0"
-    "@babel/plugin-transform-literals" "7.0.0"
-    "@babel/plugin-transform-modules-amd" "7.1.0"
-    "@babel/plugin-transform-modules-commonjs" "7.1.0"
-    "@babel/plugin-transform-modules-systemjs" "7.0.0"
-    "@babel/plugin-transform-modules-umd" "7.1.0"
-    "@babel/plugin-transform-object-super" "7.1.0"
-    "@babel/plugin-transform-parameters" "7.1.0"
-    "@babel/plugin-transform-regenerator" "7.0.0"
-    "@babel/plugin-transform-runtime" "7.1.0"
-    "@babel/plugin-transform-shorthand-properties" "7.0.0"
-    "@babel/plugin-transform-spread" "7.0.0"
-    "@babel/plugin-transform-sticky-regex" "7.0.0"
-    "@babel/plugin-transform-template-literals" "7.0.0"
-    "@babel/plugin-transform-typeof-symbol" "7.0.0"
-    "@babel/plugin-transform-unicode-regex" "7.0.0"
-    babel-plugin-transform-proxy-compat "0.21.2"
+    babel-plugin-transform-proxy-compat "0.21.3"
 
 babel-preset-jest@^23.2.0:
   version "23.2.0"
@@ -3047,10 +3004,10 @@ compare-versions@2.0.1:
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-2.0.1.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
   integrity sha1-Htwfk2h/2XoyXFn1XkWgfbEGrKY=
 
-compat-polyfills@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/compat-polyfills/-/compat-polyfills-0.21.2.tgz#684ac975245d6785dbedaa599d1ca25576c681ed"
-  integrity sha512-Cy9bFTWRZkiTkEyIy4rodne3yEyVzwRhMsqILOLOQ+KGmlz8WkclQIFWa8BbfexX+Un4r4fSzOfLsAUWtNT/sw==
+compat-polyfills@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/compat-polyfills/-/compat-polyfills-0.21.3.tgz#c624d101c83f620017b46dbc0d0ca4160dbdd5fa"
+  integrity sha512-qJxrOJZX8d04iJ9doQIH5iHnapdqFfbigbENwx+KvBMnGBgZvdK8su16rAbdWj70G4z+hdw0GIDKBPHbfIdVAA==
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -4006,16 +3963,16 @@ es-to-primitive@^1.1.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-es5-proxy-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/es5-proxy-compat/-/es5-proxy-compat-0.21.2.tgz#b0da6a336b3a07d3dae840275b908b30d810105e"
-  integrity sha512-9a+6yiV9bNZ9aqBlwJ8aWFhE6MpO/faNik8fxUGPObvxUATHL/URr+zxeR2PQEiH0XS7bqLynDF31/tAgE/KAA==
+es5-proxy-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/es5-proxy-compat/-/es5-proxy-compat-0.21.3.tgz#80adf614fefd1b109ac5a696a4eb4ca7792e3e2e"
+  integrity sha512-kK09oWnpkVlSNv0glfu5qzzW1kQ/IK8Vqyo135EROPLflpbF0JxQknHHcokuw4ZHrr1QY0n2lCwYFlrUvESVBA==
   dependencies:
-    babel-compat "0.21.2"
-    babel-plugin-transform-proxy-compat "0.21.2"
-    babel-preset-compat "0.21.2"
-    compat-polyfills "0.21.2"
-    proxy-compat "0.21.2"
+    babel-compat "0.21.3"
+    babel-plugin-transform-proxy-compat "0.21.3"
+    babel-preset-compat "0.21.3"
+    compat-polyfills "0.21.3"
+    proxy-compat "0.21.3"
 
 es6-promise@^4.0.3:
   version "4.2.5"
@@ -8317,10 +8274,10 @@ proxy-addr@~2.0.4:
     forwarded "~0.1.2"
     ipaddr.js "1.8.0"
 
-proxy-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/proxy-compat/-/proxy-compat-0.21.2.tgz#28e7f30b37cb591838aebd9f900e011d20cd4a6b"
-  integrity sha512-TztOXb4NpsatViMjd74aKPA1qnuzkX+EJaPZTrZvbGwavPLZUrGwBa3ZeezyTr5nOhDKhDXolOu1+Dq1myCH5w==
+proxy-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/proxy-compat/-/proxy-compat-0.21.3.tgz#88c13b2ffd409b8856c1518947d0fe911e1daca9"
+  integrity sha512-DJSeNeQvaP5Dt4rYUal+r0Y6sGV75oqUcBqsowff7fJdEQQB+XykeJ0VSQWiB+v12wm7fN0p55tOvHwbv7YUKw==
 
 proxy-from-env@^1.0.0:
   version "1.0.0"
@@ -8864,13 +8821,13 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.
   dependencies:
     glob "^7.0.5"
 
-rollup-plugin-compat@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-compat/-/rollup-plugin-compat-0.21.2.tgz#f489804fc7326811b1611afbb9f674395ab2f76c"
-  integrity sha512-e0qKo4lE9tw134SsyOaDEGL/IdIVoHDdnSnxYxXOjp1g+1cSsnI5PNmkAjH3t9zTIylP2smNoedpuUFUOSYwNg==
+rollup-plugin-compat@0.21.3:
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-compat/-/rollup-plugin-compat-0.21.3.tgz#ab777a2e520f987ad8ed69733e6319fe1ad8cb04"
+  integrity sha512-8O9qI+0cchoFNfWXQu+iy6Ar7i6qpdXucF5MX0Sl80O5lo/J5BMX/+1/36w+Hfbb2qD0MtHXvRIvjgMCKuxMUg==
   dependencies:
     "@babel/core" "7.1.0"
-    es5-proxy-compat "0.21.2"
+    es5-proxy-compat "0.21.3"
     magic-string "~0.25.1"
     rollup-pluginutils "~2.0.1"
 
