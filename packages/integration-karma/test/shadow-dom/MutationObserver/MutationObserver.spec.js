@@ -113,14 +113,25 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 });
         });
 
-        it('should invoke observer on slot content owner', () => {
+        it('should invoke observer on slot content owner', (done) => {
             const root = createElement('x-nested-slot-container', { is: nestedSlotContainer } );
             container.appendChild(root);
+            const slottedDiv = root.shadowRoot.querySelector('div.manual');
 
+            // observer on root element's shadowRoot will be notified
+            // because the slot content being mutated belongs to that shadow tree
+            const callback = function(actualMutationRecords, actualObserver) {
+                expect(actualObserver).toBe(parentSRObserver);
+                expect(actualMutationRecords.length).toBe(1);
+                expect(actualMutationRecords[0].target).toBe(slottedDiv);
+                expect(actualMutationRecords[0].addedNodes.length).toBe(1);
+                expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('P');
+                done();
+            };
             // Start observing the parent and child shadow trees
             // x-nested-slot-container
-            const parentSRSpy = jasmine.createSpy();
-            new MutationObserver(parentSRSpy).observe(root.shadowRoot, observerConfig);
+            const parentSRObserver = new MutationObserver(callback);
+            parentSRObserver.observe(root.shadowRoot, observerConfig);
             // x-nested-slot
             const childSRSpy = jasmine.createSpy();
             const child = root.shadowRoot.querySelector('x-nested-slot');
@@ -136,7 +147,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
 
             return Promise.resolve()
                 .then(() => {
-                    const slottedDiv = root.shadowRoot.querySelector('div.manual');
                     slottedDiv.appendChild(document.createElement('p'));
                 })
                 .then(() => {
@@ -144,9 +154,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                     expect(childSRSpy).not.toHaveBeenCalled();
                     expect(grandChildSRSpy).not.toHaveBeenCalled();
                     expect(grandChildSlotSpy).not.toHaveBeenCalled();
-                    // observer on root element's shadowRoot will be notified
-                    // because the slot content being mutated belongs to that shadow tree
-                    expect(parentSRSpy).toHaveBeenCalledTimes(1);
                 });
         });
 
@@ -217,10 +224,11 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 });
         });
 
-        it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', () => {
+        it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
             const root = createElement('x-parent', { is: parent });
             container.appendChild(root);
-            return new Promise((resolve) =>{
+            return Promise.resolve()
+                .then(() =>{
                     let observer;
                     const parentDiv = root.shadowRoot.querySelector('div');
                     const callback = function(actualMutationRecords, actualObserver) {
@@ -228,32 +236,33 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                         expect(actualMutationRecords.length).toBe(1);
                         expect(actualMutationRecords[0].target).toBe(parentDiv);
                         expect(actualMutationRecords[0].addedNodes.length).toBe(2);
-                        expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('TABLE');
+                        expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
                         expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
-                        resolve();
+                        done();
                     };
                     observer = new MutationObserver(callback);
                     observer.observe(root.shadowRoot, observerConfig);
                     // Mutate the shadow tree of x-parent
-                    parentDiv.innerHTML = `<table><thead></thead><tr></tr></table><p>`;
+                    parentDiv.innerHTML = `<h3></h3><p></p>`;
                 });
         });
 
-        it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', () => {
+        it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', (done) => {
             const root = createElement('x-parent', { is: parent });
             container.appendChild(root);
             const parentDiv = root.shadowRoot.querySelector('div');
-            parentDiv.innerHTML = `<table><thead></thead><tr></tr></table><p>`;
-            return new Promise((resolve) => {
+            parentDiv.innerHTML = `<h3></h3><p></p>`;
+            return Promise.resolve()
+                .then(() => {
                     let observer;
                     const callback = function(actualMutationRecords, actualObserver) {
                         expect(actualObserver).toBe(observer);
                         expect(actualMutationRecords.length).toBe(1);
                         expect(actualMutationRecords[0].target).toBe(parentDiv);
                         expect(actualMutationRecords[0].removedNodes.length).toBe(2);
-                        expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('TABLE');
+                        expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('H3');
                         expect(actualMutationRecords[0].removedNodes[1].tagName).toBe('P');
-                        resolve();
+                        done();
                     };
                     observer = new MutationObserver(callback);
                     observer.observe(root.shadowRoot, observerConfig);
@@ -284,6 +293,14 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
         });
 
         it('should not get notifications after disconnecting observer', () => {
+            // In compat mode, there are timing issues
+            // This allows for the chained promise to run in the next macrotask
+            function waitForMutationObservedToBeInvoked() {
+                return new Promise((resolve) => {
+                    setTimeout(resolve)
+                });
+            }
+
             const root = createElement('x-parent', { is: parent });
             container.appendChild(root);
             const parentSRSpy = jasmine.createSpy();
@@ -295,6 +312,8 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 .then(() => {
                     // Mutate the shadow tree of x-parent
                     parentDiv.appendChild(document.createElement('p'));
+                    // Wait for a macro task
+                    return waitForMutationObservedToBeInvoked();
                 })
                 .then(() => {
                     // Make sure the spy is getting called
@@ -303,11 +322,12 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                     // disconnect and verify that spy does not get invoked after
                     observer.disconnect()
                     parentDiv.appendChild(document.createElement('ul'));
+                    // Wait for a macro task
+                    return waitForMutationObservedToBeInvoked();
                 })
                 .then(() => {
                     expect(parentSRSpy).not.toHaveBeenCalled();
                 });
-
         });
 
         it('all observers of a given node are invoked', () => {
