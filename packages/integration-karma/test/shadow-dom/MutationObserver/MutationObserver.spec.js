@@ -260,8 +260,13 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                         expect(actualMutationRecords.length).toBe(1);
                         expect(actualMutationRecords[0].target).toBe(parentDiv);
                         expect(actualMutationRecords[0].removedNodes.length).toBe(2);
-                        expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('H3');
-                        expect(actualMutationRecords[0].removedNodes[1].tagName).toBe('P');
+                        const removedNodes = Array.prototype.slice.call(actualMutationRecords[0].removedNodes, 0);
+                        // In IE11, the order of nodes removal is reverse. Sorting the records to make the result deterministic
+                        removedNodes.sort((nodeA, nodeB) => {
+                            return nodeA.tagName > nodeB.tagName ? 1 : -1;
+                        });
+                        expect(removedNodes[0].tagName).toBe('H3');
+                        expect(removedNodes[1].tagName).toBe('P');
                         done();
                     };
                     observer = new MutationObserver(callback);
