@@ -50,6 +50,8 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
 
     if (typeof fallbackData === 'number') {
         fallbackData = t.numericLiteral(fallbackData);
+    } else if (typeof fallbackData === 'boolean') {
+        fallbackData = t.booleanLiteral(fallbackData);
     } else {
         fallbackData = t.stringLiteral(fallbackData);
     }
