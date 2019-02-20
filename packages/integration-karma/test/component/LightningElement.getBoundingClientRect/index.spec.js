@@ -6,7 +6,7 @@ import ConstructorInvocation from 'x/constructorInvocation';
 it('should throw when accessing during construction', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
-    }).toThrowError(
+    }).toThrowErrorDev(
         Error,
         /Assert Violation: this\.getBoundingClientRect\(\) should not be called during the construction of the custom element for <x-constructor-invocation> because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks\./
     );

@@ -26,7 +26,7 @@ function createEnvFile(lwcConfig) {
     const content = [
         `window.process = {`,
         `    env: {`,
-        `        NODE_ENV: 'test',`,
+        `        NODE_ENV: ${lwcConfig.prod ? '"production"' : '"development"'},`,
         `        COMPAT: ${lwcConfig.compat},`,
         `        NATIVE_SHADOW: ${lwcConfig.nativeShadow}`,
         `    }`,

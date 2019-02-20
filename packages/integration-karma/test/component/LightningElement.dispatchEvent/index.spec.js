@@ -44,7 +44,7 @@ it('should throw when event is dispatched during construction', function() {
     }
     expect(() => {
         createElement('x-test', { is: Test });
-    }).toThrowError(
+    }).toThrowErrorDev(
         Error,
         /this.dispatchEvent\(\) should not be called during the construction of the custom element for <x-test> because no one is listening for the event "event" just yet/
     );
@@ -53,11 +53,12 @@ it('should throw when event is dispatched during construction', function() {
 it('should log warning when element is not connected', function() {
     const elm = createElement('x-test', { is: Test });
 
-    spyOn(console, 'warn');
+    // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
+    spyOnAllFunctions(console);
     elm.dispatch(new CustomEvent('event'));
 
     /* eslint-disable-next-line no-console */
-    const [msg] = console.warn.calls.argsFor(0);
+    const [msg] = console.group.calls.argsFor(0);
     expect(msg).toMatch(
         /\[LWC warning\]: Unreachable event "event" dispatched from disconnected element <x-test>. Events can only reach the parent element after the element is connected \(via connectedCallback\) and before the element is disconnected\(via disconnectedCallback\)./
     );
@@ -68,11 +69,12 @@ function testInvalidEvent(reason, name) {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        spyOn(console, 'warn');
+        // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
+        spyOnAllFunctions(console);
         elm.dispatch(new CustomEvent(name));
 
         /* eslint-disable-next-line no-console */
-        const [msg] = console.warn.calls.argsFor(0);
+        const [msg] = console.group.calls.argsFor(0);
         expect(msg).toMatch(
             /\[LWC warning\]: Invalid event type "\S+" dispatched in element <x-test>. Event name should only contain lowercase alphanumeric characters./
         );

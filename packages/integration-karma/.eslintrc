@@ -1,7 +1,8 @@
 {
     "globals": {
         "process": true,
-        "Engine": true
+        "Engine": true,
+        "spyOnAllFunctions": true
     },
 
     "env": {
