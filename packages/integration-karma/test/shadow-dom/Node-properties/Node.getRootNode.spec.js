@@ -28,8 +28,7 @@ describe('Node.getRootNode', () => {
         expect(elm.getRootNode({ composed: true })).toBe(frag);
     });
 
-    // TODO: #972 - getRootNode({ composed: true }) on the shadowRoot doesn't return the right Node
-    xit('shadowRoot', () => {
+    it('shadowRoot', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
