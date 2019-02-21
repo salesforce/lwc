@@ -9,7 +9,8 @@
     },
 
     "rules": {
-        "no-production-assert": "error"
+        "no-production-assert": "error",
+        "import/no-unresolved": ["error", { "caseSensitive": true }]
     },
 
     "overrides": [{
@@ -18,7 +19,16 @@
         ],
 
         "rules": {
-            "no-production-assert": "off"
+            "no-production-assert": "off",
+            "import/no-unresolved": "off"
         }
-    }]
+    }],
+
+    "settings": {
+        "import/resolver": {
+            "typescript": {
+              "directory": "./tsconfig.json"
+            }
+        }
+    }
 }

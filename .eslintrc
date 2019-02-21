@@ -6,7 +6,7 @@
         "sourceType": "module"
     },
 
-    "plugins": ["@typescript-eslint"],
+    "plugins": ["@typescript-eslint", "import"],
     "extends": "eslint:recommended",
 
     "env": {
