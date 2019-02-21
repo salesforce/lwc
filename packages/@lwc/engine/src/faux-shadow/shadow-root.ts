@@ -274,21 +274,21 @@ const NodePatchDescriptors = {
             otherNode: Node | SyntheticShadowRootInterface,
         ): number {
             const host = getHost(this);
+
             if (this === otherNode) {
-                // it is the root itself
+                // "this" and "otherNode" are the same shadow root.
                 return 0;
-            }
-            if (this.contains(otherNode as Node)) {
-                // it belongs to the shadow root instance
-                return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            } else if (this.contains(otherNode as Node)) {
+                // "otherNode" belongs to the shadow tree where "this" is the shadow root.
+                return 20; // Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
             } else if (
                 compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY
             ) {
-                // it is a child element but does not belong to the shadow root instance
-                return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                // "otherNode" is in a different shadow tree contained by the shadow tree where "this" is the shadow root.
+                return 37; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_FOLLOWING | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             } else {
-                // it is not a descendant
-                return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+                // "otherNode" is in a different shadow tree that is not contained by the shadow tree where "this" is the shadow root.
+                return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             }
         },
     },

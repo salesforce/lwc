@@ -33,8 +33,7 @@ describe('Node.compareDocumentPosition', () => {
         ).not.toBe(0);
     });
 
-    // TODO: #978 - compare a node from a shadow tree with its root always return that the 2 nodes are identical
-    xit('should return the right value for nodes in the same shadow tree', () => {
+    it('should return the right value for nodes in the same shadow tree', () => {
         const elm = createElement('x-slotted', { is: ComplexSlotted });
         document.body.appendChild(elm);
 
@@ -103,8 +102,7 @@ describe('Node.compareDocumentPosition', () => {
         expect(slotted.compareDocumentPosition(after)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
-    // TODO - #996 Node.compareDocumentPosition return invalid value for node coming from a different shadow tree
-    xit('should return the right value for slotted node', () => {
+    it('should return the right value for slotted node', () => {
         const elm = createElement('x-slotted', { is: ComplexSlotted });
         document.body.appendChild(elm);
 

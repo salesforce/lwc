@@ -12,8 +12,9 @@ const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const babel = require('@babel/core');
 const minify = require('babel-preset-minify');
+
 const { version } = require('../../package.json');
-const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
+const { generateTargetName, ignoreCircularDependencies } = require('./utils');
 
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');

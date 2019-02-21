@@ -9,7 +9,7 @@ const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
-const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
+const { generateTargetName, ignoreCircularDependencies } = require('./utils');
 const { version } = require('../../package.json');
 
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');

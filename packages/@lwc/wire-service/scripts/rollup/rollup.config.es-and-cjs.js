@@ -4,16 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* eslint-env node */
-
 const path = require('path');
 const typescript = require('rollup-plugin-typescript');
-const { version } = require('./package.json');
-const { generateTargetName } = require('./rollup.config.util');
 
-const entry = path.resolve(__dirname, 'src/index.ts');
-const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
-const modulesDirectory = path.resolve(__dirname, 'dist/modules');
+const { version } = require('../../package.json');
+const { generateTargetName } = require('./util');
+
+const entry = path.resolve(__dirname, '../../src/index.ts');
+const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
+const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
 const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;

@@ -246,10 +246,16 @@ export function PatchedNode(node: Node): NodeConstructor {
             return getRootNodeGetter.call(this, options);
         }
         compareDocumentPosition(this: Node, otherNode: Node) {
-            if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
-                // it is from another shadow
-                return 0;
+            if (getRootNodeGetter.call(this) === otherNode) {
+                // "this" is in a shadow tree where the shadow root is the "otherNode".
+                return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
+            } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+                // "this" and "otherNode" belongs to 2 different shadow tree.
+                return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node.DOCUMENT_POSITION_PRECEDING
             }
+
+            // Since "this" and "otherNode" are part of the same shadow tree we can safely rely to the native
+            // Node.compareDocumentPosition implementation.
             return compareDocumentPosition.call(this, otherNode);
         }
         contains(this: Node, otherNode: Node) {

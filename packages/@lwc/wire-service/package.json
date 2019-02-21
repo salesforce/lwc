@@ -8,8 +8,7 @@
     "scripts": {
         "clean": "rm -rf dist/ lib/",
         "test": "jest",
-        "build": "tsc",
-        "postbuild": "concurrently --raw \"rollup -c rollup.config.umd.dev.js\" \"rollup -c rollup.config.umd.prod.js\" \"rollup -c rollup.config.es-and-cjs.js\"",
+        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
         "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve:playground\"",
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
