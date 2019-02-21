@@ -41,13 +41,12 @@ describe('Element.innerHTML - set', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        spyOn(console, 'error');
-
         const div = elm.shadowRoot.querySelector('div');
-        div.innerHTML = '<span>Hello World!</span>';
 
-        /* eslint-disable-next-line no-console */
-        const [msg] = console.error.calls.argsFor(0);
-        expect(msg).toMatch(`\\[LWC error\\]: innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`);
+        expect(() => {
+            div.innerHTML = '<span>Hello World!</span>';
+        }).toLogErrorDev(
+            /\[LWC error\]: innerHTML is disallowed in Element unless `lwc:dom="manual"` directive is used in the template./
+        );
     });
 });

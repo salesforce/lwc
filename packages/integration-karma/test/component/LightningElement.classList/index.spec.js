@@ -7,6 +7,7 @@ it('should throw when trying to access classList during construction', () => {
     expect(() => {
         createElement('x-access-during-construction', { is: XAccessDuringConstruction });
     }).toThrowErrorDev(
+        Error,
         /The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback\(\) instead./
     );
 });

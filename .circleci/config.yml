@@ -215,6 +215,7 @@ jobs:
       - *run_karma_tests_native_prod
       - *run_karma_tests_compat
       - *run_karma_tests_compat_prod
+
       - *run_karma_coverage
 
       - *stop_sauce_connect

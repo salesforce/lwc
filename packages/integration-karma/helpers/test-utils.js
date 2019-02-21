@@ -6,26 +6,81 @@
  */
 
 window.TestUtils = (function (lwc, jasmine, beforeAll) {
-    const customMatchers = {
-        toThrowErrorDev() {
+    function pass() {
+        return {
+            pass: true
+        };
+    }
+
+    function fail(message) {
+        return {
+            pass: false,
+            message,
+        };
+    }
+
+    // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
+    function consoleDevMatcher(methodName, internalMethodName) {
+        return function matcher() {
             return {
-                compare(actual, expectedErrorCtor, expectedMessage) {
+                compare(actual, expectedMessage) {
+                    function matchMessage(message) {
+                        if (typeof expectedMessage === 'string') {
+                            return message === expectedMessage;
+                        } else {
+                            return expectedMessage.test(message);
+                        }
+                    }
+
+                    function formatConsoleCall(args) {
+                        return args.map(String).join(' ');
+                    }
+
                     if (typeof actual !== 'function') {
                         throw new Error(`Expected function to throw error.`);
-                    } else if (typeof actual !== 'function' || expectedErrorCtor.prototype instanceof Error) {
-                        throw new Error(`Expected an error constructor.`);
                     } else if (typeof expectedMessage !== 'string' && !(expectedMessage instanceof RegExp)) {
                         throw new Error(`Expected a string or a RegExp to compare the thrown error against.`);
                     }
 
-                    let thrown;
+                    spyOnAllFunctions(console);
+                    actual();
 
-                    try {
-                        actual();
-                    } catch (error) {
-                        thrown = error;
+                    /* eslint-disable-next-line no-console */
+                    const callsArgs = console[internalMethodName || methodName].calls.allArgs();
+                    const formattedCalls = callsArgs.map(callArgs => `"${formatConsoleCall(callArgs)}"`).join(', ');
+
+                    if (process.env.NODE_ENV === 'production') {
+                        if (callsArgs.length !== 0) {
+                            fail(`Expected console.${methodName} to never called in production mode, but it was called ${callsArgs.length} with ${formattedCalls}.`);
+                        } else {
+                            return pass();
+                        }
+                    } else {
+                        if (callsArgs.length === 0) {
+                            return fail(`Expected console.${methodName} to called once with "${expectedMessage}", but was never called.`);
+                        } else if (callsArgs.length === 1) {
+                            const actualMessage = formatConsoleCall(callsArgs[0]);
+
+                            if (!matchMessage(actualMessage)) {
+                                return fail(`Expected console.${methodName} to be called with "${expectedMessage}", but was called with "${actualMessage}".`);
+                            } else {
+                                return pass();
+                            }
+                        } else {
+                            return fail(`Expected console.${methodName} to never called, but it was called ${callsArgs.length} with ${formattedCalls}.`);
+                        }
                     }
+                }
+            }
+        }
+    }
 
+    const customMatchers = {
+        toLogWarningDev: consoleDevMatcher('warn', 'group'),
+        toLogErrorDev: consoleDevMatcher('error'),
+        toThrowErrorDev() {
+            return {
+                compare(actual, expectedErrorCtor, expectedMessage) {
                     function matchMessage(message) {
                         if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
@@ -42,37 +97,40 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         return `${thrown.name} with message "${thrown.message}"`;
                     }
 
+                    if (typeof actual !== 'function') {
+                        throw new Error(`Expected function to throw error.`);
+                    } else if (typeof actual !== 'function' || expectedErrorCtor.prototype instanceof Error) {
+                        throw new Error(`Expected an error constructor.`);
+                    } else if (typeof expectedMessage !== 'string' && !(expectedMessage instanceof RegExp)) {
+                        throw new Error(`Expected a string or a RegExp to compare the thrown error against.`);
+                    }
+
+                    let thrown;
+
+                    try {
+                        actual();
+                    } catch (error) {
+                        thrown = error;
+                    }
+
                     if (process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
-                            return {
-                                pass: false,
-                                message: `Expected function not to throw an error in production mode, but it threw ${throwDescription(thrown)}.`,
-                            };
+                            return fail(`Expected function not to throw an error in production mode, but it threw ${throwDescription(thrown)}.`);
                         } else {
-                            return {
-                                pass: true,
-                            };
+                            return pass();
                         }
                     } else {
                         if (thrown === undefined) {
-                            return {
-                                pass: false,
-                                message: `Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}".`,
-                            }
+                            return fail(`Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}".`);
                         } else if (!matchError(thrown)) {
-                            return {
-                                pass: false,
-                                message: `Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}", but it threw ${throwDescription(thrown)}.`,
-                            };
+                            return fail(`Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}", but it threw ${throwDescription(thrown)}.`);
                         } else {
-                            return {
-                                pass: true,
-                            };
+                            return pass();
                         }
                     }
                 }
             }
-        }
+        },
     };
 
     beforeAll(() => {
