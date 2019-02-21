@@ -26,7 +26,6 @@ const { createDocumentFragment } = document;
 interface ShadowRootRecord {
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
-    uid: number;
     host: HTMLElement;
     shadowRoot: SyntheticShadowRootInterface;
 }
@@ -51,28 +50,25 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
-let uid: number = 0;
-
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
     if (!isUndefined(getInternalField(elm, InternalSlot))) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
-    const sr = createDocumentFragment.call(document);
+    const sr = createDocumentFragment.call(document) as SyntheticShadowRootInterface;
     // creating shadow internal record
     const record: ShadowRootRecord = {
-        uid: uid++,
         mode,
         delegatesFocus: !!delegatesFocus,
         host: elm,
-        shadowRoot: sr as SyntheticShadowRootInterface,
+        shadowRoot: sr,
     };
     setInternalField(sr, InternalSlot, record);
     setInternalField(elm, InternalSlot, record);
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
-    return sr as SyntheticShadowRootInterface;
+    return sr;
 }
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {

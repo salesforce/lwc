@@ -28,7 +28,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
         get shadowRoot(this: HTMLElement): SyntheticShadowRootInterface | null {
-            const shadow = getShadowRoot(this) as SyntheticShadowRootInterface;
+            const shadow = getShadowRoot(this);
             if (shadow.mode === 'open') {
                 return shadow;
             }
