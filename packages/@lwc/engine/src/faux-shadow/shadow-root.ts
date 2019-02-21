@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { assign, create, isNull, setPrototypeOf, defineProperty, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
+import { assign, create, isNull, setPrototypeOf, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
@@ -21,62 +20,63 @@ import { pathComposer } from "../3rdparty/polymer/path-composer";
 import { getInternalChildNodes } from "./node";
 import { innerHTMLSetter } from "../env/element";
 
-const HostKey = createFieldName('host');
-const ShadowRootKey = createFieldName('shadowRoot');
+const InternalSlot = createFieldName('shadowRecord');
 const { createDocumentFragment } = document;
 
+interface ShadowRootRecord {
+    mode: 'open' | 'closed';
+    delegatesFocus: boolean;
+    uid: number;
+    host: HTMLElement;
+    shadowRoot: SyntheticShadowRootInterface;
+}
+
+function getInternalSlot(root: SyntheticShadowRootInterface | HTMLElement): ShadowRootRecord {
+    const record: ShadowRootRecord | undefined = getInternalField(root, InternalSlot);
+    if (isUndefined(record)) {
+        throw new TypeError();
+    }
+    return record;
+}
+
 export function isDelegatingFocus(host: HTMLElement): boolean {
-    const shadowRoot = getShadowRoot(host);
-    return shadowRoot.delegatesFocus;
+    return getInternalSlot(host).delegatesFocus;
 }
 
 export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(root[HostKey], `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`);
-    }
-    return root[HostKey];
+    return getInternalSlot(root).host;
 }
 
 export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(getInternalField(elm, ShadowRootKey), `A Custom Element with a shadow attached must be provided as the first argument.`);
-    }
-    return getInternalField(elm, ShadowRootKey);
+    return getInternalSlot(elm).shadowRoot;
 }
 
+let uid: number = 0;
+
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
-    if (getInternalField(elm, ShadowRootKey)) {
+    if (!isUndefined(getInternalField(elm, InternalSlot))) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
     const sr = createDocumentFragment.call(document);
-    defineProperty(sr, 'mode', {
-        get() { return mode; },
-        configurable: true,
-    });
-    defineProperty(sr, 'delegatesFocus', {
-        get() { return !!delegatesFocus; },
-        configurable: true,
-    });
+    // creating shadow internal record
+    const record: ShadowRootRecord = {
+        uid: uid++,
+        mode,
+        delegatesFocus: !!delegatesFocus,
+        host: elm,
+        shadowRoot: sr as SyntheticShadowRootInterface,
+    };
+    setInternalField(sr, InternalSlot, record);
+    setInternalField(elm, InternalSlot, record);
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
-    setInternalField(sr, HostKey, elm);
-    setInternalField(elm, ShadowRootKey, sr);
-    // expose the shadow via a hidden symbol for testing purposes
-    if (process.env.NODE_ENV === 'test') {
-        elm['$$ShadowRoot$$'] = sr;
-    }
     return sr as SyntheticShadowRootInterface;
 }
 
-export enum ShadowRootMode {
-    CLOSED = "closed",
-    OPEN = "open",
-}
-
 export interface SyntheticShadowRootInterface extends ShadowRoot {
-    mode: ShadowRootMode;
+    // TODO: TS doesn't support delegatesFocus just yet
     delegatesFocus: boolean;
 }
 
@@ -132,8 +132,8 @@ const ShadowRootDescriptors = {
     },
     delegatesFocus: {
         configurable: true,
-        get(): boolean {
-            return false;
+        get(this: SyntheticShadowRootInterface): boolean {
+            return getInternalSlot(this).delegatesFocus;
         },
     },
     elementFromPoint: {
@@ -173,8 +173,8 @@ const ShadowRootDescriptors = {
     },
     mode: {
         configurable: true,
-        get() {
-            return ShadowRootMode.OPEN;
+        get(this: SyntheticShadowRootInterface) {
+            return getInternalSlot(this).mode;
         },
     },
     styleSheets: {
@@ -481,7 +481,7 @@ if (isNativeShadowRootAvailable) {
  * to show the content of the shadowRoot in the DOM Explorer.
  */
 export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
-    const shadowRoot: SyntheticShadowRootInterface = getInternalField(host, ShadowRootKey);
+    const shadowRoot = getShadowRoot(host);
     // @ts-ignore this $$placeholder$$ is not a security issue because you must
     // have access to the shadowRoot in order to extract the fake node, which give
     // you access to the same childNodes of the shadowRoot, so, who cares.

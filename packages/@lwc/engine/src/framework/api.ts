@@ -36,10 +36,6 @@ import { markAsDynamicChildren } from "./patch";
 import {
     isNativeShadowRootAvailable,
 } from "../env/dom";
-import {
-    insertBefore,
-    removeChild,
-} from "../env/node";
 import { Services, invokeServiceHook } from "./services";
 
 export interface ElementCompilerData extends VNodeData {
@@ -137,14 +133,14 @@ const ElementHook: Hooks = {
         updateChildrenHook(oldVnode, vnode);
     },
     insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
     },
     move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
-        removeChild.call(parentNode, vnode.elm as Node);
+        removeNodeHook(vnode, parentNode);
         removeElmHook(vnode);
     },
     destroy: destroyElmHook,
@@ -175,15 +171,15 @@ const CustomElementHook: Hooks = {
         renderCustomElmHook(vnode);
     },
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
         insertCustomElmHook(vnode);
     },
     move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
-        removeChild.call(parentNode, vnode.elm as Node);
+        removeNodeHook(vnode, parentNode);
         removeElmHook(vnode);
     },
     destroy: (vnode: VCustomElement) => {
