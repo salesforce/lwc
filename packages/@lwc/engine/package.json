@@ -9,19 +9,13 @@
   "scripts": {
     "clean": "rm -rf dist/ lib/",
     "test": "jest",
-    "build": "tsc",
-    "postbuild": "concurrently --raw \"rollup -c scripts/rollup/rollup.config.umd.dev.js\" \"rollup -c scripts/rollup/rollup.config.umd.prod.js\" \"rollup -c scripts/rollup/rollup.config.es-and-cjs.js\""
+    "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
   },
   "dependencies": {
     "observable-membrane": "0.26.0"
   },
   "devDependencies": {
-    "@lwc/template-compiler": "0.35.7",
-    "concurrently": "^3.5.1",
-    "rollup-plugin-inject": "^1.4.1",
-    "rollup-plugin-node-resolve": "^3.0.2",
-    "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-typescript": "^0.8.1"
+    "@lwc/template-compiler": "0.35.7"
   },
   "lwc": {
     "modules": {
