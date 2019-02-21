@@ -4,21 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 /**
- * Returns the shadowRoot property of a given Lightning web component.
+ * @deprecated use Element.shadowRoot directly instead.
  *
- * Use this utility instead of directly accessing the the element's ShadowRoot
- * to future-proof your test logic as LWC's Shadow DOM API implementation
- * evolves over time.
+ * Returns the shadowRoot property of a given Lightning web component.
  *
  * @param {LWCElement} element The Lightning web component element to retrieve
  * the shadowRoot property off of
  * @returns {ShadowRoot} The shadow root of the given element
  */
 module.exports.getShadowRoot = function(element) {
-    if (!element || !element.$$ShadowRoot$$) {
-        const tagName = element && element.tagName && element.tagName.toLowerCase();
-        throw new Error(`Attempting to retrieve the shadow root of '${tagName || element}' but no shadowRoot property found`);
-    }
-    return element.$$ShadowRoot$$;
+    // eslint-disable-next-line no-console
+    console.warn('[LWC deprecation notice] getShadowRoot has been deprecated. Access the Element.shadowRoot property directly instead');
+    return element.shadowRoot;
 }
