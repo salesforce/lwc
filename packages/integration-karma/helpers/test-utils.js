@@ -19,6 +19,45 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
+    // TODO: #869 - Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
+    // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
+    function spyConsole() {
+        var originalConsole = window.console;
+
+        var calls = {
+            log: [],
+            warn: [],
+            error: [],
+            group: [],
+            groupEnd: [],
+        };
+
+        window.console = {
+            log : function(){
+                calls.log.push(Array.prototype.slice.call(arguments));
+            },
+            warn : function(){
+                calls.warn.push(Array.prototype.slice.call(arguments));
+            },
+            error : function(){
+                calls.error.push(Array.prototype.slice.call(arguments));
+            },
+            group : function(){
+                calls.group.push(Array.prototype.slice.call(arguments));
+            },
+            groupEnd: function() {
+                calls.groupEnd.push(Array.prototype.slice.call(arguments));
+            }
+        };
+
+        return {
+            calls: calls,
+            reset: function() {
+                window.console = originalConsole;
+            },
+        };
+    }
+
     // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
     function consoleDevMatcherFactory(methodName, internalMethodName) {
         return function consoleDevMatcher() {
@@ -42,11 +81,15 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                         throw new Error('Expected a string or a RegExp to compare the thrown error against.');
                     }
 
-                    spyOnAllFunctions(console);
-                    actual();
+                    var spy = spyConsole();
 
-                    /* eslint-disable-next-line no-console */
-                    var callsArgs = console[internalMethodName || methodName].calls.allArgs();
+                    try {
+                        actual();
+                    } finally {
+                        spy.reset();
+                    }
+
+                    var callsArgs = spy.calls[internalMethodName || methodName];
                     var formattedCalls = callsArgs.map(function (callArgs) {
                         return '"' + formatConsoleCall(callArgs) + '"';
                     }).join(', ');
