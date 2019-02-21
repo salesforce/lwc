@@ -24,10 +24,19 @@ This set of options applies to the `start` and `test` commands. On top of the st
 
 * **`--compat`:** Compile and deliver tests in COMPAT mode.
 * **`--native-shadow`:** Force the components to be created with native shadow enabled.
+* **`--prod`:** Run the tests engine and the test in PRODUCTION mode.
 * **`--coverage`:** Gather engine code coverage, and store it in the `coverage` folder.
 * **`--grep=<pattern>`:** Filter the spec to run based on the pattern.
 
 ## Contributing
 
 * The test suite uses jasmine for test runner. You can find more details about jasmine here: https://jasmine.github.io/api/3.3/global
+* On top of the standard [jasmine matchers](https://jasmine.github.io/api/edge/matchers.html), the test suite also register custom matchers:
+    * `toLogWarningDev(message)`: `expect` a function to log a warming with a specific message in DEV only.
+    * `toLogErrorDev(message)`: `expect` a function to log an error with a specific message in DEV only.
+    * `toThrowErrorDev(Error, message)`: `expect` a function to throw an error with a specific Error constructor and a specific message.
 * You should rather import `createElement` from `test-utils` instead of `lwc`. The `createElement` element from `test-utils` set `fallback` to false if the `--native-shadow` flag is passed to the command.
+* Some of the test command options are available in the test suite on the global `process.env` object:
+    * `process.env.NODE_ENV`: is set to `development` by default and `production` when the `--prod` flag is passed
+    * `process.env.COMPAT`: is set to `false` by default and `true` if the `--compat` flag is passed
+    * `process.env.NATIVE_SHADOW`: is set to `false` by default and `true` if the `--native-shadow` flag is passed
