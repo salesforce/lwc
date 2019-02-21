@@ -8,22 +8,22 @@
 window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function pass() {
         return {
-            pass: true
+            pass: true,
         };
     }
 
     function fail(message) {
         return {
             pass: false,
-            message,
+            message: message,
         };
     }
 
     // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
-    function consoleDevMatcher(methodName, internalMethodName) {
-        return function matcher() {
+    function consoleDevMatcherFactory(methodName, internalMethodName) {
+        return function consoleDevMatcher() {
             return {
-                compare(actual, expectedMessage) {
+                compare: function compare(actual, expectedMessage) {
                     function matchMessage(message) {
                         if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
@@ -37,37 +37,39 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     }
 
                     if (typeof actual !== 'function') {
-                        throw new Error(`Expected function to throw error.`);
+                        throw new Error('Expected function to throw error.');
                     } else if (typeof expectedMessage !== 'string' && !(expectedMessage instanceof RegExp)) {
-                        throw new Error(`Expected a string or a RegExp to compare the thrown error against.`);
+                        throw new Error('Expected a string or a RegExp to compare the thrown error against.');
                     }
 
                     spyOnAllFunctions(console);
                     actual();
 
                     /* eslint-disable-next-line no-console */
-                    const callsArgs = console[internalMethodName || methodName].calls.allArgs();
-                    const formattedCalls = callsArgs.map(callArgs => `"${formatConsoleCall(callArgs)}"`).join(', ');
+                    var callsArgs = console[internalMethodName || methodName].calls.allArgs();
+                    var formattedCalls = callsArgs.map(function (callArgs) {
+                        return '"' + formatConsoleCall(callArgs) + '"';
+                    }).join(', ');
 
                     if (process.env.NODE_ENV === 'production') {
                         if (callsArgs.length !== 0) {
-                            fail(`Expected console.${methodName} to never called in production mode, but it was called ${callsArgs.length} with ${formattedCalls}.`);
+                            fail('Expected console.' + methodName + ' to never called in production mode, but it was called ' + callsArgs.length + ' with ' + formattedCalls + '.');
                         } else {
                             return pass();
                         }
                     } else {
                         if (callsArgs.length === 0) {
-                            return fail(`Expected console.${methodName} to called once with "${expectedMessage}", but was never called.`);
+                            return fail('Expected console.' + methodName + ' to called once with "' + expectedMessage + '", but was never called.');
                         } else if (callsArgs.length === 1) {
-                            const actualMessage = formatConsoleCall(callsArgs[0]);
+                            var actualMessage = formatConsoleCall(callsArgs[0]);
 
                             if (!matchMessage(actualMessage)) {
-                                return fail(`Expected console.${methodName} to be called with "${expectedMessage}", but was called with "${actualMessage}".`);
+                                return fail('Expected console.' + methodName + ' to be called with "' + expectedMessage + '", but was called with "' + actualMessage + '".');
                             } else {
                                 return pass();
                             }
                         } else {
-                            return fail(`Expected console.${methodName} to never called, but it was called ${callsArgs.length} with ${formattedCalls}.`);
+                            return fail('Expected console.' + methodName + ' to never called, but it was called ' + callsArgs.length + ' with ' + formattedCalls + '.');
                         }
                     }
                 }
@@ -75,12 +77,12 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         }
     }
 
-    const customMatchers = {
-        toLogWarningDev: consoleDevMatcher('warn', 'group'),
-        toLogErrorDev: consoleDevMatcher('error'),
-        toThrowErrorDev() {
+    var customMatchers = {
+        toLogWarningDev: consoleDevMatcherFactory('warn', 'group'),
+        toLogErrorDev: consoleDevMatcherFactory('error'),
+        toThrowErrorDev: function toThrowErrorDev() {
             return {
-                compare(actual, expectedErrorCtor, expectedMessage) {
+                compare: function(actual, expectedErrorCtor, expectedMessage) {
                     function matchMessage(message) {
                         if (typeof expectedMessage === 'string') {
                             return message === expectedMessage;
@@ -94,15 +96,15 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     }
 
                     function throwDescription(thrown) {
-                        return `${thrown.name} with message "${thrown.message}"`;
+                        return thrown.name + ' with message "' + thrown.message + '"';
                     }
 
                     if (typeof actual !== 'function') {
-                        throw new Error(`Expected function to throw error.`);
+                        throw new Error('Expected function to throw error.');
                     } else if (typeof actual !== 'function' || expectedErrorCtor.prototype instanceof Error) {
-                        throw new Error(`Expected an error constructor.`);
+                        throw new Error('Expected an error constructor.');
                     } else if (typeof expectedMessage !== 'string' && !(expectedMessage instanceof RegExp)) {
-                        throw new Error(`Expected a string or a RegExp to compare the thrown error against.`);
+                        throw new Error('Expected a string or a RegExp to compare the thrown error against.');
                     }
 
                     let thrown;
@@ -115,15 +117,15 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
                     if (process.env.NODE_ENV === 'production') {
                         if (thrown !== undefined) {
-                            return fail(`Expected function not to throw an error in production mode, but it threw ${throwDescription(thrown)}.`);
+                            return fail('Expected function not to throw an error in production mode, but it threw ' + throwDescription(thrown) + '.');
                         } else {
                             return pass();
                         }
                     } else {
                         if (thrown === undefined) {
-                            return fail(`Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}".`);
+                            return fail('Expected function to throw an ' + expectedErrorCtor.name + ' error in development mode with message "' + expectedMessage + '".');
                         } else if (!matchError(thrown)) {
-                            return fail(`Expected function to throw an ${expectedErrorCtor.name} error in development mode with message "${expectedMessage}", but it threw ${throwDescription(thrown)}.`);
+                            return fail('Expected function to throw an ' + expectedErrorCtor.name + ' error in development mode with message "' + expectedMessage + '", but it threw ' + throwDescription(thrown) + '.');
                         } else {
                             return pass();
                         }
@@ -133,7 +135,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         },
     };
 
-    beforeAll(() => {
+    beforeAll(function() {
         jasmine.addMatchers(customMatchers);
     });
 
