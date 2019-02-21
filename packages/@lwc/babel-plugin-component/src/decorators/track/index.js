@@ -34,7 +34,7 @@ function transform(t, klass, decorators) {
         const trackProperties = trackDecorators.map(
             ({ path }) =>
                 // Get tracked field names
-                path.parentPath.get('key.name').node,
+                path.parentPath.get('key.name').node
         );
 
         const trackConfig = trackProperties.reduce((acc, fieldName) => {
@@ -46,7 +46,7 @@ function transform(t, klass, decorators) {
         const staticProp = staticClassProperty(
             t,
             LWC_COMPONENT_PROPERTIES.TRACK,
-            t.valueToNode(trackConfig),
+            t.valueToNode(trackConfig)
         );
         markAsLWCNode(staticProp);
 

@@ -52,7 +52,7 @@ function scopeSelector(selector: Selector) {
         // Compound selectors containing :host have a special treatment and should not be scoped like the rest of the
         // complex selectors.
         const shouldScopeCompoundSelector = compoundSelector.every(
-            node => !isHostPseudoClass(node),
+            node => !isHostPseudoClass(node)
         );
 
         if (shouldScopeCompoundSelector) {

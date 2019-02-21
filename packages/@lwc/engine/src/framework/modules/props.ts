@@ -31,7 +31,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','),
-            'vnode.data.props cannot change shape.',
+            'vnode.data.props cannot change shape.'
         );
     }
 
@@ -49,8 +49,8 @@ function update(oldVnode: VNode, vnode: VNode) {
                 // TODO: this should never really happen because the compiler should always validate
                 assert.fail(
                     `Unknown public property "${key}" of element <${sel}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
-                        key,
-                    )}".`,
+                        key
+                    )}".`
                 );
             }
         }

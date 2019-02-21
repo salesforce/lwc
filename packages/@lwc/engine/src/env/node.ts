@@ -27,19 +27,19 @@ const {
 
 const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     Node.prototype,
-    'parentNode',
+    'parentNode'
 )!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
     Node.prototype,
-    'parentElement',
+    'parentElement'
 )
     ? getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
     Node.prototype,
-    'textContent',
+    'textContent'
 )!.set!;
 
 const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prototype, 'childNodes')

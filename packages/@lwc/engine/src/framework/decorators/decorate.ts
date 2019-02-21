@@ -15,7 +15,7 @@ import {
 export type DecoratorFunction = (
     Ctor: any,
     key: PropertyKey,
-    descriptor: PropertyDescriptor | undefined,
+    descriptor: PropertyDescriptor | undefined
 ) => PropertyDescriptor;
 export type DecoratorMap = Record<string, DecoratorFunction>;
 

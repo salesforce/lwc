@@ -28,7 +28,7 @@ function transform(plugin, opts = {}) {
         {
             plugins: [plugin],
         },
-        opts,
+        opts
     );
 
     return function(source) {

@@ -67,7 +67,7 @@ describe('slotchange', () => {
             assert.strictEqual(
                 event.assignedContents.join('.'),
                 'foo.bar',
-                'should have added an assigned node',
+                'should have added an assigned node'
             );
         });
 
@@ -77,7 +77,7 @@ describe('slotchange', () => {
             const event = events.pop();
             assert.strictEqual(
                 event.assignedContents.join('.'),
-                'belarus.china.cuba.france.india.japan.spain',
+                'belarus.china.cuba.france.india.japan.spain'
             );
         });
     });
@@ -120,7 +120,7 @@ describe('slotchange', () => {
             assert(
                 initialSlotNames.join('.'),
                 'belarus.china.cuba.france.india.japan.spain',
-                'Assigned nodes have been initialized as expected.',
+                'Assigned nodes have been initialized as expected.'
             );
 
             browser.click('.toggle-content');
@@ -129,7 +129,7 @@ describe('slotchange', () => {
             assert(
                 slotNames.join('.'),
                 'belarus.china.cuba.france.india.japan.spain',
-                'slotchange should not be dispatched.',
+                'slotchange should not be dispatched.'
             );
 
             browser.click('.add-slotchange');

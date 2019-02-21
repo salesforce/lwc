@@ -59,7 +59,7 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
             RESOURCE_NAME: t.identifier(defaultImport),
             IMPORT_SOURCE: t.stringLiteral(importSource),
             FALLBACK_DATA: fallbackData,
-        }),
+        })
     );
 }
 
@@ -87,7 +87,7 @@ function getImportInfo(path, noValidate) {
     }
 
     let resourceNames = importSpecifiers.map(
-        importSpecifier => importSpecifier.get('local').node.name,
+        importSpecifier => importSpecifier.get('local').node.name
     );
 
     return {

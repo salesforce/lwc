@@ -28,7 +28,7 @@ export interface MappedFunctionResult {
 export function rewriteIteratorToArguments(
     expression: types.FunctionExpression,
     identifier: types.Identifier,
-    argNames: { [key: string]: types.Identifier },
+    argNames: { [key: string]: types.Identifier }
 ): MappedFunctionResult {
     traverse(expression, {
         noScope: true,
@@ -57,7 +57,7 @@ export function rewriteIteratorToArguments(
 export function bindExpression(
     expression: TemplateExpression,
     node: IRNode,
-    applyBinding: boolean = true,
+    applyBinding: boolean = true
 ): BindingResult {
     const wrappedExpression = types.expressionStatement(expression);
     const boundIdentifiers = new Set();
@@ -87,7 +87,7 @@ export function bindExpression(
                 if (applyBinding) {
                     const boundedExpression = types.memberExpression(
                         types.identifier(TEMPLATE_PARAMS.INSTANCE),
-                        identifierNode,
+                        identifierNode
                     );
                     path.replaceWith(boundedExpression);
                 }

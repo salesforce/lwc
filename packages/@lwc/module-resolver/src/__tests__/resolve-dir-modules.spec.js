@@ -10,7 +10,7 @@ const lwcResolver = require('../index.js');
 describe('resolve-src-modules', () => {
     describe('simple folder structure', () => {
         const simpleStructurePath = path.resolve(
-            path.join(__dirname, 'fixtures/simple-folder-structure'),
+            path.join(__dirname, 'fixtures/simple-folder-structure')
         );
 
         it('default resolution', () => {

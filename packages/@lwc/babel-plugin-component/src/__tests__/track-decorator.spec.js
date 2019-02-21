@@ -39,7 +39,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -78,7 +78,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -99,7 +99,7 @@ describe('Transform property', () => {
                     column: 11,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -122,7 +122,7 @@ describe('Transform property', () => {
                     column: 11,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -145,6 +145,6 @@ describe('Transform property', () => {
                     column: 11,
                 },
             },
-        },
+        }
     );
 });

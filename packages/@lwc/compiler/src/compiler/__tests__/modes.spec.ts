@@ -40,7 +40,7 @@ describe('environment replacement', function() {
         } = await compile(
             getConfig({
                 NODE_ENV: 'development',
-            }),
+            })
         );
 
         expect(code).not.toContain('process.env.NODE_ENV');
@@ -52,7 +52,7 @@ describe('environment replacement', function() {
         } = await compile(
             getConfig({
                 NODE_ENV: 'production',
-            }),
+            })
         );
 
         expect(code).toContain('I am in prod');

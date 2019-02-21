@@ -20,7 +20,7 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           lang = "en";
         }
-    `,
+    `
     );
 
     test(
@@ -36,7 +36,7 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           shortDateFormat = "M/d/yyyy";
         }
-    `,
+    `
     );
 
     test(
@@ -54,7 +54,7 @@ describe('@salesforce/i18n import', () => {
         } catch (e) {
           lang = "en";
         }
-    `,
+    `
     );
 
     test(
@@ -63,7 +63,7 @@ describe('@salesforce/i18n import', () => {
         import { lang } from '@salesforce/i18n/lang';
     `,
         undefined,
-        'Invalid import from @salesforce/i18n/lang',
+        'Invalid import from @salesforce/i18n/lang'
     );
 
     test(
@@ -72,7 +72,7 @@ describe('@salesforce/i18n import', () => {
         import { default as label } from '@salesforce/i18n/lang';
     `,
         undefined,
-        'Invalid import from @salesforce/i18n/lang',
+        'Invalid import from @salesforce/i18n/lang'
     );
 
     test(
@@ -81,6 +81,6 @@ describe('@salesforce/i18n import', () => {
         import { default as label, foo } from '@salesforce/i18n/lang';
     `,
         undefined,
-        'Invalid import from @salesforce/i18n/lang',
+        'Invalid import from @salesforce/i18n/lang'
     );
 });

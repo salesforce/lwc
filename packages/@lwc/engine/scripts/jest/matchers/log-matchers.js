@@ -13,7 +13,7 @@ function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {
         if (typeof fn !== 'function') {
             throw new TypeError(
-                `Expected a first argument to be a function, received ${typeof fn}`,
+                `Expected a first argument to be a function, received ${typeof fn}`
             );
         }
 
@@ -73,7 +73,7 @@ function createMatcher(methodName) {
                         return {
                             message: () =>
                                 `Expect message:\n${this.utils.printExpected(
-                                    expectedMessage,
+                                    expectedMessage
                                 )}\n\nBut received:\n${this.utils.printReceived(receivedMessage)}`,
                             pass: false,
                         };

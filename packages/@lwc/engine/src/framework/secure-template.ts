@@ -30,7 +30,7 @@ export function sanitizeAttribute(
     tagName: string,
     namespaceUri: string,
     attrName: string,
-    attrValue: any,
+    attrValue: any
 ) {
     return attrValue;
 }

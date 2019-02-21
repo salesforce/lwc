@@ -20,7 +20,7 @@ describe('Element import', () => {
                     column: 7,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -37,7 +37,7 @@ describe('Element import', () => {
                     column: 7,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -61,7 +61,7 @@ describe('Element import', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -79,7 +79,7 @@ describe('Element import', () => {
                     column: 7,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -104,7 +104,7 @@ describe('Element import', () => {
             output: {
                 code: `import { api, track, wire, createElement, LightningElement, buildCustomElementConstructor, getComponentDef, getComponentConstructor, isComponentConstructor, readonly, register, unwrap } from "lwc";`,
             },
-        },
+        }
     );
 });
 
@@ -129,7 +129,7 @@ describe('render method', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -152,7 +152,7 @@ describe('render method', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -179,7 +179,7 @@ describe('render method', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -207,6 +207,6 @@ describe('render method', () => {
                 });
                 `,
             },
-        },
+        }
     );
 });

@@ -24,7 +24,7 @@ function moduleNameToImport(name: string): t.ImportDeclaration {
 
     return t.importDeclaration(
         [t.importDefaultSpecifier(localIdentifier)],
-        t.stringLiteral(kebabcaseToCamelcase(name)),
+        t.stringLiteral(kebabcaseToCamelcase(name))
     );
 }
 
@@ -37,11 +37,11 @@ function generateSecureImports(additionalImports: string[]): t.ImportDeclaration
         [
             t.importSpecifier(
                 t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
-                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME),
+                t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME)
             ),
             ...imports,
         ],
-        t.stringLiteral(LWC_MODULE_NAME),
+        t.stringLiteral(LWC_MODULE_NAME)
     );
 }
 
@@ -62,7 +62,7 @@ export function format(templateFn: t.FunctionDeclaration, state: State): t.Progr
         t.exportDefaultDeclaration(
             t.callExpression(t.identifier(SECURE_REGISTER_TEMPLATE_METHOD_NAME), [
                 t.identifier(TEMPLATE_FUNCTION_NAME),
-            ]),
+            ])
         ),
     ];
 

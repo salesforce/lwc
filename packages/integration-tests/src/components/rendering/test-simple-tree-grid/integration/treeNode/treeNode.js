@@ -24,7 +24,7 @@ export default class Tree1 extends LightningElement {
                 composed: true,
                 bubbles: true,
                 detail: { id: this.treeData.id },
-            }),
+            })
         );
     }
 

@@ -19,14 +19,14 @@ describe('Tabbing into custom element with delegates focus', () => {
                 const active = browser.execute(function() {
                     return document
                         .querySelector(
-                            'integration-delegates-focus-click-shadow-input-negative-tab-index',
+                            'integration-delegates-focus-click-shadow-input-negative-tab-index'
                         )
                         .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
                 });
                 return active.getTagName() === 'input';
             },
             500,
-            'expect input to be focused',
+            'expect input to be focused'
         );
     });
 });

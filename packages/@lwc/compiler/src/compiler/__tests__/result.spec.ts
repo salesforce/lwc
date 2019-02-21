@@ -142,7 +142,7 @@ describe('compiler result', () => {
 
         expect(level).toBe(DiagnosticLevel.Fatal);
         expect(message).toContain(
-            'Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.',
+            'Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.'
         );
         expect(code).toBe(1011);
     });
@@ -185,7 +185,7 @@ describe('compiler result', () => {
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
         expect(diagnostics[0].message).toBe(
-            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency",
+            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency"
         );
 
         // check error
@@ -211,7 +211,7 @@ describe('compiler result', () => {
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
         expect(diagnostics[0].message).toBe(
-            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency",
+            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency"
         );
 
         // check error

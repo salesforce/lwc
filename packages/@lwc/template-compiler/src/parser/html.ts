@@ -41,7 +41,7 @@ export function parseHTML(source: string) {
                         length: endOffset - startOffset,
                     },
                 },
-            }),
+            })
         );
     };
 
@@ -66,7 +66,7 @@ export function parseHTML(source: string) {
                             length: startTag.endOffset - startTag.startOffset,
                         },
                     },
-                }),
+                })
             );
         }
     };

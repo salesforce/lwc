@@ -63,7 +63,7 @@ describe('dom', () => {
                     modules: {
                         'x-foo': MyComponent,
                     },
-                },
+                }
             );
             class Parent extends LightningElement {
                 handleFoo(evt) {

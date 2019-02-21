@@ -78,7 +78,7 @@ function pushPackage({ sha, packageName, packageTar }) {
                 } else {
                     resolve(url);
                 }
-            },
+            }
         );
     });
 }

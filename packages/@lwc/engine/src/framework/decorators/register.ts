@@ -61,7 +61,7 @@ const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new M
 
 export function registerDecorators(
     Ctor: ComponentConstructor,
-    meta: RegisterDecoratorMeta,
+    meta: RegisterDecoratorMeta
 ): ComponentConstructor {
     const decoratorMap: DecoratorMap = create(null);
     const props = getPublicPropertiesHash(Ctor, meta.publicProps);
@@ -111,7 +111,7 @@ function getTrackHash(target: ComponentConstructor, track: TrackDef | undefined)
 
 function getWireHash(
     target: ComponentConstructor,
-    wire: WireHash | undefined,
+    wire: WireHash | undefined
 ): WireHash | undefined {
     if (isUndefined(wire) || getOwnPropertyNames(wire).length === 0) {
         return;
@@ -123,7 +123,7 @@ function getWireHash(
 
 function getPublicPropertiesHash(
     target: ComponentConstructor,
-    props: PropsDef | undefined,
+    props: PropsDef | undefined
 ): PropsDef {
     if (isUndefined(props) || getOwnPropertyNames(props).length === 0) {
         return EmptyObject;
@@ -143,14 +143,14 @@ function getPublicPropertiesHash(
                     msg.push(error);
                 } else if (experimental) {
                     msg.push(
-                        `"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`,
+                        `"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`
                     );
                 } else {
                     msg.push(
-                        `"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`,
+                        `"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
                     );
                     msg.push(
-                        `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`,
+                        `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
                     );
                 }
                 assert.logError(msg.join('\n'));
@@ -163,7 +163,7 @@ function getPublicPropertiesHash(
                 type: 'any',
                 attr: attrName,
             },
-            props[propName],
+            props[propName]
         );
         return propsHash;
     }, create(null));
@@ -171,7 +171,7 @@ function getPublicPropertiesHash(
 
 function getPublicMethodsHash(
     target: ComponentConstructor,
-    publicMethods: string[] | undefined,
+    publicMethods: string[] | undefined
 ): MethodDef {
     if (isUndefined(publicMethods) || publicMethods.length === 0) {
         return EmptyObject;
@@ -182,7 +182,7 @@ function getPublicMethodsHash(
                 isFunction(target.prototype[methodName]),
                 `Component "${target.name}" should have a method \`${methodName}\` instead of ${
                     target.prototype[methodName]
-                }.`,
+                }.`
             );
         }
         methodsHash[methodName] = target.prototype[methodName];

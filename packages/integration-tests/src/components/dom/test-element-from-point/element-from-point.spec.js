@@ -17,7 +17,7 @@ describe('shadow root element from point should return correct element', () => {
         browser.click('.shadow-element-from-point');
         assert.equal(
             browser.getText('.correct-shadow-element-indicator'),
-            'Correct shadow element selected',
+            'Correct shadow element selected'
         );
     });
 
@@ -25,7 +25,7 @@ describe('shadow root element from point should return correct element', () => {
         browser.click('.document-from-point');
         assert.equal(
             browser.getText('.correct-document-element-indicator'),
-            'Correct document element selected',
+            'Correct document element selected'
         );
     });
 });

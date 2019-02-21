@@ -17,7 +17,7 @@ if (typeof MO === 'undefined') {
             if (process.env.NODE_ENV !== 'production') {
                 if (process.env.NODE_ENV !== 'test') {
                     throw new Error(
-                        `MutationObserver should not be mocked outside of the jest test environment`,
+                        `MutationObserver should not be mocked outside of the jest test environment`
                     );
                 }
             }

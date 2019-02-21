@@ -107,7 +107,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-parent': Parent },
-                },
+                }
             );
             const parentHTML = compileTemplate(`
                 <template>
@@ -153,7 +153,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-parent': Parent },
-                },
+                }
             );
             const parentHTML = compileTemplate(`
                 <template>
@@ -210,7 +210,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-parent': Parent },
-                },
+                }
             );
             const parentHTML = compileTemplate(
                 `
@@ -222,7 +222,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             const childHTML = compileTemplate(
                 `
@@ -234,7 +234,7 @@ describe('events', () => {
             `,
                 {
                     modules: {},
-                },
+                }
             );
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -347,7 +347,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-parent': Parent },
-                },
+                }
             );
             const parentHTML = compileTemplate(
                 `
@@ -359,7 +359,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             const childHTML = compileTemplate(
                 `
@@ -371,7 +371,7 @@ describe('events', () => {
             `,
                 {
                     modules: {},
-                },
+                }
             );
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -443,7 +443,7 @@ describe('events', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
 
             class Root extends LightningElement {
@@ -462,7 +462,7 @@ describe('events', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
 
             const elm = createElement('x-root', { is: Root });
@@ -498,7 +498,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             const childHTML = compileTemplate(
                 `
@@ -509,7 +509,7 @@ describe('events', () => {
             `,
                 {
                     modules: {},
-                },
+                }
             );
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
@@ -549,7 +549,7 @@ describe('events', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             const childHTML = compileTemplate(
                 `
@@ -560,7 +560,7 @@ describe('events', () => {
             `,
                 {
                     modules: {},
-                },
+                }
             );
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
@@ -600,7 +600,7 @@ describe('events', () => {
                             new CustomEvent('bubblesnotcomposed', {
                                 bubbles: true,
                                 composed: false,
-                            }),
+                            })
                         );
                     });
                 }
@@ -634,7 +634,7 @@ describe('events', () => {
                     </x-child>
                 </template>
             `,
-                { modules: { 'x-child': Child, 'x-grand-child': GrandChild } },
+                { modules: { 'x-child': Child, 'x-grand-child': GrandChild } }
             );
 
             const elm = createElement('x-root', { is: Root });

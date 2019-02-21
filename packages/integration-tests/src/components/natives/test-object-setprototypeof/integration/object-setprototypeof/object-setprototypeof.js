@@ -14,7 +14,7 @@ export default class ObjectSetPrototypeOf extends LightningElement {
                 setPrototypeOf(target) {
                     return Object.setPrototypeOf(target, document);
                 },
-            },
+            }
         );
         Object.setPrototypeOf(proxy, []);
         return proxy instanceof Document;
@@ -27,7 +27,7 @@ export default class ObjectSetPrototypeOf extends LightningElement {
                 setPrototypeOf(target) {
                     return Object.setPrototypeOf(target, document);
                 },
-            },
+            }
         );
         Object.setPrototypeOf(proxy, []);
         return proxy instanceof Array;

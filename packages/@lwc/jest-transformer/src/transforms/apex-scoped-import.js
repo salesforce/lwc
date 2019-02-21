@@ -34,7 +34,7 @@ function insertNamedImportReplacement(t, path, resource) {
     // jest.fn();
     const jestFn = t.callExpression(
         t.memberExpression(t.identifier('jest'), t.identifier('fn')),
-        [],
+        []
     );
 
     // function() { return Promise.resolve(); };
@@ -45,10 +45,10 @@ function insertNamedImportReplacement(t, path, resource) {
             t.returnStatement(
                 t.callExpression(
                     t.memberExpression(t.identifier('Promise'), t.identifier('resolve')),
-                    [],
-                ),
+                    []
+                )
             ),
-        ]),
+        ])
     );
 
     // we know refreshApex returns a Promise, default to jest.fn() to try to be future proof
@@ -70,9 +70,9 @@ function insertNamedImportReplacement(t, path, resource) {
                             t.callExpression(t.identifier('require'), [
                                 t.stringLiteral(APEX_IMPORT_IDENTIFIER),
                             ]),
-                            t.identifier(resource),
-                        ),
-                    ),
+                            t.identifier(resource)
+                        )
+                    )
                 ),
             ]),
             // catch block: `refreshApex = jest.fn()`
@@ -80,11 +80,11 @@ function insertNamedImportReplacement(t, path, resource) {
                 t.identifier('e'),
                 t.blockStatement([
                     t.expressionStatement(
-                        t.assignmentExpression('=', t.identifier(resource), fallbackValue),
+                        t.assignmentExpression('=', t.identifier(resource), fallbackValue)
                     ),
-                ]),
-            ),
-        ),
+                ])
+            )
+        )
     );
 }
 
@@ -112,7 +112,7 @@ module.exports = function({ types: t }) {
                             RESOURCE_NAME: t.identifier(resourceNames[0]),
                             IMPORT_SOURCE: t.stringLiteral(importSource),
                             MOCK_NAME: `__lwcJestMock_${resourceNames[0]}`,
-                        }),
+                        })
                     );
                 }
             },

@@ -18,7 +18,7 @@ describe('Async event currentTarget', () => {
                 return browser.getText('.current-target-is-null') === 'Current Target is null';
             },
             1000,
-            'Expected async current target to be null',
+            'Expected async current target to be null'
         );
     });
 });

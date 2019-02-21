@@ -20,7 +20,7 @@ describe('@salesforce/resourceUrl import', () => {
         } catch (e) {
           myResource = "foo";
         }
-    `,
+    `
     );
 
     test(
@@ -36,7 +36,7 @@ describe('@salesforce/resourceUrl import', () => {
         } catch (e) {
           myResource = "ns__foo";
         }
-    `,
+    `
     );
 
     test(
@@ -54,7 +54,7 @@ describe('@salesforce/resourceUrl import', () => {
         } catch (e) {
           myResource = "foo";
         }
-    `,
+    `
     );
 
     test(
@@ -63,7 +63,7 @@ describe('@salesforce/resourceUrl import', () => {
         import { myResource } from '@salesforce/resourceUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/resourceUrl/foo',
+        'Invalid import from @salesforce/resourceUrl/foo'
     );
 
     test(
@@ -72,7 +72,7 @@ describe('@salesforce/resourceUrl import', () => {
         import { default as resource } from '@salesforce/resourceUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/resourceUrl/foo',
+        'Invalid import from @salesforce/resourceUrl/foo'
     );
 
     test(
@@ -81,6 +81,6 @@ describe('@salesforce/resourceUrl import', () => {
         import { default as resource, foo } from '@salesforce/resourceUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/resourceUrl/foo',
+        'Invalid import from @salesforce/resourceUrl/foo'
     );
 });

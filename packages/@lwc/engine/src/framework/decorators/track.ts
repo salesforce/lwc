@@ -15,7 +15,7 @@ import { ComponentConstructor, ComponentInterface } from '../component';
 export default function track(
     target: ComponentConstructor,
     prop: PropertyKey,
-    descriptor: PropertyDescriptor | undefined,
+    descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor;
 export default function track(target: any, prop?, descriptor?): any {
     if (arguments.length === 1) {
@@ -24,36 +24,36 @@ export default function track(target: any, prop?, descriptor?): any {
     if (process.env.NODE_ENV !== 'production') {
         if (arguments.length !== 3) {
             assert.fail(
-                `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`,
+                `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
             );
         }
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;
             assert.isTrue(
                 !get && !set,
-                `Compiler Error: A @track decorator can only be applied to a public field.`,
+                `Compiler Error: A @track decorator can only be applied to a public field.`
             );
             assert.isTrue(
                 configurable !== false,
-                `Compiler Error: A @track decorator can only be applied to a configurable property.`,
+                `Compiler Error: A @track decorator can only be applied to a configurable property.`
             );
             assert.isTrue(
                 writable !== false,
-                `Compiler Error: A @track decorator can only be applied to a writable property.`,
+                `Compiler Error: A @track decorator can only be applied to a writable property.`
             );
         }
     }
     return createTrackedPropertyDescriptor(
         target,
         prop,
-        isUndefined(descriptor) ? true : descriptor.enumerable === true,
+        isUndefined(descriptor) ? true : descriptor.enumerable === true
     );
 }
 
 export function createTrackedPropertyDescriptor(
     Ctor: any,
     key: PropertyKey,
-    enumerable: boolean,
+    enumerable: boolean
 ): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
@@ -71,8 +71,8 @@ export function createTrackedPropertyDescriptor(
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(
-                        key,
-                    )}`,
+                        key
+                    )}`
                 );
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);

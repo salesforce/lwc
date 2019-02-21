@@ -12,7 +12,7 @@ import { FileTransformerResult } from './transformer';
 export default function transformStyle(
     src: string,
     filename: string,
-    config: NormalizedCompilerOptions,
+    config: NormalizedCompilerOptions
 ): FileTransformerResult {
     const { minify } = config.outputConfig;
     const { customProperties } = config.stylesheetConfig;

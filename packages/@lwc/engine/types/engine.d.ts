@@ -17,12 +17,12 @@ declare module 'lwc' {
         addEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ): void;
         removeEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | EventListenerOptions,
+            options?: boolean | EventListenerOptions
         ): void;
         setAttributeNS(ns: string, attrName: string, value: any);
         removeAttributeNS(ns: string, attrName: string);
@@ -110,12 +110,12 @@ declare module 'lwc' {
         addEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ): void;
         removeEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
-            options?: boolean | EventListenerOptions,
+            options?: boolean | EventListenerOptions
         ): void;
         hasChildNodes(): boolean;
         compareDocumentPosition(otherNode: Node): number;

@@ -96,7 +96,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child-node-with-slot': HasSlot,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -138,7 +138,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child-node-with-slot': HasSlot,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -200,7 +200,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -241,7 +241,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -282,7 +282,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -323,7 +323,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -363,7 +363,7 @@ describe('#childNodes', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
         class Parent extends LightningElement {
             render() {
@@ -414,7 +414,7 @@ describe('assignedSlot', () => {
                 modules: {
                     'x-assigned-slot-child': NoSlot,
                 },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -472,7 +472,7 @@ describe('assignedSlot', () => {
                 modules: {
                     'x-native-slotted-component-child': WithSlot,
                 },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -516,7 +516,7 @@ describe('assignedSlot', () => {
                     'x-native-slotted-component-child': WithSlot,
                     'x-inside-slot': InsideSlot,
                 },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -568,7 +568,7 @@ describe('assignedSlot', () => {
                 modules: {
                     'x-default-slot-custom-element': CustomElement,
                 },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -606,7 +606,7 @@ describe('assignedSlot', () => {
                 modules: {
                     'x-native-slotted-component-child': WithSlot,
                 },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {

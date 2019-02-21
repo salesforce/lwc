@@ -61,7 +61,7 @@ function readFile(filename: string, options: NormalizedCompilerOptions): string 
 function generateModuleResolutionError(
     importee: string,
     importer: string,
-    options: NormalizedCompilerOptions,
+    options: NormalizedCompilerOptions
 ) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
@@ -73,7 +73,7 @@ function generateModuleResolutionError(
                   importer,
                   caseIgnoredFilename.substr(
                       0,
-                      caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length,
+                      caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length
                   ),
               ],
               origin: { filename: importer },
@@ -87,7 +87,7 @@ function generateModuleResolutionError(
 function generateEntryResolutionError(
     importee: string,
     importer: string,
-    options: NormalizedCompilerOptions,
+    options: NormalizedCompilerOptions
 ) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
@@ -116,7 +116,7 @@ function getAbsolutePath(importee: string, importer: string, baseDir: string | u
 
 function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMatch: string) {
     return Object.keys(files).find(
-        (bundleFile: string) => bundleFile.toLowerCase() === nameToMatch,
+        (bundleFile: string) => bundleFile.toLowerCase() === nameToMatch
     );
 }
 
@@ -137,7 +137,7 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                             importee,
                             importee.charAt(0).toLowerCase() + importee.slice(1),
                         ],
-                    },
+                    }
                 );
             }
 

@@ -30,7 +30,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     }
 
     testContentWindowProperty('postMessage', contentWindow =>
-        contentWindow.postMessage('foo', '*'),
+        contentWindow.postMessage('foo', '*')
     );
     testContentWindowProperty('focus', contentWindow => contentWindow.focus());
     testContentWindowProperty('blur', contentWindow => contentWindow.blur());

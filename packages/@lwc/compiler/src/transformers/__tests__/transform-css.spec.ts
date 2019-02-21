@@ -52,7 +52,7 @@ describe('custom properties', () => {
                 stylesheetConfig: {
                     customProperties: { allowDefinition: true },
                 },
-            }),
+            })
         ).resolves.toMatchObject({
             code: expect.any(String),
         });
@@ -65,7 +65,7 @@ describe('custom properties', () => {
                 stylesheetConfig: {
                     customProperties: { allowDefinition: false },
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             filename: 'foo.css',
             message: expect.stringContaining('Invalid definition of custom property "--bg-color"'),

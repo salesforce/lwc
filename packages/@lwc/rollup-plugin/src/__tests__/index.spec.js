@@ -84,6 +84,6 @@ function doRollup(input, { compat } = {}, rollupCompileOptions) {
                 format: 'iife',
                 name: 'test',
                 output: { globals: globalModules },
-            }),
+            })
         );
 }

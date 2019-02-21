@@ -28,7 +28,7 @@ import { createElement, createDocumentFragment } from '../env/document';
 export type StylesheetFactory = (
     hostSelector: string,
     shadowSelector: string,
-    nativeShadow: boolean,
+    nativeShadow: boolean
 ) => string;
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
@@ -77,7 +77,7 @@ function createStyleVNode(elm: HTMLStyleElement) {
             create: noop,
             update: noop,
         },
-        EmptyArray,
+        EmptyArray
     );
     // Force the diffing algo to use the cloned style.
     vnode.elm = elm;
@@ -116,7 +116,7 @@ export function evaluateCSS(
     vm: VM,
     stylesheets: StylesheetFactory[],
     hostAttribute: string,
-    shadowAttribute: string,
+    shadowAttribute: string
 ): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -143,7 +143,7 @@ export function evaluateCSS(
             (buffer, stylesheet) => {
                 return buffer + stylesheet(emptyString, emptyString, true);
             },
-            '',
+            ''
         ) as string;
         return createStyleVNode(getCachedStyleElement(textContent));
     }

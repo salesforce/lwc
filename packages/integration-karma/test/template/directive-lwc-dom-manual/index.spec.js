@@ -28,7 +28,7 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
             /* eslint-disable-next-line no-console */
             const [msg] = console.error.calls.argsFor(0);
             expect(msg).toMatch(
-                `\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                `\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`
             );
         });
     }

@@ -52,7 +52,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
 export function mergeConfig(config: Config): ResolvedConfig {
     invariant(
         config !== undefined && typeof config === 'object',
-        TemplateErrors.OPTIONS_MUST_BE_OBJECT,
+        TemplateErrors.OPTIONS_MUST_BE_OBJECT
     );
 
     for (const property in config) {

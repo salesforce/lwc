@@ -20,7 +20,7 @@ describe('@salesforce/contentAssetUrl import', () => {
         } catch (e) {
           myResource = "foo";
         }
-    `,
+    `
     );
 
     test(
@@ -36,7 +36,7 @@ describe('@salesforce/contentAssetUrl import', () => {
         } catch (e) {
           myResource = "ns__foo";
         }
-    `,
+    `
     );
 
     test(
@@ -54,7 +54,7 @@ describe('@salesforce/contentAssetUrl import', () => {
         } catch (e) {
           myResource = "foo";
         }
-    `,
+    `
     );
 
     test(
@@ -63,7 +63,7 @@ describe('@salesforce/contentAssetUrl import', () => {
         import { myAsset } from '@salesforce/contentAssetUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/contentAssetUrl/foo',
+        'Invalid import from @salesforce/contentAssetUrl/foo'
     );
 
     test(
@@ -72,7 +72,7 @@ describe('@salesforce/contentAssetUrl import', () => {
         import { default as asset } from '@salesforce/contentAssetUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/contentAssetUrl/foo',
+        'Invalid import from @salesforce/contentAssetUrl/foo'
     );
 
     test(
@@ -81,6 +81,6 @@ describe('@salesforce/contentAssetUrl import', () => {
         import { default as asset, foo } from '@salesforce/contentAssetUrl/foo';
     `,
         undefined,
-        'Invalid import from @salesforce/contentAssetUrl/foo',
+        'Invalid import from @salesforce/contentAssetUrl/foo'
     );
 });

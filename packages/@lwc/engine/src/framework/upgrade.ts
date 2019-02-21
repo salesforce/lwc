@@ -78,8 +78,8 @@ export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
-                options,
-            )}".`,
+                options
+            )}".`
         );
     }
 

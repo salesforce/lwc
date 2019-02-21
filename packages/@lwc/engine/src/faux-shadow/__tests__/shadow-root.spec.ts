@@ -70,7 +70,7 @@ describe('root', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {
@@ -109,7 +109,7 @@ describe('root', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {

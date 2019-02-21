@@ -24,7 +24,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
                 return active.getText() === 'second button';
             },
             500,
-            'Second button should be focused',
+            'Second button should be focused'
         );
 
         browser.keys(['Shift', 'Tab']);
@@ -38,7 +38,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
                 return active.getText() === 'first button';
             },
             500,
-            'First button should be focused',
+            'First button should be focused'
         );
     });
 });

@@ -20,11 +20,11 @@ const isProd = /prod/.test(mode);
 
 const engineModeFile = path.join(
     require.resolve(
-        `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`,
-    ),
+        `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`
+    )
 );
 const wireServicePath = path.join(
-    require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`),
+    require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`)
 );
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
@@ -121,7 +121,7 @@ if (!fs.existsSync(engineModeFile)) {
     throw new Error(
         'Compat version of engine not generated in expected location: ' +
             engineModeFile +
-            '.\nGenerate artifacts from the top-level Raptor project first',
+            '.\nGenerate artifacts from the top-level Raptor project first'
     );
 }
 
@@ -152,7 +152,7 @@ testEntries
             testName.startsWith('wired-')
                 ? templates.wireServiceHtml(testName, isCompat)
                 : templates.html(testName, isCompat),
-            'utf8',
+            'utf8'
         );
     }, Promise.resolve())
     .catch(err => {

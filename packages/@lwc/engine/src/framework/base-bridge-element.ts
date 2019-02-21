@@ -86,7 +86,7 @@ export interface HTMLIFrameElementConstructor {
 export function HTMLBridgeElementFactory(
     SuperClass: HTMLElementConstructor,
     props: string[],
-    methods: string[],
+    methods: string[]
 ): HTMLElementConstructor {
     let HTMLBridgeElement;
     /**
@@ -142,7 +142,7 @@ export function HTMLBridgeElementFactory(
 export const BaseBridgeElement = HTMLBridgeElementFactory(
     HTMLElement,
     getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    [],
+    []
 );
 
 freeze(BaseBridgeElement);

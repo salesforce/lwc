@@ -41,7 +41,7 @@ import { create } from './../shared/language';
 
 function getNodeRestrictionsDescriptors(
     node: Node,
-    options: RestrictionsOptions,
+    options: RestrictionsOptions
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -59,7 +59,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `appendChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 return appendChild.call(this, aChild);
@@ -73,7 +73,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 return insertBefore.call(this, newNode, referenceNode);
@@ -87,7 +87,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 return removeChild.call(this, aChild);
@@ -101,7 +101,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `replaceChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 return replaceChild.call(this, newChild, oldChild);
@@ -118,7 +118,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
@@ -132,7 +132,7 @@ function getNodeRestrictionsDescriptors(
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 originalTextContentDescriptor.set!.call(this, value);
@@ -144,7 +144,7 @@ function getNodeRestrictionsDescriptors(
 
 function getElementRestrictionsDescriptors(
     elm: HTMLElement,
-    options: RestrictionsOptions,
+    options: RestrictionsOptions
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -162,7 +162,7 @@ function getElementRestrictionsDescriptors(
                 if (options.isPortal !== true) {
                     assert.logError(
                         `innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this,
+                        this
                     );
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
@@ -186,7 +186,7 @@ function getElementRestrictionsDescriptors(
 
 function getShadowRootRestrictionsDescriptors(
     sr: ShadowRoot,
-    options: RestrictionsOptions,
+    options: RestrictionsOptions
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -227,8 +227,8 @@ function getShadowRootRestrictionsDescriptors(
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        sr,
-                    )} by adding an event listener for "${type}".`,
+                        sr
+                    )} by adding an event listener for "${type}".`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -240,7 +240,7 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getShadowRootVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`,
+                    `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -252,7 +252,7 @@ function getShadowRootRestrictionsDescriptors(
                 const vm = getShadowRootVM(this);
                 assert.isFalse(
                     isBeingConstructed(vm),
-                    `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`,
+                    `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -306,7 +306,7 @@ function setAttributeNSPatched(
     this: HTMLElement,
     attrNameSpace: string,
     attrName: string,
-    _newValue: any,
+    _newValue: any
 ) {
     const vm = getCustomElementVM(this);
 
@@ -359,9 +359,9 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     ) {
         assert.logError(
             `Invalid attribute "${StringToLowerCase.call(
-                attrName,
+                attrName
             )}" for ${vm}. Instead access the public property with \`element.${propName};\`.`,
-            elm,
+            elm
         );
     }
 }
@@ -375,14 +375,14 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
         assert.logError(
             `Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`,
-            elm,
+            elm
         );
     }
 }
 
 function getCustomElementRestrictionsDescriptors(
     elm: HTMLElement,
-    options: RestrictionsOptions,
+    options: RestrictionsOptions
 ): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -429,8 +429,8 @@ function getCustomElementRestrictionsDescriptors(
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        elm,
-                    )} by adding an event listener for "${type}".`,
+                        elm
+                    )} by adding an event listener for "${type}".`
                 );
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
@@ -481,7 +481,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                         } else if (experimental) {
                             assert.logError(
                                 `Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`,
-                                getComponentVM(this).elm,
+                                getComponentVM(this).elm
                             );
                         }
                     }
@@ -495,7 +495,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
         tagName: {
             get(this: ComponentInterface) {
                 throw new Error(
-                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`,
+                    `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`
                 );
             },
             configurable: true,
@@ -519,14 +519,14 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(
-                    `Accessing the global HTML property "${propName}" in ${this} is disabled.`,
+                    `Accessing the global HTML property "${propName}" in ${this} is disabled.`
                 );
                 if (error) {
                     msg.push(error);
                 } else {
                     if (experimental) {
                         msg.push(
-                            `This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`,
+                            `This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`
                         );
                     }
                     if (readOnly) {
@@ -535,13 +535,13 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                     }
                     if (attribute) {
                         msg.push(
-                            `"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`,
+                            `"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
                         );
                         msg.push(
-                            `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`,
+                            `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
                         );
                         msg.push(
-                            `  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`,
+                            `  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`
                         );
                     }
                 }

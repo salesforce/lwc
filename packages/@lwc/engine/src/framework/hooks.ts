@@ -178,7 +178,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`,
+            `Invalid vnode for a custom element, it must have children defined.`
         );
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -217,7 +217,7 @@ export function renderCustomElmHook(vnode: VCustomElement) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
-            `Invalid vnode for a custom element, it must have children defined.`,
+            `Invalid vnode for a custom element, it must have children defined.`
         );
     }
     renderVM(vm);

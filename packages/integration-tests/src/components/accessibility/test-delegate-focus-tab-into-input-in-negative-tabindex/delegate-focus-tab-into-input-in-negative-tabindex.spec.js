@@ -19,13 +19,13 @@ describe('Delegates focus', () => {
             () => {
                 const active = browser.execute(function() {
                     return document.querySelector(
-                        'integration-delegate-focus-tab-into-input-in-negative-tabindex',
+                        'integration-delegate-focus-tab-into-input-in-negative-tabindex'
                     ).shadowRoot.activeElement;
                 });
                 return active.getText() === 'Anchor 3';
             },
             500,
-            'Expect Anchor 3 to be focused',
+            'Expect Anchor 3 to be focused'
         );
     });
 });

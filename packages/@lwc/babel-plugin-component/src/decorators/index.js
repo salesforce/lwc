@@ -157,7 +157,7 @@ function decorators({ types: t }) {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
             const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
-                isLwcDecoratorName(name),
+                isLwcDecoratorName(name)
             );
 
             const decorators = getLwcDecorators(decoratorImportSpecifiers);

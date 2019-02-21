@@ -74,7 +74,7 @@ function removeListener(listeners: WireEventTargetListener[], toRemove: WireEven
 
 function removeConfigListener(
     configListenerMetadatas: ConfigListenerMetadata[],
-    toRemove: ConfigListener,
+    toRemove: ConfigListener
 ) {
     for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
         if (configListenerMetadatas[i].listener === toRemove) {
@@ -111,7 +111,7 @@ export class WireEventTarget {
         def: ElementDef,
         context: Context,
         wireDef: WireDef,
-        wireTarget: string,
+        wireTarget: string
     ) {
         this._cmp = cmp;
         this._def = def;
@@ -127,7 +127,7 @@ export class WireEventTarget {
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(
                         connectedListeners.includes(listener as NoArgumentListener),
-                        'must not call addEventListener("connect") with the same listener',
+                        'must not call addEventListener("connect") with the same listener'
                     );
                 }
                 connectedListeners.push(listener as NoArgumentListener);
@@ -139,7 +139,7 @@ export class WireEventTarget {
                 if (process.env.NODE_ENV !== 'production') {
                     assert.isFalse(
                         disconnectedListeners.includes(listener as NoArgumentListener),
-                        'must not call addEventListener("disconnect") with the same listener',
+                        'must not call addEventListener("disconnect") with the same listener'
                     );
                 }
                 disconnectedListeners.push(listener as NoArgumentListener);

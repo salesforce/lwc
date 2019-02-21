@@ -19,8 +19,8 @@ function moduleNameToLookup(name: string): t.VariableDeclaration {
             t.memberExpression(
                 t.identifier(TEMPLATE_MODULES_PARAMETER),
                 t.stringLiteral(name),
-                true,
-            ),
+                true
+            )
         ),
     ]);
 }

@@ -15,7 +15,7 @@ jest.mock(
             getSObjectValue: jest.fn(),
         };
     },
-    { virtual: true },
+    { virtual: true }
 );
 
 afterEach(() => {

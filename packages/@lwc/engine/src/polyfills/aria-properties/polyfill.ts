@@ -34,7 +34,7 @@ function getNormalizedAriaPropertyValue(value: any): NormalizedAttributeValue {
 
 function createAriaPropertyPropertyDescriptor(
     propName: string,
-    attrName: string,
+    attrName: string
 ): PropertyDescriptor {
     return {
         get(this: HTMLElement): any {

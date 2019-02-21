@@ -21,7 +21,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-slot');
         const activeFromShadow = browser.execute(function() {
             return document.querySelector(
-                'integration-delegates-focus-slot',
+                'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;
         });
         assert.equal(activeFromShadow.getTagName(), 'input');
@@ -39,7 +39,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
         const activeFromShadow = browser.execute(function() {
             return document.querySelector(
-                'integration-delegates-focus-slot',
+                'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;
         });
         assert.equal(activeFromShadow.value, null);
@@ -53,7 +53,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-slot');
         const activeFromShadow = browser.execute(function() {
             return document.querySelector(
-                'integration-delegates-focus-slot',
+                'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;
         });
         assert.equal(activeFromShadow.getTagName(), 'input');

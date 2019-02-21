@@ -41,7 +41,7 @@ describe('Transform property', () => {
                 });
 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -96,7 +96,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -135,7 +135,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -161,7 +161,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -224,7 +224,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -296,7 +296,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -315,7 +315,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -334,7 +334,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -354,7 +354,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -391,7 +391,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -411,7 +411,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -431,7 +431,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -451,7 +451,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -488,7 +488,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -507,7 +507,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -527,7 +527,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -548,7 +548,7 @@ describe('Transform property', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -568,7 +568,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -593,7 +593,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -613,7 +613,7 @@ describe('Transform property', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 });
 
@@ -646,7 +646,7 @@ describe('Transform method', () => {
                 });
             `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -667,6 +667,6 @@ describe('Transform method', () => {
                     column: 9,
                 },
             },
-        },
+        }
     );
 });

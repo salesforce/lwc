@@ -19,8 +19,8 @@ export function notifyMutation(target: object, key: PropertyKey) {
         assert.invariant(
             !isRendering,
             `Mutating property ${toString(key)} of ${toString(
-                target,
-            )} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`,
+                target
+            )} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
         );
     }
     const reactiveRecord = TargetToReactiveRecordMap.get(target);

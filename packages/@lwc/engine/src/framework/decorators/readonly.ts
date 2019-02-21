@@ -13,7 +13,7 @@ export default function readonly(obj: any): any {
         // TODO: enable the usage of this function as @readonly decorator
         if (arguments.length !== 1) {
             assert.fail(
-                '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.',
+                '@readonly cannot be used as a decorator just yet, use it as a function with one argument to produce a readonly version of the provided value.'
             );
         }
     }

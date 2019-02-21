@@ -72,7 +72,7 @@ export function isXLinkAttribute(attrName: string): boolean {
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,
-    tag: string,
+    tag: string
 ): {
     value: string;
     escapedExpression: boolean;
@@ -149,12 +149,12 @@ export function attributeName(attr: parse5.AST.Default.Attribute): string {
 
 export function getAttribute(
     el: IRElement,
-    pattern: string | RegExp,
+    pattern: string | RegExp
 ): parse5.AST.Default.Attribute | undefined {
     return el.attrsList.find(attr =>
         typeof pattern === 'string'
             ? attributeName(attr) === pattern
-            : !!attributeName(attr).match(pattern),
+            : !!attributeName(attr).match(pattern)
     );
 }
 
@@ -162,7 +162,7 @@ export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
     el.attrsList = el.attrsList.filter(attr =>
         typeof pattern === 'string'
             ? attributeName(attr) !== pattern
-            : !attributeName(attr).match(pattern),
+            : !attributeName(attr).match(pattern)
     );
 }
 

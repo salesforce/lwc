@@ -7,7 +7,7 @@ export default class JsonStringify extends LightningElement {
                 x: 'x',
                 y: 'y',
             },
-            {},
+            {}
         );
 
         return JSON.stringify(arr);
@@ -30,7 +30,7 @@ export default class JsonStringify extends LightningElement {
                 object: { x: 'x' },
                 [Symbol('symbol')]: true,
             },
-            {},
+            {}
         );
 
         return JSON.stringify(obj);
@@ -42,7 +42,7 @@ export default class JsonStringify extends LightningElement {
                 x: new Proxy({ y: true }, {}),
                 z: new Proxy([false], {}),
             },
-            {},
+            {}
         );
 
         return JSON.stringify(nested);

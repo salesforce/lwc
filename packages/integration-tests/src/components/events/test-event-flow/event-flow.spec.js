@@ -89,10 +89,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -102,10 +102,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -115,10 +115,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -130,10 +130,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const insideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
                 );
                 const outsideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
                 );
 
                 assert(insideIndex < outsideIndex);
@@ -143,10 +143,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const insideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
                 );
                 const outsideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT
                 );
 
                 assert(insideIndex < outsideIndex);
@@ -158,10 +158,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -171,10 +171,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -184,10 +184,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const shadowRootIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
                 );
                 const customElementIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
                 );
 
                 assert(shadowRootIndex < customElementIndex);
@@ -199,10 +199,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const insideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
                 );
                 const outsideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                 );
 
                 assert(insideIndex < outsideIndex);
@@ -212,10 +212,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const insideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
                 );
                 const outsideIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
                 );
 
                 assert(insideIndex < outsideIndex);
@@ -227,10 +227,10 @@ describe('event flow:', () => {
                 clickChildButton();
 
                 const constructorIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
                 );
                 const renderedCallbackIndex = getGuidIndex(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT
                 );
 
                 assert(constructorIndex < renderedCallbackIndex);
@@ -244,8 +244,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT
+                )
             );
         });
 
@@ -253,8 +253,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON
+                )
             );
         });
 
@@ -262,8 +262,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_SLOTTED_BUTTON,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_SLOTTED_BUTTON
+                )
             );
         });
 
@@ -271,8 +271,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
+                )
             );
         });
 
@@ -280,8 +280,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
+                )
             );
         });
 
@@ -289,8 +289,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
+                )
             );
         });
 
@@ -298,8 +298,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
+                )
             );
         });
 
@@ -307,8 +307,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV
+                )
             );
         });
 
@@ -316,8 +316,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV
+                )
             );
         });
 
@@ -325,8 +325,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
+                )
             );
         });
 
@@ -334,8 +334,8 @@ describe('event flow:', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
-                ),
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
+                )
             );
         });
     });

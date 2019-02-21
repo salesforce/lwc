@@ -65,7 +65,7 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarning(
-                `Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`,
+                `Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`
             );
         });
     });
@@ -85,7 +85,7 @@ describe('api', () => {
                         className: 'foo',
                         classMap: { foo: true },
                     },
-                    [],
+                    []
                 );
             }).toThrowError(/className/);
         });
@@ -174,7 +174,7 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarning(
-                `Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`,
+                `Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`
             );
         });
     });
@@ -246,7 +246,7 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toThrow(
-                'Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.',
+                'Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.'
             );
         });
     });
@@ -267,7 +267,7 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarning(
-                'Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.',
+                'Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.'
             );
             expect(normalized).toBe(0);
         });
@@ -319,7 +319,7 @@ describe('api', () => {
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarning(
-                'Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.',
+                'Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.'
             );
             expect(normalized).toBe(0);
         });

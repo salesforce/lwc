@@ -8,7 +8,7 @@ export default class Parent extends LightningElement {
                 bubbles: true,
                 composed: true,
                 detail: { guid },
-            }),
+            })
         );
     }
 
@@ -18,24 +18,24 @@ export default class Parent extends LightningElement {
         // Custom element
         this.addEventListener('slottedbuttonclick', () => {
             this.log(
-                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
             );
         });
         this.addEventListener('childbuttonclick', () => {
             this.log(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT,
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
             );
         });
 
         // Shadow root
         this.template.addEventListener('slottedbuttonclick', () => {
             this.log(
-                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
             );
         });
         this.template.addEventListener('childbuttonclick', () => {
             this.log(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT,
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
             );
         });
     }
@@ -47,24 +47,24 @@ export default class Parent extends LightningElement {
             // Custom element
             this.addEventListener('slottedbuttonclick', () => {
                 this.log(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
                 );
             });
             this.addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
                 );
             });
 
             // Shadow root
             this.template.addEventListener('slottedbuttonclick', () => {
                 this.log(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT
                 );
             });
             this.template.addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT
                 );
             });
 
@@ -73,14 +73,14 @@ export default class Parent extends LightningElement {
                 .querySelector('integration-child')
                 .addEventListener('slottedbuttonclick', () => {
                     this.log(
-                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                     );
                 });
             this.template
                 .querySelector('integration-child')
                 .addEventListener('childbuttonclick', () => {
                     this.log(
-                        EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                        EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                     );
                 });
 
@@ -89,19 +89,19 @@ export default class Parent extends LightningElement {
                 .querySelector('button.slotted')
                 .addEventListener('slottedbuttonclick', () => {
                     this.log(
-                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON,
+                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON
                     );
                 });
 
             // Wrapping div
             this.template.querySelector('div').addEventListener('slottedbuttonclick', () => {
                 this.log(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV,
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV
                 );
             });
             this.template.querySelector('div').addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV
                 );
             });
         }
@@ -121,7 +121,7 @@ export default class Parent extends LightningElement {
     }
     handleSlottedButtonClickOnSlottedButton() {
         this.log(
-            EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_SLOTTED_BUTTON,
+            EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_SLOTTED_BUTTON
         );
     }
 
@@ -130,7 +130,7 @@ export default class Parent extends LightningElement {
             new CustomEvent('slottedbuttonclick', {
                 bubbles: true,
                 composed: true,
-            }),
+            })
         );
     }
 }

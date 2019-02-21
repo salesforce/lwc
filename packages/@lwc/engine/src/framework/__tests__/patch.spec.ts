@@ -76,7 +76,7 @@ describe('patch', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class Root extends LightningElement {
                 constructor() {
@@ -144,7 +144,7 @@ describe('patch', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class Root extends LightningElement {
                 state = {
@@ -221,7 +221,7 @@ describe('patch', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class Root extends LightningElement {
                 state = {

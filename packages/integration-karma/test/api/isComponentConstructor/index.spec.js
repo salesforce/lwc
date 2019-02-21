@@ -5,7 +5,7 @@ function testInvalidComponentConstructor(name, ctor) {
         // TODO: #933 - isComponentConstructor throws when not passing a proper constructor instead of returning a
         // boolean.
         expect(() => isComponentConstructor(ctor)).toThrowError(
-            /Invalid prototype chain for \w+, you must extend LightningElement./,
+            /Invalid prototype chain for \w+, you must extend LightningElement./
         );
     });
 }

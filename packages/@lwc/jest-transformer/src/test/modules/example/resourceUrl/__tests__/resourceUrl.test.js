@@ -12,7 +12,7 @@ jest.mock(
     () => {
         return { default: 'value set in test' };
     },
-    { virtual: true },
+    { virtual: true }
 );
 
 afterEach(() => {

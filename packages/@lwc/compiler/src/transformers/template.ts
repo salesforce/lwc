@@ -35,7 +35,7 @@ const transform: FileTransformer = function(
     src: string,
     filename: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector,
+    metadataCollector?: MetadataCollector
 ) {
     let result;
     let metadata;
@@ -51,7 +51,7 @@ const transform: FileTransformer = function(
         if (metadataCollector) {
             metadataCollector.collectExperimentalTemplateDependencies(
                 filename,
-                metadata.templateDependencies,
+                metadata.templateDependencies
             );
         }
     } catch (e) {
@@ -72,12 +72,12 @@ const transform: FileTransformer = function(
 function serialize(
     code: string,
     filename: string,
-    { namespace, name }: NormalizedCompilerOptions,
+    { namespace, name }: NormalizedCompilerOptions
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopingAttribute = `${namespace}-${name}_${path.basename(
         filename,
-        path.extname(filename),
+        path.extname(filename)
     )}`;
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;

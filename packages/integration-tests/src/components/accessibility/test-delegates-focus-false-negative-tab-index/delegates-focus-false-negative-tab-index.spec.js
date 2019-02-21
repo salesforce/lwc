@@ -28,21 +28,21 @@ describe('Tabbing into custom element with delegates focus', () => {
                 );
             },
             500,
-            'expect integration-delegates-focus-false-negative-tab-index to be focused',
+            'expect integration-delegates-focus-false-negative-tab-index to be focused'
         );
 
         browser.waitUntil(
             () => {
                 const activeFromShadow = browser.execute(function() {
                     return document.querySelector(
-                        'integration-delegates-focus-false-negative-tab-index',
+                        'integration-delegates-focus-false-negative-tab-index'
                     ).shadowRoot.activeElement;
                 });
 
                 return activeFromShadow.getTagName() === 'a';
             },
             500,
-            'expect anchor to be focused',
+            'expect anchor to be focused'
         );
     });
 });

@@ -76,7 +76,7 @@ export default class CodeGen {
                     const stylesheetDeclaration = t.variableDeclaration('const', [
                         t.variableDeclarator(
                             t.identifier('stylesheets'),
-                            node.declaration as t.ArrayExpression,
+                            node.declaration as t.ArrayExpression
                         ),
                     ]);
 
@@ -99,7 +99,7 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: t.Expression,
+        children: t.Expression
     ) {
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.stringLiteral(tagName),
@@ -132,7 +132,7 @@ export default class CodeGen {
     genLocatorBind(
         handler: t.Expression,
         locatorId: string,
-        locatorProvider: t.Expression | undefined,
+        locatorProvider: t.Expression | undefined
     ) {
         const argsList = [handler, t.stringLiteral(locatorId)];
         if (!isUndefined(locatorProvider)) {
@@ -189,7 +189,7 @@ export default class CodeGen {
 
     private _renderApiCall(
         primitive: RenderPrimitiveDefinition,
-        params: t.Expression[],
+        params: t.Expression[]
     ): t.CallExpression {
         const { name, alias } = primitive;
 

@@ -57,7 +57,7 @@ export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             root[HostKey],
-            `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`,
+            `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`
         );
     }
     return root[HostKey];
@@ -67,7 +67,7 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             getInternalField(elm, ShadowRootKey),
-            `A Custom Element with a shadow attached must be provided as the first argument.`,
+            `A Custom Element with a shadow attached must be provided as the first argument.`
         );
     }
     return getInternalField(elm, ShadowRootKey);
@@ -75,11 +75,11 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
 
 export function attachShadow(
     elm: HTMLElement,
-    options: ShadowRootInit,
+    options: ShadowRootInit
 ): SyntheticShadowRootInterface {
     if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(
-            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`,
+            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
         );
     }
     const { mode, delegatesFocus } = options;
@@ -233,7 +233,7 @@ const NodePatchDescriptors = {
             this: SyntheticShadowRootInterface,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             addShadowRootEventListener(this, type, listener, options);
         },
@@ -246,7 +246,7 @@ const NodePatchDescriptors = {
             this: SyntheticShadowRootInterface,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             removeShadowRootEventListener(this, type, listener, options);
         },
@@ -271,7 +271,7 @@ const NodePatchDescriptors = {
         configurable: true,
         value(
             this: SyntheticShadowRootInterface,
-            otherNode: Node | SyntheticShadowRootInterface,
+            otherNode: Node | SyntheticShadowRootInterface
         ): number {
             const host = getHost(this);
 
@@ -457,8 +457,8 @@ const ParentNodePatchDescriptors = {
             return createStaticHTMLCollection(
                 ArrayFilter.call(
                     shadowRootChildNodes(this),
-                    (elm: Node | Element) => elm instanceof Element,
-                ),
+                    (elm: Node | Element) => elm instanceof Element
+                )
             );
         },
     },
@@ -500,7 +500,7 @@ assign(
     NodePatchDescriptors,
     ParentNodePatchDescriptors,
     ElementPatchDescriptors,
-    ShadowRootDescriptors,
+    ShadowRootDescriptors
 );
 
 export function SyntheticShadowRoot() {

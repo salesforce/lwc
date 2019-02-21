@@ -37,7 +37,7 @@ function getSiblingGetSetPair(propertyPath, propertyName, type) {
         classMethodPath =>
             classMethodPath !== propertyPath &&
             classMethodPath.isClassMethod({ kind: siblingType }) &&
-            classMethodPath.node.key.name === propertyName,
+            classMethodPath.node.key.name === propertyName
     );
 
     if (siblingNode) {
@@ -97,7 +97,7 @@ function transformPublicMethods(t, klassBody, apiDecorators) {
         const classProp = staticClassProperty(
             t,
             PUBLIC_METHODS,
-            t.valueToNode(publicMethodsConfig),
+            t.valueToNode(publicMethodsConfig)
         );
         markAsLWCNode(classProp);
         klassBody.pushContainer('body', classProp);

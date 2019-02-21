@@ -132,11 +132,11 @@ register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
             .subscribe({
                 next: data =>
                     wiredEventTarget.dispatchEvent(
-                        new ValueChangedEvent({ data, error: undefined }),
+                        new ValueChangedEvent({ data, error: undefined })
                     ),
                 error: error =>
                     wiredEventTarget.dispatchEvent(
-                        new ValueChangedEvent({ data: undefined, error }),
+                        new ValueChangedEvent({ data: undefined, error })
                     ),
             });
     });

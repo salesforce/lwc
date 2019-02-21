@@ -32,7 +32,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
-                    'test',
+                    'test'
                 );
                 expect(() => {
                     wireEventTarget.addEventListener(CONNECT, dupeListener);
@@ -51,7 +51,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONNECT, listener);
                 const actual = mockContext[CONTEXT_ID][CONTEXT_CONNECTED];
@@ -73,12 +73,12 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
-                    'test',
+                    'test'
                 );
                 expect(() => {
                     wireEventTarget.addEventListener(DISCONNECT, dupeListener);
                 }).toThrowError(
-                    'must not call addEventListener("disconnect") with the same listener',
+                    'must not call addEventListener("disconnect") with the same listener'
                 );
             });
 
@@ -94,7 +94,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(DISCONNECT, listener);
                 const actual = mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED];
@@ -114,7 +114,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, listener);
                 expect(listener).toHaveBeenCalledTimes(1);
@@ -133,7 +133,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, listener);
                 expect(listener).toHaveBeenCalledTimes(1);
@@ -154,7 +154,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, () => {
                     /**/
@@ -182,7 +182,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, () => {
                     /**/
@@ -208,7 +208,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, () => {
                     /**/
@@ -219,7 +219,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
-                    'test1',
+                    'test1'
                 );
                 wireEventTarget1.addEventListener(CONFIG, () => {
                     /**/
@@ -246,7 +246,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, () => {
                     /**/
@@ -257,7 +257,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
-                    'test1',
+                    'test1'
                 );
                 wireEventTarget1.addEventListener(CONFIG, () => {
                     /**/
@@ -290,7 +290,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext1,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget.addEventListener(CONFIG, () => {
                     /**/
@@ -301,7 +301,7 @@ describe('WireEventTarget', () => {
                     {} as ElementDef,
                     mockContext2,
                     mockWireDef,
-                    'test',
+                    'test'
                 );
                 wireEventTarget1.addEventListener(CONFIG, () => {
                     /**/
@@ -317,7 +317,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
-                'test',
+                'test'
             );
             expect(() => {
                 wireEventTarget.addEventListener('test', () => {
@@ -340,7 +340,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 mockContext,
                 {} as WireDef,
-                'test',
+                'test'
             );
             wireEventTarget.removeEventListener(CONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_CONNECTED]).toHaveLength(0);
@@ -357,7 +357,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 mockContext,
                 {} as WireDef,
-                'test',
+                'test'
             );
             wireEventTarget.removeEventListener(DISCONNECT, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED]).toHaveLength(0);
@@ -383,7 +383,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 mockContext,
                 mockWireDef,
-                'test',
+                'test'
             );
             wireEventTarget.removeEventListener(CONFIG, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.prop).toHaveLength(0);
@@ -409,7 +409,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 mockContext,
                 mockWireDef,
-                'test',
+                'test'
             );
             wireEventTarget.removeEventListener(CONFIG, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.x).toHaveLength(0);
@@ -420,7 +420,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
-                'test',
+                'test'
             );
             expect(() => {
                 wireEventTarget.removeEventListener('test', () => {
@@ -440,7 +440,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
-                'test',
+                'test'
             );
             wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
             expect(mockCmp.test).toBe('value');
@@ -457,7 +457,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 {} as target.Context,
                 { method: 1 } as WireDef,
-                'test',
+                'test'
             );
             wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
             expect(actual).toBe('value');
@@ -470,7 +470,7 @@ describe('WireEventTarget', () => {
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
-                'test',
+                'test'
             );
             expect(() => {
                 wireEventTarget.dispatchEvent(test as target.ValueChangedEvent);

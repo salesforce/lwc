@@ -9,7 +9,7 @@ describe('LightningElement.querySelectorAll', () => {
             createElement('x-constructor-query-selector-all', { is: ConstructorQuerySelectorAll });
         }).toThrowError(
             Error,
-            /Assert Violation: this.querySelectorAll\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector-all> because no children has been added to this element yet\./,
+            /Assert Violation: this.querySelectorAll\(\) cannot be called during the construction of the custom element for <x-constructor-query-selector-all> because no children has been added to this element yet\./
         );
     });
 

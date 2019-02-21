@@ -26,7 +26,7 @@ describe('Transforms', () => {
 
         `,
             },
-        },
+        }
     );
     pluginTestImplicit(
         'test cmp named class with decorators',
@@ -62,7 +62,7 @@ describe('Transforms', () => {
             });
         `,
             },
-        },
+        }
     );
 });
 
@@ -76,7 +76,7 @@ describe('Implicit mode', () => {
             output: {
                 code: `export default function x() {}`,
             },
-        },
+        }
     );
 
     pluginTestImplicit(
@@ -92,7 +92,7 @@ describe('Implicit mode', () => {
                 foo: 1
             };`,
             },
-        },
+        }
     );
 
     pluginTestImplicit(
@@ -139,7 +139,7 @@ describe('Implicit mode', () => {
                 });
             `,
             },
-        },
+        }
     );
 
     pluginTestImplicit(
@@ -178,7 +178,7 @@ describe('Implicit mode', () => {
                 });
             `,
             },
-        },
+        }
     );
 
     pluginTestImplicit(
@@ -217,6 +217,6 @@ describe('Implicit mode', () => {
                 });
             `,
             },
-        },
+        }
     );
 });

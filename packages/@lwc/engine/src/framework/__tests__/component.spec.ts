@@ -29,7 +29,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyComponent },
-                },
+                }
             );
             class Parent extends LightningElement {
                 value = 'salad';
@@ -66,7 +66,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 callChildM() {
@@ -105,7 +105,7 @@ describe('component', function() {
             const html = compileTemplate(
                 `<template>
                     <div>{validity}</div>
-                </template>`,
+                </template>`
             );
             class MyComponent extends LightningElement {
                 state = { value: 0 };
@@ -189,7 +189,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 render() {
@@ -333,7 +333,7 @@ describe('component', function() {
             const html = compileTemplate(
                 `<template>
                     <section style={state.customStyle}></section>
-                </template>`,
+                </template>`
             );
             class MyComponent extends LightningElement {
                 state = {
@@ -348,7 +348,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: MyComponent });
             const cssTextPropDef = Object.getOwnPropertyDescriptor(
                 CSSStyleDeclaration.prototype,
-                'cssText',
+                'cssText'
             );
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
                 get() {
@@ -370,7 +370,7 @@ describe('component', function() {
             const html = compileTemplate(
                 `<template>
                     <section style={state.customStyle}></section>
-                </template>`,
+                </template>`
             );
             class MyComponent extends LightningElement {
                 state = {
@@ -385,7 +385,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: MyComponent });
             const cssTextPropDef = Object.getOwnPropertyDescriptor(
                 CSSStyleDeclaration.prototype,
-                'cssText',
+                'cssText'
             );
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
                 get() {
@@ -407,7 +407,7 @@ describe('component', function() {
             const html = compileTemplate(
                 `<template>
                     <section style={state.customStyle}></section>
-                </template>`,
+                </template>`
             );
             class MyComponent extends LightningElement {
                 state = {
@@ -428,7 +428,7 @@ describe('component', function() {
             const html = compileTemplate(
                 `<template>
                     <section style={customStyle}></section>
-                </template>`,
+                </template>`
             );
             class MyComponent extends LightningElement {
                 customStyle: {
@@ -546,7 +546,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 callChildM() {
@@ -575,7 +575,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 getChildAttribute() {
@@ -603,7 +603,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 setChildAttribute() {
@@ -631,7 +631,7 @@ describe('component', function() {
                 </template>`,
                 {
                     modules: { 'x-child': MyChild },
-                },
+                }
             );
             class MyComponent extends LightningElement {
                 removeChildAttribute() {

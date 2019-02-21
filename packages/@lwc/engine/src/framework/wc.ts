@@ -27,7 +27,7 @@ import { patchCustomElementWithRestrictions } from './restrictions';
 
 export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
-    options?: ShadowRootInit,
+    options?: ShadowRootInit
 ): HTMLElementConstructor {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
@@ -93,7 +93,7 @@ export function buildCustomElementConstructor(
         // the reflection from attributes to props via attributeChangedCallback.
         static observedAttributes = ArrayMap.call(
             getOwnPropertyNames(props),
-            propName => props[propName].attr,
+            propName => props[propName].attr
         );
     };
 }

@@ -31,7 +31,7 @@ describe('scoped-ids', () => {
         `,
             {
                 modules: { 'x-child': MyChild },
-            },
+            }
         );
 
         describe.skip('custom elements', () => {

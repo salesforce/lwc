@@ -105,7 +105,7 @@ export function validateOptions(options: CompilerOptions) {
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
-        CompilerValidationErrors.INVALID_FILES_PROPERTY,
+        CompilerValidationErrors.INVALID_FILES_PROPERTY
     );
 
     for (const key of Object.keys(options.files)) {
@@ -113,7 +113,7 @@ export function validateOptions(options: CompilerOptions) {
         invariant(
             !isUndefined(value) && isString(value),
             CompilerValidationErrors.UNEXPECTED_FILE_CONTENT,
-            [key, value],
+            [key, value]
         );
     }
 
@@ -135,7 +135,7 @@ function validateStylesheetConfig(config: StylesheetConfig) {
         invariant(
             isUndefined(allowDefinition) || isBoolean(allowDefinition),
             CompilerValidationErrors.INVALID_ALLOWDEFINITION_PROPERTY,
-            [allowDefinition],
+            [allowDefinition]
         );
 
         if (!isUndefined(resolution)) {
@@ -147,7 +147,7 @@ function validateStylesheetConfig(config: StylesheetConfig) {
             invariant(
                 type === 'native' || type === 'module',
                 CompilerValidationErrors.INVALID_TYPE_PROPERTY,
-                [type],
+                [type]
             );
         }
     }
@@ -161,19 +161,19 @@ function validateOutputConfig(config: OutputConfig) {
     invariant(
         isUndefinedOrBoolean(config.minify),
         CompilerValidationErrors.INVALID_MINIFY_PROPERTY,
-        [config.minify],
+        [config.minify]
     );
 
     invariant(
         isUndefinedOrBoolean(config.compat),
         CompilerValidationErrors.INVALID_COMPAT_PROPERTY,
-        [config.compat],
+        [config.compat]
     );
 
     invariant(
         isUndefinedOrBoolean(config.sourcemap),
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
-        [config.sourcemap],
+        [config.sourcemap]
     );
 
     if (!isUndefined(config.env)) {

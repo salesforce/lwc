@@ -21,7 +21,7 @@ describe('Component AOM Setter', () => {
             // as a workaround to verify attribute is not set.
             ariaLabel = HTMLElement.prototype.getAttribute.call(
                 document.querySelector('integration-child'),
-                'aria-label',
+                'aria-label'
             );
         });
         assert.equal(ariaLabel, null);

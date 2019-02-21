@@ -28,7 +28,7 @@ export default class ObjectEntries extends LightningElement {
                 },
                 y: { value: 'y', enumerable: false },
                 z: { value: 'z', enumerable: true },
-            },
+            }
         );
 
         return Object.entries(myObj).join('|');
@@ -93,7 +93,7 @@ export default class ObjectEntries extends LightningElement {
                 },
                 y: { value: 'y', enumerable: false },
                 z: { value: 'z', enumerable: true },
-            },
+            }
         );
 
         const proxy = new Proxy(obj, {});
@@ -107,7 +107,7 @@ export default class ObjectEntries extends LightningElement {
                 y: 42,
                 [Symbol('z')]: 'z',
             },
-            {},
+            {}
         );
         return Object.entries(proxy).join('|');
     }

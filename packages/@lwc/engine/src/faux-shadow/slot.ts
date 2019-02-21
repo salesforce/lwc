@@ -51,7 +51,7 @@ function initSlotObserver() {
                     mutation.type === 'childList',
                     `Invalid mutation type: ${
                         mutation.type
-                    }. This mutation handler for slots should only handle "childList" mutations.`,
+                    }. This mutation handler for slots should only handle "childList" mutations.`
                 );
             }
             const { target: slot } = mutation;
@@ -80,7 +80,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
             }
             return seed;
         },
-        [],
+        []
     );
 }
 
@@ -99,7 +99,7 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
             }
             return seed;
         },
-        [],
+        []
     );
 }
 
@@ -115,13 +115,13 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
             this: HTMLSlotElement,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
                 if (process.env.NODE_ENV === 'test') {
                     /* eslint-disable-next-line no-console */
                     console.warn(
-                        'The "slotchange" event is not supported in our jest test environment.',
+                        'The "slotchange" event is not supported in our jest test environment.'
                     );
                 }
                 setInternalField(this, SlotChangeKey, true);
@@ -169,7 +169,7 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
                 ? []
                 : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(
-                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element),
+                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
             );
         }
     };

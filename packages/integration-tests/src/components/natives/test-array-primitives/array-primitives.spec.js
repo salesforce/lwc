@@ -44,7 +44,7 @@ describe('Testing array primitives', () => {
                 var list = Array.prototype.slice.call(
                     document
                         .querySelector('integration-array-primitives')
-                        .shadowRoot.querySelectorAll('li'),
+                        .shadowRoot.querySelectorAll('li')
                 );
 
                 var textList = list.map(function(li) {

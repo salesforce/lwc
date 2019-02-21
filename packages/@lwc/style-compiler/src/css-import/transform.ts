@@ -32,7 +32,7 @@ export default function process(root: Root, result: Result) {
 
         if (params.length > 1) {
             throw node.error(
-                `Invalid import statement, import statement only support a single parameter.`,
+                `Invalid import statement, import statement only support a single parameter.`
             );
         }
 

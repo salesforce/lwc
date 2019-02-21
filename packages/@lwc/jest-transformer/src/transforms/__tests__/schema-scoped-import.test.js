@@ -22,7 +22,7 @@ describe('@salesforce/schema import', () => {
             objectApiName: "Opportunity"
           };
         }
-    `,
+    `
     );
 
     test(
@@ -41,7 +41,7 @@ describe('@salesforce/schema import', () => {
             fieldApiName: "Account"
           };
         }
-    `,
+    `
     );
 
     test(
@@ -60,7 +60,7 @@ describe('@salesforce/schema import', () => {
             fieldApiName: "Account.Name"
           };
         }
-    `,
+    `
     );
 
     test(
@@ -80,7 +80,7 @@ describe('@salesforce/schema import', () => {
             objectApiName: "Opportunity"
           };
         }
-    `,
+    `
     );
 
     test(
@@ -89,7 +89,7 @@ describe('@salesforce/schema import', () => {
         import { myResource } from '@salesforce/schema/Opportunity.Account.Name';
     `,
         undefined,
-        'Invalid import from @salesforce/schema/Opportunity.Account.Name',
+        'Invalid import from @salesforce/schema/Opportunity.Account.Name'
     );
 
     test(
@@ -98,7 +98,7 @@ describe('@salesforce/schema import', () => {
         import { default as resource } from '@salesforce/schema/Opportunity.Account.Name';
     `,
         undefined,
-        'Invalid import from @salesforce/schema/Opportunity.Account.Name',
+        'Invalid import from @salesforce/schema/Opportunity.Account.Name'
     );
 
     test(
@@ -107,6 +107,6 @@ describe('@salesforce/schema import', () => {
         import { default as resource, foo } from '@salesforce/schema/Opportunity.Account.Name';
     `,
         undefined,
-        'Invalid import from @salesforce/schema/Opportunity.Account.Name',
+        'Invalid import from @salesforce/schema/Opportunity.Account.Name'
     );
 });

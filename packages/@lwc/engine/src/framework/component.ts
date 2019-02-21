@@ -54,7 +54,7 @@ export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
 // assignment of component constructor easily, without too much transformation
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { name, tmpl: template },
+    { name, tmpl: template }
 ): ComponentConstructor {
     signedComponentToMetaMap.set(Ctor, { name, template });
     return Ctor;
@@ -74,7 +74,7 @@ export function createComponent(vm: UninitializedVM, Ctor: ComponentConstructor)
     const initialized = vm as VM;
     if (isUndefined(initialized.component)) {
         throw new ReferenceError(
-            `Invalid construction for ${Ctor}, you must extend LightningElement.`,
+            `Invalid construction for ${Ctor}, you must extend LightningElement.`
         );
     }
 }
@@ -108,7 +108,7 @@ export function clearReactiveListeners(vm: VM) {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     pos > -1,
-                    `when clearing up deps, the vm must be part of the collection.`,
+                    `when clearing up deps, the vm must be part of the collection.`
                 );
             }
             ArraySplice.call(set, pos, 1);
@@ -130,7 +130,7 @@ export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             isArray(vnodes),
-            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`,
+            `${vm}.render() should always return an array of vnodes instead of ${vnodes}`
         );
     }
     return vnodes;
@@ -141,11 +141,11 @@ export function markComponentAsDirty(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isFalse(
             vm.isDirty,
-            `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`,
+            `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`
         );
         assert.isFalse(
             isRendering,
-            `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`,
+            `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
         );
     }
     vm.isDirty = true;

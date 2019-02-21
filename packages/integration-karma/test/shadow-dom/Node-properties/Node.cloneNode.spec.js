@@ -71,7 +71,7 @@ describe('Node.cloneNode', () => {
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode(true);
             expect(clone.childNodes.length).toBe(1);
             expect(clone.outerHTML).toBe(
-                '<x-container><div class="slotted">Slotted Text</div></x-container>',
+                '<x-container><div class="slotted">Slotted Text</div></x-container>'
             );
         });
 
@@ -82,7 +82,7 @@ describe('Node.cloneNode', () => {
             const clone = elm.shadowRoot.querySelector('div').cloneNode(true);
             expect(clone.childNodes.length).toBe(2);
             expect(clone.outerHTML).toBe(
-                '<div>A<x-container><x-container>B</x-container><div><x-container>C</x-container></div></x-container></div>',
+                '<div>A<x-container><x-container>B</x-container><div><x-container>C</x-container></div></x-container></div>'
             );
         });
 

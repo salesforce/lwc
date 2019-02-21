@@ -17,7 +17,7 @@ export const MINIFY_CONFIG: any = Object.assign(
     BABEL_CONFIG_BASE,
     {
         presets: [[minify, { guards: false, evaluate: false }]],
-    },
+    }
 );
 
 /**

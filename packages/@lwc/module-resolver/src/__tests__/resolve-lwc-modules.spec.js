@@ -21,7 +21,7 @@ describe('resolve-lwc-npm-modules', () => {
             'alias-fake-package',
             'fake-module1',
             'fake-module2',
-            'other-resource',
+            'other-resource'
         );
     });
 });

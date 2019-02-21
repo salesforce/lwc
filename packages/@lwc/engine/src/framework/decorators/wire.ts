@@ -13,22 +13,22 @@ import { ComponentConstructor } from '../component';
 function wireDecorator(
     target: ComponentConstructor,
     prop: PropertyKey,
-    descriptor: PropertyDescriptor | undefined,
+    descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor | any {
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;
             assert.isTrue(
                 !get && !set,
-                `Compiler Error: A @wire decorator can only be applied to a public field.`,
+                `Compiler Error: A @wire decorator can only be applied to a public field.`
             );
             assert.isTrue(
                 configurable !== false,
-                `Compiler Error: A @wire decorator can only be applied to a configurable property.`,
+                `Compiler Error: A @wire decorator can only be applied to a configurable property.`
             );
             assert.isTrue(
                 writable !== false,
-                `Compiler Error: A @wire decorator can only be applied to a writable property.`,
+                `Compiler Error: A @wire decorator can only be applied to a writable property.`
             );
         }
     }
@@ -36,7 +36,7 @@ function wireDecorator(
     return createTrackedPropertyDescriptor(
         target,
         prop,
-        isObject(descriptor) ? descriptor.enumerable === true : true,
+        isObject(descriptor) ? descriptor.enumerable === true : true
     );
 }
 

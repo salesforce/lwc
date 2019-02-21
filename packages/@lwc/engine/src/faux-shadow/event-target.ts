@@ -11,11 +11,11 @@ const dispatchEvent =
 
 const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(
     Event.prototype,
-    'target',
+    'target'
 )!.get!;
 const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(
     Event.prototype,
-    'currentTarget',
+    'currentTarget'
 )!.get!;
 
 export { dispatchEvent, eventTargetGetter, eventCurrentTargetGetter };

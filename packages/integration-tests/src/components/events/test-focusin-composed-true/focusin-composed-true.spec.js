@@ -22,7 +22,7 @@ describe('Composed focusin event', () => {
         browser.click('button');
         assert.deepEqual(
             browser.getText('.custom-focus-in-not-composed'),
-            'Custom Focus In Not Composed',
+            'Custom Focus In Not Composed'
         );
     });
 });

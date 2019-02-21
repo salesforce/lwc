@@ -183,7 +183,7 @@ const rowHTML = compileTemplate(
         <div><a data-id={row.id}>Remove</a></div>
     </template>
     `,
-    { modules: {} },
+    { modules: {} }
 );
 
 const tableHTML = compileTemplate(
@@ -207,7 +207,7 @@ const tableHTML = compileTemplate(
         modules: {
             'x-row': Row,
         },
-    },
+    }
 );
 
 describe('diff algo', () => {

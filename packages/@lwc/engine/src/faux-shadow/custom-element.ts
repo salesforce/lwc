@@ -38,7 +38,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             this: EventTarget,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             addCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
@@ -46,7 +46,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             this: EventTarget,
             type: string,
             listener: EventListener,
-            options?: boolean | AddEventListenerOptions,
+            options?: boolean | AddEventListenerOptions
         ) {
             removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
@@ -148,7 +148,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 ? []
                 : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticHTMLCollection(
-                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element),
+                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
             );
         }
     };

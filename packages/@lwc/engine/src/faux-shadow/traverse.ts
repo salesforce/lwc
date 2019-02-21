@@ -55,15 +55,15 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             owner instanceof HTMLElement,
-            `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`,
+            `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`
         );
         assert.invariant(
             node instanceof Node,
-            `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`,
+            `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`
         );
         assert.isTrue(
             compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS,
-            `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`,
+            `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`
         );
     }
     const ownerKey = getNodeNearestOwnerKey(node);
@@ -85,15 +85,15 @@ function isNodeSlotted(host: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             host instanceof HTMLElement,
-            `isNodeSlotted() should be called with a host as the first argument instead of ${host}`,
+            `isNodeSlotted() should be called with a host as the first argument instead of ${host}`
         );
         assert.invariant(
             node instanceof Node,
-            `isNodeSlotted() should be called with a node as the second argument instead of ${node}`,
+            `isNodeSlotted() should be called with a node as the second argument instead of ${node}`
         );
         assert.isTrue(
             compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS,
-            `isNodeSlotted() should never be called with a node that is not a child node of ${host}`,
+            `isNodeSlotted() should never be called with a node that is not a child node of ${host}`
         );
     }
     const hostKey = getNodeKey(host);
@@ -157,7 +157,7 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
 
 export function getAllMatches(
     owner: HTMLElement,
-    nodeList: NodeList | Node[],
+    nodeList: NodeList | Node[]
 ): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -217,7 +217,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
 
 function getAllSlottedMatches(
     host: HTMLElement,
-    nodeList: NodeList | Node[],
+    nodeList: NodeList | Node[]
 ): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -272,7 +272,7 @@ function lightDomQuerySelector(elm: Element, selector: string): Element | null {
 
 export function shadowRootQuerySelector(
     root: SyntheticShadowRootInterface,
-    selector: string,
+    selector: string
 ): Element | null {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
@@ -281,7 +281,7 @@ export function shadowRootQuerySelector(
 
 export function shadowRootQuerySelectorAll(
     root: SyntheticShadowRootInterface,
-    selector: string,
+    selector: string
 ): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
@@ -303,7 +303,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
                 }
                 return seed;
             },
-            [],
+            []
         );
     } else {
         // regular element
@@ -325,7 +325,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
             }
             return seed;
         },
-        [],
+        []
     );
 }
 

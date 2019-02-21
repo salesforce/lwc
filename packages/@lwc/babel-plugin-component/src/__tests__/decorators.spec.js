@@ -23,7 +23,7 @@ describe('decorators', () => {
                     column: 0,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -43,7 +43,7 @@ describe('decorators', () => {
                     column: 0,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -60,7 +60,7 @@ describe('decorators', () => {
                     column: 0,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -80,7 +80,7 @@ describe('decorators', () => {
                     column: 0,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -98,7 +98,7 @@ describe('decorators', () => {
                     column: 0,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -114,7 +114,7 @@ describe('decorators', () => {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
             },
-        },
+        }
     );
 
     pluginTest(
@@ -130,7 +130,7 @@ describe('decorators', () => {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
             },
-        },
+        }
     );
 
     pluginTest(
@@ -148,6 +148,6 @@ describe('decorators', () => {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
             },
-        },
+        }
     );
 });

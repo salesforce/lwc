@@ -20,7 +20,7 @@ describe('Async event target', () => {
                 return browser.getText('.correct-async-target') === 'Correct async target';
             },
             1000,
-            'Expected async target to be <async-event-target>',
+            'Expected async target to be <async-event-target>'
         );
     });
 });

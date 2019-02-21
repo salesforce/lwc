@@ -64,7 +64,7 @@ describe('slotted elements', () => {
                     'x-container': XContainer,
                     'x-child': XChild,
                 },
-            },
+            }
         );
 
         class MyMock extends LightningElement {
@@ -109,7 +109,7 @@ describe('slotted elements', () => {
                 modules: {
                     'c-child': ChildComponent,
                 },
-            },
+            }
         );
 
         class ParentComponent extends LightningElement {
@@ -149,7 +149,7 @@ describe('slotted elements', () => {
                 modules: {
                     'c-child': ChildComponent,
                 },
-            },
+            }
         );
 
         class ParentComponent extends LightningElement {

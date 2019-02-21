@@ -23,7 +23,7 @@ describe('Delegates focus', () => {
                 return active.getTagName() === 'body';
             },
             500,
-            'expect body to be focused',
+            'expect body to be focused'
         );
     });
 });

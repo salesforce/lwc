@@ -8,7 +8,7 @@ export default class Child extends LightningElement {
                 bubbles: true,
                 composed: true,
                 detail: { guid },
-            }),
+            })
         );
     }
 
@@ -18,24 +18,24 @@ export default class Child extends LightningElement {
         // Custom element
         this.addEventListener('slottedbuttonclick', () => {
             this.log(
-                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
             );
         });
         this.addEventListener('childbuttonclick', () => {
             this.log(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD,
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
             );
         });
 
         // Shadow root
         this.template.addEventListener('slottedbuttonclick', () => {
             this.log(
-                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+                EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
             );
         });
         this.template.addEventListener('childbuttonclick', () => {
             this.log(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT,
+                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
             );
         });
     }
@@ -47,31 +47,31 @@ export default class Child extends LightningElement {
             // Custom element
             this.addEventListener('slottedbuttonclick', () => {
                 this.log(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                 );
             });
             this.addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
                 );
             });
 
             // Shadow root
             this.template.addEventListener('slottedbuttonclick', () => {
                 this.log(
-                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT,
+                    EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT
                 );
             });
             this.template.addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_ROOT
                 );
             });
 
             // Button
             this.template.querySelector('button.child').addEventListener('childbuttonclick', () => {
                 this.log(
-                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON,
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON
                 );
             });
 
@@ -80,7 +80,7 @@ export default class Child extends LightningElement {
             if (slot) {
                 slot.addEventListener('slottedbuttonclick', () => {
                     this.log(
-                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT,
+                        EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT
                     );
                 });
             }
@@ -89,7 +89,7 @@ export default class Child extends LightningElement {
 
     handleChildButtonClick() {
         this.log(
-            EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_TEMPLATE_LISTENER__BOUND_TO_CHILD_BUTTON,
+            EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_TEMPLATE_LISTENER__BOUND_TO_CHILD_BUTTON
         );
     }
 
@@ -98,7 +98,7 @@ export default class Child extends LightningElement {
             new CustomEvent('childbuttonclick', {
                 bubbles: true,
                 composed: true,
-            }),
+            })
         );
     }
 }

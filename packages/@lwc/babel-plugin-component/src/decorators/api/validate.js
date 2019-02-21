@@ -19,7 +19,7 @@ function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(
         decorator =>
             decorator.name === TRACK_DECORATOR &&
-            decorator.path.parentPath.node === path.parentPath.node,
+            decorator.path.parentPath.node === path.parentPath.node
     );
 
     if (isPublicFieldTracked) {
@@ -91,7 +91,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
                 decorator =>
                     isApiDecorator(decorator) &&
                     decorator.type === DECORATOR_TYPES.GETTER &&
-                    parentPath.get('key.name').node === name,
+                    parentPath.get('key.name').node === name
             );
 
             if (associatedGetter) {

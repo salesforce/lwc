@@ -27,7 +27,7 @@ describe('Component with a wired property', () => {
                 return element.getText() === 'Title:task 1 Completed:false';
             },
             500,
-            'expect text to be different after 0.5s',
+            'expect text to be different after 0.5s'
         );
     });
 });

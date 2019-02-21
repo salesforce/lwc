@@ -15,7 +15,7 @@ import { FileTransformerResult } from './transformer';
 export default function(
     code: string,
     filename: string,
-    options: NormalizedCompilerOptions,
+    options: NormalizedCompilerOptions
 ): FileTransformerResult {
     const { isExplicitImport } = options;
     const config = Object.assign({}, BABEL_CONFIG_BASE, {

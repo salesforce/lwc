@@ -9,10 +9,10 @@ describe('Element.outerHTML - get', () => {
 
         expect(elm.outerHTML).toBe('<x-test></x-test>');
         expect(elm.shadowRoot.querySelector('x-container').outerHTML).toBe(
-            '<x-container><div>Slotted Text<input name="slotted"></div></x-container>',
+            '<x-container><div>Slotted Text<input name="slotted"></div></x-container>'
         );
         expect(elm.shadowRoot.querySelector('div').outerHTML).toBe(
-            '<div>Slotted Text<input name="slotted"></div>',
+            '<div>Slotted Text<input name="slotted"></div>'
         );
     });
 
@@ -22,7 +22,7 @@ describe('Element.outerHTML - get', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.querySelector('div').outerHTML).toBe(
-            '<div class="container">Before[<slot></slot>]After</div>',
+            '<div class="container">Before[<slot></slot>]After</div>'
         );
         expect(container.shadowRoot.querySelector('slot').outerHTML).toBe('<slot></slot>');
     });

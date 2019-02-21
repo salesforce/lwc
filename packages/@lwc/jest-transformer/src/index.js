@@ -63,7 +63,7 @@ module.exports = {
             .update(JSON.stringify(options), 'utf8')
             .update(
                 fileData + filePath + configStr + NODE_ENV + compilerVersion + engineVersion,
-                'utf8',
+                'utf8'
             )
             .digest('hex');
     },

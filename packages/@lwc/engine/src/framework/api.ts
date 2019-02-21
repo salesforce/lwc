@@ -83,7 +83,7 @@ export interface RenderAPI {
         tagName: string,
         Ctor: ComponentConstructor,
         data: CustomElementCompilerData,
-        children?: VNodes,
+        children?: VNodes
     ): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
     f(items: any[]): any[];
@@ -290,21 +290,21 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
         assert.isTrue(
             'key' in data,
-            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`,
+            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`
         );
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
-            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
             data.styleMap && data.style,
-            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`,
+            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
-                vmBeingRendered!.elm,
+                vmBeingRendered!.elm
             );
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
@@ -317,7 +317,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
                         'text' in childVnode &&
                         'elm' in childVnode &&
                         'key' in childVnode,
-                    `${childVnode} is not a vnode.`,
+                    `${childVnode} is not a vnode.`
                 );
             }
         });
@@ -369,9 +369,9 @@ export function ti(value: any): number {
         if (shouldNormalize) {
             assert.logWarning(
                 `Invalid tabindex value \`${toString(
-                    value,
+                    value
                 )}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`,
-                vmBeingRendered!.elm,
+                vmBeingRendered!.elm
             );
         }
     }
@@ -383,7 +383,7 @@ export function s(
     slotName: string,
     data: ElementCompilerData,
     children: VNodes,
-    slotset: SlotSet | undefined,
+    slotset: SlotSet | undefined
 ): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
@@ -409,7 +409,7 @@ export function c(
     sel: string,
     Ctor: ComponentConstructor,
     data: CustomElementCompilerData,
-    children?: VNodes,
+    children?: VNodes
 ): VCustomElement {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
@@ -421,23 +421,23 @@ export function c(
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
-            `c() 4nd argument data must be an array.`,
+            `c() 4nd argument data must be an array.`
         );
         // TODO: enable this once all tests are changed to use compileTemplate utility
         // assert.isTrue("key" in compilerData, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
-            `vnode.data.className and vnode.data.classMap ambiguous declaration.`,
+            `vnode.data.className and vnode.data.classMap ambiguous declaration.`
         );
         assert.isFalse(
             data.styleMap && data.style,
-            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`,
+            `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
             assert.logWarning(
                 `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
-                vmBeingRendered!.elm,
+                vmBeingRendered!.elm
             );
         }
         if (arguments.length === 4) {
@@ -451,7 +451,7 @@ export function c(
                             'text' in childVnode &&
                             'elm' in childVnode &&
                             'key' in childVnode,
-                        `${childVnode} is not a vnode.`,
+                        `${childVnode} is not a vnode.`
                     );
                 }
             });
@@ -493,7 +493,7 @@ export function c(
 // [i]terable node
 export function i(
     iterable: Iterable<any>,
-    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode,
+    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
     const list: VNodes = [];
     // marking the list as generated from iteration so we can optimize the diffing
@@ -502,7 +502,7 @@ export function i(
         if (process.env.NODE_ENV !== 'production') {
             assert.logWarning(
                 `Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
-                vmBeingRendered!.elm,
+                vmBeingRendered!.elm
             );
         }
         return list;
@@ -511,7 +511,7 @@ export function i(
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
             isUndefined(iterable[SymbolIterator]),
-            `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`,
+            `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -519,7 +519,7 @@ export function i(
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             iterator && isFunction(iterator.next),
-            `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`,
+            `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`
         );
     }
 
@@ -681,7 +681,7 @@ export function fb(fn: (...args: any[]) => any): () => any {
 export function ll(
     originalHandler: EventListener,
     id: string,
-    context?: (...args: any[]) => any,
+    context?: (...args: any[]) => any
 ): EventListener {
     if (isNull(vmBeingRendered)) {
         throw new Error();
@@ -726,7 +726,7 @@ export function k(compilerKey: number, obj: any): string | void {
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
-                    `Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`,
+                    `Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`
                 );
             }
     }
@@ -738,7 +738,7 @@ export function gid(id: any): string | null | undefined {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
                 `Invalid id value "${id}". Expected a non-empty string.`,
-                vmBeingRendered!.elm,
+                vmBeingRendered!.elm
             );
         }
         return id;

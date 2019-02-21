@@ -36,7 +36,7 @@ export class MetadataCollector {
 
     public collectExperimentalTemplateDependencies(
         templatePath: string,
-        templateDependencies: TemplateModuleDependency[],
+        templateDependencies: TemplateModuleDependency[]
     ) {
         if (!this.experimentalTemplateDependencies) {
             this.experimentalTemplateDependencies = [];

@@ -24,7 +24,7 @@ describe('Delegate focus with tabindex 0', () => {
                 return active.getTagName().toLowerCase() === 'input';
             },
             500,
-            'Input should be focused',
+            'Input should be focused'
         );
     });
 
@@ -40,7 +40,7 @@ describe('Delegate focus with tabindex 0', () => {
                 return active.getText() === 'second button';
             },
             500,
-            'Second button should be focused',
+            'Second button should be focused'
         );
 
         browser.keys(['Shift', 'Tab']);
@@ -54,7 +54,7 @@ describe('Delegate focus with tabindex 0', () => {
                 return active.getTagName().toLowerCase() === 'input';
             },
             500,
-            'Input should be focused',
+            'Input should be focused'
         );
 
         browser.keys(['Tab']); // This is a backwards tab, because 'Shift' from previous keys is not released
@@ -67,7 +67,7 @@ describe('Delegate focus with tabindex 0', () => {
                 return active.getText() === 'first button';
             },
             500,
-            'First button should be focused',
+            'First button should be focused'
         );
     });
 });

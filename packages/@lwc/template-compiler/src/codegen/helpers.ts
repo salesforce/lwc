@@ -31,10 +31,10 @@ export function getMemberExpressionRoot(expression: t.MemberExpression): t.Ident
 
 export function objectToAST(
     obj: object,
-    valueMapper: (key: string) => t.Expression,
+    valueMapper: (key: string) => t.Expression
 ): t.ObjectExpression {
     return t.objectExpression(
-        Object.keys(obj).map(key => t.objectProperty(t.stringLiteral(key), valueMapper(key))),
+        Object.keys(obj).map(key => t.objectProperty(t.stringLiteral(key), valueMapper(key)))
     );
 }
 
@@ -61,14 +61,14 @@ export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
         child =>
             isElement(child) &&
-            (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child))),
+            (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child)))
     );
 }
 
 export function destructuringAssignmentFromObject(
     target: t.Identifier | t.MemberExpression,
     keys: t.ObjectProperty[],
-    type: string = 'const',
+    type: string = 'const'
 ) {
     return t.variableDeclaration(type as any, [
         t.variableDeclarator(t.objectPattern(keys as any), target),
@@ -79,7 +79,7 @@ export function memorizeHandler(
     codeGen: CodeGen,
     element,
     componentHandler: t.Expression,
-    handler: t.Expression,
+    handler: t.Expression
 ): t.Expression {
     // #439 - The handler can only be memorized if it is bound to component instance
     const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
@@ -92,7 +92,7 @@ export function memorizeHandler(
         const memorization = t.assignmentExpression(
             '=',
             t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memorizedId),
-            handler,
+            handler
         );
 
         handler = t.logicalExpression('||', memorizedId, memorization);
@@ -108,7 +108,7 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
     if (state.slots.length) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),
-            t.identifier('slots'),
+            t.identifier('slots')
         );
 
         const slotsArray = t.arrayExpression(state.slots.map(slot => t.stringLiteral(slot)));
@@ -123,13 +123,13 @@ export function generateTemplateMetadata(state: State): t.Statement[] {
 
     const stylesheetsProperty = t.memberExpression(
         t.identifier(TEMPLATE_FUNCTION_NAME),
-        t.identifier('stylesheets'),
+        t.identifier('stylesheets')
     );
 
     const stylesheetsMetadata = t.assignmentExpression(
         '=',
         stylesheetsProperty,
-        hasInlineStyles ? t.identifier('stylesheets') : t.arrayExpression(),
+        hasInlineStyles ? t.identifier('stylesheets') : t.arrayExpression()
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 

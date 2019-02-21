@@ -75,7 +75,7 @@ describe('fixtures', () => {
                     EXPECTED_JS_FILENAME,
                     prettier.format(expectedCode, {
                         parser: 'babel',
-                    }),
+                    })
                 );
             }
 
@@ -93,17 +93,17 @@ describe('fixtures', () => {
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
             expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
-                prettier.format(expectedCode, { parser: 'babel' }),
+                prettier.format(expectedCode, { parser: 'babel' })
             );
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
 
                 expect(Array.from(actualMeta.templateUsedIds)).toEqual(
-                    expectMeta.templateUsedIds || [],
+                    expectMeta.templateUsedIds || []
                 );
                 expect(Array.from(actualMeta.templateDependencies)).toEqual(
-                    expectMeta.templateDependencies || [],
+                    expectMeta.templateDependencies || []
                 );
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }

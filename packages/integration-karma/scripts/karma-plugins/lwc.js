@@ -41,7 +41,7 @@ function createPreprocessor(config, emitter, logger) {
                 // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
                 // suites.
                 polyfills: false,
-            }),
+            })
         );
     }
 

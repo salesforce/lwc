@@ -75,14 +75,14 @@ describe('parsing', () => {
 describe('class and style', () => {
     it('class attribute', () => {
         const { root } = parseTemplate(
-            `<template><section class="foo bar   baz-fiz"></section></template>`,
+            `<template><section class="foo bar   baz-fiz"></section></template>`
         );
         expect(root.children[0].classMap).toMatchObject({ bar: true, foo: true, 'baz-fiz': true });
     });
 
     it('dynamic class attribute', () => {
         const { root } = parseTemplate(
-            `<template><section class={dynamicClass}></section></template>`,
+            `<template><section class={dynamicClass}></section></template>`
         );
         expect(root.children[0].className).toMatchObject({
             type: 'Identifier',
@@ -103,7 +103,7 @@ describe('class and style', () => {
 
     it('dynamic style attribute', () => {
         const { root } = parseTemplate(
-            `<template><section style={dynamicStyle}></section></template>`,
+            `<template><section style={dynamicStyle}></section></template>`
         );
         expect(root.children[0].style).toMatchObject({
             type: 'Identifier',
@@ -115,7 +115,7 @@ describe('class and style', () => {
 describe('event handlers', () => {
     it('event handler attribute', () => {
         const { root } = parseTemplate(
-            `<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`,
+            `<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`
         );
         expect(root.children[0].on).toMatchObject({
             click: { type: 'Identifier', name: 'handleClick' },
@@ -137,7 +137,7 @@ describe('event handlers', () => {
 describe('for:each directives', () => {
     it('right syntax', () => {
         const { root } = parseTemplate(
-            `<template><section for:each={items} for:item="item"></section></template>`,
+            `<template><section for:each={items} for:item="item"></section></template>`
         );
         expect(root.children[0].forEach.expression).toMatchObject({
             type: 'Identifier',
@@ -149,7 +149,7 @@ describe('for:each directives', () => {
 
     it('right syntax with index', () => {
         const { root } = parseTemplate(
-            `<template><section for:each={items} for:item="item" for:index="i"></section></template>`,
+            `<template><section for:each={items} for:item="item" for:index="i"></section></template>`
         );
         expect(root.children[0].forEach.expression).toMatchObject({
             type: 'Identifier',
@@ -161,13 +161,13 @@ describe('for:each directives', () => {
 
     it('error missing for:item', () => {
         const { warnings } = parseTemplate(
-            `<template><section for:each={items}></section></template>`,
+            `<template><section for:each={items}></section></template>`
         );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                'for:each and for:item directives should be associated together.',
+                'for:each and for:item directives should be associated together.'
             ),
             location: EXPECTED_LOCATION,
         });
@@ -175,7 +175,7 @@ describe('for:each directives', () => {
 
     it('error expression value for for:item', () => {
         const { warnings } = parseTemplate(
-            `<template><section for:each={items} for:item={item}></section></template>`,
+            `<template><section for:each={items} for:item={item}></section></template>`
         );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
@@ -234,7 +234,7 @@ describe('locator parsing', () => {
             code: 1069,
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                'locator:context directive is expected to be an expression.',
+                'locator:context directive is expected to be an expression.'
             ),
             location: { column: 44, line: 3, start: 67, length: 21 },
         });
@@ -250,7 +250,7 @@ describe('locator parsing', () => {
             code: 1067,
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                'locator:context cannot be a member expression. It can only be functions on the component',
+                'locator:context cannot be a member expression. It can only be functions on the component'
             ),
             location: { line: 3, column: 44, start: 67, length: 25 },
         });
@@ -260,7 +260,7 @@ describe('locator parsing', () => {
 describe('for:of directives', () => {
     it('right syntax', () => {
         const { root } = parseTemplate(
-            `<template><section iterator:it={items}></section></template>`,
+            `<template><section iterator:it={items}></section></template>`
         );
         expect(root.children[0].forOf.expression).toMatchObject({
             type: 'Identifier',
@@ -271,13 +271,13 @@ describe('for:of directives', () => {
 
     it('error expression value for for:iterator', () => {
         const { warnings } = parseTemplate(
-            `<template><section iterator:it="items"></section></template>`,
+            `<template><section iterator:it="items"></section></template>`
         );
         expect(warnings).toContainEqual({
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                `iterator:it directive is expected to be an expression`,
+                `iterator:it directive is expected to be an expression`
             ),
             location: EXPECTED_LOCATION,
         });
@@ -337,7 +337,7 @@ describe('custom component', () => {
             code: expect.any(Number),
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
+                `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`
             ),
             location: EXPECTED_LOCATION,
         });
@@ -396,7 +396,7 @@ describe('root errors', () => {
             filename: undefined,
             level: DiagnosticLevel.Error,
             message: expect.stringContaining(
-                `is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`,
+                `is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`
             ),
             location: EXPECTED_LOCATION,
         });
@@ -471,7 +471,7 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(1);
             expect(warnings[0].message).toMatch(
-                /Duplicate id value "foo" detected\. Id values must be unique within a template\./,
+                /Duplicate id value "foo" detected\. Id values must be unique within a template\./
             );
         });
         it('custom element', () => {
@@ -485,14 +485,14 @@ describe('props and attributes', () => {
             `);
             expect(warnings.length).toBe(1);
             expect(warnings[0].message).toMatch(
-                /Duplicate id value "bar" detected\. Id values must be unique within a template\./,
+                /Duplicate id value "bar" detected\. Id values must be unique within a template\./
             );
         });
     });
 
     it('invalid html attribute error', () => {
         const { warnings } = parseTemplate(
-            `<template><div minlength="1" maxlength="5"></div></template>`,
+            `<template><div minlength="1" maxlength="5"></div></template>`
         );
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
         expect(warnings[0]).toMatchObject({
@@ -502,7 +502,7 @@ describe('props and attributes', () => {
 
     it('element specific attribute validation', () => {
         const { root } = parseTemplate(
-            `<template><textarea minlength="1" maxlength="5"></textarea></template>`,
+            `<template><textarea minlength="1" maxlength="5"></textarea></template>`
         );
         expect(root.children[0].attrs).toMatchObject({
             minlength: { value: '1' },
@@ -512,7 +512,7 @@ describe('props and attributes', () => {
 
     it('global attribute validation', () => {
         const { root } = parseTemplate(
-            `<template><p title="title" aria-hidden="true"></p></template>`,
+            `<template><p title="title" aria-hidden="true"></p></template>`
         );
         expect(root.children[0].attrs).toMatchObject({
             'aria-hidden': { value: 'true' },
@@ -522,7 +522,7 @@ describe('props and attributes', () => {
 
     it('custom element props', () => {
         const { root } = parseTemplate(
-            `<template><x-button prop={state.prop}></x-button></template>`,
+            `<template><x-button prop={state.prop}></x-button></template>`
         );
         expect(root.children[0].props.prop).toMatchObject({ value: TEMPLATE_EXPRESSION });
     });
@@ -566,7 +566,7 @@ describe('props and attributes', () => {
 describe('metadata', () => {
     it('usedIds simple', () => {
         const { state } = parseTemplate(
-            `<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`,
+            `<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`
         );
         expect(Array.from(state.ids)).toEqual(['visible', 'titleClass', 'text']);
     });

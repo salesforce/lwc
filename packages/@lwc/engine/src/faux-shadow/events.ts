@@ -165,7 +165,7 @@ const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new 
 
 function getWrappedShadowRootListener(
     sr: SyntheticShadowRootInterface,
-    listener: EventListener,
+    listener: EventListener
 ): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
@@ -203,7 +203,7 @@ const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = n
 
 function getWrappedCustomElementListener(
     elm: HTMLElement,
-    listener: EventListener,
+    listener: EventListener
 ): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
@@ -289,9 +289,9 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
             assert.logWarning(
                 `${toString(
-                    elm,
+                    elm
                 )} has duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`,
-                elm,
+                elm
             );
         }
     }
@@ -314,9 +314,9 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     } else if (process.env.NODE_ENV !== 'production') {
         assert.logError(
             `Did not find event listener for event "${type}" executing removeEventListener on ${toString(
-                elm,
+                elm
             )}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`,
-            elm,
+            elm
         );
     }
 }
@@ -333,7 +333,7 @@ function isValidEventForCustomElement(event: Event): boolean {
         // it is coming from a slotted element
         isChildNode(
             getRootNodeHost(target, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement,
-            currentTarget as Node,
+            currentTarget as Node
         )
     );
 }
@@ -342,23 +342,23 @@ export function addCustomElementEventListener(
     elm: HTMLElement,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             isFunction(listener),
             `Invalid second argument for this.addEventListener() in ${toString(
-                elm,
-            )} for event "${type}". Expected an EventListener but received ${listener}.`,
+                elm
+            )} for event "${type}". Expected an EventListener but received ${listener}.`
         );
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {
             assert.logWarning(
                 `The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(
-                    options,
+                    options
                 )}`,
-                elm,
+                elm
             );
         }
     }
@@ -370,7 +370,7 @@ export function removeCustomElementEventListener(
     elm: HTMLElement,
     type: string,
     listener: EventListener,
-    _options?: boolean | AddEventListenerOptions,
+    _options?: boolean | AddEventListenerOptions
 ) {
     const wrappedListener = getWrappedCustomElementListener(elm, listener);
     detachDOMListener(elm, type, wrappedListener);
@@ -380,23 +380,23 @@ export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions,
+    options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             isFunction(listener),
             `Invalid second argument for this.template.addEventListener() in ${toString(
-                sr,
-            )} for event "${type}". Expected an EventListener but received ${listener}.`,
+                sr
+            )} for event "${type}". Expected an EventListener but received ${listener}.`
         );
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
         if (!isUndefined(options)) {
             assert.logWarning(
                 `The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(
-                    options,
+                    options
                 )}`,
-                getHost(sr),
+                getHost(sr)
             );
         }
     }
@@ -409,7 +409,7 @@ export function removeShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
     listener: EventListener,
-    _options?: boolean | AddEventListenerOptions,
+    _options?: boolean | AddEventListenerOptions
 ) {
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);

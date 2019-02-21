@@ -30,7 +30,7 @@ function getFormattedComponentStack(elm: Element): string {
         if (isLWC(currentElement)) {
             ArrayPush.call(
                 componentStack,
-                `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`,
+                `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`
             );
 
             indentation = indentation + indentationChar;

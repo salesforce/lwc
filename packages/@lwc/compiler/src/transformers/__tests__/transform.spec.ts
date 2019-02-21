@@ -14,6 +14,6 @@ it('should validate presence of src', () => {
 
 it('should validate presence of id', () => {
     expect(() => transformEntry(`console.log('Hello')`)).toThrow(
-        /Expect a string for id. Received undefined/,
+        /Expect a string for id. Received undefined/
     );
 });

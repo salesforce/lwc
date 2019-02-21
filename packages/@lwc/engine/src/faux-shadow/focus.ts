@@ -144,7 +144,7 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             tabIndexGetter.call(host) === -1 || isDelegatingFocus(host),
-            `The focusin event is only relevant when the tabIndex property is -1 on the host.`,
+            `The focusin event is only relevant when the tabIndex property is -1 on the host.`
         );
     }
     const firstChild = inner[0];
@@ -356,8 +356,8 @@ export function handleFocus(elm: HTMLElement) {
         assert.invariant(
             isDelegatingFocus(elm),
             `Invalid attempt to handle focus event for ${toString(elm)}. ${toString(
-                elm,
-            )} should have delegates focus true, but is not delegating focus`,
+                elm
+            )} should have delegates focus true, but is not delegating focus`
         );
     }
 
@@ -375,8 +375,8 @@ export function handleFocusIn(elm: HTMLElement) {
         assert.invariant(
             tabIndexGetter.call(elm) === -1,
             `Invalid attempt to handle focus in  ${toString(elm)}. ${toString(
-                elm,
-            )} should have tabIndex -1, but has tabIndex ${tabIndexGetter.call(elm)}`,
+                elm
+            )} should have tabIndex -1, but has tabIndex ${tabIndexGetter.call(elm)}`
         );
     }
 
@@ -402,8 +402,8 @@ export function ignoreFocusIn(elm: HTMLElement) {
         assert.invariant(
             tabIndexGetter.call(elm) !== -1,
             `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(
-                elm,
-            )} should not have tabIndex -1`,
+                elm
+            )} should not have tabIndex -1`
         );
     }
     removeEventListener.call(elm, 'focusin', keyboardFocusInHandler);

@@ -83,7 +83,7 @@ describe('invoker', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class MyComponent1 extends LightningElement {
                 connectedCallback() {
@@ -115,7 +115,7 @@ describe('invoker', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class MyComponent1 extends LightningElement {
                 disconnectedCallback() {
@@ -202,7 +202,7 @@ describe('invoker', () => {
             `,
                 {
                     modules: { 'x-child': Child },
-                },
+                }
             );
             class MyComponent3 extends LightningElement {
                 renderedCallback() {
@@ -306,7 +306,7 @@ describe('invoker', () => {
             `,
                 {
                     modules: { 'x-bar': MyComponent2 },
-                },
+                }
             );
             class MyComponent1 extends LightningElement {
                 render() {

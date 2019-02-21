@@ -27,7 +27,7 @@ describe('JSON.stringify on proxies', () => {
         const element = browser.element('.complex-object-stringify');
         assert.strictEqual(
             element.getText(),
-            '{"string":"x","number":1,"boolean":true,"null":null,"object":{"x":"x"}}',
+            '{"string":"x","number":1,"boolean":true,"null":null,"object":{"x":"x"}}'
         );
     });
 

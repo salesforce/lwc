@@ -120,7 +120,7 @@ module.exports = function postProcess({ types: t }) {
 
                 if (hasIdentifier) {
                     statementPath.insertAfter(
-                        createRegisterDecoratorsCall(path, node.id, metaPropertyList),
+                        createRegisterDecoratorsCall(path, node.id, metaPropertyList)
                     );
                 } else {
                     // if it does not have an id, we can treat it as a ClassExpression

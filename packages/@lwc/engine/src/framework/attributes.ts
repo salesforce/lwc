@@ -224,7 +224,7 @@ export function getPropNameFromAttrName(attrName: string): string {
         AttrNameToPropNameMap[attrName] = StringReplace.call(
             attrName,
             CAMEL_REGEX,
-            (g: string): string => g[1].toUpperCase(),
+            (g: string): string => g[1].toUpperCase()
         );
     }
     return AttrNameToPropNameMap[attrName];
@@ -241,7 +241,7 @@ export function getAttrNameFromPropName(propName: string): string {
         PropNameToAttrNameMap[propName] = StringReplace.call(
             propName,
             CAPS_REGEX,
-            (match: string): string => '-' + match.toLowerCase(),
+            (match: string): string => '-' + match.toLowerCase()
         );
     }
     return PropNameToAttrNameMap[propName];

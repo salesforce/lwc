@@ -138,7 +138,7 @@ function check() {
             !IGNORED_PATTERNS.some(pattern => pattern.test(file)) &&
             !isDirectory(file) &&
             !isbinaryfile.sync(file) &&
-            needsCopyrightHeader(file),
+            needsCopyrightHeader(file)
     );
 
     if (invalidFiles.length > 0) {

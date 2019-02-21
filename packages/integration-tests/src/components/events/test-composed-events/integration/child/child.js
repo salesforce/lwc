@@ -6,7 +6,7 @@ export default class Child extends LightningElement {
             new Event('event', {
                 bubbles: true,
                 composed: true,
-            }),
+            })
         );
     }
     handleCustomEventClick(event) {
@@ -14,7 +14,7 @@ export default class Child extends LightningElement {
             new CustomEvent('customevent', {
                 bubbles: true,
                 composed: true,
-            }),
+            })
         );
     }
 }

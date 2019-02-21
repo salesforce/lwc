@@ -122,7 +122,7 @@ export function invokeEventListener(
     vm: VM,
     fn: EventListener,
     thisValue: undefined | ComponentInterface,
-    event: Event,
+    event: Event
 ) {
     const { context, callHook } = vm;
     const ctx = currentContext;
@@ -132,7 +132,7 @@ export function invokeEventListener(
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
                 isFunction(fn),
-                `Invalid event handler for event '${event.type}' on ${vm}.`,
+                `Invalid event handler for event '${event.type}' on ${vm}.`
             );
         }
         callHook(thisValue, fn, [event]);

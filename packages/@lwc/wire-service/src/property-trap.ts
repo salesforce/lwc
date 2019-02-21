@@ -22,7 +22,7 @@ import { ConfigListenerMetadata, ConfigContext, ReactiveParameter } from './wiri
  */
 function invokeConfigListeners(
     configListenerMetadatas: Set<ConfigListenerMetadata>,
-    paramValues: any,
+    paramValues: any
 ) {
     configListenerMetadatas.forEach(metadata => {
         const { listener, statics, reactives } = metadata;
@@ -52,7 +52,7 @@ function invokeConfigListeners(
 export function updated(
     cmp: LightningElement,
     reactiveParameter: ReactiveParameter,
-    configContext: ConfigContext,
+    configContext: ConfigContext
 ) {
     if (!configContext.mutated) {
         configContext.mutated = new Set<ReactiveParameter>();
@@ -92,7 +92,7 @@ function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
  */
 export function getReactiveParameterValue(
     cmp: LightningElement,
-    reactiveParameter: ReactiveParameter,
+    reactiveParameter: ReactiveParameter
 ): any {
     let value: any = cmp[reactiveParameter.head];
     if (!reactiveParameter.tail) {
@@ -119,7 +119,7 @@ export function getReactiveParameterValue(
 export function installTrap(
     cmp: LightningElement,
     reactiveParameter: ReactiveParameter,
-    configContext: ConfigContext,
+    configContext: ConfigContext
 ) {
     const callback = updated.bind(undefined, cmp, reactiveParameter, configContext);
     const newDescriptor = getOverrideDescriptor(cmp, reactiveParameter.head, callback);
@@ -135,7 +135,7 @@ export function installTrap(
 export function findDescriptor(
     target: any,
     propName: PropertyKey,
-    protoSet?: any[],
+    protoSet?: any[]
 ): PropertyDescriptor | null {
     protoSet = protoSet || [];
     if (!target || protoSet.indexOf(target) > -1) {

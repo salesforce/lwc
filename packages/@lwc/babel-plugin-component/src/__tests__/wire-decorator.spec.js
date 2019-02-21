@@ -50,7 +50,7 @@ describe('Transform property', () => {
                 });
 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -98,7 +98,7 @@ describe('Transform property', () => {
                 });
 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -118,7 +118,7 @@ describe('Transform property', () => {
                     column: 4,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -159,7 +159,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -200,7 +200,7 @@ describe('Transform property', () => {
                 });
 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -239,7 +239,7 @@ describe('Transform property', () => {
                     });
 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -259,7 +259,7 @@ describe('Transform property', () => {
                     column: 6,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -279,7 +279,7 @@ describe('Transform property', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -301,7 +301,7 @@ describe('Transform property', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -323,7 +323,7 @@ describe('Transform property', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -345,7 +345,7 @@ describe('Transform property', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 
     pluginTest(
@@ -403,7 +403,7 @@ describe('Transform property', () => {
                 });
                 `,
             },
-        },
+        }
     );
 });
 
@@ -450,7 +450,7 @@ describe('Transform method', () => {
                 });
                 `,
             },
-        },
+        }
     );
 
     pluginTest(
@@ -472,6 +472,6 @@ describe('Transform method', () => {
                     column: 20,
                 },
             },
-        },
+        }
     );
 });

@@ -52,7 +52,7 @@ function addVnodes(
     before: Node | null,
     vnodes: VNodes,
     startIdx: number,
-    endIdx: number,
+    endIdx: number
 ) {
     for (; startIdx <= endIdx; ++startIdx) {
         const ch = vnodes[startIdx];
@@ -110,7 +110,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
                 oldStartVnode,
                 parentElm,
                 // TODO: resolve this, but using dot notation for nextSibling for now
-                (oldEndVnode.elm as Node).nextSibling,
+                (oldEndVnode.elm as Node).nextSibling
             );
             oldStartVnode = oldCh[++oldStartIdx];
             newEndVnode = newCh[--newEndIdx];
@@ -139,7 +139,7 @@ export function updateDynamicChildren(parentElm: Node, oldCh: VNodes, newCh: VNo
                         newStartVnode.hook.insert(
                             newStartVnode,
                             parentElm,
-                            oldStartVnode.elm as Node,
+                            oldStartVnode.elm as Node
                         );
                     } else {
                         patchVnode(elmToMove, newStartVnode);

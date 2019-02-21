@@ -34,7 +34,7 @@ function getLwcConfig(config) {
     const nativeShadow = Boolean(config.nativeShadow);
 
     const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
-        Boolean,
+        Boolean
     );
 
     return {

@@ -45,7 +45,7 @@ describe('Locators & Located Service', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
 
         class Parent extends LightningElement {
@@ -122,7 +122,7 @@ describe('Locators & Located Service', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
 
         class Parent extends LightningElement {
@@ -155,7 +155,7 @@ describe('Locators & Located Service', () => {
                 modules: {
                     'x-parent': Parent,
                 },
-            },
+            }
         );
         class GrandParent extends LightningElement {
             bar;
@@ -226,7 +226,7 @@ describe('Locators & Located Service', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
 
         class Parent extends LightningElement {
@@ -291,7 +291,7 @@ describe('Errors in locators', () => {
                 modules: {
                     'x-child': Child,
                 },
-            },
+            }
         );
 
         class Parent extends LightningElement {

@@ -40,7 +40,7 @@ function schemaScopedImportTransform(t, path) {
                 RESOURCE_NAME: t.identifier(defaultImport),
                 IMPORT_SOURCE: t.stringLiteral(importSource),
                 OBJECT_API_NAME: t.stringLiteral(resourcePath),
-            }),
+            })
         );
     } else {
         path.replaceWithMultiple(
@@ -49,7 +49,7 @@ function schemaScopedImportTransform(t, path) {
                 IMPORT_SOURCE: t.stringLiteral(importSource),
                 OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
                 FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
-            }),
+            })
         );
     }
 }

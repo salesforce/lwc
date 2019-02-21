@@ -60,7 +60,7 @@ const TEMPLATE_FUNCTION = template(
         CONTEXT;
         return STATEMENT;
     }`,
-    { sourceType: 'module' },
+    { sourceType: 'module' }
 );
 
 function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
@@ -89,13 +89,13 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
                 codeGen,
                 element,
                 locator.context,
-                locatorContextFunction,
+                locatorContextFunction
             );
             locatorObject.push(t.objectProperty(t.identifier('context'), locatorContextFunction));
         }
         const contextObj = t.objectProperty(
             t.identifier('locator'),
-            t.objectExpression(locatorObject),
+            t.objectExpression(locatorObject)
         );
         contextExpressions.push(contextObj);
     }
@@ -163,7 +163,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 element.tag,
                 identifierFromComponentName(componentClassName),
                 databag,
-                children,
+                children
             );
         } else if (isSlot(element)) {
             const defaultSlot = children;
@@ -201,7 +201,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         element: IRElement,
         babelNode: t.Expression,
         testExpression?: t.Expression,
-        falseValue: t.Expression = t.nullLiteral(),
+        falseValue: t.Expression = t.nullLiteral()
     ): t.Expression {
         if (!element.if) {
             return babelNode;
@@ -243,7 +243,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         const iterationFunction = t.functionExpression(
             undefined,
             params,
-            t.blockStatement([t.returnStatement(babelNode)]),
+            t.blockStatement([t.returnStatement(babelNode)])
         );
 
         return codeGen.genIterator(iterable, iterationFunction);
@@ -268,14 +268,14 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         const iterationFunction = t.functionExpression(
             undefined,
             functionParams,
-            t.blockStatement([t.returnStatement(babelNode)]),
+            t.blockStatement([t.returnStatement(babelNode)])
         );
 
         const { expression: iterable } = bindExpression(expression, element);
         const { expression: mappedIterationFunction } = rewriteIteratorToArguments(
             iterationFunction,
             iterator,
-            argNames,
+            argNames
         );
 
         return codeGen.genIterator(iterable, mappedIterationFunction);
@@ -310,8 +310,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
             return t.arrayExpression(
                 fragmentNodes.elements.map((child: t.Expression) =>
-                    applyInlineIf(element, child, testExpression),
-                ),
+                    applyInlineIf(element, child, testExpression)
+                )
             );
         } else {
             // If the template has a single children, make sure the ternary expression returns an array
@@ -320,7 +320,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     }
 
     function generateScopedIdFunctionForIdRefAttr(
-        idRef: string,
+        idRef: string
     ): t.CallExpression | t.TemplateLiteral {
         const expressions: t.CallExpression[] = idRef
             .split(/\s+/) // handle space-delimited idrefs (e.g., aria-labelledby="foo bar")
@@ -412,7 +412,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             const styleObj = objectToAST(styleMap, key =>
                 typeof styleMap[key] === 'number'
                     ? t.numericLiteral(styleMap[key] as number)
-                    : t.stringLiteral(styleMap[key] as string),
+                    : t.stringLiteral(styleMap[key] as string)
             );
 
             data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
@@ -496,8 +496,8 @@ function generateTemplateFunction(templateRoot: IRElement, state: State): t.Func
     const apis = destructuringAssignmentFromObject(
         t.identifier(TEMPLATE_PARAMS.API),
         Object.keys(codeGen.usedApis).map(name =>
-            t.objectProperty(t.identifier(name), codeGen.usedApis[name], false, true),
-        ),
+            t.objectProperty(t.identifier(name), codeGen.usedApis[name], false, true)
+        )
     );
 
     let slots: t.Node | null = null;
@@ -505,8 +505,8 @@ function generateTemplateFunction(templateRoot: IRElement, state: State): t.Func
         slots = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.SLOT_SET),
             Object.keys(codeGen.usedSlots).map(name =>
-                t.objectProperty(t.stringLiteral(name), codeGen.usedSlots[name], false, true),
-            ),
+                t.objectProperty(t.stringLiteral(name), codeGen.usedSlots[name], false, true)
+            )
         );
     }
 
@@ -514,7 +514,7 @@ function generateTemplateFunction(templateRoot: IRElement, state: State): t.Func
     if (codeGen.memorizedIds.length) {
         context = destructuringAssignmentFromObject(
             t.identifier(TEMPLATE_PARAMS.CONTEXT),
-            codeGen.memorizedIds.map(id => t.objectProperty(id, id, false, true)),
+            codeGen.memorizedIds.map(id => t.objectProperty(id, id, false, true))
         );
     }
 

@@ -31,7 +31,7 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             isUndefined(oldAttrs) || keys(oldAttrs).join(',') === keys(attrs).join(','),
-            `vnode.data.attrs cannot change shape.`,
+            `vnode.data.attrs cannot change shape.`
         );
     }
 

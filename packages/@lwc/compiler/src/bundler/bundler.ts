@@ -67,7 +67,7 @@ function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
             generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
                 messageArgs: [message],
                 origin,
-            }),
+            })
         );
     };
 }
@@ -95,7 +95,7 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         plugins.push(
             rollupEnvReplacement({
                 options,
-            }),
+            })
         );
     }
 
@@ -103,7 +103,7 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         rollupTransform({
             metadataCollector,
             options,
-        }),
+        })
     );
 
     if (outputConfig.compat) {

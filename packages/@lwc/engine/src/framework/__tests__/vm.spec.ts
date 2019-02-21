@@ -52,7 +52,7 @@ describe('vm', () => {
             `,
                 {
                     modules: { 'x-bar': ChildComponent4 },
-                },
+                }
             );
             class MyComponent4 extends LightningElement {
                 constructor() {
@@ -93,7 +93,7 @@ describe('vm', () => {
             `,
                 {
                     modules: { 'x-bar': ChildComponent5 },
-                },
+                }
             );
             class MyComponent5 extends LightningElement {
                 constructor() {
@@ -138,7 +138,7 @@ describe('vm', () => {
             `,
                 {
                     modules: { 'x-child': ChildComponentCs },
-                },
+                }
             );
             class ParentComponentCs extends LightningElement {
                 constructor() {
@@ -195,7 +195,7 @@ describe('vm', () => {
                     modules: {
                         'c-child': ChildComponent,
                     },
-                },
+                }
             );
             let parentTemplate;
             class Parent extends LightningElement {
@@ -226,7 +226,7 @@ describe('vm', () => {
                 // of the slots in c-child, they will have an extraneous attribute on them,
                 // which will be a problem.
                 expect(parentTemplate.querySelector('c-child').outerHTML).toBe(
-                    `<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`,
+                    `<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`
                 );
             });
         });

@@ -74,7 +74,7 @@ export interface UninitializedVM {
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
-        args?: any[],
+        args?: any[]
     ) => any;
     setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
     getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
@@ -99,7 +99,7 @@ let uid: number = 0;
 function callHook(
     cmp: ComponentInterface | undefined,
     fn: (...args: any[]) => any,
-    args: any[] = [],
+    args: any[] = []
 ): any {
     return fn.apply(cmp, args);
 }
@@ -214,12 +214,12 @@ export function createVM(
     tagName: string,
     elm: HTMLElement,
     Ctor: ComponentConstructor,
-    options: CreateVMInit,
+    options: CreateVMInit
 ) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             elm instanceof HTMLElement,
-            `VM creation requires a DOM element instead of ${elm}.`,
+            `VM creation requires a DOM element instead of ${elm}.`
         );
     }
     const def = getComponentDef(Ctor);
@@ -271,7 +271,7 @@ function rehydrate(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             vm.elm instanceof HTMLElement,
-            `rehydration can only happen after ${vm} was patched the first time.`,
+            `rehydration can only happen after ${vm} was patched the first time.`
         );
     }
     if (vm.idx > 0 && vm.isDirty) {
@@ -286,15 +286,15 @@ function patchErrorBoundaryVm(errorBoundaryVm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             errorBoundaryVm && 'component' in errorBoundaryVm,
-            `${errorBoundaryVm} is not a vm.`,
+            `${errorBoundaryVm} is not a vm.`
         );
         assert.isTrue(
             errorBoundaryVm.elm instanceof HTMLElement,
-            `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`,
+            `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`
         );
         assert.isTrue(
             errorBoundaryVm.isDirty,
-            'rehydration recovery should only happen if vm has updated',
+            'rehydration recovery should only happen if vm has updated'
         );
     }
     const children = renderComponent(errorBoundaryVm);
@@ -381,7 +381,7 @@ function flushRehydrationQueue() {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             rehydrateQueue.length,
-            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`,
+            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
     const vms: VM[] = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
@@ -459,7 +459,7 @@ function destroyChildren(children: VNodes) {
                 const vm = getCustomElementVM(elm as HTMLElement);
                 assert.logError(
                     `Internal Error: Failed to disconnect component ${vm}. ${e}`,
-                    elm as Element,
+                    elm as Element
                 );
             }
         }
@@ -547,7 +547,7 @@ export function getErrorComponentStack(startingElement: Element): string {
             const is = elm.getAttribute('is');
             ArrayPush.call(
                 wcStack,
-                `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`,
+                `<${StringToLowerCase.call(tagName)}${is ? ' is="${is}' : ''}>`
             );
         }
         elm = getParentOrHostElement(elm);
@@ -574,11 +574,11 @@ function getHostElement(elm: Element): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isNativeShadowRootAvailable,
-            'getHostElement should only be called if native shadow root is available',
+            'getHostElement should only be called if native shadow root is available'
         );
         assert.isTrue(
             isNull(parentElementGetter.call(elm)),
-            `getHostElement should only be called if the parent element of ${elm} is null`,
+            `getHostElement should only be called if the parent element of ${elm} is null`
         );
     }
     const parentNode = parentNodeGetter.call(elm);
@@ -669,7 +669,7 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.invariant(
             isObject(vm.cmpSlots),
-            `When doing manual allocation, there must be a cmpSlots object available.`,
+            `When doing manual allocation, there must be a cmpSlots object available.`
         );
     }
     const { cmpSlots: oldSlots } = vm;

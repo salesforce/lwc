@@ -24,7 +24,7 @@ describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable 
                 return active.getTagName().toLowerCase() === 'body';
             },
             500,
-            'It should focus the body',
+            'It should focus the body'
         );
     });
 });

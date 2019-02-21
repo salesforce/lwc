@@ -28,7 +28,7 @@ describe('Focus method on delegates focus', () => {
                 return active.getTagName().toLowerCase() === 'input';
             },
             500,
-            'It should delegate focus to input',
+            'It should delegate focus to input'
         );
     });
 });

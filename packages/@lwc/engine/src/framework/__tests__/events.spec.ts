@@ -29,7 +29,7 @@ describe('Composed events', () => {
                 modules: {
                     'x-custom-event-child': Child,
                 },
-            },
+            }
         );
         class ComposedEvents extends LightningElement {
             triggerChildFoo() {
@@ -410,7 +410,7 @@ describe('Events on Custom Elements', () => {
         `,
             {
                 modules: { 'x-child': MyChild },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -462,7 +462,7 @@ describe('Events on Custom Elements', () => {
         `,
             {
                 modules: { 'x-child': MyChild },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             render() {
@@ -709,7 +709,7 @@ describe('Slotted element events', () => {
         `,
             {
                 modules: { 'x-slotted-event-target-child': Child },
-            },
+            }
         );
         class SlottedEventTarget extends LightningElement {
             handleClick(evt) {
@@ -778,7 +778,7 @@ describe('Component events', () => {
 
         expect(errorHandler.mock.calls).toHaveLength(1);
         expect(errorHandler.mock.calls[0][0].message).toMatch(
-            /Invalid event handler for event 'click'/,
+            /Invalid event handler for event 'click'/
         );
 
         window.removeEventListener('error', errorHandler);
@@ -905,15 +905,15 @@ describe('Shadow Root events', () => {
         `,
             {
                 modules: { 'correct-nested-root-event-target-child': MyChild },
-            },
+            }
         );
         class MyComponent extends LightningElement {
             handleClick(evt) {
                 expect(evt.target.tagName.toLowerCase()).toBe(
-                    'correct-nested-root-event-target-child',
+                    'correct-nested-root-event-target-child'
                 );
                 expect(evt.target).toBe(
-                    this.template.querySelector('correct-nested-root-event-target-child'),
+                    this.template.querySelector('correct-nested-root-event-target-child')
                 );
             }
 
@@ -945,7 +945,7 @@ describe('Shadow Root events', () => {
         `,
             {
                 modules: { 'x-grand-child': GrandChild },
-            },
+            }
         );
         class Child extends LightningElement {
             connectedCallback() {
@@ -968,7 +968,7 @@ describe('Shadow Root events', () => {
         `,
             {
                 modules: { 'x-child': Child },
-            },
+            }
         );
         class Root extends LightningElement {
             render() {

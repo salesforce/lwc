@@ -30,7 +30,7 @@ describe('decorators/api.ts', () => {
             `,
                 {
                     modules: { 'x-component': MyComponent },
-                },
+                }
             );
             class Parent extends LightningElement {
                 constructor() {
@@ -145,7 +145,7 @@ describe('decorators/api.ts', () => {
             `,
                 {
                     modules: { 'x-component': MyComponent },
-                },
+                }
             );
             class Parent extends LightningElement {
                 get parentGetter() {

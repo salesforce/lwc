@@ -19,10 +19,10 @@ describe('Node.textContent - getter', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.textContent).toBe(
-            process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After',
+            process.env.NATIVE_SHADOW ? 'Before[default-slotted]After' : 'Before[]After'
         );
         expect(container.shadowRoot.querySelector('slot').textContent).toBe(
-            process.env.NATIVE_SHADOW ? 'default-slotted' : '',
+            process.env.NATIVE_SHADOW ? 'default-slotted' : ''
         );
     });
 });
@@ -50,7 +50,7 @@ describe('Node.textContent - setter', () => {
         /* eslint-disable-next-line no-console */
         const [msg] = console.error.calls.argsFor(0);
         expect(msg).toMatch(
-            `\\[LWC error\\]: textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+            `\\[LWC error\\]: textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`
         );
     });
 });

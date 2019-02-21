@@ -17,7 +17,7 @@ import { getDecoratorsRegisteredMeta } from './register';
 export default function api(
     target: ComponentConstructor,
     propName: PropertyKey,
-    descriptor: PropertyDescriptor | undefined,
+    descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
         if (arguments.length !== 3) {
@@ -28,15 +28,15 @@ export default function api(
         assert.invariant(
             !descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)),
             `Invalid property ${toString(
-                propName,
-            )} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`,
+                propName
+            )} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`
         );
         if (isObject(descriptor) && isFunction(descriptor.set)) {
             assert.isTrue(
                 isObject(descriptor) && isFunction(descriptor.get),
                 `Missing getter for property ${toString(
-                    propName,
-                )} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`,
+                    propName
+                )} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`
             );
         }
     }
@@ -65,7 +65,7 @@ export function prepareForPropUpdate(vm: VM) {
 function createPublicPropertyDescriptor(
     proto: ComponentConstructor,
     key: PropertyKey,
-    descriptor: PropertyDescriptor | undefined,
+    descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
@@ -77,9 +77,9 @@ function createPublicPropertyDescriptor(
                 if (process.env.NODE_ENV !== 'production') {
                     assert.logError(
                         `${vm} constructor should not read the value of property "${toString(
-                            key,
+                            key
                         )}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`,
-                        vm.elm,
+                        vm.elm
                     );
                 }
                 return;
@@ -94,8 +94,8 @@ function createPublicPropertyDescriptor(
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key,
-                    )}`,
+                        key
+                    )}`
                 );
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
@@ -107,9 +107,9 @@ function createPublicPropertyDescriptor(
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(
                             `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key,
+                                key
                             )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm,
+                            vm.elm
                         );
                     }
                 }
@@ -120,11 +120,11 @@ function createPublicPropertyDescriptor(
                     // is only recommended for root elements created via createElement()
                     assert.logWarning(
                         `If property ${toString(
-                            key,
+                            key
                         )} decorated with @api in ${vm} is used in the template, the value ${toString(
-                            newValue,
+                            newValue
                         )} set manually may be overridden by the template, consider binding the property only in the template.`,
-                        vm.elm,
+                        vm.elm
                     );
                 }
             }
@@ -145,17 +145,17 @@ function createPublicPropertyDescriptor(
 function createPublicAccessorDescriptor(
     Ctor: ComponentConstructor,
     key: PropertyKey,
-    descriptor: PropertyDescriptor,
+    descriptor: PropertyDescriptor
 ): PropertyDescriptor {
     const { get, set, enumerable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {
             assert.fail(
                 `Invalid attempt to create public property descriptor ${toString(
-                    key,
+                    key
                 )} in ${Ctor}. It is missing the getter declaration with @api get ${toString(
-                    key,
-                )}() {} syntax.`,
+                    key
+                )}() {} syntax.`
             );
         }
         throw new TypeError();
@@ -175,8 +175,8 @@ function createPublicAccessorDescriptor(
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
-                        key,
-                    )}`,
+                        key
+                    )}`
                 );
             }
             if (vm.isRoot || isBeingConstructed(vm)) {
@@ -188,9 +188,9 @@ function createPublicAccessorDescriptor(
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(
                             `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key,
+                                key
                             )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm,
+                            vm.elm
                         );
                     }
                 }
@@ -201,11 +201,11 @@ function createPublicAccessorDescriptor(
                     // is only recommended for root elements created via createElement()
                     assert.logWarning(
                         `If property ${toString(
-                            key,
+                            key
                         )} decorated with @api in ${vm} is used in the template, the value ${toString(
-                            newValue,
+                            newValue
                         )} set manually may be overridden by the template, consider binding the property only in the template.`,
-                        vm.elm,
+                        vm.elm
                     );
                 }
             }
@@ -216,8 +216,8 @@ function createPublicAccessorDescriptor(
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(
-                        key,
-                    )} of ${vm} that does not has a setter decorated with @api.`,
+                        key
+                    )} of ${vm} that does not has a setter decorated with @api.`
                 );
             }
         },

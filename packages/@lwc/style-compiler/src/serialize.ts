@@ -32,7 +32,7 @@ const VAR_RESOLVER_IDENTIFIER = 'varResolver';
 export default function serialize(result: postcss.LazyResult, config: Config): string {
     const { messages } = result;
     const collectVarFunctions = Boolean(
-        config.customProperties && config.customProperties.resolverModule,
+        config.customProperties && config.customProperties.resolverModule
     );
     const minify = Boolean(config.outputConfig && config.outputConfig.minify);
     const useVarResolver = messages.some(isVarFunctionMessage);
@@ -84,7 +84,7 @@ function reduceTokens(tokens: Token[]): Token[] {
                     return [...acc, token];
                 }
             },
-            [] as Token[],
+            [] as Token[]
         )
         .filter(t => t.value !== '');
 }
@@ -102,7 +102,7 @@ function generateExpressionFromTokens(tokens: Token[]): string {
 function serializeCss(
     result: postcss.LazyResult,
     collectVarFunctions: boolean,
-    minify: boolean,
+    minify: boolean
 ): string {
     const tokens: Token[] = [];
     let currentRuleTokens: Token[] = [];

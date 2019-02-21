@@ -27,21 +27,21 @@ const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== 'undef
 
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(
     HTMLIFrameElement.prototype,
-    'contentWindow',
+    'contentWindow'
 )!.get!;
 
 const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(
     Event.prototype,
-    'target',
+    'target'
 )!.get!;
 
 const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(
     Event.prototype,
-    'currentTarget',
+    'currentTarget'
 )!.get!;
 
 const focusEventRelatedTargetGetter: (
-    this: FocusEvent,
+    this: FocusEvent
 ) => EventTarget | null = getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
 
 export {

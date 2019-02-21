@@ -43,22 +43,19 @@ function buildWireConfigValue(t, wiredValues) {
             const wireConfig = [];
             if (wiredValue.adapter) {
                 wireConfig.push(
-                    t.objectProperty(
-                        t.identifier('adapter'),
-                        t.identifier(wiredValue.adapter.name),
-                    ),
+                    t.objectProperty(t.identifier('adapter'), t.identifier(wiredValue.adapter.name))
                 );
             }
 
             if (wiredValue.params) {
                 wireConfig.push(
-                    t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params)),
+                    t.objectProperty(t.identifier('params'), t.objectExpression(wiredValue.params))
                 );
             }
 
             if (wiredValue.static) {
                 wireConfig.push(
-                    t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static)),
+                    t.objectProperty(t.identifier('static'), t.objectExpression(wiredValue.static))
                 );
             }
 
@@ -68,9 +65,9 @@ function buildWireConfigValue(t, wiredValues) {
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),
-                t.objectExpression(wireConfig),
+                t.objectExpression(wireConfig)
             );
-        }),
+        })
     );
 }
 
@@ -147,7 +144,7 @@ module.exports = function transform(t, klass, decorators) {
         const staticProp = staticClassProperty(
             t,
             LWC_COMPONENT_PROPERTIES.WIRE,
-            buildWireConfigValue(t, wiredValues),
+            buildWireConfigValue(t, wiredValues)
         );
 
         markAsLWCNode(staticProp);

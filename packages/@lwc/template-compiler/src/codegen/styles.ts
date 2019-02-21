@@ -12,7 +12,7 @@ import { Statement } from '@babel/types';
 
 export default function parseInlineStyles(
     src: string,
-    stylesheetConfig: StylesheetConfig,
+    stylesheetConfig: StylesheetConfig
 ): Statement[] {
     let result;
     try {

@@ -67,7 +67,7 @@ describe('module resolver', () => {
                 }
 
                 return Test;
-            });`),
+            });`)
         );
     });
     test('compiler should resolve bundle with manually imported template that does not match component name', async () => {
@@ -116,7 +116,7 @@ describe('module resolver', () => {
                 }
 
                 return Test;
-            });`),
+            });`)
         );
     });
 
@@ -150,7 +150,7 @@ describe('module resolver', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.',
+                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.'
                 ),
             },
         ]);
@@ -172,7 +172,7 @@ describe('module resolver', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?',
+                    'Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?'
                 ),
             },
         ]);
@@ -209,7 +209,7 @@ describe('module entry validation', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".',
+                    'Illegal folder name "MycmpCamelcased". The folder name must start with a lowercase character: "mycmpCamelcased".'
                 ),
             },
         ]);
@@ -247,7 +247,7 @@ describe('module file name validation', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".',
+                    'Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".'
                 ),
             },
         ]);

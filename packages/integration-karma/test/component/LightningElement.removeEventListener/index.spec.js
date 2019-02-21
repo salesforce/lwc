@@ -35,6 +35,6 @@ xit('should log an error message when removing a non existing event handler', ()
 
     /* eslint-disable-next-line no-console */
     expect(console.error.calls.argsFor(0)[0]).toMatch(
-        /\[LWC error\]: Did not find event listener for event "click" executing removeEventListener on \[object HTMLElement\]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback\(\) hook and remove them in the disconnectedCallback\(\) hook./,
+        /\[LWC error\]: Did not find event listener for event "click" executing removeEventListener on \[object HTMLElement\]. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback\(\) hook and remove them in the disconnectedCallback\(\) hook./
     );
 });

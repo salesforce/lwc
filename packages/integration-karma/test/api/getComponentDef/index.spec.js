@@ -16,7 +16,7 @@ import wireAdapter from 'x/wireAdapter';
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
         expect(() => getComponentDef(ctor)).toThrowError(
-            /Invalid prototype chain for \w+, you must extend LightningElement./,
+            /Invalid prototype chain for \w+, you must extend LightningElement./
         );
     });
 }
@@ -109,7 +109,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'bar',
                 },
-            }),
+            })
         );
     });
 
@@ -127,7 +127,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'getter-and-setter',
                 },
-            }),
+            })
         );
     });
 
@@ -158,7 +158,7 @@ describe('@api', () => {
                     type: 'any',
                     attr: 'overridden-in-child',
                 },
-            }),
+            })
         );
     });
 
@@ -299,7 +299,7 @@ describe('circular dependencies', () => {
         const Circular = circularDependency(
             class extends LightningElement {
                 @api foo;
-            },
+            }
         );
         class Component extends Circular {
             @api bar;
@@ -318,7 +318,7 @@ describe('circular dependencies', () => {
                     type: 'any',
                     attr: 'bar',
                 },
-            }),
+            })
         );
     });
 
@@ -327,7 +327,7 @@ describe('circular dependencies', () => {
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Invalid prototype chain for Component, you must extend LightningElement./,
+            /Invalid prototype chain for Component, you must extend LightningElement./
         );
     });
 
@@ -336,7 +336,7 @@ describe('circular dependencies', () => {
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./,
+            /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./
         );
     });
 });

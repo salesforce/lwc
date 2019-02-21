@@ -19,7 +19,7 @@ describe('Composed focusout event', () => {
                 return browser.getText('.focus-out-composed') === 'Focus Out Composed';
             },
             500,
-            'Expect native focusout to be composed',
+            'Expect native focusout to be composed'
         );
 
         browser.click('button');
@@ -31,7 +31,7 @@ describe('Composed focusout event', () => {
                 );
             },
             500,
-            'Expect focus out to be composed',
+            'Expect focus out to be composed'
         );
     });
 });

@@ -19,7 +19,7 @@ describe('Delegates focus', () => {
         browser.keys(['Tab']); // tab over integration-child
         const active = browser.execute(function() {
             return document.querySelector(
-                'integration-delegate-focus-tab-into-focusable-span-after-negative-tabindex',
+                'integration-delegate-focus-tab-into-focusable-span-after-negative-tabindex'
             ).shadowRoot.activeElement;
         });
         assert.notEqual(active.value, null);

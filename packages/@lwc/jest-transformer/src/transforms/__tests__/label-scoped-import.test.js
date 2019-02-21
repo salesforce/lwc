@@ -20,7 +20,7 @@ describe('@salesforce/label import', () => {
         } catch (e) {
           myLabel = "c.foo";
         }
-    `,
+    `
     );
 
     test(
@@ -38,7 +38,7 @@ describe('@salesforce/label import', () => {
         } catch (e) {
           myLabel = "c.foo";
         }
-    `,
+    `
     );
 
     test(
@@ -47,7 +47,7 @@ describe('@salesforce/label import', () => {
         import { myLabel } from '@salesforce/label/c.foo';
     `,
         undefined,
-        'Invalid import from @salesforce/label/c.foo',
+        'Invalid import from @salesforce/label/c.foo'
     );
 
     test(
@@ -56,7 +56,7 @@ describe('@salesforce/label import', () => {
         import { default as label } from '@salesforce/label/c.foo';
     `,
         undefined,
-        'Invalid import from @salesforce/label/c.foo',
+        'Invalid import from @salesforce/label/c.foo'
     );
 
     test(
@@ -65,6 +65,6 @@ describe('@salesforce/label import', () => {
         import { default as label, foo } from '@salesforce/label/c.foo';
     `,
         undefined,
-        'Invalid import from @salesforce/label/c.foo',
+        'Invalid import from @salesforce/label/c.foo'
     );
 });

@@ -60,7 +60,7 @@ describe('error validation', () => {
             (expect(errorInfo.code) as ExtendedMatcher).toBeInRange(
                 ERROR_CODE_RANGES.compiler.min,
                 ERROR_CODE_RANGES.compiler.max,
-                key,
+                key
             );
         }
 

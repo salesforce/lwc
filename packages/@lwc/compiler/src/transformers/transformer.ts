@@ -29,7 +29,7 @@ export type FileTransformer = (
     source: string,
     filename: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector,
+    metadataCollector?: MetadataCollector
 ) => FileTransformerResult | Promise<FileTransformerResult>;
 
 export function transform(src: string, id: string, options: CompilerOptions) {
@@ -62,7 +62,7 @@ export async function transformFile(
     src: string,
     id: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector,
+    metadataCollector?: MetadataCollector
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
     return await transformer(src, id, options, metadataCollector);

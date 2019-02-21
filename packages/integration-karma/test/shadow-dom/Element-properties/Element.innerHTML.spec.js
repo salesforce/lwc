@@ -9,10 +9,10 @@ describe('Element.innerHTML - get', () => {
 
         expect(elm.innerHTML).toBe('');
         expect(elm.shadowRoot.querySelector('x-container').innerHTML).toBe(
-            '<div>Slotted Text<input name="slotted"></div>',
+            '<div>Slotted Text<input name="slotted"></div>'
         );
         expect(elm.shadowRoot.querySelector('div').innerHTML).toBe(
-            'Slotted Text<input name="slotted">',
+            'Slotted Text<input name="slotted">'
         );
     });
 
@@ -22,7 +22,7 @@ describe('Element.innerHTML - get', () => {
 
         const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.querySelector('div').innerHTML).toBe(
-            'Before[<slot></slot>]After',
+            'Before[<slot></slot>]After'
         );
         expect(container.shadowRoot.querySelector('slot').innerHTML).toBe('');
     });
@@ -51,7 +51,7 @@ describe('Element.innerHTML - set', () => {
         /* eslint-disable-next-line no-console */
         const [msg] = console.error.calls.argsFor(0);
         expect(msg).toMatch(
-            `\\[LWC error\\]: innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+            `\\[LWC error\\]: innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`
         );
     });
 });

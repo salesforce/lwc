@@ -35,29 +35,29 @@ removeEventListener = removeEventListener.__lwcOriginal__ || removeEventListener
 
 const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
     Element.prototype,
-    'innerHTML',
+    'innerHTML'
 )
     ? getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!; // IE11
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
     Element.prototype,
-    'tagName',
+    'tagName'
 )!.get!;
 
 const tabIndexGetter = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!.get as (
-    this: HTMLElement,
+    this: HTMLElement
 ) => number;
 const matches: (this: Element, selector: string) => boolean = hasOwnProperty.call(
     Element.prototype,
-    'matches',
+    'matches'
 )
     ? Element.prototype.matches
     : (Element.prototype as any).msMatchesSelector; // IE11
 
 const childrenGetter: (this: HTMLElement) => HTMLCollectionOf<Element> = hasOwnProperty.call(
     Element.prototype,
-    'children',
+    'children'
 )
     ? getOwnPropertyDescriptor(Element.prototype, 'children')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'children')!.get!; // IE11

@@ -68,7 +68,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                         (path.node as types.MemberExpression).computed;
                     invariant(
                         !shouldReportComputed,
-                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
+                        ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
                     );
 
                     const memberExpression = path.node as types.MemberExpression;
@@ -77,7 +77,7 @@ export function parseExpression(source: string, element: IRNode, state: State): 
                     invariant(
                         !isBoundToIterator(objectIdentifier, element) ||
                             propertyIdentifier.name !== ITERATOR_NEXT_KEY,
-                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED,
+                        ParserDiagnostics.MODIFYING_ITERATORS_NOT_ALLOWED
                     );
                 },
             },

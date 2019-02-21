@@ -22,7 +22,7 @@ describe('@salesforce/user import', () => {
         } catch (e) {
           id = "${DEFAULT_ID}";
         }
-    `,
+    `
     );
 
     test(
@@ -40,7 +40,7 @@ describe('@salesforce/user import', () => {
         } catch (e) {
           id = "${DEFAULT_ID}";
         }
-    `,
+    `
     );
 
     test(
@@ -49,7 +49,7 @@ describe('@salesforce/user import', () => {
         import { Id } from '@salesforce/user/Id';
     `,
         undefined,
-        'Invalid import from @salesforce/user/Id',
+        'Invalid import from @salesforce/user/Id'
     );
 
     test(
@@ -58,7 +58,7 @@ describe('@salesforce/user import', () => {
         import { default as label } from '@salesforce/user/Id';
     `,
         undefined,
-        'Invalid import from @salesforce/user/Id',
+        'Invalid import from @salesforce/user/Id'
     );
 
     test(
@@ -67,6 +67,6 @@ describe('@salesforce/user import', () => {
         import { default as label, foo } from '@salesforce/user/Id';
     `,
         undefined,
-        'Invalid import from @salesforce/user/Id',
+        'Invalid import from @salesforce/user/Id'
     );
 });

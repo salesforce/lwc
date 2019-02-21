@@ -27,7 +27,7 @@ describe('html-element', () => {
             MyComponent.track = { state: 1 };
 
             expect(() =>
-                createElement('x-foo-tracked-state', { is: MyComponent }),
+                createElement('x-foo-tracked-state', { is: MyComponent })
             ).not.toLogWarning();
         });
         it('should be mutable during construction', () => {
@@ -127,7 +127,7 @@ describe('html-element', () => {
                         modules: {
                             'x-child': Child,
                         },
-                    },
+                    }
                 );
                 class Parent extends LightningElement {
                     render() {
@@ -161,7 +161,7 @@ describe('html-element', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {
@@ -195,7 +195,7 @@ describe('html-element', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {
@@ -1151,7 +1151,7 @@ describe('html-element', () => {
                 const element = createElement('prop-reflect-accessKey', { is: MyComponent });
                 element.accessKey = 'accessKey';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe(
-                    'accessKey',
+                    'accessKey'
                 );
             });
 
@@ -1276,7 +1276,7 @@ describe('html-element', () => {
                 const element = createElement('prop-reflect-title', { is: MyComponent });
                 element.title = 'title';
                 expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe(
-                    'title',
+                    'title'
                 );
             });
 
@@ -1435,7 +1435,7 @@ describe('html-element', () => {
                         modules: {
                             'x-child': Child,
                         },
-                    },
+                    }
                 );
                 class Parent extends LightningElement {
                     render() {
@@ -1469,7 +1469,7 @@ describe('html-element', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {
@@ -1498,7 +1498,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`,
+                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
             );
         });
 
@@ -1541,7 +1541,7 @@ describe('html-element', () => {
                     modules: {
                         'x-child': Child,
                     },
-                },
+                }
             );
             class Parent extends LightningElement {
                 render() {

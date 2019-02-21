@@ -33,7 +33,7 @@ describe('accessibility', () => {
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(
-                        elm.shadowRoot.querySelector('input'),
+                        elm.shadowRoot.querySelector('input')
                     );
                 });
             });
@@ -62,7 +62,7 @@ describe('accessibility', () => {
                         modules: {
                             'x-child': Child,
                         },
-                    },
+                    }
                 );
                 class Parent extends LightningElement {
                     render() {
@@ -75,10 +75,10 @@ describe('accessibility', () => {
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
                     expect(elm.shadowRoot.activeElement).toBe(
-                        elm.shadowRoot.querySelector('x-child'),
+                        elm.shadowRoot.querySelector('x-child')
                     );
                     expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(
-                        elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input'),
+                        elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input')
                     );
                 });
             });

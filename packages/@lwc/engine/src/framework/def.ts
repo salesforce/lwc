@@ -62,7 +62,7 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
     if (isNull(proto)) {
         throw new ReferenceError(
-            `Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`,
+            `Invalid prototype chain for ${subclassComponentName}, you must extend LightningElement.`
         );
     }
     // covering the cases where the ref is circular in AMD
@@ -71,7 +71,7 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
                 throw new ReferenceError(
-                    `Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`,
+                    `Circular module dependency for ${subclassComponentName}, must resolve to a constructor that extends LightningElement.`
                 );
             }
         }
@@ -101,12 +101,12 @@ function isElementComponent(Ctor: any, subclassComponentName, protoSet?: any[]):
 function createComponentDef(
     Ctor: ComponentConstructor,
     meta: ComponentMeta,
-    subclassComponentName: string,
+    subclassComponentName: string
 ): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             isElementComponent(Ctor, subclassComponentName),
-            `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`,
+            `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
         );
 
         // local to dev block
@@ -115,7 +115,7 @@ function createComponentDef(
         // assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(
             Ctor.constructor,
-            `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`,
+            `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`
         );
     }
 
@@ -154,7 +154,7 @@ function createComponentDef(
     const bridge = HTMLBridgeElementFactory(
         SuperBridge,
         getOwnPropertyNames(props),
-        getOwnPropertyNames(methods),
+        getOwnPropertyNames(methods)
     );
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
@@ -202,7 +202,7 @@ function getOwnValue(o: any, key: string): any | undefined {
 
 export function getComponentDef(
     Ctor: ComponentConstructor,
-    subclassComponentName?: string,
+    subclassComponentName?: string
 ): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
@@ -273,5 +273,5 @@ const HTML_PROPS: PropsDef = ArrayReduce.call(
         };
         return props;
     },
-    create(null),
+    create(null)
 );

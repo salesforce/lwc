@@ -7,7 +7,7 @@ export default class Child extends LightningElement {
             new CustomEvent('foo', {
                 composed: true,
                 bubbles: true,
-            }),
+            })
         );
     }
 }
