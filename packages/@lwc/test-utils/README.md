@@ -17,13 +17,11 @@ yarn add -D '@lwc/test-utils'
 In your test:
 
 ```js
-import { getShadowRoot } from '@lwc/test-utils';
+import { foo } from '@lwc/test-utils';
 
-// create element under test and query for custom element in the Shadow DOM
 const element = createElement('my-custom-component', { is: MyCustomComponent });
 document.body.appendChild(element);
-const shadowRoot = getShadowRoot(element);
-const fancyButton = shadowRoot.querySelector('fancy-button');
+foo(element);
 ```
 
 ### Jest Preset Configuration
