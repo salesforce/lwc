@@ -26,7 +26,7 @@ import {
 import {
     MutationObserverObserve,
     MutationObserver,
-} from "../env/window";
+} from "../env/mutation-observer";
 import { PatchedElement, isSlotElement, isNodeOwnedBy, getNodeOwner, getAllMatches, getFilteredChildNodes } from "./traverse";
 import { HTMLSlotElementConstructor } from "../framework/base-bridge-element";
 import {

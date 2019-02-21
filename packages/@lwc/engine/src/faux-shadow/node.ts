@@ -20,7 +20,7 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
 } from '../env/node';
-import { MutationObserver, MutationObserverObserve } from '../env/window';
+import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { setAttribute } from '../env/element';
 import { getNodeOwner, isSlotElement, getRootNodeGetter, isNodeOwnedBy } from './traverse';
 import { NodeConstructor } from '../framework/base-bridge-element';
