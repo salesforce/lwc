@@ -19,7 +19,6 @@ import {
     validateNormalizedOptions
 } from "../compiler/options";
 
-import { collectImportLocations } from "./import-location-collector";
 import { SourceMap } from "../compiler/compiler";
 import {
     CompilerError,
@@ -143,10 +142,6 @@ export async function bundle(
         diagnostic.level = DiagnosticLevel.Fatal;
         diagnostics.push(diagnostic);
     }
-
-    metadataCollector.collectImportLocations(
-        collectImportLocations(code) || []
-    );
 
     return {
         diagnostics,

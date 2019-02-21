@@ -88,7 +88,7 @@ const { code } = await transform(source, filename, options);
 **Return**
 
 * `code` (string)- the compiled source code.
-* `metadata` (object) - the metadata collected during transformation. Includes: `declarationLoc`, `impotLocations`, and `experimentalTemplateDependencies`.
+* `metadata` (object) - the metadata collected during transformation. Includes: `declarationLoc` and `experimentalTemplateDependencies`.
 * `map` (null) - not currenlty supported.
 
 ### `version`
@@ -207,7 +207,6 @@ export interface BundleResult {
 }
 
 export interface BundleMetadata {
-    importLocations: ModuleImportLocation[];
     declarationLoc?: Location;
 }
 

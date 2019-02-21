@@ -301,7 +301,6 @@ describe("compiler metadata", () => {
         );
 
         expect(metadata).toEqual({
-            importLocations: [],
             declarationLoc: undefined,
             experimentalTemplateDependencies: [
             {
