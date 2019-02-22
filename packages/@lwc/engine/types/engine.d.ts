@@ -93,6 +93,7 @@ declare module 'lwc' {
 
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
+        readonly activeElement: Element | null;
         readonly host: HTMLElement;
         readonly firstChild: Node | null,
         readonly lastChild: Node | null,
@@ -105,6 +106,7 @@ declare module 'lwc' {
         hasChildNodes(): boolean;
         compareDocumentPosition(otherNode: Node): number;
         contains(otherNode: Node): boolean;
+        elementFromPoint(x: number, y: number): Element | null;
     }
 
     /**
