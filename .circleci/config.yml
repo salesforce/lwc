@@ -104,7 +104,7 @@ run_karma_tests_native: &run_karma_tests_native
 
 run_karma_tests_native_prod: &run_karma_tests_native_prod
   run:
-    name: Run karma tests - native shadow - production
+    name: Run karma tests - native shadow + production
     command: yarn sauce --prod --native-shadow --coverage
     working_directory: packages/integration-karma
 
@@ -116,7 +116,7 @@ run_karma_tests_compat: &run_karma_tests_compat
 
 run_karma_tests_compat_prod: &run_karma_tests_compat_prod
   run:
-    name: Run karma tests - compat - prod
+    name: Run karma tests - compat + production
     command: yarn sauce --prod --compat --coverage
     working_directory: packages/integration-karma
 

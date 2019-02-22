@@ -3,7 +3,7 @@ import { createElement } from 'test-utils';
 import Test from 'x/test';
 import ConstructorInvocation from 'x/constructorInvocation';
 
-// IE11 doesn't support calling Element.getBoundingClientRect is the element is not attached to the DOM. We need to
+// IE11 doesn't support calling Element.getBoundingClientRect if the element is not attached to the DOM. We need to
 // disable the test specifically on IE11 because it would fail when running in prod compat mode.
 // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/106812/
 const supportCallingGetBoundingClientRect = (() => {
