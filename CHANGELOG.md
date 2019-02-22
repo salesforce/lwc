@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.6...v) (2019-02-14)
+# [](https://github.com/salesforce/lwc/compare/v0.35.7...v) (2019-02-22)
+
+
+### Bug Fixes
+
+* **engine:** component name in performance marks ([#1021](https://github.com/salesforce/lwc/issues/1021)) ([25ed4c2](https://github.com/salesforce/lwc/commit/25ed4c2))
+* **engine:** Node.compareDocumentPosition spec implication issues ([#1063](https://github.com/salesforce/lwc/issues/1063)) ([cbd210e](https://github.com/salesforce/lwc/commit/cbd210e))
+* move mutation observer to its own modules ([#1068](https://github.com/salesforce/lwc/issues/1068)) ([812c0ce](https://github.com/salesforce/lwc/commit/812c0ce))
+
+
+### Features
+
+* **compiler:** remove import locations metadata ([#1047](https://github.com/salesforce/lwc/issues/1047)) ([80e6816](https://github.com/salesforce/lwc/commit/80e6816))
+* add apexContinuation transformer ([#1074](https://github.com/salesforce/lwc/issues/1074)) ([01ce6c3](https://github.com/salesforce/lwc/commit/01ce6c3))
+
+
+
+<a name="0.35.7"></a>
+## [0.35.7](https://github.com/salesforce/lwc/compare/v0.35.6...v0.35.7) (2019-02-14)
 
 
 ### Bug Fixes
