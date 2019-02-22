@@ -120,14 +120,5 @@ describe('root', () => {
             expect(xChild.shadowRoot.querySelector('p')).toBeNull();
         });
 
-
-        it('should expose the shadow root via $$ShadowRoot$$ when in test mode', () => {
-            class MyComponent extends LightningElement {}
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(elm.$$ShadowRoot$$).toBeDefined();
-        });
-
     });
 });
