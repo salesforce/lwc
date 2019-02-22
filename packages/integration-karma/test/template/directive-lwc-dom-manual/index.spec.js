@@ -19,15 +19,13 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
         it(`should log an error when calling ${method} on an element without the lwc:dom="manual" directive`, () => {
             const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
             document.body.appendChild(root);
-
-            spyOn(console, 'error');
-
             const elm = root.shadowRoot.querySelector('div');
-            fn(elm);
 
-            /* eslint-disable-next-line no-console */
-            const [msg] = console.error.calls.argsFor(0);
-            expect(msg).toMatch(`\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`)
+            expect(
+                () => fn(elm)
+            ).toLogErrorDev(
+                new RegExp(`\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`)
+            );
         });
     }
 

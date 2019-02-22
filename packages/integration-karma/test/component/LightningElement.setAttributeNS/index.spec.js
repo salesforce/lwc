@@ -8,7 +8,7 @@ const TEST_NS = 'http://www.salesforce.com/2019/lwc';
 it('should throw when invoking setAttributeNS in constructor', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
-    }).toThrowError(
+    }).toThrowErrorDev(
         Error,
         /Assert Violation: Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
     );

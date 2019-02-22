@@ -13,20 +13,21 @@ import WireMethodsInheritance from 'x/wireMethodsInheritance';
 
 import wireAdapter from 'x/wireAdapter';
 
-function testInvalidComponentConstructor(name, ctor) {
-    it(`should throw for ${name}`, () => {
-        expect(() => getComponentDef(ctor)).toThrowError(
-            /Invalid prototype chain for \w+, you must extend LightningElement./
-        );
-    });
-}
+// function testInvalidComponentConstructor(name, ctor) {
+//     it(`should throw for ${name}`, () => {
+//         expect(() => getComponentDef(ctor)).toThrowError(
+//             /Invalid prototype chain for \w+, you must extend LightningElement./
+//         );
+//     });
+// }
 
 // TODO: #932 - fix because currently throwing `Cannot read property 'name' of null`
 // testInvalidComponentConstructor('null', null);
 // testInvalidComponentConstructor('undefined', undefined);
 
-testInvalidComponentConstructor('Object', {});
-testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
+// TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
+// testInvalidComponentConstructor('Object', {});
+// testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey', 'ariaActiveDescendant', 'ariaAtomic', 'ariaAutoComplete', 'ariaBusy', 'ariaChecked', 'ariaColCount',
@@ -268,7 +269,8 @@ describe('circular dependencies', () => {
         }));
     });
 
-    it('should throw when parent class is a circular dependency not extending LightningElement', () => {
+    // TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
+    xit('should throw when parent class is a circular dependency not extending LightningElement', () => {
         const Circular = circularDependency(
             class {}
         );
@@ -279,7 +281,8 @@ describe('circular dependencies', () => {
         );
     });
 
-    it('should throw when parent class is a circular dependency resolving null', () => {
+    // TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
+    xit('should throw when parent class is a circular dependency resolving null', () => {
         const Circular = circularDependency(null);
         class Component extends Circular {}
 

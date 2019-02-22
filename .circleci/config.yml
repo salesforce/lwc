@@ -90,16 +90,34 @@ run_karma_tests: &run_karma_tests
     command: yarn sauce --coverage
     working_directory: packages/integration-karma
 
+run_karma_tests_prod: &run_karma_tests_prod
+  run:
+    name: Run karma tests - production
+    command: yarn sauce --prod --coverage
+    working_directory: packages/integration-karma
+
 run_karma_tests_native: &run_karma_tests_native
   run:
     name: Run karma tests - native shadow
     command: yarn sauce --native-shadow --coverage
     working_directory: packages/integration-karma
 
+run_karma_tests_native_prod: &run_karma_tests_native_prod
+  run:
+    name: Run karma tests - native shadow + production
+    command: yarn sauce --prod --native-shadow --coverage
+    working_directory: packages/integration-karma
+
 run_karma_tests_compat: &run_karma_tests_compat
   run:
     name: Run karma tests - compat
     command: yarn sauce --compat --coverage
+    working_directory: packages/integration-karma
+
+run_karma_tests_compat_prod: &run_karma_tests_compat_prod
+  run:
+    name: Run karma tests - compat + production
+    command: yarn sauce --prod --compat --coverage
     working_directory: packages/integration-karma
 
 run_karma_coverage: &run_karma_coverage
@@ -192,8 +210,12 @@ jobs:
       - *wait_for_sauce_connect
 
       - *run_karma_tests
+      - *run_karma_tests_prod
       - *run_karma_tests_native
+      - *run_karma_tests_native_prod
       - *run_karma_tests_compat
+      - *run_karma_tests_compat_prod
+
       - *run_karma_coverage
 
       - *stop_sauce_connect

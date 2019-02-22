@@ -42,15 +42,12 @@ describe('Node.textContent - setter', () => {
         const elm = createElement('x-test', { is: Slotted });
         document.body.appendChild(elm);
 
-        spyOn(console, 'error');
-
         const div = elm.shadowRoot.querySelector('div');
-        div.textContent = '<span>Hello World!</span>';
 
-        /* eslint-disable-next-line no-console */
-        const [msg] = console.error.calls.argsFor(0);
-        expect(msg).toMatch(
-            `\\[LWC error\\]: textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+        expect(() => {
+            div.textContent = '<span>Hello World!</span>';
+        }).toLogErrorDev(
+            /\[LWC error\]: textContent is disallowed in Element unless `lwc:dom="manual"` directive is used in the template./
         );
     });
 });
