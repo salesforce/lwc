@@ -64,20 +64,6 @@ describe('@salesforce/user/isGuest', () => {
         }
     `);
 
-    test('allows non-@salesforce/user/Id named imports', `
-        import { otherNamed } from './something-valid';
-        import isGuest from '@salesforce/user/isGuest';
-    `, `
-        import { otherNamed } from './something-valid';
-        let isGuest;
-
-        try {
-          isGuest = require("@salesforce/user/isGuest").default;
-        } catch (e) {
-          isGuest = ${DEFAULT_IS_GUEST};
-        }
-    `);
-
     test('throws error if using named import', `
         import { isGuest } from '@salesforce/user/isGuest';
     `, undefined, 'Invalid import from @salesforce/user/isGuest');
