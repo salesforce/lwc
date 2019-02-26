@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.7...v) (2019-02-22)
+# [](https://github.com/salesforce/lwc/compare/v0.35.9...v) (2019-02-26)
+
+
+### Bug Fixes
+
+* update types for shadow root ([#1077](https://github.com/salesforce/lwc/issues/1077)) ([7d4dee2](https://github.com/salesforce/lwc/commit/7d4dee2))
+
+
+
+<a name="0.35.9"></a>
+## [0.35.9](https://github.com/salesforce/lwc/compare/v0.35.7...v0.35.9) (2019-02-22)
 
 
 ### Bug Fixes
