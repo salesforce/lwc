@@ -148,7 +148,7 @@ export function getActiveElement(host: HTMLElement): Element | null {
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 ? activeElement : null;
 }
 
-function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): number {
+function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): number {
     // assert: target must be child of host
     const pos = compareDocumentPosition.call(host, relatedTarget);
     if (pos & DOCUMENT_POSITION_CONTAINED_BY) {
@@ -223,7 +223,7 @@ function keyboardFocusHandler(event: FocusEvent) {
     }
 
     const segments = getTabbableSegments(host as HTMLElement);
-    const position = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+    const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
 
     if (position === 1) {
         // probably tabbing into element
@@ -267,10 +267,9 @@ function keyboardFocusInHandler(event: FocusEvent) {
     }
 
     // Determine where the focus is coming from (Tab or Shift+Tab)
-    const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+    const post = relatedTargetPosition(host as HTMLElement, relatedTarget);
     switch (post) {
         case 1:  // focus is probably coming from above
-
             if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousTabbableElement(segments)) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
@@ -308,7 +307,8 @@ function enterMouseDownState(evt) {
 function exitMouseDownState(event) {
     const currentTarget = eventCurrentTargetGetter.call(event);
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
-    if (!(currentTarget as Node).contains(relatedTarget as Node)) {
+    // If the focused element is null or the focused element is no longer internal
+    if (isNull(relatedTarget) || relatedTargetPosition(currentTarget as HTMLElement, relatedTarget) !== 0) {
         removeEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
         removeEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
     }
