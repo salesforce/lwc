@@ -294,7 +294,7 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
     );
 }
 
-function stopFocusIn(evt) {
+function enterMouseDownState(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
     setTimeout(() => {
@@ -305,13 +305,26 @@ function stopFocusIn(evt) {
     }, 0);
 }
 
+function exitMouseDownState(event) {
+    const currentTarget = eventCurrentTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event);
+    if (!(currentTarget as Node).contains(relatedTarget as Node)) {
+        removeEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
+        removeEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
+    }
+}
+
 function handleFocusMouseDown(evt) {
     const target = eventTargetGetter.call(evt) as HTMLElement;
     // If we are mouse down in an element that can be focused
     // and the currentTarget's activeElement is not element we are mouse-ing down in
     // We can bail out and let the browser do its thing.
     if (willTriggerFocusInEvent(target)) {
-        addEventListener.call(eventCurrentTargetGetter.call(evt), 'focusin', stopFocusIn, true);
+        const currentTarget = eventCurrentTargetGetter.call(evt);
+        // Enter the temporary state where we disable the keyboard focusin handler when we click into the shadow.
+        addEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
+        // Exit the temporary state When focus leaves the shadow.
+        addEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
     }
 }
 
