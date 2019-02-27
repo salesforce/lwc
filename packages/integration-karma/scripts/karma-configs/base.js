@@ -19,10 +19,7 @@ const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
 const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
-
-const TEST_UTILS_SCRIPT = require.resolve(
-    '../../helpers/test-utils',
-);
+const TEST_UTILS = require.resolve('../../helpers/test-utils');
 
 function createPattern(location, config = {}) {
     return {
@@ -32,15 +29,18 @@ function createPattern(location, config = {}) {
 }
 
 function getLwcConfig(config) {
+    const prod = Boolean(config.prod);
     const compat = Boolean(config.compat);
     const nativeShadow = Boolean(config.nativeShadow);
 
     const tags = [
         `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
         compat && 'compat',
+        prod && 'production'
     ].filter(Boolean);
 
     return {
+        prod,
         compat,
         nativeShadow,
         tags,
@@ -54,7 +54,7 @@ function getFiles(lwcConfig) {
 
     return [
         ...frameworkFiles,
-        createPattern(TEST_UTILS_SCRIPT),
+        createPattern(TEST_UTILS),
         createPattern('**/*.spec.js', { watched: false }),
     ];
 }

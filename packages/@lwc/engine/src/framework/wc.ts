@@ -6,7 +6,7 @@
  */
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, StringToLowerCase, getOwnPropertyNames, isTrue, isFalse, ArrayMap } from "../shared/language";
-import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
+import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from "./vm";
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { getComponentDef } from "./def";
 import { tagNameGetter } from "../env/element";
@@ -21,7 +21,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         Ctor = resolveCircularModuleDependency(Ctor);
     }
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
-    const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
+    const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true, owner: null };
     if (isObject(options) && !isNull(options)) {
         const { mode, fallback } = (options as any);
         // TODO: for now, we default to open, but eventually it should default to 'closed'
@@ -46,12 +46,11 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
         }
         connectedCallback() {
             const vm = getCustomElementVM(this);
-            appendVM(vm);
-            renderVM(vm);
+            appendRootVM(vm);
         }
         disconnectedCallback() {
             const vm = getCustomElementVM(this);
-            removeVM(vm);
+            removeRootVM(vm);
         }
         attributeChangedCallback(attrName, oldValue, newValue) {
             if (oldValue === newValue) {

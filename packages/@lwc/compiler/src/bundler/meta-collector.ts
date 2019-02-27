@@ -10,27 +10,19 @@ import {
 
 import { TemplateModuleDependency } from "@lwc/template-compiler";
 
-import { ModuleImportLocation } from "./import-location-collector";
-
 export interface TemplateModuleDependencies {
     templatePath: string;
     moduleDependencies: TemplateModuleDependency[];
 }
 
 export interface BundleMetadata {
-    importLocations: ModuleImportLocation[];
     declarationLoc?: Location;
     experimentalTemplateDependencies?: TemplateModuleDependencies[];
 }
 
 export class MetadataCollector {
-    private importLocations: ModuleImportLocation[] = [];
     private experimentalTemplateDependencies?: TemplateModuleDependencies[];
     private declarationLoc?: Location;
-
-    public collectImportLocations(importLocations: ModuleImportLocation[]) {
-        this.importLocations.push(...importLocations);
-    }
 
     public setDeclarationLoc(declarationLoc?: Location) {
         this.declarationLoc = declarationLoc;
@@ -49,7 +41,6 @@ export class MetadataCollector {
 
     public getMetadata(): BundleMetadata {
         return {
-            importLocations: this.importLocations,
             declarationLoc: this.declarationLoc,
             experimentalTemplateDependencies: this.experimentalTemplateDependencies,
         };

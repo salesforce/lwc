@@ -15,9 +15,7 @@ import {
     createCustomElmHook,
     insertCustomElmHook,
     createElmHook,
-    destroyCustomElmHook,
-    renderCustomElmHook,
-    destroyElmHook,
+    rerenderCustomElmHook,
     removeElmHook,
     createChildrenHook,
     updateNodeHook,
@@ -31,15 +29,9 @@ import {
     allocateChildrenHook,
     createTextHook,
     createCommentHook,
+    removeCustomElmHook,
 } from "./hooks";
 import { markAsDynamicChildren } from "./patch";
-import {
-    isNativeShadowRootAvailable,
-} from "../env/dom";
-import {
-    insertBefore,
-    removeChild,
-} from "../env/node";
 import { Services, invokeServiceHook } from "./services";
 
 export interface ElementCompilerData extends VNodeData {
@@ -78,8 +70,6 @@ const CHAR_G = 103;
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
-function noop() { /* do nothing */ }
-
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
         if (isUndefined(vnode.elm)) {
@@ -93,7 +83,6 @@ const TextHook: Hooks = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for text nodes
     remove: removeNodeHook,
-    destroy: noop,
 };
 
 const CommentHook: Hooks = {
@@ -109,7 +98,6 @@ const CommentHook: Hooks = {
     insert: insertNodeHook,
     move: insertNodeHook, // same as insert for comment nodes
     remove: removeNodeHook,
-    destroy: noop,
 };
 
 // insert is called after update, which is used somewhere else (via a module)
@@ -137,17 +125,16 @@ const ElementHook: Hooks = {
         updateChildrenHook(oldVnode, vnode);
     },
     insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
     },
     move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
     },
     remove: (vnode: VElement, parentNode: Node) => {
-        removeChild.call(parentNode, vnode.elm as Node);
+        removeNodeHook(vnode, parentNode);
         removeElmHook(vnode);
     },
-    destroy: destroyElmHook,
 };
 
 const CustomElementHook: Hooks = {
@@ -172,23 +159,19 @@ const CustomElementHook: Hooks = {
         // will happen, but in native, it does allocate the light dom
         updateChildrenHook(oldVnode, vnode);
         // this will update the shadowRoot
-        renderCustomElmHook(vnode);
+        rerenderCustomElmHook(vnode);
     },
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
         insertCustomElmHook(vnode);
     },
     move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
-        insertBefore.call(parentNode, vnode.elm as Element, referenceNode);
+        insertNodeHook(vnode, parentNode, referenceNode);
     },
-    remove: (vnode: VElement, parentNode: Node) => {
-        removeChild.call(parentNode, vnode.elm as Node);
-        removeElmHook(vnode);
-    },
-    destroy: (vnode: VCustomElement) => {
-        destroyCustomElmHook(vnode);
-        destroyElmHook(vnode);
+    remove: (vnode: VCustomElement, parentNode: Node) => {
+        removeNodeHook(vnode, parentNode);
+        removeCustomElmHook(vnode);
     },
 };
 
@@ -207,42 +190,14 @@ function addNS(vnode: VElement) {
     }
 }
 
-function getCurrentOwnerId(): number {
+function addVNodeToChildLWC(vnode: VCustomElement) {
     if (process.env.NODE_ENV !== 'production') {
-        // TODO: enable this after refactoring all failing tests
-        if (isNull(vmBeingRendered)) {
-            return 0;
-        }
-        // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentOwnerId().`);
-    }
-    return (vmBeingRendered as VM).uid;
-}
-
-const getCurrentFallback: () => boolean = isNativeShadowRootAvailable ?
-    function() {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return (vmBeingRendered as VM).fallback;
-    } : () => {
-        if (process.env.NODE_ENV !== 'production') {
-            // TODO: enable this after refactoring all failing tests
-            // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentFallback().`);
-        }
-        return true;
-    };
-
-function getCurrentShadowAttribute(): string | undefined {
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: enable this after refactoring all failing tests
+        // TODO: remove this condition after refactoring all failing tests
         if (isNull(vmBeingRendered)) {
             return;
         }
-        // assert.invariant(!isNull(vmBeingRendered), `Invalid invocation of getCurrentShadowToken().`);
     }
-    // TODO: remove this condition after refactoring all failing tests
-    return (vmBeingRendered as VM).context.shadowAttribute;
+    ArrayPush.call((vmBeingRendered as VM).velements, vnode);
 }
 
 // [h]tml node
@@ -274,13 +229,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
     if (isUndefined(data.update)) {
         data.update = updateElmDefaultHook;
     }
-    let text, elm, shadowAttribute;
-    const fallback = getCurrentFallback();
-    // shadowAttribute is only really needed in fallback mode
-    if (fallback) {
-        shadowAttribute = getCurrentShadowAttribute();
-    }
-    const uid = getCurrentOwnerId();
+    let text, elm;
     const vnode: VElement = {
         sel,
         data,
@@ -289,9 +238,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         elm,
         key,
         hook: ElementHook,
-        shadowAttribute,
-        uid,
-        fallback,
+        owner: vmBeingRendered as VM,
     };
     if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
@@ -324,7 +271,7 @@ export function s(slotName: string, data: ElementCompilerData, children: VNodes,
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(vnode.owner.fallback)) {
         markAsDynamicChildren(children);
     }
     return vnode;
@@ -367,13 +314,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
     if (isUndefined(data.update)) {
         data.update = updateCustomElmDefaultHook;
     }
-    let text, elm, shadowAttribute;
-    const fallback = getCurrentFallback();
-    // shadowAttribute is only really needed in fallback mode
-    if (fallback) {
-        shadowAttribute = getCurrentShadowAttribute();
-    }
-    const uid = getCurrentOwnerId();
+    let text, elm;
     children = arguments.length === 3 ? EmptyArray : children as VNodes;
     const vnode: VCustomElement = {
         sel,
@@ -385,11 +326,10 @@ export function c(sel: string, Ctor: ComponentConstructor, data: CustomElementCo
 
         hook: CustomElementHook,
         ctor: Ctor,
-        shadowAttribute,
-        uid,
-        fallback,
+        owner: vmBeingRendered as VM,
         mode: 'open', // TODO: this should be defined in Ctor
     };
+    addVNodeToChildLWC(vnode);
     return vnode;
 }
 
@@ -509,8 +449,7 @@ export function t(text: string): VText {
         key,
 
         hook: TextHook,
-        uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
+        owner: vmBeingRendered as VM,
     };
 }
 
@@ -527,8 +466,7 @@ export function p(text: string): VComment {
         key,
 
         hook: CommentHook,
-        uid: getCurrentOwnerId(),
-        fallback: getCurrentFallback(),
+        owner: vmBeingRendered as VM,
     };
 }
 
@@ -618,5 +556,5 @@ export function gid(id: any): string | null | undefined {
         }
         return id;
     }
-    return isNull(id) ? id : `${id}-${getCurrentOwnerId()}`;
+    return isNull(id) ? id : `${id}-${vmBeingRendered!.uid}`;
 }

@@ -6,7 +6,7 @@
  */
 import assert from "../../shared/assert";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
-import { isObject, isNull, isTrue, toString } from "../../shared/language";
+import { isObject, isNull, isTrue, toString, isFalse } from "../../shared/language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { ComponentInterface, ComponentConstructor } from "../component";
 import { VM, getComponentVM } from "../vm";
@@ -92,9 +92,9 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
             // not need to wrap or check the value since that is happening somewhere else
             vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
 
-            // avoid notification of observability while constructing the instance
-            if (vm.idx > 0) {
-                // perf optimization to skip this step if not in the DOM
+            // avoid notification of observability if the instance is already dirty
+            if (isFalse(vm.isDirty)) {
+                // perf optimization to skip this step if the component is dirty already.
                 notifyMutation(this, key);
             }
         },

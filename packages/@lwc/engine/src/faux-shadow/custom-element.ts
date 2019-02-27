@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attachShadow, getShadowRoot, ShadowRootMode, SyntheticShadowRootInterface, isDelegatingFocus, getIE11FakeShadowRootPlaceholder } from "./shadow-root";
+import { attachShadow, getShadowRoot, SyntheticShadowRootInterface, isDelegatingFocus, getIE11FakeShadowRootPlaceholder } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
 import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
@@ -28,8 +28,8 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
         get shadowRoot(this: HTMLElement): SyntheticShadowRootInterface | null {
-            const shadow = getShadowRoot(this) as SyntheticShadowRootInterface;
-            if (shadow.mode === ShadowRootMode.OPEN) {
+            const shadow = getShadowRoot(this);
+            if (shadow.mode === 'open') {
                 return shadow;
             }
             return null;

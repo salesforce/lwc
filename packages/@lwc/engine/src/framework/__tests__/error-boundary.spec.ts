@@ -8,6 +8,8 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { querySelector, querySelectorAll } from "../../env/element";
 
+const emptyTemplate = compileTemplate(`<template></template>`);
+
 function createBoundaryComponent({ name, ctor }) {
     const baseTmpl = compileTemplate(`
         <template>
@@ -41,7 +43,7 @@ function createBoundaryComponent({ name, ctor }) {
 
 describe('error boundary component', () => {
 
-    describe('errors occured inside boundary wrapped child`s lifecycle methods', () => {
+    describe('errors occurred inside boundary wrapped child`s life-cycle methods', () => {
 
         describe('constructor', () => {
             it('should call errorCallback when boundary child throws inside constructor', () => {
@@ -99,7 +101,7 @@ describe('error boundary component', () => {
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
-            it('should unmount enitre subtree up to boundary component if child throws inside constructor', () => {
+            it('should unmount every descendent if a child constructor throws', () => {
                 class SecondLevelChild extends LightningElement {}
 
                 const firstChildTmpl = compileTemplate(`
@@ -189,26 +191,21 @@ describe('error boundary component', () => {
                 expect(boundaryElm.getError()).toBe("Child Render Throw");
             }),
 
-            it('should throw when error boundary throws inside render method', () => {
+            it('should not capture error from its own render method', () => {
                 class Boundary extends LightningElement {
-                    getError() {
-                        return this.error;
-                    }
-                    errorCallback(error) {
-                        this.error = error.message;
+                    errorCallback() {
+                        throw new Error('This should not be called');
                     }
                     render() {
                         throw new Error('Boundary Render Throw');
                     }
                 }
-                Boundary.publicMethods = ['getError'];
-                Boundary.track = { error: 1 };
 
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
 
                 expect( () => {
                     document.body.appendChild(boundaryElm);
-                }).toThrow();
+                }).toThrow(`Boundary Render Throw`);
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside render', () => {
@@ -277,9 +274,10 @@ describe('error boundary component', () => {
 
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
-
-                expect(querySelector.call(elm, 'x-first-level-child')).toBeNull();
-                expect(querySelector.call(elm, 'x-second-level-child')).toBeNull();
+                return Promise.resolve().then(() => {
+                    expect(querySelector.call(elm, 'x-first-level-child')).toBeNull();
+                    expect(querySelector.call(elm, 'x-second-level-child')).toBeNull();
+                });
             }),
 
             it ('should call errorCallback if slot throws an error inside render', () => {
@@ -411,7 +409,10 @@ describe('error boundary component', () => {
                 document.body.appendChild(hostBoundaryElm);
 
                 expect(hostBoundaryElm.getError()).toBe('Child Boundary ErrorCallback Throw');
-                expect(querySelectorAll.call(hostBoundaryElm, 'child-error-boundary').length).toBe(0);
+                return Promise.resolve().then(() => {
+                    // boundary is re-rendered on the next tick
+                    expect(querySelectorAll.call(hostBoundaryElm, 'child-error-boundary').length).toBe(0);
+                });
             });
 
             it('should unmount error boundary child if it throws inside renderedCallback', () => {
@@ -666,21 +667,13 @@ describe('error boundary component', () => {
             });
         });
 
-        // TODO: How does this works !!
-        // It's impossible to invoke getError from the template.
-        describe('error boundary failures in rendering alternative view', () => {
-            it('should throw if error boundary fails to render alternative view', () => {
+        describe('protocol', () => {
+            it('should throw if error boundary fails to recover', () => {
                 class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
                 }
-                class PostErrorChildOffender extends LightningElement {
-                    render() {
-                        throw new Error("Post-Failure Child Content Throws in Render");
-                    }
-                }
-
                 const baseTmpl = compileTemplate(`
                     <template>
                         <pre-error-child-content></pre-error-child-content>
@@ -688,44 +681,39 @@ describe('error boundary component', () => {
                 `, {
                     modules: { 'pre-error-child-content': PreErrorChildContent },
                 });
-                const recoveryTmpl = compileTemplate(`
-                    <template>
-                        <post-error-child-content></post-error-child-content>
-                    </template>
-                `, {
-                    modules: { 'post-error-child-content': PostErrorChildOffender },
-                });
-                class AltViewErrorBoundary extends LightningElement {
-                    error = null;
-                    errorCallback(error) {
-                        this.error = error.message;
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        throw new Error(`Boundary failed to recover`); // propagate error because it has no ways to recover
                     }
                     render() {
-                        return this.error ? recoveryTmpl : baseTmpl;
+                        return baseTmpl;
                     }
                 }
-                AltViewErrorBoundary.track = { error: 1 };
 
-                const elm = createElement('alt-view-boundary', { is: AltViewErrorBoundary });
+                const elm = createElement('inner-error-boundary', { is: InnerErrorBoundary });
 
                 expect( () => {
                     document.body.appendChild(elm);
-                }).toThrowError();
+                }).toThrowError(`Boundary failed to recover`);
             }),
 
-            it('should rethrow error to the parent error boundary when child boundary fails to render alternative view', () => {
+            it('should show alternative view after initial error', () => {
                 class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
                 }
-
                 class PostErrorChildOffender extends LightningElement {
                     render() {
-                        throw new Error("Post-Failure Child Content Throws in Render");
+                        return altTmpl;
                     }
                 }
 
+                const altTmpl = compileTemplate(`
+                    <template>
+                        <p>recovered</p>
+                    </template>
+                `);
                 const baseTmpl = compileTemplate(`
                     <template>
                         <pre-error-child-content></pre-error-child-content>
@@ -740,27 +728,238 @@ describe('error boundary component', () => {
                 `, {
                     modules: { 'post-error-child-content': PostErrorChildOffender },
                 });
-                class AltViewErrorBoundary extends LightningElement {
+                class InnerErrorBoundary extends LightningElement {
                     error = null;
                     errorCallback(error) {
-                        this.error = error.message;
+                        if (error.message !== this.error) {
+                            this.error = error.message;
+                        } else {
+                            throw error; // propagate errors from fallback view
+                        }
                     }
                     render() {
                         return this.error ? recoveryTmpl : baseTmpl;
                     }
                 }
-                AltViewErrorBoundary.track = { error: 1 };
+                InnerErrorBoundary.track = { error: 1 };
+
+                const elm = createElement('inner-error-boundary', { is: InnerErrorBoundary });
+                document.body.appendChild(elm);
+                Promise.resolve().then(() => {
+                    // waiting for the alternative view to kick in
+                    const p = elm.shadowRoot.querySelector('post-error-child-content').shadowRoot.querySelector('p');
+                    expect(p).toBeInstanceOf(HTMLElement);
+                    expect(p.textContent).toBe(`recovered`);
+                });
+            }),
+
+            it('should clean up the content of the failing VM if an error in the renderedCallback occur', () => {
+                class PreErrorChildContent extends LightningElement {
+                    render() {
+                        return emptyTemplate;
+                    }
+                    renderedCallback() {
+                        throw new Error("Pre-Failure Child Content Throws in renderedCallback");
+                    }
+                }
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        // does nothing... which means the offender is just reset
+                    }
+                    render() {
+                        return baseTmpl;
+                    }
+                }
 
                 const HostBoundary = createBoundaryComponent({
-                    name: 'alt-view-error-boundary',
-                    ctor: AltViewErrorBoundary
+                    name: 'inner-error-boundary',
+                    ctor: InnerErrorBoundary
                 });
 
-                const hostElm = createElement('host-boundary', { is: HostBoundary });
+                const hostElm = createElement('outer-error-boundary', { is: HostBoundary });
+                document.body.appendChild(hostElm);
+                const preErrorElm = hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelector('pre-error-child-content');
+                expect(preErrorElm).toBeInstanceOf(HTMLElement);
+                expect(preErrorElm.shadowRoot.querySelectorAll('*')).toHaveLength(0);
+            }),
+
+            it('should clean up the content of the failing VM if an error in the connectedCallback occur', () => {
+                class PreErrorChildContent extends LightningElement {
+                    render() {
+                        return emptyTemplate;
+                    }
+                    connectedCallback() {
+                        throw new Error("Pre-Failure Child Content Throws in connectedCallback");
+                    }
+                }
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        // does nothing... which means the offender is just reset
+                    }
+                    render() {
+                        return baseTmpl;
+                    }
+                }
+
+                const HostBoundary = createBoundaryComponent({
+                    name: 'inner-error-boundary',
+                    ctor: InnerErrorBoundary
+                });
+
+                const hostElm = createElement('outer-error-boundary', { is: HostBoundary });
+                document.body.appendChild(hostElm);
+                const preErrorElm = hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelector('pre-error-child-content');
+                expect(preErrorElm).toBeInstanceOf(HTMLElement);
+                expect(preErrorElm.shadowRoot.querySelectorAll('*')).toHaveLength(0);
+            }),
+
+            it('should clean up content of the failing vm if an error in an event handler occur', () => {
+                class PreErrorChildContent extends LightningElement {
+                    render() {
+                        return buttonTmpl;
+                    }
+                    handleClick() {
+                        throw new Error("Pre-Failure Child Content Throws in handler");
+                    }
+                    renderedCallback() {
+                        // simulating that the click happens at some point in the future, just
+                        // to make sure that the error is not because of the renderedCallback protection
+                        return Promise.resolve().then(() => {
+                            this.template.querySelector('a').click();
+                        });
+                    }
+                }
+                const buttonTmpl = compileTemplate(`
+                    <template>
+                        <a href="#" onclick={handleClick}>click here</a>
+                    </template>
+                `);
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        // does nothing... which means the offender is just reset
+                    }
+                    render() {
+                        return baseTmpl;
+                    }
+                }
+
+                const HostBoundary = createBoundaryComponent({
+                    name: 'inner-error-boundary',
+                    ctor: InnerErrorBoundary
+                });
+
+                const hostElm = createElement('outer-error-boundary', { is: HostBoundary });
+                document.body.appendChild(hostElm);
+                // the inner boundary should be getting this because it is the inner component the one providing an invalid handler
+                const preErrorElm = hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelector('pre-error-child-content');
+                expect(preErrorElm).toBeInstanceOf(HTMLElement);
+                return Promise.resolve().then(() => {
+                    // waiting for the next tick to validate that the state is still the same...
+                    expect(preErrorElm).toBeInstanceOf(HTMLElement);
+                    expect(preErrorElm.shadowRoot.querySelectorAll('*')).toHaveLength(0);
+                });
+            }),
+
+            it('should clean up the content of the inner error boundary if an error in a setter occur', () => {
+                class PreErrorChildContent extends LightningElement {
+                    render() {
+                        return emptyTemplate;
+                    }
+                    set foo(v) {
+                        throw new Error("Pre-Failure Child Content Throws in setter");
+                    }
+                    get foo() {
+                        return null;
+                    }
+                }
+                PreErrorChildContent.publicProps = {
+                    foo: {
+                        config: 1,
+                    }
+                };
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <pre-error-child-content foo="1"></pre-error-child-content>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        // does nothing... which means the offender is just reset
+                    }
+                    render() {
+                        return baseTmpl;
+                    }
+                }
+
+                const HostBoundary = createBoundaryComponent({
+                    name: 'inner-error-boundary',
+                    ctor: InnerErrorBoundary
+                });
+
+                const hostElm = createElement('outer-error-boundary', { is: HostBoundary });
+                document.body.appendChild(hostElm);
+                // the outer boundary should be getting this because it is the inner boundary the one providing an invalid data
+                expect(hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelectorAll('*')).toHaveLength(0);
+            }),
+
+            it('should clean up the content of the inner error boundary if an error in a constructor occur', () => {
+                class PreErrorChildContent extends LightningElement {
+                    constructor() {
+                        super();
+                        throw new Error("Pre-Failure Child Content Throws in C");
+                    }
+                }
+                const baseTmpl = compileTemplate(`
+                    <template>
+                        <p>before</p>
+                        <pre-error-child-content></pre-error-child-content>
+                        <p>after</p>
+                    </template>
+                `, {
+                    modules: { 'pre-error-child-content': PreErrorChildContent },
+                });
+                class InnerErrorBoundary extends LightningElement {
+                    errorCallback() {
+                        // does nothing... which means the offender is just reset
+                    }
+                    render() {
+                        return baseTmpl;
+                    }
+                }
+
+                const HostBoundary = createBoundaryComponent({
+                    name: 'inner-error-boundary',
+                    ctor: InnerErrorBoundary
+                });
+
+                const hostElm = createElement('outer-error-boundary', { is: HostBoundary });
                 document.body.appendChild(hostElm);
 
-                expect(hostElm.getError()).toBe("Post-Failure Child Content Throws in Render");
-                expect(hostElm.querySelectorAll('alt-view-error-boundary').length).toBe(0);
+                // the outer boundary should be getting this because it is the inner boundary the one invoking the faulty constructor
+                expect(hostElm.shadowRoot.querySelector('inner-error-boundary').shadowRoot.querySelectorAll('*')).toHaveLength(0);
             });
         });
     });

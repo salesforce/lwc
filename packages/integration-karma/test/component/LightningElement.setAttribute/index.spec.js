@@ -15,7 +15,7 @@ function testConvertValueToString(type, value) {
 it('should throw when invoking setAttribute in constructor', () => {
     expect(() => {
         createElement('x-constructor-invocation', { is: ConstructorInvocation });
-    }).toThrowError(
+    }).toThrowErrorDev(
         Error,
         /Assert Violation: Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
     );
