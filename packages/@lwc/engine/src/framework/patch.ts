@@ -6,7 +6,6 @@
  */
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { tagNameGetter } from "../env/element";
-import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
 import { setPrototypeOf, create, isUndefined, isTrue } from "../shared/language";
 import { ComponentDef } from "./def";
 import { HTMLElementConstructor } from "./base-bridge-element";
@@ -23,14 +22,6 @@ export function markAsDynamicChildren(children: VNodes) {
 
 export function hasDynamicChildren(children: VNodes): boolean {
     return FromIteration.has(children);
-}
-
-export function patchChildren(host: Element, shadowRoot: ShadowRoot, oldCh: VNodes, newCh: VNodes, isFallback: boolean) {
-    if (oldCh !== newCh) {
-        const parentNode = isFallback ? host : shadowRoot;
-        const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
-        fn(parentNode, oldCh, newCh);
-    }
 }
 
 let TextNodeProto: object;

@@ -59,17 +59,27 @@ describe('error boundary integration', () => {
     it('should render alternative view if child throws during self rehydration cycle', () => {
         browser.element('.boundary-child-self-rehydrate-throw').click();
         browser.element('.self-rehydrate-trigger').click();
-        const altenativeView = browser.element('.self-rehydrate-altenative');
-
-        assert.equal(altenativeView.getText(), 'self rehydrate alternative view');
+        const { value } = browser.executeAsync(function (done) {
+            Promise.resolve().then(function () {
+                const altenativeViewContent = document.querySelector('.self-rehydrate-altenative').textContent;
+                done(altenativeViewContent);
+            });
+        });
+        assert.equal(value, 'self rehydrate alternative view');
         // ensure offender has been unmounted
         assert.equal(browser.isExisting('integration-child-self-rehydrate-throw'), false);
     }),
 
-    it('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
+    it.skip('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
         browser.element('.nested-boundary-child-alt-view-throw').click();
 
-        assert.equal(browser.isVisible('.boundary-alt-view'), true);
+        const { value } = browser.executeAsync(function (done) {
+            Promise.resolve().then(function () {
+                const altenativeViewIsVisible = document.querySelector('.boundary-alt-view') !== null;
+                done(altenativeViewIsVisible);
+            });
+        });
+        assert.equal(value, true);
         // ensure offender has been unmounted
         assert.equal(browser.isExisting('integration-nested-post-error-child-view'), false);
     }),

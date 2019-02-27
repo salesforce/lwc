@@ -13,25 +13,27 @@ const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('vm', () => {
     describe('insertion index', () => {
-        it('should assign idx=0 (insertion index) during construction', () => {
+        it('should have idx>0 (creation index) during construction', () => {
             class MyComponent1 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent1 });
-            expect(elm[ViewModelReflection].idx).toBe(0);
+            expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
         });
 
-        it('should assign idx>0 after insertion', () => {
+        it('should have idx>0 after insertion', () => {
             class MyComponent2 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent2 });
             document.body.appendChild(elm);
             expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
         });
 
-        it('should assign idx=0 after removal', () => {
+        it('should preserve insertion index after removal of root', () => {
             class MyComponent3 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
+            const idx = elm[ViewModelReflection].idx;
+            expect(idx).toBeGreaterThan(0);
             document.body.removeChild(elm);
-            expect(elm[ViewModelReflection].idx).toBe(0);
+            expect(elm[ViewModelReflection].idx).toBe(idx);
         });
 
         it('should assign bigger idx to children', () => {
@@ -104,13 +106,14 @@ describe('vm', () => {
             expect(vm1.idx).toBeGreaterThan(0);
             expect(vm2.idx).toBeGreaterThan(0);
             const firstIdx = vm1.idx;
+            const secondIdx = vm2.idx;
             document.body.removeChild(elm);
-            expect(vm1.idx).toBe(0);
-            expect(vm2.idx).toBe(0);
+            expect(vm1.idx).toBe(firstIdx);
+            expect(vm2.idx).toBe(secondIdx);
             // reinsertion
             document.body.appendChild(elm);
-            expect(vm1.idx).toBeGreaterThan(firstIdx);
-            expect(vm2.idx).toBeGreaterThan(vm1.idx);
+            expect(vm1.idx).toBe(firstIdx);  // it is reused
+            expect(vm2.idx).toBe(secondIdx); // it is reused
             expect(counter).toBe(2);
         });
 

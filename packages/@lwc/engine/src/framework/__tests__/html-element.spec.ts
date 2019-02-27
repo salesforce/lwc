@@ -1518,7 +1518,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                `[object:vm MyComponent (0)] constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
+                `constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
             );
         });
 

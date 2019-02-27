@@ -105,7 +105,7 @@ describe('patch', () => {
                 'child:connectedCallback',
                 'child:render',
                 'child:renderedCallback',
-                'root:renderedCallback'
+                'root:renderedCallback',
             ]);
         });
 
@@ -247,7 +247,7 @@ describe('patch', () => {
                     'child:connectedCallback',
                     'child:render',
                     'child:renderedCallback',
-                    'root:renderedCallback'
+                    'root:renderedCallback',
                 ]);
             });
         });

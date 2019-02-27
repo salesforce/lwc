@@ -6,7 +6,7 @@
  */
 import assert from "../shared/assert";
 import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from "../shared/language";
-import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
+import { createVM, removeRootVM, appendRootVM, getCustomElementVM, getNodeKey, VMState } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
 import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
@@ -107,19 +107,21 @@ export function createElement(sel: string, options: any): HTMLElement {
         patchCustomElementWithRestrictions(element, EmptyObject);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
+    createVM(sel, element, Ctor, { mode, fallback, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
-        appendVM(vm);
-        renderVM(vm);
+        if (vm.state === VMState.connected) {
+            // usually means moving the element from one place to another, which is observable via life-cycle hooks
+            removeRootVM(vm);
+        }
+        appendRootVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
     setInternalField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);
-        removeVM(vm);
+        removeRootVM(vm);
     });
     return element;
 }

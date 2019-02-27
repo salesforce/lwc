@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-/**
-@license
-Copyright (c) 2015 Simon Friis Vindum.
-This code may only be used under the MIT License found at
-https://github.com/snabbdom/snabbdom/blob/master/LICENSE
-Code distributed by Snabbdom as part of the Snabbdom project at
-https://github.com/snabbdom/snabbdom/
+* Copyright (c) 2018, salesforce.com, inc.
+* All rights reserved.
+* SPDX-License-Identifier: MIT
+* For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
 */
+/**
+ @license
+ Copyright (c) 2015 Simon Friis Vindum.
+ This code may only be used under the MIT License found at
+ https://github.com/snabbdom/snabbdom/blob/master/LICENSE
+ Code distributed by Snabbdom as part of the Snabbdom project at
+ https://github.com/snabbdom/snabbdom/
+ */
+
+import { VM } from "../../framework/vm";
 
 export type VNodeStyle = Record<string, string>;
 export interface On {
@@ -35,9 +37,7 @@ export interface VNode {
   key: Key | undefined;
 
   hook: Hooks;
-  uid: number;
-  shadowAttribute?: string;
-  fallback: boolean;
+  owner: VM;
 }
 
 export interface VElement extends VNode {
@@ -46,7 +46,6 @@ export interface VElement extends VNode {
   elm: Element | undefined;
   text: undefined;
   key: Key;
-  fallback: boolean;
 }
 
 export interface VCustomElement extends VElement {
@@ -91,7 +90,6 @@ export type InsertHook = (vNode: VNode, parentNode: Node, referenceNode: Node | 
 export type MoveHook = (vNode: VNode, parentNode: Node, referenceNode: Node | null) => void;
 export type UpdateHook = (oldVNode: VNode, vNode: VNode) => void;
 export type RemoveHook = (vNode: VNode, parentNode: Node) => void;
-export type DestroyHook = (vNode: VNode) => void;
 
 export interface Hooks {
   create: CreateHook;
@@ -99,11 +97,9 @@ export interface Hooks {
   move: MoveHook;
   update: UpdateHook;
   remove: RemoveHook;
-  destroy: DestroyHook;
 }
 
 export interface Module {
   create?: CreateHook;
   update?: UpdateHook;
-  destroy?: DestroyHook;
 }

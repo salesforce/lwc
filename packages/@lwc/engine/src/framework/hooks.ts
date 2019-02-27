@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from "../shared/assert";
-import { isArray, isUndefined, isTrue, hasOwnProperty } from "../shared/language";
+import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from "../shared/language";
 import { EmptyArray, ViewModelReflection, EmptyObject } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey } from "./vm";
+import { rerenderVM, createVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey, appendVM, runWithBoundaryProtection } from "./vm";
 import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
 import {
     nodeValueSetter,
@@ -28,6 +28,8 @@ import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from
 import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
 import { getComponentDef, setElementProto } from "./def";
 
+const noop = () => void 0;
+
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     if (oldVnode.text !== vnode.text) {
         nodeValueSetter.call(vnode.elm as Node, vnode.text);
@@ -44,16 +46,18 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
 
 export function createTextHook(vnode: VNode) {
     const text = vnode.elm as Text;
-    setNodeOwnerKey(text, vnode.uid);
-    if (isTrue(vnode.fallback)) {
+    const { uid, fallback } = vnode.owner;
+    setNodeOwnerKey(text, uid);
+    if (isTrue(fallback)) {
         patchTextNodeProto(text);
     }
 }
 
 export function createCommentHook(vnode: VNode) {
     const comment = vnode.elm as Comment;
-    setNodeOwnerKey(comment, vnode.uid);
-    if (isTrue(vnode.fallback)) {
+    const { uid, fallback } = vnode.owner;
+    setNodeOwnerKey(comment, uid);
+    if (isTrue(fallback)) {
         patchCommentNodeProto(comment);
     }
 }
@@ -77,11 +81,12 @@ enum LWCDOMMode {
 }
 
 export function createElmHook(vnode: VElement) {
-    const { uid, sel, fallback } = vnode;
+    const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
-    setNodeOwnerKey(elm, uid);
-    if (isTrue(fallback)) {
-        const { shadowAttribute, data: { context } } = vnode;
+    setNodeOwnerKey(elm, owner.uid);
+    if (isTrue(owner.fallback)) {
+        const { data: { context } } = vnode;
+        const { shadowAttribute } = owner.context;
         const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
@@ -109,17 +114,18 @@ export function updateElmDefaultHook(oldVnode: VElement, vnode: VElement) {
 export function insertCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     appendVM(vm);
-    renderVM(vm);
 }
 
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
-    const { children } = vnode;
+    const { children, owner } = vnode;
     const fn = hasDynamicChildren(children) ?  updateDynamicChildren : updateStaticChildren;
-    fn(vnode.elm as Element, oldVnode.children, children);
+    runWithBoundaryProtection(owner, owner.owner, noop, () => {
+        fn(vnode.elm as Element, oldVnode.children, children);
+    }, noop);
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
-    if (isTrue(vnode.fallback)) {
+    if (isTrue(vnode.owner.fallback)) {
         // slow path
         const elm = vnode.elm as HTMLElement;
         const vm = getCustomElementVM(elm);
@@ -138,12 +144,13 @@ export function createCustomElmHook(vnode: VCustomElement) {
         // to do here since this hook is called right after invoking `document.createElement`.
         return;
     }
-    const { mode, ctor, uid, fallback } = vnode;
+    const { mode, ctor, owner } = vnode;
+    const { uid, fallback } = owner;
     setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
     if (isTrue(fallback)) {
-        const { shadowAttribute } = vnode;
+        const { shadowAttribute } = owner.context;
         patchCustomElementProto(elm, {
             def,
             shadowAttribute,
@@ -152,6 +159,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     createVM(vnode.sel as string, elm, ctor, {
         mode,
         fallback,
+        owner,
     });
     const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
@@ -192,13 +200,13 @@ export function createChildrenHook(vnode: VElement) {
     }
 }
 
-export function renderCustomElmHook(vnode: VCustomElement) {
+export function rerenderCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
     }
-    renderVM(vm);
+    rerenderVM(vm);
 }
 
 export function updateCustomElmDefaultHook(oldVnode: VCustomElement, vnode: VCustomElement) {
@@ -212,19 +220,20 @@ export function updateCustomElmDefaultHook(oldVnode: VCustomElement, vnode: VCus
 }
 
 export function removeElmHook(vnode: VElement) {
-    vnode.hook.destroy(vnode);
-}
-
-export function destroyCustomElmHook(vnode: VCustomElement) {
-    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
-}
-
-export function destroyElmHook(vnode: VElement) {
-    const { children } = vnode;
+    // this method only needs to search on child vnodes from template
+    // to trigger the remove hook just in case some of those children
+    // are custom elements.
+    const { children, elm } = vnode;
     for (let j = 0, len = children.length; j < len; ++j) {
         const ch = children[j];
-        if (ch != null) {
-            ch.hook.destroy(ch);
+        if (!isNull(ch)) {
+            ch.hook.remove(ch, elm as HTMLElement);
         }
     }
+}
+
+export function removeCustomElmHook(vnode: VCustomElement) {
+    // for custom elements we don't have to go recursively because the removeVM routine
+    // will take care of disconnecting any child VM attached to its shadow as well.
+    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
 }
