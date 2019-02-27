@@ -81,11 +81,12 @@ describe('Node.getRootNode', () => {
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('.default-slotted');
+        debugger;
         expect(target.getRootNode()).toBe(elm.shadowRoot);
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
 
-    xdescribe('manually inserted dom elements', () => {
+    describe('manually inserted dom elements', () => {
         it('nodes appended to parent with lwc:dom="manual" directive', () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
@@ -102,7 +103,7 @@ describe('Node.getRootNode', () => {
                     expect(span.getRootNode(composedTrueConfig)).toBe(document);
 
                     expect(nestedManualElement.getRootNode()).toBe(host.shadowRoot);
-                    expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(host.shadowRoot);
+                    expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(document);
                     // disconnect the manually inserted nodes
                     elm.removeChild(span);
                 })
@@ -228,7 +229,7 @@ describe('Node.getRootNode', () => {
         });
 
         if (process.env.NATIVE_SHADOW) {
-            it('', () => {
+            it('native shadow dom', () => {
                 const shadowHost = document.createElement('div');
                 document.body.appendChild(shadowHost);
                 const shadowRoot = shadowHost.attachShadow({mode: 'open'});

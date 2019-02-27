@@ -19,6 +19,7 @@ import '../polyfills/focus-event-composed/main';
 import '../polyfills/aria-properties/main';
 import '../polyfills/mutation-observer/main';
 
+import "../polyfills/node-get-root-node/main";
 /**
  * This is a descriptor map that contains
  * all standard properties that a Custom Element can support (including AOM properties), which
