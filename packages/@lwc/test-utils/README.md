@@ -14,16 +14,6 @@ Add this package as a devDependency and import the utils directly into your test
 yarn add -D '@lwc/test-utils'
 ```
 
-In your test:
-
-```js
-import { foo } from '@lwc/test-utils';
-
-const element = createElement('my-custom-component', { is: MyCustomComponent });
-document.body.appendChild(element);
-foo(element);
-```
-
 ### Jest Preset Configuration
 
 This util also comes pre-packed in `lwc-jest-preset`.
