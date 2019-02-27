@@ -2,10 +2,13 @@ import { createElement } from 'test-utils';
 import Slotted from 'x/slotted';
 import Container from 'x/container';
 import ManualNodes from 'x/manualNodes';
-
+import withLwcDomManualNested from 'x/withLwcDomManualNested';
+import withLwcDomManual from 'x/withLwcDomManual';
+import withoutLwcDomManual from 'x/withoutLwcDomManual';
+import text from 'x/text';
 
 const composedTrueConfig = { composed: true };
-describe('Node.getRootNode', () => {
+describe('Node.getRootNode >', () => {
     it('root element', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
@@ -85,7 +88,7 @@ describe('Node.getRootNode', () => {
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
 
-    describe('manually inserted dom elements', () => {
+    describe('manual dom mutations >', () => {
         it('nodes appended to parent with lwc:dom="manual" directive', () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
@@ -95,14 +98,21 @@ describe('Node.getRootNode', () => {
 
             elm.appendChild(span);
             const nestedManualElement = host.shadowRoot.querySelector('li');
-            // allow for engine's mutation observer to pick up the mutations and patch the portal elements
+            function verifyConnectedNodes() {
+                expect(span.getRootNode()).toBe(host.shadowRoot);
+                expect(span.getRootNode(composedTrueConfig)).toBe(document);
+    
+                expect(nestedManualElement.getRootNode()).toBe(host.shadowRoot);
+                expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(document);    
+            }
+            // Verify immediately after appending the child elements
+            // the portal elements would not have been patched yet
+            verifyConnectedNodes()
+            // allow for engine's mutation observer to pick up the mutations
             return Promise.resolve()
                 .then(() => {
-                    expect(span.getRootNode()).toBe(host.shadowRoot);
-                    expect(span.getRootNode(composedTrueConfig)).toBe(document);
-
-                    expect(nestedManualElement.getRootNode()).toBe(host.shadowRoot);
-                    expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(document);
+                    // reverify, after the portal elements have been patched
+                    verifyConnectedNodes()
                     // disconnect the manually inserted nodes
                     elm.removeChild(span);
                 })
@@ -115,7 +125,7 @@ describe('Node.getRootNode', () => {
                 });
         });
 
-        it('nodes appended to parent without lwc:dom="manual" directive', () => {
+        it('node appended to parent without lwc:dom="manual" directive', () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.withoutManual');
@@ -130,10 +140,88 @@ describe('Node.getRootNode', () => {
             expect(span.getRootNode()).toBe(span);
             expect(span.getRootNode(composedTrueConfig)).toBe(span);
         });
+
+        it('dynamic lwc element appended to parent without lwc:dom="manual" directive', () => {
+            const host = createElement('x-manual-nodes', { is: ManualNodes });
+            document.body.appendChild(host);
+            const elm = host.shadowRoot.querySelector('div.withoutManual');
+            const nestedElem = createElement('x-text', { is: text });
+            
+            spyOn(console, 'error'); // Ignore the engine warning
+            elm.appendChild(nestedElem);
+            expect(nestedElem.getRootNode()).toBe(host.shadowRoot);
+            expect(nestedElem.getRootNode(composedTrueConfig)).toBe(document);
+
+            expect(nestedElem.shadowRoot.getRootNode()).toBe(nestedElem.shadowRoot);
+            expect(nestedElem.shadowRoot.getRootNode(composedTrueConfig)).toBe(document);
+
+            const innerTxt = nestedElem.shadowRoot.childNodes[0];
+            expect(innerTxt.getRootNode()).toBe(nestedElem.shadowRoot);
+            expect(innerTxt.getRootNode(composedTrueConfig)).toBe(document);
+        });
+
+        // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
+        xdescribe('nested dynamic lwc elm with dom manual >', () => {
+            let outerElem;
+            let innerElem;
+            beforeEach(() => {
+                outerElem = createElement('x-outer', { is: withLwcDomManual })
+                document.body.appendChild(outerElem);
+                innerElem = createElement('x-inner', { is: withLwcDomManualNested });
+                const div = outerElem.shadowRoot.querySelector('div');
+                div.appendChild(innerElem);
+            });
+
+            it('getRootNode() of inner custom element should return outer shadowRoot', () => {
+                expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
+                expect(innerElem.getRootNode(composedTrueConfig)).toBe(document);
+            })
+
+            it('getRootNode() of inner shadow\'s template element should return inner shadowRoot', () => {
+                const innerDiv = innerElem.shadowRoot.querySelector('div');
+                expect(innerDiv.getRootNode()).toBe(innerElem.shadowRoot);
+                expect(innerDiv.getRootNode(composedTrueConfig)).toBe(document);
+            });
+
+            // Real issue is with MutationObserver
+            it('getRootNode() of inner shadow\'s dynamic element should return inner shadowRoot', () => {
+                const innerDiv = innerElem.shadowRoot.querySelector('div');
+                innerDiv.innerHTML = '<p class="innerP"></p>';
+
+                const p = innerElem.shadowRoot.querySelector('.innerP');
+                expect(p.getRootNode()).toBe(innerElem.shadowRoot);
+                expect(p.getRootNode(composedTrueConfig)).toBe(document);
+            });
+        });
+
+        // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
+        // This usecase is important and distinct from the previous testcase. The nested lwc element's portal will not be patched
+        xdescribe('nested dynamic lwc elm without dom manual >', () => {
+            let outerElem;
+            let innerElem;
+            beforeEach(() => {
+                outerElem = createElement('x-outer', { is: withLwcDomManual })
+                document.body.appendChild(outerElem);
+                innerElem = createElement('x-inner', { is: withoutLwcDomManual });
+                const div = outerElem.shadowRoot.querySelector('div');
+                div.appendChild(innerElem);
+                // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
+                spyOn(console, 'error');
+            });
+
+            it('getRootNode() of inner shadow\'s dynamic element should return inner shadowRoot', () => {
+                const innerDiv = innerElem.shadowRoot.querySelector('div');
+                innerDiv.innerHTML = '<p class="innerP"></p>';
+                const p = innerElem.shadowRoot.querySelector('.innerP');
+                expect(p.getRootNode()).toBe(innerElem.shadowRoot);
+                expect(p.getRootNode(composedTrueConfig)).toBe(document);
+            });
+        });
     });
 
-    describe('conformance test for vanilla html', () => {
-        // Derived from https://github.com/web-platform-tests/wpt/blob/7c50c216081d6ea3c9afe553ee7b64534020a1b2/dom/nodes/rootNode.html
+    // Derived from https://github.com/web-platform-tests/wpt/blob/7c50c216081d6ea3c9afe553ee7b64534020a1b2/dom/nodes/rootNode.html
+    // Filed an issue to integrate wpt suite https://github.com/salesforce/lwc/issues/1078
+    describe('conformance test for vanilla html >', () => {
         it('getRootNode() on disconnected node should return same node', () => {
             const elem = document.createElement('div');
             expect(elem.getRootNode()).toBe(elem);
