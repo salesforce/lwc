@@ -1,7 +1,7 @@
 {
   "name": "integration-karma",
   "private": true,
-  "version": "0.35.10",
+  "version": "0.35.11",
   "scripts": {
     "start": "karma start ./scripts/karma-configs/local.js",
     "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
@@ -9,9 +9,9 @@
     "coverage": "node ./scripts/merge-coverage.js"
   },
   "devDependencies": {
-    "@lwc/compiler": "0.35.10",
-    "@lwc/engine": "0.35.10",
-    "@lwc/rollup-plugin": "0.35.10",
+    "@lwc/compiler": "0.35.11",
+    "@lwc/engine": "0.35.11",
+    "@lwc/rollup-plugin": "0.35.11",
     "chokidar": "^2.0.4",
     "istanbul-api": "^2.0.6",
     "karma": "^3.1.3",

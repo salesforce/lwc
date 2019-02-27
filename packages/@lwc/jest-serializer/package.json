@@ -1,6 +1,6 @@
 {
   "name": "@lwc/jest-serializer",
-  "version": "0.35.10",
+  "version": "0.35.11",
   "description": "Custom Jest snapshot serializer",
   "main": "index.js",
   "license": "MIT",
