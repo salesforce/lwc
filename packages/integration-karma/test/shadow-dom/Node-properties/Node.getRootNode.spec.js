@@ -81,7 +81,6 @@ describe('Node.getRootNode', () => {
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('.default-slotted');
-        debugger;
         expect(target.getRootNode()).toBe(elm.shadowRoot);
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
