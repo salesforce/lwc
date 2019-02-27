@@ -242,9 +242,6 @@ export function PatchedNode(node: Node): NodeConstructor {
             // we need to return null.
             return parentNode instanceof Element ? parentNode : null;
         }
-        getRootNode(this: Node, options?: GetRootNodeOptions): Node {
-            return getRootNodeGetter.call(this, options);
-        }
         compareDocumentPosition(this: Node, otherNode: Node) {
             if (getRootNodeGetter.call(this) === otherNode) {
                 // "this" is in a shadow tree where the shadow root is the "otherNode".

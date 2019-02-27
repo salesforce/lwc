@@ -2,10 +2,10 @@ import { createElement } from 'test-utils';
 import Slotted from 'x/slotted';
 import Container from 'x/container';
 import ManualNodes from 'x/manualNodes';
-import withLwcDomManualNested from 'x/withLwcDomManualNested';
-import withLwcDomManual from 'x/withLwcDomManual';
-import withoutLwcDomManual from 'x/withoutLwcDomManual';
-import text from 'x/text';
+import WithLwcDomManualNested from 'x/withLwcDomManualNested';
+import WithLwcDomManual from 'x/withLwcDomManual';
+import WithoutLwcDomManual from 'x/withoutLwcDomManual';
+import Text from 'x/text';
 
 const composedTrueConfig = { composed: true };
 describe('Node.getRootNode >', () => {
@@ -145,7 +145,7 @@ describe('Node.getRootNode >', () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.withoutManual');
-            const nestedElem = createElement('x-text', { is: text });
+            const nestedElem = createElement('x-text', { is: Text });
             
             spyOn(console, 'error'); // Ignore the engine warning
             elm.appendChild(nestedElem);
@@ -165,9 +165,9 @@ describe('Node.getRootNode >', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
-                outerElem = createElement('x-outer', { is: withLwcDomManual })
+                outerElem = createElement('x-outer', { is: WithLwcDomManual })
                 document.body.appendChild(outerElem);
-                innerElem = createElement('x-inner', { is: withLwcDomManualNested });
+                innerElem = createElement('x-inner', { is: WithLwcDomManualNested });
                 const div = outerElem.shadowRoot.querySelector('div');
                 div.appendChild(innerElem);
             });
@@ -200,9 +200,9 @@ describe('Node.getRootNode >', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
-                outerElem = createElement('x-outer', { is: withLwcDomManual })
+                outerElem = createElement('x-outer', { is: WithLwcDomManual })
                 document.body.appendChild(outerElem);
-                innerElem = createElement('x-inner', { is: withoutLwcDomManual });
+                innerElem = createElement('x-inner', { is: WithoutLwcDomManual });
                 const div = outerElem.shadowRoot.querySelector('div');
                 div.appendChild(innerElem);
                 // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
@@ -327,6 +327,25 @@ describe('Node.getRootNode >', () => {
                 expect(shadowChild.getRootNode({ composed: false })).toBe(shadowRoot);
                 expect(shadowChild.getRootNode()).toBe(shadowRoot);
             });
+            it('lwc element inside native shadow', () => {
+                const shadowHost = document.createElement('div');
+                document.body.appendChild(shadowHost);
+                const nativeShadowRoot = shadowHost.attachShadow({mode: 'open'});
+                const lwcElem = createElement('x-text', { is: Text });
+                nativeShadowRoot.appendChild(lwcElem);
+                const shadowChild = nativeShadowRoot.querySelector('x-text');
+
+                expect(shadowChild.getRootNode(composedTrueConfig)).toBe(document);
+                expect(shadowChild.getRootNode()).toBe(nativeShadowRoot);
+                
+                const syntheticShadowRoot = lwcElem.shadowRoot;
+                expect(syntheticShadowRoot.getRootNode(composedTrueConfig)).toBe(document);
+                expect(syntheticShadowRoot.getRootNode()).toBe(syntheticShadowRoot);
+
+                const lwcTemplateNode = syntheticShadowRoot.childNodes[0];
+                expect(lwcTemplateNode.getRootNode(composedTrueConfig)).toBe(document);
+                expect(lwcTemplateNode.getRootNode()).toBe(syntheticShadowRoot);
+            })
         }
     });
 });

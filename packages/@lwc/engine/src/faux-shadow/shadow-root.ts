@@ -397,6 +397,7 @@ const NodePatchDescriptors = {
             textContextSetter.call(host, v);
         },
     },
+    // Since the synthetic shadow root is a detached DocumentFragment, short-circuit the getRootNode behavior
     getRootNode: {
         writable: true,
         enumerable: true,

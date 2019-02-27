@@ -6,7 +6,7 @@
  */
 
  /**
- * Always polyfill Node.prototype.getRootNode
+ * Always polyfill Node.prototype.getRootNode until native shadow is enabled for all components
  */
 export default function detect(): boolean {
     return true;
