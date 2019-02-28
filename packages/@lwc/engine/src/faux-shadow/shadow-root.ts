@@ -21,7 +21,7 @@ import {
     shadowRootChildNodes,
     isNodeOwnedBy,
     isSlotElement,
-    getRootNodeGetter,
+    patchedGetRootNode,
 } from './traverse';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
 import { getTextContent } from '../3rdparty/polymer/text-content';
@@ -404,7 +404,7 @@ const NodePatchDescriptors = {
         configurable: true,
         value(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
             const composed: boolean = isUndefined(options) ? false : !!options.composed;
-            return isFalse(composed) ? this : getRootNodeGetter.call(getHost(this), { composed });
+            return isFalse(composed) ? this : patchedGetRootNode.call(getHost(this), { composed });
         },
     },
 };

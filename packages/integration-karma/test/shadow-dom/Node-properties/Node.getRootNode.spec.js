@@ -221,20 +221,27 @@ describe('Node.getRootNode >', () => {
     // Derived from https://github.com/web-platform-tests/wpt/blob/7c50c216081d6ea3c9afe553ee7b64534020a1b2/dom/nodes/rootNode.html
     // Filed an issue to integrate wpt suite https://github.com/salesforce/lwc/issues/1078
     describe('conformance test for vanilla html >', () => {
+        let elem;
+        let txt;
+        let comment;
+        let processingInstruction;
+        beforeEach(() => {
+            elem = document.createElement('div');
+            txt = document.createTextNode('');
+            comment = document.createComment('');
+            const doc = new DOMParser().parseFromString('<foo />', 'application/xml');
+            processingInstruction = doc.createProcessingInstruction('xml-stylesheet', 'href="mycss.css" type="text/css"');
+        });
         it('getRootNode() on disconnected node should return same node', () => {
-            const elem = document.createElement('div');
             expect(elem.getRootNode()).toBe(elem);
             expect(elem.getRootNode(composedTrueConfig)).toBe(elem);
-
-            const txt = document.createTextNode('');
+            
             expect(txt.getRootNode()).toBe(txt);
             expect(txt.getRootNode(composedTrueConfig)).toBe(txt);
 
-            const comment = document.createComment('');
             expect(comment.getRootNode()).toBe(comment);
             expect(comment.getRootNode(composedTrueConfig)).toBe(comment);
 
-            const processingInstruction = document.createProcessingInstruction('target', 'data');
             expect(processingInstruction.getRootNode()).toBe(processingInstruction);
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(processingInstruction);
 
@@ -244,22 +251,18 @@ describe('Node.getRootNode >', () => {
         it('getRootNode() on node whose parent is a disconnected node', () => {
             const parent = document.createElement('div');
 
-            const elem = document.createElement('div');
             parent.appendChild(elem);
             expect(elem.getRootNode()).toBe(parent);
             expect(elem.getRootNode(composedTrueConfig)).toBe(parent);
 
-            const txt = document.createTextNode('');
             parent.appendChild(txt);
             expect(txt.getRootNode()).toBe(parent);
             expect(txt.getRootNode(composedTrueConfig)).toBe(parent);
 
-            const comment = document.createComment('');
             parent.appendChild(comment);
             expect(comment.getRootNode()).toBe(parent);
             expect(comment.getRootNode(composedTrueConfig)).toBe(parent);
 
-            const processingInstruction = document.createProcessingInstruction('target', 'data');
             parent.appendChild(processingInstruction);
             expect(processingInstruction.getRootNode()).toBe(parent);
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(parent);
@@ -269,22 +272,18 @@ describe('Node.getRootNode >', () => {
             const parent = document.createElement('div');
             document.body.appendChild(parent);
 
-            const elem = document.createElement('div');
             parent.appendChild(elem);
             expect(elem.getRootNode()).toBe(document);
             expect(elem.getRootNode(composedTrueConfig)).toBe(document);
 
-            const txt = document.createTextNode('');
             parent.appendChild(txt);
             expect(txt.getRootNode()).toBe(document);
             expect(txt.getRootNode(composedTrueConfig)).toBe(document);
 
-            const comment = document.createComment('');
             parent.appendChild(comment);
             expect(comment.getRootNode()).toBe(document);
             expect(comment.getRootNode(composedTrueConfig)).toBe(document);
 
-            const processingInstruction = document.createProcessingInstruction('target', 'data');
             parent.appendChild(processingInstruction);
             expect(processingInstruction.getRootNode()).toBe(document);
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(document);
@@ -293,22 +292,18 @@ describe('Node.getRootNode >', () => {
         it('getRootNode() on node whose parent is a disconnected node', () => {
             const fragment = document.createDocumentFragment();
 
-            const elem = document.createElement('div');
             fragment.appendChild(elem);
             expect(elem.getRootNode()).toBe(fragment);
             expect(elem.getRootNode(composedTrueConfig)).toBe(fragment);
 
-            const txt = document.createTextNode('');
             fragment.appendChild(txt);
             expect(txt.getRootNode()).toBe(fragment);
             expect(txt.getRootNode(composedTrueConfig)).toBe(fragment);
 
-            const comment = document.createComment('');
             fragment.appendChild(comment);
             expect(comment.getRootNode()).toBe(fragment);
             expect(comment.getRootNode(composedTrueConfig)).toBe(fragment);
 
-            const processingInstruction = document.createProcessingInstruction('target', 'data');
             fragment.appendChild(processingInstruction);
             expect(processingInstruction.getRootNode()).toBe(fragment);
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(fragment);

@@ -29,7 +29,7 @@ import { getFilteredSlotAssignedNodes } from "./slot";
 import "../polyfills/node-get-root-node/main";
 
 // Extract the patched getRootNode
-export const { getRootNode: getRootNodeGetter } = Node.prototype;
+export const { getRootNode: patchedGetRootNode } = Node.prototype;
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {

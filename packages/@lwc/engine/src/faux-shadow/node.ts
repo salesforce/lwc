@@ -22,7 +22,7 @@ import {
 } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { setAttribute } from '../env/element';
-import { getNodeOwner, isSlotElement, getRootNodeGetter, isNodeOwnedBy } from './traverse';
+import { getNodeOwner, isSlotElement, patchedGetRootNode, isNodeOwnedBy } from './traverse';
 import { NodeConstructor } from '../framework/base-bridge-element';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot } from './shadow-root';
@@ -243,7 +243,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             return parentNode instanceof Element ? parentNode : null;
         }
         compareDocumentPosition(this: Node, otherNode: Node) {
-            if (getRootNodeGetter.call(this) === otherNode) {
+            if (patchedGetRootNode.call(this) === otherNode) {
                 // "this" is in a shadow tree where the shadow root is the "otherNode".
                 return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
             } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
