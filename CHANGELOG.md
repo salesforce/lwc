@@ -1,10 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.8...v) (2019-02-20)
+# [](https://github.com/salesforce/lwc/compare/v0.34.6...v) (2019-02-28)
+
+
+### Bug Fixes
+
+* properly exit the state entered when clicking into shadows ([#1082](https://github.com/salesforce/lwc/issues/1082)) ([#1084](https://github.com/salesforce/lwc/issues/1084)) ([87a34b3](https://github.com/salesforce/lwc/commit/87a34b3))
 
 
 
-<a name="0.35.8"></a>
-## [0.35.8](https://github.com/salesforce/lwc/compare/v0.34.5...v0.35.8) (2019-02-20)
+<a name="0.34.6"></a>
+## [0.34.6](https://github.com/salesforce/lwc/compare/v0.34.5...v0.34.6) (2019-02-20)
 
 
 
