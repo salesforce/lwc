@@ -148,7 +148,7 @@ export function getActiveElement(host: HTMLElement): Element | null {
     return (compareDocumentPosition.call(host, activeElement) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 ? activeElement : null;
 }
 
-function relatedTargetPosition(host: HTMLElement, relatedTarget: HTMLElement): number {
+function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): number {
     // assert: target must be child of host
     const pos = compareDocumentPosition.call(host, relatedTarget);
     if (pos & DOCUMENT_POSITION_CONTAINED_BY) {
@@ -223,7 +223,7 @@ function keyboardFocusHandler(event: FocusEvent) {
     }
 
     const segments = getTabbableSegments(host as HTMLElement);
-    const position = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+    const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
 
     if (position === 1) {
         // probably tabbing into element
@@ -267,10 +267,9 @@ function keyboardFocusInHandler(event: FocusEvent) {
     }
 
     // Determine where the focus is coming from (Tab or Shift+Tab)
-    const post = relatedTargetPosition(host as HTMLElement, relatedTarget as HTMLElement);
+    const post = relatedTargetPosition(host as HTMLElement, relatedTarget);
     switch (post) {
         case 1:  // focus is probably coming from above
-
             if (isFirstFocusableChildReceivingFocus && relatedTarget === getPreviousTabbableElement(segments)) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
@@ -294,7 +293,7 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
     );
 }
 
-function stopFocusIn(evt) {
+function enterMouseDownState(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
     setTimeout(() => {
@@ -305,13 +304,27 @@ function stopFocusIn(evt) {
     }, 0);
 }
 
+function exitMouseDownState(event) {
+    const currentTarget = eventCurrentTargetGetter.call(event);
+    const relatedTarget = focusEventRelatedTargetGetter.call(event);
+    // If the focused element is null or the focused element is no longer internal
+    if (isNull(relatedTarget) || relatedTargetPosition(currentTarget as HTMLElement, relatedTarget) !== 0) {
+        removeEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
+        removeEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
+    }
+}
+
 function handleFocusMouseDown(evt) {
     const target = eventTargetGetter.call(evt) as HTMLElement;
     // If we are mouse down in an element that can be focused
     // and the currentTarget's activeElement is not element we are mouse-ing down in
     // We can bail out and let the browser do its thing.
     if (willTriggerFocusInEvent(target)) {
-        addEventListener.call(eventCurrentTargetGetter.call(evt), 'focusin', stopFocusIn, true);
+        const currentTarget = eventCurrentTargetGetter.call(evt);
+        // Enter the temporary state where we disable the keyboard focusin handler when we click into the shadow.
+        addEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
+        // Exit the temporary state When focus leaves the shadow.
+        addEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
     }
 }
 
