@@ -9,5 +9,7 @@
  * Always polyfill Node.prototype.getRootNode until native shadow is enabled for all components
  */
 export default function detect(): boolean {
+    // Once native-shadow is enabled, only polyfill in browsers that don't support the API
+    // return Object.getOwnPropertyDescriptor(Node.prototype, 'getRootNode') === undefined;
     return true;
 }

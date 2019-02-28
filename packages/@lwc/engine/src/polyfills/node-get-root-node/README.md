@@ -1,6 +1,6 @@
 # Node.prototype.getRootNode() polyfill
 
-This polyfill is needed to make getRootNode() respect the shadow dom boundaries of an LWC element. 
+This polyfill is needed to provide Node.prototype.getRootNode() in IE11 and Edge browsers. Also it makes getRootNode() respect the shadow dom boundaries of an LWC element. 
 
 LWC engine uses a synthetic shadow dom for browser compatibility reasons. Since the SyntheticShadowRoot is a documentFragment which is only in memory and not connected to the document, it is invisible to the native getRootNode(). 
 To resolve this, the getRootNode property is patched to be aware of the synthetic shadow created by the engine.
@@ -16,3 +16,4 @@ If looking for a shadow root of a node by calling `node.getRootNode({composed: f
     3. If the node does not belong to a shadow tree created by engine, use the original Node.prototype.getRootNode to fetch the root node
 
 Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
+Browser compatibility: https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode#Browser_compatibility

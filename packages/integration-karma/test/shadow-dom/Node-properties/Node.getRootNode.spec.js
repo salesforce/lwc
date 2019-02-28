@@ -54,7 +54,6 @@ describe('Node.getRootNode >', () => {
     it('element in the shadow', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
-
         const target = elm.shadowRoot.querySelector('x-container');
         expect(target.getRootNode()).toBe(elm.shadowRoot);
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
