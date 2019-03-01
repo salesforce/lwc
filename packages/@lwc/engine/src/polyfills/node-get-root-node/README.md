@@ -18,9 +18,6 @@ If looking for a shadow root of a node by calling `node.getRootNode({composed: f
         i. The node does not belong to a shadow tree created by engine
         ii. The engine is running in native shadow dom mode
        If so, use the original Node.prototype.getRootNode to fetch the root node(or manually climb up the dom tree where getRootNode() is unsupported)
-    
-
-
 
 *Spec*: https://dom.spec.whatwg.org/#dom-node-getrootnode
 
