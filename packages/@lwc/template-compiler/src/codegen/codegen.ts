@@ -23,7 +23,8 @@ type RenderPrimitive =
     | 'dynamic'
     | 'key'
     | 'tabindex'
-    | 'scopedId';
+    | 'scopedId'
+    | 'scopedFragId';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -44,6 +45,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     key: { name: 'k', alias: 'api_key' },
     tabindex: { name: 'ti', alias: 'api_tab_index' },
     scopedId: { name: 'gid', alias: 'api_scoped_id' },
+    scopedFragId: { name: 'fid', alias: 'api_scoped_frag_id' },
 };
 
 export default class CodeGen {
@@ -156,7 +158,18 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedId, [id]);
     }
 
-    getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
+    genScopedFragId(id: string | t.Expression): t.CallExpression {
+        if (typeof id === 'string') {
+            return this._renderApiCall(RENDER_APIS.scopedFragId, [t.stringLiteral(id)]);
+        }
+        return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
+    }
+
+    getSlot(
+        slotName: string,
+        data: t.ObjectExpression,
+        children: t.Expression,
+    ) {
         return this._renderApiCall(RENDER_APIS.slot, [
             t.stringLiteral(slotName),
             data,

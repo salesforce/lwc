@@ -683,5 +683,26 @@ export function gid(id: any): string | null | undefined {
         }
         return id;
     }
-    return isNull(id) ? id : `${id}-${vmBeingRendered!.uid}`;
+    if (isNull(id)) {
+        return null;
+    }
+    return `${id}-${vmBeingRendered!.uid}`;
+}
+
+// [f]ragment [id] function
+export function fid(url: any): string | null | undefined {
+    if (isUndefined(url) || url === '') {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.logError(`Invalid url value "${url}". Expected a non-empty string.`, vmBeingRendered!.elm);
+        }
+        return url;
+    }
+    if (isNull(url)) {
+        return null;
+    }
+    // Apply transformation only for fragment only urls
+    if (/^#/.test(url)) {
+        return `${url}-${vmBeingRendered!.uid}`;
+    }
+    return url;
 }

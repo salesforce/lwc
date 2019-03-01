@@ -69,6 +69,14 @@ export function isXLinkAttribute(attrName: string): boolean {
     return attrName === XLINK_HREF;
 }
 
+export function isFragmentOnlyUrlAttribute(attrName: string): boolean {
+    return attrName === 'href' || isXLinkAttribute(attrName);
+}
+
+export function isFragmentOnlyUrl(url: string): boolean {
+    return /^#/.test(url);
+}
+
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,

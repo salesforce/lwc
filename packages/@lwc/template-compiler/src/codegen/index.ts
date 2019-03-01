@@ -43,7 +43,12 @@ import CodeGen from './codegen';
 
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
-import { isIdReferencingAttribute, isXLinkAttribute } from '../parser/attribute';
+import {
+    isFragmentOnlyUrl,
+    isFragmentOnlyUrlAttribute,
+    isIdReferencingAttribute,
+    isXLinkAttribute,
+} from '../parser/attribute';
 import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
@@ -346,6 +351,11 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
                     expression = codeGen.genScopedId(expression);
                 }
+                // In the case of a string (see below) we do fragment-only url validation at compile
+                // time but when dealing with expressions we need to validate during run time.
+                if (isFragmentOnlyUrlAttribute(attr.name)) {
+                    return codeGen.genScopedFragId(attr.value);
+                }
                 if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.stringLiteral(tagName),
@@ -360,6 +370,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             case IRAttributeType.String:
                 if (attr.name === 'id') {
                     return codeGen.genScopedId(attr.value);
+                }
+                if (isFragmentOnlyUrlAttribute(attr.name) && isFragmentOnlyUrl(attr.value)) {
+                    return codeGen.genScopedFragId(attr.value);
                 }
                 if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
