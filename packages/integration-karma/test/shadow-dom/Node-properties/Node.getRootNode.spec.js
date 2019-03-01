@@ -8,7 +8,7 @@ import WithoutLwcDomManual from 'x/withoutLwcDomManual';
 import Text from 'x/text';
 
 const composedTrueConfig = { composed: true };
-describe('Node.getRootNode >', () => {
+describe('Node.getRootNode', () => {
     it('root element', () => {
         const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
@@ -87,7 +87,7 @@ describe('Node.getRootNode >', () => {
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
 
-    describe('manual dom mutations >', () => {
+    describe('manual dom mutations', () => {
         it('nodes appended to parent with lwc:dom="manual" directive', () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
@@ -160,7 +160,7 @@ describe('Node.getRootNode >', () => {
         });
 
         // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
-        xdescribe('nested dynamic lwc elm with dom manual >', () => {
+        xdescribe('nested dynamic lwc elm with dom manual', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
@@ -195,7 +195,7 @@ describe('Node.getRootNode >', () => {
 
         // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
         // This usecase is important and distinct from the previous testcase. The nested lwc element's portal will not be patched
-        xdescribe('nested dynamic lwc elm without dom manual >', () => {
+        xdescribe('nested dynamic lwc elm without dom manual', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
@@ -220,7 +220,7 @@ describe('Node.getRootNode >', () => {
 
     // Derived from https://github.com/web-platform-tests/wpt/blob/7c50c216081d6ea3c9afe553ee7b64534020a1b2/dom/nodes/rootNode.html
     // Filed an issue to integrate wpt suite https://github.com/salesforce/lwc/issues/1078
-    describe('conformance test for vanilla html >', () => {
+    describe('conformance test for vanilla html', () => {
         let elem;
         let txt;
         let comment;

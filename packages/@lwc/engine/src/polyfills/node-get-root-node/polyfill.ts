@@ -22,7 +22,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
         let node = this;
         let nodeParent: Node | null;
         while (!isNull(nodeParent = parentNodeGetter.call(node))) {
-            node = nodeParent as Node;
+            node = nodeParent!;
         }
         return node;
     };
@@ -59,6 +59,7 @@ export default function apply() {
     defineProperty(Node.prototype, 'getRootNode', {
         value: patchedGetRootNode,
         enumerable: true,
-        configurable: true
+        configurable: true,
+        writable: true
     });
 }
