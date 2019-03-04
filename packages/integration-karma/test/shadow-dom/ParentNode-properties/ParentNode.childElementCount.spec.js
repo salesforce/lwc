@@ -14,7 +14,7 @@ describe('ParentNode.childElementCount', () => {
         expect(elm.shadowRoot.childElementCount).toBe(2);
     });
 
-    it('should return 0 if component doesn\'t have element child', () => {
+    it("should return 0 if component doesn't have element child", () => {
         const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.childElementCount).toBe(0);

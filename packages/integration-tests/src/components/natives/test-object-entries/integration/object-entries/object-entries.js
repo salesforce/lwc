@@ -1,15 +1,15 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class ObjectEntries extends LightningElement {
     // Plain Object
     // ============
 
     get simple() {
-        return Object.entries({ x: 'x' , y: 42 }).join('|');
+        return Object.entries({ x: 'x', y: 42 }).join('|');
     }
 
     get arrayLike() {
-        return Object.entries({  0: 'a', 1: 'b', 2: 'c' }).join('|');
+        return Object.entries({ 0: 'a', 1: 'b', 2: 'c' }).join('|');
     }
 
     get unordered() {
@@ -17,11 +17,19 @@ export default class ObjectEntries extends LightningElement {
     }
 
     get notEnumerable() {
-        const myObj = Object.create({}, {
-            x: { value() { return this.z; }, enumerable: false },
-            y: { value: 'y', enumerable: false,  },
-            z: { value: 'z', enumerable: true },
-        });
+        const myObj = Object.create(
+            {},
+            {
+                x: {
+                    value() {
+                        return this.z;
+                    },
+                    enumerable: false,
+                },
+                y: { value: 'y', enumerable: false },
+                z: { value: 'z', enumerable: true },
+            }
+        );
 
         return Object.entries(myObj).join('|');
     }
@@ -40,7 +48,7 @@ export default class ObjectEntries extends LightningElement {
 
     get iterable() {
         let str = '';
-        const obj = { x: 'x' , y: 42 };
+        const obj = { x: 'x', y: 42 };
 
         for (const [key, value] of Object.entries(obj)) {
             str += `[${key}:${value}]`;
@@ -50,7 +58,7 @@ export default class ObjectEntries extends LightningElement {
     }
 
     get arrayOperation() {
-        return Object.entries({ x: 'x' , y: 42 }).reduce((acc, [key, value]) => {
+        return Object.entries({ x: 'x', y: 42 }).reduce((acc, [key, value]) => {
             return acc + `[${key}:${value}]`;
         }, '');
     }
@@ -59,12 +67,12 @@ export default class ObjectEntries extends LightningElement {
     // ============
 
     get simpleProxy() {
-        const proxy = new Proxy({ x: 'x' , y: 42 }, {});
+        const proxy = new Proxy({ x: 'x', y: 42 }, {});
         return Object.entries(proxy).join('|');
     }
 
     get arrayLikeProxy() {
-        const proxy = new Proxy({  0: 'a', 1: 'b', 2: 'c' }, {});
+        const proxy = new Proxy({ 0: 'a', 1: 'b', 2: 'c' }, {});
         return Object.entries(proxy).join('|');
     }
 
@@ -74,28 +82,39 @@ export default class ObjectEntries extends LightningElement {
     }
 
     get notEnumerableProxy() {
-        const obj = Object.create({}, {
-            x: { value() { return this.z; }, enumerable: false },
-            y: { value: 'y', enumerable: false,  },
-            z: { value: 'z', enumerable: true },
-        });
+        const obj = Object.create(
+            {},
+            {
+                x: {
+                    value() {
+                        return this.z;
+                    },
+                    enumerable: false,
+                },
+                y: { value: 'y', enumerable: false },
+                z: { value: 'z', enumerable: true },
+            }
+        );
 
         const proxy = new Proxy(obj, {});
         return Object.entries(proxy).join('|');
     }
 
     get symbolProxy() {
-        const proxy = new Proxy({
-            x: 'x',
-            y: 42,
-            [Symbol('z')]: 'z',
-        }, {});
+        const proxy = new Proxy(
+            {
+                x: 'x',
+                y: 42,
+                [Symbol('z')]: 'z',
+            },
+            {}
+        );
         return Object.entries(proxy).join('|');
     }
 
     get iterableProxy() {
         let str = '';
-        const proxy = new Proxy({ x: 'x' , y: 42 }, {});
+        const proxy = new Proxy({ x: 'x', y: 42 }, {});
 
         for (const [key, value] of Object.entries(proxy)) {
             str += `[${key}:${value}]`;
@@ -105,7 +124,7 @@ export default class ObjectEntries extends LightningElement {
     }
 
     get arrayOperationProxy() {
-        const proxy = new Proxy({ x: 'x' , y: 42 }, {});
+        const proxy = new Proxy({ x: 'x', y: 42 }, {});
         return Object.entries(proxy).reduce((acc, [key, value]) => {
             return acc + `[${key}:${value}]`;
         }, '');

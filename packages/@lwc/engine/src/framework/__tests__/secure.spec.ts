@@ -23,6 +23,8 @@ describe('secure', () => {
         const elm = createElement('x-foo', { is: Foo });
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowError('Invalid template returned by the render() method on [object:vm Foo (1)]. It must return an imported template (e.g.: `import html from "./Foo.html"`)');
+        }).toThrowError(
+            'Invalid template returned by the render() method on [object:vm Foo (1)]. It must return an imported template (e.g.: `import html from "./Foo.html"`)'
+        );
     });
 });

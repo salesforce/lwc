@@ -37,9 +37,11 @@ export default class MultipleWires extends LightningElement {
     }
 
     get error() {
-        return '' +
-            (this.todoA.error ?  this.todoA.error.message : '') +
+        return (
+            '' +
+            (this.todoA.error ? this.todoA.error.message : '') +
             ' / ' +
-            (this.todoB.error ?  this.todoB.error.message : '');
+            (this.todoB.error ? this.todoB.error.message : '')
+        );
     }
 }

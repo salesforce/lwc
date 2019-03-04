@@ -9,7 +9,6 @@ import { createElement, register } from 'lwc';
 import { registerWireService } from 'wire-service';
 import App from 'x/demo';
 
-
 registerWireService(register);
 
 const container = document.getElementById('main');

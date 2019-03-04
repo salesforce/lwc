@@ -30,9 +30,7 @@ import {
     XLINK_HREF,
 } from './constants';
 
-import {
-    isCustomElement,
-} from '../shared/ir';
+import { isCustomElement } from '../shared/ir';
 
 function isQuotedAttribute(rawAttribute: string) {
     const [, value] = rawAttribute.split('=');
@@ -74,20 +72,20 @@ export function isXLinkAttribute(attrName: string): boolean {
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,
-    tag: string,
+    tag: string
 ): {
-    value: string,
-    escapedExpression: boolean,
+    value: string;
+    escapedExpression: boolean;
 } {
     const { name, value } = attr;
     if (booleanAttributes.has(name)) {
         if (value === 'true') {
             throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_TRUE, {
-                messageArgs: [tag, name, value]
+                messageArgs: [tag, name, value],
             });
         } else if (value === 'false') {
             throw generateCompilerError(ParserDiagnostics.BOOLEAN_ATTRIBUTE_FALSE, {
-                messageArgs: [tag, name, value]
+                messageArgs: [tag, name, value],
             });
         }
     }
@@ -103,7 +101,7 @@ export function normalizeAttributeValue(
             const escaped = raw.replace('"{', '"\\{');
 
             throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE, {
-                messageArgs: [raw, unquoted, escaped]
+                messageArgs: [raw, unquoted, escaped],
             });
         }
 
@@ -111,11 +109,11 @@ export function normalizeAttributeValue(
         // -> Valid identifier.
         return { value, escapedExpression: false };
     } else if (!isEscaped && isPotentialExpression(value)) {
-
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
-        const isExpressionNextToSelfClosing = value.startsWith(EXPRESSION_SYMBOL_START)
-            && value.endsWith(`${EXPRESSION_SYMBOL_END}/`)
-            && !isQuoted;
+        const isExpressionNextToSelfClosing =
+            value.startsWith(EXPRESSION_SYMBOL_START) &&
+            value.endsWith(`${EXPRESSION_SYMBOL_END}/`) &&
+            !isQuoted;
 
         if (isExpressionNextToSelfClosing) {
             // <input value={myValue}/>
@@ -135,7 +133,7 @@ export function normalizeAttributeValue(
 
         // Throw if the attribute value looks like an expression, but it can't be resolved by the compiler.
         throw generateCompilerError(ParserDiagnostics.AMBIGUOUS_ATTRIBUTE_VALUE_STRING, {
-            messageArgs: [raw, escaped]
+            messageArgs: [raw, escaped],
         });
     }
 
@@ -149,20 +147,23 @@ export function attributeName(attr: parse5.AST.Default.Attribute): string {
     return prefix ? `${prefix}:${name}` : name;
 }
 
-export function getAttribute(el: IRElement, pattern: string | RegExp): parse5.AST.Default.Attribute | undefined {
-    return el.attrsList.find((attr) => (
-        typeof pattern === 'string' ?
-            attributeName(attr) === pattern :
-            !!attributeName(attr).match(pattern)
-    ));
+export function getAttribute(
+    el: IRElement,
+    pattern: string | RegExp
+): parse5.AST.Default.Attribute | undefined {
+    return el.attrsList.find(attr =>
+        typeof pattern === 'string'
+            ? attributeName(attr) === pattern
+            : !!attributeName(attr).match(pattern)
+    );
 }
 
 export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
-    el.attrsList = el.attrsList.filter((attr) => (
-        typeof pattern === 'string' ?
-            attributeName(attr) !== pattern :
-            !attributeName(attr).match(pattern)
-    ));
+    el.attrsList = el.attrsList.filter(attr =>
+        typeof pattern === 'string'
+            ? attributeName(attr) !== pattern
+            : !attributeName(attr).match(pattern)
+    );
 }
 
 function isAriaAttribute(attrName: string): boolean {
@@ -187,11 +188,7 @@ export function isValidTabIndexAttributeValue(value: any): boolean {
 }
 
 export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
-    return (
-        isAriaAttribute(attrName) ||
-        isFmkAttribute(attrName) ||
-        isDataAttribute(attrName)
-    );
+    return isAriaAttribute(attrName) || isFmkAttribute(attrName) || isDataAttribute(attrName);
 }
 
 function isDataAttribute(attrName: string): boolean {
@@ -199,11 +196,7 @@ function isDataAttribute(attrName: string): boolean {
 }
 
 function isFmkAttribute(attrName: string): boolean {
-    return (
-        attrName === 'lwc-deprecated:is' ||
-        attrName === 'key' ||
-        attrName === 'slot'
-    );
+    return attrName === 'lwc-deprecated:is' || attrName === 'key' || attrName === 'slot';
 }
 
 function isCustomElementAttribute(attrName: string): boolean {
@@ -252,25 +245,24 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) ||
+    if (
+        GLOBAL_ATTRIBUTE_SET.has(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
         SVG_TAG_WHITELIST.has(tagName) ||
-        DASHED_TAGNAME_ELEMENT_SET.has(tagName)) {
+        DASHED_TAGNAME_ELEMENT_SET.has(tagName)
+    ) {
         return true;
     }
 
     const validElements = HTML_ATTRIBUTES_REVERSE_LOOKUP[attrName];
-    return !!validElements &&  (!validElements.length || validElements.includes(tagName));
+    return !!validElements && (!validElements.length || validElements.includes(tagName));
 }
 
 function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
     const { tag } = element;
     const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
     const isSvgTag = SVG_TAG_WHITELIST.has(tag);
-    return (
-        !isSvgTag &&
-        !isDataAttributeOrFmk
-    );
+    return !isSvgTag && !isDataAttributeOrFmk;
 }
 
 export function attributeToPropertyName(element: IRElement, attrName: string): string {

@@ -19,7 +19,7 @@ export function getImmutable(obj) {
         },
         deleteProperty: () => {
             return false;
-        }
+        },
     };
     return new Proxy(obj, handler);
 }
@@ -46,7 +46,7 @@ export function getSubject(initialValue, initialError) {
     }
 
     const observable = {
-        subscribe: (obs) => {
+        subscribe: obs => {
             observer = obs;
             if (initialValue) {
                 next(initialValue);
@@ -55,15 +55,15 @@ export function getSubject(initialValue, initialError) {
                 error(initialError);
             }
             return {
-                unsubscribe: () => {}
+                unsubscribe: () => {},
             };
-        }
+        },
     };
 
     return {
         next,
         error,
         complete,
-        observable
+        observable,
     };
 }

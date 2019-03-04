@@ -79,8 +79,8 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     // Make sure the identifier is not bound to any iteration variable
     if (isElement(node)) {
         const { forEach, forOf } = node;
-        const boundToForItem = forEach && (forEach.item.name === identifier.name);
-        const boundToForIndex = forEach && forEach.index && (forEach.index.name === identifier.name);
+        const boundToForItem = forEach && forEach.item.name === identifier.name;
+        const boundToForIndex = forEach && forEach.index && forEach.index.name === identifier.name;
         const boundToForIterator = forOf && forOf.iterator.name === identifier.name;
 
         if (boundToForItem || boundToForIndex || boundToForIterator) {

@@ -11,7 +11,7 @@ function getModuleQualifiedName(file) {
         entry: file,
         moduleSpecifier: null,
         moduleName: null,
-        moduleNamespace: null
+        moduleNamespace: null,
     };
 
     const rootParts = path.dirname(file).split(path.sep);
@@ -23,5 +23,5 @@ function getModuleQualifiedName(file) {
 }
 
 module.exports = {
-    getModuleQualifiedName
+    getModuleQualifiedName,
 };

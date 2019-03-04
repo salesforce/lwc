@@ -8,7 +8,7 @@ import { LightningElement, track } from 'lwc';
 
 export default class Demo extends LightningElement {
     @track state = {
-        todoId: ''
+        todoId: '',
     };
 
     handleChange(evt) {

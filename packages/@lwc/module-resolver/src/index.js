@@ -23,7 +23,7 @@ function loadLwcConfig(modulePath) {
     let config;
     try {
         config = fs.readFileSync(lwcConfigPath, 'utf8');
-    } catch(e) {
+    } catch (e) {
         config = jsonPkg.lwc;
     }
 
@@ -40,7 +40,7 @@ function resolveModulesInDir(fullPathDir) {
             entry: path.join(fullPathDir, file),
             moduleSpecifier: null,
             moduleName: null,
-            moduleNamespace: DEFAULT_NS
+            moduleNamespace: DEFAULT_NS,
         };
 
         const dirModuleName = rootParts.pop();
@@ -74,19 +74,19 @@ function expandModuleDirectories({ moduleDirectories, rootDir } = {}) {
 
 function resolveModules(modules, opts) {
     if (Array.isArray(modules)) {
-        modules.forEach((modulePath) => resolveModules(modulePath, opts));
+        modules.forEach(modulePath => resolveModules(modulePath, opts));
     } else {
         const { mappings, visited, moduleRoot, lwcConfig } = opts;
         if (typeof modules === 'string') {
             const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules), lwcConfig);
-            Object.keys(packageEntries).forEach((moduleName) => {
+            Object.keys(packageEntries).forEach(moduleName => {
                 if (!hasModuleBeenVisited(moduleName, visited)) {
                     mappings[moduleName] = packageEntries[moduleName];
                     visited.add(moduleName);
                 }
             });
         } else {
-            Object.keys(modules).forEach((moduleName) => {
+            Object.keys(modules).forEach(moduleName => {
                 if (!hasModuleBeenVisited(moduleName, visited)) {
                     const modulePath = path.join(moduleRoot, modules[moduleName]);
                     mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
@@ -102,18 +102,20 @@ function resolveLwcNpmModules(options = {}) {
     const modulePaths = expandModuleDirectories(options);
 
     return modulePaths.reduce((m, nodeModulesDir) => {
-        return glob.sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: ['**/node_modules/**'] }).reduce((mappings, file) => {
-            const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
-            const lwcConfig = loadLwcConfig(moduleRoot);
+        return glob
+            .sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: ['**/node_modules/**'] })
+            .reduce((mappings, file) => {
+                const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
+                const lwcConfig = loadLwcConfig(moduleRoot);
 
-            if (lwcConfig) {
-                resolveModules(lwcConfig.modules, {mappings, visited, moduleRoot, lwcConfig });
-            }
+                if (lwcConfig) {
+                    resolveModules(lwcConfig.modules, { mappings, visited, moduleRoot, lwcConfig });
+                }
 
-            return mappings;
-        }, m);
+                return mappings;
+            }, m);
     }, {});
 }
 
-exports.resolveLwcNpmModules = resolveLwcNpmModules
+exports.resolveLwcNpmModules = resolveLwcNpmModules;
 exports.resolveModulesInDir = resolveModulesInDir;

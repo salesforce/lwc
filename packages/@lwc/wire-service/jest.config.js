@@ -11,9 +11,7 @@ module.exports = {
 
     displayName: 'lwc-wire-service',
 
-    roots: [
-        '<rootDir>/src'
-    ],
+    roots: ['<rootDir>/src'],
 
     // Override global threshold for the package. As we increase the test coverage we should increase
     // the threshold as well.

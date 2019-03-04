@@ -22,7 +22,7 @@ const footer = `/** version: ${version} */`;
 const minifyBabelConfig = {
     babelrc: false,
     comments: false,
-    presets: [minify]
+    presets: [minify],
 };
 
 function inlineMinifyPlugin() {
@@ -30,7 +30,7 @@ function inlineMinifyPlugin() {
         transformBundle(code) {
             const result = babel.transform(code, minifyBabelConfig);
             return result.code;
-        }
+        },
     };
 }
 
@@ -44,13 +44,13 @@ function rollupConfig(config) {
             name: 'WireService',
             format,
             banner,
-            footer
+            footer,
         },
         plugins: [
             typescript({ target, typescript: require('typescript') }),
             rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-            prod && inlineMinifyPlugin({})
-        ].filter(Boolean)
+            prod && inlineMinifyPlugin({}),
+        ].filter(Boolean),
     };
 }
 
@@ -61,5 +61,5 @@ module.exports = [
 
     // PRODDEBUG mode
     rollupConfig({ format: 'umd', proddebug: true, target: 'es2017' }),
-    rollupConfig({ format: 'umd', proddebug: true, target: 'es5' })
+    rollupConfig({ format: 'umd', proddebug: true, target: 'es5' }),
 ];

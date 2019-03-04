@@ -14,7 +14,7 @@ describe('ParentNode.firstElementChild', () => {
         expect(elm.shadowRoot.firstElementChild).toBe(elm.shadowRoot.querySelector('div'));
     });
 
-    it('should return null if component doesn\'t have element child', () => {
+    it("should return null if component doesn't have element child", () => {
         const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstElementChild).toBe(null);

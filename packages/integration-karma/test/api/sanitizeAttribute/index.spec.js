@@ -26,7 +26,7 @@ it('receives the right parameters', () => {
         'use',
         'http://www.w3.org/2000/svg',
         'xlink:href',
-        '/foo',
+        '/foo'
     );
 });
 

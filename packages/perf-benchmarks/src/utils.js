@@ -20,7 +20,7 @@ export function assertText(selector, text) {
     const node = assertElement(selector);
 
     if (!node.text.includes(text)) {
-        throw new Error(`No matching text ${text} for ${selector}`)
+        throw new Error(`No matching text ${text} for ${selector}`);
     }
 }
 
@@ -35,14 +35,14 @@ export function nextFrame(cb) {
 }
 
 export const insertTableComponent = function(el, container = document.body) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         container.appendChild(el);
         nextFrame(() => {
             resolve(el);
         });
     });
-}
+};
 
-export const destroyTableComponent = function (el) {
+export const destroyTableComponent = function(el) {
     return el && el.parentElement.removeChild(el);
-}
+};

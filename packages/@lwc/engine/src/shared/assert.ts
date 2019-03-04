@@ -4,19 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, forEach, isNull, StringToLowerCase } from "./language";
-import { tagNameGetter } from "../env/element";
-import { parentNodeGetter } from "../env/node";
-import { ShadowRootHostGetter } from "../env/dom";
+import { ArrayJoin, ArrayPush, forEach, isNull, StringToLowerCase } from './language';
+import { tagNameGetter } from '../env/element';
+import { parentNodeGetter } from '../env/node';
+import { ShadowRootHostGetter } from '../env/dom';
 
 const StringSplit = String.prototype.split;
 
 function isLWC(element): element is HTMLElement {
-    return (element instanceof Element) && (tagNameGetter.call(element).indexOf('-') !== -1);
+    return element instanceof Element && tagNameGetter.call(element).indexOf('-') !== -1;
 }
 
 function isShadowRoot(elmOrShadow: Node | ShadowRoot): elmOrShadow is ShadowRoot {
-    return !(elmOrShadow instanceof Element) && ('host' in elmOrShadow);
+    return !(elmOrShadow instanceof Element) && 'host' in elmOrShadow;
 }
 
 function getFormattedComponentStack(elm: Element): string {
@@ -28,7 +28,10 @@ function getFormattedComponentStack(elm: Element): string {
 
     do {
         if (isLWC(currentElement)) {
-            ArrayPush.call(componentStack, `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`);
+            ArrayPush.call(
+                componentStack,
+                `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`
+            );
 
             indentation = indentation + indentationChar;
         }
@@ -106,7 +109,7 @@ const assert = {
             /* eslint-disable-next-line no-console */
             console.group(msg);
 
-            forEach.call(stackTraceLines, (trace) => {
+            forEach.call(stackTraceLines, trace => {
                 // We need to format this as a string, because Safari will detect that the string is a stack trace line
                 // item and will format it as so
 

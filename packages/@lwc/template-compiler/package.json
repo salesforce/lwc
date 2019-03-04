@@ -1,33 +1,33 @@
 {
-  "name": "@lwc/template-compiler",
-  "version": "0.35.11",
-  "description": "Template compiler package",
-  "main": "dist/commonjs/index.js",
-  "typings": "dist/types/",
-  "license": "MIT",
-  "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "tsc",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@types/he": "~1.1.0",
-    "ast-pretty-print": "~1.1.5",
-    "esutils": "~2.0.2"
-  },
-  "dependencies": {
-    "@babel/generator": "~7.1.5",
-    "@babel/parser": "~7.1.5",
-    "@babel/template": "~7.1.2",
-    "@babel/traverse": "~7.1.5",
-    "@babel/types": "~7.1.5",
-    "@lwc/errors": "0.35.11",
-    "@lwc/style-compiler": "0.35.11",
-    "camelcase": "~5.0.0",
-    "he": "^1.1.1",
-    "parse5-with-errors": "^4.0.1"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/template-compiler",
+    "version": "0.35.11",
+    "description": "Template compiler package",
+    "main": "dist/commonjs/index.js",
+    "typings": "dist/types/",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "build": "tsc",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@types/he": "~1.1.0",
+        "ast-pretty-print": "~1.1.5",
+        "esutils": "~2.0.2"
+    },
+    "dependencies": {
+        "@babel/generator": "~7.1.5",
+        "@babel/parser": "~7.1.5",
+        "@babel/template": "~7.1.2",
+        "@babel/traverse": "~7.1.5",
+        "@babel/types": "~7.1.5",
+        "@lwc/errors": "0.35.11",
+        "@lwc/style-compiler": "0.35.11",
+        "camelcase": "~5.0.0",
+        "he": "^1.1.1",
+        "parse5-with-errors": "^4.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
 }

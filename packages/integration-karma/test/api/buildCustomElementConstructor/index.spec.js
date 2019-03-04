@@ -10,9 +10,7 @@ const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in wind
 function testInvalidOptions(type, obj) {
     // TODO: investigate in prod
     xit(`throws a ReferenceError if constructor is a ${type}`, () => {
-        expect(() => buildCustomElementConstructor(obj)).toThrowError(
-            ReferenceError,
-        );
+        expect(() => buildCustomElementConstructor(obj)).toThrowError(ReferenceError);
     });
 }
 
@@ -67,13 +65,8 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('lifecycle', () => {
         beforeAll(() => {
-            const LifecycleParentCustomElement = buildCustomElementConstructor(
-                LifecycleParent,
-            );
-            customElements.define(
-                'test-lifecycle-parent',
-                LifecycleParentCustomElement,
-            );
+            const LifecycleParentCustomElement = buildCustomElementConstructor(LifecycleParent);
+            customElements.define('test-lifecycle-parent', LifecycleParentCustomElement);
         });
 
         beforeEach(() => {

@@ -8,15 +8,22 @@
  * Lightning Web Components core module
  */
 declare module 'lwc' {
-
     interface ComposableEvent extends Event {
-        composed: boolean
+        composed: boolean;
     }
 
     class HTMLElementTheGoodPart {
         dispatchEvent(evt: ComposableEvent): boolean;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+        addEventListener(
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | AddEventListenerOptions
+        ): void;
+        removeEventListener(
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | EventListenerOptions
+        ): void;
         setAttributeNS(ns: string, attrName: string, value: any);
         removeAttributeNS(ns: string, attrName: string);
         removeAttribute(attrName: string);
@@ -28,7 +35,7 @@ declare module 'lwc' {
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
         getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element>;
         getElementsByClassName(names: string): HTMLCollectionOf<Element>;
-        readonly tagName: string
+        readonly tagName: string;
         readonly classList: DOMTokenList;
 
         // Default HTML Properties
@@ -95,14 +102,22 @@ declare module 'lwc' {
         mode: string;
         readonly activeElement: Element | null;
         readonly host: HTMLElement;
-        readonly firstChild: Node | null,
-        readonly lastChild: Node | null,
-        readonly innerHTML: string,
-        readonly textContent: string,
-        readonly childNodes: Node[],
-        readonly delegatesFocus: boolean,
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+        readonly firstChild: Node | null;
+        readonly lastChild: Node | null;
+        readonly innerHTML: string;
+        readonly textContent: string;
+        readonly childNodes: Node[];
+        readonly delegatesFocus: boolean;
+        addEventListener(
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | AddEventListenerOptions
+        ): void;
+        removeEventListener(
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | EventListenerOptions
+        ): void;
         hasChildNodes(): boolean;
         compareDocumentPosition(otherNode: Node): number;
         contains(otherNode: Node): boolean;

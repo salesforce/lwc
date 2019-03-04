@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc"
+import { LightningElement, track } from 'lwc';
 
 export default class ChildRenderThrow extends LightningElement {
     @track counter = 1;
@@ -7,7 +7,7 @@ export default class ChildRenderThrow extends LightningElement {
     }
     renderedCallback() {
         if (this.counter === 2) {
-            throw new Error("Child thew an error during rendered callback");
+            throw new Error('Child thew an error during rendered callback');
         }
     }
     handleClick() {

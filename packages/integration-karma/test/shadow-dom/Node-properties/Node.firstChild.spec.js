@@ -13,7 +13,7 @@ describe('Node.firstChild', () => {
         expect(elm.shadowRoot.firstChild).toBe(elm.shadowRoot.querySelector('div'));
     });
 
-    it('should return first child Node even if it\'s a text', () => {
+    it("should return first child Node even if it's a text", () => {
         const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.nodeType).toBe(Node.TEXT_NODE);

@@ -27,23 +27,33 @@ function getConfig(env = {}) {
 
 describe('environment replacement', function() {
     it('should not replace environment variable if unset', async () => {
-        const { result: { code } } = await compile(getConfig());
+        const {
+            result: { code },
+        } = await compile(getConfig());
 
         expect(code).toContain('process.env.NODE_ENV');
     });
 
     it('should replace environment variable if set', async () => {
-        const { result: { code } } = await compile(getConfig({
-            NODE_ENV: 'development',
-        }));
+        const {
+            result: { code },
+        } = await compile(
+            getConfig({
+                NODE_ENV: 'development',
+            })
+        );
 
         expect(code).not.toContain('process.env.NODE_ENV');
     });
 
     it('should strip branch when the condition is evaluated to false', async () => {
-        const { result: { code } } = await compile(getConfig({
-            NODE_ENV: 'production',
-        }));
+        const {
+            result: { code },
+        } = await compile(
+            getConfig({
+                NODE_ENV: 'production',
+            })
+        );
 
         expect(code).toContain('I am in prod');
         expect(code).not.toContain('I am in dev');

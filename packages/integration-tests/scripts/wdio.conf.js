@@ -24,9 +24,9 @@ const suiteFolders = path.resolve(__dirname, '../', 'src/components');
         }>
     }
 */
-const suites = fs.readdirSync(suiteFolders).map((suiteName) => {
+const suites = fs.readdirSync(suiteFolders).map(suiteName => {
     const suitePath = path.resolve(suiteFolders, suiteName);
-    const specs = fs.readdirSync(suitePath).map((specFolderName) => {
+    const specs = fs.readdirSync(suitePath).map(specFolderName => {
         const testBasePath = path.basename(specFolderName).replace('test-', '');
         return {
             mount: `/${testBasePath}`,
@@ -58,12 +58,10 @@ const config = {
     // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
-    specs: [
-        './src/**/*.spec.js'
-    ],
+    specs: ['./src/**/*.spec.js'],
     suites: wdSuites,
     // Patterns to exclude.
-    exclude:  [
+    exclude: [
         // 'path/to/excluded/files'
     ],
     //
@@ -88,23 +86,22 @@ const config = {
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
 
-    capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        //maxInstances: 5,
-        //
-        browserName: 'chrome',
-        platform: 'Windows 10',
-        version: '61.0',
-        chromeOptions: {
+    capabilities: [
+        {
+            // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+            // grid with only 5 firefox instances available you can make sure that not more than
+            // 5 instances get started at a time.
+            //maxInstances: 5,
+            //
+            browserName: 'chrome',
+            platform: 'Windows 10',
+            version: '61.0',
+            chromeOptions: {
                 //binary: CHROME_BIN_PATH,
-                args: [
-                    'headless',
-                    'disable-gpu',
-                ],
+                args: ['headless', 'disable-gpu'],
             },
-    }],
+        },
+    ],
     //
     // ===================
     // Test Configurations
@@ -167,9 +164,7 @@ const config = {
     // commands. Instead, they hook themselves up into the test process.
     services: ['selenium-standalone', 'static-server'],
 
-    staticServerFolders: [
-        { mount: '/', path: './public' }
-    ].concat(staticFolders),
+    staticServerFolders: [{ mount: '/', path: './public' }].concat(staticFolders),
     staticServerPort: webDriverPort,
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -185,21 +180,21 @@ const config = {
     reporters: [RaptorIntegrationReporter, 'junit'],
     reporterOptions: {
         RaptorIntegrationReporter: {
-            mode: mode.toUpperCase()
+            mode: mode.toUpperCase(),
         },
         junit: {
             outputDir: './results',
             outputFileFormat: function(opts) {
-                return `results-${mode}.${opts.cid}.${opts.capabilities}.xml`
+                return `results-${mode}.${opts.cid}.${opts.capabilities}.xml`;
             },
-            packageName: mode.toUpperCase()
-        }
+            packageName: mode.toUpperCase(),
+        },
     },
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
-        ui: 'bdd'
+        ui: 'bdd',
     },
     //
     // =====
@@ -314,10 +309,10 @@ const config = {
     // onComplete: function(exitCode) {
     //     HTTPServer.close();
     // }
-}
+};
 
 const headless = process.env.HEADLESS_CHROME;
-if (headless === "false") {
+if (headless === 'false') {
     config.capabilities[0].chromeOptions = {};
 }
 

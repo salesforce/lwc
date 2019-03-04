@@ -17,10 +17,12 @@ if (typeof MO === 'undefined') {
         observe() {
             if (process.env.NODE_ENV !== 'production') {
                 if (process.env.NODE_ENV !== 'test') {
-                    throw new Error(`MutationObserver should not be mocked outside of the jest test environment`);
+                    throw new Error(
+                        `MutationObserver should not be mocked outside of the jest test environment`
+                    );
                 }
             }
-        }
+        },
     };
     MO = (window as any).MutationObserver = MutationObserverMock;
 }
@@ -31,7 +33,4 @@ const MutationObserver = MO;
 // to ensure rest of the framework uses the patched version
 
 let MutationObserverObserve = MutationObserver.prototype.observe;
-export {
-    MutationObserver,
-    MutationObserverObserve
-};
+export { MutationObserver, MutationObserverObserve };

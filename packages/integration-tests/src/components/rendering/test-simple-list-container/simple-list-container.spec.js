@@ -29,7 +29,7 @@ describe('Testing component: simple-list-container', () => {
         assert.strictEqual(browser.element('li.last').getText(), 'footer');
     });
 
-    it('should render number of items between min and max', function () {
+    it('should render number of items between min and max', function() {
         var rangeChangeButton = browser.element('button.rangechange');
 
         // set min to 1 and max to 10

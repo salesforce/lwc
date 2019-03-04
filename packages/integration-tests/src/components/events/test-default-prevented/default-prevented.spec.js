@@ -14,7 +14,7 @@ describe.skip('Composed events', () => {
         browser.url(URL);
     });
 
-    it('should have the right value', function () {
+    it('should have the right value', function() {
         const element = browser.element('integration-child');
         element.click();
         const defaultPreventedIndicator = browser.element('.default-prevented-indicator');

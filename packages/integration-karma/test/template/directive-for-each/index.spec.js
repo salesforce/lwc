@@ -20,9 +20,7 @@ function testForEach(type, obj) {
                 elm.items = [];
             })
             .then(() => {
-                expect(
-                    elm.shadowRoot.querySelector('ul').childElementCount,
-                ).toBe(0);
+                expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
             });
     });
 }
@@ -67,6 +65,6 @@ xit('should log a warning when the passing a non iterable', () => {
     // TODO: Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowError(
         TypeError,
-        /Invalid template iteration for value `\[.*\]` in \[object:vm undefined \(\d*\)\], it requires an array-like object, not `null` or `undefined`/,
+        /Invalid template iteration for value `\[.*\]` in \[object:vm undefined \(\d*\)\], it requires an array-like object, not `null` or `undefined`/
     );
 });

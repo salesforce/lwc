@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { SyntheticShadowRoot } from "../../faux-shadow/shadow-root";
+import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export default function apply() {
     (window as any).ShadowRoot = SyntheticShadowRoot;

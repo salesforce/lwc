@@ -18,7 +18,8 @@ export function readFixture(location: string): string {
 }
 
 export function pretify(str: string): string {
-    return str.toString()
+    return str
+        .toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
         .map(line => line.trim())

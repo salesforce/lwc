@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as path from "path";
+import * as path from 'path';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
 
-import { NormalizedCompilerOptions } from "../compiler/options";
+import { NormalizedCompilerOptions } from '../compiler/options';
 
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
@@ -15,21 +15,21 @@ const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 
 function isRelativeImport(id: string) {
-    return id.startsWith(".");
+    return id.startsWith('.');
 }
 
 function isImplicitCssImport(id: string, importee: string) {
     return (
-        path.extname(id) === ".css" &&
-        path.extname(importee) === ".html" &&
-        path.basename(id, ".css") === path.basename(importee, ".html")
+        path.extname(id) === '.css' &&
+        path.extname(importee) === '.html' &&
+        path.basename(id, '.css') === path.basename(importee, '.html')
     );
 }
 
 function isImplicitHTMLImport(importee: string, importer: string) {
     return (
         importer &&
-        path.extname(importer) === ".js" &&
+        path.extname(importer) === '.js' &&
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
         path.basename(importer, '.js') === path.basename(importee, '.html')
@@ -41,17 +41,11 @@ function isFirstCharacterUppercased(importee: string) {
     return importee && upperCaseRegex.test(importee);
 }
 
-function fileExists(
-    fileName: string,
-    { files }: NormalizedCompilerOptions
-): boolean {
+function fileExists(fileName: string, { files }: NormalizedCompilerOptions): boolean {
     return files.hasOwnProperty(fileName);
 }
 
-function readFile(
-    filename: string,
-    options: NormalizedCompilerOptions
-): string {
+function readFile(filename: string, options: NormalizedCompilerOptions): string {
     const { files } = options;
 
     if (fileExists(filename, options)) {
@@ -59,57 +53,68 @@ function readFile(
     } else {
         throw generateCompilerError(ModuleResolutionErrors.NONEXISTENT_FILE, {
             messageArgs: [filename],
-            origin: {filename}
+            origin: { filename },
         });
     }
 }
 
-function generateModuleResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+function generateModuleResolutionError(
+    importee: string,
+    importer: string,
+    options: NormalizedCompilerOptions
+) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
-    return caseIgnoredFilename ?
-        generateCompilerError(ModuleResolutionErrors.IMPORT_AND_FILE_NAME_CASE_MISMATCH, {
-            messageArgs: [
-                importee,
-                importer,
-                caseIgnoredFilename.substr(0, caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length),
-            ],
-            origin: { filename: importer }
-        }) :
-        generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
-            messageArgs: [ importee, importer, absPath ],
-            origin: { filename: importer }
-        });
+    return caseIgnoredFilename
+        ? generateCompilerError(ModuleResolutionErrors.IMPORT_AND_FILE_NAME_CASE_MISMATCH, {
+              messageArgs: [
+                  importee,
+                  importer,
+                  caseIgnoredFilename.substr(
+                      0,
+                      caseIgnoredFilename.length - path.extname(caseIgnoredFilename).length
+                  ),
+              ],
+              origin: { filename: importer },
+          })
+        : generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FROM_IMPORTER_FAILED, {
+              messageArgs: [importee, importer, absPath],
+              origin: { filename: importer },
+          });
 }
 
-function generateEntryResolutionError(importee: string, importer: string, options: NormalizedCompilerOptions) {
+function generateEntryResolutionError(
+    importee: string,
+    importer: string,
+    options: NormalizedCompilerOptions
+) {
     const absPath = getAbsolutePath(importee, importer, options.baseDir);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
-    return caseIgnoredFilename ?
-        generateCompilerError(ModuleResolutionErrors.FOLDER_AND_FILE_NAME_CASE_MISMATCH, {
-            messageArgs: [ caseIgnoredFilename, importee ],
-            origin: { filename: importer }
-        }) :
-        generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
-            messageArgs: [importee],
-            origin: { filename: importer }
-        });
+    return caseIgnoredFilename
+        ? generateCompilerError(ModuleResolutionErrors.FOLDER_AND_FILE_NAME_CASE_MISMATCH, {
+              messageArgs: [caseIgnoredFilename, importee],
+              origin: { filename: importer },
+          })
+        : generateCompilerError(ModuleResolutionErrors.IMPORTEE_RESOLUTION_FAILED, {
+              messageArgs: [importee],
+              origin: { filename: importer },
+          });
 }
 
 function getAbsolutePath(importee: string, importer: string, baseDir: string | undefined) {
-    const relPath = importer ? path.dirname(importer) : baseDir || "";
+    const relPath = importer ? path.dirname(importer) : baseDir || '';
     let absPath = path.join(relPath, importee);
 
     if (!path.extname(importee)) {
-        absPath += ".js";
+        absPath += '.js';
     }
 
     return absPath;
 }
 
-function getCaseIgnoredFilenameMatch(files: {[key: string]: string}, nameToMatch: string) {
+function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMatch: string) {
     return Object.keys(files).find(
         (bundleFile: string) => bundleFile.toLowerCase() === nameToMatch
     );
@@ -117,7 +122,7 @@ function getCaseIgnoredFilenameMatch(files: {[key: string]: string}, nameToMatch
 
 export default function({ options }: { options: NormalizedCompilerOptions }) {
     return {
-        name: "lwc-module-resolver",
+        name: 'lwc-module-resolver',
 
         resolveId(importee: string, importer: string) {
             if (!isRelativeImport(importee) && importer) {
@@ -130,7 +135,8 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                     {
                         messageArgs: [
                             importee,
-                            importee.charAt(0).toLowerCase() + importee.slice(1) ],
+                            importee.charAt(0).toLowerCase() + importee.slice(1),
+                        ],
                     }
                 );
             }
@@ -146,9 +152,9 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
 
-                throw importer ?
-                    generateModuleResolutionError(importee, importer, options) :
-                    generateEntryResolutionError(importee, importer, options);
+                throw importer
+                    ? generateModuleResolutionError(importee, importer, options)
+                    : generateEntryResolutionError(importee, importer, options);
             }
             return absPath;
         },
@@ -162,9 +168,9 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
             }
 
-            return path.extname(id) === ".css" && !fileExists(id, options)
+            return path.extname(id) === '.css' && !fileExists(id, options)
                 ? EMPTY_IMPLICIT_CSS_CONTENT
                 : readFile(id, options);
-        }
+        },
     };
 }

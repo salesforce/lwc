@@ -4,37 +4,28 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import {
-    getNodeKey,
-    getNodeNearestOwnerKey,
-    PatchedNode,
-    getInternalChildNodes,
-} from "./node";
+import assert from '../shared/assert';
+import { getNodeKey, getNodeNearestOwnerKey, PatchedNode, getInternalChildNodes } from './node';
 import {
     childNodesGetter as nativeChildNodesGetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
-} from "../env/node";
+} from '../env/node';
+import { querySelectorAll, innerHTMLSetter, tagNameGetter } from '../env/element';
+import { wrapIframeWindow } from './iframe';
+import { ArrayReduce, ArrayPush, isUndefined, isTrue } from '../shared/language';
+import { isNull } from '../shared/language';
+import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+import { getHost, getShadowRoot, SyntheticShadowRootInterface } from './shadow-root';
 import {
-    querySelectorAll, innerHTMLSetter, tagNameGetter,
-} from "../env/element";
-import { wrapIframeWindow } from "./iframe";
-import {
-    ArrayReduce,
-    ArrayPush,
-    isUndefined,
-    isTrue,
-} from "../shared/language";
-import { isNull } from "../shared/language";
-import { getOuterHTML } from "../3rdparty/polymer/outer-html";
-import { getHost, getShadowRoot, SyntheticShadowRootInterface } from "./shadow-root";
-import { HTMLElementConstructor, HTMLIFrameElementConstructor } from "../framework/base-bridge-element";
-import { createStaticNodeList } from "../shared/static-node-list";
-import { iFrameContentWindowGetter } from "../env/dom";
-import { getFilteredSlotAssignedNodes } from "./slot";
+    HTMLElementConstructor,
+    HTMLIFrameElementConstructor,
+} from '../framework/base-bridge-element';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { iFrameContentWindowGetter } from '../env/dom';
+import { getFilteredSlotAssignedNodes } from './slot';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -47,7 +38,7 @@ export function getNodeOwner(node: Node): HTMLElement | null {
     let nodeOwner: Node | null = node;
     // At this point, node is a valid node with owner identity, now we need to find the owner node
     // search for a custom element with a VM that owns the first element with owner identity attached to it
-    while (!isNull(nodeOwner) && (getNodeKey(nodeOwner) !== ownerKey)) {
+    while (!isNull(nodeOwner) && getNodeKey(nodeOwner) !== ownerKey) {
         nodeOwner = parentNodeGetter.call(nodeOwner);
     }
     if (isNull(nodeOwner)) {
@@ -62,9 +53,18 @@ export function isSlotElement(elm: Element): boolean {
 
 export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(owner instanceof HTMLElement, `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`);
-        assert.invariant(node instanceof Node, `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`);
-        assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`);
+        assert.invariant(
+            owner instanceof HTMLElement,
+            `isNodeOwnedBy() should be called with an element as the first argument instead of ${owner}`
+        );
+        assert.invariant(
+            node instanceof Node,
+            `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`
+        );
+        assert.isTrue(
+            compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS,
+            `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`
+        );
     }
     const ownerKey = getNodeNearestOwnerKey(node);
     return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
@@ -83,9 +83,18 @@ function foldSlotElement(slot: HTMLElement) {
 
 function isNodeSlotted(host: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(host instanceof HTMLElement, `isNodeSlotted() should be called with a host as the first argument instead of ${host}`);
-        assert.invariant(node instanceof Node, `isNodeSlotted() should be called with a node as the second argument instead of ${node}`);
-        assert.isTrue(compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS, `isNodeSlotted() should never be called with a node that is not a child node of ${host}`);
+        assert.invariant(
+            host instanceof HTMLElement,
+            `isNodeSlotted() should be called with a host as the first argument instead of ${host}`
+        );
+        assert.invariant(
+            node instanceof Node,
+            `isNodeSlotted() should be called with a node as the second argument instead of ${node}`
+        );
+        assert.isTrue(
+            compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS,
+            `isNodeSlotted() should never be called with a node that is not a child node of ${host}`
+        );
     }
     const hostKey = getNodeKey(host);
     // this routine assumes that the node is coming from a different shadow (it is not owned by the host)
@@ -146,7 +155,10 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-export function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Array<Element & Node> {
+export function getAllMatches(
+    owner: HTMLElement,
+    nodeList: NodeList | Node[]
+): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -174,7 +186,7 @@ function getRoot(node: Node): Node {
 
 function getShadowIncludingRoot(node: Node): Node {
     let nodeParent;
-    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
+    while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
         node = nodeParent;
     }
 
@@ -188,27 +200,25 @@ function getShadowIncludingRoot(node: Node): Node {
  * TODO: Once we start using the real shadowDOM, this method should be replaced by:
  * const { getRootNode } = Node.prototype;
  */
-export function getRootNodeGetter(
-    this: Node,
-    options?: GetRootNodeOptions
-): Node {
+export function getRootNodeGetter(this: Node, options?: GetRootNodeOptions): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
 
-    return isTrue(composed) ?
-        getShadowIncludingRoot(this) :
-        getRoot(this);
+    return isTrue(composed) ? getShadowIncludingRoot(this) : getRoot(this);
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
-            return (nodeList[i] as Element);
+            return nodeList[i] as Element;
         }
     }
     return null;
 }
 
-function getAllSlottedMatches(host: HTMLElement, nodeList: NodeList | Node[]): Array<Node & Element> {
+function getAllSlottedMatches(
+    host: HTMLElement,
+    nodeList: NodeList | Node[]
+): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -260,13 +270,19 @@ function lightDomQuerySelector(elm: Element, selector: string): Element | null {
     }
 }
 
-export function shadowRootQuerySelector(root: SyntheticShadowRootInterface, selector: string): Element | null {
+export function shadowRootQuerySelector(
+    root: SyntheticShadowRootInterface,
+    selector: string
+): Element | null {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(root: SyntheticShadowRootInterface, selector: string): Element[] {
+export function shadowRootQuerySelectorAll(
+    root: SyntheticShadowRootInterface,
+    selector: string
+): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
@@ -279,12 +295,16 @@ export function getFilteredChildNodes(node: Node): Element[] {
         // lwc element, in which case we need to get only the nodes
         // that were slotted
         const slots = querySelectorAll.call(node, 'slot');
-        children = ArrayReduce.call(slots, (seed, slot) => {
-            if (isNodeOwnedBy(node as HTMLElement, slot)) {
-                ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
-            }
-            return seed;
-        }, []);
+        children = ArrayReduce.call(
+            slots,
+            (seed, slot) => {
+                if (isNodeOwnedBy(node as HTMLElement, slot)) {
+                    ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
+                }
+                return seed;
+            },
+            []
+        );
     } else {
         // regular element
         children = nativeChildNodesGetter.call(node);
@@ -297,12 +317,16 @@ export function getFilteredChildNodes(node: Node): Element[] {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
-    return ArrayReduce.call(children, (seed, child) => {
-        if (isNodeOwnedBy(owner, child)) {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
+    return ArrayReduce.call(
+        children,
+        (seed, child) => {
+            if (isNodeOwnedBy(owner, child)) {
+                ArrayPush.call(seed, child);
+            }
+            return seed;
+        },
+        []
+    );
 }
 
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {

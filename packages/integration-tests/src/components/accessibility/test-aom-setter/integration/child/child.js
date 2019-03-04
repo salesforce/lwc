@@ -1,4 +1,4 @@
-import { LightningElement, track, api } from "lwc";
+import { LightningElement, track, api } from 'lwc';
 
 export default class Child extends LightningElement {
     @track internalLabel;

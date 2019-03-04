@@ -9,7 +9,7 @@ describe('Node.parentElement', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('x-container').parentElement).toBe(
-            elm.shadowRoot.querySelector('.outer'),
+            elm.shadowRoot.querySelector('.outer')
         );
     });
 
@@ -25,7 +25,7 @@ describe('Node.parentElement', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('.slotted').parentElement).toBe(
-            elm.shadowRoot.querySelector('x-container'),
+            elm.shadowRoot.querySelector('x-container')
         );
     });
 

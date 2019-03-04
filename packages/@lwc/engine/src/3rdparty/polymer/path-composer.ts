@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { DOCUMENT_FRAGMENT_NODE } from "./../../env/node";
-import { getRootNodeGetter } from "./../../faux-shadow/traverse";
+import { DOCUMENT_FRAGMENT_NODE } from './../../env/node';
+import { getRootNodeGetter } from './../../faux-shadow/traverse';
 
 /**
 @license
@@ -20,19 +20,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 export function pathComposer(startNode: Node, composed: boolean): Node[] {
     const composedPath: HTMLElement[] = [];
     let current = startNode;
-    const startRoot = startNode as any === window ? window : getRootNodeGetter.call(startNode);
+    const startRoot = (startNode as any) === window ? window : getRootNodeGetter.call(startNode);
     while (current) {
         composedPath.push(current as HTMLElement);
         if ((current as HTMLElement).assignedSlot) {
             current = (current as HTMLElement).assignedSlot as HTMLSlotElement;
-        } else if ((current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE && (current as ShadowRoot).host && (composed || current !== startRoot)) {
+        } else if (
+            (current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE &&
+            (current as ShadowRoot).host &&
+            (composed || current !== startRoot)
+        ) {
             current = (current as ShadowRoot).host as HTMLElement;
         } else {
             current = (current as HTMLElement).parentNode as any;
         }
     }
     // event composedPath includes window when startNode's ownerRoot is document
-    if (composedPath[composedPath.length - 1] as any === document) {
+    if ((composedPath[composedPath.length - 1] as any) === document) {
         composedPath.push(window as any);
     }
     return composedPath;

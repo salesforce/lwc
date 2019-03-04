@@ -5,16 +5,19 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
-import {
-    StringToLowerCase,
-    StringReplace,
-    create,
-    forEach,
-    isUndefined,
-} from '../shared/language';
+import { StringToLowerCase, StringReplace, create, forEach, isUndefined } from '../shared/language';
 
 // These properties get added to LWCElement.prototype publicProps automatically
-export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
+export const defaultDefHTMLPropertyNames = [
+    'dir',
+    'id',
+    'accessKey',
+    'title',
+    'lang',
+    'hidden',
+    'draggable',
+    'tabIndex',
+];
 
 // Few more exceptions that are using the attribute name to match the property in lowercase.
 // this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
@@ -35,7 +38,8 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use `this.getBoundingClientRect()` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
+const OffsetPropertiesError =
+    'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use `this.getBoundingClientRect()` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
 
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
@@ -73,7 +77,8 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         dataset: {
             readOnly: true,
-            error: 'Using property "dataset" is an anti-pattern. Components should not rely on dataset to implement its internal logic, nor use that as a communication channel.',
+            error:
+                'Using property "dataset" is an anti-pattern. Components should not rely on dataset to implement its internal logic, nor use that as a communication channel.',
         },
         dir: {
             attribute: 'dir',
@@ -172,8 +177,8 @@ export function getGlobalHTMLPropertiesInfo() {
         slot: {
             attribute: 'slot',
             experimental: true,
-            error: `Using property or attribute "slot" is an anti-pattern.`
-        }
+            error: `Using property or attribute "slot" is an anti-pattern.`,
+        },
     };
 }
 
@@ -196,13 +201,13 @@ forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
     PropNameToAttrNameMap[propName] = attrName;
 });
 
-forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+forEach.call(defaultDefHTMLPropertyNames, propName => {
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
 });
 
-forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, (propName) => {
+forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, propName => {
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
@@ -216,7 +221,11 @@ const CAMEL_REGEX = /-([a-z])/g;
  */
 export function getPropNameFromAttrName(attrName: string): string {
     if (isUndefined(AttrNameToPropNameMap[attrName])) {
-        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+        AttrNameToPropNameMap[attrName] = StringReplace.call(
+            attrName,
+            CAMEL_REGEX,
+            (g: string): string => g[1].toUpperCase()
+        );
     }
     return AttrNameToPropNameMap[attrName];
 }
@@ -229,7 +238,11 @@ const CAPS_REGEX = /[A-Z]/g;
  */
 export function getAttrNameFromPropName(propName: string): string {
     if (isUndefined(PropNameToAttrNameMap[propName])) {
-        PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
+        PropNameToAttrNameMap[propName] = StringReplace.call(
+            propName,
+            CAPS_REGEX,
+            (match: string): string => '-' + match.toLowerCase()
+        );
     }
     return PropNameToAttrNameMap[propName];
 }

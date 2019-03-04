@@ -25,4 +25,3 @@ describe('LightningElement.querySelector', () => {
         expect(childResult.className).toBe('foo slotted1');
     });
 });
-

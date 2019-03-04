@@ -13,7 +13,7 @@ describe('Event target in slot elements', () => {
         browser.url(URL);
     });
 
-    it('should receive event with correct target', function () {
+    it('should receive event with correct target', function() {
         browser.execute(function() {
             var child = document.querySelector('integration-child');
             child.dispatchFoo();

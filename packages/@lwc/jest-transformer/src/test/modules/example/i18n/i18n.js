@@ -51,8 +51,7 @@ export default class I18n extends LightningElement {
             numberFormat,
             percentFormat,
             currencyFormat,
-            currencySymbol
+            currencySymbol,
         };
     }
-
 }

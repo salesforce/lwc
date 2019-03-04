@@ -16,7 +16,8 @@ class MyChild extends LightningElement {
 
 describe('scoped-ids', () => {
     describe('expressions', () => {
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <!--
                     TODO: JSDOM ends up invoking elm.setAttribute('id', value) when setting
@@ -27,9 +28,11 @@ describe('scoped-ids', () => {
                 <x-child></x-child>
                 <div id={identifier}></div>
             </template>
-        `, {
-            modules: { 'x-child': MyChild }
-        });
+        `,
+            {
+                modules: { 'x-child': MyChild },
+            }
+        );
 
         describe.skip('custom elements', () => {
             it('should render a transformed id attribute when its value is set to a non-empty string', () => {

@@ -4,17 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const COMPAT_SUFFIX = "_compat";
-const DEBUG_SUFFIX = "_debug";
-const PROD_SUFFIX = ".min";
+const COMPAT_SUFFIX = '_compat';
+const DEBUG_SUFFIX = '_debug';
+const PROD_SUFFIX = '.min';
 
-function generateTargetName({ prod, proddebug }){
-    return [
-        'engine',
-        proddebug ? DEBUG_SUFFIX : '',
-        prod ? '.min' : '',
-        '.js'
-    ].join('');
+function generateTargetName({ prod, proddebug }) {
+    return ['engine', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
 }
 
 function ignoreCircularDependencies({ code, message }) {
@@ -28,6 +23,5 @@ module.exports = {
     DEBUG_SUFFIX,
     PROD_SUFFIX,
     generateTargetName,
-    ignoreCircularDependencies
+    ignoreCircularDependencies,
 };
-

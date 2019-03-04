@@ -52,28 +52,15 @@ declare module 'postcss-value-parser' {
         walk(callback: WalkCallback, bubble?: boolean): ValueParsed;
     }
 
-    export function unit(
-        quantity: string,
-    ): { number: string; unit: string } | false;
+    export function unit(quantity: string): { number: string; unit: string } | false;
 
     export type CustomStringifier = (node: Node) => string;
 
-    export function stringify(
-        nodes: Node | Node[],
-        custom?: CustomStringifier,
-    ): string;
+    export function stringify(nodes: Node | Node[], custom?: CustomStringifier): string;
 
-    export type WalkCallback = (
-        node: Node,
-        index: number,
-        nodes: Node[],
-    ) => any;
+    export type WalkCallback = (node: Node, index: number, nodes: Node[]) => any;
 
-    export function walk(
-        nodes: Node[],
-        callback: WalkCallback,
-        bubble?: boolean,
-    ): ValueParsed;
+    export function walk(nodes: Node[], callback: WalkCallback, bubble?: boolean): ValueParsed;
 
     export default function(value: string): ValueParsed;
 }

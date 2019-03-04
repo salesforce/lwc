@@ -4,16 +4,28 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attachShadow, getShadowRoot, SyntheticShadowRootInterface, isDelegatingFocus, getIE11FakeShadowRootPlaceholder } from "./shadow-root";
-import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
+import {
+    attachShadow,
+    getShadowRoot,
+    SyntheticShadowRootInterface,
+    isDelegatingFocus,
+    getIE11FakeShadowRootPlaceholder,
+} from './shadow-root';
+import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import { PatchedElement, getNodeOwner, getAllMatches, getFilteredChildNodes } from './traverse';
-import { hasAttribute, tabIndexGetter, childrenGetter } from "../env/element";
-import { isNull, isFalse, getPropertyDescriptor, ArrayFilter, ArrayUnshift } from "../shared/language";
-import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from "./focus";
-import { HTMLElementConstructor } from "../framework/base-bridge-element";
-import { createStaticNodeList } from "../shared/static-node-list";
-import { createStaticHTMLCollection } from "../shared/static-html-collection";
-import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from "./node";
+import { hasAttribute, tabIndexGetter, childrenGetter } from '../env/element';
+import {
+    isNull,
+    isFalse,
+    getPropertyDescriptor,
+    ArrayFilter,
+    ArrayUnshift,
+} from '../shared/language';
+import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
+import { HTMLElementConstructor } from '../framework/base-bridge-element';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
+import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from './node';
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;
@@ -21,10 +33,20 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         attachShadow(options: ShadowRootInit): SyntheticShadowRootInterface {
             return attachShadow(this, options) as SyntheticShadowRootInterface;
         }
-        addEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+        addEventListener(
+            this: EventTarget,
+            type: string,
+            listener: EventListener,
+            options?: boolean | AddEventListenerOptions
+        ) {
             addCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
-        removeEventListener(this: EventTarget, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+        removeEventListener(
+            this: EventTarget,
+            type: string,
+            listener: EventListener,
+            options?: boolean | AddEventListenerOptions
+        ) {
             removeCustomElementEventListener(this as HTMLElement, type, listener, options);
         }
         get shadowRoot(this: HTMLElement): SyntheticShadowRootInterface | null {
@@ -46,7 +68,6 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             // https://github.com/Microsoft/TypeScript/issues/338
             const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
             return descriptor!.get!.call(this);
-
         }
         set tabIndex(this: HTMLElement, value: any) {
             // get the original value from the element before changing it, just in case
@@ -64,7 +85,7 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
 
             // Check if the value from the dom has changed
             const newValue = tabIndexGetter.call(this);
-            if ((!hasAttr || originalValue !== newValue)) {
+            if (!hasAttr || originalValue !== newValue) {
                 // Value has changed
                 if (newValue === -1) {
                     // add the magic to skip this element
@@ -96,8 +117,14 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
         }
         get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            if (process.env.NODE_ENV !== 'production' && isFalse(hasNativeSymbolsSupport) && isExternalChildNodeAccessorFlagOn()) {
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
+            if (
+                process.env.NODE_ENV !== 'production' &&
+                isFalse(hasNativeSymbolsSupport) &&
+                isExternalChildNodeAccessorFlagOn()
+            ) {
                 // inserting a comment node as the first childNode to trick the IE11
                 // DevTool to show the content of the shadowRoot, this should only happen
                 // in dev-mode and in IE11 (which we detect by looking at the symbol).
@@ -116,8 +143,12 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 return childrenGetter.call(this);
             }
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(
+                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
+            );
         }
     };
 }

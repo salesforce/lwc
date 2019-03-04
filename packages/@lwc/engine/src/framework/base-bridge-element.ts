@@ -19,12 +19,10 @@ import {
     defineProperty,
     isFunction,
     defineProperties,
-} from "../shared/language";
-import { getCustomElementVM } from "./vm";
-import {
-    ComponentInterface
- } from './component';
-import { HTMLElementOriginalDescriptors } from "./html-properties";
+} from '../shared/language';
+import { getCustomElementVM } from './vm';
+import { ComponentInterface } from './component';
+import { HTMLElementOriginalDescriptors } from './html-properties';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -68,24 +66,28 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
 
 export interface NodeConstructor {
     prototype: Node;
-    new(): Node;
+    new (): Node;
 }
 export interface HTMLElementConstructor {
     prototype: HTMLElement;
-    new(): HTMLElement;
+    new (): HTMLElement;
 }
 
 export interface HTMLSlotElementConstructor {
     prototype: HTMLSlotElement;
-    new(): HTMLSlotElement;
+    new (): HTMLSlotElement;
 }
 
 export interface HTMLIFrameElementConstructor {
     prototype: HTMLIFrameElement;
-    new(): HTMLIFrameElement;
+    new (): HTMLIFrameElement;
 }
 
-export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, props: string[], methods: string[]): HTMLElementConstructor {
+export function HTMLBridgeElementFactory(
+    SuperClass: HTMLElementConstructor,
+    props: string[],
+    methods: string[]
+): HTMLElementConstructor {
     let HTMLBridgeElement;
     /**
      * Modern browsers will have all Native Constructors as regular Classes
@@ -137,7 +139,11 @@ export function HTMLBridgeElementFactory(SuperClass: HTMLElementConstructor, pro
     return HTMLBridgeElement as HTMLElementConstructor;
 }
 
-export const BaseBridgeElement = HTMLBridgeElementFactory(HTMLElement, getOwnPropertyNames(HTMLElementOriginalDescriptors), []);
+export const BaseBridgeElement = HTMLBridgeElementFactory(
+    HTMLElement,
+    getOwnPropertyNames(HTMLElementOriginalDescriptors),
+    []
+);
 
 freeze(BaseBridgeElement);
 seal(BaseBridgeElement.prototype);

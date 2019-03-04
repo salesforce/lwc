@@ -13,7 +13,7 @@ describe('Issue 657: Cannot attach event in `connectedCallback`', () => {
         browser.url(URL);
     });
 
-    it('clicking force button should update value', function () {
+    it('clicking force button should update value', function() {
         const button = browser.element('button');
         button.click();
         const p = browser.element('p');

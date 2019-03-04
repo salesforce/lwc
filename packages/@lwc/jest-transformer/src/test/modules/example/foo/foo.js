@@ -4,23 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LightningElement, api } from "lwc";
-import { echo } from "./lib";
+import { LightningElement, api } from 'lwc';
+import { echo } from './lib';
 
 function pause(time) {
-    return new Promise((resolve) => (
-        setTimeout(resolve, time)
-    ));
+    return new Promise(resolve => setTimeout(resolve, time));
 }
 
 export default class Foo extends LightningElement {
-    @api me = "foo";
+    @api me = 'foo';
 
     get computedClass() {
-        if (this.me === "foo") {
-            return "fooClass";
+        if (this.me === 'foo') {
+            return 'fooClass';
         }
-        return echo("otherClass");
+        return echo('otherClass');
     }
 
     @api

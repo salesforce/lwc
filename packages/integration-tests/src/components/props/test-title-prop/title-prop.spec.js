@@ -13,7 +13,7 @@ describe('Title public prop', () => {
         browser.url(URL);
     });
 
-    it('should have rendered title property propertly', function () {
+    it('should have rendered title property propertly', function() {
         const element = browser.element('integration-child');
         const text = element.getText();
         assert.deepEqual(text, 'Child title');

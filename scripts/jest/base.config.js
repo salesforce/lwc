@@ -20,9 +20,7 @@ module.exports = {
         },
     },
 
-    testMatch: [
-        '<rootDir>/**/__tests__/*.spec.(js|ts)'
-    ],
+    testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
     // Global mono-repo code coverage threshold.
     coverageThreshold: {

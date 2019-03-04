@@ -17,15 +17,8 @@ import {
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
-import {
-    findNode,
-    replaceNodeWith,
-    trimNodeWhitespaces,
-} from '../utils/selector-parser';
-import {
-    SHADOW_ATTRIBUTE,
-    HOST_ATTRIBUTE
-} from '../utils/selectors-scoping';
+import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
+import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
 
 export interface SelectorScopingConfig {
     /** When set to true, the :host selector gets replace with the the scoping token. */
@@ -58,7 +51,9 @@ function scopeSelector(selector: Selector) {
     for (const compoundSelector of compoundSelectors) {
         // Compound selectors containing :host have a special treatment and should not be scoped like the rest of the
         // complex selectors.
-        const shouldScopeCompoundSelector = compoundSelector.every(node => !isHostPseudoClass(node));
+        const shouldScopeCompoundSelector = compoundSelector.every(
+            node => !isHostPseudoClass(node)
+        );
 
         if (shouldScopeCompoundSelector) {
             let nodeToScope: Node | undefined;
@@ -96,9 +91,7 @@ function scopeSelector(selector: Selector) {
  */
 function transformHost(selector: Selector) {
     // Locate the first :host pseudo-class
-    const hostNode = findNode(selector, isHostPseudoClass) as
-        | Pseudo
-        | undefined;
+    const hostNode = findNode(selector, isHostPseudoClass) as Pseudo | undefined;
 
     if (hostNode) {
         // Store the original location of the :host in the selector
@@ -114,31 +107,26 @@ function transformHost(selector: Selector) {
 
         // Generate a unique contextualized version of the selector for each selector pass as argument
         // to the :host
-        const contextualSelectors = hostNode.nodes.map(
-            (contextSelectors: Selector) => {
-                const clonedSelector = selector.clone({}) as Selector;
-                const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
+        const contextualSelectors = hostNode.nodes.map((contextSelectors: Selector) => {
+            const clonedSelector = selector.clone({}) as Selector;
+            const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
-                // Add to the compound selector previously containing the :host pseudo class
-                // the contextual selectors.
-                contextSelectors.each(node => {
-                    trimNodeWhitespaces(node);
-                    clonedSelector.insertAfter(clonedHostNode, node);
-                });
+            // Add to the compound selector previously containing the :host pseudo class
+            // the contextual selectors.
+            contextSelectors.each(node => {
+                trimNodeWhitespaces(node);
+                clonedSelector.insertAfter(clonedHostNode, node);
+            });
 
-                return clonedSelector;
-            },
-        );
+            return clonedSelector;
+        });
 
         // Replace the current selector with the different variants
         replaceNodeWith(selector, ...contextualSelectors);
     }
 }
 
-export default function transformSelector(
-    root: Root,
-    transformConfig: SelectorScopingConfig,
-) {
+export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
     validateSelectors(root);
 
     root.each((selector: Selector) => {

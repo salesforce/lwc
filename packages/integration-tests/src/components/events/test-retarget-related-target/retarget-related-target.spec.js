@@ -14,10 +14,10 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should retarget relatedTarget from a foreign shadow', () => {
-        browser.execute(function () {
+        browser.execute(function() {
             document.querySelector('integration-child input').focus();
         });
         browser.keys(['Shift', 'Tab']);
-        assert.equal(browser.getText('.related-target-tabname'), 'integration-child')
+        assert.equal(browser.getText('.related-target-tabname'), 'integration-child');
     });
 });

@@ -27,16 +27,16 @@ function rollupConfig(config) {
             name: 'WireService',
             format,
             banner,
-            footer
+            footer,
         },
         plugins: [
             typescript({ target: target, typescript: require('typescript') }),
-            rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') })
-        ]
+            rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') }),
+        ],
     };
 }
 
 module.exports = [
     rollupConfig({ format: 'umd', target: 'es5' }),
-    rollupConfig({ format: 'umd', target: 'es2017' })
+    rollupConfig({ format: 'umd', target: 'es2017' }),
 ];

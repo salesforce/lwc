@@ -1,5 +1,5 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class BoundaryAltViewThrow extends LightningElement {
-    @track state = { error: false, title: "initial" };
+    @track state = { error: false, title: 'initial' };
 }

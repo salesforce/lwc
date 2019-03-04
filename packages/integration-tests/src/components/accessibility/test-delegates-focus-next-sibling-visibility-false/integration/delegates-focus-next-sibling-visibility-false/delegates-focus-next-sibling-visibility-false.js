@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class Cmp extends LightningElement {
-
-}
+export default class Cmp extends LightningElement {}

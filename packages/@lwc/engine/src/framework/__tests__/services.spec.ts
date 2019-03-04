@@ -5,19 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as target from '../services';
-import { createElement, LightningElement } from "../main";
+import { createElement, LightningElement } from '../main';
 import { compileTemplate } from 'test-utils';
 
 function resetServices() {
-    Object.keys(target.Services).forEach((name) => {
+    Object.keys(target.Services).forEach(name => {
         delete target.Services[name];
     });
 }
 
 describe('services', () => {
-
     describe('register()', () => {
-
         beforeEach(function() {
             resetServices();
         });
@@ -38,7 +36,7 @@ describe('services', () => {
             expect(target.Services.rendered).toBeUndefined();
             target.register({
                 rendered() {},
-                connected() {}
+                connected() {},
             });
             expect(target.Services.rendered).toHaveLength(1);
             expect(target.Services.connected).toHaveLength(1);
@@ -47,19 +45,20 @@ describe('services', () => {
         it('should allow multiple services to register the same hook', () => {
             expect(target.Services.rendered).toBeUndefined();
             target.register({
-                rendered() {}
+                rendered() {},
             });
             target.register({
-                rendered() {}
+                rendered() {},
             });
             expect(target.Services.rendered).toHaveLength(2);
         });
-
     });
 
     describe('integration', () => {
         it('should invoke all hooks', () => {
-            let r = 0, c = 0, d = 0;
+            let r = 0,
+                c = 0,
+                d = 0;
             target.register({
                 rendered() {
                     r++;
@@ -69,7 +68,7 @@ describe('services', () => {
                 },
                 disconnected() {
                     d++;
-                }
+                },
             });
             class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
@@ -93,7 +92,7 @@ describe('services', () => {
                 },
                 disconnected() {
                     lifecycleLog.push('service disconnected callback');
-                }
+                },
             });
             const html = compileTemplate(`<template></template>`);
             class MyComponent extends LightningElement {
@@ -126,9 +125,8 @@ describe('services', () => {
                 'service rendered callback',
                 'component rendered callback',
                 'service disconnected callback',
-                'component disconnected callback'
+                'component disconnected callback',
             ]);
         });
     });
-
 });

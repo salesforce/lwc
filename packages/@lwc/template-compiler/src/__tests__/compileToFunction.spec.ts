@@ -25,7 +25,7 @@ function mockRenderApi() {
 
     return {
         calls,
-        apis
+        apis,
     };
 }
 
@@ -35,9 +35,7 @@ it('should throw on invalid template', () => {
             <template>1</template>
             <template>2</template>
         `);
-    }).toThrowError(
-        'LWC1075: Multiple roots found'
-    );
+    }).toThrowError('LWC1075: Multiple roots found');
 });
 
 it('should throw if template contains a style tag', () => {
@@ -49,9 +47,7 @@ it('should throw if template contains a style tag', () => {
                 </style>
             </template>
         `);
-    }).toThrowError(
-        `LWC1033: compileToFunction doesn't support style tag`
-    );
+    }).toThrowError(`LWC1033: compileToFunction doesn't support style tag`);
 });
 
 it('should compile correctly simple components', () => {
@@ -103,5 +99,5 @@ it('should should attach template metadata', () => {
     `);
     const tmpl = renderFn({});
 
-    expect(tmpl.slots).toEqual([ 'foo' ]);
+    expect(tmpl.slots).toEqual(['foo']);
 });

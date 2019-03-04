@@ -132,7 +132,6 @@ describe('focus', () => {
                 el.setAttribute('tabindex', '0');
                 expect(isFocusable(el)).toBe(true);
             });
-
         });
 
         describe('Form element', () => {
@@ -292,8 +291,6 @@ describe('focus', () => {
         });
     });
 
-
-
     describe('isTabbable', () => {
         describe('Form control elements', () => {
             it('<button type="button"> is tabbable', () => {
@@ -445,7 +442,6 @@ describe('focus', () => {
                 el.setAttribute('tabindex', '0');
                 expect(isFocusable(el)).toBe(true);
             });
-
         });
 
         describe('Form element', () => {
@@ -598,4 +594,4 @@ describe('focus', () => {
             });
         });
     });
-})
+});

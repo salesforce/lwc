@@ -4,21 +4,43 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create, isNull, setPrototypeOf, ArrayFilter, defineProperties, isUndefined, isFalse } from "../shared/language";
-import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy, isSlotElement, getRootNodeGetter } from "./traverse";
-import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
-import { getTextContent } from "../3rdparty/polymer/text-content";
-import { createStaticNodeList } from "../shared/static-node-list";
-import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from "../env/document";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, parentElementGetter, textContextSetter, isConnected } from "../env/node";
-import { isNativeShadowRootAvailable } from "../env/dom";
-import { createStaticHTMLCollection } from "../shared/static-html-collection";
-import { getOuterHTML } from "../3rdparty/polymer/outer-html";
-import { retarget } from "../3rdparty/polymer/retarget";
-import { pathComposer } from "../3rdparty/polymer/path-composer";
-import { getInternalChildNodes } from "./node";
-import { innerHTMLSetter } from "../env/element";
+import {
+    assign,
+    create,
+    isNull,
+    setPrototypeOf,
+    ArrayFilter,
+    defineProperties,
+    isUndefined,
+    isFalse,
+} from '../shared/language';
+import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    shadowRootQuerySelector,
+    shadowRootQuerySelectorAll,
+    shadowRootChildNodes,
+    isNodeOwnedBy,
+    isSlotElement,
+    getRootNodeGetter,
+} from './traverse';
+import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
+import { getTextContent } from '../3rdparty/polymer/text-content';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from '../env/document';
+import {
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
+    parentElementGetter,
+    textContextSetter,
+    isConnected,
+} from '../env/node';
+import { isNativeShadowRootAvailable } from '../env/dom';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
+import { getOuterHTML } from '../3rdparty/polymer/outer-html';
+import { retarget } from '../3rdparty/polymer/retarget';
+import { pathComposer } from '../3rdparty/polymer/path-composer';
+import { getInternalChildNodes } from './node';
+import { innerHTMLSetter } from '../env/element';
 
 const InternalSlot = createFieldName('shadowRecord');
 const { createDocumentFragment } = document;
@@ -50,9 +72,14 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
-export function attachShadow(elm: HTMLElement, options: ShadowRootInit): SyntheticShadowRootInterface {
+export function attachShadow(
+    elm: HTMLElement,
+    options: ShadowRootInit
+): SyntheticShadowRootInterface {
     if (!isUndefined(getInternalField(elm, InternalSlot))) {
-        throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
+        throw new Error(
+            `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
+        );
     }
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
@@ -227,7 +254,10 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, otherNode: Node | SyntheticShadowRootInterface): number {
+        value(
+            this: SyntheticShadowRootInterface,
+            otherNode: Node | SyntheticShadowRootInterface
+        ): number {
             const host = getHost(this);
 
             if (this === otherNode) {
@@ -236,7 +266,9 @@ const NodePatchDescriptors = {
             } else if (this.contains(otherNode as Node)) {
                 // "otherNode" belongs to the shadow tree where "this" is the shadow root.
                 return 20; // Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
-            } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
+            } else if (
+                compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY
+            ) {
                 // "otherNode" is in a different shadow tree contained by the shadow tree where "this" is the shadow root.
                 return 37; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_FOLLOWING | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             } else {
@@ -363,7 +395,7 @@ const NodePatchDescriptors = {
         set(this: SyntheticShadowRootInterface, v: string) {
             const host = getHost(this);
             textContextSetter.call(host, v);
-        }
+        },
     },
     getRootNode: {
         writable: true,
@@ -499,7 +531,7 @@ export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
             },
             enumerable: true,
             configurable: true,
-        }
+        },
     });
     return c;
 }

@@ -9,14 +9,16 @@ const wire = require('./wire');
 const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES, LWC_DECORATORS } = require('../constants');
-const { generateError, getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
+const {
+    generateError,
+    getEngineImportSpecifiers,
+    isClassMethod,
+    isSetterClassMethod,
+    isGetterClassMethod,
+} = require('../utils');
 const { DecoratorErrors } = require('@lwc/errors');
 
-const DECORATOR_TRANSFORMS = [
-    api,
-    wire,
-    track
-];
+const DECORATOR_TRANSFORMS = [api, wire, track];
 
 function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some(transform => transform.name === name);
@@ -39,52 +41,54 @@ function getDecoratorType(propertyOrMethod) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
         throw generateError(propertyOrMethod, {
-            errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE
+            errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
         });
     }
 }
 
 /** Returns a list of all the LWC decorators usages */
 function getLwcDecorators(importSpecifiers) {
-    return importSpecifiers.reduce((acc, { name, path }) => {
-        // Get a list of all the  local references
-        const local = path.get('imported');
-        const references = getReferences(local).map(reference => ({
-            name,
-            reference
-        }))
+    return importSpecifiers
+        .reduce((acc, { name, path }) => {
+            // Get a list of all the  local references
+            const local = path.get('imported');
+            const references = getReferences(local).map(reference => ({
+                name,
+                reference,
+            }));
 
-        return [...acc, ...references];
-    }, []).map(({ name, reference }) => {
-        // Get the decorator from the identifier
-        // If the the decorator is:
-        //   - an identifier @track : the decorator is the parent of the identifier
-        //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
-        let decorator = reference.parentPath.isDecorator() ?
-            reference.parentPath:
-            reference.parentPath.parentPath;
+            return [...acc, ...references];
+        }, [])
+        .map(({ name, reference }) => {
+            // Get the decorator from the identifier
+            // If the the decorator is:
+            //   - an identifier @track : the decorator is the parent of the identifier
+            //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
+            let decorator = reference.parentPath.isDecorator()
+                ? reference.parentPath
+                : reference.parentPath.parentPath;
 
-        if (!decorator.isDecorator()) {
-            throw generateError(decorator, {
-                errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
-                messageArgs: [name]
-            });
-        }
+            if (!decorator.isDecorator()) {
+                throw generateError(decorator, {
+                    errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
+                    messageArgs: [name],
+                });
+            }
 
-        const propertyOrMethod = decorator.parentPath;
-        if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-            throw generateError(propertyOrMethod, {
-                errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
-                messageArgs: [name]
-            });
-        }
+            const propertyOrMethod = decorator.parentPath;
+            if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
+                throw generateError(propertyOrMethod, {
+                    errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
+                    messageArgs: [name],
+                });
+            }
 
-        return {
-            name,
-            path: decorator,
-            type: getDecoratorType(propertyOrMethod)
-        };
-    });
+            return {
+                name,
+                path: decorator,
+                type: getDecoratorType(propertyOrMethod),
+            };
+        });
 }
 
 /** Group decorator per class */
@@ -138,9 +142,13 @@ function invalidDecorators() {
         Decorator(path) {
             throw generateError(path.parentPath, {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
-                messageArgs: [path.node.expression.name, LWC_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
+                messageArgs: [
+                    path.node.expression.name,
+                    LWC_DECORATORS.join(', '),
+                    LWC_PACKAGE_ALIAS,
+                ],
             });
-        }
+        },
     };
 }
 
@@ -148,9 +156,9 @@ function decorators({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getEngineImportSpecifiers(path);
-            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => (
+            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) =>
                 isLwcDecoratorName(name)
-            ));
+            );
 
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
             const grouped = groupDecorator(decorators);
@@ -176,12 +184,12 @@ function decorators({ types: t }) {
 
             throw generateError(path.parentPath, {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR,
-                messageArgs: [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS]
+                messageArgs: [AVAILABLE_DECORATORS.join(', '), LWC_PACKAGE_ALIAS],
             });
-        }
+        },
     };
 }
 module.exports = {
     decorators,
-    invalidDecorators
-}
+    invalidDecorators,
+};

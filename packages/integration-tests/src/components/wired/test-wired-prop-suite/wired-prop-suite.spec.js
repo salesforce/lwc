@@ -22,8 +22,12 @@ describe('Component with a wired property', () => {
         const element = browser.element('integration-wired-prop');
         const button = browser.element('button');
         button.click();
-        browser.waitUntil(() => {
-            return element.getText() === 'Title:task 1 Completed:false';
-        }, 500, 'expect text to be different after 0.5s');
+        browser.waitUntil(
+            () => {
+                return element.getText() === 'Title:task 1 Completed:false';
+            },
+            500,
+            'expect text to be different after 0.5s'
+        );
     });
 });

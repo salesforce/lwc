@@ -1,4 +1,4 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api } from 'lwc';
 
 export default class Child extends LightningElement {
     @api
@@ -7,7 +7,7 @@ export default class Child extends LightningElement {
             new CustomEvent('foo', {
                 composed: true,
                 bubbles: true,
-            }),
+            })
         );
     }
 }

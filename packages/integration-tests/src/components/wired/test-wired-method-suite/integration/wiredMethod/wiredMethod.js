@@ -1,4 +1,4 @@
-import { LightningElement, api, track, wire } from "lwc";
+import { LightningElement, api, track, wire } from 'lwc';
 import { getTodo } from 'todo';
 
 export default class WiredMethod extends LightningElement {
@@ -6,7 +6,7 @@ export default class WiredMethod extends LightningElement {
     @track state = { error: undefined, todo: undefined };
 
     @wire(getTodo, { id: '$todoId' })
-    function({error, data}) {
+    function({ error, data }) {
         this.state = { error: error, todo: data };
     }
 }

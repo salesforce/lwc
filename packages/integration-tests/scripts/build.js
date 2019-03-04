@@ -18,8 +18,14 @@ const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 const isProd = /prod/.test(mode);
 
-const engineModeFile = path.join(require.resolve(`@lwc/engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine${isProd ? '.min' : ''}.js`));
-const wireServicePath = path.join(require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire.js`));
+const engineModeFile = path.join(
+    require.resolve(
+        `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`
+    )
+);
+const wireServicePath = path.join(
+    require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`)
+);
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
 const testSufix = '.test.js';
@@ -32,7 +38,7 @@ const testOutput = path.join(__dirname, '../', 'public');
 const testSharedOutput = path.join(testOutput, 'shared');
 const testEntries = functionalTests.reduce((seed, functionalFolder) => {
     const testsFolder = path.join(functionalTestDir, functionalFolder);
-    const tests = fs.readdirSync(testsFolder).map((test) => {
+    const tests = fs.readdirSync(testsFolder).map(test => {
         const testPath = path.join(testsFolder, test, `${test}${testSufix}`);
         return { path: testPath, namespace: functionalFolder, name: getTestName(testPath) };
     });
@@ -42,7 +48,9 @@ const testEntries = functionalTests.reduce((seed, functionalFolder) => {
 // -- Plugins & Helpers -------------------------------------
 
 function getTestName(absPpath) {
-    return path.basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js').replace(testPrefix, '');
+    return path
+        .basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js')
+        .replace(testPrefix, '');
 }
 
 function testCaseComponentResolverPlugin() {
@@ -52,7 +60,7 @@ function testCaseComponentResolverPlugin() {
             if (/test\/case/.test(id)) {
                 return path.resolve(`./src/shared/test-case.js`);
             }
-        }
+        },
     };
 }
 
@@ -71,10 +79,12 @@ function entryPointResolverPlugin() {
         load(id) {
             if (id.includes(testSufix)) {
                 const testBundle = getTestName(id);
-                return testBundle.startsWith('wired-') ? getTodoApp(testBundle) : templates.app(testBundle);
+                return testBundle.startsWith('wired-')
+                    ? getTodoApp(testBundle)
+                    : templates.app(testBundle);
             }
         },
-    }
+    };
 }
 
 // -- Rollup config ---------------------------------------------
@@ -82,25 +92,25 @@ function entryPointResolverPlugin() {
 const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
-    'lwc': 'Engine',
+    lwc: 'Engine',
     'wire-service': 'WireService',
-    'todo': 'Todo'
+    todo: 'Todo',
 };
 
 const baseInputConfig = {
-    external: function (id) {
-        return id in globalModules
+    external: function(id) {
+        return id in globalModules;
     },
     plugins: [
         entryPointResolverPlugin(),
         rollupLwcCompilerPlugin({
             exclude: `**/*${testSufix}`,
-            resolveFromPackages: false
+            resolveFromPackages: false,
         }),
         isCompat && rollupCompatPlugin({ polyfills: false }),
         isProd && rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         testCaseComponentResolverPlugin(),
-    ].filter(Boolean)
+    ].filter(Boolean),
 };
 
 const baseOutputConfig = { format: 'iife', globals: globalModules };
@@ -108,32 +118,43 @@ const baseOutputConfig = { format: 'iife', globals: globalModules };
 // -- Build shared artifacts -----------------------------------------------------
 
 if (!fs.existsSync(engineModeFile)) {
-    throw new Error("Compat version of engine not generated in expected location: " + engineModeFile
-        + ".\nGenerate artifacts from the top-level Raptor project first");
+    throw new Error(
+        'Compat version of engine not generated in expected location: ' +
+            engineModeFile +
+            '.\nGenerate artifacts from the top-level Raptor project first'
+    );
 }
 
 // copy static files
-fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
-fs.writeFileSync(path.join(testSharedOutput,'downgrade.js'), compatPolyfills.loadDowngrade());
-fs.writeFileSync(path.join(testSharedOutput,'polyfills.js'), compatPolyfills.loadPolyfills());
+fs.copySync(engineModeFile, path.join(testSharedOutput, 'engine.js'));
+fs.writeFileSync(path.join(testSharedOutput, 'downgrade.js'), compatPolyfills.loadDowngrade());
+fs.writeFileSync(path.join(testSharedOutput, 'polyfills.js'), compatPolyfills.loadPolyfills());
 
 fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire.js'));
 fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 
 // -- Build component tests -----------------------------------------------------=
 
-testEntries.reduce(async (promise, test) => {
-    await promise;
-    const { name: testName, path: testEntry, namespace: testNamespace } = test;
-    console.log(`Building integration test: ${testName}`);
-    const bundle = await rollup.rollup({ ...baseInputConfig, input: testEntry });
+testEntries
+    .reduce(async (promise, test) => {
+        await promise;
+        const { name: testName, path: testEntry, namespace: testNamespace } = test;
+        console.log(`Building integration test: ${testName}`);
+        const bundle = await rollup.rollup({ ...baseInputConfig, input: testEntry });
 
-    await bundle.write({
-        ...baseOutputConfig,
-        file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`
+        await bundle.write({
+            ...baseOutputConfig,
+            file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`,
+        });
+
+        fs.writeFileSync(
+            `${testOutput}/${testNamespace}/${testName}/index.html`,
+            testName.startsWith('wired-')
+                ? templates.wireServiceHtml(testName, isCompat)
+                : templates.html(testName, isCompat),
+            'utf8'
+        );
+    }, Promise.resolve())
+    .catch(err => {
+        console.log(err);
     });
-
-    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, testName.startsWith('wired-') ? templates.wireServiceHtml(testName, isCompat) : templates.html(testName, isCompat), 'utf8');
-
-}, Promise.resolve())
-.catch((err) => { console.log(err); });

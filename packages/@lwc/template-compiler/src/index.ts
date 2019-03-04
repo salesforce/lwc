@@ -25,12 +25,12 @@ import { CompilationMetadata } from './shared/types';
 
 export {
     ModuleDependency as TemplateModuleDependency,
-    DependencyParameter as TemplateModuleDependencyParameter
+    DependencyParameter as TemplateModuleDependencyParameter,
 } from './shared/types';
 
 export default function compiler(
     source: string,
-    config: Config,
+    config: Config
 ): {
     code: string;
     warnings: CompilerDiagnostic[];
@@ -46,7 +46,7 @@ export default function compiler(
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
-            warning => warning.level === DiagnosticLevel.Error,
+            warning => warning.level === DiagnosticLevel.Error
         );
 
         if (!hasParsingError && parsingResults.root) {

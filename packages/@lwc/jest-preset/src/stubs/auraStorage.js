@@ -17,7 +17,7 @@ class Storage {
         this.expiration = config.expiration || 10;
         this.debugLogging = config.debugLogging || false;
         this.clearOnInit = config.clearOnInit || false;
-        this.version = config.version || "";
+        this.version = config.version || '';
         this.autoRefreshInterval = config.autoRefreshInterval || 30;
 
         this.storage = new Map();
@@ -36,14 +36,14 @@ class Storage {
     }
 
     clear() {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.storage.clear();
             resolve();
         });
     }
 
     get(key) {
-        return this.getAll([key]).then((items) => {
+        return this.getAll([key]).then(items => {
             return items[key];
         });
     }
@@ -53,14 +53,14 @@ class Storage {
     }
 
     getAll(keys) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const ret = {};
             if (!keys) {
                 this.storage.forEach((value, key) => {
                     ret[key] = value;
                 });
             } else {
-                keys.forEach((key) => {
+                keys.forEach(key => {
                     ret[key] = this.storage.get(key);
                 });
             }
@@ -75,8 +75,8 @@ class Storage {
     }
 
     setAll(values) {
-        return new Promise((resolve) => {
-            Object.keys(values).forEach((key) => {
+        return new Promise(resolve => {
+            Object.keys(values).forEach(key => {
                 this.storage.set(key, values[key]);
             });
             resolve();
@@ -88,8 +88,8 @@ class Storage {
     }
 
     removeAll(keys) {
-        return new Promise((resolve) => {
-            keys.forEach((key) => {
+        return new Promise(resolve => {
+            keys.forEach(key => {
                 this.storage.delete(key);
             });
             resolve();
@@ -131,11 +131,11 @@ module.exports = {
         return Object.assign({}, storages);
     },
     initStorage(config) {
-        if (typeof config !== "object" || config === null || Array.isArray(config)) {
-            throw new Error("config must be an object");
+        if (typeof config !== 'object' || config === null || Array.isArray(config)) {
+            throw new Error('config must be an object');
         }
         if (!(typeof config.name === 'string') || !config.name) {
-            throw new Error("name must be a non-empty string");
+            throw new Error('name must be a non-empty string');
         }
         const store = new Storage(config);
         storages[config.name] = store;
@@ -144,5 +144,5 @@ module.exports = {
     deleteStorage(name) {
         delete storages[name];
         return Promise.resolve();
-    }
+    },
 };

@@ -18,11 +18,7 @@ const PACKAGES = glob.sync('*/**/package.json', {
 
 let areVersionsInSync = true;
 for (const location of PACKAGES) {
-    const {
-        name,
-        peerDependencies = {},
-        devDependencies = {},
-    } = require(location);
+    const { name, peerDependencies = {}, devDependencies = {} } = require(location);
 
     for (const dep of Object.keys(peerDependencies)) {
         if (

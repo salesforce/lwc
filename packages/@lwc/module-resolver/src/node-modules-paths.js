@@ -36,9 +36,9 @@ module.exports = function nodeModulesPaths(basedir, { moduleDirectory } = {}) {
         return dirs.concat(
             modules.map(moduleDir => {
                 return path.join(prefix, aPath, moduleDir);
-            }),
+            })
         );
     }, []);
 
     return dirs;
-}
+};

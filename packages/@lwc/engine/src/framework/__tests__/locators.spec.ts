@@ -35,18 +35,21 @@ describe('Locators & Located Service', () => {
             }
         }
 
-        const parentHtml = compileTemplate(`
+        const parentHtml = compileTemplate(
+            `
             <template>
                 <x-child locator:id="${expectedScope}" locator:context={getParentState}></x-child>
             </template>
-        `, {
-            modules: {
-                'x-child': Child,
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
 
         class Parent extends LightningElement {
-            foo=10;
+            foo = 10;
 
             constructor() {
                 super();
@@ -58,20 +61,19 @@ describe('Locators & Located Service', () => {
             }
 
             getParentState() {
-                return {key:this.foo};
+                return { key: this.foo };
             }
         }
 
         register({
             locator: function(component, data, def, context) {
-                const {target, host, targetContext, hostContext} = context.locator.resolved;
+                const { target, host, targetContext, hostContext } = context.locator.resolved;
                 interaction = {
                     target: target,
-                    scope:  host,
-                    context: Object.assign(targetContext || {}, hostContext)
+                    scope: host,
+                    context: Object.assign(targetContext || {}, hostContext),
                 };
-
-            }
+            },
         });
         const elem = createElement('x-parent', { is: Parent });
         document.body.appendChild(elem);
@@ -80,7 +82,7 @@ describe('Locators & Located Service', () => {
         expect(interaction).toEqual({
             target: expectedTarget,
             scope: expectedScope,
-            context: { key: expectedValue }
+            context: { key: expectedValue },
         });
     });
 
@@ -105,7 +107,8 @@ describe('Locators & Located Service', () => {
             }
         }
 
-        const parentHtml = compileTemplate(`
+        const parentHtml = compileTemplate(
+            `
             <template>
                 <x-child locator:id="ignore-me">
                     <button onclick={handleClick}
@@ -114,11 +117,13 @@ describe('Locators & Located Service', () => {
                     </button>
                 </x-child>
             </template>
-        `, {
-            modules: {
-                'x-child': Child,
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
 
         class Parent extends LightningElement {
             foo;
@@ -134,21 +139,24 @@ describe('Locators & Located Service', () => {
                 return parentHtml;
             }
             getParentState() {
-                return {parentKey:this.foo};
+                return { parentKey: this.foo };
             }
         }
 
-        const grandParentHtml = compileTemplate(`
+        const grandParentHtml = compileTemplate(
+            `
             <template>
                 <x-parent locator:id="${expectedScope}"
                           locator:context={getGrandParentState}>
                 </x-parent>
             </template>
-        `,{
-            modules: {
-                'x-parent': Parent,
+        `,
+            {
+                modules: {
+                    'x-parent': Parent,
+                },
             }
-        });
+        );
         class GrandParent extends LightningElement {
             bar;
             constructor() {
@@ -159,20 +167,19 @@ describe('Locators & Located Service', () => {
                 return grandParentHtml;
             }
             getGrandParentState() {
-                return {grandParentKey: this.bar}
+                return { grandParentKey: this.bar };
             }
         }
 
         register({
             locator: function(component, data, def, context) {
-                const {target, host, targetContext, hostContext} = context.locator.resolved;
+                const { target, host, targetContext, hostContext } = context.locator.resolved;
                 interaction = {
                     target: target,
-                    scope:  host,
-                    context: Object.assign(targetContext || {}, hostContext)
+                    scope: host,
+                    context: Object.assign(targetContext || {}, hostContext),
                 };
-
-            }
+            },
         });
         const elem = createElement('x-grand-parent', { is: GrandParent });
         document.body.appendChild(elem);
@@ -181,7 +188,7 @@ describe('Locators & Located Service', () => {
         expect(interaction).toEqual({
             target: expectedTarget,
             scope: expectedScope,
-            context: { parentKey: expectedParentValue, grandParentKey: expectedGrandParentValue }
+            context: { parentKey: expectedParentValue, grandParentKey: expectedGrandParentValue },
         });
     });
 
@@ -209,15 +216,18 @@ describe('Locators & Located Service', () => {
             }
         }
 
-        const parentHtml = compileTemplate(`
+        const parentHtml = compileTemplate(
+            `
             <template>
                 <x-child></x-child>
             </template>
-        `, {
-            modules: {
-                'x-child': Child,
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
 
         class Parent extends LightningElement {
             constructor() {
@@ -232,7 +242,7 @@ describe('Locators & Located Service', () => {
         register({
             locator: function() {
                 locatedServiceTriggered = true;
-            }
+            },
         });
         const elem = createElement('x-parent', { is: Parent });
         document.body.appendChild(elem);
@@ -242,8 +252,8 @@ describe('Locators & Located Service', () => {
     });
 });
 
-describe("Errors in locators", () => {
-    it("locator:context callback error is unhandled and prevents actual click handler from executing", () => {
+describe('Errors in locators', () => {
+    it('locator:context callback error is unhandled and prevents actual click handler from executing', () => {
         let clickCount = 0;
         let exceptionLogged = false;
         let interactionLogged = false;
@@ -271,18 +281,21 @@ describe("Errors in locators", () => {
             }
         }
 
-        const parentHtml = compileTemplate(`
+        const parentHtml = compileTemplate(
+            `
             <template>
                 <x-child locator:id="${expectedScope}" locator:context={getParentState}></x-child>
             </template>
-        `, {
-            modules: {
-                'x-child': Child,
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
 
         class Parent extends LightningElement {
-            foo=10;
+            foo = 10;
 
             constructor() {
                 super();
@@ -301,18 +314,18 @@ describe("Errors in locators", () => {
         register({
             locator: function() {
                 interactionLogged = true;
-            }
+            },
         });
         const elem = createElement('x-parent', { is: Parent });
         document.body.appendChild(elem);
 
         // this global listener is needed so that jsdom can forward
         // the unhandled exception here. It won't be catch-able when calling click
-        window.addEventListener('error', (evt) => {
+        window.addEventListener('error', evt => {
             exceptionLogged = true;
             // tell jsdom not to log this event to the console which is default behavior
             evt.preventDefault();
-        })
+        });
 
         childCmp.template.querySelector('button').click();
 

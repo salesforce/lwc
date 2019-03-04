@@ -104,9 +104,7 @@ it('should support chaining querySelectors', () => {
 
     const slotted = elm.shadowRoot.firstChild.firstChild;
 
-    expect(
-        elm.shadowRoot.querySelector('x-slot').querySelector('.slotted'),
-    ).toBe(slotted);
+    expect(elm.shadowRoot.querySelector('x-slot').querySelector('.slotted')).toBe(slotted);
 });
 
 it('should support nested slots - multi-level', () => {

@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as CompilerErrors from "../compiler/error-info";
-import { LWCErrorInfo } from "../shared/types";
+import * as CompilerErrors from '../compiler/error-info';
+import { LWCErrorInfo } from '../shared/types';
 
 // TODO: Move somewhere more visible and documentable
 // TODO: W-5678919 - Implement script to display next available error code
 const ERROR_CODE_RANGES = {
     compiler: {
         min: 1001,
-        max: 1999
-    }
+        max: 1999,
+    },
 };
 
 interface ExtendedMatcher extends jest.Matchers<void> {
@@ -24,17 +24,23 @@ interface ExtendedMatcher extends jest.Matchers<void> {
 expect.extend({
     toBeInRange(code, min, max, key) {
         const pass = Number.isInteger(code) && code >= min && code <= max;
-        const message = () => `expected ${key}'s error code '${code}'${pass ? ' not ' : ' '}to be in the range ${min}-${max}`;
+        const message = () =>
+            `expected ${key}'s error code '${code}'${
+                pass ? ' not ' : ' '
+            }to be in the range ${min}-${max}`;
 
         return { message, pass };
     },
 
     toBeUniqueCode(code, key, seenErrorCodes: Set<number>) {
         const pass = !seenErrorCodes.has(code);
-        const message = () => `expected ${key}'s error code '${code}' to${pass ? ' not ' : ' '}be a unique error code`;
+        const message = () =>
+            `expected ${key}'s error code '${code}' to${
+                pass ? ' not ' : ' '
+            }be a unique error code`;
 
         return { message, pass };
-    }
+    },
 });
 
 function traverseErrorInfo(object, fn: (errorInfo: LWCErrorInfo, path: string) => void, path) {
@@ -51,8 +57,11 @@ function traverseErrorInfo(object, fn: (errorInfo: LWCErrorInfo, path: string) =
 describe('error validation', () => {
     it('compiler error codes are in the correct range', () => {
         function validate(errorInfo: LWCErrorInfo, key: string) {
-            (expect(errorInfo.code) as ExtendedMatcher)
-                .toBeInRange(ERROR_CODE_RANGES.compiler.min, ERROR_CODE_RANGES.compiler.max, key);
+            (expect(errorInfo.code) as ExtendedMatcher).toBeInRange(
+                ERROR_CODE_RANGES.compiler.min,
+                ERROR_CODE_RANGES.compiler.max,
+                key
+            );
         }
 
         traverseErrorInfo(CompilerErrors, validate, 'compiler');

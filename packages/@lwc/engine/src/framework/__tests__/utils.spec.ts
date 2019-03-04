@@ -8,10 +8,9 @@ import * as target from '../utils';
 
 describe('utils', () => {
     describe('#addCallbackToNextTick()', () => {
-
         it('should throw for non-callable values', () => {
             expect(() => target.addCallbackToNextTick(undefined)).toThrow();
-            expect(() => target.addCallbackToNextTick("")).toThrow();
+            expect(() => target.addCallbackToNextTick('')).toThrow();
             expect(() => target.addCallbackToNextTick(NaN)).toThrow();
             expect(() => target.addCallbackToNextTick({})).toThrow();
             expect(() => target.addCallbackToNextTick(1)).toThrow();
@@ -62,16 +61,16 @@ describe('utils', () => {
                 chars += 'b';
             });
             expect(chars).toBe('a');
-            return Promise.resolve().then(() => {
-                expect(chars).toBe('ab');
-                target.addCallbackToNextTick(() => {
-                    chars += 'c';
+            return Promise.resolve()
+                .then(() => {
+                    expect(chars).toBe('ab');
+                    target.addCallbackToNextTick(() => {
+                        chars += 'c';
+                    });
+                })
+                .then(() => {
+                    expect(chars).toBe('abc');
                 });
-            }).then(() => {
-                expect(chars).toBe('abc');
-            });
         });
-
     });
-
 });

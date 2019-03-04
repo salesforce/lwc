@@ -9,16 +9,16 @@ const assert = require('assert');
 const URL = 'http://localhost:4567/slotchange-event';
 
 function getEvents() {
-    var messages = Array.prototype.slice.call(
-        document.querySelectorAll('.message')
-    );
+    var messages = Array.prototype.slice.call(document.querySelectorAll('.message'));
     return messages
-        .map(function (message) { return message.textContent; })
+        .map(function(message) {
+            return message.textContent;
+        })
         .map(JSON.parse);
 }
 
 function getSlotNames(events) {
-    return events.map(function (event) {
+    return events.map(function(event) {
         return event.slotName;
     });
 }
@@ -64,14 +64,21 @@ describe('slotchange', () => {
             browser.click('.foo-bar');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
-            assert.strictEqual(event.assignedContents.join('.'), 'foo.bar', 'should have added an assigned node');
+            assert.strictEqual(
+                event.assignedContents.join('.'),
+                'foo.bar',
+                'should have added an assigned node'
+            );
         });
 
         it('should be dispatched when replacing a single existing node with two different nodes', () => {
             browser.click('.countries');
             const events = browser.execute(getEvents).value;
             const event = events.pop();
-            assert.strictEqual(event.assignedContents.join('.'), 'belarus.china.cuba.france.india.japan.spain');
+            assert.strictEqual(
+                event.assignedContents.join('.'),
+                'belarus.china.cuba.france.india.japan.spain'
+            );
         });
     });
 

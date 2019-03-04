@@ -5,24 +5,65 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const adjectives = [
-    "pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain",
-    "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy",
-    "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive",
-    "fancy"
+    'pretty',
+    'large',
+    'big',
+    'small',
+    'tall',
+    'short',
+    'long',
+    'handsome',
+    'plain',
+    'quaint',
+    'clean',
+    'elegant',
+    'easy',
+    'angry',
+    'crazy',
+    'helpful',
+    'mushy',
+    'odd',
+    'unsightly',
+    'adorable',
+    'important',
+    'inexpensive',
+    'cheap',
+    'expensive',
+    'fancy',
 ];
 
 const colours = [
-    "red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white",
-    "black", "orange"
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange',
 ];
 
 const nouns = [
-    "table", "chair", "house", "bbq", "desk", "car", "pony", "cookie", "sandwich",
-    "burger", "pizza", "mouse", "keyboard"
+    'table',
+    'chair',
+    'house',
+    'bbq',
+    'desk',
+    'car',
+    'pony',
+    'cookie',
+    'sandwich',
+    'burger',
+    'pizza',
+    'mouse',
+    'keyboard',
 ];
 
 function _random(max) {
-    return Math.round(Math.random()*1000)%max;
+    return Math.round(Math.random() * 1000) % max;
 }
 
 // TODO export as default class when compiler handles it
@@ -38,7 +79,12 @@ export class Store {
         for (var i = 0; i < count; i++)
             data.push({
                 id: this.id++,
-                label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)]
+                label:
+                    adjectives[_random(adjectives.length)] +
+                    ' ' +
+                    colours[_random(colours.length)] +
+                    ' ' +
+                    nouns[_random(nouns.length)],
             });
         return data;
     }
@@ -46,9 +92,11 @@ export class Store {
     updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
         var newData = [];
-        for (let i = 0; i < this.data.length; i ++) {
-            if (i%10===0) {
-                newData[i] = Object.assign({}, this.data[i], {label: this.data[i].label + ' !!!'});
+        for (let i = 0; i < this.data.length; i++) {
+            if (i % 10 === 0) {
+                newData[i] = Object.assign({}, this.data[i], {
+                    label: this.data[i].label + ' !!!',
+                });
             } else {
                 newData[i] = this.data[i];
             }
@@ -57,7 +105,7 @@ export class Store {
     }
 
     delete(id) {
-        const idx = this.data.findIndex(d => d.id==id);
+        const idx = this.data.findIndex(d => d.id == id);
         this.data.splice(idx, 1);
     }
 
@@ -89,15 +137,14 @@ export class Store {
     }
 
     swapRows() {
-        if(this.data.length > 10) {
+        if (this.data.length > 10) {
             let d4 = this.data[4];
             let d9 = this.data[9];
 
             var newData = this.data.map(function(data, i) {
-                if(i === 4) {
+                if (i === 4) {
                     return d9;
-                }
-                else if(i === 9) {
+                } else if (i === 9) {
                     return d4;
                 }
                 return data;
