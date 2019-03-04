@@ -19,14 +19,17 @@ const LWC_CONFIG_FILE = '.lwcrc';
 function loadLwcConfig(modulePath) {
     const packageJsonPath = path.join(modulePath, 'package.json');
     const lwcConfigPath = path.join(modulePath, LWC_CONFIG_FILE);
-    const jsonPkg = require(packageJsonPath);
     let config;
     try {
-        config = fs.readFileSync(lwcConfigPath, 'utf8');
-    } catch (e) {
-        config = jsonPkg.lwc;
+        const jsonPkg = require(packageJsonPath);
+        try {
+            config = fs.readFileSync(lwcConfigPath, 'utf8');
+        } catch (e) {
+            config = jsonPkg.lwc;
+        }
+    } catch(ignore) {
+        // ignore
     }
-
     return config;
 }
 
