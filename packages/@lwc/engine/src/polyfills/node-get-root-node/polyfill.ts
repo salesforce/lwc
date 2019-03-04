@@ -7,7 +7,7 @@
 import { defineProperty, isNull, isTrue, isUndefined } from '../../shared/language';
 import { parentNodeGetter } from '../../env/node';
 import { getNodeOwner } from '../../faux-shadow/traverse';
-import { getShadowRoot } from "../../faux-shadow/shadow-root";
+import { getShadowRoot } from '../../faux-shadow/shadow-root';
 
 const nativeGetRootNode = Node.prototype.getRootNode;
 
@@ -16,16 +16,18 @@ const nativeGetRootNode = Node.prototype.getRootNode;
  * If Node.prototype.getRootNode is supported, use it
  * else, assume we are working in non-native shadow mode and climb using parentNode
  */
-const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(nativeGetRootNode) ?
-    nativeGetRootNode : 
-    function(this: Node): Node{
-        let node = this;
-        let nodeParent: Node | null;
-        while (!isNull(nodeParent = parentNodeGetter.call(node))) {
-            node = nodeParent!;
-        }
-        return node;
-    };
+const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(
+    nativeGetRootNode
+)
+    ? nativeGetRootNode
+    : function(this: Node): Node {
+          let node = this;
+          let nodeParent: Node | null;
+          while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
+              node = nodeParent!;
+          }
+          return node;
+      };
 
 /**
  * Get the shadow root
@@ -33,9 +35,10 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
  * Note: getNodeOwner() returns null when running in native-shadow mode.
  *  Fallback to using the native getRootNode() to discover the root node.
  *  This is because, it is not possible to inspect the node and decide if it is part
- *  of a native shadow or the synthetic shadow. 
- * @param {Node} node 
- */    
+ *  of a native shadow or the synthetic shadow.
+ * @param {Node} node
+ */
+
 function getNearestRoot(node: Node): Node {
     const ownerNode: HTMLElement | null = getNodeOwner(node);
 
@@ -50,9 +53,7 @@ function getNearestRoot(node: Node): Node {
 function patchedGetRootNode(this: Node, options?: GetRootNodeOptions): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
 
-    return isTrue(composed) ?
-        getDocumentOrRootNode.call(this, options) :
-        getNearestRoot(this);
+    return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
 }
 
 export default function apply() {
@@ -60,6 +61,6 @@ export default function apply() {
         value: patchedGetRootNode,
         enumerable: true,
         configurable: true,
-        writable: true
+        writable: true,
     });
 }

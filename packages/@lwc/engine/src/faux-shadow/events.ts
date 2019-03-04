@@ -28,7 +28,7 @@ import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 
-import "../polyfills/event-listener/main";
+import '../polyfills/event-listener/main';
 
 // intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
 // due to the issues with JSDOM patching hazard.
