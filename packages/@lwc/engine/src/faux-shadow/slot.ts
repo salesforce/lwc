@@ -4,14 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { getAttribute, childrenGetter } from "../env/element";
-import {
-    createFieldName,
-    getInternalField,
-    setInternalField,
-} from "../shared/fields";
-import { dispatchEvent } from "../env/dom";
+import assert from '../shared/assert';
+import { getAttribute, childrenGetter } from '../env/element';
+import { createFieldName, getInternalField, setInternalField } from '../shared/fields';
+import { dispatchEvent } from '../env/dom';
 import {
     ArrayIndexOf,
     ArrayPush,
@@ -22,18 +18,20 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
-} from "../shared/language";
+} from '../shared/language';
+import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
-    MutationObserverObserve,
-    MutationObserver,
-} from "../env/mutation-observer";
-import { PatchedElement, isSlotElement, isNodeOwnedBy, getNodeOwner, getAllMatches, getFilteredChildNodes } from "./traverse";
-import { HTMLSlotElementConstructor } from "../framework/base-bridge-element";
-import {
-    childNodesGetter as nativeChildNodesGetter,
-} from "../env/node";
-import { createStaticNodeList } from "../shared/static-node-list";
-import { createStaticHTMLCollection } from "../shared/static-html-collection";
+    PatchedElement,
+    isSlotElement,
+    isNodeOwnedBy,
+    getNodeOwner,
+    getAllMatches,
+    getFilteredChildNodes,
+} from './traverse';
+import { HTMLSlotElementConstructor } from '../framework/base-bridge-element';
+import { childNodesGetter as nativeChildNodesGetter } from '../env/node';
+import { createStaticNodeList } from '../shared/static-node-list';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -74,12 +72,16 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
-    return ArrayReduce.call(childNodes, (seed, child) => {
-        if (!isNodeOwnedBy(owner, child)) {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
+    return ArrayReduce.call(
+        childNodes,
+        (seed, child) => {
+            if (!isNodeOwnedBy(owner, child)) {
+                ArrayPush.call(seed, child);
+            }
+            return seed;
+        },
+        []
+    );
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
@@ -87,14 +89,18 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
-    return ArrayReduce.call(childNodes, (seed, child) => {
-        if (child instanceof Element && isSlotElement(child)) {
-            ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
-        } else {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
+    return ArrayReduce.call(
+        childNodes,
+        (seed, child) => {
+            if (child instanceof Element && isSlotElement(child)) {
+                ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
+            } else {
+                ArrayPush.call(seed, child);
+            }
+            return seed;
+        },
+        []
+    );
 }
 
 interface AssignedNodesOptions {
@@ -105,11 +111,18 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
     const Ctor = PatchedElement(elm) as HTMLSlotElementConstructor;
     const { addEventListener: superAddEventListener } = elm;
     return class PatchedHTMLSlotElement extends Ctor {
-        addEventListener(this: HTMLSlotElement, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+        addEventListener(
+            this: HTMLSlotElement,
+            type: string,
+            listener: EventListener,
+            options?: boolean | AddEventListenerOptions
+        ) {
             if (type === 'slotchange' && !getInternalField(this, SlotChangeKey)) {
                 if (process.env.NODE_ENV === 'test') {
                     /* eslint-disable-next-line no-console */
-                    console.warn('The "slotchange" event is not supported in our jest test environment.');
+                    console.warn(
+                        'The "slotchange" event is not supported in our jest test environment.'
+                    );
                 }
                 setInternalField(this, SlotChangeKey, true);
                 if (!observer) {
@@ -121,7 +134,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
         }
         assignedElements(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
             const flatten = !isUndefined(options) && isTrue(options.flatten);
-            const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+            const nodes = flatten
+                ? getFilteredSlotFlattenNodes(this)
+                : getFilteredSlotAssignedNodes(this);
             return ArrayFilter.call(nodes, node => node instanceof Element);
         }
         assignedNodes(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
@@ -135,7 +150,9 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
         }
         get childNodes(this: HTMLSlotElement): NodeListOf<Node & Element> {
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
             return createStaticNodeList(childNodes);
         }
         get children(this: HTMLSlotElement): HTMLCollectionOf<Element> {
@@ -148,8 +165,12 @@ export function PatchedSlotElement(elm: HTMLSlotElement): HTMLSlotElementConstru
                 return childrenGetter.call(this);
             }
             const owner = getNodeOwner(this);
-            const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
-            return createStaticHTMLCollection(ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element));
+            const childNodes = isNull(owner)
+                ? []
+                : getAllMatches(owner, getFilteredChildNodes(this));
+            return createStaticHTMLCollection(
+                ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
+            );
         }
     };
 }

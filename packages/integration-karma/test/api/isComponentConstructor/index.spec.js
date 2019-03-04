@@ -24,7 +24,7 @@ it('should return true if when passing a class inheriting from LightningElement'
     expect(isComponentConstructor(Component)).toBe(true);
 });
 
-it('should return true if when passing a class with LightningElement in it\'s prototype chain', () => {
+it("should return true if when passing a class with LightningElement in it's prototype chain", () => {
     class Base extends LightningElement {}
     class Component extends Base {}
     expect(isComponentConstructor(Component)).toBe(true);

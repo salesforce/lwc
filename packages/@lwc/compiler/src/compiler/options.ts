@@ -4,35 +4,31 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isBoolean, isString, isUndefined, isObject } from "../utils";
-import { CompilerValidationErrors, invariant } from "@lwc/errors";
+import { isBoolean, isString, isUndefined, isObject } from '../utils';
+import { CompilerValidationErrors, invariant } from '@lwc/errors';
 
 const DEFAULT_OPTIONS = {
-    baseDir: "",
-    isExplicitImport: false
+    baseDir: '',
+    isExplicitImport: false,
 };
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     customProperties: {
         allowDefinition: false,
-        resolution: { type: 'native' }
-    }
+        resolution: { type: 'native' },
+    },
 };
 
 const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
     env: {},
     minify: false,
     compat: false,
-    sourcemap: false
+    sourcemap: false,
 };
 
-const KNOWN_ENV = new Set([
-    'NODE_ENV',
-]);
+const KNOWN_ENV = new Set(['NODE_ENV']);
 
-export type CustomPropertiesResolution =
-    | { type: 'native' }
-    | { type: 'module', name: string };
+export type CustomPropertiesResolution = { type: 'native' } | { type: 'module'; name: string };
 
 export interface CustomPropertiesConfig {
     allowDefinition?: boolean;
@@ -100,8 +96,12 @@ export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
 
 export function validateOptions(options: CompilerOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
-    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [options.name]);
-    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [options.namespace]);
+    invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
+        options.name,
+    ]);
+    invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
+        options.namespace,
+    ]);
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
@@ -139,11 +139,9 @@ function validateStylesheetConfig(config: StylesheetConfig) {
         );
 
         if (!isUndefined(resolution)) {
-            invariant(
-                isObject(resolution),
-                CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY,
-                [resolution]
-            );
+            invariant(isObject(resolution), CompilerValidationErrors.INVALID_RESOLUTION_PROPERTY, [
+                resolution,
+            ]);
 
             const { type } = resolution;
             invariant(
@@ -179,47 +177,38 @@ function validateOutputConfig(config: OutputConfig) {
     );
 
     if (!isUndefined(config.env)) {
-        invariant(
-            isObject(config.env),
-            CompilerValidationErrors.INVALID_ENV_PROPERTY,
-            [config.env]
-        );
+        invariant(isObject(config.env), CompilerValidationErrors.INVALID_ENV_PROPERTY, [
+            config.env,
+        ]);
 
         for (const [key, value] of Object.entries(config.env)) {
-            invariant(
-                KNOWN_ENV.has(key),
-                CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY,
-                [key]
-            );
+            invariant(KNOWN_ENV.has(key), CompilerValidationErrors.UNKNOWN_ENV_ENTRY_KEY, [key]);
 
-            invariant(
-                isString(value),
-                CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE,
-                [key, value]
-            );
+            invariant(isString(value), CompilerValidationErrors.INVALID_ENV_ENTRY_VALUE, [
+                key,
+                value,
+            ]);
         }
     }
 }
 
-export function normalizeOptions(
-    options: CompilerOptions
-): NormalizedCompilerOptions {
+export function normalizeOptions(options: CompilerOptions): NormalizedCompilerOptions {
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
-        ...options.outputConfig
+        ...options.outputConfig,
     };
 
     const stylesheetConfig: NormalizedStylesheetConfig = {
         customProperties: {
             ...DEFAULT_STYLESHEET_CONFIG.customProperties,
             ...(options.stylesheetConfig && options.stylesheetConfig.customProperties),
-        }
+        },
     };
 
     return {
         ...DEFAULT_OPTIONS,
         ...options,
         stylesheetConfig,
-        outputConfig
+        outputConfig,
     };
 }

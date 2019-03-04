@@ -13,7 +13,7 @@ describe('Event target in slot elements', () => {
         browser.url(URL);
     });
 
-    it('should receive event with correct target', function () {
+    it('should receive event with correct target', function() {
         const select = browser.element('select');
         select.selectByVisibleText('Second');
 

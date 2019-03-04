@@ -20,17 +20,17 @@ function testConnectSlot(name, fn) {
     });
 }
 
-testConnectSlot('Node.appendChild', (elm) => {
+testConnectSlot('Node.appendChild', elm => {
     document.body.appendChild(elm);
 });
 
-testConnectSlot('Node.insertBefore', (elm) => {
+testConnectSlot('Node.insertBefore', elm => {
     const child = document.createElement('div');
     document.body.appendChild(child);
     document.body.insertBefore(elm, child);
 });
 
-testConnectSlot('Node.replaceChild', (elm) => {
+testConnectSlot('Node.replaceChild', elm => {
     const child = document.createElement('div');
     document.body.appendChild(child);
     document.body.replaceChild(elm, child);

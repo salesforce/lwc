@@ -41,8 +41,12 @@ function selectorProcessorFactory(config: PluginConfig, transformConfig: Selecto
 export default postcss.plugin('postcss-plugin-lwc', (pluginConfig: PluginConfig) => {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
-    const nativeShadowSelectorProcessor = selectorProcessorFactory(pluginConfig, { transformHost: false });
-    const fakeShadowSelectorProcessor = selectorProcessorFactory(pluginConfig, { transformHost: true });
+    const nativeShadowSelectorProcessor = selectorProcessorFactory(pluginConfig, {
+        transformHost: false,
+    });
+    const fakeShadowSelectorProcessor = selectorProcessorFactory(pluginConfig, {
+        transformHost: true,
+    });
 
     return (root: Root, result: Result) => {
         const { customProperties } = pluginConfig;

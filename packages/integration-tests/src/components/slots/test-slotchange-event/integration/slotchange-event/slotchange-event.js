@@ -7,7 +7,7 @@ export default class SlotChangeEvent extends LightningElement {
         things: ['foo'],
         toggle: false,
         updateName: false,
-    }
+    };
 
     get leakedSlotChangeEventCount() {
         return this.state.leakedEvents.length;
@@ -18,9 +18,7 @@ export default class SlotChangeEvent extends LightningElement {
     }
 
     get messages() {
-        return this.state.events.map(
-            data => JSON.stringify(data)
-        );
+        return this.state.events.map(data => JSON.stringify(data));
     }
 
     addEventListenerToSlot() {

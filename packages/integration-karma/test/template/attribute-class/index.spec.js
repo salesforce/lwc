@@ -20,7 +20,7 @@ describe('dynamic class attribute', () => {
 
         return {
             host: elm,
-            target: elm.shadowRoot.querySelector('div')
+            target: elm.shadowRoot.querySelector('div'),
         };
     }
 

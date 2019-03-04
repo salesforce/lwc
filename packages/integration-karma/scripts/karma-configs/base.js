@@ -36,7 +36,7 @@ function getLwcConfig(config) {
     const tags = [
         `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
         compat && 'compat',
-        prod && 'production'
+        prod && 'production',
     ].filter(Boolean);
 
     return {
@@ -100,9 +100,7 @@ module.exports = config => {
     // The code coverage is only enabled when the flag is passed since it makes debugging the engine code harder.
     if (config.coverage) {
         // Indicate to Karma to instrument the engine to gather code coverage.
-        config.preprocessors[
-            lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE
-        ] = ['coverage'];
+        config.preprocessors[lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');

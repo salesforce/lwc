@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require("fs");
-const path = require("path");
-const compiler = require("@lwc/compiler");
-const pluginUtils = require("rollup-pluginutils");
-const lwcResolver = require("@lwc/module-resolver");
+const fs = require('fs');
+const path = require('path');
+const compiler = require('@lwc/compiler');
+const pluginUtils = require('rollup-pluginutils');
+const lwcResolver = require('@lwc/module-resolver');
 const { getModuleQualifiedName } = require('./utils');
-const { DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
+const { DEFAULT_OPTIONS, DEFAULT_MODE } = require('./constants');
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 
 function isImplicitHTMLImport(importee, importer) {
     return (
-        path.extname(importer) === ".js" &&
+        path.extname(importer) === '.js' &&
         path.extname(importee) === '.html' &&
         path.dirname(importer) === path.dirname(importee) &&
         path.basename(importer, '.js') === path.basename(importee, '.html')
@@ -34,14 +34,18 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     let modulePaths = {};
 
     return {
-        name: "rollup-plugin-lwc-compiler",
+        name: 'rollup-plugin-lwc-compiler',
 
         options(rollupOptions) {
             modulePaths = {};
             const entry = rollupOptions.input || rollupOptions.entry;
             const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
-            const externalPaths = resolveFromPackages ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions) : {};
-            const sourcePaths = resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions) : {};
+            const externalPaths = resolveFromPackages
+                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
+                : {};
+            const sourcePaths = resolveFromSource
+                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
+                : {};
             Object.assign(modulePaths, externalPaths, sourcePaths);
         },
 
@@ -52,7 +56,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // Normalize relative import to absolute import
-            if (importee.startsWith(".") && importer) {
+            if (importee.startsWith('.') && importer) {
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
                 const absPath = pluginUtils.addExtension(normalizedPath);
 
@@ -70,10 +74,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             const exists = fs.existsSync(id);
-            const isCSS = path.extname(id) === ".css";
+            const isCSS = path.extname(id) === '.css';
 
             if (!exists && isCSS) {
-                return "";
+                return '';
             }
         },
 
@@ -93,10 +97,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 namespace: moduleRegistry.moduleNamespace,
                 moduleSpecifier: moduleRegistry.moduleSpecifier,
                 outputConfig: { sourcemap: mergedPluginOptions.sourcemap },
-                stylesheetConfig: mergedPluginOptions.stylesheetConfig
+                stylesheetConfig: mergedPluginOptions.stylesheetConfig,
             });
 
             return { code, map };
-        }
+        },
     };
 };

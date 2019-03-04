@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import decorate from "../decorate";
+import decorate from '../decorate';
 
 describe('decorate.ts', () => {
     describe('decorate() api', () => {
@@ -31,7 +31,7 @@ describe('decorate.ts', () => {
             expect(() => {
                 class f {}
                 decorate(f, {
-                    x: undefined
+                    x: undefined,
                 });
             }).toThrow();
         });
@@ -44,24 +44,26 @@ describe('decorate.ts', () => {
         it('should decorate a class', () => {
             expect.assertions(7);
             class f {
-                get y() { return 1; }
-                set y(v) { }
+                get y() {
+                    return 1;
+                }
+                set y(v) {}
             }
             decorate(f, {
-                x: function (Ctor, key, descriptor) {
+                x: function(Ctor, key, descriptor) {
                     expect(Ctor).toBe(f);
                     expect(key).toBe('x');
                     expect(descriptor).toBe(undefined);
                     return {
-                        value: 1
+                        value: 1,
                     };
                 },
-                y: function (Ctor, key, descriptor) {
+                y: function(Ctor, key, descriptor) {
                     expect(Ctor).toBe(f);
                     expect(key).toBe('y');
                     expect(descriptor.configurable).toBe(true);
                     return descriptor;
-                }
+                },
             });
             expect(new f().x).toBe(1);
         });

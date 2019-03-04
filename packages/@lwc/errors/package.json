@@ -1,19 +1,19 @@
 {
-  "name": "@lwc/errors",
-  "version": "0.35.11",
-  "description": "LWC Error Utilities",
-  "main": "dist/commonjs/index.js",
-  "license": "MIT",
-  "typings": "dist/types/",
-  "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "tsc",
-    "test": "jest"
-  },
-  "keywords": [
-    "lwc"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/errors",
+    "version": "0.35.11",
+    "description": "LWC Error Utilities",
+    "main": "dist/commonjs/index.js",
+    "license": "MIT",
+    "typings": "dist/types/",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "build": "tsc",
+        "test": "jest"
+    },
+    "keywords": [
+        "lwc"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }

@@ -6,12 +6,15 @@
  */
 const { isApiDecorator } = require('./shared');
 const { markAsLWCNode, staticClassProperty } = require('../../utils');
-const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
+const {
+    LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS },
+    DECORATOR_TYPES,
+} = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
     PROPERTY: 0,
     GETTER: 1,
-    SETTER: 2
+    SETTER: 2,
 };
 
 function getPropertyBitmask(type) {
@@ -30,14 +33,16 @@ function getPropertyBitmask(type) {
 function getSiblingGetSetPair(propertyPath, propertyName, type) {
     const siblingType = type === 'getter' ? 'set' : 'get';
     const klassBody = propertyPath.parentPath.get('body');
-    const siblingNode = klassBody.find((classMethodPath) => (
-        classMethodPath !== propertyPath &&
-        classMethodPath.isClassMethod({ kind: siblingType }) &&
-        classMethodPath.node.key.name === propertyName)
+    const siblingNode = klassBody.find(
+        classMethodPath =>
+            classMethodPath !== propertyPath &&
+            classMethodPath.isClassMethod({ kind: siblingType }) &&
+            classMethodPath.node.key.name === propertyName
     );
 
     if (siblingNode) {
-        const decoratorType = siblingType === 'get' ? DECORATOR_TYPES.GETTER :DECORATOR_TYPES.SETTER;
+        const decoratorType =
+            siblingType === 'get' ? DECORATOR_TYPES.GETTER : DECORATOR_TYPES.SETTER;
         return { type: decoratorType, path: siblingNode };
     }
 }
@@ -67,9 +72,7 @@ function computePublicPropsConfig(decorators) {
 
 /** Returns the public methods configuration of class based on a list of decorators. */
 function computePublicMethodsConfig(decorators) {
-    return decorators.map(({ path }) => (
-        path.parentPath.get('key.name').node
-    ));
+    return decorators.map(({ path }) => path.parentPath.get('key.name').node);
 }
 
 /** Transform class public props and returns the list of public props */
@@ -78,11 +81,7 @@ function transformPublicProps(t, klassBody, apiDecorators) {
 
     if (publicProps.length) {
         const publicPropsConfig = computePublicPropsConfig(publicProps);
-        const staticProp = staticClassProperty(
-            t,
-            PUBLIC_PROPS,
-            t.valueToNode(publicPropsConfig)
-        );
+        const staticProp = staticClassProperty(t, PUBLIC_PROPS, t.valueToNode(publicPropsConfig));
 
         markAsLWCNode(staticProp);
         klassBody.pushContainer('body', staticProp);
@@ -111,5 +110,4 @@ module.exports = function transform(t, klass, decorators) {
 
     transformPublicProps(t, klassBody, apiDecorators);
     transformPublicMethods(t, klassBody, apiDecorators);
-
-}
+};

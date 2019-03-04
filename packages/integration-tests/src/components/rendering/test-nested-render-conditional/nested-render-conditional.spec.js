@@ -13,7 +13,7 @@ describe('Nested conditional render', () => {
         browser.url(URL);
     });
 
-    it('should toggle element with nested conditional', function () {
+    it('should toggle element with nested conditional', function() {
         const clickElement = browser.element('.click-me');
         clickElement.click();
         const toggleElement = browser.elements('.toggle');

@@ -17,14 +17,12 @@ module.exports = {
     transform: {
         '^.+\\.(js|html|css)$': '<rootDir>/src/index.js',
     },
-    testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
+    testMatch: ['**/__tests__/**/?(*.)(test).js'],
     resolver: '@lwc/jest-resolver',
     snapshotSerializers: ['@lwc/jest-serializer'],
 
     // Disable coverage entirely for this package. This package overrides the jest configuration
     // to test its internals. Because of this the coverage reports the fixtures code and not the
     // package's logic.
-    coveragePathIgnorePatterns: [
-        '<rootDir>/src',
-    ],
+    coveragePathIgnorePatterns: ['<rootDir>/src'],
 };

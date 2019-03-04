@@ -1,15 +1,15 @@
 # lwc-jest-resolver
 
-The default [Jest](https://facebook.github.io/jest/) resolver for finding lwc-* modules. This project leverages [lwc-npm-resolver](https://git.soma.salesforce.com/raptor/raptor/tree/master/packages/lwc-npm-resolver) to allow LWC components to import modules by their shorthand. For example, lwc-engine can be imported simply as `engine`.
+The default [Jest](https://facebook.github.io/jest/) resolver for finding lwc-\* modules. This project leverages [lwc-npm-resolver](https://git.soma.salesforce.com/raptor/raptor/tree/master/packages/lwc-npm-resolver) to allow LWC components to import modules by their shorthand. For example, lwc-engine can be imported simply as `engine`.
 
 For more info on resolvers see the Jest [doc](https://facebook.github.io/jest/docs/configuration.html#resolver-string).
 
 ## Requirements
 
- * Node 8.x
- * NPM 5.x
- * Yarn >= 1.0.0
- * Jest >= 21.x
+-   Node 8.x
+-   NPM 5.x
+-   Yarn >= 1.0.0
+-   Jest >= 21.x
 
 ## Usage
 
@@ -17,9 +17,9 @@ This resolver will be included as part of LWCs preset Jest configuration. Follow
 
 ```json
 {
-  "jest": {
-    "preset": "lwc-jest-preset"
-  }
+    "jest": {
+        "preset": "lwc-jest-preset"
+    }
 }
 ```
 
@@ -27,9 +27,9 @@ Alternatively, you can directly set the resolver in your config. For example:
 
 ```json
 {
-  "jest": {
-    "resolver": "lwc-jest-resolver"
-  }
+    "jest": {
+        "resolver": "lwc-jest-resolver"
+    }
 }
 ```
 

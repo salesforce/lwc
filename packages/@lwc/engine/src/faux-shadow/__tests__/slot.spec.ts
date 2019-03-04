@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from "../../framework/main";
+import { createElement, LightningElement } from '../../framework/main';
 
 describe('slotted elements', () => {
     it('should be visible via event.target', () => {
@@ -51,18 +51,21 @@ describe('slotted elements', () => {
             }
         }
 
-        const htmlMock = compileTemplate(`
+        const htmlMock = compileTemplate(
+            `
             <template>
                 <x-container>
                     <x-child></x-child>
                 </x-container>
             </template>
-        `, {
-            modules: {
-                'x-container': XContainer,
-                'x-child': XChild,
+        `,
+            {
+                modules: {
+                    'x-container': XContainer,
+                    'x-child': XChild,
+                },
             }
-        });
+        );
 
         class MyMock extends LightningElement {
             connectedCallback() {
@@ -96,15 +99,18 @@ describe('slotted elements', () => {
                 return childHTML;
             }
         }
-        const parentHTML = compileTemplate(`<template>
+        const parentHTML = compileTemplate(
+            `<template>
             <c-child>
                 <div>Slotted</div>
             </c-child>
-        </template>`, {
-            modules: {
-                'c-child': ChildComponent
+        </template>`,
+            {
+                modules: {
+                    'c-child': ChildComponent,
+                },
             }
-        });
+        );
 
         class ParentComponent extends LightningElement {
             render() {
@@ -133,15 +139,18 @@ describe('slotted elements', () => {
                 return childHTML;
             }
         }
-        const parentHTML = compileTemplate(`<template>
+        const parentHTML = compileTemplate(
+            `<template>
             <c-child>
                 <div>Slotted</div>
             </c-child>
-        </template>`, {
-            modules: {
-                'c-child': ChildComponent
+        </template>`,
+            {
+                modules: {
+                    'c-child': ChildComponent,
+                },
             }
-        });
+        );
 
         class ParentComponent extends LightningElement {
             render() {
@@ -155,5 +164,4 @@ describe('slotted elements', () => {
         children = slot.childNodes;
         expect(children).toHaveLength(0);
     });
-
 });

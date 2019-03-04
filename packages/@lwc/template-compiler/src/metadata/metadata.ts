@@ -9,9 +9,9 @@ import {
     IRElement,
     ModuleDependency,
     TemplateExpression,
-    TemplateIdentifier
-} from "../shared/types";
-import { kebabcaseToCamelcase } from "../shared/naming";
+    TemplateIdentifier,
+} from '../shared/types';
+import { kebabcaseToCamelcase } from '../shared/naming';
 import generate from '@babel/generator';
 import * as babelTypes from '@babel/types';
 
@@ -38,7 +38,7 @@ export function getModuleMetadata(element: IRElement): ModuleDependency {
             }
             properties[name] = {
                 type: returnedType,
-                value: returnedValue
+                value: returnedValue,
             };
         }
     }

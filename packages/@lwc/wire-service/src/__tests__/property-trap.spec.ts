@@ -4,18 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    installTrap,
-    findDescriptor,
-    getReactiveParameterValue,
-    updated
-} from '../property-trap';
+import { installTrap, findDescriptor, getReactiveParameterValue, updated } from '../property-trap';
 import { ConfigContext, ReactiveParameter } from '../wiring';
 
 describe('findDescriptor', () => {
     it('detects circular prototype chains', () => {
-        function A() { /**/ }
-        function B() { /**/ }
+        function A() {
+            /**/
+        }
+        function B() {
+            /**/
+        }
         B.prototype = Object.create(A.prototype);
         A.prototype = Object.create(B.prototype);
         const actual = findDescriptor(B, 'target');
@@ -23,9 +22,13 @@ describe('findDescriptor', () => {
     });
 
     it('finds descriptor on super with prototype setting', () => {
-        function A() { /**/ }
+        function A() {
+            /**/
+        }
         A.prototype.target = 'target';
-        function B() { /**/ }
+        function B() {
+            /**/
+        }
         B.prototype = Object.create(A.prototype);
         expect(findDescriptor(B, 'target')).toBe(null);
         expect(findDescriptor(new B(), 'target')).not.toBe(null);
@@ -41,21 +44,21 @@ describe('findDescriptor', () => {
         class B extends A {}
         expect(findDescriptor(B, 'target')).toBe(null);
         expect(findDescriptor(new B(), 'target')).not.toBe(null);
-     });
+    });
 });
 
 describe('installTrap', () => {
     const context: ConfigContext = {
         listeners: {
-            prop1: []
+            prop1: [],
         },
         values: {
-            prop1: ''
-        }
+            prop1: '',
+        },
     };
     const reactiveParameter: ReactiveParameter = {
         reference: 'prop1',
-        head: 'prop1'
+        head: 'prop1',
     };
 
     it('defaults to original value when setter installed', () => {
@@ -80,7 +83,9 @@ describe('installTrap', () => {
 
     it('installs setter on cmp for property', () => {
         class Target {
-            set prop1(value) { /**/ }
+            set prop1(value) {
+                /**/
+            }
         }
         const original = Object.getOwnPropertyDescriptor(Target.prototype, 'prop1');
         const cmp = new Target();
@@ -96,7 +101,9 @@ describe('installTrap', () => {
             set prop1(value) {
                 setter(value);
             }
-            get prop1() { return ''; }
+            get prop1() {
+                return '';
+            }
         }
         const cmp = new Target();
         installTrap(cmp, reactiveParameter, context);
@@ -108,10 +115,12 @@ describe('installTrap', () => {
     it('installs setter on cmp only for reactiveParameter.root', () => {
         const dotNotationReactiveParameter: ReactiveParameter = {
             reference: 'prop1.x.y',
-            head: 'prop1'
+            head: 'prop1',
         };
         class Target {
-            set prop1(value) { /**/ }
+            set prop1(value) {
+                /**/
+            }
         }
         const original = Object.getOwnPropertyDescriptor(Target.prototype, 'prop1');
         const cmp = new Target();
@@ -125,7 +134,7 @@ describe('installTrap', () => {
 describe('invokeConfigListeners', () => {
     const reactiveParameter: ReactiveParameter = {
         reference: 'prop1',
-        head: 'prop1'
+        head: 'prop1',
     };
 
     it('invokes listener with reactive parameter default value', () => {
@@ -133,11 +142,11 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, reactives: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }],
             },
             values: {
                 // initial state is empty
-            }
+            },
         };
         class Target {
             prop1 = expected;
@@ -156,10 +165,9 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, reactives: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }],
             },
-            values: {
-            }
+            values: {},
         };
         class Target {
             prop1;
@@ -179,11 +187,11 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, reactives: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }],
             },
             values: {
-                prop1: 'expected'
-            }
+                prop1: 'expected',
+            },
         };
         class Target {
             prop1;
@@ -201,15 +209,19 @@ describe('invokeConfigListeners', () => {
         const listener = jest.fn();
         const context: ConfigContext = {
             listeners: {
-                prop1: [{ listener, reactives: { param1: 'prop1' } }]
+                prop1: [{ listener, reactives: { param1: 'prop1' } }],
             },
             values: {
-                prop1: ''
-            }
+                prop1: '',
+            },
         };
         class Target {
-            set prop1(value) { /**/ }
-            get prop1() { return expected; }
+            set prop1(value) {
+                /**/
+            }
+            get prop1() {
+                return expected;
+            }
         }
         const cmp = new Target();
         installTrap(cmp, reactiveParameter, context);
@@ -227,23 +239,23 @@ describe('getReactiveParameterValue', () => {
         const reactiveParameter: ReactiveParameter = {
             reference: 'a.b.c.d',
             head: 'a',
-            tail: ['b', 'c', 'd']
+            tail: ['b', 'c', 'd'],
         };
         class Target {
-            a = { b: { c: { d: expected }}};
+            a = { b: { c: { d: expected } } };
         }
         expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBe(expected);
     });
 
     it('returns tree in object graph', () => {
-        const expected = { e: { f: 'expected' }};
+        const expected = { e: { f: 'expected' } };
         const reactiveParameter: ReactiveParameter = {
             reference: 'a.b.c.d',
             head: 'a',
-            tail: ['b', 'c', 'd']
+            tail: ['b', 'c', 'd'],
         };
         class Target {
-            a = { b: { c: { d: expected }}};
+            a = { b: { c: { d: expected } } };
         }
         expect(getReactiveParameterValue(new Target(), reactiveParameter)).toBe(expected);
     });
@@ -252,7 +264,7 @@ describe('getReactiveParameterValue', () => {
         const reactiveParameter: ReactiveParameter = {
             reference: 'a.b.c.d',
             head: 'a',
-            tail: ['b', 'c', 'd']
+            tail: ['b', 'c', 'd'],
         };
         class Target {
             // a does not exist
@@ -264,7 +276,7 @@ describe('getReactiveParameterValue', () => {
         const reactiveParameter: ReactiveParameter = {
             reference: 'a.b.c.d',
             head: 'a',
-            tail: ['b', 'c', 'd']
+            tail: ['b', 'c', 'd'],
         };
         class Target {
             a = { b: undefined };
@@ -276,7 +288,7 @@ describe('getReactiveParameterValue', () => {
         const reactiveParameter: ReactiveParameter = {
             reference: 'a.b.c.d',
             head: 'a',
-            tail: ['b', 'c', 'd']
+            tail: ['b', 'c', 'd'],
         };
         class Target {
             a = { b: {} };

@@ -82,7 +82,8 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child-node-with-slot>
@@ -90,11 +91,13 @@ describe('#childNodes', () => {
                     </x-child-node-with-slot>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child-node-with-slot': HasSlot
+        `,
+            {
+                modules: {
+                    'x-child-node-with-slot': HasSlot,
+                },
             }
-        });
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -103,7 +106,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-child-node-with-slot')
+            .shadowRoot.querySelector('slot');
         expect(slot.childNodes).toHaveLength(0);
     });
 
@@ -121,17 +126,20 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child-node-with-slot></x-child-node-with-slot>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child-node-with-slot': HasSlot
+        `,
+            {
+                modules: {
+                    'x-child-node-with-slot': HasSlot,
+                },
             }
-        });
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -140,7 +148,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-child-node-with-slot')
+            .shadowRoot.querySelector('slot');
         expect(slot.childNodes).toHaveLength(1);
     });
 
@@ -178,17 +188,20 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child></x-child>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child': Child
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -214,7 +227,8 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child>
@@ -222,11 +236,13 @@ describe('#childNodes', () => {
                     </x-child>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child': Child
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -252,7 +268,8 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child>
@@ -260,11 +277,13 @@ describe('#childNodes', () => {
                     </x-child>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child': Child
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
             }
-        });
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -292,17 +311,20 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <div>
                     <x-child></x-child>
                 </div>
             </template>
-        `, {
-            modules: {
-                'x-child': Child
-            },
-        });
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
+            }
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -331,15 +353,18 @@ describe('#childNodes', () => {
             }
         }
 
-        const parentTmpl = compileTemplate(`
+        const parentTmpl = compileTemplate(
+            `
             <template>
                 <x-child></x-child>
             </template>
-        `, {
-            modules: {
-                'x-child': Child
-            },
-        });
+        `,
+            {
+                modules: {
+                    'x-child': Child,
+                },
+            }
+        );
         class Parent extends LightningElement {
             render() {
                 return parentTmpl;
@@ -379,15 +404,18 @@ describe('assignedSlot', () => {
     it('should return null when custom element is not in slot', () => {
         class NoSlot extends LightningElement {}
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-assigned-slot-child></x-assigned-slot-child>
             </template>
-        `, {
-            modules: {
-                'x-assigned-slot-child': NoSlot,
+        `,
+            {
+                modules: {
+                    'x-assigned-slot-child': NoSlot,
+                },
             }
-        });
+        );
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -430,7 +458,8 @@ describe('assignedSlot', () => {
             }
         }
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-native-slotted-component-child>
                     <div>
@@ -438,11 +467,13 @@ describe('assignedSlot', () => {
                     </div>
                 </x-native-slotted-component-child>
             </template>
-        `, {
-            modules: {
-                'x-native-slotted-component-child': WithSlot,
+        `,
+            {
+                modules: {
+                    'x-native-slotted-component-child': WithSlot,
+                },
             }
-        });
+        );
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -451,7 +482,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const child = elm.shadowRoot.querySelector('div');
         expect(child.assignedSlot).toBe(slot);
     });
@@ -470,18 +503,21 @@ describe('assignedSlot', () => {
             }
         }
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-native-slotted-component-child>
                     <x-inside-slot></x-inside-slot>
                 </x-native-slotted-component-child>
             </template>
-        `, {
-            modules: {
-                'x-native-slotted-component-child': WithSlot,
-                'x-inside-slot': InsideSlot,
+        `,
+            {
+                modules: {
+                    'x-native-slotted-component-child': WithSlot,
+                    'x-inside-slot': InsideSlot,
+                },
             }
-        });
+        );
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -490,7 +526,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const child = elm.shadowRoot.querySelector('x-inside-slot');
         expect(child.assignedSlot).toBe(slot);
     });
@@ -518,17 +556,20 @@ describe('assignedSlot', () => {
     it('should return null when custom element default slot content', () => {
         class CustomElement extends LightningElement {}
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <slot>
                     <x-default-slot-custom-element></x-default-slot-custom-element>
                 </slot>
             </template>
-        `, {
-            modules: {
-                'x-default-slot-custom-element': CustomElement
+        `,
+            {
+                modules: {
+                    'x-default-slot-custom-element': CustomElement,
+                },
             }
-        });
+        );
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -553,17 +594,20 @@ describe('assignedSlot', () => {
             }
         }
 
-        const html = compileTemplate(`
+        const html = compileTemplate(
+            `
             <template>
                 <x-native-slotted-component-child>
                     text
                 </x-native-slotted-component-child>
             </template>
-        `, {
-            modules: {
-                'x-native-slotted-component-child': WithSlot
+        `,
+            {
+                modules: {
+                    'x-native-slotted-component-child': WithSlot,
+                },
             }
-        });
+        );
         class MyComponent extends LightningElement {
             render() {
                 return html;
@@ -572,7 +616,9 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot
+            .querySelector('x-native-slotted-component-child')
+            .shadowRoot.querySelector('slot');
         const text = elm.shadowRoot.querySelector('x-native-slotted-component-child').childNodes[0];
         expect(text.assignedSlot).toBe(slot);
     });

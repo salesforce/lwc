@@ -8,24 +8,65 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
 
 const adjectives = [
-    "pretty", "large", "big", "small", "tall", "short", "long", "handsome", "plain",
-    "quaint", "clean", "elegant", "easy", "angry", "crazy", "helpful", "mushy",
-    "odd", "unsightly", "adorable", "important", "inexpensive", "cheap", "expensive",
-    "fancy"
+    'pretty',
+    'large',
+    'big',
+    'small',
+    'tall',
+    'short',
+    'long',
+    'handsome',
+    'plain',
+    'quaint',
+    'clean',
+    'elegant',
+    'easy',
+    'angry',
+    'crazy',
+    'helpful',
+    'mushy',
+    'odd',
+    'unsightly',
+    'adorable',
+    'important',
+    'inexpensive',
+    'cheap',
+    'expensive',
+    'fancy',
 ];
 
 const colours = [
-    "red", "yellow", "blue", "green", "pink", "brown", "purple", "brown", "white",
-    "black", "orange"
+    'red',
+    'yellow',
+    'blue',
+    'green',
+    'pink',
+    'brown',
+    'purple',
+    'brown',
+    'white',
+    'black',
+    'orange',
 ];
 
 const nouns = [
-    "table", "chair", "house", "bbq", "desk", "car", "pony", "cookie", "sandwich",
-    "burger", "pizza", "mouse", "keyboard"
+    'table',
+    'chair',
+    'house',
+    'bbq',
+    'desk',
+    'car',
+    'pony',
+    'cookie',
+    'sandwich',
+    'burger',
+    'pizza',
+    'mouse',
+    'keyboard',
 ];
 
 function _random(max) {
-    return Math.round(Math.random()*1000)%max;
+    return Math.round(Math.random() * 1000) % max;
 }
 
 class Store {
@@ -40,7 +81,12 @@ class Store {
         for (var i = 0; i < count; i++) {
             data.push({
                 id: this.id++,
-                label: adjectives[_random(adjectives.length)] + " " + colours[_random(colours.length)] + " " + nouns[_random(nouns.length)]
+                label:
+                    adjectives[_random(adjectives.length)] +
+                    ' ' +
+                    colours[_random(colours.length)] +
+                    ' ' +
+                    nouns[_random(nouns.length)],
             });
         }
         return data;
@@ -49,9 +95,11 @@ class Store {
     updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
         const newData = [];
-        for (let i = 0; i < this.data.length; i ++) {
-            if (i%10===0) {
-                newData[i] = Object.assign({}, this.data[i], {label: this.data[i].label + ' !!!'});
+        for (let i = 0; i < this.data.length; i++) {
+            if (i % 10 === 0) {
+                newData[i] = Object.assign({}, this.data[i], {
+                    label: this.data[i].label + ' !!!',
+                });
             } else {
                 newData[i] = this.data[i];
             }
@@ -60,7 +108,7 @@ class Store {
     }
 
     delete(id) {
-        const idx = this.data.findIndex(d => d.id==id);
+        const idx = this.data.findIndex(d => d.id == id);
         this.data.splice(idx, 1);
     }
 
@@ -97,10 +145,9 @@ class Store {
             let d9 = this.data[9];
 
             const newData = this.data.map(function(data, i) {
-                if(i === 4) {
+                if (i === 4) {
                     return d9;
-                }
-                else if(i === 9) {
+                } else if (i === 9) {
                     return d4;
                 }
                 return data;
@@ -116,7 +163,7 @@ class Table extends LightningElement {
     }
 }
 Table.publicProps = {
-    rows: {}
+    rows: {},
 };
 
 class Row extends LightningElement {
@@ -125,18 +172,22 @@ class Row extends LightningElement {
     }
 }
 Row.publicProps = {
-    row: {}
+    row: {},
 };
 
-const rowHTML = compileTemplate(`
+const rowHTML = compileTemplate(
+    `
     <template>
         <span>{row.id}</span>
         <div><a data-id={row.id}>{row.label}</a></div>
         <div><a data-id={row.id}>Remove</a></div>
     </template>
-    `, { modules: {} });
+    `,
+    { modules: {} }
+);
 
-const tableHTML = compileTemplate(`
+const tableHTML = compileTemplate(
+    `
     <template>
         <section>
             <div>
@@ -151,18 +202,20 @@ const tableHTML = compileTemplate(`
             </div>
         </section>
     </template>
-    `, {
+    `,
+    {
         modules: {
-            'x-row': Row
-        }
-    });
+            'x-row': Row,
+        },
+    }
+);
 
 describe('diff algo', () => {
     describe('iteration', () => {
         it('should create new items', () => {
             const store = new Store();
             const elm = createElement('x-table', { is: Table });
-            store.run()
+            store.run();
             elm.rows = store.data;
             document.body.appendChild(elm);
             const template = elm.shadowRoot;
@@ -171,7 +224,7 @@ describe('diff algo', () => {
         it('should append new items', () => {
             const store = new Store();
             const elm = createElement('x-table', { is: Table });
-            store.run()
+            store.run();
             elm.rows = store.data;
             document.body.appendChild(elm);
             store.add();
@@ -189,7 +242,7 @@ describe('diff algo', () => {
         it('should allow swapping', () => {
             const store = new Store();
             const elm = createElement('x-table', { is: Table });
-            store.run()
+            store.run();
             const [a, b, c] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
@@ -206,7 +259,7 @@ describe('diff algo', () => {
         it('should allow reusing the first element as last', () => {
             const store = new Store();
             const elm = createElement('x-table', { is: Table });
-            store.run()
+            store.run();
             const [a, b, c] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
@@ -224,7 +277,7 @@ describe('diff algo', () => {
         it('should allow removing last and add new at the end', () => {
             const store = new Store();
             const elm = createElement('x-table', { is: Table });
-            store.run()
+            store.run();
             const [a, b, c, d] = store.data;
             elm.rows = [a, b, c];
             document.body.appendChild(elm);
@@ -309,7 +362,7 @@ describe('diff algo', () => {
             }
             registerDecorators(App, {
                 track: { items: 1, sortDir: 1 },
-                publicMethods: ['sort']
+                publicMethods: ['sort'],
             });
             const elm = createElement('x-foo', { is: App });
             document.body.appendChild(elm);

@@ -16,12 +16,11 @@ describe.skip('Retarget relatedTarget', () => {
     });
 
     it('should not throw when relatedTarget is null', () => {
-        browser.execute(function () {
+        browser.execute(function() {
             document.body.focus();
             document
                 .querySelector('integration-retarget-null-related-target')
-                .shadowRoot
-                .querySelector('.focus-input')
+                .shadowRoot.querySelector('.focus-input')
                 .focus();
         });
         const elm = browser.element('.related-target-tabname');

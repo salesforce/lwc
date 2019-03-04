@@ -1,9 +1,9 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class MutateApiError extends LightningElement {
     get getFoo() {
         return {
-            x: 1
+            x: 1,
         };
     }
 }

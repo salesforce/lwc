@@ -1,5 +1,4 @@
-import { LightningElement, track } from "lwc";
-
+import { LightningElement, track } from 'lwc';
 
 export default class AsyncEventTarget extends LightningElement {
     @track syncTargetIsCorrect = false;

@@ -1,26 +1,26 @@
 {
-  "name": "@lwc/jest-preset",
-  "version": "0.35.11",
-  "description": "Jest preset configuration and stubs to help test LWC",
-  "license": "MIT",
-  "scripts": {
-    "test": "jest"
-  },
-  "keywords": [
-    "Jest",
-    "LWC"
-  ],
-  "main": "jest-preset.js",
-  "peerDependencies": {
-    "jest": ">= 23.0.0"
-  },
-  "dependencies": {
-    "@lwc/jest-resolver": "0.35.11",
-    "@lwc/jest-serializer": "0.35.11",
-    "@lwc/jest-transformer": "0.35.11",
-    "@lwc/test-utils": "0.35.11"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/jest-preset",
+    "version": "0.35.11",
+    "description": "Jest preset configuration and stubs to help test LWC",
+    "license": "MIT",
+    "scripts": {
+        "test": "jest"
+    },
+    "keywords": [
+        "Jest",
+        "LWC"
+    ],
+    "main": "jest-preset.js",
+    "peerDependencies": {
+        "jest": ">= 23.0.0"
+    },
+    "dependencies": {
+        "@lwc/jest-resolver": "0.35.11",
+        "@lwc/jest-serializer": "0.35.11",
+        "@lwc/jest-transformer": "0.35.11",
+        "@lwc/test-utils": "0.35.11"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
 }

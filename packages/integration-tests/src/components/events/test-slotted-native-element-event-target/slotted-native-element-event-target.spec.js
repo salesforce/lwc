@@ -13,7 +13,7 @@ describe('Event target in slot elements', () => {
         browser.url(URL);
     });
 
-    it('should receive event with correct target', function () {
+    it('should receive event with correct target', function() {
         browser.click('p');
         browser.waitForVisible('.correct-event-target');
         assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');

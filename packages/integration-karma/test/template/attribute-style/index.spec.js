@@ -30,6 +30,6 @@ describe('dyamic style attribute', () => {
         elm.dynamicStyle = 'position: relative;';
         return Promise.resolve().then(() => {
             expect(elm.shadowRoot.querySelector('div').style.position).toBe('relative');
-        })
+        });
     });
 });

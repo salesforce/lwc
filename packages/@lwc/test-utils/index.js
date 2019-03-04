@@ -16,6 +16,8 @@
  */
 module.exports.getShadowRoot = function(element) {
     // eslint-disable-next-line no-console
-    console.warn('[LWC deprecation notice] getShadowRoot has been deprecated. Access the Element.shadowRoot property directly instead');
+    console.warn(
+        '[LWC deprecation notice] getShadowRoot has been deprecated. Access the Element.shadowRoot property directly instead'
+    );
     return element.shadowRoot;
-}
+};

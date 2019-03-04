@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { elementFromPoint, DocumentPrototypeActiveElement } from "../../env/document";
-import { getNodeOwnerKey } from "../../framework/vm";
-import { isNull, isUndefined, defineProperty } from "../../shared/language";
-import { parentElementGetter } from "../../env/node";
-import { retarget } from "../../3rdparty/polymer/retarget";
-import { pathComposer } from "../../3rdparty/polymer/path-composer";
+import { elementFromPoint, DocumentPrototypeActiveElement } from '../../env/document';
+import { getNodeOwnerKey } from '../../framework/vm';
+import { isNull, isUndefined, defineProperty } from '../../shared/language';
+import { parentElementGetter } from '../../env/node';
+import { retarget } from '../../3rdparty/polymer/retarget';
+import { pathComposer } from '../../3rdparty/polymer/path-composer';
 
 export default function apply() {
     function elemFromPoint(left: number, top: number): Element | null {
@@ -39,7 +39,8 @@ export default function apply() {
                     return null;
                 }
             }
-            if (node.tagName === 'HTML') { // IE 11. Active element should never be html element
+            if (node.tagName === 'HTML') {
+                // IE 11. Active element should never be html element
                 node = document.body;
             }
 

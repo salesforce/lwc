@@ -21,6 +21,6 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
 
     return rollupPluginReplace({
         values: patterns,
-        sourcemap: options.outputConfig.sourcemap
+        sourcemap: options.outputConfig.sourcemap,
     });
 }

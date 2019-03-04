@@ -9,7 +9,7 @@ describe('Array prototype methods', () => {
     const URL = 'http://localhost:4567/array-push-concat-unshift';
 
     function microTask() {
-        browser.executeAsync(function (done) {
+        browser.executeAsync(function(done) {
             Promise.resolve().then(function() {
                 done();
             });
@@ -20,7 +20,7 @@ describe('Array prototype methods', () => {
         browser.url(URL);
     });
 
-    it('should display unshifted items correctly', function () {
+    it('should display unshifted items correctly', function() {
         const el = browser.element('.unshift-list');
         el.click();
 
@@ -32,7 +32,7 @@ describe('Array prototype methods', () => {
         assert.strictEqual(elements.value[2].getText(), 'second');
     });
 
-    it('should display pushed items correctly', function () {
+    it('should display pushed items correctly', function() {
         const el = browser.element('.push-list');
         el.click();
 
@@ -44,7 +44,7 @@ describe('Array prototype methods', () => {
         assert.strictEqual(elements.value[2].getText(), 'pushed');
     });
 
-    it('should display concat items correctly', function () {
+    it('should display concat items correctly', function() {
         const el = browser.element('.concat-list');
         el.click();
 
@@ -57,7 +57,7 @@ describe('Array prototype methods', () => {
         assert.strictEqual(elements.value[3].getText(), 'concat 2');
     });
 
-    it('should display concat items correctly', function () {
+    it('should display concat items correctly', function() {
         const el = browser.element('.prop-concat-list');
         el.click();
 

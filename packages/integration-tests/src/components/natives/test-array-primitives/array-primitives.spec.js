@@ -18,29 +18,36 @@ describe('Testing array primitives', () => {
         assert.equal(title, 'array-primitives');
     });
 
-    it('check initial state', function () {
+    it('check initial state', function() {
         const initialLength = 5;
-        const { value } = browser.execute(function () {
-            return document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li').length
+        const { value } = browser.execute(function() {
+            return document
+                .querySelector('integration-array-primitives')
+                .shadowRoot.querySelectorAll('li').length;
         });
 
         assert.equal(value, initialLength);
     });
 
-    it('check splice reactivity', function () {
-        const splicedList = [ 'one', 'three', 'four', 'five' ];
+    it('check splice reactivity', function() {
+        const splicedList = ['one', 'three', 'four', 'five'];
         const splicedLength = splicedList.length;
-        browser.execute(function () {
-            return document.querySelector('integration-array-primitives').shadowRoot.querySelector('.splice').click();
+        browser.execute(function() {
+            return document
+                .querySelector('integration-array-primitives')
+                .shadowRoot.querySelector('.splice')
+                .click();
         });
 
-        const { value } = browser.executeAsync(function (done) {
-            Promise.resolve().then(function () {
+        const { value } = browser.executeAsync(function(done) {
+            Promise.resolve().then(function() {
                 var list = Array.prototype.slice.call(
-                    document.querySelector('integration-array-primitives').shadowRoot.querySelectorAll('li')
+                    document
+                        .querySelector('integration-array-primitives')
+                        .shadowRoot.querySelectorAll('li')
                 );
 
-                var textList = list.map(function (li) {
+                var textList = list.map(function(li) {
                     return li.textContent;
                 });
 

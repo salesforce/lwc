@@ -14,7 +14,7 @@ export default class SingleWireMethod extends LightningElement {
     @track todo = undefined;
 
     @wire(getTodo, { id: '$todoId' })
-    function({error, data}) {
+    function({ error, data }) {
         this.error = error;
         this.todo = data;
     }

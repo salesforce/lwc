@@ -9,7 +9,7 @@
  * Next error code: 1118
  */
 
-export * from "./compiler";
-export * from "./jest-transformer";
-export * from "./lwc-class";
-export * from "./template-transform";
+export * from './compiler';
+export * from './jest-transformer';
+export * from './lwc-class';
+export * from './template-transform';

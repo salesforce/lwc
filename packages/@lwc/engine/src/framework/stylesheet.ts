@@ -4,21 +4,32 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isUndefined, create, emptyString, isArray, forEach, ArrayReduce } from "../shared/language";
-import { VNode } from "../3rdparty/snabbdom/types";
+import assert from '../shared/assert';
+import {
+    isUndefined,
+    create,
+    emptyString,
+    isArray,
+    forEach,
+    ArrayReduce,
+} from '../shared/language';
+import { VNode } from '../3rdparty/snabbdom/types';
 
-import * as api from "./api";
-import { EmptyArray } from "./utils";
-import { VM } from "./vm";
-import { removeAttribute, setAttribute } from "../env/element";
-import { appendChild } from "../env/node";
-import { createElement, createDocumentFragment } from "../env/document";
+import * as api from './api';
+import { EmptyArray } from './utils';
+import { VM } from './vm';
+import { removeAttribute, setAttribute } from '../env/element';
+import { appendChild } from '../env/node';
+import { createElement, createDocumentFragment } from '../env/document';
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type StylesheetFactory = (hostSelector: string, shadowSelector: string, nativeShadow: boolean) => string;
+export type StylesheetFactory = (
+    hostSelector: string,
+    shadowSelector: string,
+    nativeShadow: boolean
+) => string;
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
@@ -59,11 +70,15 @@ function noop() {
 }
 
 function createStyleVNode(elm: HTMLStyleElement) {
-    const vnode = api.h('style', {
-        key: 'style', // special key
-        create: noop,
-        update: noop,
-    }, EmptyArray);
+    const vnode = api.h(
+        'style',
+        {
+            key: 'style', // special key
+            create: noop,
+            update: noop,
+        },
+        EmptyArray
+    );
     // Force the diffing algo to use the cloned style.
     vnode.elm = elm;
     return vnode;
@@ -97,9 +112,14 @@ export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttrib
     context.shadowAttribute = shadowAttribute;
 }
 
-export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttribute: string, shadowAttribute: string): VNode | null {
+export function evaluateCSS(
+    vm: VM,
+    stylesheets: StylesheetFactory[],
+    hostAttribute: string,
+    shadowAttribute: string
+): VNode | null {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
 
@@ -118,9 +138,13 @@ export function evaluateCSS(vm: VM, stylesheets: StylesheetFactory[], hostAttrib
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
-        const textContent = ArrayReduce.call(stylesheets, (buffer, stylesheet) => {
-            return buffer + stylesheet(emptyString, emptyString, true);
-        }, '') as string;
+        const textContent = ArrayReduce.call(
+            stylesheets,
+            (buffer, stylesheet) => {
+                return buffer + stylesheet(emptyString, emptyString, true);
+            },
+            ''
+        ) as string;
         return createStyleVNode(getCachedStyleElement(textContent));
     }
 }

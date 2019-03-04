@@ -37,9 +37,7 @@ it('should apply transformation for valid javascript file', async () => {
 });
 
 it('should throw when processing an invalid javascript file', async () => {
-    await expect(
-        transform(`const`, 'foo.js', COMPILER_OPTIONS),
-    ).rejects.toMatchObject({
+    await expect(transform(`const`, 'foo.js', COMPILER_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
         message: expect.stringContaining('foo.js: Unexpected token (1:5)'),
     });

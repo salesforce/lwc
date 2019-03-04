@@ -13,7 +13,7 @@ function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {
         if (typeof fn !== 'function') {
             throw new TypeError(
-                `Expected a first argument to be a function, received ${typeof fn}`,
+                `Expected a first argument to be a function, received ${typeof fn}`
             );
         }
 
@@ -43,8 +43,7 @@ function createMatcher(methodName) {
                         .join('\n\n');
 
                     return {
-                        message: () =>
-                            `Expect no message but received:\n${formattedMessages}`,
+                        message: () => `Expect no message but received:\n${formattedMessages}`,
                         pass: true,
                     };
                 }
@@ -56,9 +55,7 @@ function createMatcher(methodName) {
                 if (receivedMessages.length === 0) {
                     return {
                         message: () =>
-                            `Expect no message for:\n${this.utils.printExpected(
-                                expectedMessage,
-                            )}`,
+                            `Expect no message for:\n${this.utils.printExpected(expectedMessage)}`,
                         pass: false,
                     };
                 } else if (receivedMessages.length === 1) {
@@ -76,10 +73,8 @@ function createMatcher(methodName) {
                         return {
                             message: () =>
                                 `Expect message:\n${this.utils.printExpected(
-                                    expectedMessage,
-                                )}\n\nBut received:\n${this.utils.printReceived(
-                                    receivedMessage,
-                                )}`,
+                                    expectedMessage
+                                )}\n\nBut received:\n${this.utils.printReceived(receivedMessage)}`,
                             pass: false,
                         };
                     }

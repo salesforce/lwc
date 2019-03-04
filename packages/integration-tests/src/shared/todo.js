@@ -1,8 +1,10 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-        typeof define === 'function' && window.define.amd ? window.define(['exports'], factory) :
-            (factory((global.Todo = {})));
-}(this, (function (exports) {
+(function(global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined'
+        ? factory(exports)
+        : typeof define === 'function' && window.define.amd
+        ? window.define(['exports'], factory)
+        : factory((global.Todo = {}));
+})(this, function(exports) {
     'use strict';
 
     function getSubject(initialValue, initialError) {
@@ -30,16 +32,16 @@
                     error(initialError);
                 }
                 return {
-                    unsubscribe: function() {}
+                    unsubscribe: function() {},
                 };
-            }
+            },
         };
 
         return {
             next: next,
             error: error,
             complete: complete,
-            observable: observable
+            observable: observable,
         };
     }
 
@@ -47,7 +49,7 @@
         return {
             id: id,
             title: 'task ' + id,
-            completed: completed
+            completed: completed,
         };
     }
 
@@ -59,12 +61,11 @@
         generateTodo(4, true),
         // intentionally skip 5
         generateTodo(6, false),
-        generateTodo(7, false)
+        generateTodo(7, false),
     ].reduce(function(acc, value) {
         acc[value.id] = value;
         return acc;
     }, {});
-
 
     function getObservable(config) {
         if (!config || !('id' in config)) {
@@ -85,4 +86,4 @@
     exports.getTodo = getTodo;
     exports.getObservable = getObservable;
     Object.defineProperty(exports, '__esModule', { value: true });
-})));
+});

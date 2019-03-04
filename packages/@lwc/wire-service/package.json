@@ -1,31 +1,31 @@
 {
-  "name": "@lwc/wire-service",
-  "version": "0.35.11",
-  "description": "@wire service",
-  "license": "MIT",
-  "main": "dist/commonjs/es2017/wire.js",
-  "module": "dist/modules/es2017/wire.js",
-  "scripts": {
-    "clean": "rm -rf dist/ lib/",
-    "test": "jest",
-    "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
-    "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve:playground\"",
-    "build:playground": "rollup -c playground/rollup.config.js",
-    "serve:playground": "node playground/server.js"
-  },
-  "devDependencies": {
-    "@lwc/compiler": "0.35.11",
-    "@lwc/engine": "0.35.11",
-    "@lwc/jest-transformer": "0.35.11",
-    "@lwc/rollup-plugin": "0.35.11",
-    "express": "^4.15.2"
-  },
-  "lwc": {
-    "modules": {
-      "wire-service": "dist/modules/es2017/wire.js"
+    "name": "@lwc/wire-service",
+    "version": "0.35.11",
+    "description": "@wire service",
+    "license": "MIT",
+    "main": "dist/commonjs/es2017/wire.js",
+    "module": "dist/modules/es2017/wire.js",
+    "scripts": {
+        "clean": "rm -rf dist/ lib/",
+        "test": "jest",
+        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
+        "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve:playground\"",
+        "build:playground": "rollup -c playground/rollup.config.js",
+        "serve:playground": "node playground/server.js"
+    },
+    "devDependencies": {
+        "@lwc/compiler": "0.35.11",
+        "@lwc/engine": "0.35.11",
+        "@lwc/jest-transformer": "0.35.11",
+        "@lwc/rollup-plugin": "0.35.11",
+        "express": "^4.15.2"
+    },
+    "lwc": {
+        "modules": {
+            "wire-service": "dist/modules/es2017/wire.js"
+        }
+    },
+    "publishConfig": {
+        "access": "public"
     }
-  },
-  "publishConfig": {
-    "access": "public"
-  }
 }

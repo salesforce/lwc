@@ -4,9 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { EmptyObject, SPACE_CHAR } from "../utils";
-import { isUndefined, create, StringSlice, freeze, StringCharCodeAt, isString } from "../../shared/language";
-import { VNode } from "../../3rdparty/snabbdom/types";
+import { EmptyObject, SPACE_CHAR } from '../utils';
+import {
+    isUndefined,
+    create,
+    StringSlice,
+    freeze,
+    StringCharCodeAt,
+    isString,
+} from '../../shared/language';
+import { VNode } from '../../3rdparty/snabbdom/types';
 
 const classNameToClassMap = create(null);
 
@@ -47,13 +54,18 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 }
 
 function updateClassAttribute(oldVnode: VNode, vnode: VNode) {
-    const { elm, data: { className: newClass } } = vnode;
-    const { data: { className: oldClass } } = oldVnode;
+    const {
+        elm,
+        data: { className: newClass },
+    } = vnode;
+    const {
+        data: { className: oldClass },
+    } = oldVnode;
     if (oldClass === newClass) {
         return;
     }
 
-    const { classList } = (elm as Element);
+    const { classList } = elm as Element;
     const newClassMap = getMapFromClassName(newClass);
     const oldClassMap = getMapFromClassName(oldClass);
 
@@ -75,5 +87,5 @@ const emptyVNode = { data: {} };
 
 export default {
     create: (vnode: VNode) => updateClassAttribute(emptyVNode as VNode, vnode),
-    update: updateClassAttribute
+    update: updateClassAttribute,
 };

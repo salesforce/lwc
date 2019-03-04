@@ -24,10 +24,8 @@ const userScopedImport = require('./transforms/user-scoped-import');
 
 const BABEL_CONFIG = {
     sourceMaps: 'both',
-    "presets": [
-        jestPreset,
-    ],
-    "plugins": [
+    presets: [jestPreset],
+    plugins: [
         babelCommonJs,
         apexScopedImport,
         apexContinuationScopedImport,
@@ -37,7 +35,7 @@ const BABEL_CONFIG = {
         resourceScopedImport,
         schemaScopedImport,
         userScopedImport,
-    ]
+    ],
 };
 
 module.exports = {
@@ -47,8 +45,8 @@ module.exports = {
             moduleName: 'test',
             moduleNamespace: 'x',
             outputConfig: {
-                sourcemap: true
-            }
+                sourcemap: true,
+            },
         });
 
         const { code, map } = waitForPromise(transform);
@@ -65,7 +63,10 @@ module.exports = {
         return crypto
             .createHash('md5')
             .update(JSON.stringify(options), 'utf8')
-            .update(fileData + filePath + configStr + NODE_ENV + compilerVersion + engineVersion, 'utf8')
+            .update(
+                fileData + filePath + configStr + NODE_ENV + compilerVersion + engineVersion,
+                'utf8'
+            )
             .digest('hex');
-    }
+    },
 };

@@ -4,12 +4,25 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayIndexOf, ArrayReduce, ArrayPush, create, defineProperty, defineProperties, forEach, isUndefined } from '../../shared/language';
+import {
+    ArrayIndexOf,
+    ArrayReduce,
+    ArrayPush,
+    create,
+    defineProperty,
+    defineProperties,
+    forEach,
+    isUndefined,
+} from '../../shared/language';
 import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 const OriginalMutationObserver: typeof MutationObserver = (window as any).MutationObserver;
-const { disconnect: originalDisconnect, observe: originalObserve, takeRecords: originalTakeRecords } = OriginalMutationObserver.prototype;
+const {
+    disconnect: originalDisconnect,
+    observe: originalObserve,
+    takeRecords: originalTakeRecords,
+} = OriginalMutationObserver.prototype;
 
 // Internal fields to maintain relationships
 const observedTargetsField = '$$lwcObservedTargets$$';
@@ -20,29 +33,37 @@ const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
  * @param {MutationRecord} originalRecord
  */
 function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord {
-    const { addedNodes, removedNodes, target, type} = originalRecord;
+    const { addedNodes, removedNodes, target, type } = originalRecord;
     const retargetedRecord = create(MutationRecord.prototype);
     defineProperties(retargetedRecord, {
         addedNodes: {
-            get() { return addedNodes; },
+            get() {
+                return addedNodes;
+            },
             enumerable: true,
-            configurable: true
+            configurable: true,
         },
         removedNodes: {
-            get() { return removedNodes; },
+            get() {
+                return removedNodes;
+            },
             enumerable: true,
-            configurable: true
+            configurable: true,
         },
         type: {
-            get() { return type; },
+            get() {
+                return type;
+            },
             enumerable: true,
-            configurable: true
+            configurable: true,
         },
         target: {
-            get() { return (target as Element).shadowRoot; },
+            get() {
+                return (target as Element).shadowRoot;
+            },
             enumerable: true,
-            configurable: true
-        }
+            configurable: true,
+        },
     });
     return retargetedRecord;
 }
@@ -51,27 +72,31 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
  * This function first gathers the OwnerKey of all the targets observed by the MutationObserver instance.
  * Next, process each MutationRecord to determine if the mutation occured in the same shadow tree as
  * one of the targets being observed.
- * 
+ *
  * The key filtering logic is to match the observed target node's ownerKey/ownKey with the ownerKey of the nodes in the
  * MutationRecord.
  * The ownerKey of the rootnode will be undefined. Similarly ownerkey of nodes outside the shadow will be undefined.
  * @param {MutationRecords[]} mutations
  * @param {MutationObserver} observer
  */
-function filterMutationRecords(mutations: MutationRecord[], observer: MutationObserver): MutationRecord[] {
+function filterMutationRecords(
+    mutations: MutationRecord[],
+    observer: MutationObserver
+): MutationRecord[] {
     const observedTargets = observer[observedTargetsField];
-    const observedTargetOwnerKeys: Array<(number|undefined)> = [];
+    const observedTargetOwnerKeys: Array<number | undefined> = [];
     forEach.call(observedTargets, (node: Node) => {
         // If the observed target is a shadowRoot, the ownerkey of the shadow tree will be fetched using the host
-        const observedTargetOwnerKey = node instanceof (window as any).ShadowRoot
-            ? getNodeKey((node as ShadowRoot).host)
-            : getNodeNearestOwnerKey(node);
+        const observedTargetOwnerKey =
+            node instanceof (window as any).ShadowRoot
+                ? getNodeKey((node as ShadowRoot).host)
+                : getNodeNearestOwnerKey(node);
         ArrayPush.call(observedTargetOwnerKeys, observedTargetOwnerKey);
     });
     return ArrayReduce.call(
         mutations,
         (filteredSet, record: MutationRecord) => {
-            const { target , addedNodes, removedNodes, type } = record;
+            const { target, addedNodes, removedNodes, type } = record;
             // If the mutations affected a lwc host element or its shadow,
             // because LWC uses synthetic shadow, target will be the host
             if (type === 'childList' && !isUndefined(getNodeKey(target))) {
@@ -84,38 +109,45 @@ function filterMutationRecords(mutations: MutationRecord[], observer: MutationOb
                     // If the target was being observed, then return record as-is
                     if (observedTargets.indexOf(target) !== -1) {
                         ArrayPush.call(filteredSet, record);
-                    } else { // else, must be observing the shadowRoot
+                    } else {
+                        // else, must be observing the shadowRoot
                         ArrayPush.call(filteredSet, retargetMutationRecord(record));
                     }
                 }
             } else {
                 // if target is shadowRoot, then fetch key of shadow tree from the host
                 // this should never be the case when synthetic shadow is on, only when running in native
-                const recordTargetOwnerKey = target instanceof (window as any).ShadowRoot
-                ? getNodeKey((target as ShadowRoot).host)
-                : getNodeNearestOwnerKey(target);
-                const mutationInScope = ArrayIndexOf.call(observedTargetOwnerKeys, recordTargetOwnerKey) !== -1;
+                const recordTargetOwnerKey =
+                    target instanceof (window as any).ShadowRoot
+                        ? getNodeKey((target as ShadowRoot).host)
+                        : getNodeNearestOwnerKey(target);
+                const mutationInScope =
+                    ArrayIndexOf.call(observedTargetOwnerKeys, recordTargetOwnerKey) !== -1;
                 if (mutationInScope) {
                     ArrayPush.call(filteredSet, record);
                 }
             }
             return filteredSet;
-        }, []) as MutationRecord[];
+        },
+        []
+    ) as MutationRecord[];
 }
 
 function getWrappedCallback(callback: MutationCallback): MutationCallback {
     let wrappedCallback: MutationCallback | undefined = (callback as any)[wrapperLookupField];
     if (isUndefined(wrappedCallback)) {
-        wrappedCallback = (callback as any)[wrapperLookupField] =
-            (mutations: MutationRecord[], observer: MutationObserver): void => {
-                // Filter mutation records
-                const filteredRecords = filterMutationRecords(mutations, observer);
-                // If not records are eligible for the observer, do not invoke callback
-                if (filteredRecords.length === 0) {
-                    return;
-                }
-                callback.call(observer, filteredRecords, observer);
-            };
+        wrappedCallback = (callback as any)[wrapperLookupField] = (
+            mutations: MutationRecord[],
+            observer: MutationObserver
+        ): void => {
+            // Filter mutation records
+            const filteredRecords = filterMutationRecords(mutations, observer);
+            // If not records are eligible for the observer, do not invoke callback
+            if (filteredRecords.length === 0) {
+                return;
+            }
+            callback.call(observer, filteredRecords, observer);
+        };
     }
     return wrappedCallback;
 }
@@ -126,10 +158,13 @@ function getWrappedCallback(callback: MutationCallback): MutationCallback {
  * 2. Add a property field to track all observed targets of the observer instance
  * @param {MutationCallback} callback
  */
-function PatchedMutationObserver(this: MutationObserver, callback: MutationCallback): MutationObserver {
+function PatchedMutationObserver(
+    this: MutationObserver,
+    callback: MutationCallback
+): MutationObserver {
     const wrappedCallback: any = getWrappedCallback(callback);
     const observer = new OriginalMutationObserver(wrappedCallback);
-    defineProperty(observer, observedTargetsField, {value : []});
+    defineProperty(observer, observedTargetsField, { value: [] });
     return observer;
 }
 
@@ -146,7 +181,11 @@ function patchedDisconnect(this: MutationObserver): void {
  * @param {Node} target
  * @param {Object} options
  */
-function patchedObserve(this: MutationObserver, target: Node, options?: MutationObserverInit): void {
+function patchedObserve(
+    this: MutationObserver,
+    target: Node,
+    options?: MutationObserverInit
+): void {
     // If the observer was created by the patched constructor, this field should be defined. Adding a guard for extra safety
     if (!isUndefined(this[observedTargetsField])) {
         ArrayPush.call(this[observedTargetsField], target);

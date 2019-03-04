@@ -1,12 +1,10 @@
 {
-  "extends": "../../../tsconfig.json",
+    "extends": "../../../tsconfig.json",
 
-  "compilerOptions": {
-    "outDir": "dist/commonjs",
-    "declarationDir": "dist/types",
-  },
+    "compilerOptions": {
+        "outDir": "dist/commonjs",
+        "declarationDir": "dist/types"
+    },
 
-  "include": [
-    "src/"
-  ],
+    "include": ["src/"]
 }

@@ -19,6 +19,6 @@ export interface WireDef {
 export interface ElementDef {
     // wire is optional on ElementDef but the lwc guarantees it before invoking wiring service hook
     wire: {
-        [key: string]: WireDef
+        [key: string]: WireDef;
     };
 }

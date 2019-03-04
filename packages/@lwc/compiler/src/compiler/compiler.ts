@@ -4,14 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CompilerDiagnostic, DiagnosticLevel } from "@lwc/errors";
+import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
 
-import { bundle } from "../bundler/bundler";
-import { BundleMetadata } from "../bundler/meta-collector";
-import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
+import { bundle } from '../bundler/bundler';
+import { BundleMetadata } from '../bundler/meta-collector';
+import {
+    CompilerOptions,
+    validateOptions,
+    normalizeOptions,
+    NormalizedOutputConfig,
+} from './options';
 import { version } from '../index';
 
-export { default as templateCompiler } from "@lwc/template-compiler";
+export { default as templateCompiler } from '@lwc/template-compiler';
 
 export interface CompilerOutput {
     success: boolean;
@@ -29,21 +34,14 @@ export interface BundleResult {
 
 export type SourceMap = any;
 
-export async function compile(
-    options: CompilerOptions
-): Promise<CompilerOutput> {
+export async function compile(options: CompilerOptions): Promise<CompilerOutput> {
     validateOptions(options);
     const normalizedOptions = normalizeOptions(options);
 
     let result: BundleResult | undefined;
     const diagnostics: CompilerDiagnostic[] = [];
 
-    const {
-        diagnostics: bundleDiagnostics,
-        code,
-        map,
-        metadata,
-    } = await bundle(normalizedOptions);
+    const { diagnostics: bundleDiagnostics, code, map, metadata } = await bundle(normalizedOptions);
 
     diagnostics.push(...bundleDiagnostics);
 
@@ -59,7 +57,7 @@ export async function compile(
         version,
         success: !hasError(diagnostics),
         diagnostics,
-        result
+        result,
     };
 }
 

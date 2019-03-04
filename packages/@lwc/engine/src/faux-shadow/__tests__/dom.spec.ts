@@ -9,37 +9,37 @@ import { createElement, LightningElement } from '../../framework/main';
 
 describe('dom', () => {
     describe('composed polyfill', () => {
-        it('should get native events as composed true', function () {
+        it('should get native events as composed true', function() {
             expect.assertions(1);
             const elm = document.createElement('div');
             document.body.appendChild(elm);
-            elm.addEventListener('click', function (e) {
+            elm.addEventListener('click', function(e) {
                 expect(e.composed).toBe(true);
             });
             elm.click();
         });
         // TODO: flapper
-        it.skip('should get custom events as composed false', function () {
+        it.skip('should get custom events as composed false', function() {
             expect.assertions(1);
             const elm = document.createElement('div');
             document.body.appendChild(elm);
-            elm.addEventListener('bar', function (e) {
+            elm.addEventListener('bar', function(e) {
                 expect(e.composed).toBe(false);
             });
             elm.dispatchEvent(new CustomEvent('bar', {}));
         });
 
-        it('should allow customization of composed init in custom events', function () {
+        it('should allow customization of composed init in custom events', function() {
             expect.assertions(1);
             const elm = document.createElement('div');
             document.body.appendChild(elm);
-            elm.addEventListener('foo', function (e) {
+            elm.addEventListener('foo', function(e) {
                 expect(e.composed).toBe(true);
             });
             elm.dispatchEvent(new CustomEvent('foo', { composed: true }));
         });
 
-        it('should handle event.target on events dispatched on custom elements', function () {
+        it('should handle event.target on events dispatched on custom elements', function() {
             expect.assertions(1);
             class MyComponent extends LightningElement {
                 trigger() {
@@ -53,15 +53,18 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-foo onfoo={handleFoo}></x-foo>
                 </template>
-            `, {
-                modules: {
-                    'x-foo': MyComponent,
+            `,
+                {
+                    modules: {
+                        'x-foo': MyComponent,
+                    },
                 }
-            });
+            );
             class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));

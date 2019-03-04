@@ -29,7 +29,7 @@ xit('should let the event bubble throws the shadow root when invoking click() on
     document.body.appendChild(elm);
     elm.addEventListener('click', evt => {
         clickEvent = evt;
-    })
+    });
 
     elm.shadowRoot.querySelector('div').click();
 

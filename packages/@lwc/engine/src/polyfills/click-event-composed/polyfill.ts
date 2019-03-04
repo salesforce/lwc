@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { addEventListener, removeEventListener } from "../../env/element";
+import { addEventListener, removeEventListener } from '../../env/element';
 
 const originalClickDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'click');
 
@@ -14,7 +14,7 @@ function handleClick(event) {
         enumerable: true,
         get() {
             return true;
-        }
+        },
     });
 }
 

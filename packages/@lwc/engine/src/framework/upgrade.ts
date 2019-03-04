@@ -4,18 +4,34 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isUndefined, assign, isNull, isObject, isTrue, isFalse, isFunction, toString } from "../shared/language";
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, getNodeKey, VMState } from "./vm";
-import { ComponentConstructor } from "./component";
-import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from "./utils";
-import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
-import { isNativeShadowRootAvailable } from "../env/dom";
-import { patchCustomElementProto } from "./patch";
-import { getComponentDef, setElementProto } from "./def";
-import { patchCustomElementWithRestrictions } from "./restrictions";
-import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from "./performance-timing";
-import { appendChild, insertBefore, replaceChild, removeChild } from "../env/node";
+import assert from '../shared/assert';
+import {
+    isUndefined,
+    assign,
+    isNull,
+    isObject,
+    isTrue,
+    isFalse,
+    isFunction,
+    toString,
+} from '../shared/language';
+import {
+    createVM,
+    removeRootVM,
+    appendRootVM,
+    getCustomElementVM,
+    getNodeKey,
+    VMState,
+} from './vm';
+import { ComponentConstructor } from './component';
+import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
+import { isNativeShadowRootAvailable } from '../env/dom';
+import { patchCustomElementProto } from './patch';
+import { getComponentDef, setElementProto } from './def';
+import { patchCustomElementWithRestrictions } from './restrictions';
+import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
+import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
 const ConnectingSlot = createFieldName('connecting');
 const DisconnectingSlot = createFieldName('disconnecting');
@@ -67,24 +83,28 @@ assign(Node.prototype, {
  */
 export function createElement(sel: string, options: any): HTMLElement {
     if (!isObject(options) || isNull(options)) {
-        throw new TypeError(`"createElement" function expects an object as second parameter but received "${toString(options)}".`);
+        throw new TypeError(
+            `"createElement" function expects an object as second parameter but received "${toString(
+                options
+            )}".`
+        );
     }
 
     let Ctor = (options as any).is as ComponentConstructor;
 
     if (!isFunction(Ctor)) {
-        throw new TypeError(
-            `"is" value must be a function but received "${toString(Ctor)}".`
-        );
+        throw new TypeError(`"is" value must be a function but received "${toString(Ctor)}".`);
     }
 
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
 
-    let { mode, fallback } = (options as any);
+    let { mode, fallback } = options as any;
     // TODO: for now, we default to open, but eventually it should default to 'closed'
-    if (mode !== 'closed') { mode = 'open'; }
+    if (mode !== 'closed') {
+        mode = 'open';
+    }
     // TODO: for now, we default to true, but eventually it should default to false
     fallback = isUndefined(fallback) || isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
 
@@ -100,7 +120,7 @@ export function createElement(sel: string, options: any): HTMLElement {
     setElementProto(element, def);
     if (isTrue(fallback)) {
         patchCustomElementProto(element, {
-            def
+            def,
         });
     }
     if (process.env.NODE_ENV !== 'production') {

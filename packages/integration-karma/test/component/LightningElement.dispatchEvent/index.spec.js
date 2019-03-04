@@ -69,7 +69,9 @@ function testInvalidEvent(reason, name) {
         expect(() => {
             elm.dispatch(new CustomEvent(name));
         }).toLogWarningDev(
-            new RegExp(`\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should only contain lowercase alphanumeric characters\\.`)
+            new RegExp(
+                `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should only contain lowercase alphanumeric characters\\.`
+            )
         );
     });
 }

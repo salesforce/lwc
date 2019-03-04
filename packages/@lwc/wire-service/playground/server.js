@@ -26,4 +26,3 @@ const server = app.listen(app.get('port'), () => {
     const port = server.address().port;
     console.log(`Server up on http://localhost:${port}`); // eslint-disable-line no-console
 });
-

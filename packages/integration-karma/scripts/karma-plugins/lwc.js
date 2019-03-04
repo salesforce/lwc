@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
- /**
+/**
  * This transformation is inspired from the karma-rollup-transform:
  * https://github.com/jlmakes/karma-rollup-preprocessor/blob/master/lib/index.js
  */
@@ -41,7 +41,7 @@ function createPreprocessor(config, emitter, logger) {
                 // The compat polyfills are injected at runtime by Karma, polyfills can be shared between all the
                 // suites.
                 polyfills: false,
-            }),
+            })
         );
     }
 
@@ -52,8 +52,8 @@ function createPreprocessor(config, emitter, logger) {
 
         // Wrap all the tests into a describe block with the file stricture name
         const ancestorDirectories = path.relative(basePath, suiteDir).split(path.sep);
-        const intro = ancestorDirectories.map(tag =>  `describe("${tag}", function () {`).join('\n');
-        const outro = ancestorDirectories.map(() =>  `});`).join('\n');
+        const intro = ancestorDirectories.map(tag => `describe("${tag}", function () {`).join('\n');
+        const outro = ancestorDirectories.map(() => `});`).join('\n');
 
         try {
             const bundle = await rollup({
@@ -93,11 +93,7 @@ function createPreprocessor(config, emitter, logger) {
             done(null, code);
         } catch (error) {
             const location = path.relative(basePath, file.path);
-            log.error(
-                'Error processing “%s”\n\n%s\n',
-                location,
-                error.stack || error.message,
-            );
+            log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
 
             done(error, null);
         }

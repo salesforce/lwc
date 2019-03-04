@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from "../../shared/language";
-import { VNode } from "../../3rdparty/snabbdom/types";
+import { isUndefined } from '../../shared/language';
+import { VNode } from '../../3rdparty/snabbdom/types';
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;
-    const { data: { on } } = vnode;
+    const {
+        data: { on },
+    } = vnode;
     const handler = on && on[type];
     // call event handler if exists
     if (handler) {
@@ -41,12 +43,14 @@ function updateAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
 }
 
 function createAllEventListeners(vnode: VNode) {
-    const { data: { on } } = vnode;
+    const {
+        data: { on },
+    } = vnode;
     if (isUndefined(on)) {
         return;
     }
     const elm = vnode.elm as Element;
-    const listener: VNodeEventListener = (vnode as InteractiveVNode).listener = createListener();
+    const listener: VNodeEventListener = ((vnode as InteractiveVNode).listener = createListener());
     listener.vnode = vnode;
 
     let name;

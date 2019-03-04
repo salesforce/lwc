@@ -11,16 +11,12 @@ describe('option validation', () => {
         expect(() => {
             // Use call to escape typescript type checking
             compiler.call(null, `<template></template>`);
-        }).toThrow(
-            /Compiler options must be an object/,
-        );
+        }).toThrow(/Compiler options must be an object/);
     });
 
     it('throws for unknown compiler option', () => {
         expect(() => {
             compiler(`<template></template>`, { foo: true } as any);
-        }).toThrow(
-            /Unknown option property foo/,
-        );
+        }).toThrow(/Unknown option property foo/);
     });
 });

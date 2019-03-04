@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, seal, ArrayPush, isFunction, hasOwnProperty } from "../shared/language";
-import { createFieldName } from "../shared/fields";
+import { create, seal, ArrayPush, isFunction, hasOwnProperty } from '../shared/language';
+import { createFieldName } from '../shared/fields';
 
 type Callback = () => void;
 
@@ -19,7 +19,9 @@ export const ViewModelReflection = createFieldName('ViewModel');
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
         if (nextTickCallbackQueue.length === 0) {
-            throw new Error(`Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`);
+            throw new Error(
+                `Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`
+            );
         }
     }
     const callbacks: Callback[] = nextTickCallbackQueue;
@@ -32,7 +34,9 @@ function flushCallbackQueue() {
 export function addCallbackToNextTick(callback: Callback) {
     if (process.env.NODE_ENV !== 'production') {
         if (!isFunction(callback)) {
-            throw new Error(`Internal Error: addCallbackToNextTick() can only accept a function callback`);
+            throw new Error(
+                `Internal Error: addCallbackToNextTick() can only accept a function callback`
+            );
         }
     }
     if (nextTickCallbackQueue.length === 0) {

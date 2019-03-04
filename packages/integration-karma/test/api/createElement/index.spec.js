@@ -67,7 +67,7 @@ if (process.env.NATIVE_SHADOW) {
         createElement('x-component', {
             is: ClosedShadowComponent,
             fallback: false,
-            mode: 'closed'
+            mode: 'closed',
         });
 
         expect(shadowRoot instanceof ShadowRoot);

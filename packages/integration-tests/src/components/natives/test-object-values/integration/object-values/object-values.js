@@ -1,15 +1,15 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class ObjectValues extends LightningElement {
     // Plain Object
     // ============
 
     get simple() {
-        return Object.values({ x: 'x' , y: 42 }).join('|');
+        return Object.values({ x: 'x', y: 42 }).join('|');
     }
 
     get arrayLike() {
-        return Object.values({  0: 'a', 1: 'b', 2: 'c' }).join('|');
+        return Object.values({ 0: 'a', 1: 'b', 2: 'c' }).join('|');
     }
 
     get unordered() {
@@ -17,11 +17,19 @@ export default class ObjectValues extends LightningElement {
     }
 
     get notEnumerable() {
-        const myObj = Object.create({}, {
-            x: { value() { return this.z; }, enumerable: false },
-            y: { value: 'y', enumerable: false,  },
-            z: { value: 'z', enumerable: true },
-        });
+        const myObj = Object.create(
+            {},
+            {
+                x: {
+                    value() {
+                        return this.z;
+                    },
+                    enumerable: false,
+                },
+                y: { value: 'y', enumerable: false },
+                z: { value: 'z', enumerable: true },
+            }
+        );
 
         return Object.values(myObj).join('|');
     }
@@ -42,12 +50,12 @@ export default class ObjectValues extends LightningElement {
     // ============
 
     get simpleProxy() {
-        const proxy = new Proxy({ x: 'x' , y: 42 }, {});
+        const proxy = new Proxy({ x: 'x', y: 42 }, {});
         return Object.values(proxy).join('|');
     }
 
     get arrayLikeProxy() {
-        const proxy = new Proxy({  0: 'a', 1: 'b', 2: 'c' }, {});
+        const proxy = new Proxy({ 0: 'a', 1: 'b', 2: 'c' }, {});
         return Object.values(proxy).join('|');
     }
 
@@ -57,22 +65,33 @@ export default class ObjectValues extends LightningElement {
     }
 
     get notEnumerableProxy() {
-        const obj = Object.create({}, {
-            x: { value() { return this.z; }, enumerable: false },
-            y: { value: 'y', enumerable: false,  },
-            z: { value: 'z', enumerable: true },
-        });
+        const obj = Object.create(
+            {},
+            {
+                x: {
+                    value() {
+                        return this.z;
+                    },
+                    enumerable: false,
+                },
+                y: { value: 'y', enumerable: false },
+                z: { value: 'z', enumerable: true },
+            }
+        );
 
         const proxy = new Proxy(obj, {});
         return Object.values(proxy).join('|');
     }
 
     get symbolProxy() {
-        const proxy = new Proxy({
-            x: 'x',
-            y: 42,
-            [Symbol('z')]: 'z',
-        }, {});
+        const proxy = new Proxy(
+            {
+                x: 'x',
+                y: 42,
+                [Symbol('z')]: 'z',
+            },
+            {}
+        );
         return Object.values(proxy).join('|');
     }
 }

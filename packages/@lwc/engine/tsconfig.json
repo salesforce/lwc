@@ -1,24 +1,15 @@
 {
-  "extends": "../../../tsconfig.json",
+    "extends": "../../../tsconfig.json",
 
-  "compilerOptions": {
-    "noImplicitAny": false,
-    "strictFunctionTypes": false,
-    "strictPropertyInitialization": false,
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "strictFunctionTypes": false,
+        "strictPropertyInitialization": false,
 
-    "outDir": "lib",
+        "outDir": "lib",
 
-    "lib": [
-      "dom",
-      "es2015",
-      "es2016",
-      "es2017",
-      "es2018"
-    ],
-  },
+        "lib": ["dom", "es2015", "es2016", "es2017", "es2018"]
+    },
 
-  "include": [
-    "scripts/tslint/",
-    "src/"
-  ]
+    "include": ["scripts/tslint/", "src/"]
 }

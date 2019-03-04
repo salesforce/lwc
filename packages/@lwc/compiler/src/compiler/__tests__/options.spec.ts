@@ -21,7 +21,9 @@ describe('compiler options', () => {
 
     it('should validate bundle namespace option', async () => {
         await expect(compile({ name: 'foo' })).rejects.toMatchObject({
-            message: expect.stringContaining('Expected a string for namespace, received "undefined".'),
+            message: expect.stringContaining(
+                'Expected a string for namespace, received "undefined".'
+            ),
         });
     });
 
@@ -31,7 +33,7 @@ describe('compiler options', () => {
                 name: '/x/foo/foo.js',
                 namespace: 'x',
                 files: {},
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining('Expected an object with files to be compiled.'),
         });
@@ -45,7 +47,7 @@ describe('compiler options', () => {
                 files: {
                     'foo.js': true,
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Unexpected file content for "foo.js". Expected a string, received "true".'
@@ -62,7 +64,7 @@ describe('compiler options', () => {
                 outputConfig: {
                     minify: 'true',
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Expected a boolean for outputConfig.minify, received "true".'
@@ -79,7 +81,7 @@ describe('compiler options', () => {
                 outputConfig: {
                     compat: 'true',
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Expected a boolean for outputConfig.compat, received "true".'
@@ -96,10 +98,10 @@ describe('compiler options', () => {
                 outputConfig: {
                     sourcemap: 'true',
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
-                "Expected a boolean value for outputConfig.sourcemap, received \"true\"."
+                'Expected a boolean value for outputConfig.sourcemap, received "true".'
             ),
         });
     });
@@ -115,7 +117,7 @@ describe('compiler options', () => {
                         allowDefinition: 'foo',
                     },
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".'
@@ -134,7 +136,7 @@ describe('compiler options', () => {
                         resolution: true,
                     },
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Expected an object for stylesheetConfig.customProperties.resolution, received "true".'
@@ -153,7 +155,7 @@ describe('compiler options', () => {
                         resolution: { type: 'foo' },
                     },
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             message: expect.stringContaining(
                 'Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "foo".'

@@ -13,7 +13,7 @@ describe('Node.lasChild', () => {
         expect(elm.shadowRoot.lastChild).toBe(elm.shadowRoot.querySelector('p'));
     });
 
-    it('should return last child Node even if it\'s a text', () => {
+    it("should return last child Node even if it's a text", () => {
         const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.lastChild.nodeType).toBe(Node.TEXT_NODE);

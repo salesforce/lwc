@@ -30,16 +30,14 @@ interface RenderPrimitiveDefinition {
     alias: string;
 }
 
-const RENDER_APIS: {
-    [primitive in RenderPrimitive]: RenderPrimitiveDefinition
-} = {
+const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition } = {
     iterator: { name: 'i', alias: 'api_iterator' },
     flatten: { name: 'f', alias: 'api_flatten' },
     element: { name: 'h', alias: 'api_element' },
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     bind: { name: 'b', alias: 'api_bind' },
-    functionBind: {name: 'fb', alias: 'function_bind'},
+    functionBind: { name: 'fb', alias: 'function_bind' },
     locatorListenerBind: { name: 'll', alias: 'locator_listener' },
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
@@ -77,8 +75,9 @@ export default class CodeGen {
                 } else if (t.isExportDefaultDeclaration(node)) {
                     const stylesheetDeclaration = t.variableDeclaration('const', [
                         t.variableDeclarator(
-                            t.identifier('stylesheets'), node.declaration as t.ArrayExpression
-                        )
+                            t.identifier('stylesheets'),
+                            node.declaration as t.ArrayExpression
+                        ),
                     ]);
 
                     styleBody.push(stylesheetDeclaration);
@@ -92,23 +91,15 @@ export default class CodeGen {
         }
     }
 
-    genElement(
-        tagName: string,
-        data: t.ObjectExpression,
-        children: t.Expression,
-    ) {
-        return this._renderApiCall(RENDER_APIS.element, [
-            t.stringLiteral(tagName),
-            data,
-            children,
-        ]);
+    genElement(tagName: string, data: t.ObjectExpression, children: t.Expression) {
+        return this._renderApiCall(RENDER_APIS.element, [t.stringLiteral(tagName), data, children]);
     }
 
     genCustomElement(
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
-        children: t.Expression,
+        children: t.Expression
     ) {
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.stringLiteral(tagName),
@@ -120,9 +111,7 @@ export default class CodeGen {
 
     genText(value: string | t.Expression): t.Expression {
         if (typeof value === 'string') {
-            return this._renderApiCall(RENDER_APIS.text, [
-                t.stringLiteral(value),
-            ]);
+            return this._renderApiCall(RENDER_APIS.text, [t.stringLiteral(value)]);
         } else {
             return this._renderApiCall(RENDER_APIS.dynamic, [value]);
         }
@@ -140,8 +129,11 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.functionBind, [fn]);
     }
 
-    genLocatorBind(handler: t.Expression, locatorId: string,
-                   locatorProvider: t.Expression | undefined) {
+    genLocatorBind(
+        handler: t.Expression,
+        locatorId: string,
+        locatorProvider: t.Expression | undefined
+    ) {
         const argsList = [handler, t.stringLiteral(locatorId)];
         if (!isUndefined(locatorProvider)) {
             argsList.push(locatorProvider);
@@ -164,16 +156,12 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedId, [id]);
     }
 
-    getSlot(
-        slotName: string,
-        data: t.ObjectExpression,
-        children: t.Expression,
-    ) {
+    getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         return this._renderApiCall(RENDER_APIS.slot, [
             t.stringLiteral(slotName),
             data,
             children,
-            t.identifier('$slotset')
+            t.identifier('$slotset'),
         ]);
     }
 
@@ -201,7 +189,7 @@ export default class CodeGen {
 
     private _renderApiCall(
         primitive: RenderPrimitiveDefinition,
-        params: t.Expression[],
+        params: t.Expression[]
     ): t.CallExpression {
         const { name, alias } = primitive;
 

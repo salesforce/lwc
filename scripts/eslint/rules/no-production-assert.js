@@ -23,19 +23,21 @@ module.exports = {
                 if (isAssertCallExpression) {
                     const isGuarded = context.getAncestors().some(ancestor => {
                         return (
-                            (ancestor.type === 'IfStatement') &&
-                            (sourceCode.getText(ancestor.test) === `process.env.NODE_ENV !== 'production'`)
+                            ancestor.type === 'IfStatement' &&
+                            sourceCode.getText(ancestor.test) ===
+                                `process.env.NODE_ENV !== 'production'`
                         );
                     });
 
                     if (!isGuarded) {
                         context.report({
                             node,
-                            message: 'Unexpected assert statement not guarded by a if production check.'
+                            message:
+                                'Unexpected assert statement not guarded by a if production check.',
                         });
                     }
                 }
-            }
+            },
         };
     },
-}
+};

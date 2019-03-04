@@ -7,7 +7,7 @@
 import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
-import { ModuleDependency } from "./shared/types";
+import { ModuleDependency } from './shared/types';
 import { Statement, ImportDeclaration } from '@babel/types';
 
 export interface IdAttributeData {
@@ -26,11 +26,11 @@ export default class State {
     secureDependencies: string[] = []; // imports patched by locker service at runtime
 
     inlineStyle: {
-        body: Statement[],
-        imports: ImportDeclaration[]
+        body: Statement[];
+        imports: ImportDeclaration[];
     } = {
         body: [],
-        imports: []
+        imports: [],
     };
 
     idAttrData: IdAttributeData[] = [];

@@ -9,7 +9,7 @@ import FooInner from 'example/fooInner';
 
 jest.mock('globalLib', () => {
     return {
-        func: () => "from test"
+        func: () => 'from test',
     };
 });
 
@@ -22,6 +22,6 @@ describe('example-foo-inner', () => {
 
     it('returns value from mock defined in test file', () => {
         const element = createElement('example-foo-inner', { is: FooInner });
-        expect(element.globalLibReturn).toBe("from test");
+        expect(element.globalLibReturn).toBe('from test');
     });
 });

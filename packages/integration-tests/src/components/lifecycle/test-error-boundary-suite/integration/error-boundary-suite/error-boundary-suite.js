@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class RootParent extends LightningElement {
     @track state = {
@@ -9,8 +9,8 @@ export default class RootParent extends LightningElement {
         'boundary-child-attr-changed-throw': false,
         'boundary-child-slot-throw': false,
         'boundary-child-self-rehydrate-throw': false,
-        'boundary-alternative-view-throw': false
-    }
+        'boundary-alternative-view-throw': false,
+    };
 
     handleClick(event) {
         const value = event.currentTarget.value;
@@ -53,4 +53,3 @@ export default class RootParent extends LightningElement {
         return this.state['nested-boundary-child-alt-view-throw'];
     }
 }
-

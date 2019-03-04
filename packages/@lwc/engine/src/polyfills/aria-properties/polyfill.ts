@@ -15,10 +15,7 @@ type AriaPropMap = Record<string, NormalizedAttributeValue>;
 
 const nodeToAriaPropertyValuesMap: WeakMap<HTMLElement, AriaPropMap> = new WeakMap();
 const { hasOwnProperty } = Object.prototype;
-const {
-    replace: StringReplace,
-    toLowerCase: StringToLowerCase,
-} = String.prototype;
+const { replace: StringReplace, toLowerCase: StringToLowerCase } = String.prototype;
 
 function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
     let map = nodeToAriaPropertyValuesMap.get(elm);
@@ -35,7 +32,10 @@ function getNormalizedAriaPropertyValue(value: any): NormalizedAttributeValue {
     return value == null ? null : value + '';
 }
 
-function createAriaPropertyPropertyDescriptor(propName: string, attrName: string): PropertyDescriptor {
+function createAriaPropertyPropertyDescriptor(
+    propName: string,
+    attrName: string
+): PropertyDescriptor {
     return {
         get(this: HTMLElement): any {
             const map = getAriaPropertyMap(this);
