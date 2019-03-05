@@ -440,13 +440,21 @@ function runChildrenDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    const { velements: childLWC } = vm;
+    const { velements: vCustomElementCollection } = vm;
     // reporting disconnection for every child
-    for (let i = 0, len = childLWC.length; i < len; i += 1) {
-        const elm = childLWC[i].elm as HTMLElement;
-        const childVM = getCustomElementVM(elm);
-        runDisconnectedCallback(childVM);
-        runChildrenDisconnectedCallback(childVM);
+    for (let i = 0, len = vCustomElementCollection.length; i < len; i += 1) {
+        const elm = vCustomElementCollection[i].elm;
+        // There are two cases where the element could be undefined:
+        // * when there is an error during the construction phase, and an
+        //   error boundary picks it, there is a possibility that the VCustomElement
+        //   is not properly initialized, and therefore is should be ignored.
+        // * when slotted custom element is not used by the element where it is slotted
+        //   into it, as a result, the custom element was never initialized.
+        if (!isUndefined(elm)) {
+            const childVM = getCustomElementVM(elm as HTMLElement);
+            runDisconnectedCallback(childVM);
+            runChildrenDisconnectedCallback(childVM);
+        }
     }
 }
 
