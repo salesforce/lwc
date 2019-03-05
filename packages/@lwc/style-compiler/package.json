@@ -1,22 +1,22 @@
 {
-  "name": "@lwc/style-compiler",
-  "version": "0.35.10",
-  "description": "Transform style sheet to be consumed by the LWC engine",
-  "license": "MIT",
-  "main": "dist/commonjs/index.js",
-  "types": "dist/types/index.d.ts",
-  "scripts": {
-    "clean": "rm -rf dist/",
-    "build": "tsc",
-    "test": "jest"
-  },
-  "dependencies": {
-    "cssnano": "~3.10.0",
-    "postcss": "~7.0.5",
-    "postcss-selector-parser": "3.1.1",
-    "postcss-value-parser": "3.3.1"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/style-compiler",
+    "version": "0.35.11",
+    "description": "Transform style sheet to be consumed by the LWC engine",
+    "license": "MIT",
+    "main": "dist/commonjs/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "build": "tsc",
+        "test": "jest"
+    },
+    "dependencies": {
+        "cssnano": "~3.10.0",
+        "postcss": "~7.0.5",
+        "postcss-selector-parser": "3.1.1",
+        "postcss-value-parser": "3.3.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
 }

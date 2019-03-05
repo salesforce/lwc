@@ -6,8 +6,8 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
-import track from "../track";
-import readonly from "../readonly";
+import track from '../track';
+import readonly from '../readonly';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -113,7 +113,7 @@ describe('track.ts', () => {
                     expect(this.foo).toBe(1);
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -132,7 +132,7 @@ describe('track.ts', () => {
                     expect(this.foo).not.toBe(a);
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -149,7 +149,7 @@ describe('track.ts', () => {
                     expect(this.foo).toBe(d);
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -168,7 +168,7 @@ describe('track.ts', () => {
                     expect(this.foo).toBe(o);
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
 
             const elm = createElement('x-foo', { is: MyComponent });
@@ -184,7 +184,7 @@ describe('track.ts', () => {
                     this.foo = v;
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -200,7 +200,7 @@ describe('track.ts', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.track = { foo: {  } };
+            MyComponent.track = { foo: {} };
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);
@@ -210,7 +210,7 @@ describe('track.ts', () => {
 
     describe('@track regression', () => {
         test(`#609 - each instance of the same object prototype should have it's own tracked property value`, () => {
-            class XFoo extends LightningElement  {
+            class XFoo extends LightningElement {
                 constructor() {
                     super();
                     this.counter = 0;
@@ -237,7 +237,7 @@ describe('track.ts', () => {
     });
 
     test(`#609 - instance of the same object prototype should not share values of tracked properties`, () => {
-        class XFoo extends LightningElement  {
+        class XFoo extends LightningElement {
             constructor() {
                 super();
                 this.counter = 0;

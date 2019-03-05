@@ -8,17 +8,18 @@ const PrettyFormat = require('pretty-format');
 const DOMElement = PrettyFormat.plugins.DOMElement;
 
 function test({ nodeType } = {}) {
-    return nodeType && (
-        nodeType === 1 || // element
+    return (
+        nodeType &&
+        (nodeType === 1 || // element
         nodeType === 3 || // text
-        nodeType === 6    // comment
+            nodeType === 6) // comment
     );
 }
 
 const { defineProperty } = Object;
 
 function escapeHTML(str) {
-  return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function printText(text, config) {
@@ -28,15 +29,15 @@ function printText(text, config) {
 
 function printChildren(children, config, indentation, depth, refs, printer) {
     return children
-    .map(
-      child =>
-        config.spacingOuter +
-        indentation +
-        (typeof child === 'string'
-          ? printText(child, config)
-          : printer(child, config, indentation, depth, refs)),
-    )
-    .join('');
+        .map(
+            child =>
+                config.spacingOuter +
+                indentation +
+                (typeof child === 'string'
+                    ? printText(child, config)
+                    : printer(child, config, indentation, depth, refs))
+        )
+        .join('');
 }
 
 function serialize(node, config, indentation, depth, refs, printer) {
@@ -55,15 +56,35 @@ function serialize(node, config, indentation, depth, refs, printer) {
         configurable: true,
     });
 
-    const result = DOMElement.serialize(node, config, indentation, depth, refs, (currentNode, currentConfig, currentIndentation, currentDepth, currentRefs) => {
-        if (currentNode.textContent === '#shadow-root(open)') {
-            return [
-                '#shadow-root(open)',
-                printChildren(currentNode.children, currentConfig, currentIndentation + config.indent, currentDepth + 1, currentRefs, printer)
-            ].join('');
+    const result = DOMElement.serialize(
+        node,
+        config,
+        indentation,
+        depth,
+        refs,
+        (currentNode, currentConfig, currentIndentation, currentDepth, currentRefs) => {
+            if (currentNode.textContent === '#shadow-root(open)') {
+                return [
+                    '#shadow-root(open)',
+                    printChildren(
+                        currentNode.children,
+                        currentConfig,
+                        currentIndentation + config.indent,
+                        currentDepth + 1,
+                        currentRefs,
+                        printer
+                    ),
+                ].join('');
+            }
+            return printer(
+                currentNode,
+                currentConfig,
+                currentIndentation,
+                currentDepth,
+                currentRefs
+            );
         }
-        return printer(currentNode, currentConfig, currentIndentation, currentDepth, currentRefs);
-    });
+    );
     delete node.childNodes;
 
     return result;

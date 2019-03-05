@@ -53,7 +53,6 @@ export {
     StringCharCodeAt,
     StringSlice,
     StringSplit,
-
     freeze,
     seal,
     keys,
@@ -69,7 +68,6 @@ export {
     hasOwnProperty,
     preventExtensions,
     isExtensible,
-
     ArrayReduce,
     ArraySlice,
     ArraySplice,
@@ -134,7 +132,7 @@ export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescripto
             return d;
         }
         o = getPrototypeOf(o);
-     } while (o !== null);
+    } while (o !== null);
 }
 
 export const emptyString = '';

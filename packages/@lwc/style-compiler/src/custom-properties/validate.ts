@@ -13,9 +13,7 @@ export default function validate(root: Root): void {
         const { prop } = decl;
 
         if (prop.startsWith(CUSTOM_PROPERTY_IDENTIFIER)) {
-            throw decl.error(
-                `Invalid definition of custom property "${prop}".`,
-            );
+            throw decl.error(`Invalid definition of custom property "${prop}".`);
         }
     });
 }

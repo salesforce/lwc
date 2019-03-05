@@ -16,9 +16,7 @@ const COMPILER_OPTIONS: CompilerOptions = {
 };
 
 it('should throw when processing an invalid CSS file', async () => {
-    await expect(
-        transform(`<`, 'foo.css', COMPILER_OPTIONS),
-    ).rejects.toMatchObject({
+    await expect(transform(`<`, 'foo.css', COMPILER_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.css',
         message: expect.stringContaining('foo.css:1:1: Unknown word'),
     });
@@ -54,7 +52,7 @@ describe('custom properties', () => {
                 stylesheetConfig: {
                     customProperties: { allowDefinition: true },
                 },
-            }),
+            })
         ).resolves.toMatchObject({
             code: expect.any(String),
         });
@@ -67,12 +65,10 @@ describe('custom properties', () => {
                 stylesheetConfig: {
                     customProperties: { allowDefinition: false },
                 },
-            }),
+            })
         ).rejects.toMatchObject({
             filename: 'foo.css',
-            message: expect.stringContaining(
-                'Invalid definition of custom property "--bg-color"',
-            ),
+            message: expect.stringContaining('Invalid definition of custom property "--bg-color"'),
         });
     });
 

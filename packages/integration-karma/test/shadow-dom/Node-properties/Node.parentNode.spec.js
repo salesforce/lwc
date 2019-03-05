@@ -9,7 +9,7 @@ describe('Node.parentNode', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('x-container').parentNode).toBe(
-            elm.shadowRoot.querySelector('.outer'),
+            elm.shadowRoot.querySelector('.outer')
         );
     });
 

@@ -11,9 +11,7 @@ function waitForPromise(promise) {
     let err;
     let res;
 
-    promise
-        .then(result => (res = result), error => (err = error))
-        .then(() => (resolved = true));
+    promise.then(result => (res = result), error => (err = error)).then(() => (resolved = true));
 
     deasync.loopWhile(() => !resolved);
 
@@ -25,5 +23,5 @@ function waitForPromise(promise) {
 }
 
 module.exports = {
-    waitForPromise
+    waitForPromise,
 };

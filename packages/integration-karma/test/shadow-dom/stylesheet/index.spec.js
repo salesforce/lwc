@@ -29,7 +29,7 @@ describe('shadow encapsulation', () => {
             expect(window.getComputedStyle(div).marginLeft).toBe('0px');
             expect(window.getComputedStyle(div).marginRight).toBe('10px');
         });
-    })
+    });
 });
 
 describe(':host', () => {

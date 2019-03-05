@@ -10,15 +10,15 @@ const replace = require('rollup-plugin-replace');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const babel = require("@babel/core");
-const minify = require("babel-preset-minify");
+const babel = require('@babel/core');
+const minify = require('babel-preset-minify');
 
 const { version } = require('../../package.json');
 const { generateTargetName, ignoreCircularDependencies } = require('./utils');
 
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
-const banner = (`/* proxy-compat-disable */`);
+const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
 const minifyBabelConfig = {
@@ -32,22 +32,23 @@ function inlineMinifyPlugin() {
         transformBundle(code) {
             const result = babel.transform(code, minifyBabelConfig);
             return result.code;
-        }
+        },
     };
 }
 
-function rollupConfig(config){
+function rollupConfig(config) {
     const { format, target, prod } = config;
     let plugins = [
         nodeResolve(),
         rollupTypescriptPlugin({
             typescript,
-            target, module: 'es6',
+            target,
+            module: 'es6',
             sourceMap: false,
-            include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
+            include: ['*.ts', '**/*.ts', '/**/node_modules/**/*.js'],
         }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-        prod && inlineMinifyPlugin({})
+        prod && inlineMinifyPlugin({}),
     ].filter(p => p);
 
     const targetName = generateTargetName(config);
@@ -56,15 +57,15 @@ function rollupConfig(config){
     return {
         input: entry,
         output: {
-            file: path.join(outputDir + `/${target}`,  targetName),
+            file: path.join(outputDir + `/${target}`, targetName),
             format: format,
-            name: "Engine",
+            name: 'Engine',
             banner: banner,
             footer: footer,
         },
         onwarn: ignoreCircularDependencies,
-        plugins
-    }
+        plugins,
+    };
 }
 
 module.exports = [
@@ -74,6 +75,5 @@ module.exports = [
 
     // PRODDEBUG mode
     rollupConfig({ format: 'umd', proddebug: true, target: 'es2017' }),
-    rollupConfig({ format: 'umd', proddebug: true, target: 'es5' })
-]
-
+    rollupConfig({ format: 'umd', proddebug: true, target: 'es5' }),
+];

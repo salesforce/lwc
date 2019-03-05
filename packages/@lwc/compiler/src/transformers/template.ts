@@ -4,14 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as path from "path";
-import { CompilerError, normalizeToCompilerError, DiagnosticLevel, TransformerErrors } from "@lwc/errors";
-import compile from "@lwc/template-compiler";
-import { TemplateModuleDependency } from "@lwc/template-compiler";
+import * as path from 'path';
+import {
+    CompilerError,
+    normalizeToCompilerError,
+    DiagnosticLevel,
+    TransformerErrors,
+} from '@lwc/errors';
+import compile from '@lwc/template-compiler';
+import { TemplateModuleDependency } from '@lwc/template-compiler';
 
-import { FileTransformer } from "./transformer";
-import { MetadataCollector } from "../bundler/meta-collector";
-import { NormalizedCompilerOptions } from "../compiler/options";
+import { FileTransformer } from './transformer';
+import { MetadataCollector } from '../bundler/meta-collector';
+import { NormalizedCompilerOptions } from '../compiler/options';
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
@@ -44,9 +49,11 @@ const transform: FileTransformer = function(
 
         metadata = result.metadata;
         if (metadataCollector) {
-            metadataCollector.collectExperimentalTemplateDependencies(filename, metadata.templateDependencies);
+            metadataCollector.collectExperimentalTemplateDependencies(
+                filename,
+                metadata.templateDependencies
+            );
         }
-
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
@@ -58,13 +65,20 @@ const transform: FileTransformer = function(
     return {
         code: serialize(code, filename, options),
         map: { mappings: '' },
-        metadata
+        metadata,
     };
 };
 
-function serialize(code: string, filename: string, { namespace, name }: NormalizedCompilerOptions): string {
+function serialize(
+    code: string,
+    filename: string,
+    { namespace, name }: NormalizedCompilerOptions
+): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
-    const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+    const scopingAttribute = `${namespace}-${name}_${path.basename(
+        filename,
+        path.extname(filename)
+    )}`;
     let buffer = '';
     buffer += `import _implicitStylesheets from "${cssRelPath}";\n\n`;
     buffer += code;

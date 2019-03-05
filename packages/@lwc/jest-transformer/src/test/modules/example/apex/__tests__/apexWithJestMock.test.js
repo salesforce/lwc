@@ -8,11 +8,15 @@ import { createElement } from 'lwc';
 import Apex from 'example/apex';
 import { getSObjectValue } from '@salesforce/apex';
 
-jest.mock('@salesforce/apex', () => {
-    return {
-        getSObjectValue: jest.fn(),
-    }
-}, { virtual: true });
+jest.mock(
+    '@salesforce/apex',
+    () => {
+        return {
+            getSObjectValue: jest.fn(),
+        };
+    },
+    { virtual: true }
+);
 
 afterEach(() => {
     while (document.body.firstChild) {

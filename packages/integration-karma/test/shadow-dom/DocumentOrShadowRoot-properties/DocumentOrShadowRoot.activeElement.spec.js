@@ -28,7 +28,7 @@ describe('Document', () => {
         document.body.appendChild(elm);
 
         const withInput = elm.shadowRoot.querySelector('x-with-input');
-        const input  = withInput.shadowRoot.querySelector('input');
+        const input = withInput.shadowRoot.querySelector('input');
         input.focus();
 
         expect(document.activeElement).toBe(elm);
@@ -56,13 +56,13 @@ describe('ShadowRoot', () => {
         document.body.appendChild(elm);
 
         const withInput = elm.shadowRoot.querySelector('x-with-input');
-        const input  = withInput.shadowRoot.querySelector('input');
+        const input = withInput.shadowRoot.querySelector('input');
         input.focus();
 
         expect(elm.shadowRoot.activeElement).toBe(withInput);
     });
 
-    it('should return the focus element even if it\'s added manually in the DOM', () => {
+    it("should return the focus element even if it's added manually in the DOM", () => {
         const elm = createElement('x-with-lwc-dom-manual', { is: WithLwcDomManual });
         document.body.appendChild(elm);
 

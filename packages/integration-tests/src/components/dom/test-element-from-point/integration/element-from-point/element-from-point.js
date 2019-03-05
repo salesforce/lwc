@@ -6,7 +6,8 @@ export default class ShadowRootFromPoint extends LightningElement {
 
     handleShadowElementFromPointClick() {
         const match = this.template.elementFromPoint(5, 5);
-        this.didSelectCorrectShadowElement = match === this.template.querySelector('.shadow-element-from-point');
+        this.didSelectCorrectShadowElement =
+            match === this.template.querySelector('.shadow-element-from-point');
     }
 
     handleDocumentElementFromPointClick() {

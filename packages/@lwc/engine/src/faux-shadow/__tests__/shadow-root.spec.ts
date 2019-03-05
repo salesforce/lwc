@@ -60,15 +60,18 @@ describe('root', () => {
                 }
             }
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <p></p>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                }
+            );
             class Parent extends LightningElement {
                 render() {
                     return parentTmpl;
@@ -96,15 +99,18 @@ describe('root', () => {
                 }
             }
 
-            const parentTmpl = compileTemplate(`
+            const parentTmpl = compileTemplate(
+                `
                 <template>
                     <x-child>
                         <p></p>
                     </x-child>
                 </template>
-            `, {
-                modules: { 'x-child': Child },
-            });
+            `,
+                {
+                    modules: { 'x-child': Child },
+                }
+            );
             class Parent extends LightningElement {
                 render() {
                     return parentTmpl;
@@ -119,6 +125,5 @@ describe('root', () => {
             const xChild = elm.shadowRoot.querySelector('x-child');
             expect(xChild.shadowRoot.querySelector('p')).toBeNull();
         });
-
     });
 });

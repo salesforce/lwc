@@ -16,20 +16,33 @@ describe('Tabbing into custom element with delegates focus', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
-        browser.waitUntil(() => {
-            const activeFromDocument = browser.execute(function () {
-                return document.activeElement;
-            });
+        browser.waitUntil(
+            () => {
+                const activeFromDocument = browser.execute(function() {
+                    return document.activeElement;
+                });
 
-            return activeFromDocument.getTagName() === 'integration-delegates-focus-false-negative-tab-index'
-        }, 500, 'expect integration-delegates-focus-false-negative-tab-index to be focused');
+                return (
+                    activeFromDocument.getTagName() ===
+                    'integration-delegates-focus-false-negative-tab-index'
+                );
+            },
+            500,
+            'expect integration-delegates-focus-false-negative-tab-index to be focused'
+        );
 
-        browser.waitUntil(() => {
-            const activeFromShadow = browser.execute(function () {
-                return document.querySelector('integration-delegates-focus-false-negative-tab-index').shadowRoot.activeElement;
-            });
+        browser.waitUntil(
+            () => {
+                const activeFromShadow = browser.execute(function() {
+                    return document.querySelector(
+                        'integration-delegates-focus-false-negative-tab-index'
+                    ).shadowRoot.activeElement;
+                });
 
-            return activeFromShadow.getTagName() === 'a';
-        }, 500, 'expect anchor to be focused');
+                return activeFromShadow.getTagName() === 'a';
+            },
+            500,
+            'expect anchor to be focused'
+        );
     });
 });

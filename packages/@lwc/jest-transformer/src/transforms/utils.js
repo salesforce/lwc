@@ -56,11 +56,13 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
         fallbackData = t.stringLiteral(fallbackData);
     }
 
-    path.replaceWithMultiple(defaultTemplate({
-        RESOURCE_NAME: t.identifier(defaultImport),
-        IMPORT_SOURCE: t.stringLiteral(importSource),
-        FALLBACK_DATA: fallbackData
-    }));
+    path.replaceWithMultiple(
+        defaultTemplate({
+            RESOURCE_NAME: t.identifier(defaultImport),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            FALLBACK_DATA: fallbackData,
+        })
+    );
 }
 
 /*
@@ -92,14 +94,19 @@ function getImportInfo(path, noValidate) {
     const importSource = path.get('source.value').node;
     const importSpecifiers = path.get('specifiers');
 
-    if (!noValidate && (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())) {
+    if (
+        !noValidate &&
+        (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier())
+    ) {
         throw generateError(path, {
             errorInfo: JestTransformerErrors.INVALID_IMPORT,
-            messageArgs: [importSource]
+            messageArgs: [importSource],
         });
     }
 
-    let resourceNames = importSpecifiers.map(importSpecifier => importSpecifier.get('local').node.name);
+    let resourceNames = importSpecifiers.map(
+        importSpecifier => importSpecifier.get('local').node.name
+    );
 
     return {
         importSource,

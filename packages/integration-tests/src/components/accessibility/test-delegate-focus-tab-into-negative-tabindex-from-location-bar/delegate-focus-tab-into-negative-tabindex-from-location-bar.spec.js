@@ -11,15 +11,19 @@ describe('Delegates focus', () => {
         browser.url(URL);
     });
 
-    it('should focus the input when clicked', function () {
+    it('should focus the input when clicked', function() {
         browser.keys(['Tab']); // tab into first anchor
         browser.keys(['Tab']); // tab into second anchor
         browser.keys(['Tab']); // tab over integration-child
-        browser.waitUntil(() => {
-            const active = browser.execute(function () {
-                return document.activeElement;
-            });
-            return active.getTagName() === 'body';
-        }, 500, 'expect body to be focused');
+        browser.waitUntil(
+            () => {
+                const active = browser.execute(function() {
+                    return document.activeElement;
+                });
+                return active.getTagName() === 'body';
+            },
+            500,
+            'expect body to be focused'
+        );
     });
 });

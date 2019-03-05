@@ -4,17 +4,34 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isArray, isFunction, isNull, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
-import { VNode, VNodes } from "../3rdparty/snabbdom/types";
-import * as api from "./api";
-import { RenderAPI } from "./api";
-import { Context } from "./context";
-import { SlotSet, VM, resetShadowRoot } from "./vm";
-import { EmptyArray } from "./utils";
-import { ComponentInterface } from "./component";
-import { isTemplateRegistered, registerTemplate } from "./secure-template";
-import { evaluateCSS, StylesheetFactory, applyStyleAttributes, resetStyleAttributes } from "./stylesheet";
+import assert from '../shared/assert';
+import {
+    isArray,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    create,
+    ArrayIndexOf,
+    toString,
+    hasOwnProperty,
+    forEach,
+    ArrayUnshift,
+} from '../shared/language';
+import { VNode, VNodes } from '../3rdparty/snabbdom/types';
+import * as api from './api';
+import { RenderAPI } from './api';
+import { Context } from './context';
+import { SlotSet, VM, resetShadowRoot } from './vm';
+import { EmptyArray } from './utils';
+import { ComponentInterface } from './component';
+import { isTemplateRegistered, registerTemplate } from './secure-template';
+import {
+    evaluateCSS,
+    StylesheetFactory,
+    applyStyleAttributes,
+    resetStyleAttributes,
+} from './stylesheet';
 
 export { registerTemplate };
 export interface Template {
@@ -56,12 +73,20 @@ function validateSlots(vm: VM, html: any) {
     const { slots = EmptyArray } = html;
     for (const slotName in cmpSlots) {
         // eslint-disable-next-line no-production-assert
-        assert.isTrue(isArray(cmpSlots[slotName]), `Slots can only be set to an array, instead received ${toString(cmpSlots[slotName])} for slot "${slotName}" in ${vm}.`);
+        assert.isTrue(
+            isArray(cmpSlots[slotName]),
+            `Slots can only be set to an array, instead received ${toString(
+                cmpSlots[slotName]
+            )} for slot "${slotName}" in ${vm}.`
+        );
 
         if (ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`, vm.elm);
+            assert.logWarning(
+                `Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`,
+                vm.elm
+            );
         }
     }
 }
@@ -77,18 +102,32 @@ function validateFields(vm: VM, html: Template) {
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`, vm.elm);
+            assert.logWarning(
+                `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`,
+                vm.elm
+            );
         } else if (hasOwnProperty.call(component, propName)) {
             // eslint-disable-next-line no-production-assert
-            assert.fail(`${component}'s template is accessing \`this.${toString(propName)}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(propName)}\`.`);
+            assert.fail(
+                `${component}'s template is accessing \`this.${toString(
+                    propName
+                )}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(
+                    propName
+                )}\`.`
+            );
         }
     });
 }
 
-export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
+export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be an imported template instead of ${toString(html)}`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(
+            isFunction(html),
+            `evaluateTemplate() second argument must be an imported template instead of ${toString(
+                html
+            )}`
+        );
     }
 
     // TODO: add identity to the html functions
@@ -104,7 +143,11 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         // Check that the template was built by the compiler
         if (!isTemplateRegistered(html)) {
-            throw new TypeError(`Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${vm.def.name}.html"\`), instead, it has returned: ${toString(html)}.`);
+            throw new TypeError(
+                `Invalid template returned by the render() method on ${vm}. It must return an imported template (e.g.: \`import html from "./${
+                    vm.def.name
+                }.html"\`), instead, it has returned: ${toString(html)}.`
+            );
         }
 
         vm.cmpTemplate = html;
@@ -133,7 +176,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
+        assert.isTrue(
+            isObject(context.tplCache),
+            `vm.context.tplCache must be an object associated to ${cmpTemplate}.`
+        );
         // validating slots in every rendering since the allocated content might change over time
         validateSlots(vm, html);
     }
@@ -145,7 +191,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
+        assert.invariant(
+            isArray(vnodes),
+            `Compiler should produce html functions that always return an array.`
+        );
     }
     return vnodes;
 }

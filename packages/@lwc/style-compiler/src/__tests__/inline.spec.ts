@@ -13,8 +13,8 @@ describe('playground test for debugging ', () => {
         `;
         const { code } = transform(src, 'test', {
             customProperties: {
-                resolverModule: "custom-properties-resolver"
-            }
+                resolverModule: 'custom-properties-resolver',
+            },
         });
 
         expect(code).toBeDefined();

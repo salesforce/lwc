@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class RetargetRelatedTarget extends LightningElement {
-
-}
+export default class RetargetRelatedTarget extends LightningElement {}

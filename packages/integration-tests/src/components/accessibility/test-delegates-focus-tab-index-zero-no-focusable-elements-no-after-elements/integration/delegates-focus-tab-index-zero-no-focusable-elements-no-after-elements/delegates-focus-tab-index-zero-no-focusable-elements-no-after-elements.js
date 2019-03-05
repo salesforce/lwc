@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class Parent extends LightningElement {
-
-}
+export default class Parent extends LightningElement {}

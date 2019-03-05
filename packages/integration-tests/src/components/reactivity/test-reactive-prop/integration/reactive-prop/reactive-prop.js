@@ -1,11 +1,10 @@
-
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class ReactiveProp extends LightningElement {
     @track trackHasOwnProp = {};
     @track trackDefineProp = {};
     @track trackDeletedProp = { inner: true };
-    @track trackEnumerableProp = { visible: true }
+    @track trackEnumerableProp = { visible: true };
 
     constructor() {
         super();
@@ -19,16 +18,15 @@ export default class ReactiveProp extends LightningElement {
         this.trackHasOwnProp.inner = true;
     }
 
-
     get hasDefinedProp() {
-        return this.trackDefineProp.inner
+        return this.trackDefineProp.inner;
     }
 
     handleTrackDefinePropClick() {
         Object.defineProperty(this.trackDefineProp, 'inner', {
             value: 'true',
-            enumerable: true
-        })
+            enumerable: true,
+        });
     }
 
     get hasDeletedProp() {
@@ -36,9 +34,8 @@ export default class ReactiveProp extends LightningElement {
     }
 
     handleTrackDeletePropClick() {
-        delete this.trackDeletedProp['inner']
+        delete this.trackDeletedProp['inner'];
     }
-
 
     get hasEnumerable() {
         return Object.keys(this.trackEnumerableProp);
@@ -46,7 +43,7 @@ export default class ReactiveProp extends LightningElement {
 
     handleTrackEnumerableClick() {
         Object.defineProperty(this.trackEnumerableProp, 'visible', {
-            enumerable: false
+            enumerable: false,
         });
     }
 }

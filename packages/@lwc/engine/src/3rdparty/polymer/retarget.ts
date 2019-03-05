@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { pathComposer } from "./path-composer";
-import { getRootNodeGetter } from "./../../faux-shadow/traverse";
-import { SyntheticShadowRoot } from "./../../faux-shadow/shadow-root";
+import { pathComposer } from './path-composer';
+import { getRootNodeGetter } from './../../faux-shadow/traverse';
+import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
 @license

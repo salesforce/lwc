@@ -20,7 +20,12 @@ import { patchEvent } from '../../faux-shadow/events';
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
     if (originalTarget instanceof Node) {
-        if ((compareDocumentPosition.call(document, originalTarget) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 && getNodeOwnerKey(originalTarget)) {
+        if (
+            (compareDocumentPosition.call(document, originalTarget) &
+                DOCUMENT_POSITION_CONTAINED_BY) !==
+                0 &&
+            getNodeOwnerKey(originalTarget)
+        ) {
             return true;
         }
     }
@@ -39,10 +44,14 @@ function getEventListenerWrapper(fnOrObj): EventListener | null {
                 if (doesEventNeedsPatch(e)) {
                     patchEvent(e);
                 }
-                return isHandlerFunction ? fnOrObj.call(this, e) : fnOrObj.handleEvent && fnOrObj.handleEvent(e);
+                return isHandlerFunction
+                    ? fnOrObj.call(this, e)
+                    : fnOrObj.handleEvent && fnOrObj.handleEvent(e);
             };
         }
-    } catch (e) { /** ignore */ }
+    } catch (e) {
+        /** ignore */
+    }
     return wrapperFn;
 }
 
@@ -53,7 +62,10 @@ function windowAddEventListener(this: EventTarget, type, fnOrObj, optionsOrCaptu
         return;
     }
     // bail if `fnOrObj` is an object without a `handleEvent` method
-    if (handlerType === 'object' && (!fnOrObj.handleEvent || typeof fnOrObj.handleEvent !== 'function')) {
+    if (
+        handlerType === 'object' &&
+        (!fnOrObj.handleEvent || typeof fnOrObj.handleEvent !== 'function')
+    ) {
         return;
     }
     const wrapperFn = getEventListenerWrapper(fnOrObj);
@@ -72,7 +84,10 @@ function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
         return;
     }
     // bail if `fnOrObj` is an object without a `handleEvent` method
-    if (handlerType === 'object' && (!fnOrObj.handleEvent || typeof fnOrObj.handleEvent !== 'function')) {
+    if (
+        handlerType === 'object' &&
+        (!fnOrObj.handleEvent || typeof fnOrObj.handleEvent !== 'function')
+    ) {
         return;
     }
     const wrapperFn = getEventListenerWrapper(fnOrObj);

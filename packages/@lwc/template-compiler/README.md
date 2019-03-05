@@ -38,16 +38,18 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`)
 ```
 
 **Parameters:**
-* `source` (string, required) - the HTML template source to compile.
+
+-   `source` (string, required) - the HTML template source to compile.
 
 **Return:**
 The method returns an object with the following fields:
-* `code` (string) - the compiled template.
-* `warnings` (array) - the list of warnings produced when compiling the template. Each warning has the following fields:
-    * message (string) - the warning message.
-    * level (string) - the severity of the warning: `info`, `warning`, `error`.
-    * start (number) - the start index in the source code producing the warning.
-    * length (number) - the character length in the source code producing the warning.
+
+-   `code` (string) - the compiled template.
+-   `warnings` (array) - the list of warnings produced when compiling the template. Each warning has the following fields:
+    -   message (string) - the warning message.
+    -   level (string) - the severity of the warning: `info`, `warning`, `error`.
+    -   start (number) - the start index in the source code producing the warning.
+    -   length (number) - the character length in the source code producing the warning.
 
 ### `compileToFunction`
 
@@ -67,7 +69,8 @@ class Component extends LightningElement {
 ```
 
 **Parameters:**
-* `source` (string, required) - the HTML template source to compile.
+
+-   `source` (string, required) - the HTML template source to compile.
 
 **Return:**
 The method returns an evaluated function that can be used directly in a component `render` method.

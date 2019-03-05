@@ -1,23 +1,23 @@
 {
-  "name": "integration-karma",
-  "private": true,
-  "version": "0.35.10",
-  "scripts": {
-    "start": "karma start ./scripts/karma-configs/local.js",
-    "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
-    "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
-    "coverage": "node ./scripts/merge-coverage.js"
-  },
-  "devDependencies": {
-    "@lwc/compiler": "0.35.10",
-    "@lwc/engine": "0.35.10",
-    "@lwc/rollup-plugin": "0.35.10",
-    "chokidar": "^2.0.4",
-    "istanbul-api": "^2.0.6",
-    "karma": "^3.1.3",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage": "^1.1.2",
-    "karma-jasmine": "^2.0.1",
-    "karma-sauce-launcher": "^2.0.2"
-  }
+    "name": "integration-karma",
+    "private": true,
+    "version": "0.35.11",
+    "scripts": {
+        "start": "karma start ./scripts/karma-configs/local.js",
+        "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
+        "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
+        "coverage": "node ./scripts/merge-coverage.js"
+    },
+    "devDependencies": {
+        "@lwc/compiler": "0.35.11",
+        "@lwc/engine": "0.35.11",
+        "@lwc/rollup-plugin": "0.35.11",
+        "chokidar": "^2.0.4",
+        "istanbul-api": "^2.0.6",
+        "karma": "^3.1.3",
+        "karma-chrome-launcher": "^2.2.0",
+        "karma-coverage": "^1.1.2",
+        "karma-jasmine": "^2.0.1",
+        "karma-sauce-launcher": "^2.0.2"
+    }
 }

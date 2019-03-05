@@ -1,18 +1,16 @@
 {
-  "extends": "../../../tsconfig.json",
+    "extends": "../../../tsconfig.json",
 
-  "compilerOptions": {
-    "noImplicitAny": false,
+    "compilerOptions": {
+        "noImplicitAny": false,
 
-    "outDir": "lib",
+        "outDir": "lib",
 
-    "baseUrl": ".",
-    "paths": {
-      "lwc": ["../engine"],
-    }
-  },
+        "baseUrl": ".",
+        "paths": {
+            "lwc": ["../engine"]
+        }
+    },
 
-  "include": [
-    "src/",
-  ]
+    "include": ["src/"]
 }

@@ -4,28 +4,35 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../../shared/assert";
+import assert from '../../shared/assert';
 import { unlockAttribute, lockAttribute } from '../attributes';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../../shared/language';
 import { EmptyObject } from '../utils';
-import { VNode } from "../../3rdparty/snabbdom/types";
+import { VNode } from '../../3rdparty/snabbdom/types';
 
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 
 function updateAttrs(oldVnode: VNode, vnode: VNode) {
-    const { data: { attrs } } = vnode;
+    const {
+        data: { attrs },
+    } = vnode;
     if (isUndefined(attrs)) {
         return;
     }
-    let { data: { attrs: oldAttrs } } = oldVnode;
+    let {
+        data: { attrs: oldAttrs },
+    } = oldVnode;
     if (oldAttrs === attrs) {
         return;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isUndefined(oldAttrs) || keys(oldAttrs).join(',') === keys(attrs).join(','), `vnode.data.attrs cannot change shape.`);
+        assert.invariant(
+            isUndefined(oldAttrs) || keys(oldAttrs).join(',') === keys(attrs).join(','),
+            `vnode.data.attrs cannot change shape.`
+        );
     }
 
     const elm = vnode.elm as Element;
@@ -61,5 +68,5 @@ const emptyVNode = { data: {} };
 
 export default {
     create: (vnode: VNode) => updateAttrs(emptyVNode as VNode, vnode),
-    update: updateAttrs
+    update: updateAttrs,
 };

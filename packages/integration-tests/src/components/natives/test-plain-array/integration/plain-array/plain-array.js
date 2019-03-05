@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class ArrayPush extends LightningElement {
     @track foo = { title: 'proxy' };
@@ -9,11 +9,14 @@ export default class ArrayPush extends LightningElement {
     }
 
     get plainPushWithProxy() {
-        const array = [{
-            title: 'first'
-        }, {
-            title: 'second'
-        }];
+        const array = [
+            {
+                title: 'first',
+            },
+            {
+                title: 'second',
+            },
+        ];
         array.push(this.foo, { title: 'fourth' });
         return array;
     }
@@ -24,11 +27,14 @@ export default class ArrayPush extends LightningElement {
     }
 
     get plainConcatWithProxy() {
-        const array = [{
-            title: 'first'
-        }, {
-            title: 'second'
-        }];
+        const array = [
+            {
+                title: 'first',
+            },
+            {
+                title: 'second',
+            },
+        ];
         return array.concat([this.foo]);
     }
 }

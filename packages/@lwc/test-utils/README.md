@@ -14,18 +14,6 @@ Add this package as a devDependency and import the utils directly into your test
 yarn add -D '@lwc/test-utils'
 ```
 
-In your test:
-
-```js
-import { getShadowRoot } from '@lwc/test-utils';
-
-// create element under test and query for custom element in the Shadow DOM
-const element = createElement('my-custom-component', { is: MyCustomComponent });
-document.body.appendChild(element);
-const shadowRoot = getShadowRoot(element);
-const fancyButton = shadowRoot.querySelector('fancy-button');
-```
-
 ### Jest Preset Configuration
 
 This util also comes pre-packed in `lwc-jest-preset`.
@@ -53,7 +41,7 @@ module.exports = {
     ...PRESET_CONFIG,
     moduleNameMapper: {
         ...PRESET_CONFIG.moduleNameMapper,
-        '^(mynamespace)-(.+)$': '<rootDir>/src/$1/$2/$2'
+        '^(mynamespace)-(.+)$': '<rootDir>/src/$1/$2/$2',
     },
 };
 ```

@@ -1,4 +1,4 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class FocusInComposedTrue extends LightningElement {
     @track eventIsComposed = false;
@@ -15,6 +15,8 @@ export default class FocusInComposedTrue extends LightningElement {
     }
 
     handleButtonClick() {
-        this.template.querySelector('.custom-focus-in').dispatchEvent(new CustomEvent('focusin', { bubbles: true, composed: false }));
+        this.template
+            .querySelector('.custom-focus-in')
+            .dispatchEvent(new CustomEvent('focusin', { bubbles: true, composed: false }));
     }
 }

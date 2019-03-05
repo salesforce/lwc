@@ -13,10 +13,7 @@ const { CONSOLE_WHITELIST } = require('./test-whitelist');
 const { toLogError, toLogWarning } = require('./matchers/log-matchers');
 
 // Extract original methods from console
-const {
-    warn: originalWarn,
-    error: originalError,
-} = console;
+const { warn: originalWarn, error: originalError } = console;
 
 let currentSpec;
 jasmine.getEnv().addReporter({
@@ -37,17 +34,16 @@ afterEach(() => {
     const { fullName } = currentSpec;
 
     const isWhitelistedTest = CONSOLE_WHITELIST.includes(fullName);
-    const didTestLogged = [
-        ...console.warn.mock.calls,
-        ...console.error.mock.calls,
-    ].length > 0;
+    const didTestLogged = [...console.warn.mock.calls, ...console.error.mock.calls].length > 0;
 
     try {
         if (isWhitelistedTest) {
             if (!didTestLogged) {
                 const message = [
                     `This test used to used to log a warning or an error, but don't log anymore.`,
-                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold('test-whitelist.js')}"`,
+                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold(
+                        'test-whitelist.js'
+                    )}"`,
                 ].join('\n');
 
                 throw new Error(message);
@@ -58,10 +54,8 @@ afterEach(() => {
                     `Expect test not to log an error or a warning.\n`,
                     `If the message expected, make sure you asserts against those logs in the tests.\n`,
                     `Use instead: ${chalk.green.bold(
-                        `expect(<function>).toLogError(<message>)`,
-                    )} or ${chalk.green.bold(
-                        `expect(<function>).toLogWarning(<message>)`,
-                    )}`,
+                        `expect(<function>).toLogError(<message>)`
+                    )} or ${chalk.green.bold(`expect(<function>).toLogWarning(<message>)`)}`,
                 ].join('\n');
 
                 throw new Error(message);

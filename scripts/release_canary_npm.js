@@ -33,15 +33,18 @@ const PACKAGE_DEPENDENCIES = new Set([
     '@lwc/style-compiler',
     '@lwc/template-compiler',
     '@lwc/test-utils',
-    '@lwc/wire-service'
+    '@lwc/wire-service',
 ]);
 
 const CONFIG = {
     accessKeyId: process.env.RELEASE_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.RELEASE_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.RELEASE_REGION || process.env.AWS_REGION
+    region: process.env.RELEASE_REGION || process.env.AWS_REGION,
 };
-const BUCKET = process.env.RELEASE_BUCKET_NAME || process.env.BUCKETEER_BUCKET_NAME || process.env.AWS_BUCKET_NAME;
+const BUCKET =
+    process.env.RELEASE_BUCKET_NAME ||
+    process.env.BUCKETEER_BUCKET_NAME ||
+    process.env.AWS_BUCKET_NAME;
 const TEN_YEARS = 1000 * 60 * 60 * 24 * 365 * 10;
 
 const S3 = new AWS.S3(CONFIG);
@@ -59,7 +62,7 @@ function generateUrl(packageName, sha) {
 }
 
 function pushPackage({ sha, packageName, packageTar }) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         const url = generateUrl(packageName, sha);
         S3.putObject(
             {
@@ -68,14 +71,15 @@ function pushPackage({ sha, packageName, packageTar }) {
                 Body: fs.readFileSync(packageTar),
                 Expires: new Date(Date.now() + TEN_YEARS),
                 ContentType: lookup(url) || undefined,
-            }, function (err) {
+            },
+            function(err) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(url)
+                    resolve(url);
                 }
             }
-        )
+        );
     });
 }
 
@@ -105,9 +109,9 @@ async function run() {
             pkgJson.version = `${version}-canary+${sha}`;
 
             // Rewrite dependencies
-            ['dependencies', 'devDependencies'].forEach((key) => {
+            ['dependencies', 'devDependencies'].forEach(key => {
                 if (pkgJson[key]) {
-                    Object.keys(pkgJson[key]).forEach((dep) => {
+                    Object.keys(pkgJson[key]).forEach(dep => {
                         if (PACKAGE_DEPENDENCIES.has(dep)) {
                             pkgJson[key][dep] = HOST + '/' + generateUrl(dep, sha);
                         }
@@ -123,16 +127,14 @@ async function run() {
 
             // Push package to S3
             process.stdout.write(`Pushing package: ${pkgName}...`);
-            const url = await pushPackage({ packageName: name, sha, packageTar : tarPath });
+            const url = await pushPackage({ packageName: name, sha, packageTar: tarPath });
             process.stdout.write(` [DONE]\n Uploaded to: ${HOST}/${url}\n`);
         }
-
     } else {
         console.log('No packages found');
     }
 }
 
-run()
-.catch(function(err) {
+run().catch(function(err) {
     console.log(err);
-})
+});

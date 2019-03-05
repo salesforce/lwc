@@ -4,29 +4,39 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from "../shared/assert";
-import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from "../shared/language";
-import { EmptyArray, ViewModelReflection, EmptyObject } from "./utils";
-import { rerenderVM, createVM, removeVM, getCustomElementVM, allocateInSlot, setNodeOwnerKey, appendVM, runWithBoundaryProtection } from "./vm";
-import { VNode, VNodes, VCustomElement, VElement } from "../3rdparty/snabbdom/types";
+import assert from '../shared/assert';
+import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from '../shared/language';
+import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
 import {
-    nodeValueSetter,
-    insertBefore,
-    removeChild,
-} from "../env/node";
-import modEvents from "./modules/events";
-import modAttrs from "./modules/attrs";
-import modProps from "./modules/props";
-import modComputedClassName from "./modules/computed-class-attr";
-import modComputedStyle from "./modules/computed-style-attr";
-import modStaticClassName from "./modules/static-class-attr";
-import modStaticStyle from "./modules/static-style-attr";
-import modContext from "./modules/context";
-import { hasDynamicChildren } from "./patch";
-import { updateDynamicChildren, updateStaticChildren } from "../3rdparty/snabbdom/snabbdom";
-import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from "./restrictions";
-import { patchElementProto, patchTextNodeProto, patchCommentNodeProto, patchCustomElementProto } from "./patch";
-import { getComponentDef, setElementProto } from "./def";
+    rerenderVM,
+    createVM,
+    removeVM,
+    getCustomElementVM,
+    allocateInSlot,
+    setNodeOwnerKey,
+    appendVM,
+    runWithBoundaryProtection,
+} from './vm';
+import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
+import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
+import modEvents from './modules/events';
+import modAttrs from './modules/attrs';
+import modProps from './modules/props';
+import modComputedClassName from './modules/computed-class-attr';
+import modComputedStyle from './modules/computed-style-attr';
+import modStaticClassName from './modules/static-class-attr';
+import modStaticStyle from './modules/static-style-attr';
+import modContext from './modules/context';
+import { hasDynamicChildren } from './patch';
+import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from './restrictions';
+import {
+    patchElementProto,
+    patchTextNodeProto,
+    patchCommentNodeProto,
+    patchCustomElementProto,
+} from './patch';
+import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
 
@@ -85,9 +95,14 @@ export function createElmHook(vnode: VElement) {
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, owner.uid);
     if (isTrue(owner.fallback)) {
-        const { data: { context } } = vnode;
+        const {
+            data: { context },
+        } = vnode;
         const { shadowAttribute } = owner.context;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
+        const isPortal =
+            !isUndefined(context) &&
+            !isUndefined(context.lwc) &&
+            context.lwc.dom === LWCDOMMode.manual;
         patchElementProto(elm, {
             sel,
             isPortal,
@@ -95,8 +110,13 @@ export function createElmHook(vnode: VElement) {
         });
     }
     if (process.env.NODE_ENV !== 'production') {
-        const { data: { context } } = vnode;
-        const isPortal = !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === LWCDOMMode.manual;
+        const {
+            data: { context },
+        } = vnode;
+        const isPortal =
+            !isUndefined(context) &&
+            !isUndefined(context.lwc) &&
+            context.lwc.dom === LWCDOMMode.manual;
         patchElementWithRestrictions(elm, { isPortal });
     }
 }
@@ -118,10 +138,16 @@ export function insertCustomElmHook(vnode: VCustomElement) {
 
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children, owner } = vnode;
-    const fn = hasDynamicChildren(children) ?  updateDynamicChildren : updateStaticChildren;
-    runWithBoundaryProtection(owner, owner.owner, noop, () => {
-        fn(vnode.elm as Element, oldVnode.children, children);
-    }, noop);
+    const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
+    runWithBoundaryProtection(
+        owner,
+        owner.owner,
+        noop,
+        () => {
+            fn(vnode.elm as Element, oldVnode.children, children);
+        },
+        noop
+    );
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
@@ -163,8 +189,11 @@ export function createCustomElmHook(vnode: VCustomElement) {
     });
     const vm = getCustomElementVM(elm);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(
+            isArray(vnode.children),
+            `Invalid vnode for a custom element, it must have children defined.`
+        );
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm, EmptyObject);
@@ -191,11 +220,7 @@ export function createChildrenHook(vnode: VElement) {
         const ch = children[j];
         if (ch != null) {
             ch.hook.create(ch);
-            ch.hook.insert(
-                ch,
-                elm as Element,
-                null,
-            );
+            ch.hook.insert(ch, elm as Element, null);
         }
     }
 }
@@ -203,8 +228,11 @@ export function createChildrenHook(vnode: VElement) {
 export function rerenderCustomElmHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(vnode.elm as HTMLElement);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
-        assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(
+            isArray(vnode.children),
+            `Invalid vnode for a custom element, it must have children defined.`
+        );
     }
     rerenderVM(vm);
 }

@@ -39,9 +39,7 @@ describe('fixtures', () => {
 
         const readFixtureFile = (fileName): string => {
             const filePath = fixtureFilePath(fileName);
-            return fs.existsSync(filePath) ?
-                fs.readFileSync(filePath, 'utf-8') :
-                null;
+            return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : null;
         };
 
         const writeFixtureFile = (fileName, content): void => {
@@ -73,15 +71,19 @@ describe('fixtures', () => {
             if (expectedCode === null) {
                 // write compiled js file if doesn't exist (ie new fixture)
                 expectedCode = actual.code;
-                writeFixtureFile(EXPECTED_JS_FILENAME, prettier.format(expectedCode));
-
+                writeFixtureFile(
+                    EXPECTED_JS_FILENAME,
+                    prettier.format(expectedCode, {
+                        parser: 'babel',
+                    })
+                );
             }
 
             if (expectedMetaData === null) {
                 // write metadata file if doesn't exist (ie new fixture)
                 const metadata = {
                     warnings: actual.warnings,
-                    metadata: {...actualMeta},
+                    metadata: { ...actualMeta },
                 };
                 expectedMetaData = metadata;
                 writeFixtureFile(EXPECTED_META_FILENAME, JSON.stringify(expectedMetaData, null, 4));
@@ -90,17 +92,19 @@ describe('fixtures', () => {
             // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
-            expect(
-                prettier.format(actual.code),
-            ).toEqual(
-                prettier.format(expectedCode),
+            expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
+                prettier.format(expectedCode, { parser: 'babel' })
             );
 
             if (actualMeta) {
                 const expectMeta = expectedMetaData.metadata || {};
 
-                expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);
-                expect(Array.from(actualMeta.templateDependencies)).toEqual(expectMeta.templateDependencies || []);
+                expect(Array.from(actualMeta.templateUsedIds)).toEqual(
+                    expectMeta.templateUsedIds || []
+                );
+                expect(Array.from(actualMeta.templateDependencies)).toEqual(
+                    expectMeta.templateDependencies || []
+                );
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }
         });

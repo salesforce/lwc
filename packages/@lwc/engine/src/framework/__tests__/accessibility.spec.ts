@@ -32,7 +32,9 @@ describe('accessibility', () => {
                 document.body.appendChild(elm);
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
-                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('input'));
+                    expect(elm.shadowRoot.activeElement).toBe(
+                        elm.shadowRoot.querySelector('input')
+                    );
                 });
             });
 
@@ -50,15 +52,18 @@ describe('accessibility', () => {
                         this.template.querySelector('input').focus();
                     }
                 }
-                const parentHTML = compileTemplate(`
+                const parentHTML = compileTemplate(
+                    `
                     <template>
                         <x-child></x-child>
                     </template>
-                `, {
-                    modules: {
-                        'x-child': Child
+                `,
+                    {
+                        modules: {
+                            'x-child': Child,
+                        },
                     }
-                });
+                );
                 class Parent extends LightningElement {
                     render() {
                         return parentHTML;
@@ -69,8 +74,12 @@ describe('accessibility', () => {
                 document.body.appendChild(elm);
                 return Promise.resolve().then(() => {
                     // jsdom has some timing issues with the manual focusing process
-                    expect(elm.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child'));
-                    expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input'));
+                    expect(elm.shadowRoot.activeElement).toBe(
+                        elm.shadowRoot.querySelector('x-child')
+                    );
+                    expect(elm.shadowRoot.activeElement.shadowRoot.activeElement).toBe(
+                        elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('input')
+                    );
                 });
             });
 

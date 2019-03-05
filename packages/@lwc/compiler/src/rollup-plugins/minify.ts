@@ -8,13 +8,17 @@ import * as babel from '@babel/core';
 import minify from 'babel-preset-minify';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
-import { NormalizedOutputConfig } from "../compiler/options";
+import { NormalizedOutputConfig } from '../compiler/options';
 
-export const MINIFY_CONFIG: any = Object.assign({
-    comments: false,
-}, BABEL_CONFIG_BASE, {
-    presets: [[minify, { guards: false, evaluate: false }]]
-});
+export const MINIFY_CONFIG: any = Object.assign(
+    {
+        comments: false,
+    },
+    BABEL_CONFIG_BASE,
+    {
+        presets: [[minify, { guards: false, evaluate: false }]],
+    }
+);
 
 /**
  * Rollup plugin applying minification to the generated bundle.

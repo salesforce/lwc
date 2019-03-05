@@ -13,8 +13,8 @@ describe('Event target in slot elements', () => {
         browser.url(URL);
     });
 
-    it('should receive event with correct target', function () {
-        browser.execute(function () {
+    it('should receive event with correct target', function() {
+        browser.execute(function() {
             document.querySelector('integration-child').click();
         });
         const elm = browser.element('.correct-event-target');

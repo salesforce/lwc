@@ -10,7 +10,7 @@ import {
     patchUserTiming,
     resetUserTiming,
     resetMeasures,
-    expectMeasureEquals
+    expectMeasureEquals,
 } from './user-timing-utils';
 
 function testConstructor(expected) {
@@ -88,131 +88,200 @@ if (isUserTimingSupported) {
     });
 
     if (process.env.NODE_ENV === 'production') {
-        testConstructor([{
-            label: /lwc-hydrate/,
-        }]);
-
-        testRehydration([{
-            label: /lwc-rehydrate/,
-        }]);
-
-        testNestedTree([{
-            label: /lwc-hydrate/,
-        }]);
-
-        testNestedRehydration([{
-            label: /lwc-rehydrate/,
-        }]);
-
-        testLifecycleHooks([{
-            label: /lwc-hydrate/,
-        }]);
-
-        testNestedComponentCreation([{
-            label: /lwc-hydrate/,
-            children: [{
+        testConstructor([
+            {
                 label: /lwc-hydrate/,
-            }],
-        }]);
+            },
+        ]);
+
+        testRehydration([
+            {
+                label: /lwc-rehydrate/,
+            },
+        ]);
+
+        testNestedTree([
+            {
+                label: /lwc-hydrate/,
+            },
+        ]);
+
+        testNestedRehydration([
+            {
+                label: /lwc-rehydrate/,
+            },
+        ]);
+
+        testLifecycleHooks([
+            {
+                label: /lwc-hydrate/,
+            },
+        ]);
+
+        testNestedComponentCreation([
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /lwc-hydrate/,
+                    },
+                ],
+            },
+        ]);
     } else {
-        testConstructor([{
-            label: /<x-child \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-child \(\d+\)> - render/,
-            }, {
-                label: /<x-child \(\d+\)> - patch/,
-            }],
-        }]);
-
-        testRehydration([{
-            label: /lwc-rehydrate/,
-            children: [{
-                label: /<x-child \(\d+\)> - render/,
-            }, {
-                label: /<x-child \(\d+\)> - patch/,
-            }],
-        }]);
-
-        testNestedTree([{
-            label: /<x-parent \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-parent \(\d+\)> - render/,
-            }, {
-                label: /<x-parent \(\d+\)> - patch/,
-                children: [{
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }, {
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }],
-            }],
-        }]);
-
-        testNestedRehydration([{
-            label: /lwc-rehydrate/,
-            children: [{
-                label: /<x-parent \(\d+\)> - render/,
-            }, {
-                label: /<x-parent \(\d+\)> - patch/,
-                children: [{
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }, {
-                    label: /<x-child \(\d+\)> - render/,
-                }, {
-                    label: /<x-child \(\d+\)> - patch/,
-                }]
-            }],
-        }]);
-
-        testLifecycleHooks([{
-            label: /<x-lifecycle \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-lifecycle \(\d+\)> - connectedCallback/,
-            },{
-                label: /<x-lifecycle \(\d+\)> - render/,
-            }, {
-                label: /<x-lifecycle \(\d+\)> - patch/,
-            }, {
-                label: /<x-lifecycle \(\d+\)> - renderedCallback/,
-            }],
-        }, {
-            label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
-        }]);
-
-        testNestedComponentCreation([{
-            label: /<x-nested \(\d+\)> - constructor/,
-        }, {
-            label: /lwc-hydrate/,
-            children: [{
-                label: /<x-nested \(\d+\)> - render/,
-            }, {
-                label: /<x-nested \(\d+\)> - renderedCallback/,
-                children: [{
-                    label: /<x-child \(\d+\)> - constructor/,
-                }, {
-                    label: /lwc-hydrate/,
-                    children: [{
+        testConstructor([
+            {
+                label: /<x-child \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
                         label: /<x-child \(\d+\)> - render/,
-                    }, {
+                    },
+                    {
                         label: /<x-child \(\d+\)> - patch/,
-                    }],
-                }]
-            }],
-        }]);
+                    },
+                ],
+            },
+        ]);
+
+        testRehydration([
+            {
+                label: /lwc-rehydrate/,
+                children: [
+                    {
+                        label: /<x-child \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-child \(\d+\)> - patch/,
+                    },
+                ],
+            },
+        ]);
+
+        testNestedTree([
+            {
+                label: /<x-parent \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-parent \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-parent \(\d+\)> - patch/,
+                        children: [
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
+
+        testNestedRehydration([
+            {
+                label: /lwc-rehydrate/,
+                children: [
+                    {
+                        label: /<x-parent \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-parent \(\d+\)> - patch/,
+                        children: [
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - render/,
+                            },
+                            {
+                                label: /<x-child \(\d+\)> - patch/,
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
+
+        testLifecycleHooks([
+            {
+                label: /<x-lifecycle \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-lifecycle \(\d+\)> - connectedCallback/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - patch/,
+                    },
+                    {
+                        label: /<x-lifecycle \(\d+\)> - renderedCallback/,
+                    },
+                ],
+            },
+            {
+                label: /<x-lifecycle \(\d+\)> - disconnectedCallback/,
+            },
+        ]);
+
+        testNestedComponentCreation([
+            {
+                label: /<x-nested \(\d+\)> - constructor/,
+            },
+            {
+                label: /lwc-hydrate/,
+                children: [
+                    {
+                        label: /<x-nested \(\d+\)> - render/,
+                    },
+                    {
+                        label: /<x-nested \(\d+\)> - renderedCallback/,
+                        children: [
+                            {
+                                label: /<x-child \(\d+\)> - constructor/,
+                            },
+                            {
+                                label: /lwc-hydrate/,
+                                children: [
+                                    {
+                                        label: /<x-child \(\d+\)> - render/,
+                                    },
+                                    {
+                                        label: /<x-child \(\d+\)> - patch/,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]);
     }
 }

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { SourceMapConsumer } from "source-map";
+import { SourceMapConsumer } from 'source-map';
 import lwcCompatFactory from '../compat';
 
 const codeFixture = `
@@ -31,18 +31,27 @@ describe('rollup plugin lwc-compat', () => {
         expect(result.map).not.toBeNull();
 
         await SourceMapConsumer.with(result!.map, null, sourceMapConsumer => {
-            const varMappedToConstPosition = sourceMapConsumer.originalPositionFor({line: 2, column: 0});
+            const varMappedToConstPosition = sourceMapConsumer.originalPositionFor({
+                line: 2,
+                column: 0,
+            });
 
             expect(varMappedToConstPosition.line).toBe(2);
             expect(varMappedToConstPosition.column).toBe(0);
 
-            const aDeclarationPosition = sourceMapConsumer.originalPositionFor({line: 2, column: 4});
+            const aDeclarationPosition = sourceMapConsumer.originalPositionFor({
+                line: 2,
+                column: 4,
+            });
 
             expect(aDeclarationPosition.line).toBe(2);
             expect(aDeclarationPosition.column).toBe(6);
             expect(aDeclarationPosition.name).toBe('a');
 
-            const setKeyMappedToConsolePosition = sourceMapConsumer.originalPositionFor({line: 4, column: 0});
+            const setKeyMappedToConsolePosition = sourceMapConsumer.originalPositionFor({
+                line: 4,
+                column: 0,
+            });
             expect(setKeyMappedToConsolePosition.line).toBe(3);
             expect(setKeyMappedToConsolePosition.column).toBe(0);
         });

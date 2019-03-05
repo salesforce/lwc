@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api, track } from 'lwc';
 
 export default class Tree1 extends LightningElement {
     @api treeData;
@@ -19,11 +19,13 @@ export default class Tree1 extends LightningElement {
     }
 
     handleClick() {
-        this.dispatchEvent(new CustomEvent('togglerow', {
-            composed: true,
-            bubbles: true,
-            detail: { id: this.treeData.id }
-        }));
+        this.dispatchEvent(
+            new CustomEvent('togglerow', {
+                composed: true,
+                bubbles: true,
+                detail: { id: this.treeData.id },
+            })
+        );
     }
 
     handleRefresh() {

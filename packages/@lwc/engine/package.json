@@ -1,28 +1,28 @@
 {
-  "name": "@lwc/engine",
-  "version": "0.35.10",
-  "description": "LWC Engine",
-  "main": "dist/commonjs/es2017/engine.js",
-  "module": "dist/modules/es2017/engine.js",
-  "typings": "types/engine.d.ts",
-  "license": "MIT",
-  "scripts": {
-    "clean": "rm -rf dist/ lib/",
-    "test": "jest",
-    "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
-  },
-  "dependencies": {
-    "observable-membrane": "0.26.0"
-  },
-  "devDependencies": {
-    "@lwc/template-compiler": "0.35.10"
-  },
-  "lwc": {
-    "modules": {
-      "lwc": "dist/modules/es2017/engine.js"
+    "name": "@lwc/engine",
+    "version": "0.35.11",
+    "description": "LWC Engine",
+    "main": "dist/commonjs/es2017/engine.js",
+    "module": "dist/modules/es2017/engine.js",
+    "typings": "types/engine.d.ts",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/ lib/",
+        "test": "jest",
+        "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
+    },
+    "dependencies": {
+        "observable-membrane": "0.26.0"
+    },
+    "devDependencies": {
+        "@lwc/template-compiler": "0.35.11"
+    },
+    "lwc": {
+        "modules": {
+            "lwc": "dist/modules/es2017/engine.js"
+        }
+    },
+    "publishConfig": {
+        "access": "public"
     }
-  },
-  "publishConfig": {
-    "access": "public"
-  }
 }

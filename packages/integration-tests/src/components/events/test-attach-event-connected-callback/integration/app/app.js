@@ -1,8 +1,8 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, track } from 'lwc';
 
 export default class App extends LightningElement {
     @track handledClick = false;
-    connectedCallback(){
+    connectedCallback() {
         this.template.addEventListener('cstm', () => {
             this.handledClick = true;
         });

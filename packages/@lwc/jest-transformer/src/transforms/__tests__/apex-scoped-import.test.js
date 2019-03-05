@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const test = require('./utils/test-transform').test(
-    require('../apex-scoped-import')
-);
+const test = require('./utils/test-transform').test(require('../apex-scoped-import'));
 
 describe('@salesforce/apex import', () => {
-    test('does default transformation', `
+    test(
+        'does default transformation',
+        `
         import myMethod from '@salesforce/apex/FooController.fooMethod';
-    `, `
+    `,
+        `
         let myMethod;
 
         try {
@@ -23,12 +24,16 @@ describe('@salesforce/apex import', () => {
 
           myMethod = global.__lwcJestMock_myMethod;
         }
-    `);
+    `
+    );
 
-    test('allows non-@salesforce/apex named imports', `
+    test(
+        'allows non-@salesforce/apex named imports',
+        `
         import { otherNamed } from './something-valid';
         import myMethod from '@salesforce/apex/FooController.fooMethod';
-    `, `
+    `,
+        `
         import { otherNamed } from './something-valid';
         let myMethod;
 
@@ -41,11 +46,15 @@ describe('@salesforce/apex import', () => {
 
           myMethod = global.__lwcJestMock_myMethod;
         }
-    `);
+    `
+    );
 
-    test('transforms named imports from @salesforce/apex', `
+    test(
+        'transforms named imports from @salesforce/apex',
+        `
         import { refreshApex, getSObjectValue } from '@salesforce/apex';
-    `, `
+    `,
+        `
         let refreshApex;
 
         try {
@@ -63,5 +72,6 @@ describe('@salesforce/apex import', () => {
         } catch (e) {
           getSObjectValue = jest.fn();
         }
-    `);
+    `
+    );
 });

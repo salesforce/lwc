@@ -4,13 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
+import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
 
-const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(Document.prototype, 'activeElement')!.get as (this: Document) => Element | null;
+const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(
+    Document.prototype,
+    'activeElement'
+)!.get as (this: Document) => Element | null;
 
-const elementFromPoint = hasOwnProperty.call(Document.prototype, 'elementFromPoint') ?
-Document.prototype.elementFromPoint :
-(Document.prototype as any).msElementFromPoint;  // IE11
+const elementFromPoint = hasOwnProperty.call(Document.prototype, 'elementFromPoint')
+    ? Document.prototype.elementFromPoint
+    : (Document.prototype as any).msElementFromPoint; // IE11
 
 const {
     createDocumentFragment,

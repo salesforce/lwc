@@ -18,7 +18,4 @@ windowAddEventListener = windowAddEventListener.__lwcOriginal__ || windowAddEven
 // @ts-ignore jsdom
 windowRemoveEventListener = windowRemoveEventListener.__lwcOriginal__ || windowRemoveEventListener;
 
-export {
-    windowAddEventListener,
-    windowRemoveEventListener,
-};
+export { windowAddEventListener, windowRemoveEventListener };

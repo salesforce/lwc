@@ -1,4 +1,4 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class ReactivityObjectFreeze extends LightningElement {
     state = {
@@ -8,7 +8,7 @@ export default class ReactivityObjectFreeze extends LightningElement {
             { text: 'Learn Raptor' },
             { text: 'Build something awesome' },
         ],
-        message: "Click to freeze"
+        message: 'Click to freeze',
     };
     constructor() {
         super();

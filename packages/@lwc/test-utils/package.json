@@ -1,13 +1,13 @@
 {
-  "name": "@lwc/test-utils",
-  "version": "0.35.10",
-  "description": "Test utilities for LWC",
-  "main": "index.js",
-  "license": "MIT",
-  "keywords": [
-    "lwc"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/test-utils",
+    "version": "0.35.11",
+    "description": "Test utilities for LWC",
+    "main": "index.js",
+    "license": "MIT",
+    "keywords": [
+        "lwc"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }

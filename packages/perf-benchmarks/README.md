@@ -32,5 +32,5 @@ Temporary benchmark artifact:
 If you open that file in your local browser, you should be able to debug the test. Don't forget to open the console and execute the following command to kick off the Best Running in the browser:
 
 ```js
-BEST.runBenchmark({ iterations: 1 })
+BEST.runBenchmark({ iterations: 1 });
 ```

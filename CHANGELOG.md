@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.9...v) (2019-02-26)
+# [](https://github.com/salesforce/lwc/compare/v0.35.10...v) (2019-02-27)
+
+
+### Bug Fixes
+
+* **engine:** Error boundary improvement ([#937](https://github.com/salesforce/lwc/issues/937)) ([796997d](https://github.com/salesforce/lwc/commit/796997d))
+* **test-utils:** deprecate getShadowRoot API ([#1069](https://github.com/salesforce/lwc/issues/1069)) ([59298cd](https://github.com/salesforce/lwc/commit/59298cd))
+
+
+### Features
+
+* patch MutationObserver to be aware of synthetic shadow dom ([#1046](https://github.com/salesforce/lwc/issues/1046)) ([e80c0cc](https://github.com/salesforce/lwc/commit/e80c0cc))
+
+
+
+<a name="0.35.10"></a>
+## [0.35.10](https://github.com/salesforce/lwc/compare/v0.35.9...v0.35.10) (2019-02-26)
 
 
 ### Bug Fixes

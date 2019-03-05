@@ -14,10 +14,7 @@ export default function process(root: Root, result: Result) {
         // Ensure @import are at the top of the file
         let prev = node.prev();
         while (prev) {
-            if (
-                prev.type === 'comment' ||
-                (prev.type === 'atrule' && prev.name === 'import')
-            ) {
+            if (prev.type === 'comment' || (prev.type === 'atrule' && prev.name === 'import')) {
                 prev = prev.prev();
             } else {
                 throw prev.error('@import must precede all other statements');
@@ -29,18 +26,13 @@ export default function process(root: Root, result: Result) {
         // Ensure import match the following syntax:
         //     @import "foo";
         //     @import "./foo.css";
-        if (
-            !params.length ||
-            (params[0].type !== 'string' || !params[0].value)
-        ) {
-            throw node.error(
-                `Invalid import statement, unable to find imported module.`,
-            );
+        if (!params.length || (params[0].type !== 'string' || !params[0].value)) {
+            throw node.error(`Invalid import statement, unable to find imported module.`);
         }
 
         if (params.length > 1) {
             throw node.error(
-                `Invalid import statement, import statement only support a single parameter.`,
+                `Invalid import statement, import statement only support a single parameter.`
             );
         }
 

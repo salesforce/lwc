@@ -1,9 +1,9 @@
 /*
-* Copyright (c) 2018, salesforce.com, inc.
-* All rights reserved.
-* SPDX-License-Identifier: MIT
-* For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
-*/
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 /**
  @license
  Copyright (c) 2015 Simon Friis Vindum.
@@ -13,11 +13,11 @@
  https://github.com/snabbdom/snabbdom/
  */
 
-import { VM } from "../../framework/vm";
+import { VM } from '../../framework/vm';
 
 export type VNodeStyle = Record<string, string>;
 export interface On {
-  [event: string]: EventListener;
+    [event: string]: EventListener;
 }
 export type Attrs = Record<string, string | number | boolean>;
 export type Classes = Record<string, boolean>;
@@ -28,61 +28,61 @@ export type Key = string | number;
 export type VNodes = Array<VNode | null>;
 
 export interface VNode {
-  sel: string | undefined;
-  data: VNodeData;
-  children: VNodes | undefined;
-  elm: Node | undefined;
-  parentElm?: Element;
-  text: string | undefined;
-  key: Key | undefined;
+    sel: string | undefined;
+    data: VNodeData;
+    children: VNodes | undefined;
+    elm: Node | undefined;
+    parentElm?: Element;
+    text: string | undefined;
+    key: Key | undefined;
 
-  hook: Hooks;
-  owner: VM;
+    hook: Hooks;
+    owner: VM;
 }
 
 export interface VElement extends VNode {
-  sel: string;
-  children: VNodes;
-  elm: Element | undefined;
-  text: undefined;
-  key: Key;
+    sel: string;
+    children: VNodes;
+    elm: Element | undefined;
+    text: undefined;
+    key: Key;
 }
 
 export interface VCustomElement extends VElement {
-  mode: "closed" | "open";
-  ctor: any;
+    mode: 'closed' | 'open';
+    ctor: any;
 }
 
 export interface VComment extends VNode {
-  sel: string;
-  children: undefined;
-  elm: Comment | undefined;
-  text: string;
-  key: undefined;
+    sel: string;
+    children: undefined;
+    elm: Comment | undefined;
+    text: string;
+    key: undefined;
 }
 
 export interface VText extends VNode {
-  sel: undefined;
-  children: undefined;
-  elm: Node | undefined;
-  text: string;
-  key: undefined;
+    sel: undefined;
+    children: undefined;
+    elm: Node | undefined;
+    text: string;
+    key: undefined;
 }
 
 export type CustomElementContext = Record<string, Record<string, any>>;
 
 export interface VNodeData {
-  props?: Props;
-  attrs?: Attrs;
-  className?: any;
-  style?: any;
-  classMap?: Classes;
-  styleMap?: VNodeStyle;
-  context?: CustomElementContext;
-  on?: On;
-  ns?: string; // for SVGs
-  create: CreateHook;
-  update: UpdateHook;
+    props?: Props;
+    attrs?: Attrs;
+    className?: any;
+    style?: any;
+    classMap?: Classes;
+    styleMap?: VNodeStyle;
+    context?: CustomElementContext;
+    on?: On;
+    ns?: string; // for SVGs
+    create: CreateHook;
+    update: UpdateHook;
 }
 
 export type CreateHook = (vNode: VNode) => void;
@@ -92,14 +92,14 @@ export type UpdateHook = (oldVNode: VNode, vNode: VNode) => void;
 export type RemoveHook = (vNode: VNode, parentNode: Node) => void;
 
 export interface Hooks {
-  create: CreateHook;
-  insert: InsertHook;
-  move: MoveHook;
-  update: UpdateHook;
-  remove: RemoveHook;
+    create: CreateHook;
+    insert: InsertHook;
+    move: MoveHook;
+    update: UpdateHook;
+    remove: RemoveHook;
 }
 
 export interface Module {
-  create?: CreateHook;
-  update?: UpdateHook;
+    create?: CreateHook;
+    update?: UpdateHook;
 }

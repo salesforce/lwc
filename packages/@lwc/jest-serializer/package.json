@@ -1,14 +1,14 @@
 {
-  "name": "@lwc/jest-serializer",
-  "version": "0.35.10",
-  "description": "Custom Jest snapshot serializer",
-  "main": "index.js",
-  "license": "MIT",
-  "keywords": [
-    "jest",
-    "lwc"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@lwc/jest-serializer",
+    "version": "0.35.11",
+    "description": "Custom Jest snapshot serializer",
+    "main": "index.js",
+    "license": "MIT",
+    "keywords": [
+        "jest",
+        "lwc"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }

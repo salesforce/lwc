@@ -1,4 +1,4 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 function getType(recordId, recordUi) {
     const record = recordUi.records[recordId];
@@ -18,21 +18,20 @@ export default class ObjectKeys extends LightningElement {
         type: 'default',
         recordUi: {
             records: {
-                "001x" : { apiName: "Opportunity" }
+                '001x': { apiName: 'Opportunity' },
             },
             objectInfos: {
-                "Opportunity": {
+                Opportunity: {
                     recordTypeInfos: {
-                        "key": { master: true }
-                    }
-                }
-            }
-        }
+                        key: { master: true },
+                    },
+                },
+            },
+        },
     };
 
     get key() {
-        const recordId = "001x";
-        return getType(recordId, this.state.recordUi) || 'fail'
+        const recordId = '001x';
+        return getType(recordId, this.state.recordUi) || 'fail';
     }
-
 }

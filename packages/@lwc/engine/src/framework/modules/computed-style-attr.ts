@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isString } from '../../shared/language';
-import { VNode } from "../../3rdparty/snabbdom/types";
+import { VNode } from '../../3rdparty/snabbdom/types';
 import { removeAttribute } from '../../env/element';
 
 // The style property is a string when defined via an expression in the template.
@@ -15,7 +15,7 @@ function updateStyleAttribute(oldVnode: VNode, vnode: VNode) {
         return;
     }
 
-    const elm = (vnode.elm as HTMLElement);
+    const elm = vnode.elm as HTMLElement;
     const { style } = elm;
     if (!isString(newStyle) || newStyle === '') {
         removeAttribute.call(elm, 'style');

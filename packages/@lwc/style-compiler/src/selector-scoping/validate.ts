@@ -4,13 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    Root,
-    isAttribute,
-    isCombinator,
-    isTag,
-    Tag,
-} from 'postcss-selector-parser';
+import { Root, isAttribute, isCombinator, isTag, Tag } from 'postcss-selector-parser';
 
 import {
     isGlobalAttribute,
@@ -29,24 +23,18 @@ function validateSelectors(root: Root) {
         if (value) {
             // Ensure the selector doesn't use a deprecated CSS selector.
             if (DEPRECATED_SELECTORS.has(value)) {
-                throw root.error(
-                    `Invalid usage of deprecated selector "${value}".`,
-                    {
-                        index: sourceIndex,
-                        word: value,
-                    },
-                );
+                throw root.error(`Invalid usage of deprecated selector "${value}".`, {
+                    index: sourceIndex,
+                    word: value,
+                });
             }
 
             // Ensure the selector doesn't use an unsupported selector.
             if (UNSUPPORTED_SELECTORS.has(value)) {
-                throw root.error(
-                    `Invalid usage of unsupported selector "${value}".`,
-                    {
-                        index: sourceIndex,
-                        word: value,
-                    },
-                );
+                throw root.error(`Invalid usage of unsupported selector "${value}".`, {
+                    index: sourceIndex,
+                    word: value,
+                });
             }
         }
     });
@@ -59,7 +47,11 @@ function validateAttribute(root: Root) {
 
             // Let's check if the attribute name is either a Global HTML attribute, an ARIA attribute
             // or a data-* attribute since those are available on all the elements.
-            if (isGlobalAttribute(attributeName) || isAriaAttribute(attributeName) || isDataAttribute(attributeName)) {
+            if (
+                isGlobalAttribute(attributeName) ||
+                isAriaAttribute(attributeName) ||
+                isDataAttribute(attributeName)
+            ) {
                 return;
             }
 
@@ -69,11 +61,7 @@ function validateAttribute(root: Root) {
             let tagSelector: Tag | undefined = undefined;
             let runner = node.prev();
 
-            while (
-                tagSelector === undefined &&
-                runner !== undefined &&
-                !isCombinator(runner)
-            ) {
+            while (tagSelector === undefined && runner !== undefined && !isCombinator(runner)) {
                 if (isTag(runner)) {
                     tagSelector = runner;
                 } else {
@@ -90,13 +78,10 @@ function validateAttribute(root: Root) {
                     `with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")`,
                 ];
 
-                throw root.error(
-                    message.join(''),
-                    {
-                        index: sourceIndex,
-                        word: attributeName,
-                    }
-                );
+                throw root.error(message.join(''), {
+                    index: sourceIndex,
+                    word: attributeName,
+                });
             }
 
             // If compound selector is associated with a tag selector, we can validate the usage of the

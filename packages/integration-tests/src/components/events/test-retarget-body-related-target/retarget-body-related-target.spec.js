@@ -14,12 +14,12 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should have correct relatedTarget when body was focused', () => {
-        browser.execute(function () {
+        browser.execute(function() {
             document.body.focus();
         });
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        assert.equal(browser.getText('.related-target-tagname'), 'body')
+        assert.equal(browser.getText('.related-target-tagname'), 'body');
     });
 });

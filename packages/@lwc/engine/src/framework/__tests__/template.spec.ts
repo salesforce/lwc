@@ -40,15 +40,9 @@ describe('template', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            expect(
-                elm.shadowRoot.querySelectorAll('div').length
-            ).toBe(2);
-            expect(
-                elm.shadowRoot.querySelectorAll('div')[0].textContent
-            ).toBe('a');
-            expect(
-                elm.shadowRoot.querySelectorAll('div')[1].textContent
-            ).toBe('b');
+            expect(elm.shadowRoot.querySelectorAll('div').length).toBe(2);
+            expect(elm.shadowRoot.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm.shadowRoot.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         it('should render sets correctly', function() {
@@ -70,15 +64,9 @@ describe('template', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            expect(
-                elm.shadowRoot.querySelectorAll('div').length
-            ).toBe(2);
-            expect(
-                elm.shadowRoot.querySelectorAll('div')[0].textContent
-            ).toBe('a');
-            expect(
-                elm.shadowRoot.querySelectorAll('div')[1].textContent
-            ).toBe('b');
+            expect(elm.shadowRoot.querySelectorAll('div').length).toBe(2);
+            expect(elm.shadowRoot.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm.shadowRoot.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         // this test depends on the memoization
@@ -230,7 +218,7 @@ describe('template', () => {
             const x = [1, 2, 3];
             class MyComponent extends LightningElement {}
             MyComponent.publicProps = {
-                x: {}
+                x: {},
             };
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = x;
@@ -256,41 +244,40 @@ describe('template', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(typeof x).toBe("function");
+            expect(typeof x).toBe('function');
             expect(x).toBe(y);
         });
-
     });
 
     describe('evaluateTemplate()', () => {
         it('should throw for undefined value', () => {
             expect(() => {
-                createCustomComponent(() => undefined)
+                createCustomComponent(() => undefined);
             }).toThrow();
         });
 
         it('should throw for null value', () => {
             expect(() => {
-                createCustomComponent(() =>  null)
+                createCustomComponent(() => null);
             }).toThrow();
         });
         it('should throw for empty values', () => {
             expect(() => {
-                createCustomComponent(() =>  '')
+                createCustomComponent(() => '');
             }).toThrow();
         });
 
         it('should throw for dom elements', () => {
             const elm = document.createElement('p');
             expect(() => {
-                createCustomComponent(() =>  elm)
+                createCustomComponent(() => elm);
             }).toThrow();
         });
 
         it('should throw for array of dom elements', () => {
             const elm = document.createElement('p');
             expect(() => {
-                createCustomComponent(() =>  [elm])
+                createCustomComponent(() => [elm]);
             }).toThrow();
         });
     });
@@ -377,7 +364,7 @@ describe('template', () => {
             class MyComponent extends LightningElement {
                 x = 0;
                 render() {
-                    return this.x === 0 ? html1: html2;
+                    return this.x === 0 ? html1 : html2;
                 }
                 renderedCallback() {
                     counter++;
@@ -395,7 +382,7 @@ describe('template', () => {
             elm.x = 2;
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
-                expect(div.id).toBe(""); // this means the element was not reused
+                expect(div.id).toBe(''); // this means the element was not reused
             });
         });
     });

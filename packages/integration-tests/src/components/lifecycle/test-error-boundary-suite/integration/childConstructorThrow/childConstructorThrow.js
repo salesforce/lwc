@@ -1,4 +1,4 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class ChildConstructorThrow extends LightningElement {
     constructor() {

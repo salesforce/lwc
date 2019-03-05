@@ -16,8 +16,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 // This code is inspired by Polymer ShadyDOM Polyfill
 
-import { getInnerHTML } from "./inner-html";
-import { tagNameGetter } from "../../env/element";
+import { getInnerHTML } from './inner-html';
+import { tagNameGetter } from '../../env/element';
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
 const escapeAttrRegExp = /[&\u00A0"]/g;
@@ -66,7 +66,7 @@ const voidElements = new Set([
     'PARAM',
     'SOURCE',
     'TRACK',
-    'WBR'
+    'WBR',
 ]);
 
 const plaintextParents = new Set([
@@ -77,7 +77,7 @@ const plaintextParents = new Set([
     'NOEMBED',
     'NOFRAMES',
     'PLAINTEXT',
-    'NOSCRIPT'
+    'NOSCRIPT',
 ]);
 
 export function getOuterHTML(node: Node): string {
@@ -97,7 +97,10 @@ export function getOuterHTML(node: Node): string {
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
-            if (parentNode instanceof Element && plaintextParents.has(tagNameGetter.call(parentNode))) {
+            if (
+                parentNode instanceof Element &&
+                plaintextParents.has(tagNameGetter.call(parentNode))
+            ) {
                 return data;
             }
             return escapeData(data);

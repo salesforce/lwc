@@ -8,7 +8,7 @@ const { stringScopedImportTransform } = require('./utils');
 
 const I18N_IMPORT_IDENTIFIER = '@salesforce/i18n/';
 
-module.exports = function ({ types: t }) {
+module.exports = function({ types: t }) {
     return {
         visitor: {
             ImportDeclaration(path) {
@@ -17,8 +17,8 @@ module.exports = function ({ types: t }) {
                     const mockValue = getMockValue(importId);
                     stringScopedImportTransform(t, path, importId, mockValue);
                 }
-            }
-        }
+            },
+        },
     };
 };
 

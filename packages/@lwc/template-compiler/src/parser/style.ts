@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { transform as transformStyle } from "@lwc/style-compiler";
+import { transform as transformStyle } from '@lwc/style-compiler';
 
-import { ResolvedConfig } from "../config";
+import { ResolvedConfig } from '../config';
 
 export interface StyleMap {
     [name: string]: string;

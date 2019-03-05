@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from "lwc";
+import { LightningElement, api, track } from 'lwc';
 
 export default class Tree1 extends LightningElement {
     @api treeData;
@@ -23,7 +23,7 @@ export default class Tree1 extends LightningElement {
 
         this.state = {
             ...this.state,
-            [id]: { collapsed: !(this.state[id] && this.state[id].collapsed) }
+            [id]: { collapsed: !(this.state[id] && this.state[id].collapsed) },
         };
     }
 

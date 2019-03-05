@@ -26,19 +26,17 @@ describe('Testing reactive proxy rehydration', () => {
         assert.deepEqual(span.getText(), 'true');
     });
 
-    it ('should rehydrate template when property has been deleted from tracked object', () => {
+    it('should rehydrate template when property has been deleted from tracked object', () => {
         const button = browser.element('.b_deleteprop');
         const span = browser.element('.s_deleteprop');
         button.click();
         assert.deepEqual(span.getText(), 'false');
-    })
+    });
 
-    it ('should rehydrate template when enumerable attribute of a tracked property has changed', () => {
+    it('should rehydrate template when enumerable attribute of a tracked property has changed', () => {
         const button = browser.element('.b_enumerable');
         const span = browser.element('.s_enumerable');
         button.click();
         assert.deepEqual(span.getText(), '');
-    })
-
-
+    });
 });

@@ -15,7 +15,7 @@ it('should correctly concatenate all parameters', () => {
 });
 
 it('should correctly concatenate values and arrays', () => {
-    const result = [1].concat([ true ], null, { x: 'x' }, [5]);
+    const result = [1].concat([true], null, { x: 'x' }, [5]);
 
     expect(result.length).toBe(5);
     expect(result).toEqual([1, true, null, { x: 'x' }, 5]);
@@ -60,7 +60,7 @@ it('should invoke get traps for length, 0 and 1', () => {
         has(target, key) {
             hasCalls.push([target, key]);
             return key in target;
-        }
+        },
     };
 
     const first = [1, 2];
@@ -68,12 +68,7 @@ it('should invoke get traps for length, 0 and 1', () => {
     const secondProxified = new Proxy(second, proxyHandler);
     const result = first.concat(secondProxified);
 
-    expect(result).toEqual([
-        1,
-        2,
-        3,
-        4
-    ]);
+    expect(result).toEqual([1, 2, 3, 4]);
 
     // Since Proxy COMPAT doesn't normalize the accessed key, we need to convert all the accessed keys to String to
     // ensure consistent behavior regardless with we use the Native or the COMPAT version of Proxy.
