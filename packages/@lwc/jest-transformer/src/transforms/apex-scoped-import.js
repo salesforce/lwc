@@ -4,26 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const babelTemplate = require('@babel/template').default;
-const { getImportInfo } = require('./utils');
+const {
+    getImportInfo,
+    resolvedPromiseTemplate
+} = require('./utils');
 
 const APEX_IMPORT_IDENTIFIER = '@salesforce/apex';
-
-/*
- * Apex imports can be used as @wire ids or called directly. If used as a @wire
- * id, it must be the same object in the component under test and the test case
- * itself. Due to this requirement, we save the mock to the global object to be
- * shared.
- */
-const resolvedPromiseTemplate = babelTemplate(`
-    let RESOURCE_NAME;
-    try {
-        RESOURCE_NAME = require(IMPORT_SOURCE).default;
-    } catch (e) {
-        global.MOCK_NAME = global.MOCK_NAME || function() { return Promise.resolve(); };
-        RESOURCE_NAME = global.MOCK_NAME;
-    }
-`);
 
 /**
  * Instead of using @babel/template, we manually build the variable declaration

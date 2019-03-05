@@ -63,6 +63,22 @@ function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     }));
 }
 
+/*
+ * Apex imports can be used as @wire ids or called directly. If used as a @wire
+ * id, it must be the same object in the component under test and the test case
+ * itself. Due to this requirement, we save the mock to the global object to be
+ * shared.
+ */
+const resolvedPromiseTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        global.MOCK_NAME = global.MOCK_NAME || function RESOURCE_NAME() { return Promise.resolve(); };
+        RESOURCE_NAME = global.MOCK_NAME;
+    }
+`);
+
 /**
  * For an import statement we want to transform, parse out the names of the
  * resources and the source of the import.
@@ -110,5 +126,6 @@ function generateError(path, { errorInfo, messageArgs } = {}) {
 
 module.exports = {
     stringScopedImportTransform,
+    resolvedPromiseTemplate,
     getImportInfo,
 };

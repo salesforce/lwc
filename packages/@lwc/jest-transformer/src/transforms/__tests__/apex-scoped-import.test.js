@@ -17,7 +17,7 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
+          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function myMethod() {
             return Promise.resolve();
           };
 
@@ -35,7 +35,7 @@ describe('@salesforce/apex import', () => {
         try {
           myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function () {
+          global.__lwcJestMock_myMethod = global.__lwcJestMock_myMethod || function myMethod() {
             return Promise.resolve();
           };
 
