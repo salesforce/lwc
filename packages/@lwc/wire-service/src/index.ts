@@ -110,6 +110,9 @@ const wireService = {
 
     connected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(context[CONTEXT_ID], 'wire adapter "connected" hook called without an established context');
+        }
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
         }
@@ -118,6 +121,9 @@ const wireService = {
 
     disconnected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(context[CONTEXT_ID], 'wire adapter "disconnected" hook called without an established context');
+        }
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;
         }
