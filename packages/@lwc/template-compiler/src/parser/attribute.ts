@@ -20,6 +20,7 @@ import { IRElement } from '../shared/types';
 
 import {
     DATA_RE,
+    SVG_NAMESPACE_URI,
     SVG_TAG_WHITELIST,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
@@ -69,8 +70,19 @@ export function isXLinkAttribute(attrName: string): boolean {
     return attrName === XLINK_HREF;
 }
 
-export function isFragmentOnlyUrlAttribute(attrName: string): boolean {
-    return attrName === 'href' || isXLinkAttribute(attrName);
+export function isFragmentOnlyUrlAttribute(
+    tagName: string,
+    attrName: string,
+    namespaceURI: string
+): boolean {
+    if (tagName === 'a' || tagName === 'area') {
+        return attrName === 'href';
+    }
+    if (tagName === 'use' && namespaceURI === SVG_NAMESPACE_URI) {
+        // xlink:href is a deprecated attribute included for backwards compatibility
+        return attrName === 'href' || attrName === 'xlink:href';
+    }
+    return false;
 }
 
 export function isFragmentOnlyUrl(url: string): boolean {

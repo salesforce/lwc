@@ -353,8 +353,8 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 }
                 // In the case of a string (see below) we do fragment-only url validation at compile
                 // time but when dealing with expressions we need to validate during run time.
-                if (isFragmentOnlyUrlAttribute(attr.name)) {
-                    return codeGen.genScopedFragId(attr.value);
+                if (isFragmentOnlyUrlAttribute(tagName, attr.name, namespaceURI)) {
+                    expression = codeGen.genScopedFragId(expression);
                 }
                 if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
@@ -370,24 +370,26 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             case IRAttributeType.String:
                 if (attr.name === 'id') {
                     return codeGen.genScopedId(attr.value);
-                }
-                if (isFragmentOnlyUrlAttribute(attr.name) && isFragmentOnlyUrl(attr.value)) {
-                    return codeGen.genScopedFragId(attr.value);
-                }
-                if (isIdReferencingAttribute(attr.name)) {
+                } else if (isIdReferencingAttribute(attr.name)) {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
+                } else {
+                    let expression;
+                    if (
+                        isFragmentOnlyUrlAttribute(tagName, attr.name, namespaceURI) &&
+                        isFragmentOnlyUrl(attr.value)
+                    ) {
+                        expression = codeGen.genScopedFragId(attr.value);
+                    }
+                    if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
+                        expression = t.callExpression(t.identifier('sanitizeAttribute'), [
+                            t.stringLiteral(tagName),
+                            t.stringLiteral(namespaceURI),
+                            t.stringLiteral(attr.name),
+                            expression,
+                        ]);
+                    }
+                    return expression ? expression : t.stringLiteral(attr.value);
                 }
-
-                if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
-                    return t.callExpression(t.identifier('sanitizeAttribute'), [
-                        t.stringLiteral(tagName),
-                        t.stringLiteral(namespaceURI),
-                        t.stringLiteral(attr.name),
-                        t.stringLiteral(attr.value),
-                    ]);
-                }
-                return t.stringLiteral(attr.value);
-
             case IRAttributeType.Boolean:
                 return t.booleanLiteral(attr.value);
         }
