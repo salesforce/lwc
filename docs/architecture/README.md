@@ -196,7 +196,7 @@ Interaction between `VM`, `VNodes`, and `Nodes`:
                   │
        ┌─────────────────────┐                          ┌─────────────────────────┐
        │                     │                          │                         │
-       │         VM          │◀─────────Owner───────────│    UnitializedVNode     │◁─────┐
+       │         VM          │◀─────────Owner───────────│    UninitializedVNode   │◁─────┐
        │                     │                          │                         │      │
        └───┬──────────────┬──┘                          └─────────────────────────┘      │
            │      ▲       │                                          △                   │
@@ -205,7 +205,7 @@ Interaction between `VM`, `VNodes`, and `Nodes`:
            │      │            │                                     │                   │
            │      │            │                        ┌────────────┴────────────┐      │
            │      │            ▼                        │                         │      │
-           │      │   ┌────────────────┐                │   UnitializedVElement   │◁─────┼────────┐
+           │      │   ┌────────────────┐                │   UninitializedVElement │◁─────┼────────┐
            │      │   │                │                │                         │      │        │
            │      │   │   ShadowRoot   │                └─────────────────────────┘      │        │
            │      │   │                │                             △                   │        │
@@ -216,7 +216,7 @@ Interaction between `VM`, `VNodes`, and `Nodes`:
            │      │                                                  │                   │        │
            │      │                                ┌──────────────────────────────────┐  │        │
       velements   │                                │                                  │  │        │
-           │      │                                │ UnitializedVCustomElement        │◁─┼────────┼────────────┐
+           │      │                                │ UninitializedVCustomElement      │◁─┼────────┼────────────┐
            │  Internal                             │                                  │  │        │            │
            │    Slot                               └──────────────────────────────────┘  │        │            │
            │      │                                                                      │        │            │
