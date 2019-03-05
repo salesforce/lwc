@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.10...v) (2019-02-27)
+# [](https://github.com/salesforce/lwc/compare/v0.35.11...v) (2019-03-05)
+
+
+### Bug Fixes
+
+* properly exit the state entered when clicking into shadows ([#1082](https://github.com/salesforce/lwc/issues/1082)) ([d20fdda](https://github.com/salesforce/lwc/commit/d20fdda))
+* **engine:** error boundary fix for non-inserted slotted custom elements ([#1090](https://github.com/salesforce/lwc/issues/1090)) ([3b3c278](https://github.com/salesforce/lwc/commit/3b3c278))
+
+
+
+<a name="0.35.11"></a>
+## [0.35.11](https://github.com/salesforce/lwc/compare/v0.35.10...v0.35.11) (2019-02-27)
 
 
 ### Bug Fixes
