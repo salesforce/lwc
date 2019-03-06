@@ -4,20 +4,14 @@ import Slotted from 'x/slotted';
 import Test from 'x/test';
 
 function testDisconnectSlot(name, fn) {
-    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {
-        let isDisconnected = false;
-        let thisValue;
-
+    it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
         const elm = createElement('x-test', { is: Test });
         elm.disconnect = function(context) {
-            isDisconnected = true;
-            thisValue = context;
+            expect(context instanceof Test).toBe(true);
+            done();
         };
 
         fn(elm);
-
-        expect(thisValue instanceof Test).toBe(true);
-        expect(isDisconnected).toBe(true);
     });
 }
 
@@ -32,11 +26,19 @@ testDisconnectSlot('Node.replaceChild', elm => {
     document.body.replaceChild(newChild, elm);
 });
 
-describe('disconnect host with slots', () => {
+describe('disconnectedCallback for host with slots', () => {
     let parentDisconnectSpy;
     let slotIgnoringChildSpy;
     let slotAcceptingChildSpy;
     let parent;
+
+    beforeAll(() => {
+        // Ignore the engine logging about passing slot content to a component that does not accept slot
+        spyOn(console, 'group');
+        spyOn(console, 'log');
+        spyOn(console, 'groupEnd');
+    });
+
     beforeEach(() => {
         parentDisconnectSpy = jasmine.createSpy();
         slotIgnoringChildSpy = jasmine.createSpy();
@@ -47,7 +49,8 @@ describe('disconnect host with slots', () => {
         parent.shadowRoot.querySelector('x-accepting-slots').disconnect = slotAcceptingChildSpy;
         parent.shadowRoot.querySelector('x-ignoring-slots').disconnect = slotIgnoringChildSpy;
     });
-    it('should not throw when disconnecting host with unrendered slot content', () => {
+
+    it('should invoke disconnectedCallback on host and all children components', () => {
         document.body.removeChild(parent);
         expect(parentDisconnectSpy).toHaveBeenCalledTimes(1);
         expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
@@ -55,10 +58,11 @@ describe('disconnect host with slots', () => {
     });
 
     /**
+     * Automation for issue #1090
      * In this scenario the slot content from the parent's template is unrendered.
-     * disconnecting the slot receiver was causing errors.
+     * disconnecting the slot receiver was causing errors
      **/
-    it('when child element ignores slot content from parent is removed', () => {
+    it('should invoke disconnectedCallback on child that has unrendered slot content', () => {
         parent.hideChildIgnoresSlots = true;
 
         return Promise.resolve(() => {
@@ -68,11 +72,15 @@ describe('disconnect host with slots', () => {
         });
     });
 
-    it('when child element accepting slot content from parent is removed', () => {
+    it('should invoke disconnectedCallback on child that has rendered slot content', () => {
+        const slotContent = parent.shadowRoot.querySelector('x-test.slotted');
+        const slotContentDisconnectSpy = jasmine.createSpy();
+        slotContent.disconnect = slotContentDisconnectSpy;
         parent.hideChildAcceptsSlots = true;
         return Promise.resolve(() => {
             expect(parentDisconnectSpy).not.toHaveBeenCalled();
             expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
+            expect(slotContentDisconnectSpy).toHaveBeenCalledTimes(1);
             expect(slotIgnoringChildSpy).not.toHaveBeenCalled();
         });
     });
