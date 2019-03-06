@@ -28,12 +28,15 @@ function validateWireParameters(path) {
         });
     }
 
+    // ensure wire adapter is imported
     if (isIdentifier && !path.scope.getBinding(id.node.name)) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
             messageArgs: [id.node.name],
         });
     }
+
+    // ensure wire adapter is a first parameter
     if (
         isIdentifier &&
         !path.scope.getBinding(id.node.name).path.isImportSpecifier() &&
