@@ -70,7 +70,7 @@ export function isIdReferencingAttribute(attrName: string): boolean {
 
 // Whitelists http://www.w3.org/1999/xhtml namespace idref elements for which we
 // allow id references.
-export function fragOnlyUrlsXHTML(
+export function isAllowedFragOnlyUrlsXHTML(
     tagName: string,
     attrName: string,
     namespaceURI: string

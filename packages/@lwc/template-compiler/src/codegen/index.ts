@@ -44,7 +44,7 @@ import CodeGen from './codegen';
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import {
-    fragOnlyUrlsXHTML,
+    isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
@@ -350,7 +350,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
                     return codeGen.genScopedId(expression);
                 }
-                if (fragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)) {
+                if (isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)) {
                     return codeGen.genScopedFragId(expression);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
@@ -372,7 +372,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }
                 if (
-                    fragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
+                    isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
                     isFragmentOnlyUrl(attr.value)
                 ) {
                     return codeGen.genScopedFragId(attr.value);

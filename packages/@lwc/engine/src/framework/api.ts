@@ -673,7 +673,7 @@ export function k(compilerKey: number, obj: any): string | void {
 }
 
 // [g]lobal [id] function
-export function gid(id: any): string | null | undefined {
+export function gid(id: string | undefined | null): string | null | undefined {
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
@@ -683,6 +683,7 @@ export function gid(id: any): string | null | undefined {
         }
         return id;
     }
+    // We remove attributes when they are assigned a value of null
     if (isNull(id)) {
         return null;
     }
@@ -690,7 +691,7 @@ export function gid(id: any): string | null | undefined {
 }
 
 // [f]ragment [id] function
-export function fid(url: any): string | null | undefined {
+export function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
@@ -700,10 +701,11 @@ export function fid(url: any): string | null | undefined {
         }
         return url;
     }
+    // We remove attributes when they are assigned a value of null
     if (isNull(url)) {
         return null;
     }
-    // Apply transformation only for fragment only urls
+    // Apply transformation only for fragment-only-urls
     if (/^#/.test(url)) {
         return `${url}-${vmBeingRendered!.uid}`;
     }
