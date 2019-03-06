@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.11...v) (2019-03-05)
+# [](https://github.com/salesforce/lwc/compare/v0.35.12...v) (2019-03-06)
+
+
+### Bug Fixes
+
+* **jest-transformer:** apex import mocks to use named functions ([#1093](https://github.com/salesforce/lwc/issues/1093)) ([c2c1097](https://github.com/salesforce/lwc/commit/c2c1097))
+* **wire-service:** add lifecycle hook guards ([#1092](https://github.com/salesforce/lwc/issues/1092)) ([dfa87d1](https://github.com/salesforce/lwc/commit/dfa87d1))
+
+
+
+<a name="0.35.12"></a>
+## [0.35.12](https://github.com/salesforce/lwc/compare/v0.35.11...v0.35.12) (2019-03-05)
 
 
 ### Bug Fixes

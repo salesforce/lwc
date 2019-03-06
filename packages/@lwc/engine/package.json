@@ -1,6 +1,6 @@
 {
     "name": "@lwc/engine",
-    "version": "0.35.12",
+    "version": "0.36.0",
     "description": "LWC Engine",
     "main": "dist/commonjs/es2017/engine.js",
     "module": "dist/modules/es2017/engine.js",
@@ -15,7 +15,7 @@
         "observable-membrane": "0.26.0"
     },
     "devDependencies": {
-        "@lwc/template-compiler": "0.35.12"
+        "@lwc/template-compiler": "0.36.0"
     },
     "lwc": {
         "modules": {
