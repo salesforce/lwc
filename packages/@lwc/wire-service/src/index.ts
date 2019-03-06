@@ -121,7 +121,10 @@ const wireService = {
     connected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(!def.wire || context[CONTEXT_ID], 'wire service was not initialized prior to component creation:  "connected" service hook invoked without necessary context');
+            assert.isTrue(
+                !def.wire || context[CONTEXT_ID],
+                'wire service was not initialized prior to component creation:  "connected" service hook invoked without necessary context'
+            );
         }
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
@@ -132,7 +135,10 @@ const wireService = {
     disconnected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(!def.wire || context[CONTEXT_ID], 'wire service was not initialized prior to component creation:  "disconnected" service hook invoked without necessary context');
+            assert.isTrue(
+                !def.wire || context[CONTEXT_ID],
+                'wire service was not initialized prior to component creation:  "disconnected" service hook invoked without necessary context'
+            );
         }
         if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;
