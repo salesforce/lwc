@@ -58,7 +58,6 @@ describe('disconnect host with slots', () => {
      * In this scenario the slot content from the parent's template is unrendered.
      * disconnecting the slot receiver was causing errors.
      **/
-
     it('when child element ignores slot content from parent is removed', () => {
         parent.hideChildIgnoresSlots = true;
 
