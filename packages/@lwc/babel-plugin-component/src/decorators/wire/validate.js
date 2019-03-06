@@ -20,14 +20,22 @@ function validateWireParameters(path) {
         });
     }
 
-    if (!id.isIdentifier()) {
+    const isIdentifier = id.isIdentifier();
+
+    if (!isIdentifier) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
         });
     }
 
+    if (isIdentifier && !path.scope.getBinding(id.node.name)) {
+        throw generateError(id, {
+            errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
+            messageArgs: [id.node.name],
+        });
+    }
     if (
-        id.isIdentifier() &&
+        isIdentifier &&
         !path.scope.getBinding(id.node.name).path.isImportSpecifier() &&
         !path.scope.getBinding(id.node.name).path.isImportDefaultSpecifier()
     ) {

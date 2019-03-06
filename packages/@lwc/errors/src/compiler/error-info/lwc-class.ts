@@ -197,4 +197,11 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    WIRE_ADAPTER_SHOULD_BE_IMPORTED: {
+        code: 1119,
+        message: 'Failed to resolve @wire adapter "{0}". Ensure it is imported.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

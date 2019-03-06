@@ -102,6 +102,24 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        'decorator expects wire adapter to be imported',
+        `
+        import { LightningElement, wire } from 'lwc';
+        export default class PublicMethods extends LightningElement {
+          @wire(adapter) foo;
+        }
+        `,
+        {
+            error: {
+                message: 'Failed to resolve @wire adapter "adapter". Ensure it is imported',
+                loc: {
+                    line: 2,
+                    column: 4,
+                },
+            },
+        }
+    );
+    pluginTest(
         'decorator expects wire adapter as first parameter',
         `
         import { wire } from 'lwc';
