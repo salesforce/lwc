@@ -165,11 +165,7 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.scopedFragId, [id]);
     }
 
-    getSlot(
-        slotName: string,
-        data: t.ObjectExpression,
-        children: t.Expression,
-    ) {
+    getSlot(slotName: string, data: t.ObjectExpression, children: t.Expression) {
         return this._renderApiCall(RENDER_APIS.slot, [
             t.stringLiteral(slotName),
             data,

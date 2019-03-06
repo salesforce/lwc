@@ -693,7 +693,10 @@ export function gid(id: any): string | null | undefined {
 export function fid(url: any): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(`Invalid url value "${url}". Expected a non-empty string.`, vmBeingRendered!.elm);
+            assert.logError(
+                `Invalid url value "${url}". Expected a non-empty string.`,
+                vmBeingRendered!.elm
+            );
         }
         return url;
     }
