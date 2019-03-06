@@ -1,4 +1,4 @@
-import { registerTemplate, sanitizeAttribute } from "lwc";
+import { registerTemplate } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const { h: api_element } = $api;
@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "image",
           {
             attrs: {
-              "xlink:href": sanitizeAttribute("image", "http://www.w3.org/2000/svg", "xlink:href", "/foo.png"),
+              "xlink:href": "/foo.png",
               x: "1",
               y: "2",
               height: "200",

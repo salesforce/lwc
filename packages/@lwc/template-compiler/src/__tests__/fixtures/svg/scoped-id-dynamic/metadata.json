@@ -1,0 +1,13 @@
+{
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "blackId",
+            "redId",
+            "blackUrl",
+            "redUrl"
+        ],
+        "templateDependencies": []
+    }
+}

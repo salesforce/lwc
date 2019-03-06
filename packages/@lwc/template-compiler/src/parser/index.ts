@@ -25,6 +25,7 @@ import {
     attributeToPropertyName,
     isDeprecatedIsAttribute,
     isProhibitedIsAttribute,
+    isSvgUseHref,
     isTabIndexAttribute,
     isValidTabIndexAttributeValue,
 } from './attribute';
@@ -787,7 +788,7 @@ export default function parse(
                 const node = element.__original as parse5.AST.Default.Element;
 
                 // record secure import dependency if xlink attr is detected
-                if (name === 'xlink:href' && node.namespaceURI === SVG_NAMESPACE_URI) {
+                if (isSvgUseHref(tag, name, node.namespaceURI)) {
                     if (!state.secureDependencies.includes('sanitizeAttribute')) {
                         state.secureDependencies.push('sanitizeAttribute');
                     }

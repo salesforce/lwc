@@ -1,7 +1,7 @@
 import { registerTemplate, sanitizeAttribute } from "lwc";
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { h: api_element } = $api;
+  const { fid: api_scoped_frag_id, h: api_element } = $api;
   return [
     api_element(
       "svg",
@@ -20,7 +20,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             attrs: {
-                "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", $cmp.getXLink)
+              "xlink:href": sanitizeAttribute(
+                "use",
+                "http://www.w3.org/2000/svg",
+                "xlink:href",
+                api_scoped_frag_id($cmp.getXLink)
+              )
             },
             key: 3
           },

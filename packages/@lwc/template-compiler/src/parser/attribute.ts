@@ -19,15 +19,18 @@ import {
 import { IRElement } from '../shared/types';
 
 import {
+    ATTR_NAME,
     DATA_RE,
+    SVG_NAMESPACE_URI,
     SVG_TAG_WHITELIST,
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
+    HTML_NAMESPACE_URI,
+    HTML_TAG,
     DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
-    XLINK_HREF,
 } from './constants';
 
 import { isCustomElement } from '../shared/ir';
@@ -65,8 +68,34 @@ export function isIdReferencingAttribute(attrName: string): boolean {
     return ID_REFERENCING_ATTRIBUTES_SET.has(attrName);
 }
 
-export function isXLinkAttribute(attrName: string): boolean {
-    return attrName === XLINK_HREF;
+// Whitelists http://www.w3.org/1999/xhtml namespace idref elements for which we
+// allow id references.
+export function isAllowedFragOnlyUrlsXHTML(
+    tagName: string,
+    attrName: string,
+    namespaceURI: string
+): boolean {
+    const whitelistedTags = [HTML_TAG.A, HTML_TAG.AREA];
+    return (
+        attrName === ATTR_NAME.HREF &&
+        whitelistedTags.includes(tagName) &&
+        namespaceURI === HTML_NAMESPACE_URI
+    );
+}
+
+// Identifies `href/xlink:href` attributes on `use` elements in the
+// http://www.w3.org/2000/svg namespace
+export function isSvgUseHref(tagName: string, attrName: string, namespaceURI: string): boolean {
+    return (
+        // xlink:href is a deprecated attribute included for backwards compatibility
+        [ATTR_NAME.HREF, ATTR_NAME.XLINK_HREF].includes(attrName) &&
+        tagName === HTML_TAG.USE &&
+        namespaceURI === SVG_NAMESPACE_URI
+    );
+}
+
+export function isFragmentOnlyUrl(url: string): boolean {
+    return /^#/.test(url);
 }
 
 export function normalizeAttributeValue(
