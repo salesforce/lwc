@@ -44,12 +44,11 @@ import CodeGen from './codegen';
 import { format as formatModule } from './formatters/module';
 import { format as formatFunction } from './formatters/function';
 import {
+    fragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
-    isFragmentOnlyUrlAttribute,
     isIdReferencingAttribute,
-    isXLinkAttribute,
+    isSvgUseHref,
 } from '../parser/attribute';
-import { SVG_NAMESPACE_URI } from '../parser/constants';
 
 import { TemplateErrors, generateCompilerError } from '@lwc/errors';
 
@@ -346,50 +345,51 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
             case IRAttributeType.Expression: {
                 let { expression } = bindExpression(attr.value, element);
                 if (attr.name === 'tabindex') {
-                    expression = codeGen.genTabIndex([expression]);
+                    return codeGen.genTabIndex([expression]);
                 }
                 if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
-                    expression = codeGen.genScopedId(expression);
+                    return codeGen.genScopedId(expression);
                 }
-                // In the case of a string (see below) we do fragment-only url validation at compile
-                // time but when dealing with expressions we need to validate during run time.
-                if (isFragmentOnlyUrlAttribute(tagName, attr.name, namespaceURI)) {
-                    expression = codeGen.genScopedFragId(expression);
+                if (fragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)) {
+                    return codeGen.genScopedFragId(expression);
                 }
-                if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
+                if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
                     return t.callExpression(t.identifier('sanitizeAttribute'), [
                         t.stringLiteral(tagName),
                         t.stringLiteral(namespaceURI),
                         t.stringLiteral(attr.name),
-                        expression,
+                        codeGen.genScopedFragId(expression),
                     ]);
                 }
                 return expression;
             }
 
-            case IRAttributeType.String:
+            case IRAttributeType.String: {
                 if (attr.name === 'id') {
                     return codeGen.genScopedId(attr.value);
-                } else if (isIdReferencingAttribute(attr.name)) {
-                    return generateScopedIdFunctionForIdRefAttr(attr.value);
-                } else {
-                    let expression;
-                    if (
-                        isFragmentOnlyUrlAttribute(tagName, attr.name, namespaceURI) &&
-                        isFragmentOnlyUrl(attr.value)
-                    ) {
-                        expression = codeGen.genScopedFragId(attr.value);
-                    }
-                    if (isXLinkAttribute(attr.name) && namespaceURI === SVG_NAMESPACE_URI) {
-                        expression = t.callExpression(t.identifier('sanitizeAttribute'), [
-                            t.stringLiteral(tagName),
-                            t.stringLiteral(namespaceURI),
-                            t.stringLiteral(attr.name),
-                            expression,
-                        ]);
-                    }
-                    return expression ? expression : t.stringLiteral(attr.value);
                 }
+                if (isIdReferencingAttribute(attr.name)) {
+                    return generateScopedIdFunctionForIdRefAttr(attr.value);
+                }
+                if (
+                    fragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
+                    isFragmentOnlyUrl(attr.value)
+                ) {
+                    return codeGen.genScopedFragId(attr.value);
+                }
+                if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
+                    return t.callExpression(t.identifier('sanitizeAttribute'), [
+                        t.stringLiteral(tagName),
+                        t.stringLiteral(namespaceURI),
+                        t.stringLiteral(attr.name),
+                        isFragmentOnlyUrl(attr.value)
+                            ? codeGen.genScopedFragId(attr.value)
+                            : t.stringLiteral(attr.value),
+                    ]);
+                }
+                return t.stringLiteral(attr.value);
+            }
+
             case IRAttributeType.Boolean:
                 return t.booleanLiteral(attr.value);
         }
