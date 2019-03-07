@@ -1,0 +1,39 @@
+:dir(ltr) {
+    order: 0;
+}
+
+:dir(ltr)  test {
+    order: 1;
+} 
+
+test :dir(ltr) {
+    order: 2;
+}
+
+test:dir(ltr) {
+    order: 3;
+}
+
+test:dir(ltr) test {
+    order: 4;
+}
+
+:dir(rtl) {
+    order: 5;
+}
+
+:dir(rtl)  test {
+    order: 6;
+} 
+
+test :dir(rtl) {
+    order: 7;
+}
+
+test:dir(rtl) {
+    order: 8;
+}
+
+test:dir(rtl) test {
+    order: 9;
+}

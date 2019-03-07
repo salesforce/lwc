@@ -17,6 +17,7 @@ import {
 } from 'postcss-selector-parser';
 
 import validateSelectors from './validate';
+import isDirPseudoClass from '../utils/is-dir-pseudo-class';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
 
@@ -49,13 +50,16 @@ function scopeSelector(selector: Selector) {
     });
 
     for (const compoundSelector of compoundSelectors) {
-        // Compound selectors containing :host have a special treatment and should not be scoped like the rest of the
-        // complex selectors.
-        const shouldScopeCompoundSelector = compoundSelector.every(
-            node => !isHostPseudoClass(node)
-        );
+        // Compound selectors with only a single :dir pseudo class should be scoped, the dir pseudo
+        // class transform will take care of transforming it properly.
+        const isDirSelectorOnly =
+            compoundSelector.length === 1 && isDirPseudoClass(compoundSelector[0]);
 
-        if (shouldScopeCompoundSelector) {
+        // Compound selectors containing :host have a special treatment and should not be scoped
+        // like the rest of the complex selectors.
+        const containsHost = compoundSelector.some(isHostPseudoClass);
+
+        if (!isDirSelectorOnly && !containsHost) {
             let nodeToScope: Node | undefined;
 
             // In each compound selector we need to locate the last selector to scope.
