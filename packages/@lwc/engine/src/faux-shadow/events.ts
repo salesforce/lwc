@@ -22,7 +22,7 @@ import {
     isNull,
     getPropertyDescriptor,
 } from '../shared/language';
-import { getRootNodeGetter } from './traverse';
+import { patchedGetRootNode } from './traverse';
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
@@ -53,7 +53,7 @@ function isChildNode(root: Element, node: Node): boolean {
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function getRootNodeHost(node: Node, options): Node {
-    let rootNode = getRootNodeGetter.call(node, options);
+    let rootNode = patchedGetRootNode.call(node, options);
 
     // is SyntheticShadowRootInterface
     if ('mode' in rootNode && 'delegatesFocus' in rootNode) {

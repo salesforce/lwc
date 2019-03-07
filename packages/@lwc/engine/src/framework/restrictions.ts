@@ -138,7 +138,6 @@ function getNodeRestrictionsDescriptors(
                 originalTextContentDescriptor.set!.call(this, value);
             },
         },
-        // TODO: add restrictions for getRootNode() method
     };
 }
 

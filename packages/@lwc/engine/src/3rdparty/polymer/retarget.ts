@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { pathComposer } from './path-composer';
-import { getRootNodeGetter } from './../../faux-shadow/traverse';
+import { patchedGetRootNode } from './../../faux-shadow/traverse';
 import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
 
 /**
@@ -24,7 +24,7 @@ export function retarget(refNode: Node, path: Node[]): EventTarget | null {
     const p$ = path;
     for (let i = 0, ancestor, lastRoot, root, rootIdx; i < p$.length; i++) {
         ancestor = p$[i];
-        root = ancestor === window ? window : getRootNodeGetter.call(ancestor);
+        root = ancestor === window ? window : patchedGetRootNode.call(ancestor);
         if (root !== lastRoot) {
             rootIdx = refNodePath.indexOf(root);
             lastRoot = root;

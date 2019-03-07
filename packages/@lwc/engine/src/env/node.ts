@@ -16,13 +16,13 @@ const {
 } = Node;
 
 const {
+    appendChild,
+    cloneNode,
+    compareDocumentPosition,
+    hasChildNodes,
     insertBefore,
     removeChild,
-    appendChild,
-    hasChildNodes,
     replaceChild,
-    compareDocumentPosition,
-    cloneNode,
 } = Node.prototype;
 
 const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
@@ -63,20 +63,20 @@ const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
 
 export {
     // Node.prototype
+    appendChild,
+    childNodesGetter,
+    cloneNode,
     compareDocumentPosition,
     hasChildNodes,
     insertBefore,
-    removeChild,
-    replaceChild,
-    appendChild,
-    parentNodeGetter,
-    parentElementGetter,
-    childNodesGetter,
-    textContextSetter,
+    isConnected,
     nodeValueGetter,
     nodeValueSetter,
-    cloneNode,
-    isConnected,
+    parentElementGetter,
+    parentNodeGetter,
+    removeChild,
+    replaceChild,
+    textContextSetter,
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,

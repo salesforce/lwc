@@ -15,10 +15,10 @@ import {
 } from '../env/node';
 import { querySelectorAll, innerHTMLSetter, tagNameGetter } from '../env/element';
 import { wrapIframeWindow } from './iframe';
-import { ArrayReduce, ArrayPush, isUndefined, isTrue } from '../shared/language';
+import { ArrayReduce, ArrayPush, isUndefined } from '../shared/language';
 import { isNull } from '../shared/language';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
-import { getHost, getShadowRoot, SyntheticShadowRootInterface } from './shadow-root';
+import { getHost, SyntheticShadowRootInterface } from './shadow-root';
 import {
     HTMLElementConstructor,
     HTMLIFrameElementConstructor,
@@ -26,6 +26,10 @@ import {
 import { createStaticNodeList } from '../shared/static-node-list';
 import { iFrameContentWindowGetter } from '../env/dom';
 import { getFilteredSlotAssignedNodes } from './slot';
+import '../polyfills/node-get-root-node/main';
+
+// Extract the patched getRootNode
+export const { getRootNode: patchedGetRootNode } = Node.prototype;
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -170,40 +174,6 @@ export function getAllMatches(
         }
     }
     return filteredAndPatched;
-}
-
-function getRoot(node: Node): Node {
-    const ownerNode = getNodeOwner(node);
-
-    if (isNull(ownerNode)) {
-        // we hit a wall, is not in lwc boundary.
-        return getShadowIncludingRoot(node);
-    }
-
-    // @ts-ignore: Attributes property is removed from Node (https://developer.mozilla.org/en-US/docs/Web/API/Node)
-    return getShadowRoot(ownerNode) as Node;
-}
-
-function getShadowIncludingRoot(node: Node): Node {
-    let nodeParent;
-    while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
-        node = nodeParent;
-    }
-
-    return node;
-}
-
-/**
- * Dummy implementation of the Node.prototype.getRootNode.
- * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
- *
- * TODO: Once we start using the real shadowDOM, this method should be replaced by:
- * const { getRootNode } = Node.prototype;
- */
-export function getRootNodeGetter(this: Node, options?: GetRootNodeOptions): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-
-    return isTrue(composed) ? getShadowIncludingRoot(this) : getRoot(this);
 }
 
 function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {

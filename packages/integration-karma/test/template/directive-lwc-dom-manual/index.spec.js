@@ -3,7 +3,6 @@ import { createElement } from 'test-utils';
 import withLwcDomManual from 'x/withLwcDomManual';
 import withoutLwcDomManual from 'x/withoutLwcDomManual';
 import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
-import withLwcDomManualNested from 'x/withLwcDomManualNested';
 
 function waitForStyleToBeApplied() {
     // Using a timeout instead of a Promise.resolve to wait for the MutationObserver to be triggered.
@@ -131,17 +130,6 @@ describe('adopt node in the shadow', () => {
         expect(inner.parentElement.parentElement).toBe(elm);
     });
 
-    // TODO: #971 - Elements insert manually in lwc:dom="manual" are not patched with synthetic shadow polyfill
-    xit('should return the right shadowRoot when invoking getRootNode() on inserted elements', () => {
-        const root = createElement('x-test', { is: withLwcDomManual });
-        document.body.appendChild(root);
-
-        const elm = root.shadowRoot.querySelector('div');
-        elm.innerHTML = '<div class="foo"></div>';
-
-        expect(root.shadowRoot.querySelector('.foo').getRootNode()).toBe(root.shadowRoot);
-    });
-
     it('should apply the component styles to inserted elements', () => {
         const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
@@ -166,58 +154,5 @@ describe('adopt node in the shadow', () => {
             // IE11 throws an error.
             expect(window.getComputedStyle(svgElm.firstChild).fill).toBe('rgb(0, 255, 0)');
         });
-    });
-});
-
-// #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
-xdescribe('nested dynamic lwc elm with dom manual', () => {
-    let outerElem;
-    let innerElem;
-    beforeEach(() => {
-        outerElem = createElement('x-outer', { is: withLwcDomManual });
-        document.body.appendChild(outerElem);
-        innerElem = createElement('x-inner', { is: withLwcDomManualNested });
-        const div = outerElem.shadowRoot.querySelector('div');
-        div.appendChild(innerElem);
-    });
-
-    it('getRootNode() of inner custom element should return outer shadowRoot', () => {
-        expect(innerElem.getRootNode()).toBe(outerElem.shadowRoot);
-    });
-
-    it("getRootNode() of inner shadow's template element should return inner shadowRoot", () => {
-        const innerDiv = innerElem.shadowRoot.querySelector('div');
-        expect(innerDiv.getRootNode()).toBe(innerElem.shadowRoot);
-    });
-
-    // Real issue is with MutationObserver
-    it("getRootNode() of inner shadow's dynamic element should return inner shadowRoot", () => {
-        const innerDiv = innerElem.shadowRoot.querySelector('div');
-        innerDiv.innerHTML = '<p class="innerP"></p>';
-
-        const p = innerElem.shadowRoot.querySelector('.innerP');
-        expect(p.getRootNode()).toBe(innerElem.shadowRoot);
-    });
-});
-
-// #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
-xdescribe('nested dynamic lwc elm without dom manual', () => {
-    let outerElem;
-    let innerElem;
-    beforeEach(() => {
-        outerElem = createElement('x-outer', { is: withLwcDomManual });
-        document.body.appendChild(outerElem);
-        innerElem = createElement('x-inner', { is: withoutLwcDomManual });
-        const div = outerElem.shadowRoot.querySelector('div');
-        div.appendChild(innerElem);
-        // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
-        spyOn(console, 'error');
-    });
-
-    it('getRootNode() of inner shadow element should return inner shadowRoot', () => {
-        const innerDiv = innerElem.shadowRoot.querySelector('div');
-        innerDiv.innerHTML = '<p class="innerP"></p>';
-        const p = innerElem.shadowRoot.querySelector('.innerP');
-        expect(p.getRootNode()).toBe(innerElem.shadowRoot);
     });
 });

@@ -6,7 +6,7 @@
  */
 
 import { DOCUMENT_FRAGMENT_NODE } from './../../env/node';
-import { getRootNodeGetter } from './../../faux-shadow/traverse';
+import { patchedGetRootNode } from './../../faux-shadow/traverse';
 
 /**
 @license
@@ -20,7 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 export function pathComposer(startNode: Node, composed: boolean): Node[] {
     const composedPath: HTMLElement[] = [];
     let current = startNode;
-    const startRoot = (startNode as any) === window ? window : getRootNodeGetter.call(startNode);
+    const startRoot = (startNode as any) === window ? window : patchedGetRootNode.call(startNode);
     while (current) {
         composedPath.push(current as HTMLElement);
         if ((current as HTMLElement).assignedSlot) {
