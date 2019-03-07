@@ -64,15 +64,19 @@ export function getComponentRegisteredMeta(Ctor: ComponentConstructor): Componen
     return signedComponentToMetaMap.get(Ctor);
 }
 
-export function createComponent(vm: UninitializedVM, Ctor: ComponentConstructor) {
+export function createComponent(uninitializedVm: UninitializedVM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(
+            uninitializedVm && 'cmpRoot' in uninitializedVm,
+            `${uninitializedVm} is not a vm.`
+        );
     }
-    // create the component instance
-    invokeComponentConstructor(vm, Ctor);
 
-    const initialized = vm as VM;
-    if (isUndefined(initialized.component)) {
+    // create the component instance
+    invokeComponentConstructor(uninitializedVm, Ctor);
+
+    const initializedVm = uninitializedVm;
+    if (isUndefined(initializedVm.component)) {
         throw new ReferenceError(
             `Invalid construction for ${Ctor}, you must extend LightningElement.`
         );

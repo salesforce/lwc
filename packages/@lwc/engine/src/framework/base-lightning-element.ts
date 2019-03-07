@@ -158,7 +158,7 @@ export function BaseLightningElement(this: ComponentInterface) {
     const vm = vmBeingConstructed;
     const { elm, cmpRoot, uid } = vm;
     const component = this;
-    (vm as VM).component = component;
+    vm.component = component;
     // interaction hooks
     // We are intentionally hiding this argument from the formal API of LWCElement because
     // we don't want folks to know about it just yet.

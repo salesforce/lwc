@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { VM, UninitializedVM } from './vm';
+import { UninitializedVM } from './vm';
 
 import { tagNameGetter } from '../env/element';
 import { StringToLowerCase, isUndefined } from '../shared/language';
@@ -32,7 +32,7 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(phase: string, vm: VM | UninitializedVM): string {
+function getMarkName(phase: string, vm: UninitializedVM): string {
     return `<${StringToLowerCase.call(tagNameGetter.call(vm.elm))} (${vm.uid})> - ${phase}`;
 }
 
@@ -55,13 +55,13 @@ function noop() {
 
 export const startMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    : function(phase: MeasurementPhase, vm: UninitializedVM) {
           const markName = getMarkName(phase, vm);
           start(markName);
       };
 export const endMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: MeasurementPhase, vm: VM | UninitializedVM) {
+    : function(phase: MeasurementPhase, vm: UninitializedVM) {
           const markName = getMarkName(phase, vm);
           end(markName, markName);
       };
@@ -70,13 +70,13 @@ export const endMeasure = !isUserTimingSupported
 // the VM is used to create unique mark names at each level.
 export const startGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    : function(phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           start(markName);
       };
 export const endGlobalMeasure = !isUserTimingSupported
     ? noop
-    : function(phase: GlobalMeasurementPhase, vm?: VM) {
+    : function(phase: GlobalMeasurementPhase, vm?: UninitializedVM) {
           const markName = isUndefined(vm) ? phase : getMarkName(phase, vm);
           end(phase, markName);
       };

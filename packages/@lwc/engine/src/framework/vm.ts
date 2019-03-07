@@ -13,7 +13,6 @@ import {
     clearReactiveListeners,
     ComponentConstructor,
     markComponentAsDirty,
-    ErrorCallback,
 } from './component';
 import { hasDynamicChildren } from './patch';
 import {
@@ -228,7 +227,7 @@ export function createVM(
         mode,
         def,
         owner,
-        elm: elm as HTMLElement,
+        elm,
         data: EmptyObject,
         context: create(null),
         cmpTemplate: undefined,
@@ -660,13 +659,13 @@ export function allocateInSlot(vm: VM, children: VNodes) {
         );
     }
     const { cmpSlots: oldSlots } = vm;
-    const cmpSlots = (vm.cmpSlots = create(null) as SlotSet);
+    const cmpSlots = (vm.cmpSlots = create(null));
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
             continue;
         }
-        const data = vnode.data as VNodeData;
+        const { data } = vnode;
         const slotName = ((data.attrs && data.attrs.slot) || '') as string;
         const vnodes: VNodes = (cmpSlots[slotName] = cmpSlots[slotName] || []);
         // re-keying the vnodes is necessary to avoid conflicts with default content for the slot
@@ -729,15 +728,14 @@ export function runWithBoundaryProtection(
                 throw error; // eslint-disable-line no-unsafe-finally
             }
             resetShadowRoot(vm); // remove offenders
-            const { errorCallback } = errorBoundaryVm.def;
+
             if (process.env.NODE_ENV !== 'production') {
                 startMeasure('errorCallback', errorBoundaryVm);
             }
+
             // error boundaries must have an ErrorCallback
-            invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [
-                error,
-                error.wcStack,
-            ]);
+            const errorCallback = errorBoundaryVm.def.errorCallback!;
+            invokeComponentCallback(errorBoundaryVm, errorCallback, [error, error.wcStack]);
 
             if (process.env.NODE_ENV !== 'production') {
                 endMeasure('errorCallback', errorBoundaryVm);
