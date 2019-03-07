@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import { attribute, combinator, Root, Selector, isCombinator } from 'postcss-selector-parser';
 
 import isDirPseudoClass from '../utils/is-dir-pseudo-class';
