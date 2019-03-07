@@ -24,7 +24,6 @@ import { RenderAPI } from './api';
 import { Context } from './context';
 import { SlotSet, VM, resetShadowRoot } from './vm';
 import { EmptyArray } from './utils';
-import { ComponentInterface } from './component';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
     evaluateCSS,
@@ -96,7 +95,8 @@ function validateFields(vm: VM, html: Template) {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const component = vm.component as ComponentInterface;
+    const { component } = vm;
+
     // validating identifiers used by template that should be provided by the component
     const { ids = [] } = html;
     forEach.call(ids, (propName: string) => {
