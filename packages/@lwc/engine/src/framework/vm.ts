@@ -84,10 +84,12 @@ export interface UninitializedVM {
     data: VNodeData;
     children: VNodes;
     velements: VCustomElement[];
+    cmpTemplate?: Template;
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
     cmpRoot: ShadowRoot;
+    component?: ComponentInterface;
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
@@ -105,7 +107,6 @@ export interface UninitializedVM {
 }
 
 export interface VM extends UninitializedVM {
-    cmpState: Record<string, any>;
     cmpTemplate: Template;
     component: ComponentInterface;
 }
@@ -214,7 +215,7 @@ export function createVM(
     };
     uid += 1;
     idx += 1;
-    const vm: UninitializedVM = {
+    const uninitializedVm: UninitializedVM = {
         uid,
         // component creation index is defined once, and never reset, it can
         // be preserved from one insertion to another without any issue
@@ -230,6 +231,7 @@ export function createVM(
         elm: elm as HTMLElement,
         data: EmptyObject,
         context: create(null),
+        cmpTemplate: undefined,
         cmpProps: create(null),
         cmpTrack: create(null),
         cmpSlots: fallback ? create(null) : undefined,
@@ -237,6 +239,7 @@ export function createVM(
         callHook,
         setHook,
         getHook,
+        component: undefined,
         children: EmptyArray,
         velements: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
@@ -244,16 +247,17 @@ export function createVM(
     };
 
     if (process.env.NODE_ENV !== 'production') {
-        vm.toString = (): string => {
-            return `[object:vm ${def.name} (${vm.idx})]`;
+        uninitializedVm.toString = (): string => {
+            return `[object:vm ${def.name} (${uninitializedVm.idx})]`;
         };
     }
-    // create component instance associated to the vm and the element
-    createComponent(vm, Ctor);
 
-    const initialized = vm as VM;
+    // create component instance associated to the vm and the element
+    createComponent(uninitializedVm, Ctor);
+
     // link component to the wire service
-    linkComponent(initialized);
+    const initializedVm = uninitializedVm as VM;
+    linkComponent(initializedVm);
 }
 
 function rehydrate(vm: VM) {
