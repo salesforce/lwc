@@ -45,7 +45,15 @@ const BUCKET =
     process.env.RELEASE_BUCKET_NAME ||
     process.env.BUCKETEER_BUCKET_NAME ||
     process.env.AWS_BUCKET_NAME;
-const TEN_YEARS = 1000 * 60 * 60 * 24 * 365 * 10;
+
+let RELEASE_TTL;
+if (process.env.RELEASE_TTL) {
+    RELEASE_TTL = process.env.RELEASE_TTL;
+} else if (process.env.CI && process.env.CIRCLE_BRANCH === 'master') {
+    RELEASE_TTL = 1000 * 60 * 60 * 24 * 365 * 10; // 10 years.
+} else {
+    RELEASE_TTL = 1000 * 60 * 60 * 24 * 30; // 30 days.
+}
 
 const S3 = new AWS.S3(CONFIG);
 const PREFIX = 'public';
@@ -69,7 +77,7 @@ function pushPackage({ sha, packageName, packageTar }) {
                 Bucket: BUCKET,
                 Key: url,
                 Body: fs.readFileSync(packageTar),
-                Expires: new Date(Date.now() + TEN_YEARS),
+                Expires: new Date(Date.now() + RELEASE_TTL),
                 ContentType: lookup(url) || undefined,
             },
             function(err) {
