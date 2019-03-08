@@ -21,7 +21,6 @@ import {
     defineProperties,
 } from '../shared/language';
 import { getCustomElementVM } from './vm';
-import { ComponentInterface } from './component';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
@@ -37,7 +36,7 @@ function createGetter(key: string) {
         fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
             const vm = getCustomElementVM(this);
             const { getHook } = vm;
-            return getHook(vm.component as ComponentInterface, key);
+            return getHook(vm.component, key);
         };
     }
     return fn;
@@ -49,7 +48,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
             const vm = getCustomElementVM(this);
             const { setHook } = vm;
-            setHook(vm.component as ComponentInterface, key, newValue);
+            setHook(vm.component, key, newValue);
         };
     }
     return fn;
@@ -59,8 +58,8 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
     return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { callHook, component } = vm;
-        const fn = (component as ComponentInterface)[methodName];
-        return callHook(vm.component as ComponentInterface, fn, ArraySlice.call(arguments));
+        const fn = component[methodName];
+        return callHook(vm.component, fn, ArraySlice.call(arguments));
     };
 }
 
