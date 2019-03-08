@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": ":dir() pseudo class expects \"ltr\" or \"rtl\" for value, but received \"right-to-left\".",
+    "column": 1,
+    "line": 1
+}

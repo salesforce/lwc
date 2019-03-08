@@ -14,6 +14,7 @@ import validateIdSelectors from './no-id-selectors/validate';
 import transformImport from './css-import/transform';
 import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
 import transformCustomProperties from './custom-properties/transform';
+import transformDirPseudoClass from './dir-pseudo-class/transform';
 
 export type VarTransformer = (name: string, fallback: string) => string;
 
@@ -34,7 +35,9 @@ function shouldTransformSelector(rule: Rule) {
 function selectorProcessorFactory(config: PluginConfig, transformConfig: SelectorScopingConfig) {
     return postCssSelector(root => {
         validateIdSelectors(root);
+
         transformSelectorScoping(root, transformConfig);
+        transformDirPseudoClass(root);
     }) as Processor;
 }
 
