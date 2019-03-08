@@ -291,9 +291,6 @@ workflows:
       - push_canary_npm_artifacts:
           requires:
             - build
-          filters:
-            branches:
-              only: master
 
       - test_integration:
           requires:
