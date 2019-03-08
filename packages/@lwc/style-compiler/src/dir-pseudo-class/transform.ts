@@ -6,7 +6,7 @@
  */
 import { attribute, combinator, Root, Selector, isCombinator } from 'postcss-selector-parser';
 
-import isDirPseudoClass from '../utils/is-dir-pseudo-class';
+import { isDirPseudoClass } from '../utils/rtl';
 
 function isValidDirValue(value: string): boolean {
     return value === 'ltr' || value === 'rtl';
@@ -23,7 +23,7 @@ export default function(root: Root) {
             const value = node.nodes.toString().trim();
             if (!isValidDirValue(value)) {
                 throw root.error(
-                    `:dir() pseudo class expect "ltr" or "rtl" for value, but received "${value}".`,
+                    `:dir() pseudo class expects "ltr" or "rtl" for value, but received "${value}".`,
                     {
                         index: node.sourceIndex,
                         word: node.value,
