@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.35.12...v) (2019-03-06)
+# [](https://github.com/salesforce/lwc/compare/v0.36.0...v) (2019-03-08)
+
+
+### Bug Fixes
+
+* include fragment only urls when scoping idrefs ([#1085](https://github.com/salesforce/lwc/issues/1085)) ([4d54d08](https://github.com/salesforce/lwc/commit/4d54d08))
+* **babel-plugin-component:** validate wire adapter import ([#1096](https://github.com/salesforce/lwc/issues/1096)) ([e3525d5](https://github.com/salesforce/lwc/commit/e3525d5))
+* patch behavior of Node.prototype.getRootNode ([#1083](https://github.com/salesforce/lwc/issues/1083)) ([9f998e8](https://github.com/salesforce/lwc/commit/9f998e8))
+
+
+### Features
+
+* **style-compiler:** add support for :dir pseudo class ([#1099](https://github.com/salesforce/lwc/issues/1099)) ([fe3206c](https://github.com/salesforce/lwc/commit/fe3206c))
+
+
+### Performance Improvements
+
+* **engine:** optimize vm object to initialize all the fields in advance ([#1098](https://github.com/salesforce/lwc/issues/1098)) ([8b0f9d3](https://github.com/salesforce/lwc/commit/8b0f9d3))
+
+
+
+<a name="0.36.0"></a>
+# [0.36.0](https://github.com/salesforce/lwc/compare/v0.35.12...v0.36.0) (2019-03-06)
 
 
 ### Bug Fixes
