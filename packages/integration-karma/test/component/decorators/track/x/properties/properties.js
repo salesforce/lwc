@@ -14,6 +14,9 @@ export default class Properties extends LightningElement {
         },
     };
 
+    @track
+    array = [1, 2, 3];
+
     @api
     mutateCmp(cb) {
         cb(this);
