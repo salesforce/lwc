@@ -83,10 +83,7 @@ describe('properties', () => {
             elm.mutateCmp(cmp => {
                 cmp.publicProp = 1;
             });
-        }).toThrowError(
-            Error,
-            /Invalid mutation: Cannot set "x" on "\[object Object\]". "\[object Object\]" is read-only./
-        );
+        }).toThrowError();
     });
 
     it('throws an error when attempting a property of a public property', () => {
@@ -98,10 +95,7 @@ describe('properties', () => {
             elm.mutateCmp(cmp => {
                 cmp.publicProp.x = 1;
             });
-        }).toThrowError(
-            Error,
-            /Invalid mutation: Cannot set "x" on "\[object Object\]". "\[object Object\]" is read-only./
-        );
+        }).toThrowError();
     });
 });
 
