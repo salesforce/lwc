@@ -3,7 +3,7 @@ import { createElement } from 'test-utils';
 import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';
 
-it('rerender the component when a track property is updated - literal', () => {
+it('rerenders the component when a track property is updated - literal', () => {
     const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
@@ -15,7 +15,7 @@ it('rerender the component when a track property is updated - literal', () => {
     });
 });
 
-it('rerender the component when a track property is updated - object', () => {
+it('rerenders the component when a track property is updated - object', () => {
     const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
@@ -27,7 +27,7 @@ it('rerender the component when a track property is updated - object', () => {
     });
 });
 
-it('rerender the component when a track property is updated - nested object', () => {
+it('rerenders the component when a track property is updated - nested object', () => {
     const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
@@ -48,4 +48,43 @@ it('throws when updating a track property during render', () => {
         Error,
         /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of \[.+\]\.prop/
     );
+});
+
+it('should support freezing tracked property', () => {
+    const elm = createElement('x-properties', { is: Properties });
+    document.body.appendChild(elm);
+
+    elm.mutateCmp(cmp => {
+        cmp.obj = { value: 1 };
+        Object.freeze(cmp.obj);
+    });
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
+    });
+});
+
+it('rerenders the component when a track property is deleted', () => {
+    const elm = createElement('x-properties', { is: Properties });
+    document.body.appendChild(elm);
+
+    elm.mutateCmp(cmp => {
+        delete cmp.obj.value;
+    });
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('');
+    });
+});
+
+it('rerenders the component when a track property is defined using Object.defineProperty', () => {
+    const elm = createElement('x-properties', { is: Properties });
+    document.body.appendChild(elm);
+
+    elm.mutateCmp(cmp => {
+        Object.defineProperty(cmp.obj, 'value', {
+            value: 1,
+        });
+    });
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
+    });
 });
