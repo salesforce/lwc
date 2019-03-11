@@ -3,6 +3,7 @@ import { createElement } from 'test-utils';
 import Properties from 'x/properties';
 import ConstructorPropertyAccess from 'x/constructorPropertyAccess';
 import ManualMutation from 'x/manualMutation';
+import Mutate from 'x/mutate';
 import GetterSetter from 'x/getterSetter';
 import ConstructorGetterAccess from 'x/constructorGetterAccess';
 import Reactivity from 'x/reactivity';
@@ -70,6 +71,37 @@ describe('properties', () => {
         return Promise.resolve().then(() => {
             expect(elm.getRenderCount()).toBe(1);
         });
+    });
+
+    // TODO - #1105 Engine doesn't throw when mutation a public property
+    xit('throws an error when attempting to mutate a public property', () => {
+        const elm = createElement('x-mutate', { is: Mutate });
+        elm.publicProp = 0;
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.mutateCmp(cmp => {
+                cmp.publicProp = 1;
+            });
+        }).toThrowError(
+            Error,
+            /Invalid mutation: Cannot set "x" on "\[object Object\]". "\[object Object\]" is read-only./
+        );
+    });
+
+    it('throws an error when attempting a property of a public property', () => {
+        const elm = createElement('x-mutate', { is: Mutate });
+        elm.publicProp = { x: 0 };
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.mutateCmp(cmp => {
+                cmp.publicProp.x = 1;
+            });
+        }).toThrowError(
+            Error,
+            /Invalid mutation: Cannot set "x" on "\[object Object\]". "\[object Object\]" is read-only./
+        );
     });
 });
 
