@@ -45,37 +45,38 @@ testDisconnectSlot('Node.insertBefore', elm => {
     ul.insertBefore(elm, secondLi);
 });
 
-/* disconnectedCallback not invoked in these cases #1102
-testDisconnectSlot('ChildNode.remove', elm => {
-    document.body.appendChild(elm);
-    elm.remove();
-});
+xdescribe('#1102 - disconnectedCallback should be invoked for ChildNode APIs', () => {
+    testDisconnectSlot('ChildNode.remove', elm => {
+        document.body.appendChild(elm);
+        elm.remove();
+    });
 
-testDisconnectSlot('ChildNode.replaceWith', elm => {
-    const newChild = document.createElement('div');
-    document.body.appendChild(elm);
-    elm.replaceWith(newChild);
-});
+    testDisconnectSlot('ChildNode.replaceWith', elm => {
+        const newChild = document.createElement('div');
+        document.body.appendChild(elm);
+        elm.replaceWith(newChild);
+    });
 
-testDisconnectSlot('ChildNode.after', elm => {
-    const container = document.createElement('div');
-    document.body.appendChild(elm);
-    document.body.appendChild(container);
-    container.innerHTML = '<p></p>';
-    const p = container.querySelector('p');
-    // Disconnect and reattach element to another part of tree
-    p.after(elm);
-});
+    testDisconnectSlot('ChildNode.after', elm => {
+        const container = document.createElement('div');
+        document.body.appendChild(elm);
+        document.body.appendChild(container);
+        container.innerHTML = '<p></p>';
+        const p = container.querySelector('p');
+        // Disconnect and reattach element to another part of tree
+        p.after(elm);
+    });
 
-testDisconnectSlot('ChildNode.before', elm => {
-    const container = document.createElement('div');
-    document.body.appendChild(elm);
-    document.body.appendChild(container);
-    container.innerHTML = '<p></p>';
-    const p = container.querySelector('p');
-    // Disconnect and reattach element to another part of tree
-    p.before(elm);
-}); */
+    testDisconnectSlot('ChildNode.before', elm => {
+        const container = document.createElement('div');
+        document.body.appendChild(elm);
+        document.body.appendChild(container);
+        container.innerHTML = '<p></p>';
+        const p = container.querySelector('p');
+        // Disconnect and reattach element to another part of tree
+        p.before(elm);
+    });
+});
 
 describe('disconnectedCallback for host with slots', () => {
     let parentDisconnectSpy;
@@ -85,6 +86,7 @@ describe('disconnectedCallback for host with slots', () => {
 
     beforeAll(() => {
         // Ignore the engine logging about passing slot content to a component that does not accept slot
+        // These should become unnecessary when #869 is fixed
         spyOn(console, 'group');
         spyOn(console, 'log');
         spyOn(console, 'groupEnd');
