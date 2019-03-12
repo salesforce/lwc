@@ -18,8 +18,6 @@ import {
     assign,
     freeze,
     create,
-    ArrayIndexOf,
-    ArrayPush,
     getOwnPropertyNames,
     getPrototypeOf,
     isNull,
@@ -27,6 +25,7 @@ import {
     ArrayReduce,
     isUndefined,
     getOwnPropertyDescriptor,
+    isFunction,
 } from '../shared/language';
 import { getInternalField } from '../shared/fields';
 import { getAttrNameFromPropName } from './attributes';
@@ -84,31 +83,12 @@ function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstr
     return proto as ComponentConstructor;
 }
 
-function isElementComponent(Ctor: any, subclassComponentName, protoSet?: any[]): boolean {
-    protoSet = protoSet || [];
-    if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
-        return false; // null, undefined, or circular prototype definition
-    }
-    const proto = getCtorProto(Ctor, subclassComponentName);
-    if ((proto as any) === BaseLightningElement) {
-        return true;
-    }
-    getComponentDef(proto, subclassComponentName); // ensuring that the prototype chain is already expanded
-    ArrayPush.call(protoSet, Ctor);
-    return isElementComponent(proto, subclassComponentName, protoSet);
-}
-
 function createComponentDef(
     Ctor: ComponentConstructor,
     meta: ComponentMeta,
     subclassComponentName: string
 ): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            isElementComponent(Ctor, subclassComponentName),
-            `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
-        );
-
         // local to dev block
         const ctorName = Ctor.name;
         // Removing the following assert until https://bugs.webkit.org/show_bug.cgi?id=190140 is fixed.
@@ -191,8 +171,32 @@ function createComponentDef(
     return def;
 }
 
-export function isComponentConstructor(Ctor: any): boolean {
-    return isElementComponent(Ctor, Ctor.name);
+export function isComponentConstructor(ctor: any): ctor is ComponentConstructor {
+    if (!isFunction(ctor)) {
+        return false;
+    }
+
+    // Fast path: LightningElement is part of the prototype chain of the constructor.
+    if (ctor.prototype instanceof BaseLightningElement) {
+        return true;
+    }
+
+    // Slow path: LightningElement is not part of the prototype chain of the constructor, we need
+    // climb up the constructor prototype chain to check in case there are circular dependencies
+    // to resolve.
+    let current = ctor;
+    do {
+        if (isCircularModuleDependency(current)) {
+            current = resolveCircularModuleDependency(current);
+        }
+
+        if (current === BaseLightningElement) {
+            return true;
+        }
+    } while (!isNull(current) && (current = getPrototypeOf(current)));
+
+    // Finally return false if the LightningElement is not part of the prototype chain.
+    return false;
 }
 
 function getOwnValue(o: any, key: string): any | undefined {
@@ -200,26 +204,31 @@ function getOwnValue(o: any, key: string): any | undefined {
     return d && d.value;
 }
 
-export function getComponentDef(
-    Ctor: ComponentConstructor,
-    subclassComponentName?: string
-): ComponentDef {
+export function getComponentDef(Ctor: any, subclassComponentName?: string): ComponentDef | null {
     let def = CtorToDefMap.get(Ctor);
-    if (def) {
-        return def;
+
+    if (isUndefined(def)) {
+        if (!isComponentConstructor(Ctor)) {
+            throw new TypeError(
+                `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
+            );
+        }
+
+        let meta = getComponentRegisteredMeta(Ctor);
+        if (isUndefined(meta)) {
+            // TODO: remove this workaround:
+            // this is temporary until
+            // all tests are updated to call registerComponent:
+            meta = {
+                template: undefined,
+                name: Ctor.name,
+            };
+        }
+
+        def = createComponentDef(Ctor, meta, subclassComponentName || Ctor.name);
+        CtorToDefMap.set(Ctor, def);
     }
-    let meta = getComponentRegisteredMeta(Ctor);
-    if (isUndefined(meta)) {
-        // TODO: remove this workaround:
-        // this is temporary until
-        // all tests are updated to call registerComponent:
-        meta = {
-            template: undefined,
-            name: Ctor.name,
-        };
-    }
-    def = createComponentDef(Ctor, meta, subclassComponentName || Ctor.name);
-    CtorToDefMap.set(Ctor, def);
+
     return def;
 }
 

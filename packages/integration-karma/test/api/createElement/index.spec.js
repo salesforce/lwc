@@ -1,10 +1,14 @@
-import { LightningElement, createElement } from 'lwc';
+import { createElement } from 'lwc';
 
-class Component extends LightningElement {}
+import Test from 'x/test';
+import ShadowRootGetter from 'x/shadowRootGetter';
 
 function testInvalidOptions(type, option) {
     it(`throws a TypeError if option is a ${type}`, () => {
-        expect(() => createElement('x-component', option)).toThrowError(TypeError);
+        expect(() => createElement('x-component', option)).toThrowError(
+            TypeError,
+            /"createElement" function expects an object as second parameter but received ".+"\./
+        );
     });
 }
 
@@ -12,24 +16,39 @@ testInvalidOptions('undefined', undefined);
 testInvalidOptions('null', null);
 testInvalidOptions('String', 'x-component');
 testInvalidOptions('Class not extending LightningElement', class Component {});
-testInvalidOptions('Object without the is property', {});
+
+function testInvalidIsValue(type, isValue) {
+    it(`throws a TypeError if option.is is a ${type}`, () => {
+        expect(() => createElement('x-component', { is: isValue })).toThrowError(
+            TypeError,
+            /.+ is not a valid component constructor, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
+        );
+    });
+}
+
+testInvalidIsValue('undefined', undefined);
+testInvalidIsValue('null', null);
+testInvalidIsValue('String', 'x-component');
+testInvalidIsValue('Function', function() {});
+testInvalidIsValue('Class not extending LightningElement', class Component {});
 
 it('returns an HTMLElement', () => {
-    const elm = createElement('x-component', { is: Component });
+    const elm = createElement('x-component', { is: Test });
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
 it('should create an element with a synthetic shadow root by default', () => {
-    const elm = createElement('x-component', { is: Component });
+    const elm = createElement('x-component', { is: Test });
     expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
 });
 
-it('supports component constructors in circular dependency', () => {
+fit('supports component constructors in circular dependency', () => {
     function Circular() {
-        return Component;
+        return Test;
     }
     Circular.__circular__ = true;
 
+    debugger;
     const elm = createElement('x-component', { is: Circular });
     expect(elm instanceof HTMLElement).toBe(true);
 });
@@ -37,7 +56,7 @@ it('supports component constructors in circular dependency', () => {
 if (process.env.NATIVE_SHADOW) {
     it('should create an element with a native shadow root if fallback is false', () => {
         const elm = createElement('x-component', {
-            is: Component,
+            is: Test,
             fallback: false,
         });
 
@@ -47,28 +66,22 @@ if (process.env.NATIVE_SHADOW) {
 
     it('should create a shadowRoot in open mode when mode in not specified', () => {
         const elm = createElement('x-component', {
-            is: Component,
+            is: Test,
             fallback: false,
         });
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
     it('should create a shadowRoot in closed mode if the mode is passed as closed', () => {
-        // Since the shadowRoot property is not attached to the element in closed mode, we need to retrieve it by
-        // accessing the template property from the class constructor.
-        let shadowRoot;
-        class ClosedShadowComponent extends LightningElement {
-            constructor() {
-                super();
-                shadowRoot = this.template;
-            }
-        }
-
-        createElement('x-component', {
-            is: ClosedShadowComponent,
+        const elm = createElement('x-shadow-root-getter', {
+            is: ShadowRootGetter,
             fallback: false,
             mode: 'closed',
         });
+
+        // Since the shadowRoot property is not attached to the element in closed mode, we need to
+        // retrieve it by accessing the template property from the class.
+        const shadowRoot = elm.getShadowRoot();
 
         expect(shadowRoot instanceof ShadowRoot);
         expect(shadowRoot.mode).toBe('closed');
