@@ -2,6 +2,6 @@ import { LightningElement } from 'lwc';
 
 export default class AriaDynamic extends LightningElement {
     get attrValue() {
-        return 'kamogawa';
+        return 'foo';
     }
 }
