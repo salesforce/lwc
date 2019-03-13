@@ -136,9 +136,7 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                `Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`
-            );
+            }).toLogWarning('it should be an Array or an iterable Object.');
         });
     });
 
@@ -208,9 +206,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow(
-                'Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.'
-            );
+            }).toThrow('Key must be a string or number.');
         });
     });
 
@@ -229,9 +225,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                'Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.'
-            );
+            }).toLogWarning('This attribute can only be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
@@ -281,9 +275,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                'Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.'
-            );
+            }).toLogWarning('This attribute can only be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
