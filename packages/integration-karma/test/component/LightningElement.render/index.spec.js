@@ -1,6 +1,6 @@
 import { createElement } from 'test-utils';
 
-import DynamicTemplate from 'x/dynamicTemplate';
+import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
 
 function testInvalidTemplate(type, template) {
@@ -50,4 +50,25 @@ it('should associated the component stack when the invocation throws', () => {
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in render');
     expect(error.wcStack).toBe('<x-render-throw>');
+});
+
+it('supports returning a template', () => {
+    const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
+    elm.template = template1;
+    document.body.appendChild(elm);
+
+    expect(elm.shadowRoot.textContent).toBe('Template 1');
+});
+
+it('supports returning different templates', () => {
+    const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
+    elm.template = template1;
+    document.body.appendChild(elm);
+
+    expect(elm.shadowRoot.textContent).toBe('Template 1');
+
+    elm.template = template2;
+    return Promise.resolve().then(() => {
+        expect(elm.shadowRoot.textContent).toBe('Template 2');
+    });
 });
