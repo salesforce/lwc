@@ -1,4 +1,12 @@
-# lwc-integration
+# integration-tests
+
+Add tests to integration-karma instead of integration-tests unless the tests are related to
+keyboard navigation.
+
+Pro tip: `browser.keys(['Shift', 'Tab'])` keeps you in a state where the shift key is toggled so
+you may run into unexpected results unless you explicitly untoggle the shift key. The
+recommendation is to use the command `browser.keys(['Shift', 'Tab', 'Shift'])` which toggles and
+untoggles the shift key in a single command.
 
 End-to-end tests run in the browser across different modes with the option to run tests remotely on Sauce Labs.
 
