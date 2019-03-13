@@ -1,0 +1,17 @@
+<template>
+    <div class="sanjo" id={attrValue}></div>
+
+    <div>
+        <a class="anchor-fragment-url" href={fragmentUrl} data-id={fragmentUrl}>fragment url</a>
+        <a class="anchor-relative-url" href={relativeUrl} data-id={relativeUrl}>relative url</a>
+        <a class="anchor-absolute-url" href={absoluteUrl} data-id={absoluteUrl}>absolute url</a>
+    </div>
+
+    <div>
+        <map name="blackdot">
+            <area class="area-fragment-url" href={fragmentUrl} data-id={fragmentUrl} shape="circle" coords="75,75,75" />
+            <area class="area-relative-url" href={relativeUrl} data-id={relativeUrl} shape="circle" coords="75,75,75" />
+            <area class="area-absolute-url" href={absoluteUrl} data-id={absoluteUrl} shape="circle" coords="75,75,75" />
+        </map>
+    </div>
+</template>
