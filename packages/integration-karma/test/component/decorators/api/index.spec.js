@@ -73,19 +73,6 @@ describe('properties', () => {
         });
     });
 
-    // TODO - #1105 Engine doesn't throw when mutation a public property
-    xit('throws an error when attempting to mutate a public property', () => {
-        const elm = createElement('x-mutate', { is: Mutate });
-        elm.publicProp = 0;
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.mutateCmp(cmp => {
-                cmp.publicProp = 1;
-            });
-        }).toThrowError();
-    });
-
     // TODO: salesforce/observable-membrane#28 - ReadOnly membrane doesn't throw when mutating a value on JavascriptCore
     xit('throws an error when attempting a property of a public property', () => {
         const elm = createElement('x-mutate', { is: Mutate });
