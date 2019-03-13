@@ -2,6 +2,7 @@ import { createElement } from 'test-utils';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
+import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
@@ -15,34 +16,36 @@ function testDisconnectSlot(name, fn) {
     });
 }
 
-testDisconnectSlot('Node.removeChild', elm => {
-    document.body.appendChild(elm);
-    document.body.removeChild(elm);
-});
+describe('disconnectedCallback should be invoked for Node APIs', () => {
+    testDisconnectSlot('Node.removeChild', elm => {
+        document.body.appendChild(elm);
+        document.body.removeChild(elm);
+    });
 
-testDisconnectSlot('Node.replaceChild', elm => {
-    const newChild = document.createElement('div');
-    document.body.appendChild(elm);
-    document.body.replaceChild(newChild, elm);
-});
+    testDisconnectSlot('Node.replaceChild', elm => {
+        const newChild = document.createElement('div');
+        document.body.appendChild(elm);
+        document.body.replaceChild(newChild, elm);
+    });
 
-testDisconnectSlot('Node.appendChild', elm => {
-    const sibling = document.createElement('div');
-    document.body.appendChild(elm);
-    document.body.appendChild(sibling);
-    // Disconnect and reattach element to another part of tree
-    sibling.appendChild(elm);
-});
+    testDisconnectSlot('Node.appendChild', elm => {
+        const sibling = document.createElement('div');
+        document.body.appendChild(elm);
+        document.body.appendChild(sibling);
+        // Disconnect and reattach element to another part of tree
+        sibling.appendChild(elm);
+    });
 
-testDisconnectSlot('Node.insertBefore', elm => {
-    const container = document.createElement('div');
-    document.body.appendChild(elm);
-    document.body.appendChild(container);
-    container.innerHTML = '<ul><li class="first">First</li><li class="second">Second</li></ul>';
-    // Disconnect and reattach element to another part of tree
-    const ul = container.querySelector('ul');
-    const secondLi = container.querySelector('second');
-    ul.insertBefore(elm, secondLi);
+    testDisconnectSlot('Node.insertBefore', elm => {
+        const container = document.createElement('div');
+        document.body.appendChild(elm);
+        document.body.appendChild(container);
+        container.innerHTML = '<ul><li class="first">First</li><li class="second">Second</li></ul>';
+        // Disconnect and reattach element to another part of tree
+        const ul = container.querySelector('ul');
+        const secondLi = container.querySelector('second');
+        ul.insertBefore(elm, secondLi);
+    });
 });
 
 xdescribe('#1102 - disconnectedCallback should be invoked for ChildNode APIs', () => {
@@ -137,4 +140,20 @@ describe('disconnectedCallback for host with slots', () => {
             expect(slotIgnoringChildSpy).not.toHaveBeenCalled();
         });
     });
+});
+
+it('should associated the component stack when the invocation throws', () => {
+    const elm = createElement('x-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
+    document.body.appendChild(elm);
+
+    let error;
+    try {
+        document.body.removeChild(elm);
+    } catch (e) {
+        error = e;
+    }
+
+    expect(error).not.toBe(undefined);
+    expect(error.message).toBe('throw in disconnected');
+    expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
 });
