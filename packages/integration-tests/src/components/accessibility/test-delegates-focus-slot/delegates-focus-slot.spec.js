@@ -46,7 +46,7 @@ describe('Tabbing into custom element with delegates focus', () => {
     });
 
     it('should apply focus to input in shadow when tabbing backwards', function() {
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
         const activeFromDocument = browser.execute(function() {
             return document.activeElement;
         });

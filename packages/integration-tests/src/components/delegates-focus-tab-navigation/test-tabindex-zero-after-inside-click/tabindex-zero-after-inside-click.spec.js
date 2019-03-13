@@ -30,7 +30,7 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
     it('should continue delegating focus (backward)', function() {
         browser.click('.second-inside');
         browser.click('.third-outside');
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;

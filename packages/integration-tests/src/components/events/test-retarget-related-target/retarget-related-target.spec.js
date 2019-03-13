@@ -17,7 +17,7 @@ describe('Retarget relatedTarget', () => {
         browser.execute(function() {
             document.querySelector('integration-child input').focus();
         });
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
         assert.equal(browser.getText('.related-target-tabname'), 'integration-child');
     });
 });

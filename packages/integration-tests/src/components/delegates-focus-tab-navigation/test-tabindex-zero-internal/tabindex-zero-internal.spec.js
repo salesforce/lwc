@@ -28,7 +28,7 @@ describe('Internal tab navigation when tabindex 0', () => {
 
     it('should navigate (backward)', function() {
         browser.click('.second-inside');
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;

@@ -27,7 +27,7 @@ describe('Tab navigation when tabindex -1', () => {
 
     it('should skip shadow (backward)', function() {
         browser.click('.third-outside');
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;

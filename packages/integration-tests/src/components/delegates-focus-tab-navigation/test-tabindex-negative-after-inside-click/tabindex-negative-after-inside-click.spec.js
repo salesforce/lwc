@@ -29,7 +29,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
     it('should continue skipping elements (backward)', function() {
         browser.click('.second-inside');
         browser.click('.third-outside');
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;

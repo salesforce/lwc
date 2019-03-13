@@ -17,7 +17,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         const activeFromDocument = browser.execute(function() {
             return document.activeElement;
