@@ -11,10 +11,7 @@ function testInvalidTemplate(type, template) {
         // TODO: Open issue to improve error message
         expect(() => {
             document.body.appendChild(elm);
-        }).toThrowError(
-            Error,
-            /Assert Violation: evaluateTemplate\(\) second argument must be an imported template instead of .+/
-        );
+        }).toThrowError(Error);
     });
 }
 
