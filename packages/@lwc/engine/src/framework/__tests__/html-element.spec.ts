@@ -12,80 +12,6 @@ import assertLogger from '../../shared/assert';
 const emptyTemplate = compileTemplate(`<template></template>`);
 
 describe('html-element', () => {
-    describe('#tracked', () => {
-        it('should not warn if component has untracked state property', function() {
-            class MyComponent extends LightningElement {
-                state = {};
-            }
-
-            expect(() => createElement('x-foo', { is: MyComponent })).not.toLogWarning();
-        });
-        it('should not warn if component has tracked state property', function() {
-            class MyComponent extends LightningElement {
-                state = {};
-            }
-            MyComponent.track = { state: 1 };
-
-            expect(() =>
-                createElement('x-foo-tracked-state', { is: MyComponent })
-            ).not.toLogWarning();
-        });
-        it('should be mutable during construction', () => {
-            let state;
-            const o = { foo: 1, bar: 2, baz: 1 };
-            const def = class MyComponent extends LightningElement {
-                state = {
-                    foo: undefined,
-                    bar: undefined,
-                    baz: undefined,
-                };
-                constructor() {
-                    super();
-                    this.state = o;
-                    this.state.baz = 3;
-                    state = this.state;
-                }
-            };
-            def.track = { state: 1 };
-            createElement('x-foo', { is: def });
-            expect(state.foo).toBe(1);
-            expect(state.bar).toBe(2);
-            expect(state.baz).toBe(3);
-            expect(o.foo).toBe(1);
-            expect(o.bar).toBe(2);
-            expect(o.baz).toBe(3);
-            expect(o).not.toBe(state);
-        });
-        it('should accept member properties', () => {
-            let state;
-            const o = { foo: 1 };
-            const def = class MyComponent extends LightningElement {
-                state = { x: 1, y: o };
-                constructor() {
-                    super();
-                    state = this.state;
-                }
-            };
-            def.track = { state: 1 };
-            createElement('x-foo', { is: def });
-            expect({ x: 1, y: o }).toEqual(state);
-            expect(state.y).not.toBe(o);
-        });
-        it('should not throw an error when assigning observable object', function() {
-            expect.assertions(1);
-            class MyComponent extends LightningElement {
-                constructor() {
-                    super();
-                    expect(() => {
-                        this.state = {};
-                    }).not.toThrow();
-                }
-            }
-            MyComponent.track = { state: 1 };
-            createElement('x-foo', { is: MyComponent });
-        });
-    });
-
     describe('global HTML Properties', () => {
         it('should always return null', () => {
             expect.assertions(1);
@@ -593,44 +519,6 @@ describe('html-element', () => {
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
             expect(() => document.body.appendChild(elm)).not.toLogWarning();
-        });
-    });
-
-    describe('Inheritance', () => {
-        it('should inherit public getters and setters correctly', () => {
-            class MyParent extends LightningElement {
-                get foo() {
-                    return 'foo';
-                }
-                set foo(value) {}
-            }
-            MyParent.publicProps = {
-                foo: {},
-            };
-            class MyComponent extends MyParent {}
-            expect(() => {
-                createElement('getter-inheritance', { is: MyComponent });
-            }).not.toThrow();
-        });
-
-        it('should call correct inherited public setter', () => {
-            let count = 0;
-            class MyParent extends LightningElement {
-                get foo() {
-                    return 'foo';
-                }
-                set foo(value) {
-                    count += 1;
-                }
-            }
-            MyParent.publicProps = {
-                foo: {},
-            };
-            class MyComponent extends MyParent {}
-
-            const elm = createElement('getter-inheritance', { is: MyComponent });
-            elm.foo = 'bar';
-            expect(count).toBe(1);
         });
     });
 
