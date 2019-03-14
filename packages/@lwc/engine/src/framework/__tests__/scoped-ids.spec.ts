@@ -35,54 +35,6 @@ describe('scoped-ids', () => {
         );
 
         describe.skip('custom elements', () => {
-            it('should render a transformed id attribute when its value is set to a non-empty string', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return 'foo';
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const child = elm.shadowRoot.querySelector('x-child');
-                expect(child.getAttribute('id')).toEqual(expect.stringContaining('foo'));
-            });
-
-            it('should render a transformed id attribute when its value is set to a boolean value', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return true;
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const child = elm.shadowRoot.querySelector('x-child');
-                expect(child.getAttribute('id')).toEqual(expect.stringContaining('true'));
-            });
-
-            it('should not render id attribute when its value is set to `null`', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return null;
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const child = elm.shadowRoot.querySelector('x-child');
-                expect(child.getAttribute('id')).toEqual(null);
-            });
-
             it('should render expected id attribute value when its value is set to `undefined`', () => {
                 class MyComponent extends LightningElement {
                     get identifier() {
@@ -121,54 +73,6 @@ describe('scoped-ids', () => {
         });
 
         describe('native elements', () => {
-            it('should render a transformed id attribute when its value is set to a non-empty string', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return 'foo';
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const div = elm.shadowRoot.querySelector('div');
-                expect(div.getAttribute('id')).toEqual(expect.stringContaining('foo'));
-            });
-
-            it('should render a transformed id attribute when its value is set to a boolean value', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return true;
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const div = elm.shadowRoot.querySelector('div');
-                expect(div.getAttribute('id')).toEqual(expect.stringContaining('true'));
-            });
-
-            it('should not render id attribute when its value is set to `null`', () => {
-                class MyComponent extends LightningElement {
-                    get identifier() {
-                        return null;
-                    }
-                    render() {
-                        return html;
-                    }
-                }
-
-                const elm = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(elm);
-                const div = elm.shadowRoot.querySelector('div');
-                expect(div.getAttribute('id')).toEqual(null);
-            });
-
             it('should not render id attribute when its value is set to `undefined`', () => {
                 class MyComponent extends LightningElement {
                     get identifier() {
