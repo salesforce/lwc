@@ -37,7 +37,7 @@ testConnectSlot('Node.replaceChild', elm => {
     document.body.replaceChild(elm, child);
 });
 
-it('should associated the component stack when the invocation throws', () => {
+it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-connected-callback-throw', { is: ConnectedCallbackThrow });
 
     let error;

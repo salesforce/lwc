@@ -35,7 +35,7 @@ it(`throws an error if returns an invalid template`, () => {
     );
 });
 
-it('should associated the component stack when the invocation throws', () => {
+it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-render-throw', { is: RenderThrow });
 
     let error;

@@ -24,7 +24,7 @@ it('should remove existing event listeners', () => {
     expect(isInvoked).toBe(false);
 });
 
-it('should not trow when invoking in the different lifecycle hooks', () => {
+it('should not throw when invoking in the different lifecycle hooks', () => {
     expect(() => {
         const elm = createElement('x-lifecycle-hooks', { is: LifecycleHooks });
         document.body.appendChild(elm);

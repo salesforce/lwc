@@ -142,7 +142,7 @@ describe('disconnectedCallback for host with slots', () => {
     });
 });
 
-it('should associated the component stack when the invocation throws', () => {
+it('should associate the component stack when the invocation throws', () => {
     const elm = createElement('x-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
     document.body.appendChild(elm);
 
