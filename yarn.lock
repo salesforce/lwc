@@ -8413,10 +8413,10 @@ object.pick@^1.3.0:
   dependencies:
     isobject "^3.0.1"
 
-observable-membrane@0.26.0:
-  version "0.26.0"
-  resolved "http://npm.lwcjs.org/observable-membrane/-/observable-membrane-0.26.0/f4f186660b4fbd61e91001424981b63e522f948e.tgz#f4f186660b4fbd61e91001424981b63e522f948e"
-  integrity sha512-iVi2WY0l9sSuSDvXJpKd8FFx6vG2LGFa91Wd0c3gC4aRa7GhW8BByzIbqJwsOe1miQSJ02k8iFAyx2moGm7zmQ==
+observable-membrane@0.26.1:
+  version "0.26.1"
+  resolved "http://npm.lwcjs.org/observable-membrane/-/observable-membrane-0.26.1/5619a7b2f4b0414d62b3e6cc2ea65734a08cce7a.tgz#5619a7b2f4b0414d62b3e6cc2ea65734a08cce7a"
+  integrity sha512-fBxLHtd0pUFI/rKh6Dfn9fxjEgY4NkRIqlPEKa9fR28rC9CQDfQ5P+t292CtAArtXOQ1mF8Nq9m1cF52IdN8DA==
 
 on-finished@~2.3.0:
   version "2.3.0"
