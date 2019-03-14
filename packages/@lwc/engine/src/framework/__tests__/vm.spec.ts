@@ -7,7 +7,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
 import { ViewModelReflection } from '../utils';
-import { getErrorComponentStack, getComponentVM } from '../vm';
+import { getComponentVM } from '../vm';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -124,40 +124,6 @@ describe('vm', () => {
         });
     });
 
-    describe('getComponentStack', () => {
-        it('should return stack with hierarchy bottom up.', () => {
-            let vm: VM;
-            class ChildComponentCs extends LightningElement {
-                constructor() {
-                    super();
-                    vm = getComponentVM(this);
-                }
-            }
-            const html = compileTemplate(
-                `
-                <template>
-                    <x-child></x-child>
-                </template>
-            `,
-                {
-                    modules: { 'x-child': ChildComponentCs },
-                }
-            );
-            class ParentComponentCs extends LightningElement {
-                constructor() {
-                    super();
-                }
-                render() {
-                    return html;
-                }
-            }
-
-            const elm = createElement('x-parent', { is: ParentComponentCs });
-            document.body.appendChild(elm);
-
-            expect(getErrorComponentStack(vm.elm)).toBe('<x-parent>\n\t<x-child>');
-        });
-    });
     describe('slotting for slowpath', () => {
         it('should re-keyed slotted content to avoid reusing elements from default content', () => {
             const childHTML = compileTemplate(`<template>

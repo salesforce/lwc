@@ -45,49 +45,12 @@ describe('api', () => {
                 createElement('x-foo');
             }).toThrow();
         });
-
-        it('should log warning if passed style is not a string', () => {
-            const style = {
-                color: 'red',
-            };
-            const factory = function() {
-                return Foo;
-            };
-            // just to have a vm being rendered.
-            class VmRendering extends LightningElement {
-                render() {
-                    api.c('x-foo', factory, { style });
-                    return () => [];
-                }
-            }
-
-            const elm = createElement('x-vm-aux', { is: VmRendering });
-            expect(() => {
-                document.body.appendChild(elm);
-            }).toLogWarning(
-                `Invalid 'style' attribute passed to <x-foo> should be a string value, and will be ignored.`
-            );
-        });
     });
 
     describe('#h()', () => {
         it('should allow null entries in children', () => {
             const vnode = api.h('p', { key: 0 }, [null]);
             expect(vnode.children).toEqual([null]);
-        });
-
-        it('should throw if the vnode contains both a computed className and a classMap', () => {
-            expect(() => {
-                api.h(
-                    'p',
-                    {
-                        key: 0,
-                        className: 'foo',
-                        classMap: { foo: true },
-                    },
-                    []
-                );
-            }).toThrowError(/className/);
         });
 
         it('should throw for anything other than vnode and null', () => {
@@ -173,9 +136,7 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                `Invalid template iteration for value "undefined" in [object:vm VmRendering (4)], it should be an Array or an iterable Object.`
-            );
+            }).toLogWarning('it should be an Array or an iterable Object.');
         });
     });
 
@@ -245,9 +206,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toThrow(
-                'Invalid key value "[object Object]" in [object:vm Foo (8)]. Key must be a string or number.'
-            );
+            }).toThrow('Key must be a string or number.');
         });
     });
 
@@ -266,9 +225,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                'Invalid tabindex value `2` in template for [object:vm Foo (9)]. This attribute can only be set to 0 or -1.'
-            );
+            }).toLogWarning('This attribute can only be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
@@ -318,9 +275,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning(
-                'Invalid tabindex value `3` in template for [object:vm Foo (12)]. This attribute can only be set to 0 or -1.'
-            );
+            }).toLogWarning('This attribute can only be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 

@@ -1,6 +1,7 @@
 import { createElement } from 'test-utils';
 
 import Test from 'x/test';
+import LifecycleHooks from 'x/lifecycleHooks';
 import NonExistingEventListener from 'x/nonExistingEventListener';
 
 it('should remove existing event listeners', () => {
@@ -21,6 +22,14 @@ it('should remove existing event listeners', () => {
     elm.removeListener();
     elm.click();
     expect(isInvoked).toBe(false);
+});
+
+it('should not throw when invoking in the different lifecycle hooks', () => {
+    expect(() => {
+        const elm = createElement('x-lifecycle-hooks', { is: LifecycleHooks });
+        document.body.appendChild(elm);
+        document.body.removeChild(elm);
+    }).not.toThrow();
 });
 
 // TODO: #1043 inconsistent restriction between native shadow and synthetic shadow

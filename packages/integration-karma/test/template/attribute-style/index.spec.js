@@ -4,7 +4,7 @@ import Static from 'x/static';
 import Dynamic from 'x/dynamic';
 
 describe('static style attribute', () => {
-    it('simple', () => {
+    it('renders the style attribute', () => {
         const elm = createElement('x-static', { is: Static });
         document.body.appendChild(elm);
 
@@ -14,22 +14,43 @@ describe('static style attribute', () => {
     });
 });
 
-describe('dyamic style attribute', () => {
-    it('simple', () => {
-        const elm = createElement('x-dynamic', { is: Dynamic });
-        elm.dynamicStyle = 'position: absolute;';
-        document.body.appendChild(elm);
+describe('dynamic style attribute', () => {
+    function testRenderStyleAttribute(type, value, expectedValue) {
+        it(`renders the style attribute for ${type}`, () => {
+            const elm = createElement('x-dynamic', { is: Dynamic });
+            elm.dynamicStyle = value;
+            document.body.appendChild(elm);
 
-        expect(elm.shadowRoot.querySelector('div').style.position).toBe('absolute');
-    });
-
-    it('replace', () => {
-        const elm = createElement('x-dynamic', { is: Dynamic });
-        document.body.appendChild(elm);
-
-        elm.dynamicStyle = 'position: relative;';
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('div').style.position).toBe('relative');
+            expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(expectedValue);
         });
-    });
+    }
+
+    testRenderStyleAttribute('null', null, null);
+    testRenderStyleAttribute('undefined', undefined, null);
+    testRenderStyleAttribute('empty string', '', null);
+    testRenderStyleAttribute('css style string', 'position: relative;', 'position: relative;');
+
+    function testUpdateStyleAttribute(type, value, expectedValue) {
+        it(`updates the style attribute for ${type}`, () => {
+            const elm = createElement('x-dynamic', { is: Dynamic });
+            elm.dynamicStyle = 'position: relative;';
+            document.body.appendChild(elm);
+
+            expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
+                'position: relative;'
+            );
+
+            elm.dynamicStyle = value;
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
+                    expectedValue
+                );
+            });
+        });
+    }
+
+    testUpdateStyleAttribute('null', null, null);
+    testUpdateStyleAttribute('undefined', undefined, null);
+    testUpdateStyleAttribute('empty string', '', null);
+    testUpdateStyleAttribute('css style string', 'position: absolute;', 'position: absolute;');
 });
