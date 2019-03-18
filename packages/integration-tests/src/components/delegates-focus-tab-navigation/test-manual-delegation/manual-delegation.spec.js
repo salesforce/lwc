@@ -7,8 +7,7 @@
 const assert = require('assert');
 const URL = 'http://localhost:4567/manual-delegation';
 
-// Enable after fixing W-5936052
-describe.skip('Tab navigation when component passes tabindex attribute to an internal element', () => {
+describe('Tab navigation when component passes tabindex attribute to an internal element', () => {
     before(() => {
         browser.url(URL);
     });
@@ -21,7 +20,7 @@ describe.skip('Tab navigation when component passes tabindex attribute to an int
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
-            return input;
+            return input.className;
         }).value;
         assert.equal(className, 'first-inside');
     });
