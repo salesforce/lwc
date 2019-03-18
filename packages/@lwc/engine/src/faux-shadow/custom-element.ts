@@ -70,12 +70,22 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             return descriptor!.get!.call(this);
         }
         set tabIndex(this: HTMLElement, value: any) {
-            // get the original value from the element before changing it, just in case
-            // the custom element is doing something funky. we only really care about
-            // the actual changes in the DOM.
-            const hasAttr = hasAttribute.call(this, 'tabindex');
-            const originalValue = tabIndexGetter.call(this);
-            // run the super logic, which bridges the setter to the component
+            // NOTE: This tabIndex setter might be confusing unless it is
+            // understood that HTML elements have default tabIndex property
+            // values. Specifically, natively focusable elements have a default
+            // tabIndex value of 0 and all other elements default to a tabIndex
+            // value of -1 so in many cases we need to check whether or not the
+            // tabindex attribute value is actually rendered when deciding to
+            // add/remove listeners. For example, we need to add a listener when
+            // <x-foo> becomes <x-foo tabindex="-1"> but the tabIndex property
+            // value is -1 both before and after so it isn't enough to check
+            // whether the value has changed.
+
+            const delegatesFocus = isDelegatingFocus(this);
+
+            // Record the state of things before invoking component setter.
+            const prevValue = tabIndexGetter.call(this);
+            const prevHasAttr = hasAttribute.call(this, 'tabindex');
 
             // NOTE: Technically this should be `super.tabIndex` however Typescript
             // has a known bug while transpiling down to ES5
@@ -83,25 +93,53 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
             descriptor!.set!.call(this, value);
 
-            // Check if the value from the dom has changed
-            const newValue = tabIndexGetter.call(this);
-            if (!hasAttr || originalValue !== newValue) {
-                // Value has changed
-                if (newValue === -1) {
-                    // add the magic to skip this element
-                    handleFocusIn(this);
-                } else if (newValue === 0 && isDelegatingFocus(this)) {
-                    // Listen for focus if the new tabIndex is 0, and we are delegating focus
-                    handleFocus(this);
-                } else {
-                    // TabIndex is set to 0, but we aren't delegating focus, so we can ignore everything
+            // Record the state of things after invoking component setter.
+            const currValue = tabIndexGetter.call(this);
+            const currHasAttr = hasAttribute.call(this, 'tabindex');
+
+            const didValueChange = prevValue !== currValue;
+
+            // If the tabindex attribute is initially rendered, we can assume
+            // that this setter has previously executed and we have already
+            // added an event listener. Remove this listener if either the
+            // tabIndex property value has changed or if the component no longer
+            // renders a tabindex attribute.
+            if (prevHasAttr && (didValueChange || isFalse(currHasAttr))) {
+                if (prevValue === -1) {
                     ignoreFocusIn(this);
+                }
+                if (prevValue === 0 && delegatesFocus) {
                     ignoreFocus(this);
                 }
-            } else if (originalValue === -1) {
-                // remove the magic
-                ignoreFocusIn(this);
-                ignoreFocus(this);
+            }
+
+            // If a tabindex attribute was not rendered after invoking its
+            // setter, it means the component is taking control. Do nothing.
+            if (!currHasAttr) {
+                return;
+            }
+
+            // If the tabindex attribute is initially rendered we can assume
+            // that this setter has already executed before and we have
+            // previously added an event listener. If the tabindex attribute is
+            // still rendered after invoking the setter and the tabIndex
+            // property value has not changed, we don't need to do any work.
+            if (prevHasAttr && currHasAttr && isFalse(didValueChange)) {
+                return;
+            }
+
+            // At this point we know that a tabindex attribute was rendered
+            // after invoking the setter and that either:
+            // 1) This is the first time this setter is being invoked.
+            // 2) This is not the first time this setter is being invoked and the value is changing.
+            // We need to add the appropriate listeners in either case.
+            if (currValue === -1) {
+                // Add the magic to skip the shadow tree
+                handleFocusIn(this);
+            }
+            if (currValue === 0 && delegatesFocus) {
+                // Add the magic to skip the host element
+                handleFocus(this);
             }
         }
         blur(this: HTMLElement) {
