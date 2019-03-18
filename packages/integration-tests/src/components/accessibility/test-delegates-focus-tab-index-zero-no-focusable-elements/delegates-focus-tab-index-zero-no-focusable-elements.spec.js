@@ -27,7 +27,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
             'Second button should be focused'
         );
 
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         browser.waitUntil(
             () => {

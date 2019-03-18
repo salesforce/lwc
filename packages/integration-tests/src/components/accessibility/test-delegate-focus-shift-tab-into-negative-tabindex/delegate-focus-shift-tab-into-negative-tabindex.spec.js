@@ -16,7 +16,7 @@ describe('Delegates focus', () => {
         browser.keys(['Tab']); // tab into first anchor
         browser.keys(['Tab']); // tab into second anchor
         browser.keys(['Tab']); // tab over integration-child
-        browser.keys(['Shift', 'Tab']); // tab backwards over integration-child
+        browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child
         const active = browser.execute(function() {
             return document.querySelector(
                 'integration-delegate-focus-shift-tab-into-negative-tabindex'

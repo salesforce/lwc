@@ -43,7 +43,7 @@ describe('Delegate focus with tabindex 0', () => {
             'Second button should be focused'
         );
 
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         browser.waitUntil(
             () => {
@@ -57,7 +57,7 @@ describe('Delegate focus with tabindex 0', () => {
             'Input should be focused'
         );
 
-        browser.keys(['Tab']); // This is a backwards tab, because 'Shift' from previous keys is not released
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         browser.waitUntil(
             () => {

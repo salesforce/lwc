@@ -30,7 +30,7 @@ describe('Tab navigation without tabindex', () => {
     it('should delegate focus (backward)', function() {
         browser.click('.third-outside');
         browser.click('.third-outside');
-        browser.keys(['Shift', 'Tab']);
+        browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;

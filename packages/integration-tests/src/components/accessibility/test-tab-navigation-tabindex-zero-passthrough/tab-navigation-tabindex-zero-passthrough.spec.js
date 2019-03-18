@@ -5,29 +5,29 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/tabindex-negative-internal';
+const URL = 'http://localhost:4567/tab-navigation-tabindex-zero-passthrough';
 
-describe('Internal tab navigation when tabindex -1', () => {
+// Enable after fixing W-5936052
+describe.skip('Tab navigation when component passes tabindex attribute to an internal element', () => {
     before(() => {
         browser.url(URL);
     });
 
-    it('should navigate (forward)', function() {
-        browser.click('.second-inside');
+    it('should focus on internal element when tabbing forward from a sibling element', function() {
+        browser.click('.second-outside');
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
-            return input.className;
+            return input;
         }).value;
-
-        assert.equal(className, 'third-inside');
+        assert.equal(className, 'first-inside');
     });
 
-    it('should navigate (backward)', function() {
-        browser.click('.second-inside');
+    it('should focus on internal element when tabbing backwards from a sibling element', function() {
+        browser.click('.third-outside');
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
@@ -36,7 +36,6 @@ describe('Internal tab navigation when tabindex -1', () => {
             var input = child.shadowRoot.activeElement;
             return input.className;
         }).value;
-
-        assert.equal(className, 'first-inside');
+        assert.equal(className, 'third-inside');
     });
 });
