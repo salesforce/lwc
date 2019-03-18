@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/tab-navigation-tabindex-zero-passthrough';
+const URL = 'http://localhost:4567/manual-delegation';
 
 // Enable after fixing W-5936052
 describe.skip('Tab navigation when component passes tabindex attribute to an internal element', () => {
