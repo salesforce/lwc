@@ -7,7 +7,7 @@
     },
 
     "plugins": ["@typescript-eslint"],
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "airbnb-base"],
 
     "env": {
         "es6": true
@@ -18,7 +18,16 @@
         "@typescript-eslint/no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_" }
-        ]
+        ],
+        "indent" : ["error", 4],
+        "no-useless-constructor": "off",
+        "comma-dangle": ["error", {
+            "arrays": "ignore",
+            "objects": "ignore",
+            "imports": "never",
+            "exports": "never",
+            "functions": "ignore"
+        }]
     },
 
     "overrides": [
