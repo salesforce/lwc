@@ -165,6 +165,121 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        'single @api getter on one class member should not conflict with @api setter on another',
+        `
+        import { api } from 'lwc';
+        export default class Test {
+            @api
+            get first() { return null; }
+
+            @api
+            get second() {
+                return this.s;
+            }
+            set second(value) {
+                this.s = value;
+            }
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    
+                    class Test {
+                        get first() {
+                            return null;
+                        }
+                        
+                        get second() {
+                            return this.s;
+                        }
+                        
+                        set second(value) {
+                            this.s = value;
+                        }
+                    }
+                    
+                    _registerDecorators(Test, {
+                    publicProps: {
+                        first: {
+                            config: 1
+                        },
+                        second: {
+                            config: 3
+                        }
+                    }
+                    });
+                    
+                    export default _registerComponent(Test, {
+                    tmpl: _tmpl
+                    });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
+        '@api setter on one class member should not conflict with @api getter on another',
+        `
+        import { api } from 'lwc';
+        export default class Test {
+            @api
+            set first(value) {}
+            get first() {}
+
+            @api
+            get second() {
+                return this.s;
+            }
+            set second (value) {
+                this.s = value;
+            }
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    
+                    class Test {
+                    set first(value) {}
+                    
+                    get first() {}
+                    
+                    get second() {
+                        return this.s;
+                    }
+                    
+                    set second(value) {
+                        this.s = value;
+                    }
+                    }
+                    
+                    _registerDecorators(Test, {
+                    publicProps: {
+                        first: {
+                        config: 3
+                        },
+                        second: {
+                        config: 3
+                        }
+                    }
+                    });
+                    
+                    export default _registerComponent(Test, {
+                    tmpl: _tmpl
+                    });
+                `,
+            },
+        }
+    );
+
+    pluginTest(
         'transform pairs of setter and getter',
         `
         import { api } from 'lwc';
