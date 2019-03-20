@@ -3,10 +3,11 @@ import { createElement } from 'test-utils';
 import HrefStatic from 'x/hrefStatic';
 import HrefDynamic from 'x/hrefDynamic';
 
-function testHref(type, elm) {
-    document.body.appendChild(elm);
-
+function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
+        const elm = create();
+        document.body.appendChild(elm);
+
         it('should transform fragment-only urls (anchor)', () => {
             const anchor = elm.shadowRoot.querySelector('.anchor-fragment-url');
             const id = elm.shadowRoot.querySelector('.sanjo').getAttribute('id');
@@ -45,5 +46,5 @@ function testHref(type, elm) {
     });
 }
 
-testHref('static', createElement('x-href-static', { is: HrefStatic }));
-testHref('dynamic', createElement('x-href-dynamic', { is: HrefDynamic }));
+testHref('static', () => createElement('x-href-static', { is: HrefStatic }));
+testHref('dynamic', () => createElement('x-href-dynamic', { is: HrefDynamic }));

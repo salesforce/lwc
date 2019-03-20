@@ -16,10 +16,11 @@ const ID_REFERENCING_ARIA_ATTRS = new Set([
     'for',
 ]);
 
-function testAria(type, elm) {
-    document.body.appendChild(elm);
-
+function testAria(type, create) {
     describe(`${type} aria attribute values`, () => {
+        const elm = create();
+        document.body.appendChild(elm);
+
         it('should transform the `for` attribute value', () => {
             const label = elm.shadowRoot.querySelector('label');
             const ul = elm.shadowRoot.querySelector('ul');
@@ -40,5 +41,5 @@ function testAria(type, elm) {
     });
 }
 
-testAria('static', createElement('x-aria-static', { is: AriaStatic }));
-testAria('dynamic', createElement('x-aria-dynamic', { is: AriaDynamic }));
+testAria('static', () => createElement('x-aria-static', { is: AriaStatic }));
+testAria('dynamic', () => createElement('x-aria-dynamic', { is: AriaDynamic }));
