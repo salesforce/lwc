@@ -149,7 +149,6 @@ module.exports = function validate(klass, decorators) {
         }
     });
 
-    //console.log('---> decorators: ', decorators);
     validateSingleApiDecoratorOnSetterGetterPair(decorators);
     validateUniqueness(decorators);
 };
