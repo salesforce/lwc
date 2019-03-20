@@ -81,26 +81,30 @@ function validatePropertyName(property) {
 }
 
 function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
-    decorators
-        .filter(decorator => isApiDecorator(decorator) && decorator.type === DECORATOR_TYPES.SETTER)
-        .forEach(({ path }) => {
-            const parentPath = path.parentPath;
-            const name = parentPath.get('key.name').node;
+    // keep track of visited class methods
+    const visitedMethods = new Set();
 
-            const associatedGetter = decorators.find(
-                decorator =>
-                    isApiDecorator(decorator) &&
-                    decorator.type === DECORATOR_TYPES.GETTER &&
-                    parentPath.get('key.name').node === name
-            );
+    decorators.forEach(decorator => {
+        const { path, type } = decorator;
 
-            if (associatedGetter) {
-                throw generateError(parentPath, {
+        // since we are validating get/set we only look at @api methods
+        if (
+            isApiDecorator(decorator) &&
+            (type === DECORATOR_TYPES.GETTER || type === DECORATOR_TYPES.SETTER)
+        ) {
+            const methodPath = path.parentPath;
+            const methodName = methodPath.get('key.name').node;
+
+            if (visitedMethods.has(methodName)) {
+                throw generateError(methodPath, {
                     errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-                    messageArgs: [name],
+                    messageArgs: [methodName],
                 });
             }
-        });
+
+            visitedMethods.add(methodName);
+        }
+    });
 }
 
 function validateUniqueness(decorators) {
