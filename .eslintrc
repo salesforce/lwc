@@ -19,7 +19,7 @@
             "error",
             { "argsIgnorePattern": "^_" }
         ],
-        "indent" : ["error", 4],
+        "indent" : ["error", 4, { "SwitchCase": 1 }],
         "no-useless-constructor": "off",
         "comma-dangle": ["error", {
             "arrays": "ignore",
@@ -27,7 +27,22 @@
             "imports": "never",
             "exports": "never",
             "functions": "ignore"
-        }]
+        }],
+        "func-names": "off",
+        "no-param-reassign": "off",
+        "no-bitwise": "off",
+        "no-plusplus": "off",
+        
+        // want to enable these after discussion
+        "quotes": "off",
+        "import/no-extraneous-dependencies": "off",
+        "implicit-arrow-linebreak": "off",
+        "no-shadow": "off",
+        "consistent-return": "off",
+        "operator-linebreak": "off",
+        "import/order": "off",
+        "no-else-return": "off",
+        "space-before-function-paren": "off"
     },
 
     "overrides": [

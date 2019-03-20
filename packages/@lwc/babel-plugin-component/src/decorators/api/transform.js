@@ -59,7 +59,8 @@ function computePublicPropsConfig(decorators) {
 
         acc[propertyName].config |= getPropertyBitmask(type);
 
-        // With the latest decorator spec a decorator only need to be in one of the getter/setter pair
+        // With the latest decorator spec, a decorator only need to be in
+        // one of the getter/setter pair
         // We need to add the proper bitmask for the sibling getter/setter if exists
         const siblingPair = getSiblingGetSetPair(property, propertyName, type);
         if (siblingPair) {

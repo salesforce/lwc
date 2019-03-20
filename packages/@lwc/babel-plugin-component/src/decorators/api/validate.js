@@ -84,7 +84,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
     decorators
         .filter(decorator => isApiDecorator(decorator) && decorator.type === DECORATOR_TYPES.SETTER)
         .forEach(({ path }) => {
-            const parentPath = path.parentPath;
+            const { parentPath } = path;
             const name = parentPath.get('key.name').node;
 
             const associatedGetter = decorators.find(

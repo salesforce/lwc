@@ -10,6 +10,16 @@ const prettier = require('prettier');
 
 const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
 
+function prettify(str) {
+    return str
+        .toString()
+        .replace(/^\s+|\s+$/, '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length)
+        .join('\n');
+}
+
 function transform(plugin, pluginOpts = {}, opts = {}) {
     const testConfig = Object.assign(
         {},
@@ -23,16 +33,6 @@ function transform(plugin, pluginOpts = {}, opts = {}) {
     return function(source) {
         return babel.transform(prettify(source), testConfig);
     };
-}
-
-function prettify(str) {
-    return str
-        .toString()
-        .replace(/^\s+|\s+$/, '')
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length)
-        .join('\n');
 }
 
 function pluginTest(plugin, pluginOpts, opts = {}) {
