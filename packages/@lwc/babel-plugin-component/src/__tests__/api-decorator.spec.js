@@ -172,10 +172,10 @@ describe('Transform property', () => {
             @api
             get first() { return null; }
 
-            @api
             get second() {
                 return this.s;
             }
+            @api
             set second(value) {
                 this.s = value;
             }
