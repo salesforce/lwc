@@ -88,7 +88,10 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
         const { path, type } = decorator;
 
         // since we are validating get/set we only look at @api methods
-        if (isApiDecorator(decorator) && type !== DECORATOR_TYPES.PROPERTY) {
+        if (
+            isApiDecorator(decorator) &&
+            (type === DECORATOR_TYPES.GETTER || type === DECORATOR_TYPES.SETTER)
+        ) {
             const methodPath = path.parentPath;
             const methodName = methodPath.get('key.name').node;
 
