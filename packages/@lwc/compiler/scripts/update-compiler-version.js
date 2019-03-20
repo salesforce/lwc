@@ -24,7 +24,8 @@ async function updateVersion(version) {
     await result.write({
         file: sourcePath,
         format: 'cjs',
-        sourcemap: false, // keep typescript generated map to stay consistent with the rest of the files.
+        // keep typescript generated map to stay consistent with the rest of the files.
+        sourcemap: false,
     });
 }
 

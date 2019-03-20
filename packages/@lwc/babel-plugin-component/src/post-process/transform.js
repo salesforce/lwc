@@ -14,6 +14,7 @@
 const { basename } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 const { isLWCNode } = require('../utils');
+
 const LWC_POST_PROCCESED = Symbol();
 
 const REGISTER_DECORATORS_ID = 'registerDecorators';
@@ -78,7 +79,8 @@ module.exports = function postProcess({ types: t }) {
     function needsComponentRegistration(path) {
         return (
             (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
-            // path.isMemberExpression() || // this will probably yield more false positives than anything else
+            // this will probably yield more false positives than anything else
+            // path.isMemberExpression() ||
             path.isCallExpression() ||
             path.isClassDeclaration() ||
             path.isConditionalExpression()
@@ -86,7 +88,7 @@ module.exports = function postProcess({ types: t }) {
     }
 
     return {
-        /// Register component
+        // Register component
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {

@@ -10,7 +10,8 @@ const { exit } = require('./program');
 /**
  * The transform is done in 2 passes:
  *    - First, apply in a single AST traversal the decorators and the component transformation.
- *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
+ *    - Then, in a second path transform class properties using the official babel plugin
+ *       "babel-plugin-transform-class-properties".
  */
 module.exports = function LwcClassTransform(api) {
     const { merge: mergeVisitors } = api.traverse.visitors;

@@ -47,6 +47,14 @@ function getEngineImportsStatements(path) {
     });
 }
 
+function generateError(source, { errorInfo, messageArgs } = {}) {
+    const message = generateErrorMessage(errorInfo, messageArgs);
+    const error = source.buildCodeFrameError(message);
+
+    error.lwcCode = errorInfo && errorInfo.code;
+    return error;
+}
+
 function getEngineImportSpecifiers(path) {
     const imports = getEngineImportsStatements(path);
 
@@ -77,14 +85,6 @@ function getEngineImportSpecifiers(path) {
             const imported = specifier.get('imported').node.name;
             return [...acc, { name: imported, path: specifier }];
         }, []);
-}
-
-function generateError(source, { errorInfo, messageArgs } = {}) {
-    const message = generateErrorMessage(errorInfo, messageArgs);
-    const error = source.buildCodeFrameError(message);
-
-    error.lwcCode = errorInfo && errorInfo.code;
-    return error;
 }
 
 function isLWCNode(node) {

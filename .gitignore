@@ -6,6 +6,7 @@ node_modules/
 coverage/
 .idea/
 .project/
+.vscode/*
 
 lib/
 playground/index.js

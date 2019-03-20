@@ -16,9 +16,10 @@ function exit(api) {
                     postProcess(api),
                     classProperty(api, { loose: true }).visitor,
 
-                    // Decorator usage validation is done on a program exit because by the time program exits,
-                    // all the decorators are suppose to be transformed and removed from the class.
-                    // Any remaining decorators mean they were not detected and therefore misused.
+                    // Decorator usage validation is done on a program exit because by the time
+                    // program exits, all the decorators are suppose to be transformed and removed
+                    // from the class. Any remaining decorators mean they were not detected and
+                    // therefore misused.
                     invalidDecorators(api),
                 ]);
 

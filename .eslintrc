@@ -32,7 +32,13 @@
         "no-param-reassign": "off",
         "no-bitwise": "off",
         "no-plusplus": "off",
+        "no-underscore-dangle": "off",
+        "dot-notation": "off",
         
+        // Look later
+        "arrow-parens": "off",
+        "arrow-body-style": "off",
+
         // want to enable these after discussion
         "quotes": "off",
         "import/no-extraneous-dependencies": "off",
@@ -42,7 +48,12 @@
         "operator-linebreak": "off",
         "import/order": "off",
         "no-else-return": "off",
-        "space-before-function-paren": "off"
+        "space-before-function-paren": "off",
+        "no-restricted-syntax": "off",
+        "prefer-destructuring": "off",
+        "symbol-description": "off",
+        "prefer-template": "off",
+        "function-paren-newline": "off"
     },
 
     "overrides": [
