@@ -343,7 +343,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
         switch (attr.type) {
             case IRAttributeType.Expression: {
-                let { expression } = bindExpression(attr.value, element);
+                const { expression } = bindExpression(attr.value, element);
                 if (attr.name === 'tabindex') {
                     return codeGen.genTabIndex([expression]);
                 }

@@ -32,5 +32,5 @@ const MutationObserver = MO;
 // Eventually, import the patched MutationObserver polyfill here
 // to ensure rest of the framework uses the patched version
 
-let MutationObserverObserve = MutationObserver.prototype.observe;
+const MutationObserverObserve = MutationObserver.prototype.observe;
 export { MutationObserver, MutationObserverObserve };

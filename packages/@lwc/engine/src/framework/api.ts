@@ -570,10 +570,8 @@ export function t(text: string): VText {
 // comment node
 export function p(text: string): VComment {
     const data = EmptyObject;
-    let sel = '!',
-        children,
-        key,
-        elm;
+    const sel = '!';
+    let children, key, elm;
     return {
         sel,
         data,

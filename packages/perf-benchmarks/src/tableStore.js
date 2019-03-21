@@ -138,8 +138,8 @@ export class Store {
 
     swapRows() {
         if (this.data.length > 10) {
-            let d4 = this.data[4];
-            let d9 = this.data[9];
+            const d4 = this.data[4];
+            const d9 = this.data[9];
 
             var newData = this.data.map(function(data, i) {
                 if (i === 4) {

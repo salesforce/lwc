@@ -70,7 +70,7 @@ function createPreprocessor(config, emitter, logger) {
 
             cache = bundle.cache;
 
-            let { code, map } = await bundle.generate({
+            const { code, map } = await bundle.generate({
                 format: 'iife',
                 sourcemap: 'inline',
 

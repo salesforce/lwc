@@ -58,7 +58,7 @@ function validateAttribute(root: Root) {
             // If the attribute name is not a globally available attribute, the attribute selector is required
             // to be associated with a tag selector, so we can validate its usage. Let's walk the compound selector
             // backward to find the associated tag selector.
-            let tagSelector: Tag | undefined = undefined;
+            let tagSelector: Tag | undefined;
             let runner = node.prev();
 
             while (tagSelector === undefined && runner !== undefined && !isCombinator(runner)) {

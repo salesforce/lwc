@@ -5,7 +5,7 @@ export default class EnumerablePropertyLeak extends LightningElement {
         const properties = [];
 
         const obj = { x: 'x', y: 'y' };
-        for (let property in obj) {
+        for (const property in obj) {
             properties.push(property);
         }
 
@@ -16,7 +16,7 @@ export default class EnumerablePropertyLeak extends LightningElement {
         const properties = [];
 
         const array = ['x', 'y'];
-        for (let property in array) {
+        for (const property in array) {
             properties.push(property);
         }
 

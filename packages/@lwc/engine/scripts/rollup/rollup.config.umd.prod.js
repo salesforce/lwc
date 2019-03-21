@@ -38,7 +38,7 @@ function inlineMinifyPlugin() {
 
 function rollupConfig(config) {
     const { format, target, prod } = config;
-    let plugins = [
+    const plugins = [
         nodeResolve(),
         rollupTypescriptPlugin({
             typescript,
