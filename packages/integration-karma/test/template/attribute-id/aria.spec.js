@@ -18,8 +18,12 @@ const ID_REFERENCING_ARIA_ATTRS = new Set([
 
 function testAria(type, create) {
     describe(`${type} aria attribute values`, () => {
-        const elm = create();
-        document.body.appendChild(elm);
+        let elm;
+
+        beforeAll(() => {
+            elm = create();
+            document.body.appendChild(elm);
+        });
 
         it('should transform the `for` attribute value', () => {
             const label = elm.shadowRoot.querySelector('label');

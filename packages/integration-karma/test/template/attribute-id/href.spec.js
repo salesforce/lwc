@@ -5,8 +5,12 @@ import HrefDynamic from 'x/hrefDynamic';
 
 function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
-        const elm = create();
-        document.body.appendChild(elm);
+        let elm;
+
+        beforeAll(() => {
+            elm = create();
+            document.body.appendChild(elm);
+        });
 
         it('should transform fragment-only urls (anchor)', () => {
             const anchor = elm.shadowRoot.querySelector('.anchor-fragment-url');
