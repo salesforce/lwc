@@ -21,12 +21,7 @@
         ],
 
         "no-buffer-constructor": "error",
-        "no-const-assign": "error",
-        "no-console": "warn",
-        "no-debugger": "error",
-        "no-dupe-class-members": "error",
         "no-new-require": "error",
-        "no-undef": "error",
         "no-undef-init": "error",
         "no-useless-computed-key": "error",
         "prefer-const": ["error", {
