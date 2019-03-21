@@ -9,7 +9,8 @@
     },
 
     "rules": {
-        "no-production-assert": "error"
+        "no-production-assert": "error",
+        "no-prototype-builtins": "error"
     },
 
     "overrides": [{
