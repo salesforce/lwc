@@ -18,7 +18,31 @@
         "@typescript-eslint/no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_" }
-        ]
+        ],
+
+        "no-buffer-constructor": "error",
+        "no-const-assign": "error",
+        "no-console": "warn",
+        "no-debugger": "error",
+        "no-dupe-class-members": "error",
+        "no-new-require": "error",
+        "no-undef": "error",
+        "no-undef-init": "error",
+        "no-useless-computed-key": "error",
+        "prefer-const": ["error", {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": true
+          }],
+        "template-curly-spacing": "error",
+        
+        // Want to enable if there is consent
+        "no-shadow": "off",
+        "no-use-before-define": ["off", { "functions": true, "classes": true, "variables": false }], // 215 violations
+        "prefer-arrow-callback": ["off", {
+            "allowNamedFunctions": false,
+            "allowUnboundThis": true
+          }],
+        "prefer-template": "off", // 52 violations, template literals not supported in all browsers
     },
 
     "overrides": [
