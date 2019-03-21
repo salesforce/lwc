@@ -2,7 +2,7 @@ import { createElement } from 'test-utils';
 
 import Test from 'x/test';
 
-fdescribe('document.prototype query methods', () => {
+describe('document.prototype query methods', () => {
     const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
 
