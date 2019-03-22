@@ -70,16 +70,13 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
             return descriptor!.get!.call(this);
         }
         set tabIndex(this: HTMLElement, value: any) {
-            // NOTE: This tabIndex setter might be confusing unless it is
-            // understood that HTML elements have default tabIndex property
-            // values. Specifically, natively focusable elements have a default
-            // tabIndex value of 0 and all other elements default to a tabIndex
-            // value of -1 so in many cases we need to check whether or not the
-            // tabindex attribute value is actually rendered when deciding to
-            // add/remove listeners. For example, we need to add a listener when
-            // <x-foo> becomes <x-foo tabindex="-1"> but the tabIndex property
-            // value is -1 both before and after so it isn't enough to check
-            // whether the value has changed.
+            // This tabIndex setter might be confusing unless it is understood that HTML elements
+            // have default tabIndex property values. Natively focusable elements have a default
+            // tabIndex value of 0 and all other elements have a default tabIndex value of -1. An
+            // example of when this matters: We don't need to do anything for <x-foo> but we do need
+            // to add a listener for <x-foo tabindex="-1">. The tabIndex property value is -1 in
+            // both cases, so we need an additional check to see if the tabindex attribute is
+            // reflected on the host.
 
             const delegatesFocus = isDelegatingFocus(this);
 
@@ -99,11 +96,10 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
 
             const didValueChange = prevValue !== currValue;
 
-            // If the tabindex attribute is initially rendered, we can assume
-            // that this setter has previously executed and we have already
-            // added an event listener. Remove this listener if either the
-            // tabIndex property value has changed or if the component no longer
-            // renders a tabindex attribute.
+            // If the tabindex attribute is initially rendered, we can assume that this setter has
+            // previously executed and a listener has been added. We must remove that listener if
+            // the tabIndex property value has changed or if the component no longer renders a
+            // tabindex attribute.
             if (prevHasAttr && (didValueChange || isFalse(currHasAttr))) {
                 if (prevValue === -1) {
                     ignoreFocusIn(this);
@@ -113,23 +109,22 @@ export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor 
                 }
             }
 
-            // If a tabindex attribute was not rendered after invoking its
-            // setter, it means the component is taking control. Do nothing.
-            if (!currHasAttr) {
+            // If a tabindex attribute was not rendered after invoking its setter, it means the
+            // component is taking control. Do nothing.
+            if (isFalse(currHasAttr)) {
                 return;
             }
 
-            // If the tabindex attribute is initially rendered we can assume
-            // that this setter has already executed before and we have
-            // previously added an event listener. If the tabindex attribute is
-            // still rendered after invoking the setter and the tabIndex
-            // property value has not changed, we don't need to do any work.
+            // If the tabindex attribute is initially rendered, we can assume that this setter has
+            // previously executed and a listener has been added. If the tabindex attribute is still
+            // rendered after invoking the setter AND the tabIndex property value has not changed,
+            // we don't need to do any work.
             if (prevHasAttr && currHasAttr && isFalse(didValueChange)) {
                 return;
             }
 
-            // At this point we know that a tabindex attribute was rendered
-            // after invoking the setter and that either:
+            // At this point we know that a tabindex attribute was rendered after invoking the
+            // setter and that either:
             // 1) This is the first time this setter is being invoked.
             // 2) This is not the first time this setter is being invoked and the value is changing.
             // We need to add the appropriate listeners in either case.
