@@ -23,8 +23,6 @@ export default function apply() {
         addEventListener.call(this, 'click', handleClick);
         try {
             originalClickDescriptor!.value!.call(this);
-        } catch (ex) {
-            throw ex;
         } finally {
             removeEventListener.call(this, 'click', handleClick);
         }

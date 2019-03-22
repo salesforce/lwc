@@ -264,7 +264,6 @@ function keyboardFocusHandler(event: FocusEvent) {
         } else {
             focusOnNextOrBlur(target, segments);
         }
-        return;
     } else if (host === target) {
         // Shift tabbed back to the host
         focusOnPrevOrBlur(host, segments);

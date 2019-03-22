@@ -463,8 +463,6 @@ export default function parse(
                 id,
                 context,
             };
-
-            return;
         }
     }
 
@@ -509,9 +507,8 @@ export default function parse(
         const forItemAttribute = getTemplateAttribute(element, 'for:item');
         const forIndex = getTemplateAttribute(element, 'for:index');
 
-        if (!forEachAttribute && !forItemAttribute) {
-            return;
-        } else if (forEachAttribute && forItemAttribute) {
+        if (forEachAttribute && forItemAttribute) {
+            // If both directives are defined
             removeAttribute(element, forEachAttribute.name);
             removeAttribute(element, forItemAttribute.name);
 
@@ -567,7 +564,8 @@ export default function parse(
                 item,
                 index,
             };
-        } else {
+        } else if (forEachAttribute || forItemAttribute) {
+            // If only one directive is defined
             return warnOnElement(
                 ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
                 element.__original
@@ -997,8 +995,6 @@ export default function parse(
                     location: normalizeLocation(location),
                 })
             );
-
-            return;
         }
     }
 

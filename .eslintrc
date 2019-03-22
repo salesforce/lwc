@@ -71,7 +71,9 @@
         "no-self-compare": "error",
         "no-undef-init": "error",
         "no-unused-vars": "off", // Override eslint:recommended rule
+        "no-useless-catch": "error",
         "no-useless-computed-key": "error",
+        "no-useless-return": "error",
         "no-with": "error",
         "prefer-const": ["error", {
             "destructuring": "any",
@@ -96,9 +98,7 @@
             "string": true,
             "allow": []
           }], // 28 violations https://eslint.org/docs/rules/no-implicit-coercion
-        "no-useless-return": "off", // 7 violations https://eslint.org/docs/rules/no-useless-return
-        "no-loop-func": "off", // 1 violation https://eslint.org/docs/rules/no-loop-func
-        "no-useless-catch": "off" // 1 violation https://eslint.org/docs/rules/no-useless-catch
+        "no-loop-func": "off" // 1 violation https://eslint.org/docs/rules/no-loop-func
     },
 
     "overrides": [
