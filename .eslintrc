@@ -126,12 +126,6 @@
             "rules": {
                 "no-console": "off"
             }
-        },
-        {
-            "files": [ "**/engine/src/polyfills/**"],
-            "rules": {
-                "no-extend-native": "off"
-            }
         }
     ]
 }
