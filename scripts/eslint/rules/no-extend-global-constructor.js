@@ -15,7 +15,7 @@
  */
 
 /**
- * This rule is complementary to no-extend-native in that it prevents us from using the
+ * This rule is complimentary to no-extend-native in that it prevents us from using the
  * `extend` keyword on any of the mentioned global constructors
  * https://eslint.org/docs/rules/no-extend-native
  */
