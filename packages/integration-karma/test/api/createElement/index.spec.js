@@ -7,7 +7,7 @@ function testInvalidOptions(type, option) {
     it(`throws a TypeError if option is a ${type}`, () => {
         expect(() => createElement('x-component', option)).toThrowError(
             TypeError,
-            /"createElement" function expects an object as second parameter but received ".+"\./
+            /"createElement" function expects an object as second parameter but received/
         );
     });
 }
@@ -21,7 +21,7 @@ function testInvalidIsValue(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
         expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
-            /.+ is not a valid component constructor, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
+            '"createElement" function as expect a "is" option with a valid component constructor.'
         );
     });
 }
@@ -29,8 +29,18 @@ function testInvalidIsValue(type, isValue) {
 testInvalidIsValue('undefined', undefined);
 testInvalidIsValue('null', null);
 testInvalidIsValue('String', 'x-component');
-testInvalidIsValue('Function', function() {});
-testInvalidIsValue('Class not extending LightningElement', class Component {});
+
+function testInvalidComponentConstructor(type, isValue) {
+    it(`throws a TypeError if option.is is a ${type}`, () => {
+        expect(() => createElement('x-component', { is: isValue })).toThrowError(
+            TypeError,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
+        );
+    });
+}
+
+testInvalidComponentConstructor('Function', function() {});
+testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 it('returns an HTMLElement', () => {
     const elm = createElement('x-component', { is: Test });
@@ -42,13 +52,12 @@ it('should create an element with a synthetic shadow root by default', () => {
     expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
 });
 
-fit('supports component constructors in circular dependency', () => {
+it('supports component constructors in circular dependency', () => {
     function Circular() {
         return Test;
     }
     Circular.__circular__ = true;
 
-    debugger;
     const elm = createElement('x-component', { is: Circular });
     expect(elm instanceof HTMLElement).toBe(true);
 });

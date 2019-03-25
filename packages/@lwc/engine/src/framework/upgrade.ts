@@ -10,6 +10,7 @@ import {
     assign,
     isNull,
     isObject,
+    isFunction,
     isTrue,
     isFalse,
     toString,
@@ -23,11 +24,11 @@ import {
     VMState,
 } from './vm';
 import { ComponentConstructor } from './component';
-import { EmptyObject } from './utils';
+import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
 import { isNativeShadowRootAvailable } from '../env/dom';
 import { patchCustomElementProto } from './patch';
-import { isComponentConstructor, getComponentDef, setElementProto } from './def';
+import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
@@ -97,10 +98,10 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         );
     }
 
-    const Ctor = options.is;
-    if (!isComponentConstructor(Ctor)) {
+    let Ctor = options.is;
+    if (!isFunction(Ctor)) {
         throw new TypeError(
-            `${Ctor} is not a valid component constructor, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`
+            `"createElement" function as expect a "is" option with a valid component constructor.`
         );
     }
 
@@ -119,8 +120,13 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         return element;
     }
 
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
+
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
+
     if (isTrue(fallback)) {
         patchCustomElementProto(element, {
             def,
