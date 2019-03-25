@@ -6,12 +6,11 @@
  */
 import assert from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
-import { isObject, isNull, isTrue, toString, isFalse } from '../../shared/language';
+import { isObject, toString, isFalse } from '../../shared/language';
 import { observeMutation, notifyMutation } from '../watcher';
 import { ComponentInterface, ComponentConstructor } from '../component';
-import { VM, getComponentVM } from '../vm';
+import { getComponentVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';
-import { reactiveMembrane } from '../membrane';
 import { getDecoratorsRegisteredMeta } from './register';
 
 export default function api(
@@ -54,14 +53,6 @@ export default function api(
     }
 }
 
-let vmBeingUpdated: VM | null = null;
-export function prepareForPropUpdate(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    vmBeingUpdated = vm;
-}
-
 function createPublicPropertyDescriptor(
     proto: ComponentConstructor,
     key: PropertyKey,
@@ -98,39 +89,8 @@ function createPublicPropertyDescriptor(
                     )}`
                 );
             }
-            if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
-                vmBeingUpdated = vm;
-                if (process.env.NODE_ENV !== 'production') {
-                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // Then newValue if newValue is observable (plain object or array)
-                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(
-                            `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key
-                            )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm
-                        );
-                    }
-                }
-            }
-            if (process.env.NODE_ENV !== 'production') {
-                if (vmBeingUpdated !== vm) {
-                    // logic for setting new properties of the element directly from the DOM
-                    // is only recommended for root elements created via createElement()
-                    assert.logWarning(
-                        `If property ${toString(
-                            key
-                        )} decorated with @api in ${vm} is used in the template, the value ${toString(
-                            newValue
-                        )} set manually may be overridden by the template, consider binding the property only in the template.`,
-                        vm.elm
-                    );
-                }
-            }
-            vmBeingUpdated = null; // releasing the lock
             // not need to wrap or check the value since that is happening somewhere else
-            vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
+            vm.cmpProps[key] = newValue;
 
             // avoid notification of observability if the instance is already dirty
             if (isFalse(vm.isDirty)) {
@@ -179,40 +139,9 @@ function createPublicAccessorDescriptor(
                     )}`
                 );
             }
-            if (vm.isRoot || isBeingConstructed(vm)) {
-                vmBeingUpdated = vm;
-                if (process.env.NODE_ENV !== 'production') {
-                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // Then newValue if newValue is observable (plain object or array)
-                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(
-                            `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key
-                            )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm
-                        );
-                    }
-                }
-            }
-            if (process.env.NODE_ENV !== 'production') {
-                if (vmBeingUpdated !== vm) {
-                    // logic for setting new properties of the element directly from the DOM
-                    // is only recommended for root elements created via createElement()
-                    assert.logWarning(
-                        `If property ${toString(
-                            key
-                        )} decorated with @api in ${vm} is used in the template, the value ${toString(
-                            newValue
-                        )} set manually may be overridden by the template, consider binding the property only in the template.`,
-                        vm.elm
-                    );
-                }
-            }
-            vmBeingUpdated = null; // releasing the lock
             // not need to wrap or check the value since that is happening somewhere else
             if (set) {
-                set.call(this, reactiveMembrane.getReadOnlyProxy(newValue));
+                set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
                     `Invalid attempt to set a new value for property ${toString(

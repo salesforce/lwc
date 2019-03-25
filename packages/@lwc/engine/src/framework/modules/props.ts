@@ -8,7 +8,7 @@ import assert from '../../shared/assert';
 import { isUndefined, keys } from '../../shared/language';
 import { getInternalField } from '../../shared/fields';
 import { ViewModelReflection } from '../utils';
-import { prepareForPropUpdate } from '../decorators/api';
+import { prepareForPropUpdate } from '../base-bridge-element';
 import { VNode } from '../../3rdparty/snabbdom/types';
 import { getAttrNameFromPropName } from '../attributes';
 
