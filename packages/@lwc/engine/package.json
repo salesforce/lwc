@@ -9,7 +9,7 @@
     "scripts": {
         "clean": "rm -rf dist/ lib/",
         "test": "jest",
-        "build": "rollup -c scripts/rollup/rollup.config.js"
+        "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
     },
     "dependencies": {
         "observable-membrane": "0.26.1"
