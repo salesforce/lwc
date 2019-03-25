@@ -204,7 +204,7 @@ function getOwnValue(o: any, key: string): any | undefined {
     return d && d.value;
 }
 
-export function getComponentDef(Ctor: any, subclassComponentName?: string): ComponentDef | null {
+export function getComponentDef(Ctor: any, subclassComponentName?: string): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
