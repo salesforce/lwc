@@ -29,3 +29,15 @@ it("should return true if when passing a class with LightningElement in it's pro
     class Component extends Base {}
     expect(isComponentConstructor(Component)).toBe(true);
 });
+
+describe('locker integration', () => {
+    it('should return true when passing component class that extend a mirror of the LightningElement', () => {
+        function SecureBaseClass() {
+            return SecureBaseClass;
+        }
+        SecureBaseClass.__circular__ = true;
+
+        class Component extends SecureBaseClass {}
+        expect(isComponentConstructor(Component)).toBe(true);
+    });
+});

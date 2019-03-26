@@ -74,3 +74,20 @@ if (process.env.NATIVE_SHADOW) {
         expect(shadowRoot.mode).toBe('closed');
     });
 }
+
+describe('locker integration', () => {
+    it('should support component class that extend a mirror of the LightningElement', () => {
+        function SecureBaseClass() {
+            if (this instanceof SecureBaseClass) {
+                LightningElement.prototype.constructor.call(this);
+            } else {
+                return SecureBaseClass;
+            }
+        }
+        SecureBaseClass.__circular__ = true;
+
+        class Component extends SecureBaseClass {}
+        const elm = createElement('x-component', { is: Component });
+        expect(elm instanceof HTMLElement).toBe(true);
+    });
+});

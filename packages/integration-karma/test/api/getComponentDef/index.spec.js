@@ -342,4 +342,26 @@ describe('circular dependencies', () => {
             /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./
         );
     });
+
+    describe('locker integration', () => {
+        it('should resolve parent class with circular dependency that resoves to itself', () => {
+            function SecureBaseClass() {
+                return SecureBaseClass;
+            }
+            SecureBaseClass.__circular__ = true;
+            class Component extends SecureBaseClass {
+                @api bar;
+            }
+            const { props } = getComponentDef(Component);
+            expect(props).toEqual(
+                jasmine.objectContaining({
+                    bar: {
+                        config: 0,
+                        type: 'any',
+                        attr: 'bar',
+                    },
+                })
+            );
+        });
+    });
 });
