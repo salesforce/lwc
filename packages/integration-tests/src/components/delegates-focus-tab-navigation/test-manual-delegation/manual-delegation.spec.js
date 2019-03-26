@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/tabindex-none';
+const URL = 'http://localhost:4567/manual-delegation';
 
-describe('Tab navigation without tabindex', () => {
+describe('Tab navigation when component passes tabindex attribute to an internal element', () => {
     before(() => {
         browser.url(URL);
     });
 
-    it('should delegate focus (forward)', function() {
+    it('should focus on internal element when tabbing forward from a sibling element', function() {
         browser.click('.second-outside');
         browser.keys(['Tab']);
 
@@ -22,11 +22,10 @@ describe('Tab navigation without tabindex', () => {
             var input = child.shadowRoot.activeElement;
             return input.className;
         }).value;
-
         assert.equal(className, 'first-inside');
     });
 
-    it('should delegate focus (backward)', function() {
+    it('should focus on internal element when tabbing backwards from a sibling element', function() {
         browser.click('.third-outside');
         browser.keys(['Shift', 'Tab', 'Shift']);
 
@@ -36,7 +35,6 @@ describe('Tab navigation without tabindex', () => {
             var input = child.shadowRoot.activeElement;
             return input.className;
         }).value;
-
         assert.equal(className, 'third-inside');
     });
 });

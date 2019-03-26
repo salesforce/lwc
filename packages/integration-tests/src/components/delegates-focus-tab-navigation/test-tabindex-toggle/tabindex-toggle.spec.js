@@ -5,15 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = 'http://localhost:4567/tab-navigation-tabindex-zero-passthrough';
+const URL = 'http://localhost:4567/tabindex-toggle';
 
-// Enable after fixing W-5936052
-describe.skip('Tab navigation when component passes tabindex attribute to an internal element', () => {
+describe('Tab navigation without tabindex', () => {
     before(() => {
         browser.url(URL);
     });
 
-    it('should focus on internal element when tabbing forward from a sibling element', function() {
+    it('should support tabindex toggling', function() {
         browser.click('.second-outside');
         browser.keys(['Tab']);
 
@@ -21,21 +20,35 @@ describe.skip('Tab navigation when component passes tabindex attribute to an int
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
-            return input;
+            return input.className;
         }).value;
         assert.equal(className, 'first-inside');
-    });
 
-    it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        browser.click('.third-outside');
-        browser.keys(['Shift', 'Tab', 'Shift']);
+        // Toggle the tabindex <x-child tabindex="-1">
+        browser.click('.toggle');
 
-        var className = browser.execute(function() {
+        browser.click('.second-outside');
+        browser.keys(['Tab']);
+
+        className = browser.execute(function() {
+            var container = document.activeElement;
+            var input = container.shadowRoot.activeElement;
+            return input.className;
+        }).value;
+        assert.equal(className, 'third-outside');
+
+        // Toggle the tabindex <x-child>
+        browser.click('.toggle');
+
+        browser.click('.second-outside');
+        browser.keys(['Tab']);
+
+        className = browser.execute(function() {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
         }).value;
-        assert.equal(className, 'third-inside');
+        assert.equal(className, 'first-inside');
     });
 });

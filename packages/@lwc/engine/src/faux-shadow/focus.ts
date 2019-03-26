@@ -428,14 +428,6 @@ export function handleFocusIn(elm: HTMLElement) {
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            tabIndexGetter.call(elm) !== -1,
-            `Invalid attempt to ignore focus in  ${toString(elm)}. ${toString(
-                elm
-            )} should not have tabIndex -1`
-        );
-    }
     removeEventListener.call(elm, 'focusin', keyboardFocusInHandler);
     removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
 }
