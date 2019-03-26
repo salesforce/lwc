@@ -11,15 +11,8 @@
 
 import path from 'path';
 
-interface NodeModulesConfig {
-    moduleDirectory?: string[];
-}
-
-export default function nodeModulesPaths(
-    basedir: string,
-    { moduleDirectory }: NodeModulesConfig = {}
-) {
-    const modules = moduleDirectory ? ([] as any).concat(moduleDirectory) : ['node_modules'];
+export default function nodeModulesPaths(basedir: string, moduleDirectory: string[] | undefined) {
+    const modules: string[] = moduleDirectory ? [...moduleDirectory] : ['node_modules'];
 
     // ensure that `basedir` is an absolute path at this point,
     // resolving against the process' current working directory
@@ -39,7 +32,7 @@ export default function nodeModulesPaths(
         parsed = path.parse(parsed.dir);
     }
 
-    const dirs = paths.reduce((dirs, aPath) => {
+    const dirs = paths.reduce((dirs: string[], aPath) => {
         return dirs.concat(
             modules.map(moduleDir => {
                 return path.join(prefix, aPath, moduleDir);

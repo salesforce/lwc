@@ -24,8 +24,8 @@ export interface RegistryEntry {
 }
 
 export interface ModuleResolverConfig {
-    moduleDirectories?: string[];
-    rootDir?: string;
+    moduleDirectories: string[];
+    rootDir: string;
 }
 
 function createRegistryEntry(entry, moduleSpecifier, moduleName, moduleNamespace): RegistryEntry {
@@ -46,7 +46,7 @@ function loadLwcConfig(modulePath) {
     return config;
 }
 
-function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
+export function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: absPath }).reduce((mappings, file) => {
         const ext = path.extname(file);
         const fileName = path.basename(file, ext);
@@ -79,12 +79,15 @@ function hasModuleBeenVisited(module, visited) {
     return false;
 }
 
-function expandModuleDirectories({ moduleDirectories, rootDir }: ModuleResolverConfig = {}) {
+function expandModuleDirectories({
+    moduleDirectories,
+    rootDir,
+}: Partial<ModuleResolverConfig> = {}) {
     if (!moduleDirectories && !rootDir) {
         return module.paths;
     }
 
-    return nodeModulePaths(rootDir || __dirname, { moduleDirectory: moduleDirectories });
+    return nodeModulePaths(rootDir || __dirname, moduleDirectories);
 }
 
 function resolveModules(modules, opts) {
@@ -112,7 +115,7 @@ function resolveModules(modules, opts) {
     }
 }
 
-function resolveLwcNpmModules(options: ModuleResolverConfig = {}) {
+export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}) {
     const visited = new Set();
     const modulePaths = expandModuleDirectories(options);
     return modulePaths.reduce((m, nodeModulesDir) => {
@@ -130,6 +133,3 @@ function resolveLwcNpmModules(options: ModuleResolverConfig = {}) {
             }, m);
     }, {});
 }
-
-exports.resolveLwcNpmModules = resolveLwcNpmModules;
-exports.resolveModulesInDir = resolveModulesInDir;
