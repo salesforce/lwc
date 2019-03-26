@@ -9,10 +9,17 @@
  * https://github.com/browserify/resolve
  */
 
-const path = require('path');
+import path from 'path';
 
-module.exports = function nodeModulesPaths(basedir, { moduleDirectory } = {}) {
-    const modules = moduleDirectory ? [].concat(moduleDirectory) : ['node_modules'];
+interface NodeModulesConfig {
+    moduleDirectory?: string[];
+}
+
+export default function nodeModulesPaths(
+    basedir: string,
+    { moduleDirectory }: NodeModulesConfig = {}
+) {
+    const modules = moduleDirectory ? ([] as any).concat(moduleDirectory) : ['node_modules'];
 
     // ensure that `basedir` is an absolute path at this point,
     // resolving against the process' current working directory
@@ -41,4 +48,4 @@ module.exports = function nodeModulesPaths(basedir, { moduleDirectory } = {}) {
     }, []);
 
     return dirs;
-};
+}

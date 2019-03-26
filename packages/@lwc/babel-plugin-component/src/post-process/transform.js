@@ -11,7 +11,7 @@
  *
  */
 
-const { basename } = require('path');
+const { basename, extname } = require('path');
 const moduleImports = require('@babel/helper-module-imports');
 const { isLWCNode } = require('../utils');
 const LWC_POST_PROCCESED = Symbol();
@@ -42,7 +42,8 @@ module.exports = function postProcess({ types: t }) {
 
     function getBaseName({ file }) {
         const classPath = file.opts.filename;
-        return basename(classPath, '.js');
+        const ext = extname(classPath);
+        return basename(classPath, ext);
     }
 
     function importDefaultTemplate(path, state) {

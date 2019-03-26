@@ -5,16 +5,32 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 /* eslint-env node */
-const glob = require('glob');
-const path = require('path');
-const fs = require('fs');
-const nodeModulePaths = require('./node-modules-paths');
 
-const DEFAULT_NS = 'x';
+import glob from 'glob';
+import path from 'path';
+import fs from 'fs';
+import nodeModulePaths from './node-modules-paths';
+
+const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
 const PACKAGE_PATTERN = `**/*/package.json`;
-const MODULE_EXTENSION = '.js';
-const MODULE_ENTRY_PATTERN = `**/*${MODULE_EXTENSION}`;
+const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
+
+export interface RegistryEntry {
+    entry: string;
+    moduleSpecifier: string;
+    moduleName: string;
+    moduleNamespace: string;
+}
+
+export interface ModuleResolverConfig {
+    moduleDirectories?: string[];
+    rootDir?: string;
+}
+
+function createRegistryEntry(entry, moduleSpecifier, moduleName, moduleNamespace): RegistryEntry {
+    return { entry, moduleSpecifier, moduleName, moduleNamespace };
+}
 
 function loadLwcConfig(modulePath) {
     const packageJsonPath = path.join(modulePath, 'package.json');
@@ -30,27 +46,26 @@ function loadLwcConfig(modulePath) {
     return config;
 }
 
-function resolveModulesInDir(fullPathDir) {
-    return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
-        const fileName = path.basename(file, MODULE_EXTENSION);
+function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
+    return glob.sync(MODULE_ENTRY_PATTERN, { cwd: absPath }).reduce((mappings, file) => {
+        const ext = path.extname(file);
+        const fileName = path.basename(file, ext);
         const rootDir = path.dirname(file);
-        // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
-        const rootParts = rootDir.split('/');
-        const registry = {
-            entry: path.join(fullPathDir, file),
-            moduleSpecifier: null,
-            moduleName: null,
-            moduleNamespace: DEFAULT_NS,
-        };
+        const rootParts = rootDir.split('/'); // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
+        const entry = path.join(absPath, file);
 
         const dirModuleName = rootParts.pop();
         const dirModuleNamespace = rootParts.pop();
         if (dirModuleNamespace && dirModuleName === fileName) {
-            registry.moduleName = fileName;
-            registry.moduleNamespace = dirModuleNamespace.toLowerCase();
-            registry.moduleSpecifier = `${dirModuleNamespace}/${fileName}`;
-            mappings[registry.moduleSpecifier] = registry;
+            const registryNode = createRegistryEntry(
+                entry,
+                `${dirModuleNamespace}/${fileName}`,
+                fileName,
+                dirModuleNamespace.toLowerCase()
+            );
+            mappings[registryNode.moduleSpecifier] = registryNode;
         }
+
         return mappings;
     }, {});
 }
@@ -64,7 +79,7 @@ function hasModuleBeenVisited(module, visited) {
     return false;
 }
 
-function expandModuleDirectories({ moduleDirectories, rootDir } = {}) {
+function expandModuleDirectories({ moduleDirectories, rootDir }: ModuleResolverConfig = {}) {
     if (!moduleDirectories && !rootDir) {
         return module.paths;
     }
@@ -76,9 +91,9 @@ function resolveModules(modules, opts) {
     if (Array.isArray(modules)) {
         modules.forEach(modulePath => resolveModules(modulePath, opts));
     } else {
-        const { mappings, visited, moduleRoot, lwcConfig } = opts;
+        const { mappings, visited, moduleRoot } = opts;
         if (typeof modules === 'string') {
-            const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules), lwcConfig);
+            const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules));
             Object.keys(packageEntries).forEach(moduleName => {
                 if (!hasModuleBeenVisited(moduleName, visited)) {
                     mappings[moduleName] = packageEntries[moduleName];
@@ -97,13 +112,12 @@ function resolveModules(modules, opts) {
     }
 }
 
-function resolveLwcNpmModules(options = {}) {
+function resolveLwcNpmModules(options: ModuleResolverConfig = {}) {
     const visited = new Set();
     const modulePaths = expandModuleDirectories(options);
-
     return modulePaths.reduce((m, nodeModulesDir) => {
         return glob
-            .sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: ['**/node_modules/**'] })
+            .sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: DEFAULT_IGNORE })
             .reduce((mappings, file) => {
                 const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
                 const lwcConfig = loadLwcConfig(moduleRoot);

@@ -47,6 +47,7 @@ export function getTransformer(fileName: string): FileTransformer {
         case '.css':
             return styleTransform;
 
+        case '.ts':
         case '.js':
             return javascriptTransformer;
 

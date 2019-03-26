@@ -2,7 +2,10 @@
     "name": "@lwc/module-resolver",
     "description": "Resolves paths for LWC components",
     "version": "0.37.0",
-    "main": "./src/index.js",
+    "main": "./dist/commonjs/index.js",
+    "scripts": {
+        "build": "tsc"
+    },
     "license": "MIT",
     "dependencies": {
         "glob": "^7.1.2"
