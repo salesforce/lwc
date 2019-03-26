@@ -107,9 +107,32 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
+let templateContainsId = false;
+function initialPassToCheckForIds(root: IRNode) {
+    traverse(root, {
+        element: {
+            exit(element: IRElement) {
+                if (templateContainsId) {
+                    return;
+                }
+                const { attrs, props } = element;
+                if (attrs && attrs.id) {
+                    templateContainsId = true;
+                }
+                if (props && props.id) {
+                    templateContainsId = true;
+                }
+            },
+        },
+    });
+}
+
 function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     const stack = new Stack<t.Expression>();
     stack.push(t.arrayExpression([]));
+
+    templateContainsId = false;
+    initialPassToCheckForIds(root);
 
     traverse(root, {
         text: {
@@ -350,7 +373,10 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 if (attr.name === 'id' || isIdReferencingAttribute(attr.name)) {
                     return codeGen.genScopedId(expression);
                 }
-                if (isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)) {
+                if (
+                    templateContainsId &&
+                    isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI)
+                ) {
                     return codeGen.genScopedFragId(expression);
                 }
                 if (isSvgUseHref(tagName, attr.name, namespaceURI)) {
@@ -372,6 +398,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                     return generateScopedIdFunctionForIdRefAttr(attr.value);
                 }
                 if (
+                    templateContainsId &&
                     isAllowedFragOnlyUrlsXHTML(tagName, attr.name, namespaceURI) &&
                     isFragmentOnlyUrl(attr.value)
                 ) {
