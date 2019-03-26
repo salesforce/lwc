@@ -66,7 +66,7 @@ function createSetter(key: string) {
                 vmBeingUpdated = vm;
                 if (process.env.NODE_ENV !== 'production') {
                     // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // Then newValue if newValue is observable (plain object or array)
+                    // if newValue is observable (plain object or array)
                     const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(
@@ -93,7 +93,6 @@ function createSetter(key: string) {
                 }
             }
             vmBeingUpdated = null; // releasing the lock
-            // not need to wrap or check the value since that is happening somewhere else
             newValue = reactiveMembrane.getReadOnlyProxy(newValue);
             setHook(vm.component, key, newValue);
         };

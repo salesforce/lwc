@@ -89,7 +89,6 @@ function createPublicPropertyDescriptor(
                     )}`
                 );
             }
-            // not need to wrap or check the value since that is happening somewhere else
             vm.cmpProps[key] = newValue;
 
             // avoid notification of observability if the instance is already dirty
@@ -139,7 +138,6 @@ function createPublicAccessorDescriptor(
                     )}`
                 );
             }
-            // not need to wrap or check the value since that is happening somewhere else
             if (set) {
                 set.call(this, newValue);
             } else if (process.env.NODE_ENV !== 'production') {
