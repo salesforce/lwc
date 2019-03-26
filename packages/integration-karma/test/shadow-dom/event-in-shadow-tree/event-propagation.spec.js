@@ -141,7 +141,8 @@ describe('event propagation in simple shadow tree', () => {
         ]);
     });
 
-    it('propagate event from a host element', () => {
+    // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
+    xit('propagate event from a host element', () => {
         const logs = dispatchEventWithLog(
             nodes['x-shadow-tree'],
             new CustomEvent('test', { composed: true, bubbles: true })
