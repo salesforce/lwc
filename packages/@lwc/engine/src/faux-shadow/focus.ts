@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
+import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     matches,
     querySelectorAll,
@@ -206,24 +207,40 @@ function getNextTabbableElement(segments: QuerySegments): HTMLElement | null {
     return getFirstTabbableMatch(next);
 }
 
+function muteEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+}
+function muteFocusEventsDuringExecution(func: Function) {
+    windowAddEventListener.call(window, 'focusin', muteEvent, true);
+    windowAddEventListener.call(window, 'focusout', muteEvent, true);
+    func();
+    windowRemoveEventListener.call(window, 'focusin', muteEvent, true);
+    windowRemoveEventListener.call(window, 'focusout', muteEvent, true);
+}
+
 function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const nextNode = getNextTabbableElement(segments);
-    if (isNull(nextNode)) {
-        // nothing to focus on, blur to invalidate the operation
-        (focusEventTarget as HTMLElement).blur();
-        return;
-    }
-    nextNode.focus();
+    muteFocusEventsDuringExecution(() => {
+        const nextNode = getNextTabbableElement(segments);
+        if (isNull(nextNode)) {
+            // nothing to focus on, blur to invalidate the operation
+            (focusEventTarget as HTMLElement).blur();
+        } else {
+            nextNode.focus();
+        }
+    });
 }
 
 function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const prevNode = getPreviousTabbableElement(segments);
-    if (isNull(prevNode)) {
-        // nothing to focus on, blur to invalidate the operation
-        (focusEventTarget as HTMLElement).blur();
-        return;
-    }
-    prevNode.focus();
+    muteFocusEventsDuringExecution(() => {
+        const prevNode = getPreviousTabbableElement(segments);
+        if (isNull(prevNode)) {
+            // nothing to focus on, blur to invalidate the operation
+            (focusEventTarget as HTMLElement).blur();
+        } else {
+            prevNode.focus();
+        }
+    });
 }
 
 function isFirstTabbableChild(target: EventTarget, segments: QuerySegments): boolean {
@@ -260,7 +277,9 @@ function keyboardFocusHandler(event: FocusEvent) {
         // probably tabbing into element
         const first = getFirstTabbableMatch(segments.inner);
         if (!isNull(first)) {
-            first.focus();
+            muteFocusEventsDuringExecution(() => {
+                first.focus();
+            });
         } else {
             focusOnNextOrBlur(target, segments);
         }
@@ -302,20 +321,14 @@ function keyboardFocusInHandler(event: FocusEvent) {
     const post = relatedTargetPosition(host as HTMLElement, relatedTarget);
     switch (post) {
         case 1: // focus is probably coming from above
-            if (
-                isFirstFocusableChildReceivingFocus &&
-                relatedTarget === getPreviousTabbableElement(segments)
-            ) {
+            if (isFirstFocusableChildReceivingFocus) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnNextOrBlur(target, segments);
             }
             break;
         case 2: // focus is probably coming from below
-            if (
-                isLastFocusableChildReceivingFocus &&
-                relatedTarget === getNextTabbableElement(segments)
-            ) {
+            if (isLastFocusableChildReceivingFocus) {
                 // the focus was on the immediate focusable elements from above,
                 // it is almost certain that the focus is due to tab keypress
                 focusOnPrevOrBlur(target, segments);
