@@ -18,7 +18,7 @@ const BASE_CONFIG = {
 describe('test typescript like bundle', () => {
     test('test typescript extension', async () => {
         const customConfig = {
-            name: 'typescript.ts',
+            name: 'typescript',
             files: {
                 'typescript.ts': readFixture('./typescript/typescript.ts'),
                 'typescript.html': readFixture('./typescript/typescript.html'),
@@ -38,7 +38,7 @@ describe('test typescript like bundle', () => {
 
     test('test typescript grammar should fail', async () => {
         const customConfig = {
-            name: 'typescript-typed.ts',
+            name: 'typescript-typed',
             files: {
                 'typescript-typed.ts': readFixture('./typescript-typed/typescript-typed.ts'),
                 'typescript-typed.html': readFixture('./typescript-typed/typescript-typed.html'),

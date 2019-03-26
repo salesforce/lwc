@@ -10,8 +10,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 var _tmpl = registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetTokens = {
-    hostAttribute: "x-typescript.ts_typescript-host",
-    shadowAttribute: "x-typescript.ts_typescript"
+    hostAttribute: "x-typescript_typescript-host",
+    shadowAttribute: "x-typescript_typescript"
 };
 const Test = 1;
 class ClassAndTemplate extends LightningElement {
