@@ -25,6 +25,7 @@
         "@lwc/engine": "0.37.0",
         "@lwc/rollup-plugin": "0.37.0",
         "@lwc/wire-service": "0.37.0",
+        "compat-polyfills": "0.21.4",
         "deepmerge": "^1.5.2",
         "dotenv": "^4.0.0",
         "fs-extra": "^4.0.2",
