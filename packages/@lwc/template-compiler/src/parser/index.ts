@@ -870,11 +870,10 @@ export default function parse(
                 }
             }
 
-            if (
-                node.namespaceURI === HTML_NAMESPACE_URI &&
-                tag === 'iframe' &&
-                attrName === 'srcdoc'
-            ) {
+            // TODO #1136 - once the template compiler emits the element namespace information to the engine we should
+            // restrict the validation of the "srcdoc" attribute on the "iframe" element only if this element is
+            // part of the HTML namespace.
+            if (tag === 'iframe' && attrName === 'srcdoc') {
                 warnOnElement(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, node);
             }
         });
