@@ -83,12 +83,12 @@
         "yoda": "error",
 
         // Want to enable if there is consent
-        "no-shadow": "off", // https://eslint.org/docs/rules/no-shadow
+        "no-shadow": "off", // 20 violations https://eslint.org/docs/rules/no-shadow
         "no-use-before-define": ["off", { "functions": true, "classes": true, "variables": false }], // 215 violations https://eslint.org/docs/rules/no-use-before-define
         "prefer-arrow-callback": ["off", {
             "allowNamedFunctions": false,
             "allowUnboundThis": true
-          }], //https://eslint.org/docs/rules/prefer-arrow-callback
+          }], // 268 violations https://eslint.org/docs/rules/prefer-arrow-callback
         "prefer-template": "off", // 52 violations, https://eslint.org/docs/rules/prefer-template template literals not supported in all browsers
         "guard-for-in": "off", // 12 violations https://eslint.org/docs/rules/guard-for-in
         "no-else-return": ["off", { "allowElseIf": false }], // 46 violations https://eslint.org/docs/rules/no-else-return
