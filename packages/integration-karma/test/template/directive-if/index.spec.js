@@ -1,5 +1,6 @@
 import { createElement } from 'test-utils';
 import XTest from 'x/test';
+import XSlotted from 'x/slotted';
 
 describe('if:true directive', () => {
     it('should render if the value is truthy', () => {
@@ -49,6 +50,36 @@ describe('if:true directive', () => {
             })
             .then(() => {
                 expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
+            });
+    });
+    it('should update child with slot content if value changes', () => {
+        const elm = createElement('x-test', { is: XSlotted });
+        document.body.appendChild(elm);
+
+        const child = elm.shadowRoot.querySelector('x-child');
+        expect(child).not.toBeNull();
+        expect(child.querySelector('.content')).toBeNull();
+
+        // The warning message is not of concern here. That is covered by a test in decorators/api/index.spec.js
+        // Testing the start of the error message to not miss errors thrown for other reasons
+        expect(() => {
+            child.show = true;
+        }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+        return Promise.resolve()
+            .then(() => {
+                expect(child.querySelector('.content')).not.toBeNull();
+                expect(() => {
+                    child.show = false;
+                }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            })
+            .then(() => {
+                expect(child.querySelector('.content')).toBeNull();
+                expect(() => {
+                    child.show = true;
+                }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            })
+            .then(() => {
+                expect(child.querySelector('.content')).not.toBeNull();
             });
     });
 });
