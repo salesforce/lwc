@@ -9,18 +9,19 @@
 
 import assert from '../shared/assert';
 import {
-    defineProperties,
-    getOwnPropertyNames,
-    forEach,
+    ArraySlice,
     assign,
+    create,
+    defineProperties,
+    forEach,
+    getOwnPropertyNames,
+    getPropertyDescriptor,
+    getPrototypeOf,
     isString,
     isUndefined,
-    ArraySlice,
-    toString,
-    StringToLowerCase,
     setPrototypeOf,
-    getPrototypeOf,
-    getPropertyDescriptor,
+    StringToLowerCase,
+    toString,
 } from '../shared/language';
 import { ComponentInterface } from './component';
 import {
@@ -37,7 +38,16 @@ import {
     removeAttribute,
     removeAttributeNS,
 } from '../env/element';
-import { create } from './../shared/language';
+
+function generateDescriptor(options: undefined | object): object {
+    // Note: non-enumerable, so that it does not affect for..in loops or Object.keys() in userland
+    return assign(
+        {
+            configurable: true,
+        },
+        options
+    );
+}
 
 function getNodeRestrictionsDescriptors(
     node: Node,
@@ -54,7 +64,7 @@ function getNodeRestrictionsDescriptors(
     const originalNodeValueDescriptor = getPropertyDescriptor(node, 'nodeValue')!;
     const { appendChild, insertBefore, removeChild, replaceChild } = node;
     return {
-        appendChild: {
+        appendChild: generateDescriptor({
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
@@ -64,11 +74,8 @@ function getNodeRestrictionsDescriptors(
                 }
                 return appendChild.call(this, aChild);
             },
-            enumerable: false,
-            writable: false,
-            configurable: true,
-        },
-        insertBefore: {
+        }),
+        insertBefore: generateDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
@@ -78,11 +85,8 @@ function getNodeRestrictionsDescriptors(
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
-            enumerable: false,
-            writable: false,
-            configurable: true,
-        },
-        removeChild: {
+        }),
+        removeChild: generateDescriptor({
             value(this: Node, aChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
@@ -92,11 +96,8 @@ function getNodeRestrictionsDescriptors(
                 }
                 return removeChild.call(this, aChild);
             },
-            enumerable: false,
-            writable: false,
-            configurable: true,
-        },
-        replaceChild: {
+        }),
+        replaceChild: generateDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
                 if (this instanceof Element && options.isPortal !== true) {
                     assert.logError(
@@ -106,11 +107,8 @@ function getNodeRestrictionsDescriptors(
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
-            enumerable: false,
-            writable: false,
-            configurable: true,
-        },
-        nodeValue: {
+        }),
+        nodeValue: generateDescriptor({
             get(this: Node) {
                 return originalNodeValueDescriptor.get!.call(this);
             },
@@ -123,8 +121,8 @@ function getNodeRestrictionsDescriptors(
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             },
-        },
-        textContent: {
+        }),
+        textContent: generateDescriptor({
             get(this: Node): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
@@ -137,7 +135,7 @@ function getNodeRestrictionsDescriptors(
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             },
-        },
+        }),
     };
 }
 
@@ -153,7 +151,7 @@ function getElementRestrictionsDescriptors(
     const originalInnerHTMLDescriptor = getPropertyDescriptor(elm, 'innerHTML')!;
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     assign(descriptors, {
-        innerHTML: {
+        innerHTML: generateDescriptor({
             get(): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
@@ -166,19 +164,15 @@ function getElementRestrictionsDescriptors(
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        outerHTML: {
+        }),
+        outerHTML: generateDescriptor({
             get(this: HTMLElement): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set outerHTML on Element.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
+        }),
     });
     return descriptors;
 }
@@ -201,27 +195,23 @@ function getShadowRootRestrictionsDescriptors(
     const originalInnerHTMLDescriptor = getPropertyDescriptor(sr, 'innerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(sr, 'textContent')!;
     assign(descriptors, {
-        innerHTML: {
+        innerHTML: generateDescriptor({
             get(this: ShadowRoot): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, _value: string) {
                 throw new TypeError(`Invalid attempt to set innerHTML on ShadowRoot.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        textContent: {
+        }),
+        textContent: generateDescriptor({
             get(this: ShadowRoot): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: ShadowRoot, _value: string) {
                 throw new TypeError(`Invalid attempt to set textContent on ShadowRoot.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        addEventListener: {
+        }),
+        addEventListener: generateDescriptor({
             value(this: ShadowRoot, type: string) {
                 assert.invariant(
                     !isRendering,
@@ -233,8 +223,8 @@ function getShadowRootRestrictionsDescriptors(
                 // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             },
-        },
-        querySelector: {
+        }),
+        querySelector: generateDescriptor({
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(
@@ -245,8 +235,8 @@ function getShadowRootRestrictionsDescriptors(
                 // @ts-ignore type-mismatch
                 return originalQuerySelector.apply(this, arguments);
             },
-        },
-        querySelectorAll: {
+        }),
+        querySelectorAll: generateDescriptor({
             value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(
@@ -257,7 +247,7 @@ function getShadowRootRestrictionsDescriptors(
                 // @ts-ignore type-mismatch
                 return originalQuerySelectorAll.apply(this, arguments);
             },
-        },
+        }),
     });
     const BlackListedShadowRootMethods = {
         appendChild: 0,
@@ -270,11 +260,11 @@ function getShadowRootRestrictionsDescriptors(
         elementsFromPoint: 0,
     };
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
-        const descriptor = {
+        const descriptor = generateDescriptor({
             get() {
                 throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
             },
-        };
+        });
         descriptors[methodName] = descriptor;
     });
     return descriptors;
@@ -393,37 +383,31 @@ function getCustomElementRestrictionsDescriptors(
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
     const originalTextContentDescriptor = getPropertyDescriptor(elm, 'textContent')!;
     return assign(descriptors, {
-        innerHTML: {
+        innerHTML: generateDescriptor({
             get(this: HTMLElement): string {
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set innerHTML on HTMLElement.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        outerHTML: {
+        }),
+        outerHTML: generateDescriptor({
             get(this: HTMLElement): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set outerHTML on HTMLElement.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        textContent: {
+        }),
+        textContent: generateDescriptor({
             get(this: HTMLElement): string {
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: HTMLElement, _value: string) {
                 throw new TypeError(`Invalid attempt to set textContent on HTMLElement.`);
             },
-            enumerable: true,
-            configurable: true,
-        },
-        addEventListener: {
+        }),
+        addEventListener: generateDescriptor({
             value(this: HTMLElement, type: string) {
                 assert.invariant(
                     !isRendering,
@@ -435,28 +419,23 @@ function getCustomElementRestrictionsDescriptors(
                 // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
             },
-        },
+        }),
         // replacing mutators and accessors on the element itself to catch any mutation
-        getAttribute: {
+        getAttribute: generateDescriptor({
             value: getAttributePatched,
-            configurable: true,
-        },
-        setAttribute: {
+        }),
+        setAttribute: generateDescriptor({
             value: setAttributePatched,
-            configurable: true,
-        },
-        setAttributeNS: {
+        }),
+        setAttributeNS: generateDescriptor({
             value: setAttributeNSPatched,
-            configurable: true,
-        },
-        removeAttribute: {
+        }),
+        removeAttribute: generateDescriptor({
             value: removeAttributePatched,
-            configurable: true,
-        },
-        removeAttributeNS: {
+        }),
+        removeAttributeNS: generateDescriptor({
             value: removeAttributeNSPatched,
-            configurable: true,
-        },
+        }),
     });
 }
 
@@ -467,7 +446,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     }
     const originalSetAttribute = cmp.setAttribute;
     return {
-        setAttribute: {
+        setAttribute: generateDescriptor({
             value(this: ComponentInterface, attrName: string, _value: any) {
                 // logging errors for experimental and special attributes
                 if (isString(attrName)) {
@@ -489,16 +468,14 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                 // @ts-ignore type-mismatch
                 originalSetAttribute.apply(this, arguments);
             },
-            configurable: true,
-        },
-        tagName: {
+        }),
+        tagName: generateDescriptor({
             get(this: ComponentInterface) {
                 throw new Error(
                     `Usage of property \`tagName\` is disallowed because the component itself does not know which tagName will be used to create the element, therefore writing code that check for that value is error prone.`
                 );
             },
-            configurable: true,
-        },
+        }),
     };
 }
 
@@ -513,7 +490,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
         if (propName in proto) {
             return; // no need to redefine something that we are already exposing
         }
-        descriptors[propName] = {
+        descriptors[propName] = generateDescriptor({
             get(this: ComponentInterface) {
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
@@ -548,7 +525,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
             set() {},
-        };
+        });
     });
     return descriptors;
 }
