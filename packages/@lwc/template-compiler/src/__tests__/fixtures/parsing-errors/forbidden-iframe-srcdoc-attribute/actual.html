@@ -1,3 +1,13 @@
 <template>
     <iframe srcdoc="<script src=/foo.js></script>"></iframe>
+
+    <svg>
+        <!-- TODO: #1136 template compiler should not restrict srcdoc attribute on iframe in the SVG namespace. -->
+        <iframe srcdoc="<script src=/foo.js></script>"></iframe>
+    </svg>
+
+    <math>
+        <!-- TODO: #1136 template compiler should not restrict srcdoc attribute on iframe in the MathML namespace. -->
+        <iframe srcdoc="<script src=/foo.js></script>"></iframe>
+    </math>
 </template>
