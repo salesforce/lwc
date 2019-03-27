@@ -545,7 +545,6 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                     }
                 }
                 assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
-                return; // explicit undefined
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
             set() {},

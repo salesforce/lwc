@@ -14,11 +14,91 @@
     },
 
     "rules": {
-        "no-unused-vars": "off",
+        "block-scoped-var": "error",
         "@typescript-eslint/no-unused-vars": [
             "error",
             { "argsIgnorePattern": "^_" }
-        ]
+        ],
+        "no-alert": "warn",
+        "no-buffer-constructor": "error",
+        "no-eval": "error",
+        "no-extend-native": "error", // This is complimentary to no-extend-global-constructor
+        "no-extra-bind": "error",
+        "no-extra-label": "error",
+        "no-iterator": "error",
+        "no-lone-blocks": "error",
+        "no-proto": "error",
+        "no-new-require": "error",
+        "no-restricted-properties": ["error", {
+            "object": "arguments",
+            "property": "callee",
+            "message": "arguments.callee is deprecated"
+        }, {
+            "object": "global",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "self",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "window",
+            "property": "isFinite",
+            "message": "Please use Number.isFinite instead"
+        }, {
+            "object": "global",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "object": "self",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "object": "window",
+            "property": "isNaN",
+            "message": "Please use Number.isNaN instead"
+        }, {
+            "property": "__defineGetter__",
+            "message": "Please use Object.defineProperty instead."
+        }, {
+            "property": "__defineSetter__",
+            "message": "Please use Object.defineProperty instead."
+        }, {
+            "object": "Math",
+            "property": "pow",
+            "message": "Use the exponentiation operator (**) instead."
+        }],
+        "no-self-compare": "error",
+        "no-undef-init": "error",
+        "no-unused-vars": "off", // Override eslint:recommended rule
+        "no-useless-catch": "error",
+        "no-useless-computed-key": "error",
+        "no-useless-return": "error",
+        "no-with": "error",
+        "prefer-const": ["error", {
+            "destructuring": "any",
+            "ignoreReadBeforeAssign": true
+          }],
+        "template-curly-spacing": "error",
+        "yoda": "error",
+
+        // Want to enable if there is consent
+        "no-shadow": "off", // 20 violations https://eslint.org/docs/rules/no-shadow
+        "no-use-before-define": ["off", { "functions": true, "classes": true, "variables": false }], // 215 violations https://eslint.org/docs/rules/no-use-before-define
+        "prefer-arrow-callback": ["off", {
+            "allowNamedFunctions": false,
+            "allowUnboundThis": true
+          }], // 268 violations https://eslint.org/docs/rules/prefer-arrow-callback
+        "prefer-template": "off", // 52 violations, https://eslint.org/docs/rules/prefer-template template literals not supported in all browsers
+        "guard-for-in": "off", // 12 violations https://eslint.org/docs/rules/guard-for-in
+        "no-else-return": ["off", { "allowElseIf": false }], // 46 violations https://eslint.org/docs/rules/no-else-return
+        "no-implicit-coercion": ["off", {
+            "boolean": true,
+            "number": true,
+            "string": true,
+            "allow": []
+          }], // 28 violations https://eslint.org/docs/rules/no-implicit-coercion
+        "no-loop-func": "off" // 1 violation https://eslint.org/docs/rules/no-loop-func
     },
 
     "overrides": [

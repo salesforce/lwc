@@ -64,7 +64,7 @@ function getLwcDecorators(importSpecifiers) {
             // If the the decorator is:
             //   - an identifier @track : the decorator is the parent of the identifier
             //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
-            let decorator = reference.parentPath.isDecorator()
+            const decorator = reference.parentPath.isDecorator()
                 ? reference.parentPath
                 : reference.parentPath.parentPath;
 
@@ -120,14 +120,14 @@ function transform(t, klass, decorators) {
 
 /** Remove all the decorators */
 function removeDecorators(decorators) {
-    for (let { path } of decorators) {
+    for (const { path } of decorators) {
         path.remove();
     }
 }
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
 function removeImportSpecifiers(specifiers) {
-    for (let { path } of specifiers) {
+    for (const { path } of specifiers) {
         const importStatement = path.parentPath;
         path.remove();
 
@@ -163,7 +163,7 @@ function decorators({ types: t }) {
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
             const grouped = groupDecorator(decorators);
 
-            for (let [klass, decorators] of grouped) {
+            for (const [klass, decorators] of grouped) {
                 validate(klass, decorators);
                 transform(t, klass, decorators);
             }

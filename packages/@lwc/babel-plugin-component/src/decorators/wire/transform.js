@@ -87,7 +87,7 @@ const scopedReferenceLookup = scope => name => {
         if (binding.kind === 'module') {
             // Resolves module import to the name of the module imported
             // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
-            let parentPathNode = binding.path.parentPath.node;
+            const parentPathNode = binding.path.parentPath.node;
             if (parentPathNode && parentPathNode.source) {
                 type = 'module';
                 value = parentPathNode.source.value;

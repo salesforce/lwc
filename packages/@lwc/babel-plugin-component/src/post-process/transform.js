@@ -86,7 +86,7 @@ module.exports = function postProcess({ types: t }) {
     }
 
     return {
-        /// Register component
+        // Register component
         ExportDefaultDeclaration(path, state) {
             const implicitResolution = !state.opts.isExplicitImport;
             if (implicitResolution) {

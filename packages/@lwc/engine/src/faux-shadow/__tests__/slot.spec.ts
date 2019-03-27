@@ -160,8 +160,7 @@ describe('slotted elements', () => {
         const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
         document.body.appendChild(elm);
         const slot = childTemplate.querySelector('slot');
-        let children;
-        children = slot.childNodes;
+        const children = slot.childNodes;
         expect(children).toHaveLength(0);
     });
 });

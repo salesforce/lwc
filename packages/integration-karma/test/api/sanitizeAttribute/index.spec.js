@@ -2,7 +2,7 @@ import { createElement } from 'test-utils';
 
 import Xlink from 'x/xlink';
 
-let originalSanitizeAttribute = Engine.sanitizeAttribute;
+const originalSanitizeAttribute = Engine.sanitizeAttribute;
 afterEach(() => {
     // Reset original sanitizer after each test.
     Engine.sanitizeAttribute = originalSanitizeAttribute;

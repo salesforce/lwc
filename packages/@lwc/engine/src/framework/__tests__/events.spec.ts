@@ -536,7 +536,7 @@ describe('Events on Custom Elements', () => {
 
     it('it should call event handler correctly when events bubble from template', () => {
         expect.assertions(1);
-        let clickSpy = jest.fn();
+        const clickSpy = jest.fn();
 
         const html = compileTemplate(`
             <template>

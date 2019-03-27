@@ -45,7 +45,6 @@ register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
         const observable = getObservable(config);
         if (observable) {
             subscription = observable.subscribe(observer);
-            return;
         }
     });
 
@@ -62,7 +61,6 @@ register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
         const observable = getObservable(config);
         if (observable) {
             subscription = observable.subscribe(observer);
-            return;
         }
     });
 });

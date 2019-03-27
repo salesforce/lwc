@@ -9,16 +9,25 @@
     },
 
     "rules": {
-        "no-production-assert": "error"
+        "no-production-assert": "error",
+        "no-prototype-builtins": "error"
     },
 
-    "overrides": [{
-        "files": [
-            "**/__tests__/**"
-        ],
+    "overrides": [
+        {
+            "files": [
+                "**/__tests__/**"
+            ],
 
-        "rules": {
-            "no-production-assert": "off"
+            "rules": {
+                "no-production-assert": "off"
+            }
+        },
+        {
+            "files": [ "src/polyfills/**"],
+            "rules": {
+                "no-extend-native": "off"
+            }
         }
-    }]
+    ]
 }
