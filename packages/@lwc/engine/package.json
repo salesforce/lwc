@@ -1,6 +1,6 @@
 {
   "name": "@lwc/engine",
-  "version": "0.34.7",
+  "version": "0.34.8",
   "description": "LWC Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
@@ -17,7 +17,7 @@
     "observable-membrane": "0.25.0"
   },
   "devDependencies": {
-    "@lwc/template-compiler": "0.34.7",
+    "@lwc/template-compiler": "0.34.8",
     "concurrently": "^3.5.1",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^3.0.2",
