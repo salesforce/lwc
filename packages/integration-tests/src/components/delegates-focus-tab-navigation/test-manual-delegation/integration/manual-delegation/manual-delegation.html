@@ -1,0 +1,10 @@
+<template>
+    <button onclick={handleClick}>toggle (current tabindex value: {privateTabIndex})</button>
+    <input class="first-outside" placeholder="first (outside)">
+    <input class="second-outside" placeholder="second (outside)">
+    <div>
+        <integration-child class="integration-child" tabindex={privateTabIndex}></integration-child>
+    </div>
+    <input class="third-outside" placeholder="third (outside)">
+    <input class="fourth-outside" placeholder="fourth (outside)">
+</template>

@@ -7,66 +7,6 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../framework/main';
 
-describe('proxy', () => {
-    it('should allow setting properties manually', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <div></div>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        root.querySelector('div').id = 'something';
-        expect(root.querySelector('div').getAttribute('id')).toBe('something');
-    });
-    it('should unwrap arguments when invoking a method on a proxy', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <div>
-                    <p></p>
-                </div>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        const div = root.querySelector('div');
-        const p = root.querySelector('p');
-        expect(div.contains(p)).toBe(true);
-    });
-    it('should allow setting attributes manually', () => {
-        const myComponentTmpl = compileTemplate(`
-            <template>
-                <div></div>
-            </template>
-        `);
-        class MyComponent extends LightningElement {
-            render() {
-                return myComponentTmpl;
-            }
-        }
-
-        const elm = createElement('x-foo', { is: MyComponent });
-        document.body.appendChild(elm);
-        const root = elm.shadowRoot;
-        root.querySelector('div').setAttribute('id', 'something');
-        expect(root.querySelector('div').id).toBe('something');
-    });
-});
-
 describe('#childNodes', () => {
     it('should always return an empty array for slots not rendering default content', () => {
         const hasSlotTmpl = compileTemplate(`

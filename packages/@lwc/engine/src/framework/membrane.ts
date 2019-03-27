@@ -22,7 +22,8 @@ export const reactiveMembrane = new ObservableMembrane({
 export const unwrap = function(value: any): any {
     const unwrapped = reactiveMembrane.unwrapProxy(value);
     if (unwrapped !== value) {
-        return unwrapped;
+        // if value is a proxy, unwrap to access original value and apply distortion
+        return valueDistortion(unwrapped);
     }
     return value;
 };
