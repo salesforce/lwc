@@ -149,7 +149,9 @@ describe('module resolver', () => {
         expect(diagnostics).toMatchObject([
             {
                 level: 0,
-                message: expect.stringContaining('Failed to resolve'),
+                message: expect.stringContaining(
+                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
+                ),
             },
         ]);
     });
@@ -169,7 +171,9 @@ describe('module resolver', () => {
         expect(diagnostics).toMatchObject([
             {
                 level: 0,
-                message: expect.stringContaining('Failed to resolve'),
+                message: expect.stringContaining(
+                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
+                ),
             },
         ]);
     });
@@ -242,7 +246,9 @@ describe('module file name validation', () => {
         expect(diagnostics).toMatchObject([
             {
                 level: 0,
-                message: expect.stringContaining('Failed to resolve'),
+                message: expect.stringContaining(
+                    'LWC1010: Failed to resolve entry for module "mycmp".'
+                ),
             },
         ]);
     });
