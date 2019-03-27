@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.36.0...v) (2019-03-08)
+# [](https://github.com/salesforce/lwc/compare/v0.37.0...v) (2019-03-27)
+
+
+### Bug Fixes
+
+* **babel-plugin-component:** correct class member decorator validation  ([#1122](https://github.com/salesforce/lwc/issues/1122)) ([22ec3d5](https://github.com/salesforce/lwc/commit/22ec3d5))
+* use observable-membrane v0.26.1 ([#1111](https://github.com/salesforce/lwc/issues/1111)) ([df0e91f](https://github.com/salesforce/lwc/commit/df0e91f))
+* **engine:** prevent focus events when engine manages focus ([#1116](https://github.com/salesforce/lwc/issues/1116)) ([477c5cf](https://github.com/salesforce/lwc/commit/477c5cf))
+* **jest-transformer:** add babel-preset-jest dependency ([#1112](https://github.com/salesforce/lwc/issues/1112)) ([1f12803](https://github.com/salesforce/lwc/commit/1f12803))
+
+
+
+<a name="0.37.0"></a>
+# [0.37.0](https://github.com/salesforce/lwc/compare/v0.36.0...v0.37.0) (2019-03-08)
 
 
 ### Bug Fixes

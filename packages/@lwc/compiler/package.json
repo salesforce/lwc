@@ -1,6 +1,6 @@
 {
     "name": "@lwc/compiler",
-    "version": "0.37.0",
+    "version": "0.37.1",
     "description": "LWC compiler",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
@@ -14,10 +14,10 @@
     "dependencies": {
         "@babel/core": "7.1.0",
         "@babel/plugin-proposal-object-rest-spread": "7.0.0",
-        "@lwc/babel-plugin-component": "0.37.0",
-        "@lwc/errors": "0.37.0",
-        "@lwc/style-compiler": "0.37.0",
-        "@lwc/template-compiler": "0.37.0",
+        "@lwc/babel-plugin-component": "0.37.1",
+        "@lwc/errors": "0.37.1",
+        "@lwc/style-compiler": "0.37.1",
+        "@lwc/template-compiler": "0.37.1",
         "@types/chokidar": "^1.7.5",
         "babel-preset-compat": "0.21.4",
         "babel-preset-minify": "0.5.0-alpha.5a128fd5",
