@@ -1,4 +1,7 @@
 <template>
+    <div>
+        <button class="initialize" onclick={handleClick}>initialize tabindex to 0</button>
+    </div>
     <input class="first-outside" placeholder="first (outside)">
     <div>
         <integration-parent tabindex={computedTabIndex} onfocusout={handleFocusOut}></integration-parent>

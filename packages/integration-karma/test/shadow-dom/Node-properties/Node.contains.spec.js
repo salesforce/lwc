@@ -1,6 +1,7 @@
 import { createElement } from 'test-utils';
 
 import Slotted from 'x/slotted';
+import Test from 'x/test';
 
 describe('Node.contains', () => {
     it('should return the right value for node outside the shadow tree', () => {
@@ -11,6 +12,18 @@ describe('Node.contains', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.contains(div)).toBe(false);
+    });
+
+    it('should return the right value for standard html elements inside the shadow tree', () => {
+        const elm = createElement('x-foo', { is: Test });
+        document.body.appendChild(elm);
+        const root = elm.shadowRoot;
+        const div = root.querySelector('div');
+        const p = root.querySelector('p');
+        expect(div.contains(p)).toBe(false);
+
+        const span = root.querySelector('span');
+        expect(div.contains(span)).toBe(true);
     });
 
     it('should return the right value for nodes in the same shadow tree', () => {
