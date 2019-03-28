@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, LightningElement } from 'lwc';
 
 import Test from 'x/test';
 import ShadowRootGetter from 'x/shadowRootGetter';

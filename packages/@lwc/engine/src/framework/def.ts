@@ -187,7 +187,15 @@ export function isComponentConstructor(ctor: any): ctor is ComponentConstructor 
     let current = ctor;
     do {
         if (isCircularModuleDependency(current)) {
-            current = resolveCircularModuleDependency(current);
+            const circularResolved = resolveCircularModuleDependency(current);
+
+            // If the circular function returns itself, that's the signal that we have hit the end of the proto chain,
+            // which must always be a valid base constructor.
+            if (circularResolved === current) {
+                return true;
+            }
+
+            current = circularResolved;
         }
 
         if (current === BaseLightningElement) {
