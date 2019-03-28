@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const lwcResolver = require('../index.js');
+const lwcResolver = require('../index');
 
 describe('resolve-lwc-npm-modules', () => {
     it('resolve from npm', () => {

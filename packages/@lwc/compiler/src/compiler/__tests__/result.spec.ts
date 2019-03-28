@@ -142,7 +142,7 @@ describe('compiler result', () => {
 
         expect(level).toBe(DiagnosticLevel.Fatal);
         expect(message).toContain(
-            'Failed to resolve import "./nothing" from "foo.js". Please add "nothing.js" file to the component folder.'
+            'Failed to resolve import "./nothing" from "foo.js". Please add "nothing" file to the component folder.'
         );
         expect(code).toBe(1011);
     });

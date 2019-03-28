@@ -150,7 +150,7 @@ describe('module resolver', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo.js" file to the component folder.'
+                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
                 ),
             },
         ]);
@@ -172,7 +172,7 @@ describe('module resolver', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve "./lib/foo" from "foo.js". Did you mean "lib/Foo"?'
+                    'LWC1011: Failed to resolve import "./lib/foo" from "foo.js". Please add "lib/foo" file to the component folder.'
                 ),
             },
         ]);
@@ -247,7 +247,7 @@ describe('module file name validation', () => {
             {
                 level: 0,
                 message: expect.stringContaining(
-                    'Failed to resolve "Mycmp.js". The file name must case match the component folder name "mycmp".'
+                    'LWC1010: Failed to resolve entry for module "mycmp".'
                 ),
             },
         ]);

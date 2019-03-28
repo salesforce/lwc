@@ -7,12 +7,13 @@
 import * as path from 'path';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
 
-import { NormalizedCompilerOptions } from '../compiler/options';
+import { NormalizedCompilerOptions, BundleFiles } from '../compiler/options';
 
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
+const VALID_EXTENSIONS = ['.js', '.ts'];
 
 function isRelativeImport(id: string) {
     return id.startsWith('.');
@@ -41,6 +42,14 @@ function isFirstCharacterUppercased(importee: string) {
     return importee && upperCaseRegex.test(importee);
 }
 
+function inferExtension(fileName: string, files: BundleFiles) {
+    if (!path.extname(fileName)) {
+        const ext = VALID_EXTENSIONS.find(ext => files.hasOwnProperty(fileName + ext)) || '';
+        return fileName + ext;
+    }
+    return fileName;
+}
+
 function fileExists(fileName: string, { files }: NormalizedCompilerOptions): boolean {
     return files.hasOwnProperty(fileName);
 }
@@ -63,7 +72,7 @@ function generateModuleResolutionError(
     importer: string,
     options: NormalizedCompilerOptions
 ) {
-    const absPath = getAbsolutePath(importee, importer, options.baseDir);
+    const absPath = getAbsolutePath(importee, importer, options);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
     return caseIgnoredFilename
@@ -89,7 +98,7 @@ function generateEntryResolutionError(
     importer: string,
     options: NormalizedCompilerOptions
 ) {
-    const absPath = getAbsolutePath(importee, importer, options.baseDir);
+    const absPath = getAbsolutePath(importee, importer, options);
     const caseIgnoredFilename = getCaseIgnoredFilenameMatch(options.files, absPath);
 
     return caseIgnoredFilename
@@ -103,15 +112,10 @@ function generateEntryResolutionError(
           });
 }
 
-function getAbsolutePath(importee: string, importer: string, baseDir: string | undefined) {
+function getAbsolutePath(importee: string, importer: string, options: NormalizedCompilerOptions) {
+    const { baseDir, files } = options;
     const relPath = importer ? path.dirname(importer) : baseDir || '';
-    let absPath = path.join(relPath, importee);
-
-    if (!path.extname(importee)) {
-        absPath += '.js';
-    }
-
-    return absPath;
+    return inferExtension(path.join(relPath, importee), files);
 }
 
 function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMatch: string) {
@@ -141,7 +145,7 @@ export default function({ options }: { options: NormalizedCompilerOptions }) {
                 );
             }
 
-            const absPath = getAbsolutePath(importee, importer, options.baseDir);
+            const absPath = getAbsolutePath(importee, importer, options);
 
             if (!fileExists(absPath, options)) {
                 if (isImplicitCssImport(importee, importer)) {
