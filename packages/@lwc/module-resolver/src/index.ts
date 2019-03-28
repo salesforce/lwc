@@ -43,7 +43,7 @@ function loadLwcConfig(modulePath) {
         } catch (e) {
             config = jsonPkg.lwc;
         }
-    } catch(ignore) {
+    } catch (ignore) {
         // ignore
     }
     return config;
