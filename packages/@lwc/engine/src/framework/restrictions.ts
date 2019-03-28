@@ -39,7 +39,7 @@ import {
     removeAttributeNS,
 } from '../env/element';
 
-function generateDescriptor(options: undefined | object): object {
+function generateDescriptor(options: PropertyDescriptor): object {
     // Note: non-enumerable, so that it does not affect for..in loops or Object.keys() in userland
     return assign(
         {
