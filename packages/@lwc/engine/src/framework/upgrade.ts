@@ -101,7 +101,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     let Ctor = options.is;
     if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"createElement" function as expect a "is" option with a valid component constructor.`
+            `"createElement" function expects a "is" option with a valid component constructor.`
         );
     }
 
