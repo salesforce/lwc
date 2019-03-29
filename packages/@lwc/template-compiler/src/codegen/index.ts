@@ -107,14 +107,11 @@ function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: 
     data.push(t.objectProperty(t.identifier('context'), t.objectExpression(contextExpressions)));
 }
 
-let templateContainsId = false;
 function initialPassToCheckForIds(root: IRNode) {
+    let templateContainsId = false;
     traverse(root, {
         element: {
             exit(element: IRElement) {
-                if (templateContainsId) {
-                    return;
-                }
                 const { attrs, props } = element;
                 if (attrs && attrs.id) {
                     templateContainsId = true;
@@ -125,14 +122,14 @@ function initialPassToCheckForIds(root: IRNode) {
             },
         },
     });
+    return templateContainsId;
 }
 
 function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     const stack = new Stack<t.Expression>();
     stack.push(t.arrayExpression([]));
 
-    templateContainsId = false;
-    initialPassToCheckForIds(root);
+    const templateContainsId = initialPassToCheckForIds(root);
 
     traverse(root, {
         text: {
@@ -172,14 +169,18 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 // Applied the transformation to itself
                 isTemplate(element)
                     ? transformTemplate(element, children)
-                    : transformElement(element, children);
+                    : transformElement(element, children, templateContainsId);
             },
         },
     });
 
     /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
-    function transformElement(element: IRElement, children: t.Expression) {
-        const databag = elementDataBag(element);
+    function transformElement(
+        element: IRElement,
+        children: t.Expression,
+        templateContainsId: boolean
+    ) {
+        const databag = elementDataBag(element, templateContainsId);
 
         let babelElement: t.Expression;
         if (isCustomElement(element)) {
@@ -361,7 +362,11 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         return t.templateLiteral(quasis, expressions);
     }
 
-    function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
+    function computeAttrValue(
+        attr: IRAttribute,
+        element: IRElement,
+        templateContainsId: boolean
+    ): t.Expression {
         const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
 
         switch (attr.type) {
@@ -422,7 +427,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         }
     }
 
-    function elementDataBag(element: IRElement): t.ObjectExpression {
+    function elementDataBag(element: IRElement, templateContainsId: boolean): t.ObjectExpression {
         const data: t.ObjectProperty[] = [];
         const {
             classMap,
@@ -469,7 +474,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         // Attributes
         if (attrs) {
             const attrsObj = objectToAST(attrs, key => {
-                return computeAttrValue(attrs[key], element);
+                return computeAttrValue(attrs[key], element, templateContainsId);
             });
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
         }
@@ -477,7 +482,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         // Properties
         if (props) {
             const propsObj = objectToAST(props, key => {
-                return computeAttrValue(props[key], element);
+                return computeAttrValue(props[key], element, templateContainsId);
             });
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
