@@ -2,6 +2,7 @@ import { createElement } from 'test-utils';
 
 import HrefStatic from 'x/hrefStatic';
 import HrefDynamic from 'x/hrefDynamic';
+import HrefDangling from 'x/hrefDangling';
 
 function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
@@ -52,3 +53,18 @@ function testHref(type, create) {
 
 testHref('static', () => createElement('x-href-static', { is: HrefStatic }));
 testHref('dynamic', () => createElement('x-href-dynamic', { is: HrefDynamic }));
+
+// Delete this test when we transform all href values with fragment-only urls
+// https://github.com/salesforce/lwc/issues/1150
+it('should not transform fragment-only urls when the template has no ids', () => {
+    const elm = createElement('x-href-dangling', { is: HrefDangling });
+    document.body.appendChild(elm);
+    expect(elm.shadowRoot.querySelector('a').getAttribute('href')).toBe('#foo');
+});
+// Enable this test when we transform all href values with fragment-only urls
+// https://github.com/salesforce/lwc/issues/1150
+xit('should transform fragment-only urls even when the template has no ids', () => {
+    const elm = createElement('x-href-dangling', { is: HrefDangling });
+    document.body.appendChild(elm);
+    expect(elm.shadowRoot.querySelector('a').getAttribute('href')).not.toBe('#foo');
+});
