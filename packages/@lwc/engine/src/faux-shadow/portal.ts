@@ -5,8 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined, forEach } from '../shared/language';
-import { getNodeOwnerKey, setNodeOwnerKey, setCSSToken, getInternalChildNodes } from './node';
-import { getCSSToken } from './node';
+import {
+    getNodeOwnerKey,
+    setNodeOwnerKey,
+    getCSSToken,
+    setCSSToken,
+    getInternalChildNodes,
+} from './node';
 import '../polyfills/mutation-observer/main';
 
 const MutationObserver = (window as any).MutationObserver;
@@ -16,18 +21,12 @@ const MutationObserverObserve = MutationObserver.prototype.observe;
 // "Registered observers in a node’s registered observer list have a weak
 // reference to the node."
 // https://dom.spec.whatwg.org/#garbage-collection
-let portalObserver;
-
-const portals: WeakMap<Element, 1> = new WeakMap();
+let portalObserver: MutationObserver | undefined;
 
 const portalObserverConfig: MutationObserverInit = {
     childList: true,
     subtree: true,
 };
-
-export function isPortalElement(elm: Element): boolean {
-    return portals.has(elm);
-}
 
 function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | undefined) {
     // If node already has an ownerKey, we can skip
@@ -79,8 +78,7 @@ function initPortalObserver() {
 }
 
 export function markElementAsPortal(elm: Element) {
-    portals.set(elm, 1);
-    if (!portalObserver) {
+    if (isUndefined(portalObserver)) {
         portalObserver = initPortalObserver();
     }
     // install mutation observer for portals
