@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const babel = require('@babel/core');
-const minify = require('babel-preset-minify');
-const typescript = require('rollup-plugin-typescript');
-const rollupReplacePlugin = require('rollup-plugin-replace');
+const typescript = require('typescript');
+const rollupReplace = require('rollup-plugin-replace');
+const { terser: rollupTerser } = require('rollup-plugin-terser');
+const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 
 const { version } = require('../../package.json');
 const { generateTargetName } = require('./util');
@@ -18,21 +18,6 @@ const outputDir = path.resolve(__dirname, '../../dist/umd');
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
-
-const minifyBabelConfig = {
-    babelrc: false,
-    comments: false,
-    presets: [minify],
-};
-
-function inlineMinifyPlugin() {
-    return {
-        transformBundle(code) {
-            const result = babel.transform(code, minifyBabelConfig);
-            return result.code;
-        },
-    };
-}
 
 function rollupConfig(config) {
     const { format, target, prod } = config;
@@ -47,10 +32,10 @@ function rollupConfig(config) {
             footer,
         },
         plugins: [
-            typescript({ target, typescript: require('typescript') }),
-            rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-            prod && inlineMinifyPlugin({}),
-        ].filter(Boolean),
+            rollupTypescriptPlugin({ target, typescript }),
+            rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+            prod && rollupTerser(),
+        ],
     };
 }
 

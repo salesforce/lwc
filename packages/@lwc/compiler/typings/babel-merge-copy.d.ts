@@ -109,11 +109,6 @@ declare module 'babel-plugin-transform-class-properties' {
     export = transform;
 }
 
-declare module 'babel-preset-minify' {
-    const transform: any;
-    export = transform;
-}
-
 declare module 'babel-plugin-transform-proxy-compat' {
     const transform: any;
     export = transform;

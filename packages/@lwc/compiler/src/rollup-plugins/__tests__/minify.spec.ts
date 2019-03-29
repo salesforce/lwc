@@ -20,7 +20,7 @@ describe('rollup plugin lwc-minify', () => {
         const result = lwcMinifier.transformBundle(codeFixture);
 
         expect(result.code).toBe(minifiedCode);
-        expect(result.map).toBeNull();
+        expect(result.map).toBeUndefined();
     });
     test('should output a correct sourcemap', async () => {
         const lwcMinifier = lwcMinifierFactory({ sourcemap: true });
