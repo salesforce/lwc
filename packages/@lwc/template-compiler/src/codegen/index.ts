@@ -129,6 +129,9 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
     const stack = new Stack<t.Expression>();
     stack.push(t.arrayExpression([]));
 
+    // Initial scan to detect any id attributes in order to avoid manging href
+    // values in this case. This is only temporary:
+    // https://github.com/salesforce/lwc/issues/1150
     const templateContainsId = initialPassToCheckForIds(root);
 
     traverse(root, {
