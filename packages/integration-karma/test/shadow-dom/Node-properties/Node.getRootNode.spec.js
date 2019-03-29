@@ -160,7 +160,7 @@ describe('Node.getRootNode', () => {
         });
 
         // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
-        xdescribe('nested dynamic lwc elm with dom manual', () => {
+        describe('nested dynamic lwc elm with dom manual', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
@@ -195,7 +195,7 @@ describe('Node.getRootNode', () => {
 
         // #1022 Support insertion of lwc element inside a node marked as lwc:dom="manual"
         // This usecase is important and distinct from the previous testcase. The nested lwc element's portal will not be patched
-        xdescribe('nested dynamic lwc elm without dom manual', () => {
+        describe('nested dynamic lwc elm without dom manual', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
