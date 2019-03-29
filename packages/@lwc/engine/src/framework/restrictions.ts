@@ -39,7 +39,7 @@ import {
     removeAttributeNS,
 } from '../env/element';
 
-function generateDataDescriptor(options: PropertyDescriptor): object {
+function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
         {
             configurable: true,
@@ -50,7 +50,7 @@ function generateDataDescriptor(options: PropertyDescriptor): object {
     );
 }
 
-function generateAccessorDescriptor(options: PropertyDescriptor): object {
+function generateAccessorDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
         {
             configurable: true,
