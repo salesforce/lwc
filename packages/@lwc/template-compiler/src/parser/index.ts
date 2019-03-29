@@ -652,7 +652,9 @@ export default function parse(
 
     function applyComponent(element: IRElement) {
         const { tag } = element;
+
         let component: string | undefined;
+        let dynamicComponent: TemplateExpression | undefined;
 
         if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
             component = tag;
@@ -672,12 +674,27 @@ export default function parse(
             component = isAttr.value;
         }
 
-        if (component) {
-            element.component = component;
+        const lwcDynamicAttr = getTemplateAttribute(element, 'lwc:dynamic');
+        if (lwcDynamicAttr) {
+            removeAttribute(element, 'lwc:dynamic');
 
-            if (!state.dependencies.includes(component)) {
-                state.dependencies.push(component);
+            if (lwcDynamicAttr.type !== IRAttributeType.Expression) {
+                return warnAt(
+                    ParserDiagnostics.LWC_DYNAMIC_ATTRIBUTE_CANNOT_BE_A_STRING,
+                    [],
+                    lwcDynamicAttr.location
+                );
             }
+
+            dynamicComponent = lwcDynamicAttr.value;
+            component = undefined;
+        }
+
+        element.component = component;
+        element.dynamicComponent = dynamicComponent;
+
+        if (component && !state.dependencies.includes(component)) {
+            state.dependencies.push(component);
         }
     }
 

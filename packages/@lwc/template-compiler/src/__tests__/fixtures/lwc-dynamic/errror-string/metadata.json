@@ -1,0 +1,20 @@
+{
+    "warnings": [
+        {
+            "code": 1120,
+            "message": "LWC1120: \"lwc:dynamic\" directive value can't be a string",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 20,
+                "start": 30,
+                "length": 18
+            }
+        }
+    ],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [],
+        "templateDependencies": []
+    }
+}

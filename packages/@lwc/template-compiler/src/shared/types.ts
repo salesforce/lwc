@@ -59,6 +59,7 @@ export interface IRElement {
     __original: HTMLElement;
 
     component?: string;
+    dynamicComponent?: TemplateExpression;
 
     className?: TemplateExpression;
     classMap?: { [name: string]: true };

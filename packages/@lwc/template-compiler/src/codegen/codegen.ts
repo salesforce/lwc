@@ -99,7 +99,7 @@ export default class CodeGen {
 
     genCustomElement(
         tagName: string,
-        componentClass: t.Identifier,
+        componentClass: t.Expression,
         data: t.ObjectExpression,
         children: t.Expression
     ) {

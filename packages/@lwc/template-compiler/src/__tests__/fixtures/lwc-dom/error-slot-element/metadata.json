@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1088,
-            "message": "LWC1088: Invalid directive \"lwc:dom\" on <slot>.. \"lwc:dom\" cannot be added to a <slot>",
+            "message": "LWC1088: Invalid directive \"lwc:dom\" on <slot>. \"lwc:dom\" cannot be added to a <slot>",
             "level": 1,
             "location": {
                 "line": 2,

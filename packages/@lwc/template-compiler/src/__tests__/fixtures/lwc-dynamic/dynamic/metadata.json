@@ -1,0 +1,14 @@
+{
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "ctor"
+        ],
+        "templateDependencies": [
+            {
+                "tagName": "x-placeholder"
+            }
+        ]
+    }
+}

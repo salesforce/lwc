@@ -16,6 +16,11 @@ import generate from '@babel/generator';
 import * as babelTypes from '@babel/types';
 
 export function getModuleMetadata(element: IRElement): ModuleDependency {
+    let moduleName;
+    if (element.component) {
+        moduleName = kebabcaseToCamelcase(element.component);
+    }
+
     let properties;
     // Note that we only collect properties and not attributes (such as 'class', 'data-*')
     if (element.props) {
@@ -44,8 +49,8 @@ export function getModuleMetadata(element: IRElement): ModuleDependency {
     }
 
     return {
-        moduleName: kebabcaseToCamelcase(element.component),
         tagName: element.tag,
+        moduleName,
         properties,
     };
 }

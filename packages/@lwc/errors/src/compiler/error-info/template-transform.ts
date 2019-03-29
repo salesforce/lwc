@@ -465,7 +465,14 @@ export const ParserDiagnostics = {
 
     LWC_DOM_INVALID_SLOT_ELEMENT: {
         code: 1088,
-        message: 'Invalid directive "lwc:dom" on <slot>.. "lwc:dom" cannot be added to a <slot>',
+        message: 'Invalid directive "lwc:dom" on <slot>. "lwc:dom" cannot be added to a <slot>',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    LWC_DYNAMIC_ATTRIBUTE_CANNOT_BE_A_STRING: {
+        code: 1120,
+        message: '"lwc:dynamic" directive value can\'t be a string',
         level: DiagnosticLevel.Error,
         url: '',
     },

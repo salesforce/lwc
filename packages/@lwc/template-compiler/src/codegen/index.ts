@@ -160,20 +160,38 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
 
         let babelElement: t.Expression;
         if (isCustomElement(element)) {
-            // Make sure to register the component
-            const componentClassName = element.component!;
+            const { component, dynamicComponent } = element;
 
-            babelElement = codeGen.genCustomElement(
-                element.tag,
-                identifierFromComponentName(componentClassName),
-                databag,
-                children
-            );
+            if (component) {
+                // api_custom_element("x-component", ctor, {}, []);
+                babelElement = codeGen.genCustomElement(
+                    element.tag,
+                    identifierFromComponentName(component),
+                    databag,
+                    children
+                );
+            } else if (dynamicComponent) {
+                // $cmp.ctor ? api_custom_element("x-dynamic-component", $cmp.ctor, {}, []) : null;
+                const dynamicComponentLookup = bindExpression(dynamicComponent, element).expression;
+                babelElement = t.conditionalExpression(
+                    dynamicComponentLookup,
+                    codeGen.genCustomElement(
+                        element.tag,
+                        dynamicComponentLookup,
+                        databag,
+                        children
+                    ),
+                    t.nullLiteral()
+                );
+            } else {
+                throw new Error('Invalid compiler state: Unknown custom element');
+            }
         } else if (isSlot(element)) {
+            // api_slot("slot-name", {}, [], $slotset);
             const defaultSlot = children;
-
             babelElement = codeGen.getSlot(element.slotName!, databag, defaultSlot);
         } else {
+            // api_element("tag", {}, []);
             babelElement = codeGen.genElement(element.tag, databag, children);
         }
 

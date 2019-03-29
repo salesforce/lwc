@@ -49,7 +49,10 @@ export function isElement(node: IRNode): node is IRElement {
 }
 
 export function isCustomElement(node: IRNode): boolean {
-    return !!(node as IRElement).component;
+    return (
+        (node as IRElement).component !== undefined ||
+        (node as IRElement).dynamicComponent !== undefined
+    );
 }
 
 export function traverse(node: IRNode, visitor: Visitor): void {
