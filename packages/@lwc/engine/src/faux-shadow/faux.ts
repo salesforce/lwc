@@ -9,6 +9,7 @@ export { PatchedSlotElement } from './slot';
 
 export { PatchedCustomElement } from './custom-element';
 
-export { markElementAsPortal, setCSSToken, PatchedNode } from './node';
+export { setCSSToken, PatchedNode } from './node';
+export { markElementAsPortal } from './portal';
 
 export { PatchedElement, PatchedIframeElement } from './traverse';

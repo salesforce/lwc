@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isUndefined,
-    isNull,
-    forEach,
-    getPrototypeOf,
-    setPrototypeOf,
-    isFalse,
-} from '../shared/language';
+import { isUndefined, isNull, getPrototypeOf, setPrototypeOf, isFalse } from '../shared/language';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -20,7 +13,6 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
 } from '../env/node';
-import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { setAttribute } from '../env/element';
 import { getNodeOwner, isSlotElement, patchedGetRootNode, isNodeOwnedBy } from './traverse';
 import { NodeConstructor } from '../framework/base-bridge-element';
@@ -59,92 +51,17 @@ export function getNodeKey(node: Node): number | undefined {
     return node[OwnKey];
 }
 
-const portals: WeakMap<Element, 1> = new WeakMap();
-
-// We can use a single observer without having to worry about leaking because
-// "Registered observers in a node’s registered observer list have a weak
-// reference to the node."
-// https://dom.spec.whatwg.org/#garbage-collection
-let portalObserver;
-
-const portalObserverConfig: MutationObserverInit = {
-    childList: true,
-    subtree: true,
-};
-
-function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | undefined) {
-    // If node already has an ownerKey, we can skip
-    // Note: checking if a node has any ownerKey is not enough
-    // because this element could be moved from one
-    // shadow to another
-    if (getNodeOwnerKey(node) === ownerKey) {
-        return;
-    }
-    setNodeOwnerKey(node, ownerKey);
-    if (node instanceof Element) {
-        setCSSToken(node, shadowToken);
-        const childNodes = getInternalChildNodes(node);
-        for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            const child = childNodes[i];
-            patchPortalElement(child, ownerKey, shadowToken);
-        }
-    }
-}
-
-function initPortalObserver() {
-    return new MutationObserver(mutations => {
-        forEach.call(mutations, mutation => {
-            const { target: elm, addedNodes } = mutation;
-            const ownerKey = getNodeOwnerKey(elm);
-            const shadowToken = getCSSToken(elm);
-
-            // OwnerKey might be undefined at this point.
-            // We used to throw an error here, but we need to return early instead.
-            //
-            // This routine results in a mutation target that will have no key
-            // because its been removed by the time the observer runs
-
-            // const div = document.createElement('div');
-            // div.innerHTML = '<span>span</span>';
-            // const span = div.querySelector('span');
-            // manualElement.appendChild(div);
-            // span.textContent = '';
-            // span.parentNode.removeChild(span);
-            if (isUndefined(ownerKey)) {
-                return;
-            }
-            for (let i = 0, len = addedNodes.length; i < len; i += 1) {
-                const node: Node = addedNodes[i];
-                patchPortalElement(node, ownerKey, shadowToken);
-            }
-        });
-    });
-}
-
 const ShadowTokenKey = '$$ShadowTokenKey$$';
+
+export function getCSSToken(elm: Element): string | undefined {
+    return elm[ShadowTokenKey];
+}
 
 export function setCSSToken(elm: Element, shadowToken: string | undefined) {
     if (!isUndefined(shadowToken)) {
         setAttribute.call(elm, shadowToken, '');
         elm[ShadowTokenKey] = shadowToken;
     }
-}
-
-function getCSSToken(elm: Element): string | undefined {
-    return elm[ShadowTokenKey];
-}
-
-export function markElementAsPortal(elm: Element) {
-    portals.set(elm, 1);
-    if (!portalObserver) {
-        portalObserver = initPortalObserver();
-    }
-    // install mutation observer for portals
-    MutationObserverObserve.call(portalObserver, elm, portalObserverConfig);
-}
-
-export function isPortalElement(elm: Element): boolean {
-    return portals.has(elm);
 }
 
 function getShadowParent(node: Node, value: undefined | Element): (Node & ParentNode) | null {
