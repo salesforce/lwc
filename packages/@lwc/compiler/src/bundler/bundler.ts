@@ -129,11 +129,14 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         });
 
         if (output.length > 1) {
-            throw new Error('TODO');
+            diagnostics.push(
+                generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT)
+            );
         }
 
-        code = output[0].code;
-        map = output[0].map;
+        const result = output[0];
+        code = result.code;
+        map = result.map;
     } catch (e) {
         // Rollup may have clobbered error.code with its own data
         if (e instanceof CompilerError && (e as any).pluginCode) {

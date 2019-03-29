@@ -13,6 +13,38 @@ describe('bundler', () => {
         });
     });
 
+    test('invalid multi relative import', async () => {
+        const result = await bundle({
+            baseDir: '',
+            name: 'cmp',
+            namespace: 'c',
+            files: {
+                'cmp.js': 'import("./a.js")',
+                'a.js': 'export const a = 1;',
+            },
+            stylesheetConfig: {
+                customProperties: {
+                    allowDefinition: false,
+                    resolution: { type: 'native' },
+                },
+            },
+            outputConfig: {
+                env: { NODE_ENV: 'development' },
+                minify: false,
+                compat: false,
+                sourcemap: false,
+            },
+        });
+
+        expect(result.diagnostics).toEqual([
+            {
+                code: 1120,
+                message: 'LWC1120: Illegal dynamic import via a relative path.',
+                level: 1,
+            },
+        ]);
+    });
+
     test('does not return sourcemap by default', async () => {
         const result = await bundle({
             baseDir: '',

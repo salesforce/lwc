@@ -172,6 +172,13 @@ export const ModuleResolutionErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    RELATIVE_DYNAMIC_IMPORT: {
+        code: 1120,
+        message: 'Illegal dynamic import via a relative path.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const TransformerErrors = {
