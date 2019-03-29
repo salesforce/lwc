@@ -212,4 +212,4 @@ var Bar = function Bar() {
 _classCallCheck(this, Bar);
 __setKey(this, "bar", "foo");
 };
-export { test, Test, obj1, t, obj2, literal, Bar };
+export { Bar, Test, literal, obj1, obj2, t, test };

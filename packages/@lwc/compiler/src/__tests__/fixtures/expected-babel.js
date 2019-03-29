@@ -110,4 +110,5 @@ class Bar {
 
 }
 
-export { test, Test, obj1, t, obj2, literal, Bar };
+export { Bar, Test, literal, obj1, obj2, t, test };
+

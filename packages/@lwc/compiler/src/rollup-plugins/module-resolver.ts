@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as path from 'path';
+import { Plugin } from 'rollup';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
 
 import { NormalizedCompilerOptions, BundleFiles } from '../compiler/options';
@@ -124,7 +125,7 @@ function getCaseIgnoredFilenameMatch(files: { [key: string]: string }, nameToMat
     );
 }
 
-export default function({ options }: { options: NormalizedCompilerOptions }) {
+export default function({ options }: { options: NormalizedCompilerOptions }): Plugin {
     return {
         name: 'lwc-module-resolver',
 

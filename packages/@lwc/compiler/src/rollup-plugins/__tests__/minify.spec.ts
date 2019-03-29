@@ -17,14 +17,13 @@ const minifiedCode = 'var a=1;console.log(a);';
 describe('rollup plugin lwc-minify', () => {
     test('lwc-minify should not output sourcemaps', () => {
         const lwcMinifier = lwcMinifierFactory({ sourcemap: false });
-        const result = lwcMinifier.transformBundle(codeFixture);
+        const result = lwcMinifier.renderChunk(codeFixture);
 
-        expect(result.code).toBe(minifiedCode);
-        expect(result.map).toBeUndefined();
+        expect(result).toBe(minifiedCode);
     });
     test('should output a correct sourcemap', async () => {
         const lwcMinifier = lwcMinifierFactory({ sourcemap: true });
-        const result = lwcMinifier.transformBundle(codeFixture);
+        const result = lwcMinifier.renderChunk(codeFixture);
 
         expect(result.map).not.toBeNull();
 

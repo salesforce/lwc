@@ -1,5 +1,5 @@
+import { registerTemplate, registerComponent, LightningElement, registerDecorators } from 'lwc';
 import _xBar from 'x/bar';
-import { registerTemplate, registerDecorators, registerComponent, LightningElement } from 'lwc';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
 
