@@ -10,9 +10,9 @@ import {
     assign,
     isNull,
     isObject,
+    isFunction,
     isTrue,
     isFalse,
-    isFunction,
     toString,
 } from '../shared/language';
 import {
@@ -24,7 +24,7 @@ import {
     VMState,
 } from './vm';
 import { ComponentConstructor } from './component';
-import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
 import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
 import { isNativeShadowRootAvailable } from '../env/dom';
 import { patchCustomElementProto } from './patch';
@@ -70,6 +70,14 @@ assign(Node.prototype, {
     },
 });
 
+type ShadowDomMode = 'open' | 'closed';
+
+interface CreateElementOptions {
+    is: ComponentConstructor;
+    fallback?: boolean;
+    mode?: ShadowDomMode;
+}
+
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -81,7 +89,7 @@ assign(Node.prototype, {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: any): HTMLElement {
+export function createElement(sel: string, options: CreateElementOptions): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
@@ -90,23 +98,18 @@ export function createElement(sel: string, options: any): HTMLElement {
         );
     }
 
-    let Ctor = (options as any).is as ComponentConstructor;
-
+    let Ctor = options.is;
     if (!isFunction(Ctor)) {
-        throw new TypeError(`"is" value must be a function but received "${toString(Ctor)}".`);
+        throw new TypeError(
+            `"createElement" function expects a "is" option with a valid component constructor.`
+        );
     }
 
-    if (isCircularModuleDependency(Ctor)) {
-        Ctor = resolveCircularModuleDependency(Ctor);
-    }
-
-    let { mode, fallback } = options as any;
-    // TODO: for now, we default to open, but eventually it should default to 'closed'
-    if (mode !== 'closed') {
-        mode = 'open';
-    }
-    // TODO: for now, we default to true, but eventually it should default to false
-    fallback = isUndefined(fallback) || isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
+    const mode = options.mode !== 'closed' ? 'open' : 'closed';
+    const fallback =
+        isUndefined(options.fallback) ||
+        isTrue(options.fallback) ||
+        isFalse(isNativeShadowRootAvailable);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -116,8 +119,14 @@ export function createElement(sel: string, options: any): HTMLElement {
         // to do here.
         return element;
     }
+
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
+
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
+
     if (isTrue(fallback)) {
         patchCustomElementProto(element, {
             def,

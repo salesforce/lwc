@@ -16,7 +16,7 @@ import {
     ArrayMap,
 } from '../shared/language';
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
-import { resolveCircularModuleDependency, isCircularModuleDependency, EmptyObject } from './utils';
+import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { tagNameGetter } from '../env/element';
 import { isNativeShadowRootAvailable } from '../env/dom';
@@ -29,9 +29,6 @@ export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
     options?: ShadowRootInit
 ): HTMLElementConstructor {
-    if (isCircularModuleDependency(Ctor)) {
-        Ctor = resolveCircularModuleDependency(Ctor);
-    }
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const normalizedOptions: CreateVMInit = {
         fallback: false,

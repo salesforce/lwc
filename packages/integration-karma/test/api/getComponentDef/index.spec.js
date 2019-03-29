@@ -13,21 +13,20 @@ import WireMethodsInheritance from 'x/wireMethodsInheritance';
 
 import wireAdapter from 'x/wireAdapter';
 
-// function testInvalidComponentConstructor(name, ctor) {
-//     it(`should throw for ${name}`, () => {
-//         expect(() => getComponentDef(ctor)).toThrowError(
-//             /Invalid prototype chain for \w+, you must extend LightningElement./
-//         );
-//     });
-// }
+function testInvalidComponentConstructor(name, ctor) {
+    it(`should throw for ${name}`, () => {
+        expect(() => getComponentDef(ctor)).toThrowError(
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
+        );
+    });
+}
 
-// TODO: #932 - fix because currently throwing `Cannot read property 'name' of null`
-// testInvalidComponentConstructor('null', null);
-// testInvalidComponentConstructor('undefined', undefined);
-
-// TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
-// testInvalidComponentConstructor('Object', {});
-// testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
+testInvalidComponentConstructor('null', null);
+testInvalidComponentConstructor('undefined', undefined);
+testInvalidComponentConstructor('String', 'component');
+testInvalidComponentConstructor('Object', {});
+testInvalidComponentConstructor('Function', function() {});
+testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 const GLOBAL_HTML_ATTRIBUTES = [
     'accessKey',
@@ -323,23 +322,21 @@ describe('circular dependencies', () => {
         );
     });
 
-    // TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
-    xit('should throw when parent class is a circular dependency not extending LightningElement', () => {
+    it('should throw when parent class is a circular dependency not extending LightningElement', () => {
         const Circular = circularDependency(class {});
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Invalid prototype chain for Component, you must extend LightningElement./
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 
-    // TODO: #1064 - getComponentDef and isComponentConstructor doesn't behave the same way when running in production mode
-    xit('should throw when parent class is a circular dependency resolving null', () => {
+    it('should throw when parent class is a circular dependency resolving null', () => {
         const Circular = circularDependency(null);
         class Component extends Circular {}
 
         expect(() => getComponentDef(Component)).toThrowError(
-            /Circular module dependency for Component, must resolve to a constructor that extends LightningElement./
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
     });
 

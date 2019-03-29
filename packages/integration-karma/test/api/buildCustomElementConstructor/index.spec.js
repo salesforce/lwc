@@ -8,17 +8,18 @@ import LifecycleParent from 'x/lifecycleParent';
 const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in window;
 
 function testInvalidOptions(type, obj) {
-    // TODO: investigate in prod
-    xit(`throws a ReferenceError if constructor is a ${type}`, () => {
-        expect(() => buildCustomElementConstructor(obj)).toThrowError(ReferenceError);
+    it(`throws a ReferenceError if constructor is a ${type}`, () => {
+        expect(() => buildCustomElementConstructor(obj)).toThrowError(
+            TypeError,
+            /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration\./
+        );
     });
 }
 
-// TODO - #1010 buildCustomElementConstructor throws an obscure error when passing null or undefined
-// testInvalidOptions('undefined', undefined);
-// testInvalidOptions('null', null);
-
+testInvalidOptions('undefined', undefined);
+testInvalidOptions('null', null);
 testInvalidOptions('String', 'x-component');
+testInvalidOptions('Function', function() {});
 testInvalidOptions('Class not extending LightningElement', class Component {});
 testInvalidOptions('Object without the is property', {});
 
