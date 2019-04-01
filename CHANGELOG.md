@@ -1,5 +1,24 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.37.0...v) (2019-03-27)
+# [](https://github.com/salesforce/lwc/compare/v0.37.1...v) (2019-04-01)
+
+
+### Bug Fixes
+
+* **engine:** Make engine more resilient to invalid constructors ([#1121](https://github.com/salesforce/lwc/issues/1121)) ([fee643c](https://github.com/salesforce/lwc/commit/fee643c))
+* **module-resolver:** protect against invalid package.json ([#1146](https://github.com/salesforce/lwc/issues/1146)) ([906ac64](https://github.com/salesforce/lwc/commit/906ac64))
+* **template-compiler:** restrict srcdoc attribute on all iframe element ([#1137](https://github.com/salesforce/lwc/issues/1137)) ([3aff1a5](https://github.com/salesforce/lwc/commit/3aff1a5))
+* unify the descriptor creation process for restrictions ([#1144](https://github.com/salesforce/lwc/issues/1144)) ([bfb577e](https://github.com/salesforce/lwc/commit/bfb577e))
+* use patched MutationObserver to key portal elements ([#1147](https://github.com/salesforce/lwc/issues/1147)) ([5c97354](https://github.com/salesforce/lwc/commit/5c97354)), closes [#1022](https://github.com/salesforce/lwc/issues/1022)
+
+
+### Features
+
+* allow typescript file extension ([#1135](https://github.com/salesforce/lwc/issues/1135)) ([4acd1d3](https://github.com/salesforce/lwc/commit/4acd1d3))
+
+
+
+<a name="0.37.1"></a>
+## [0.37.1](https://github.com/salesforce/lwc/compare/v0.37.0...v0.37.1) (2019-03-27)
 
 
 ### Bug Fixes
