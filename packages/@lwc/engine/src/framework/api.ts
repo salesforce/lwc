@@ -443,7 +443,9 @@ export function i(
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             assert.logWarning(
-                `Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
+                `Invalid template iteration for value "${toString(
+                    iterable
+                )}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
                 vmBeingRendered!.elm
             );
         }
@@ -453,7 +455,9 @@ export function i(
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
             isUndefined(iterable[SymbolIterator]),
-            `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`
+            `Invalid template iteration for value \`${toString(
+                iterable
+            )}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -461,7 +465,7 @@ export function i(
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
             iterator && isFunction(iterator.next),
-            `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`
+            `Invalid iterator function for "${toString(iterable)}" in ${vmBeingRendered}.`
         );
     }
 

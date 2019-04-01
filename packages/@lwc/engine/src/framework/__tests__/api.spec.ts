@@ -102,6 +102,15 @@ describe('api', () => {
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
+        it('should handle arrays with null prototype objects', function() {
+            const obj = Object.create(null);
+            obj.foo = 'bar';
+            const o = [obj];
+            expect(() => {
+                api.i(o, () => []);
+            }).not.toThrow();
+        });
+
         it('should handle Sets', function() {
             const o = new Set();
             o.add(1);
