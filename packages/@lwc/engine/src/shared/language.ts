@@ -121,9 +121,11 @@ export function toString(obj: any): string {
         // So using Array.prototype.toString directly will cause an error
         // Iterate through all the items and handle individually.
         if (isArray(obj)) {
-            return obj.reduce((str, value) => {
-                return str + toString(value);
-            }, emptyString);
+            return obj
+                .map(value => {
+                    return toString(value);
+                })
+                .join(',');
         }
 
         return obj.toString();
