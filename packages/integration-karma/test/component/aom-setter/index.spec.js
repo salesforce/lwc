@@ -9,13 +9,13 @@ beforeAll(() => {
     document.body.appendChild(parent);
 });
 
-it('should call AOM setter', () => {
+it('should override native AOM setter and render text content', () => {
     const child = parent.shadowRoot.querySelector('x-child');
     const elm = child.shadowRoot.querySelector('span');
     expect(elm.textContent).toBe('KIX to HKG');
 });
 
-it('should not reflect when calling AOM setter', () => {
+it('should disable default behavior of DOM reflection when invoking a custom AOM setter', () => {
     const child = parent.shadowRoot.querySelector('x-child');
     expect(child.hasAttribute('aria-label')).toBe(false);
 });
