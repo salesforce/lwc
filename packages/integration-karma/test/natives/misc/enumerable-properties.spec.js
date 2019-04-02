@@ -1,7 +1,5 @@
-import { LightningElement } from 'lwc';
-
-export default class EnumerablePropertyLeak extends LightningElement {
-    get objectEnumerableProperties() {
+describe('enumerable properties', () => {
+    it('should not leak any properties on Object', () => {
         const properties = [];
 
         const obj = { x: 'x', y: 'y' };
@@ -9,17 +7,16 @@ export default class EnumerablePropertyLeak extends LightningElement {
             properties.push(property);
         }
 
-        return properties;
-    }
+        expect(properties).toEqual(['x', 'y']);
+    });
 
-    get arrayEnumerableProperties() {
+    it('should not leak any properties on Array', () => {
         const properties = [];
 
         const array = ['x', 'y'];
         for (const property in array) {
             properties.push(property);
         }
-
-        return properties;
-    }
-}
+        expect(properties).toEqual(['0', '1']);
+    });
+});
