@@ -233,6 +233,7 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
         'thead',
         'tr',
     ],
+    allow: ['iframe'],
     allowfullscreen: ['iframe'],
     allowtransparency: [
         'iframe', // Non standard
