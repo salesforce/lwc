@@ -9,6 +9,10 @@ import { tagNameGetter } from '../env/element';
 import { setPrototypeOf, create, isUndefined, isTrue } from '../shared/language';
 import { ComponentDef } from './def';
 import { HTMLElementConstructor } from './base-bridge-element';
+
+// TODO: eventually the engine should not do any of this work,
+// it should just interact with the DOM, and the polyfill should
+// take care of all these operation
 import {
     PatchedElement,
     PatchedSlotElement,
@@ -17,7 +21,7 @@ import {
     PatchedCustomElement,
     markElementAsPortal,
     setCSSToken,
-} from '../faux-shadow/faux';
+} from '@lwc/synthetic-shadow';
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();
@@ -78,9 +82,11 @@ export function patchElementProto(
         proto = TagToProtoCache[sel] = getPatchedElementClass(elm).prototype;
     }
     setPrototypeOf(elm, proto);
+    // TODO: we need another mechanism to mark elements as portal
     if (isTrue(isPortal)) {
         markElementAsPortal(elm);
     }
+    // TODO: we need another mechanism to apply css tokens
     setCSSToken(elm, shadowAttribute);
 }
 
@@ -97,7 +103,9 @@ export function patchCustomElementProto(
     const { def, shadowAttribute } = options;
     let patchedBridge = (def as PatchedComponentDef).patchedBridge;
     if (isUndefined(patchedBridge)) {
-        patchedBridge = (def as PatchedComponentDef).patchedBridge = PatchedCustomElement(elm);
+        patchedBridge = (def as PatchedComponentDef).patchedBridge = PatchedCustomElement(
+            elm
+        ) as HTMLElementConstructor;
     }
     // temporary patching the proto, eventually this should be just more nodes in the proto chain
     setPrototypeOf(elm, patchedBridge.prototype);

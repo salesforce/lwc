@@ -130,7 +130,7 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
 }
 
 // DO NOT CHANGE this:
-// these two values are used by the faux-shadow implementation to traverse the DOM
+// these two values are used by the synthetic-shadow implementation to traverse the DOM
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
@@ -472,7 +472,7 @@ export function resetShadowRoot(vm: VM) {
     const { fallback } = vm;
     vm.children = EmptyArray;
     if (isTrue(fallback)) {
-        // faux-shadow does not have a real cmpRoot instance, instead
+        // synthetic-shadow does not have a real cmpRoot instance, instead
         // we need to remove the content of the host entirely
         innerHTMLSetter.call(vm.elm, '');
     } else {
@@ -495,7 +495,7 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-export function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
+function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
@@ -614,14 +614,6 @@ export function setNodeKey(node: Node, value: number) {
     }
 }
 
-export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
-    const vm: VM | undefined = getInternalField(sr, ViewModelReflection);
-    if (isUndefined(vm)) {
-        return null;
-    }
-    return vm.elm;
-}
-
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getInternalField(elm, ViewModelReflection);
@@ -648,7 +640,7 @@ export function getShadowRootVM(root: ShadowRoot): VM {
 }
 
 // slow path routine
-// NOTE: we should probably more this routine to the faux shadow folder
+// NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {

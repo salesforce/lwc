@@ -28,10 +28,14 @@ import {
     getAllMatches,
     getFilteredChildNodes,
 } from './traverse';
-import { HTMLSlotElementConstructor } from '../framework/base-bridge-element';
 import { childNodesGetter as nativeChildNodesGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
+
+export interface HTMLSlotElementConstructor {
+    prototype: HTMLSlotElement;
+    new (): HTMLSlotElement;
+}
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak

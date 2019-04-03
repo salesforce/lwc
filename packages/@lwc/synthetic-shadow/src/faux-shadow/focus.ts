@@ -182,7 +182,7 @@ export function getActiveElement(host: HTMLElement): Element | null {
 
 function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): number {
     // assert: target must be child of host
-    const pos = compareDocumentPosition.call(host, relatedTarget);
+    const pos = compareDocumentPosition.call(host, relatedTarget as Node);
     if (pos & DOCUMENT_POSITION_CONTAINED_BY) {
         // focus remains inside the host
         return 0;
@@ -344,11 +344,15 @@ function willTriggerFocusInEvent(target: HTMLElement): boolean {
 
 function enterMouseDownState(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
-    removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
+    removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler as EventListener);
     setTimeout(() => {
         // only reinstate the focus if the tabindex is still -1
-        if (tabIndexGetter.call(currentTarget) === -1) {
-            addEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler);
+        if (!isNull(currentTarget) && tabIndexGetter.call(currentTarget as HTMLElement) === -1) {
+            addEventListener.call(
+                currentTarget,
+                'focusin',
+                keyboardFocusInHandler as EventListener
+            );
         }
     }, 0);
 }
@@ -392,11 +396,11 @@ export function handleFocus(elm: HTMLElement) {
 
     // Unbind any focusin listeners we may have going on
     ignoreFocusIn(elm);
-    addEventListener.call(elm, 'focusin', keyboardFocusHandler, true);
+    addEventListener.call(elm, 'focusin', keyboardFocusHandler as EventListener, true);
 }
 
 export function ignoreFocus(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focusin', keyboardFocusHandler, true);
+    removeEventListener.call(elm, 'focusin', keyboardFocusHandler as EventListener, true);
 }
 
 export function handleFocusIn(elm: HTMLElement) {
@@ -423,10 +427,10 @@ export function handleFocusIn(elm: HTMLElement) {
     // the keydown event happens on whatever element already has focus (or no element
     // at all in the case of the location bar. So, instead we have to assume that focusin
     // without a mousedown means keyboard navigation
-    addEventListener.call(elm, 'focusin', keyboardFocusInHandler);
+    addEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler);
+    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener);
     removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
 }

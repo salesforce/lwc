@@ -16,10 +16,15 @@ const {
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     defineProperties,
+    getOwnPropertySymbols,
     hasOwnProperty,
+    preventExtensions,
+    isExtensible,
 } = Object;
 const { isArray } = Array;
 const {
+    concat: ArrayConcat,
+    filter: ArrayFilter,
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
@@ -29,20 +34,25 @@ const {
     join: ArrayJoin,
     forEach,
     reduce: ArrayReduce,
+    reverse: ArrayReverse,
 } = Array.prototype;
 
 const {
     replace: StringReplace,
     toLowerCase: StringToLowerCase,
+    indexOf: StringIndexOf,
     charCodeAt: StringCharCodeAt,
     slice: StringSlice,
+    split: StringSplit,
 } = String.prototype;
 
 export {
     StringToLowerCase,
     StringReplace,
+    StringIndexOf,
     StringCharCodeAt,
     StringSlice,
+    StringSplit,
     freeze,
     seal,
     keys,
@@ -54,16 +64,22 @@ export {
     setPrototypeOf,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    getOwnPropertySymbols,
     hasOwnProperty,
+    preventExtensions,
+    isExtensible,
     ArrayReduce,
     ArraySlice,
     ArraySplice,
     ArrayUnshift,
+    ArrayFilter,
     ArrayMap,
     ArrayJoin,
+    ArrayConcat,
     isArray,
     ArrayIndexOf,
     ArrayPush,
+    ArrayReverse,
     forEach,
 };
 
@@ -101,18 +117,11 @@ export function isNumber(obj: any): obj is number {
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && obj.toString) {
-        // Arrays might hold objects with "null" prototype
-        // So using Array.prototype.toString directly will cause an error
-        // Iterate through all the items and handle individually.
-        if (isArray(obj)) {
-            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
-        }
-
         return obj.toString();
     } else if (typeof obj === 'object') {
         return OtS.call(obj);
     } else {
-        return obj + emptyString;
+        return obj + '';
     }
 }
 

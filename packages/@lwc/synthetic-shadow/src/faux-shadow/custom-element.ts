@@ -22,10 +22,14 @@ import {
     ArrayUnshift,
 } from '../shared/language';
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
-import { HTMLElementConstructor } from '../framework/base-bridge-element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from './node';
+
+export interface HTMLElementConstructor {
+    prototype: HTMLElement;
+    new (): HTMLElement;
+}
 
 export function PatchedCustomElement(Base: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedElement(Base) as HTMLElementConstructor;

@@ -84,7 +84,7 @@ export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
         case Node.ELEMENT_NODE: {
             const { attributes: attrs } = node as Element;
-            const tagName = tagNameGetter.call(node);
+            const tagName = tagNameGetter.call(node as Element);
             let s = '<' + toLowerCase.call(tagName);
             for (let i = 0, attr; (attr = attrs[i]); i++) {
                 s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';

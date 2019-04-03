@@ -15,14 +15,18 @@ import {
 } from '../env/node';
 import { setAttribute } from '../env/element';
 import { getNodeOwner, isSlotElement, patchedGetRootNode, isNodeOwnedBy } from './traverse';
-import { NodeConstructor } from '../framework/base-bridge-element';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot } from './shadow-root';
 
 // DO NOT CHANGE this:
-// these two values need to be in sync with framework/vm.ts
+// these two values need to be in sync with engine
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
+
+export interface NodeConstructor {
+    prototype: Node;
+    new (): Node;
+}
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 

@@ -4,6 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+export interface HTMLIFrameElementConstructor {
+    prototype: HTMLIFrameElement;
+    new (): HTMLIFrameElement;
+}
+
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
