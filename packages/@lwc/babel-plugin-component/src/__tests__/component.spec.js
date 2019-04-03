@@ -41,6 +41,104 @@ describe('Element import', () => {
     );
 
     pluginTest(
+        'throws if constructor does not contain super()',
+        `
+        import { LightningElement } from 'lwc';
+
+        export default class Test extends LightningElement {
+            constructor() {
+                const a = 1;
+            }
+        }
+    `,
+        {
+            error: {
+                message: `LightningElement "constructor" must contain "super();".`,
+                loc: {
+                    line: 1,
+                    column: 7,
+                },
+            },
+        }
+    );
+
+    pluginTest(
+        'throws if remapped component constructor does not contain super()',
+        `
+        import { LightningElement as Component } from 'lwc';
+
+        export default class Test extends Component {
+            constructor() {
+                const a = 1;
+            }
+        }
+    `,
+        {
+            error: {
+                message: `Component "constructor" must contain "super();".`,
+                loc: {
+                    line: 1,
+                    column: 7,
+                },
+            },
+        }
+    );
+
+    pluginTest(
+        "throws if constructor's body is empty",
+        `
+        import { LightningElement } from 'lwc';
+
+        export default class Test extends LightningElement {
+            constructor() {}
+        }
+    `,
+        {
+            error: {
+                message: `LightningElement "constructor" must contain "super();".`,
+                loc: {
+                    line: 1,
+                    column: 7,
+                },
+            },
+        }
+    );
+
+    pluginTest(
+        'does not throw if super() is not a first statement in the constructor',
+        `
+        import { LightningElement } from 'lwc';
+
+        export default class Test extends LightningElement {
+            constructor() {
+                const a = 1;
+                super(); 
+            }
+        }
+    `,
+        {
+            output: {
+                code: `
+            import _tmpl from "./test.html";
+            import { registerComponent as _registerComponent } from "lwc";
+            import { LightningElement } from "lwc";
+
+            class Test extends LightningElement {
+                constructor() {
+                    const a = 1;
+                    super(); 
+                }
+            }
+
+            export default _registerComponent(Test, {
+              tmpl: _tmpl
+            });
+            `,
+            },
+        }
+    );
+
+    pluginTest(
         'allow to remap the import to LightningElement',
         `
         import { LightningElement as Component } from 'lwc';

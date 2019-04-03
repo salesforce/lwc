@@ -33,6 +33,13 @@ export const LWCClassErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_CONSTRUCTOR: {
+        code: 1120,
+        message: '{0} "constructor" must contain "super();".',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const DecoratorErrors = {

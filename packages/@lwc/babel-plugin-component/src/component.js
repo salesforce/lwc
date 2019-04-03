@@ -28,5 +28,56 @@ module.exports = function() {
                 .filter(({ name }) => name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT)
                 .map(({ path }) => path.get('local'));
         },
+
+        ClassDeclaration(path, state) {
+            const { node } = path;
+
+            let superClassName = node.superClass && node.superClass.name;
+
+            // check if LightningElement is mapped to another name during import
+            if (superClassName && superClassName !== 'LightningElement') {
+                superClassName = state.componentBaseClassImports.find(({ node }) => {
+                    return node && node.name === superClassName;
+                });
+            }
+
+            // don't validate components not extending from LightningElement
+            if (superClassName) {
+                const classBody = node.body.body;
+
+                // find constructor
+                const constructorMethod = classBody.find(statement => {
+                    return statement.type === 'ClassMethod' && statement.key.name === 'constructor';
+                });
+
+                if (constructorMethod) {
+                    const constructorBody = constructorMethod && constructorMethod.body.body;
+
+                    // constructor cannot be empty
+                    if (!constructorBody.length) {
+                        throw generateError(path, {
+                            errorInfo: LWCClassErrors.INVALID_CONSTRUCTOR,
+                            messageArgs: [superClassName],
+                        });
+                    }
+
+                    // ensure constructor body contains super()
+                    if (
+                        !constructorBody.find(constructorStatement => {
+                            return (
+                                constructorStatement.type === 'ExpressionStatement' &&
+                                constructorStatement.expression.callee &&
+                                constructorStatement.expression.callee.type === 'Super'
+                            );
+                        })
+                    ) {
+                        throw generateError(path, {
+                            errorInfo: LWCClassErrors.INVALID_CONSTRUCTOR,
+                            messageArgs: [superClassName],
+                        });
+                    }
+                }
+            }
+        },
     };
 };
