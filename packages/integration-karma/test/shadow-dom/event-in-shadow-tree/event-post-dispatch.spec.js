@@ -14,9 +14,15 @@ function createShadowTree(parentNode) {
     return extractDataIds(elm);
 }
 
+function assertEventStateReset(evt) {
+    expect(evt.eventPhase).toBe(0);
+    expect(evt.currentTarget).toBe(null);
+    expect(evt.composedPath().length).toBe(0);
+}
+
 describe('Event properties post dispatch on node in a shadow tree', () => {
     let nodes;
-    beforeEach(() => {
+    beforeAll(() => {
         nodes = createShadowTree(document.body);
     });
 
@@ -25,10 +31,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes.span.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -36,10 +40,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes.span.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -47,10 +49,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -58,10 +58,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
@@ -69,10 +67,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
@@ -80,10 +76,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
@@ -92,9 +86,7 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
 
         expect(evt.target).toBe(nodes['x-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
+        assertEventStateReset(evt);
     });
 
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
@@ -102,10 +94,8 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 });
 
@@ -119,7 +109,7 @@ function createNestedShadowTree(parentNode) {
 
 describe('Event properties post dispatch on node in a nested shadow tree', () => {
     let nodes;
-    beforeEach(() => {
+    beforeAll(() => {
         nodes = createNestedShadowTree(document.body);
     });
 
@@ -128,10 +118,8 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes.span.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -139,10 +127,8 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { bubbles: true });
         nodes.span.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -151,9 +137,7 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         nodes['span-manual'].dispatchEvent(evt);
 
         expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
+        assertEventStateReset(evt);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -161,10 +145,8 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
@@ -172,10 +154,8 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
         nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
@@ -183,10 +163,8 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(null);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -195,9 +173,7 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
 
         expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
+        assertEventStateReset(evt);
     });
 
     // TODO: #1129 - Invoking dispatchEvent on nodes rendered by the template doesn't respect retargetting
@@ -205,9 +181,7 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['x-shadow-tree'].dispatchEventComponent(evt);
 
+        assertEventStateReset(evt);
         expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-        expect(evt.eventPhase).toBe(0);
-        expect(evt.currentTarget).toBe(null);
-        expect(evt.composedPath().length).toBe(0);
     });
 });
