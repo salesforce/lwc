@@ -1,0 +1,8 @@
+<template>
+    <template if:true={state.error}>
+        <div class='boundary-alt-view'>Host Boundary Alternative View</div>
+    </template>
+    <template if:false={state.error}>
+        <x-nested-child-boundary-view-throw></x-nested-child-boundary-view-throw>
+    </template>
+</template>
