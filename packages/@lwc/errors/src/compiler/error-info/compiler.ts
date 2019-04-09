@@ -175,7 +175,7 @@ export const ModuleResolutionErrors = {
 
     RELATIVE_DYNAMIC_IMPORT: {
         code: 1120,
-        message: 'Illegal dynamic import via a relative path.',
+        message: 'Illegal usage of the dynamic import syntax with a relative path.',
         level: DiagnosticLevel.Error,
         url: '',
     },

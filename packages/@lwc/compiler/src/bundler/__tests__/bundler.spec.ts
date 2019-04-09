@@ -39,7 +39,8 @@ describe('bundler', () => {
         expect(result.diagnostics).toEqual([
             {
                 code: 1120,
-                message: 'LWC1120: Illegal dynamic import via a relative path.',
+                message:
+                    'LWC1120: Illegal usage of the dynamic import syntax with a relative path.',
                 level: 1,
             },
         ]);

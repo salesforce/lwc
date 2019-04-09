@@ -128,6 +128,8 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
             format,
         });
 
+        // Rollup produces multiple chunks when a module uses "import()" with a relative import
+        // path. We need to ensure the compiled module only contains the main chunk.
         if (output.length > 1) {
             diagnostics.push(
                 generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT)
