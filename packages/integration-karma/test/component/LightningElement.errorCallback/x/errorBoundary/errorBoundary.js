@@ -13,7 +13,7 @@ export default class RootParent extends LightningElement {
     };
 
     @api
-    flipFlag(flag) {
+    toggleFlag(flag) {
         this.state[flag] = true;
     }
 

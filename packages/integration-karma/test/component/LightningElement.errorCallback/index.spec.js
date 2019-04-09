@@ -14,7 +14,7 @@ function waitForNestedRehydration() {
     });
 }
 
-describe('error boundary integration', () => {
+describe('error boundary', () => {
     let elm;
     let shadowRoot;
     beforeEach(() => {
@@ -24,7 +24,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child throws in renderedCallback()', () => {
-        elm.flipFlag('boundary-child-rendered-throw');
+        elm.toggleFlag('boundary-child-rendered-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-rendered-throw')
                 .shadowRoot;
@@ -37,7 +37,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child throws in render()', () => {
-        elm.flipFlag('boundary-child-render-throw');
+        elm.toggleFlag('boundary-child-render-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-render-throw')
                 .shadowRoot;
@@ -50,7 +50,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child throws in constructor()', () => {
-        elm.flipFlag('boundary-child-constructor-throw');
+        elm.toggleFlag('boundary-child-constructor-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-constructor-throw')
                 .shadowRoot;
@@ -64,7 +64,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child throws in connectedCallback()', () => {
-        elm.flipFlag('boundary-child-connected-throw');
+        elm.toggleFlag('boundary-child-connected-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-connected-throw')
                 .shadowRoot;
@@ -77,7 +77,7 @@ describe('error boundary integration', () => {
     });
 
     it('should render alternative view if child slot throws in render()', () => {
-        elm.flipFlag('boundary-child-slot-throw');
+        elm.toggleFlag('boundary-child-slot-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-child-slot-throw')
                 .shadowRoot;
@@ -89,27 +89,26 @@ describe('error boundary integration', () => {
         });
     });
 
-    it('should render alternative view if child throws during self rehydration cycle', done => {
-        elm.flipFlag('boundary-child-self-rehydrate-throw');
+    it('should render alternative view if child throws during self rehydration cycle', () => {
+        elm.toggleFlag('boundary-child-self-rehydrate-throw');
         return Promise.resolve().then(() => {
             const innerShadowRoot = shadowRoot.querySelector(
                 'x-boundary-child-self-rehydrate-throw'
             ).shadowRoot;
             const deepNestedHost = innerShadowRoot.querySelector('x-child-self-rehydrate-throw');
             deepNestedHost.incrementCounter();
-            waitForNestedRehydration().then(() => {
+            return waitForNestedRehydration().then(() => {
                 const altenativeView = innerShadowRoot.querySelector('.self-rehydrate-altenative');
                 expect(altenativeView.textContent).toEqual('self rehydrate alternative view');
 
                 // ensure offender has been unmounted
                 expect(innerShadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
-                done();
             });
         });
     });
 
     xit('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
-        elm.flipFlag('nested-boundary-child-alt-view-throw');
+        elm.toggleFlag('nested-boundary-child-alt-view-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector(
                 'x-nested-boundary-child-alt-view-throw'
@@ -123,7 +122,7 @@ describe('error boundary integration', () => {
     });
 
     it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
-        elm.flipFlag('boundary-alternative-view-throw');
+        elm.toggleFlag('boundary-alternative-view-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector('x-boundary-alternative-view-throw')
                 .shadowRoot;
