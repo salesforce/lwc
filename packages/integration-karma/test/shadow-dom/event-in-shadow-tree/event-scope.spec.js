@@ -267,7 +267,7 @@ function testEventScopeOnHostElement(type, Ctor) {
     });
 }
 
-for (let [name, Ctor] of EVENT_MAPPING) {
+for (const [name, Ctor] of EVENT_MAPPING) {
     testEventScopeInShadowTree(name, Ctor);
     testEventScopeOnShadowRoot(name, Ctor);
     testEventScopeOnHostElement(name, Ctor);
