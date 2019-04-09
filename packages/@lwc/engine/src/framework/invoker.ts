@@ -68,7 +68,17 @@ export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentC
      */
     try {
         // job
-        new Ctor();
+        const result = new Ctor();
+
+        // Check indirectly if the constructor result is an instance of LightningElement. Using
+        // the "instanceof" operator would not work here since Locker Service provides its own
+        // implementation of LightningElement, so we indirectly check if the base constructor is
+        // invoked by accessing the component on the vm.
+        if (vmBeingConstructed.component !== result) {
+            throw new TypeError(
+                'Invalid component constructor, the class should extend LightningElement.'
+            );
+        }
     } catch (e) {
         error = Object(e);
     } finally {
