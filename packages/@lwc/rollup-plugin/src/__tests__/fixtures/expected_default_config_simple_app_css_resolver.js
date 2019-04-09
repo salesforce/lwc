@@ -1,4 +1,4 @@
-(function(varResolver, lwc) {
+(function(lwc, varResolver) {
     'use strict';
 
    varResolver =
@@ -101,4 +101,4 @@
     });
     container.appendChild(element);
 
- })(resolveCss, Engine);
+ })(Engine, resolveCss);

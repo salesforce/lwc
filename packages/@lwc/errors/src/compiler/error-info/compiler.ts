@@ -172,6 +172,13 @@ export const ModuleResolutionErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    RELATIVE_DYNAMIC_IMPORT: {
+        code: 1120,
+        message: 'Illegal usage of the dynamic import syntax with a relative path.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
 
 export const TransformerErrors = {

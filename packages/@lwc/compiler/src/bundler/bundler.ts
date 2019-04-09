@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { rollup } from 'rollup';
+import { rollup, Plugin, RollupWarning } from 'rollup';
+import {
+    CompilerError,
+    CompilerDiagnostic,
+    generateCompilerDiagnostic,
+    DiagnosticLevel,
+    ModuleResolutionErrors,
+    normalizeToDiagnostic,
+} from '@lwc/errors';
 
 import { MetadataCollector, BundleMetadata } from './meta-collector';
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
@@ -17,14 +25,6 @@ import rollupMinify from '../rollup-plugins/minify';
 import { NormalizedCompilerOptions, validateNormalizedOptions } from '../compiler/options';
 
 import { SourceMap } from '../compiler/compiler';
-import {
-    CompilerError,
-    CompilerDiagnostic,
-    generateCompilerDiagnostic,
-    DiagnosticLevel,
-    ModuleResolutionErrors,
-    normalizeToDiagnostic,
-} from '@lwc/errors';
 
 export interface BundleReport {
     code: string;
@@ -33,34 +33,31 @@ export interface BundleReport {
     metadata: BundleMetadata;
 }
 
-interface RollupWarning {
-    message: string;
-    frame?: string;
-    loc?: {
-        file: string;
-        line: number;
-        column: number;
-    };
-    pos?: number;
-}
-
 const DEFAULT_FORMAT = 'amd';
 
 function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
-    return function onwarn({ message, loc, pos }: RollupWarning) {
-        // loc and pos are bundled together
-        const origin =
-            loc && pos
-                ? {
-                      filename: loc.file,
-                      location: {
-                          line: loc.line,
-                          column: loc.column,
-                          start: pos,
-                          length: 0,
-                      },
-                  }
-                : {};
+    return function onwarn(warning: string | RollupWarning) {
+        let message;
+        let origin = {};
+
+        if (typeof warning === 'string') {
+            message = warning;
+        } else {
+            message = warning.message;
+
+            if (warning.loc) {
+                const { loc, pos } = warning;
+                origin = {
+                    filename: loc.file,
+                    location: {
+                        line: loc.line,
+                        column: loc.column,
+                        start: pos,
+                        length: 0,
+                    },
+                };
+            }
+        }
 
         diagnostics.push(
             generateCompilerDiagnostic(ModuleResolutionErrors.MODULE_RESOLUTION_ERROR, {
@@ -82,7 +79,7 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
     const diagnostics: CompilerDiagnostic[] = [];
     const metadataCollector = new MetadataCollector();
 
-    const plugins: any[] = [
+    const plugins: Plugin[] = [
         rollupModuleResolver({
             options,
         }),
@@ -113,8 +110,9 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         plugins.push(rollupMinify(outputConfig));
     }
 
-    let code;
-    let map = null;
+    let code: string = '';
+    let map: SourceMap | null = null;
+
     try {
         const rollupBundler = await rollup({
             input: name,
@@ -122,13 +120,23 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
             onwarn: handleRollupWarning(diagnostics),
         });
 
-        const result = await rollupBundler.generate({
+        const { output } = await rollupBundler.generate({
             amd: { id: namespace + '/' + name },
             interop: false,
             strict: false,
             sourcemap: outputConfig.sourcemap,
             format,
         });
+
+        // Rollup produces multiple chunks when a module uses "import()" with a relative import
+        // path. We need to ensure the compiled module only contains the main chunk.
+        if (output.length > 1) {
+            diagnostics.push(
+                generateCompilerDiagnostic(ModuleResolutionErrors.RELATIVE_DYNAMIC_IMPORT)
+            );
+        }
+
+        const result = output[0];
         code = result.code;
         map = result.map;
     } catch (e) {

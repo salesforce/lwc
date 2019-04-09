@@ -69,19 +69,19 @@ function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
     const mutated = configContext.mutated as Set<ReactiveParameter>;
     delete configContext.mutated;
 
-    // pull this variable out of scope to workaround babel minify issue - https://github.com/babel/minify/issues/877
-    let listeners;
     mutated.forEach(reactiveParameter => {
         const value = getReactiveParameterValue(cmp, reactiveParameter);
         if (configContext.values[reactiveParameter.reference] === value) {
             return;
         }
         configContext.values[reactiveParameter.reference] = value;
-        listeners = configContext.listeners[reactiveParameter.head];
+
+        const listeners = configContext.listeners[reactiveParameter.head];
         for (let i = 0, len = listeners.length; i < len; i++) {
             uniqueListeners.add(listeners[i]);
         }
     });
+
     invokeConfigListeners(uniqueListeners, configContext.values);
 }
 

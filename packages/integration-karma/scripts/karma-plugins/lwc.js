@@ -70,7 +70,7 @@ function createPreprocessor(config, emitter, logger) {
 
             cache = bundle.cache;
 
-            const { code, map } = await bundle.generate({
+            const { output } = await bundle.generate({
                 format: 'iife',
                 sourcemap: 'inline',
 
@@ -84,6 +84,8 @@ function createPreprocessor(config, emitter, logger) {
                 intro,
                 outro,
             });
+
+            const { code, map } = output[0];
 
             // We need to assign the source to the original file so Karma can source map the error in the console. Add
             // also adding the source map inline for browser debugging.

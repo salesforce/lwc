@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { Plugin } from 'rollup';
+
 import { getTransformer, FileTransformerResult } from '../transformers/transformer';
 
 import { NormalizedCompilerOptions } from '../compiler/options';
@@ -15,7 +17,7 @@ export default function({
 }: {
     options: NormalizedCompilerOptions;
     metadataCollector?: MetadataCollector;
-}) {
+}): Plugin {
     return {
         name: 'lwc-file-transform',
         async transform(src: string, id: string): Promise<FileTransformerResult> {

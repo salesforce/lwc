@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { Plugin } from 'rollup';
 import * as babel from '@babel/core';
 import * as presetCompat from 'babel-preset-compat';
 
@@ -15,7 +16,7 @@ const BABEL_CONFIG_CONFIG = {
     presets: [[presetCompat, { proxy: true }]],
 };
 
-export default function({ sourcemap }: NormalizedOutputConfig) {
+export default function({ sourcemap }: NormalizedOutputConfig): Plugin {
     const config = Object.assign({}, BABEL_CONFIG_CONFIG, { sourceMaps: sourcemap });
 
     return {

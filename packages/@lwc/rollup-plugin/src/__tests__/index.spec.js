@@ -63,27 +63,27 @@ describe('rollup in compat mode', () => {
 
 const globalModules = { lwc: 'Engine', myCssResolver: 'resolveCss' };
 
-function doRollup(input, { compat } = {}, rollupCompileOptions) {
-    return rollup
-        .rollup({
-            input,
-            external: id => id in globalModules,
-            plugins: [
-                rollupCompile(rollupCompileOptions),
-                compat && rollupCompat({ polyfills: false }),
-            ].filter(Boolean),
-            onwarn(warn) {
-                if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
-                    /* eslint-disable-next-line no-console */
-                    console.warn(warn.message);
-                }
-            },
-        })
-        .then(bundle =>
-            bundle.generate({
-                format: 'iife',
-                name: 'test',
-                output: { globals: globalModules },
-            })
-        );
+async function doRollup(input, { compat } = {}, rollupCompileOptions) {
+    const bundle = await rollup.rollup({
+        input,
+        external: id => id in globalModules,
+        plugins: [
+            rollupCompile(rollupCompileOptions),
+            compat && rollupCompat({ polyfills: false }),
+        ],
+        onwarn(warn) {
+            if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
+                /* eslint-disable-next-line no-console */
+                console.warn(warn.message);
+            }
+        },
+    });
+
+    const { output } = await bundle.generate({
+        format: 'iife',
+        name: 'test',
+        output: { globals: globalModules },
+    });
+
+    return output[0];
 }

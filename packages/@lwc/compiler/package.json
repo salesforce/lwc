@@ -18,11 +18,10 @@
         "@lwc/errors": "0.37.2",
         "@lwc/style-compiler": "0.37.2",
         "@lwc/template-compiler": "0.37.2",
-        "@types/chokidar": "^1.7.5",
         "babel-preset-compat": "0.21.4",
-        "babel-preset-minify": "0.5.0-alpha.5a128fd5",
-        "rollup": "0.66.2",
-        "rollup-plugin-replace": "^2.0.0"
+        "rollup": "^1.7.4",
+        "rollup-plugin-replace": "^2.1.0",
+        "terser": "^3.17.0"
     },
     "devDependencies": {
         "magic-string": "^0.22.4",
