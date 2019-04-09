@@ -1,0 +1,16 @@
+{
+    "name": "@lwc/config",
+    "version": "0.36.0",
+    "description": "LWC Configuration",
+    "license": "MIT",
+    "main": "dist/commonjs/es2017/config.js",
+    "module": "dist/modules/es2017/config.js",
+    "scripts": {
+        "clean": "rm -rf dist/ lib/",
+        "test": "jest",
+        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
