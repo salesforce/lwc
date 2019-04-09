@@ -15,7 +15,12 @@ describe('Composed change event', () => {
 
     it('should be composed: false', function() {
         // Force native "change" event to fire
-        browser.click('input');
+        browser.execute(function() {
+            document
+                .querySelector('integration-change-event-composed')
+                .shadowRoot.querySelector('input')
+                .focus();
+        });
         browser.keys('foo');
         browser.click('body');
         assert.deepEqual(browser.getText('.verify-not-composed'), 'Not Composed');

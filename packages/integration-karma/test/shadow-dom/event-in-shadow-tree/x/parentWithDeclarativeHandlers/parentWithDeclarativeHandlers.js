@@ -1,8 +1,8 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class ComposedEvents extends LightningElement {
-    @track eventReceived = false;
-    @track customEventReceived = false;
+    @api eventReceived = false;
+    @api customEventReceived = false;
 
     handleEvent() {
         this.eventReceived = true;
