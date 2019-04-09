@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement, extractShadowDataIds } from 'test-utils';
 
 import NoDirectChild from 'x/noDirectChild';
 import Basic from 'x/basic';
@@ -10,52 +10,6 @@ import Complex from 'x/complex';
 // Gecko - https://bugzilla.mozilla.org/show_bug.cgi?id=1425685
 const SUPPORT_ASSIGNED_ELEMENTS =
     !process.env.NATIVE_SHADOW || 'assignedElements' in document.createElement('slot');
-
-function extractDataIds(root) {
-    const nodes = {};
-
-    function processElement(elm) {
-        if (elm.hasAttribute('data-id')) {
-            nodes[elm.getAttribute('data-id')] = elm;
-        }
-
-        if (elm.shadowRoot) {
-            Object.assign(nodes, extractShadowDataIds(elm.shadowRoot));
-        }
-    }
-
-    function acceptNode() {
-        return NodeFilter.FILTER_ACCEPT;
-    }
-
-    // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
-    // other browsers don't.
-    const safeFilter = acceptNode;
-    safeFilter.acceptNode = acceptNode;
-
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, safeFilter, false);
-
-    processElement(root);
-
-    let elm;
-    while ((elm = walker.nextNode())) {
-        processElement(elm);
-    }
-
-    return nodes;
-}
-
-function extractShadowDataIds(shadowRoot) {
-    const nodes = {};
-
-    // We can't use a TreeWalker directly on the ShadowRoot since with synthetic shadow the ShadowRoot is not an
-    // actual DOM nodes. So we need to iterate over the children manually and run the tree walker on each child.
-    for (const child of shadowRoot.childNodes) {
-        Object.assign(nodes, extractDataIds(child));
-    }
-
-    return nodes;
-}
 
 describe('ignore non direct host children', () => {
     let elm;

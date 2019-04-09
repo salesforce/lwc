@@ -253,7 +253,56 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         return lwc.createElement(name, config);
     }
 
+    function extractDataIds(root) {
+        var nodes = {};
+
+        function processElement(elm) {
+            if (elm.hasAttribute('data-id')) {
+                nodes[elm.getAttribute('data-id')] = elm;
+            }
+
+            if (elm.shadowRoot) {
+                Object.assign(nodes, extractShadowDataIds(elm.shadowRoot));
+            }
+        }
+
+        function acceptNode() {
+            return NodeFilter.FILTER_ACCEPT;
+        }
+
+        // Work around Internet Explorer wanting a function instead of an object. IE also *requires* this argument where
+        // other browsers don't.
+        var safeFilter = acceptNode;
+        safeFilter.acceptNode = acceptNode;
+
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, safeFilter, false);
+
+        processElement(root);
+
+        var elm;
+        while ((elm = walker.nextNode())) {
+            processElement(elm);
+        }
+
+        return nodes;
+    }
+
+    function extractShadowDataIds(shadowRoot) {
+        const nodes = {};
+
+        // We can't use a TreeWalker directly on the ShadowRoot since with synthetic shadow the ShadowRoot is not an
+        // actual DOM nodes. So we need to iterate over the children manually and run the tree walker on each child.
+        for (var i = 0; i < shadowRoot.childNodes.length; i++) {
+            var child = shadowRoot.childNodes[i];
+            Object.assign(nodes, extractDataIds(child));
+        }
+
+        return nodes;
+    }
+
     return {
         createElement: createElement,
+        extractDataIds: extractDataIds,
+        extractShadowDataIds: extractShadowDataIds,
     };
 })(Engine, jasmine, beforeAll);
