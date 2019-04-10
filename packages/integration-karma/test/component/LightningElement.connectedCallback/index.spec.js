@@ -2,6 +2,7 @@ import { createElement } from 'test-utils';
 
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
+import XSlottedParent from 'x/slottedParent';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {
@@ -50,4 +51,17 @@ it('should associate the component stack when the invocation throws', () => {
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in connected');
     expect(error.wcStack).toBe('<x-connected-callback-throw>');
+});
+
+describe('addEventListner in `connectedCallback`', () => {
+    it('clicking force button should update value', function() {
+        const elm = createElement('x-slotted-parent', { is: XSlottedParent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-child');
+        child.dispatchEventOnHost();
+        return Promise.resolve().then(() => {
+            expect(elm.eventHandled).toBe(true);
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('Was clicked: true');
+        });
+    });
 });

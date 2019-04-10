@@ -5,6 +5,7 @@ import { createElement, extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
 import NestedShadowTree from 'x/nestedShadowTree';
+import XParentWithDeclarativeHandlers from 'x/parentWithDeclarativeHandlers';
 
 function dispatchEventWithLog(target, event) {
     var log = [];
@@ -161,6 +162,30 @@ describe('event propagation in simple shadow tree', () => {
             [document.documentElement, nodes['x-shadow-tree'], composedPath],
             [document, nodes['x-shadow-tree'], composedPath],
         ]);
+    });
+
+    describe('parent with declarative handlers', () => {
+        let elm;
+        let child;
+        beforeAll(() => {
+            elm = createElement('x-parent-with-declarative-handlers', {
+                is: XParentWithDeclarativeHandlers,
+            });
+            document.body.appendChild(elm);
+            child = elm.shadowRoot.querySelector('x-event-dispatching-child');
+        });
+        if (process.env.COMPAT !== true) {
+            // https://github.com/salesforce/es5-proxy-compat/issues/115
+            it('event handlers gets invoked when composed event is dispatched', () => {
+                child.dispatchStandardEvent();
+                expect(elm.eventReceived).toBe(true);
+            });
+        }
+
+        it('event handlers gets invoked when composed custom event is dispatched', () => {
+            child.dispatchCustomEvent();
+            expect(elm.customEventReceived).toBe(true);
+        });
     });
 });
 
