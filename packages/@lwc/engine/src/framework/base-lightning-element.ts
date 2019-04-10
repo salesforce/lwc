@@ -179,6 +179,20 @@ export function BaseLightningElement(this: ComponentInterface) {
     }
 }
 
+const EVENT_NAME_RESTRICTIONS = [
+    '1) Start with a lowercase letter',
+    '2) End with a lowercase letter or number',
+    '3) Only contain lowercase letters, numbers, and underscores',
+].join(' ');
+function isValidEventName(name) {
+    return (
+        // Starts with a lowercase letter and only contains lowercase letters, number, and underscores
+        /^[a-z][a-z0-9_]*$/.test(name) &&
+        // Does not end with an underscore
+        !/_$/.test(name)
+    );
+}
+
 // HTML Element - The Good Parts
 BaseLightningElement.prototype = {
     constructor: BaseLightningElement,
@@ -219,11 +233,11 @@ BaseLightningElement.prototype = {
                 );
             }
 
-            if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
+            if (!isValidEventName(evtName)) {
                 assert.logWarning(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
-                    )}. Event name should only contain lowercase alphanumeric characters.`,
+                    )}. Event name should ${EVENT_NAME_RESTRICTIONS}`,
                     elm
                 );
             }
