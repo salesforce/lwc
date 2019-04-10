@@ -174,10 +174,13 @@ describe('event propagation in simple shadow tree', () => {
             document.body.appendChild(elm);
             child = elm.shadowRoot.querySelector('x-event-dispatching-child');
         });
-        it('event handlers gets invoked when composed event is dispatched', () => {
-            child.dispatchStandardEvent();
-            expect(elm.eventReceived).toBe(true);
-        });
+        if (process.env.COMPAT !== true) {
+            // https://github.com/salesforce/es5-proxy-compat/issues/115
+            it('event handlers gets invoked when composed event is dispatched', () => {
+                child.dispatchStandardEvent();
+                expect(elm.eventReceived).toBe(true);
+            });
+        }
 
         it('event handlers gets invoked when composed custom event is dispatched', () => {
             child.dispatchCustomEvent();
