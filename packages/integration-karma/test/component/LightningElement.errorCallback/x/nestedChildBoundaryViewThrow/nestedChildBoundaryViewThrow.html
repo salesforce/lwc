@@ -1,0 +1,9 @@
+<template>
+    <p>Child Error: {state.error} </p>
+    <template if:true={state.error}>
+        <x-nested-post-error-child-view></x-nested-post-error-child-view>
+    </template>
+    <template if:false={state.error}>
+        <x-nested-pre-error-child-view></x-nested-pre-error-child-view>
+    </template>
+</template>
