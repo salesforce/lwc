@@ -111,7 +111,8 @@ describe('error boundary', () => {
         });
     });
 
-    xit('should render parent boundary`s alternative view when child boundary to render its alternative view', () => {
+    // #1169 parent's errorCallback never invoked
+    xit('should render parent boundary`s alternative view when child boundary fails to render its alternative view', () => {
         elm.toggleFlag('nested-boundary-child-alt-view-throw');
         return waitForNestedRehydration().then(() => {
             const innerShadowRoot = shadowRoot.querySelector(
