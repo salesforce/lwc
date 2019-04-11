@@ -1,6 +1,6 @@
 import { LightningElement, track } from 'lwc';
 
-export default class BoundaryChildBoundaryAltViewThrow extends LightningElement {
+export default class NestedChildBoundaryAltViewThrow extends LightningElement {
     @track state = { error: false, title: 'initial' };
 
     errorCallback() {

@@ -5,6 +5,6 @@ export default class ChildRenderThrow extends LightningElement {
         super();
     }
     render() {
-        throw new Error('Child thew an error during rendering');
+        throw new Error('Child threw an error during rendering');
     }
 }

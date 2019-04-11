@@ -1,5 +1,9 @@
 import { createElement } from 'test-utils';
 import XErrorBoundary from 'x/errorBoundary';
+import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
+import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
+import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
+import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
 // Wait for a macrotask because the test has to wait for a nested rehydration(async) to complete.
 // tl;dr
@@ -135,4 +139,51 @@ describe('error boundary', () => {
             ).not.toBe(null);
         });
     });
+});
+
+describe('error boundary during initial component construction', () => {
+    function testStub(
+        testcase,
+        hostSelector,
+        hostClass,
+        offendingChildSelector,
+        expectedErrorMessage
+    ) {
+        it(`should invoke parent errorCallback ${testcase}`, () => {
+            const parent = createElement(hostSelector, { is: hostClass });
+            document.body.appendChild(parent);
+            expect(parent.errorCallbackCalled).toBe(true);
+            expect(parent.error.message).toBe(expectedErrorMessage);
+            // ensure offender has been unmounted
+            expect(parent.querySelector(offendingChildSelector)).toBe(null);
+        });
+    }
+    testStub(
+        'when child throws in constructor',
+        'x-child-constructor-throw-during-init',
+        XChildConstructorThrowDuringInit,
+        'x-child-constructor-throw',
+        'child-constructor-throw: triggered error'
+    );
+    testStub(
+        'when child throws in render',
+        'x-child-render-throw-during-init',
+        XChildRenderThrowDuringInit,
+        'x-child-render-throw',
+        'Child threw an error during rendering'
+    );
+    testStub(
+        'when child throws in renderedCallback',
+        'x-child-rendered-throw-during-init',
+        XChildRenderedThrowDuringInit,
+        'x-child-rendered-throw',
+        'Child threw in renderedCallback'
+    );
+    testStub(
+        'when child throws in connectedCallback',
+        'x-child-connected-throw-during-init',
+        XChildConnectedThrowDuringInit,
+        'x-child-connected-throw',
+        'Child threw in connectedCallback'
+    );
 });
