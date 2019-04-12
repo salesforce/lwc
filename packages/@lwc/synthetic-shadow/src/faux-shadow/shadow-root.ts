@@ -45,6 +45,7 @@ import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { getInternalChildNodes } from './node';
 import { innerHTMLSetter } from '../env/element';
+import { unlockDomMutation, lockDomMutation } from '../framework/restrictions';
 
 const InternalSlot = createFieldName('shadowRecord');
 const { createDocumentFragment } = document;
@@ -209,6 +210,70 @@ const ShadowRootDescriptors = {
         configurable: true,
         get(): StyleSheetList {
             throw new Error();
+        },
+    },
+    insertBefore: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(
+            this: SyntheticShadowRootInterface,
+            newChild: T,
+            refChild: Node | null
+        ): T {
+            if (process.env.NODE_ENV !== 'production') {
+                unlockDomMutation();
+            }
+            insertBefore.call(getHost(this), newChild, refChild);
+            if (process.env.NODE_ENV !== 'production') {
+                lockDomMutation();
+            }
+            return newChild;
+        },
+    },
+    removeChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
+            if (process.env.NODE_ENV !== 'production') {
+                unlockDomMutation();
+            }
+            removeChild.call(getHost(this), oldChild);
+            if (process.env.NODE_ENV !== 'production') {
+                lockDomMutation();
+            }
+            return oldChild;
+        },
+    },
+    appendChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
+            if (process.env.NODE_ENV !== 'production') {
+                unlockDomMutation();
+            }
+            appendChild.call(getHost(this), newChild);
+            if (process.env.NODE_ENV !== 'production') {
+                lockDomMutation();
+            }
+            return newChild;
+        },
+    },
+    replaceChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
+            if (process.env.NODE_ENV !== 'production') {
+                unlockDomMutation();
+            }
+            replaceChild.call(getHost(this), newChild, oldChild);
+            if (process.env.NODE_ENV !== 'production') {
+                lockDomMutation();
+            }
+            return oldChild;
         },
     },
 };
