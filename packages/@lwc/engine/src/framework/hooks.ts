@@ -98,7 +98,7 @@ export function createCommentHook(vnode: VNode) {
     }
 }
 
-export function createElmDefaultHook(vnode: VElement) {
+export function createElmHook(vnode: VElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -116,7 +116,7 @@ enum LWCDOMMode {
     manual = 'manual',
 }
 
-export function createElmHook(vnode: VElement) {
+export function fallbackElmHook(vnode: VElement) {
     const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, owner.uid);
@@ -147,7 +147,7 @@ export function createElmHook(vnode: VElement) {
     }
 }
 
-export function updateElmDefaultHook(oldVnode: VElement, vnode: VElement) {
+export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
@@ -188,7 +188,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmHook(vnode: VCustomElement) {
+export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
     if (hasOwnProperty.call(elm, ViewModelReflection)) {
         // There is a possibility that a custom element is registered under tagName,
@@ -226,7 +226,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmDefaultHook(vnode: VCustomElement) {
+export function createCustomElmHook(vnode: VCustomElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -263,7 +263,7 @@ export function rerenderCustomElmHook(vnode: VCustomElement) {
     rerenderVM(vm);
 }
 
-export function updateCustomElmDefaultHook(oldVnode: VCustomElement, vnode: VCustomElement) {
+export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
