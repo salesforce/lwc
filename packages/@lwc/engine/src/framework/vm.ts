@@ -194,12 +194,7 @@ export interface CreateVMInit {
     owner: VM | null;
 }
 
-export function createVM(
-    tagName: string,
-    elm: HTMLElement,
-    Ctor: ComponentConstructor,
-    options: CreateVMInit
-) {
+export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             elm instanceof HTMLElement,
@@ -277,13 +272,12 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    const { elm, cmpRoot, fallback, children: oldCh } = vm;
+    const { cmpRoot, children: oldCh } = vm;
     vm.children = newCh; // caching the new children collection
     if (newCh.length > 0 || oldCh.length > 0) {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
         if (oldCh !== newCh) {
-            const parentNode = fallback ? elm : cmpRoot;
             const fn = hasDynamicChildren(newCh) ? updateDynamicChildren : updateStaticChildren;
             runWithBoundaryProtection(
                 vm,
@@ -296,7 +290,7 @@ function patchShadowRoot(vm: VM, newCh: VNodes) {
                 },
                 () => {
                     // job
-                    fn(parentNode, oldCh, newCh);
+                    fn(cmpRoot, oldCh, newCh);
                 },
                 () => {
                     // post

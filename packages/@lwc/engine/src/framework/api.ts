@@ -280,12 +280,8 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         });
     }
     const { key } = data;
-    if (isUndefined(data.create)) {
-        data.create = createElmDefaultHook;
-    }
-    if (isUndefined(data.update)) {
-        data.update = updateElmDefaultHook;
-    }
+    data.create = createElmDefaultHook;
+    data.update = updateElmDefaultHook;
     let text, elm;
     const vnode: VElement = {
         sel,
@@ -407,12 +403,8 @@ export function c(
         }
     }
     const { key } = data;
-    if (isUndefined(data.create)) {
-        data.create = createCustomElmDefaultHook;
-    }
-    if (isUndefined(data.update)) {
-        data.update = updateCustomElmDefaultHook;
-    }
+    data.create = createCustomElmDefaultHook;
+    data.update = updateCustomElmDefaultHook;
     let text, elm;
     children = arguments.length === 3 ? EmptyArray : (children as VNodes);
     const vnode: VCustomElement = {

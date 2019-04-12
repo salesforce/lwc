@@ -18,7 +18,6 @@ import {
     runWithBoundaryProtection,
 } from './vm';
 import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
-import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -29,7 +28,12 @@ import modStaticStyle from './modules/static-style-attr';
 import modContext from './modules/context';
 import { hasDynamicChildren } from './patch';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from './restrictions';
+import {
+    patchCustomElementWithRestrictions,
+    patchElementWithRestrictions,
+    unlockDomMutation,
+    lockDomMutation,
+} from './restrictions';
 import {
     patchElementProto,
     patchTextNodeProto,
@@ -41,17 +45,39 @@ import { getComponentDef, setElementProto } from './def';
 const noop = () => void 0;
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    if (oldVnode.text !== vnode.text) {
-        nodeValueSetter.call(vnode.elm as Node, vnode.text);
+    const { text } = vnode;
+    if (oldVnode.text !== text) {
+        if (process.env.NODE_ENV !== 'production') {
+            unlockDomMutation();
+        }
+        /**
+         * Compiler will never produce a text property that is not string
+         */
+        (vnode.elm as Node).nodeValue = text as string;
+        if (process.env.NODE_ENV !== 'production') {
+            lockDomMutation();
+        }
     }
 }
 
 export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
-    insertBefore.call(parentNode, vnode.elm as Node, referenceNode);
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    parentNode.insertBefore(vnode.elm as Node, referenceNode);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
 }
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
-    removeChild.call(parentNode, vnode.elm as Node);
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    parentNode.removeChild(vnode.elm as Node);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
 }
 
 export function createTextHook(vnode: VNode) {
@@ -182,7 +208,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
             shadowAttribute,
         });
     }
-    createVM(vnode.sel as string, elm, ctor, {
+    createVM(elm, ctor, {
         mode,
         fallback,
         owner,
