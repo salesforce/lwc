@@ -12,6 +12,8 @@ import '../polyfills/aria-properties/main';
 import '@lwc/synthetic-shadow';
 
 // TODO: Revisit all of this exports figure out a better separation
+import './reactions';
+
 export { createElement } from './upgrade';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';

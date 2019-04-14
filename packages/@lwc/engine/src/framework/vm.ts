@@ -129,6 +129,51 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
 
+// relying on the node-reactions library to observe
+// connect and disconnect of new custom elements
+const ConnectedSlot = '$node:connected$';
+const DisconnectedSlot = '$node:disconnected$';
+
+function observeConnected(element: Node, value: () => void) {
+    defineProperty(element, ConnectedSlot, {
+        value,
+        configurable: true,
+    });
+}
+
+function observeDisconnected(element: Node, value: () => void) {
+    defineProperty(element, DisconnectedSlot, {
+        value,
+        configurable: true,
+    });
+}
+
+function observeVMConnection(element: HTMLElement) {
+    // Handle insertion and removal from the DOM manually
+    observeConnected(element, () => {
+        const vm = getCustomElementVM(element);
+        const { isRoot } = vm;
+        if (isRoot) {
+            // we only measure root elements
+            startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+        }
+        if (vm.state === VMState.connected) {
+            // usually means moving the element from one place to another,
+            // which is observable via life-cycle hooks
+            removeVM(vm);
+        }
+        appendVM(vm);
+        if (isRoot) {
+            // we only measure root elements
+            endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+        }
+    });
+    observeDisconnected(element, () => {
+        const vm = getCustomElementVM(element);
+        removeVM(vm);
+    });
+}
+
 // DO NOT CHANGE this:
 // these two values are used by the synthetic-shadow implementation to traverse the DOM
 const OwnerKey = '$$OwnerKey$$';
@@ -141,19 +186,15 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function appendRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    runConnectedCallback(vm);
-    rehydrate(vm);
-}
-
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
+    const { state } = vm;
+    if (state === VMState.connected) {
+        return; // nothing to do since it is already connected
+    }
+    vm.state = VMState.connected;
     runConnectedCallback(vm);
     rehydrate(vm);
 }
@@ -168,21 +209,17 @@ function resetComponentStateWhenRemoved(vm: VM) {
     runChildrenDisconnectedCallback(vm);
 }
 
-// this method is triggered by the diffing algo only when a vnode from the
-// old vnode.children is removed from the DOM.
+// this method is triggered by the diffing algo or by the removal
+// of a root element from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.state === VMState.connected, `${vm} must be inserted.`);
     }
-    resetComponentStateWhenRemoved(vm);
-}
-
-// this method is triggered by the removal of a root element from the DOM.
-export function removeRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+    const { state } = vm;
+    if (state !== VMState.connected) {
+        return; // nothing to do since it is already disconnected
     }
+    vm.state = VMState.disconnected;
     resetComponentStateWhenRemoved(vm);
 }
 
@@ -252,6 +289,9 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
     linkComponent(initializedVm);
+
+    // subscribe to connect and disconnect hooks
+    observeVMConnection(elm);
 }
 
 function rehydrate(vm: VM) {
@@ -373,11 +413,6 @@ function runConnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    const { state } = vm;
-    if (state === VMState.connected) {
-        return; // nothing to do since it was already connected
-    }
-    vm.state = VMState.connected;
     // reporting connection
     const { connected } = Services;
     if (connected) {
@@ -400,10 +435,6 @@ function runConnectedCallback(vm: VM) {
 function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { state } = vm;
-    if (state === VMState.disconnected) {
-        return; // nothing to do since it was already disconnected
     }
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,

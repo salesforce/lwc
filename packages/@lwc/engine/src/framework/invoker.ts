@@ -106,18 +106,16 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     const ctx = currentContext;
     const isRenderingInception = isRendering;
     const vmBeingRenderedInception = vmBeingRendered;
-    isRendering = true;
-    vmBeingRendered = vm;
     let result;
     runWithBoundaryProtection(
         vm,
         owner,
         () => {
             // pre
-            establishContext(context);
             if (process.env.NODE_ENV !== 'production') {
                 startMeasure('render', vm);
             }
+            establishContext(context);
             isRendering = true;
             vmBeingRendered = vm;
         },
@@ -128,12 +126,12 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         },
         () => {
             establishContext(ctx);
+            isRendering = isRenderingInception;
+            vmBeingRendered = vmBeingRenderedInception;
             // post
             if (process.env.NODE_ENV !== 'production') {
                 endMeasure('render', vm);
             }
-            isRendering = isRenderingInception;
-            vmBeingRendered = vmBeingRenderedInception;
         }
     );
     return result || [];

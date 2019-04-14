@@ -10,11 +10,9 @@ import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
 import {
     rerenderVM,
     createVM,
-    removeVM,
     getCustomElementVM,
     allocateInSlot,
     setNodeOwnerKey,
-    appendVM,
     runWithBoundaryProtection,
 } from './vm';
 import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
@@ -157,11 +155,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
-    appendVM(vm);
-}
-
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children, owner } = vnode;
     const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
@@ -284,10 +277,4 @@ export function removeElmHook(vnode: VElement) {
             ch.hook.remove(ch, elm as HTMLElement);
         }
     }
-}
-
-export function removeCustomElmHook(vnode: VCustomElement) {
-    // for custom elements we don't have to go recursively because the removeVM routine
-    // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
 }

@@ -44,7 +44,6 @@ import {
 } from '../3rdparty/snabbdom/types';
 import {
     createViewModelHook,
-    insertCustomElmHook,
     fallbackElmHook,
     rerenderCustomElmHook,
     removeElmHook,
@@ -60,7 +59,6 @@ import {
     allocateChildrenHook,
     createTextHook,
     createCommentHook,
-    removeCustomElmHook,
 } from './hooks';
 import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
@@ -193,14 +191,12 @@ const CustomElementHook: Hooks = {
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
-        insertCustomElmHook(vnode);
     },
     move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
     },
     remove: (vnode: VCustomElement, parentNode: Node) => {
         removeNodeHook(vnode, parentNode);
-        removeCustomElmHook(vnode);
     },
 };
 

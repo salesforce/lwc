@@ -14,7 +14,7 @@ import {
     isFalse,
     ArrayMap,
 } from '../shared/language';
-import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
+import { createVM, appendVM, removeVM, getCustomElementVM, CreateVMInit } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { isNativeShadowRootAvailable } from '../env/dom';
@@ -57,13 +57,13 @@ export function buildCustomElementConstructor(
                 patchCustomElementWithRestrictions(this, EmptyObject);
             }
         }
-        connectedCallback() {
+        connectedCallback1() {
             const vm = getCustomElementVM(this);
-            appendRootVM(vm);
+            appendVM(vm);
         }
-        disconnectedCallback() {
+        disconnectedCallback1() {
             const vm = getCustomElementVM(this);
-            removeRootVM(vm);
+            removeVM(vm);
         }
         attributeChangedCallback(attrName, oldValue, newValue) {
             if (oldValue === newValue) {
