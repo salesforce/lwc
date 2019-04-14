@@ -31,12 +31,8 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     parentElementGetter,
-    textContextSetter,
+    textContentSetter,
     isConnected,
-    removeChild,
-    insertBefore,
-    replaceChild,
-    appendChild,
 } from '../env/node';
 import { isNativeShadowRootAvailable } from '../env/dom';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
@@ -220,7 +216,7 @@ const ShadowRootDescriptors = {
             newChild: T,
             refChild: Node | null
         ): T {
-            insertBefore.call(getHost(this), newChild, refChild);
+            Node.prototype.insertBefore.call(getHost(this), newChild, refChild);
             return newChild;
         },
     },
@@ -229,7 +225,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
-            removeChild.call(getHost(this), oldChild);
+            Node.prototype.removeChild.call(getHost(this), oldChild);
             return oldChild;
         },
     },
@@ -238,7 +234,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
-            appendChild.call(getHost(this), newChild);
+            Node.prototype.appendChild.call(getHost(this), newChild);
             return newChild;
         },
     },
@@ -247,7 +243,7 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
-            replaceChild.call(getHost(this), newChild, oldChild);
+            Node.prototype.replaceChild.call(getHost(this), newChild, oldChild);
             return oldChild;
         },
     },
@@ -478,7 +474,7 @@ const NodePatchDescriptors = {
         },
         set(this: SyntheticShadowRootInterface, v: string) {
             const host = getHost(this);
-            textContextSetter.call(host, v);
+            textContentSetter.call(host, v);
         },
     },
     // Since the synthetic shadow root is a detached DocumentFragment, short-circuit the getRootNode behavior

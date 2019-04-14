@@ -7,7 +7,7 @@
 import { isUndefined, isNull, getPrototypeOf, setPrototypeOf, isFalse } from '../shared/language';
 import {
     parentNodeGetter,
-    textContextSetter,
+    textContentSetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     parentNodeGetter as nativeParentNodeGetter,
@@ -117,7 +117,7 @@ export function PatchedNode(node: Node): NodeConstructor {
             return getTextContent(this);
         }
         set textContent(this: Node, value: string) {
-            textContextSetter.call(this, value);
+            textContentSetter.call(this, value);
         }
         get childElementCount(this: ParentNode) {
             return this.children.length;
