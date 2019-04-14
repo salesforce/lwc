@@ -5,9 +5,6 @@ export default class Parent extends LightningElement {
     items = [0];
 
     @api
-    customLastName = false;
-
-    @api
     add() {
         const { items } = this;
         const last = items[items.length - 1];
@@ -22,11 +19,6 @@ export default class Parent extends LightningElement {
     @api
     clear() {
         this.items = [];
-    }
-
-    @api
-    customizeLastName(name) {
-        this.customLastName = name;
     }
 
     @api

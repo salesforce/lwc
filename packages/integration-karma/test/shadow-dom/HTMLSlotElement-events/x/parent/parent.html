@@ -1,19 +1,7 @@
 <template>
-    <x-slotchange-on-slot>
+    <x-child>
         <template for:each={items} for:item="item">
             <span key={item}>{item}</span>
         </template>
-    </x-slotchange-on-slot>
-
-    <x-slotchange-on-div>
-        <template for:each={items} for:item="item">
-            <span key={item}>{item}</span>
-        </template>
-    </x-slotchange-on-div>
-
-    <x-nested-slots>
-        <template if:true={customLastName}>
-            <span slot="last">Kashida</span>
-        </template>
-    </x-nested-slots>
+    </x-child>
 </template>
