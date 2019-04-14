@@ -148,30 +148,31 @@ function observeDisconnected(element: Node, value: () => void) {
     });
 }
 
-function observeVMConnection(element: HTMLElement) {
-    // Handle insertion and removal from the DOM manually
-    observeConnected(element, () => {
-        const vm = getCustomElementVM(element);
-        const { isRoot } = vm;
-        if (isRoot) {
-            // we only measure root elements
-            startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        }
-        if (vm.state === VMState.connected) {
-            // usually means moving the element from one place to another,
-            // which is observable via life-cycle hooks
-            removeVM(vm);
-        }
-        appendVM(vm);
-        if (isRoot) {
-            // we only measure root elements
-            endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        }
-    });
-    observeDisconnected(element, () => {
-        const vm = getCustomElementVM(element);
+// Handle insertion and removal from the DOM manually
+export function onConnected(element: HTMLElement) {
+    const vm = getCustomElementVM(element);
+    const { isRoot } = vm;
+    if (isRoot) {
+        // TODO: all registered CE are considered root elements, that is a problem
+        // because we might not want to measure them, only the real root elements.
+        // we only measure root elements
+        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+    }
+    if (vm.state === VMState.connected) {
+        // usually means moving the element from one place to another,
+        // which is observable via life-cycle hooks
         removeVM(vm);
-    });
+    }
+    appendVM(vm);
+    if (isRoot) {
+        // we only measure root elements
+        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+    }
+}
+
+export function onDisconnected(element: HTMLElement) {
+    const vm = getCustomElementVM(element);
+    removeVM(vm);
 }
 
 // DO NOT CHANGE this:
@@ -186,7 +187,7 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function appendVM(vm: VM) {
+function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
@@ -211,7 +212,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
 
 // this method is triggered by the diffing algo or by the removal
 // of a root element from the DOM.
-export function removeVM(vm: VM) {
+function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
@@ -228,6 +229,7 @@ export interface CreateVMInit {
     // custom settings for now
     fallback: boolean;
     isRoot?: boolean;
+    isCE?: boolean;
     owner: VM | null;
 }
 
@@ -239,7 +241,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         );
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, fallback, owner } = options;
+    const { isCE, isRoot, mode, fallback, owner } = options;
     const shadowRootOptions: ShadowRootInit = {
         mode,
         delegatesFocus: !!Ctor.delegatesFocus,
@@ -290,8 +292,15 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     const initializedVm = uninitializedVm as VM;
     linkComponent(initializedVm);
 
-    // subscribe to connect and disconnect hooks
-    observeVMConnection(elm);
+    if (!isTrue(isCE)) {
+        // non-registered custom elements must be observed via node-reactions
+        observeConnected(elm, () => {
+            onConnected(elm);
+        });
+        observeDisconnected(elm, () => {
+            onDisconnected(elm);
+        });
+    }
 }
 
 function rehydrate(vm: VM) {
