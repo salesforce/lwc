@@ -117,11 +117,18 @@ export function isNumber(obj: any): obj is number {
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && obj.toString) {
+        // Arrays might hold objects with "null" prototype
+        // So using Array.prototype.toString directly will cause an error
+        // Iterate through all the items and handle individually.
+        if (isArray(obj)) {
+            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
+        }
+
         return obj.toString();
     } else if (typeof obj === 'object') {
         return OtS.call(obj);
     } else {
-        return obj + '';
+        return obj + emptyString;
     }
 }
 
