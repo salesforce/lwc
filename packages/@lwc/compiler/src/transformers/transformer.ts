@@ -29,12 +29,20 @@ export interface FileTransformerResult {
  *
  * @deprecated Use transformSync instead.
  */
-export async function transform(
+export function transform(
     src: string,
     filename: string,
     options: CompilerOptions
 ): Promise<FileTransformerResult> {
-    return transformSync(src, filename, options);
+    validateArguments(src, filename);
+    return new Promise((resolve, reject) => {
+        try {
+            const res = transformSync(src, filename, options);
+            resolve(res);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 /**
@@ -46,10 +54,13 @@ export function transformSync(
     filename: string,
     options: CompilerOptions
 ): FileTransformerResult {
+    validateArguments(src, filename);
+    return transformFile(src, filename, normalizeOptions(options));
+}
+
+function validateArguments(src: string, filename: string) {
     invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
     invariant(isString(filename), TransformerErrors.INVALID_ID, [filename]);
-
-    return transformFile(src, filename, normalizeOptions(options));
 }
 
 export function transformFile(
