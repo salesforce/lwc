@@ -1,5 +1,6 @@
 import { createElement } from 'test-utils';
 import XTest from 'x/test';
+import ArrayNullPrototype from 'x/arrayNullPrototype';
 
 function testForEach(type, obj) {
     it(`should render ${type}`, () => {
@@ -67,4 +68,11 @@ xit('should log a warning when the passing a non iterable', () => {
         TypeError,
         /Invalid template iteration for value `\[.*\]` in \[object:vm undefined \(\d*\)\], it requires an array-like object, not `null` or `undefined`/
     );
+});
+
+it('should render an array of objects with null prototype', () => {
+    const elm = createElement('x-array-null-prototype', { is: ArrayNullPrototype });
+    document.body.appendChild(elm);
+
+    expect(elm.shadowRoot.querySelector('span').textContent).toBe('text');
 });
