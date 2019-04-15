@@ -27,6 +27,12 @@ function callNodeSlot(node: Node, slot: PropertyKey): Node {
     return node; // for convenience
 }
 
+/**
+ * We use a local member property to avoid repatching the same multiple times,
+ * considering that this pkg might be included multiple times in the page, e.g.:
+ * - included by shadow root polyfill to detect childNodes mutations for patching
+ * - included by every version of the LWC engine to observe connected and disconnected
+ */
 if (Node.prototype.insertBefore[NodeReactionsInstalledSlot] !== 'installed') {
     const { assign, defineProperty, hasOwnProperty, getOwnPropertyDescriptor } = Object;
 

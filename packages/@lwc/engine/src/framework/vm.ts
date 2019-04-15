@@ -200,16 +200,6 @@ function appendVM(vm: VM) {
     rehydrate(vm);
 }
 
-// just in case the component comes back, with this we guarantee re-rendering it
-// while preventing any attempt to rehydration until after reinsertion.
-function resetComponentStateWhenRemoved(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    runDisconnectedCallback(vm);
-    runChildrenDisconnectedCallback(vm);
-}
-
 // this method is triggered by the diffing algo or by the removal
 // of a root element from the DOM.
 function removeVM(vm: VM) {
@@ -221,7 +211,8 @@ function removeVM(vm: VM) {
         return; // nothing to do since it is already disconnected
     }
     vm.state = VMState.disconnected;
-    resetComponentStateWhenRemoved(vm);
+    runDisconnectedCallback(vm);
+    runChildrenDisconnectedCallback(vm);
 }
 
 export interface CreateVMInit {
@@ -453,7 +444,6 @@ function runDisconnectedCallback(vm: VM) {
         markComponentAsDirty(vm);
     }
     clearReactiveListeners(vm);
-    vm.state = VMState.disconnected;
     // reporting disconnection
     const { disconnected } = Services;
     if (disconnected) {
@@ -489,8 +479,9 @@ function runChildrenDisconnectedCallback(vm: VM) {
         //   into it, as a result, the custom element was never initialized.
         if (!isUndefined(elm)) {
             const childVM = getCustomElementVM(elm as HTMLElement);
-            runDisconnectedCallback(childVM);
-            runChildrenDisconnectedCallback(childVM);
+            // This is needed because sometimes the node-reactions will not detect the
+            // removal of the children when the host is removed, but sometimes it does it.
+            removeVM(childVM);
         }
     }
 }
