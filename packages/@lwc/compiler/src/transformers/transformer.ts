@@ -11,60 +11,75 @@ import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from '..
 
 import styleTransform from './style';
 import templateTransformer, { TemplateMetadata } from './template';
-import javascriptTransformer from './javascript';
+import scriptTransformer from './javascript';
 
 import { isString } from '../utils';
 import { MetadataCollector } from '../bundler/meta-collector';
 import { SourceMap } from '../compiler/compiler';
 
-// TODO: Improve on metadata type by providing consistent interface. Currently
-// javascript transformer output differs from css and html in that later return a promise
 export interface FileTransformerResult {
     code: string;
     metadata?: TemplateMetadata;
     map: SourceMap | null;
 }
 
-export type FileTransformer = (
-    source: string,
+/**
+ * Transforms the passed code. Returning a Promise of an object with the generated code, source map
+ * and gathered metadata.
+ *
+ * @deprecated Use transformSync instead.
+ */
+export async function transform(
+    src: string,
+    filename: string,
+    options: CompilerOptions
+): Promise<FileTransformerResult> {
+    return transformSync(src, filename, options);
+}
+
+/**
+ * Transform the passed source code. Returning an object with the generated code, source map and
+ * gathered metadata.
+ */
+export function transformSync(
+    src: string,
+    filename: string,
+    options: CompilerOptions
+): FileTransformerResult {
+    invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
+    invariant(isString(filename), TransformerErrors.INVALID_ID, [filename]);
+
+    return transformFile(src, filename, normalizeOptions(options));
+}
+
+export function transformFile(
+    src: string,
     filename: string,
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
-) => FileTransformerResult | Promise<FileTransformerResult>;
+): FileTransformerResult {
+    let transformer;
 
-export function transform(src: string, id: string, options: CompilerOptions) {
-    invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
-    invariant(isString(id), TransformerErrors.INVALID_ID, [id]);
-
-    return transformFile(src, id, normalizeOptions(options));
-}
-
-export function getTransformer(fileName: string): FileTransformer {
-    switch (path.extname(fileName)) {
+    switch (path.extname(filename)) {
         case '.html':
-            return templateTransformer;
+            transformer = templateTransformer;
+            break;
 
         case '.css':
-            return styleTransform;
+            transformer = styleTransform;
+            break;
 
         case '.ts':
         case '.js':
-            return javascriptTransformer;
+            transformer = scriptTransformer;
+            break;
 
         default:
             throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
-                messageArgs: [fileName],
-                origin: { filename: fileName },
+                messageArgs: [filename],
+                origin: { filename },
             });
     }
-}
 
-export async function transformFile(
-    src: string,
-    id: string,
-    options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector
-): Promise<FileTransformerResult> {
-    const transformer = getTransformer(id);
-    return await transformer(src, id, options, metadataCollector);
+    return transformer(src, filename, options, metadataCollector);
 }
