@@ -24,7 +24,7 @@ testValidateOptions('transform', transform);
 testValidateOptions('transformSync', transformSync);
 
 describe('transform', () => {
-    it('returns the a promise resolving to an object with code', () => {
+    it('returns a promise resolving to an object with code', () => {
         expect(transform(`console.log('Hello')`, 'foo.js', {})).resolves.toMatchObject({
             code: expect.any(String),
         });
