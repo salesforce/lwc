@@ -12,7 +12,7 @@ import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 import { NormalizedCompilerOptions } from '../compiler/options';
 import { FileTransformerResult } from './transformer';
 
-export default function(
+export default function scriptTransform(
     code: string,
     filename: string,
     options: NormalizedCompilerOptions

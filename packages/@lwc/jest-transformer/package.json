@@ -16,8 +16,7 @@
         "@babel/plugin-transform-modules-commonjs": "7.1.0",
         "@babel/template": "~7.1.2",
         "@lwc/errors": "0.37.4",
-        "babel-preset-jest": "^24.0.0",
-        "deasync": "0.1.14"
+        "babel-preset-jest": "^24.0.0"
     },
     "peerDependencies": {
         "@lwc/compiler": "0.37.x",

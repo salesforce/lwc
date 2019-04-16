@@ -14,7 +14,6 @@ import {
 import compile from '@lwc/template-compiler';
 import { TemplateModuleDependency } from '@lwc/template-compiler';
 
-import { FileTransformer } from './transformer';
 import { MetadataCollector } from '../bundler/meta-collector';
 import { NormalizedCompilerOptions } from '../compiler/options';
 
@@ -31,7 +30,7 @@ export interface TemplateMetadata {
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
  */
-const transform: FileTransformer = function(
+export default function templateTransform(
     src: string,
     filename: string,
     options: NormalizedCompilerOptions,
@@ -67,7 +66,7 @@ const transform: FileTransformer = function(
         map: { mappings: '' },
         metadata,
     };
-};
+}
 
 function serialize(
     code: string,
@@ -94,5 +93,3 @@ function serialize(
 
     return buffer;
 }
-
-export default transform;
