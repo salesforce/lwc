@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../../framework/main';
+import { createElement, LightningElement } from '@lwc/engine';
 import assertLogger from '../../shared/assert';
 
 describe('patched node properties', () => {
@@ -31,7 +31,7 @@ describe('patched node properties', () => {
             const nestedRootElement = createElement('x-nested', { is: NestedRootElement });
             const rootElementTmpl = compileTemplate(`
             <template>
-                <div class='expectedParent'></div>
+                <div class='expectedParent' lwc:dom="manual"></div>
             </template>
             `);
             class RootElement extends LightningElement {

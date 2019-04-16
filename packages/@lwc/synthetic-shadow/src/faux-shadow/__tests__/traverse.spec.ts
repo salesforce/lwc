@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../../framework/main';
+import { createElement, LightningElement } from '@lwc/engine';
 
 describe('#childNodes', () => {
     it('should always return an empty array for slots not rendering default content', () => {
