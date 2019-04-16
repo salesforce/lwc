@@ -21,7 +21,7 @@ function rollupConfig(config) {
     const { format, target } = config;
 
     return {
-        input: input,
+        input,
         output: {
             file: path.join(outputDir + `/${target}`, generateTargetName(config)),
             name: 'SyntheticShadow',
@@ -30,7 +30,7 @@ function rollupConfig(config) {
             footer,
         },
         plugins: [
-            typescript({ target: target, typescript: require('typescript') }),
+            typescript({ target, typescript: require('typescript') }),
             rollupReplacePlugin({ 'process.env.NODE_ENV': JSON.stringify('development') }),
         ],
     };

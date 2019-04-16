@@ -16,5 +16,5 @@ module.exports = {
     COMPAT_SUFFIX,
     DEBUG_SUFFIX,
     PROD_SUFFIX,
-    generateTargetName: generateTargetName,
+    generateTargetName,
 };
