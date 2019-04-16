@@ -5,5 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export { compile } from './compiler/compiler';
-export { transform } from './transformers/transformer';
+export { transform, transformSync } from './transformers/transformer';
+
 export const version = '__VERSION__';
