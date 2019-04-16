@@ -23,5 +23,6 @@ module.exports = {
         '<rootDir>/packages/@lwc/style-compiler',
         '<rootDir>/packages/@lwc/wire-service',
         '<rootDir>/packages/@lwc/rollup-plugin',
+        '<rootDir>/packages/@lwc/synthetic-shadow',
     ],
 };
