@@ -269,6 +269,7 @@ function getShadowRootRestrictionsDescriptors(
         getElementById: 0,
         getSelection: 0,
         elementsFromPoint: 0,
+        dispatchEvent: 0,
     };
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
         const descriptor = generateAccessorDescriptor({

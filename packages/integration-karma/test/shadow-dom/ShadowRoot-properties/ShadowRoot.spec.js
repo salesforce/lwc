@@ -65,3 +65,28 @@ describe('Properties overrides', () => {
         });
     });
 });
+
+const SHADOW_ROOT_RESTRICTED = [
+    'appendChild',
+    'removeChild',
+    'replaceChild',
+    'cloneNode',
+    'insertBefore',
+    'getElementById',
+    'getSelection',
+    'elementsFromPoint',
+    'dispatchEvent',
+];
+
+describe('restrictions', () => {
+    for (const methodName of SHADOW_ROOT_RESTRICTED) {
+        it(`should throw when accessing ShadowRoot.${methodName} in dev mode`, () => {
+            const elm = createElement('x-test', { is: Test });
+
+            expect(() => elm.shadowRoot[methodName]).toThrowErrorDev(
+                Error,
+                `Disallowed method "${methodName}" in ShadowRoot.`
+            );
+        });
+    }
+});
