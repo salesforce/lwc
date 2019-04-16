@@ -211,6 +211,9 @@ const ShadowRootDescriptors = {
             throw new Error();
         },
     },
+};
+
+const NodePatchDescriptors = {
     insertBefore: {
         writable: true,
         enumerable: true,
@@ -251,9 +254,6 @@ const ShadowRootDescriptors = {
             return oldChild;
         },
     },
-};
-
-const NodePatchDescriptors = {
     addEventListener: {
         writable: true,
         enumerable: true,
