@@ -13,7 +13,7 @@ const { terser: rollupTerser } = require('rollup-plugin-terser');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 
 const { version } = require('../../package.json');
-const { generateTargetName, ignoreCircularDependencies } = require('./utils');
+const { TS_WHITELIST, generateTargetName, ignoreCircularDependencies } = require('./utils');
 
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
@@ -40,7 +40,7 @@ function rollupConfig(config) {
                 target,
                 module: 'es6',
                 sourceMap: false,
-                include: ['*.ts', '**/*.ts', '/**/node_modules/**/*.js'],
+                include: TS_WHITELIST,
             }),
             rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
             prod && rollupTerser(),
