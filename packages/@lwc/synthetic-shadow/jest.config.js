@@ -25,7 +25,14 @@ module.exports = {
     coverageThreshold: {
         global: {
             ...BASE_CONFIG.coverageThreshold.global,
-            branches: 60,
+            // since we have split out this code from engine pkg
+            // it is still tested from there and from integration tests
+            // while only a small amount of units were copied into this pkg
+            // TODO: remove all units in favor of integration tests to avoid
+            // the hazard of testing in jest/jsdom.
+            branches: 15,
+            functions: 5,
+            lines: 30,
         },
     },
 };
