@@ -32,7 +32,7 @@ import { childNodesGetter as nativeChildNodesGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 
-export interface HTMLSlotElementConstructor {
+interface HTMLSlotElementConstructor {
     prototype: HTMLSlotElement;
     new (): HTMLSlotElement;
 }

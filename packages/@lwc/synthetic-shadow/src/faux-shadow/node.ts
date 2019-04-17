@@ -23,7 +23,7 @@ import { getShadowRoot } from './shadow-root';
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
-export interface NodeConstructor {
+interface NodeConstructor {
     prototype: Node;
     new (): Node;
 }
