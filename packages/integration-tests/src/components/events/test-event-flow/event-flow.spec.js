@@ -50,12 +50,21 @@ function assertValidGuid(guid) {
 
 function clickSlottedButton() {
     browser.execute(function() {
-        document.querySelector('button.slotted').click();
+        document
+            .querySelector('integration-event-flow')
+            .shadowRoot.querySelector('integration-parent')
+            .shadowRoot.querySelector('button.slotted')
+            .click();
     });
 }
 function clickChildButton() {
     browser.execute(function() {
-        document.querySelector('button.child').click();
+        document
+            .querySelector('integration-event-flow')
+            .shadowRoot.querySelector('integration-parent')
+            .shadowRoot.querySelector('integration-child')
+            .shadowRoot.querySelector('button.child')
+            .click();
     });
 }
 
@@ -78,7 +87,12 @@ describe('event flow:', () => {
     });
 
     beforeEach(() => {
-        browser.click('button.clear');
+        browser.execute(function() {
+            document
+                .querySelector('integration-event-flow')
+                .shadowRoot.querySelector('button.clear')
+                .click();
+        });
         // Reset log cache
         LOGGED_GUIDS = null;
     });
