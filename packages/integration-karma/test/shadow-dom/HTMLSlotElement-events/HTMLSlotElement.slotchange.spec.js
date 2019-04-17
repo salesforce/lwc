@@ -5,6 +5,9 @@ import Parent from 'x/parent';
 let parent;
 let child;
 
+// These tests use task timing instead of the microtask timing to schedule
+// assertions due to MO timing inconsistency across browsers.
+
 beforeEach(() => {
     parent = createElement('x-parent', { is: Parent });
     document.body.appendChild(parent);
@@ -12,57 +15,72 @@ beforeEach(() => {
 });
 
 it('should fire slotchange on initial render', () => {
-    return Promise.resolve().then(() => {
-        expect(child.slotChangeCount).toBe(1);
-    });
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            expect(child.slotChangeCount).toBe(1);
+        });
 });
 
 it('should fire non-composed slotchange', () => {
-    return Promise.resolve().then(() => {
-        expect(parent.slotChangeCount).toBe(0);
-    });
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            expect(parent.slotChangeCount).toBe(0);
+        });
 });
 
 it('should fire slotchange on add', () => {
-    parent.add();
-    // Macrotask because need to wait for rehydrate + MO callback
-    return new Promise(setTimeout).then(() => {
-        expect(child.slotChangeCount).toBe(2);
-    });
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            child.slotChangeCount = 0;
+            parent.add();
+        })
+        .then(setTimeout)
+        .then(() => {
+            expect(child.slotChangeCount).toBe(1);
+        });
 });
 
 it('should fire slotchange on remove', () => {
-    parent.clear();
-    // Macrotask because need to wait for rehydrate + MO callback
-    return new Promise(setTimeout).then(() => {
-        expect(child.slotChangeCount).toBe(2);
-    });
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            child.slotChangeCount = 0;
+            parent.clear();
+        })
+        .then(setTimeout)
+        .then(() => {
+            expect(child.slotChangeCount).toBe(1);
+        });
 });
 
 it('should fire slotchange on replace', () => {
-    parent.replace();
-    // Macrotask because need to wait for rehydrate + MO callback
-    return new Promise(setTimeout).then(() => {
-        expect(child.slotChangeCount).toBe(2);
-    });
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            child.slotChangeCount = 0;
+            parent.replace();
+        })
+        .then(setTimeout)
+        .then(() => {
+            expect(child.slotChangeCount).toBe(1);
+        });
 });
 
 it('should fire slotchange when listener added programmatically', () => {
     let count = 0;
-    return (
-        Promise.resolve()
-            // Macrotask because need to wait for initial render
-            .then(setTimeout)
-            .then(() => {
-                child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
-                    count += 1;
-                });
-                parent.add();
-            })
-            // Macrotask because need to wait for rehydrate + MO callback
-            .then(setTimeout)
-            .then(() => {
-                expect(count).toBe(1);
-            })
-    );
+    return Promise.resolve()
+        .then(setTimeout)
+        .then(() => {
+            child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
+                count += 1;
+            });
+            parent.add();
+        })
+        .then(setTimeout)
+        .then(() => {
+            expect(count).toBe(1);
+        });
 });
