@@ -107,90 +107,6 @@ function testEventScopeInShadowTree(type, Ctor) {
     });
 }
 
-function testEventScopeOnShadowRoot(type, Ctor) {
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xdescribe(`event scope on shadow root ${type}`, () => {
-        let nodes;
-        beforeEach(() => {
-            nodes = createShadowTree(document.body);
-        });
-
-        it('default', () => {
-            const evt = new Ctor('test');
-            const logs = dispatchEventWithLog(nodes['x-shadow-tree'].shadowRoot, evt);
-            const composedPath = [nodes['x-shadow-tree'].shadowRoot];
-            expect(logs).toEqual([
-                [
-                    nodes['x-shadow-tree'].shadowRoot,
-                    nodes['x-shadow-tree'].shadowRoot,
-                    composedPath,
-                ],
-            ]);
-        });
-
-        it('{ bubble: true }', () => {
-            const evt = new Ctor('test', { bubbles: true });
-            const logs = dispatchEventWithLog(nodes['x-shadow-tree'].shadowRoot, evt);
-
-            const composedPath = [nodes['x-shadow-tree'].shadowRoot];
-            expect(logs).toEqual([
-                [
-                    nodes['x-shadow-tree'].shadowRoot,
-                    nodes['x-shadow-tree'].shadowRoot,
-                    composedPath,
-                ],
-            ]);
-        });
-
-        it('{ composed: true }', () => {
-            const evt = new Ctor('test', { composed: true });
-            const logs = dispatchEventWithLog(nodes['x-shadow-tree'].shadowRoot, evt);
-
-            const composedPath = [
-                nodes['x-shadow-tree'].shadowRoot,
-                nodes['x-shadow-tree'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-            expect(logs).toEqual([
-                [
-                    nodes['x-shadow-tree'].shadowRoot,
-                    nodes['x-shadow-tree'].shadowRoot,
-                    composedPath,
-                ],
-                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            ]);
-        });
-
-        it('{ bubble: true, composed: true }', () => {
-            const evt = new Ctor('test', { bubbles: true, composed: true });
-
-            const logs = dispatchEventWithLog(nodes['x-shadow-tree'].shadowRoot, evt);
-            const composedPath = [
-                nodes['x-shadow-tree'].shadowRoot,
-                nodes['x-shadow-tree'],
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ];
-            expect(logs).toEqual([
-                [
-                    nodes['x-shadow-tree'].shadowRoot,
-                    nodes['x-shadow-tree'].shadowRoot,
-                    composedPath,
-                ],
-                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-                [document.body, nodes['x-shadow-tree'], composedPath],
-                [document.documentElement, nodes['x-shadow-tree'], composedPath],
-                [document, nodes['x-shadow-tree'], composedPath],
-            ]);
-        });
-    });
-}
-
 function testEventScopeOnHostElement(type, Ctor) {
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
     xdescribe(`event scope on host element ${type}`, () => {
@@ -269,6 +185,5 @@ function testEventScopeOnHostElement(type, Ctor) {
 
 for (const [name, Ctor] of EVENT_MAPPING) {
     testEventScopeInShadowTree(name, Ctor);
-    testEventScopeOnShadowRoot(name, Ctor);
     testEventScopeOnHostElement(name, Ctor);
 }

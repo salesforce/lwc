@@ -118,30 +118,6 @@ describe('event propagation in simple shadow tree', () => {
         ]);
     });
 
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('propagate event from a shadow root', () => {
-        const logs = dispatchEventWithLog(
-            nodes['x-shadow-tree'].shadowRoot,
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
-
-        const composedPath = [
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            document.body,
-            document.documentElement,
-            document,
-            window,
-        ];
-        expect(logs).toEqual([
-            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
-            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            [document.body, nodes['x-shadow-tree'], composedPath],
-            [document.documentElement, nodes['x-shadow-tree'], composedPath],
-            [document, nodes['x-shadow-tree'], composedPath],
-        ]);
-    });
-
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
     xit('propagate event from a host element', () => {
         const logs = dispatchEventWithLog(
@@ -257,34 +233,6 @@ describe('event propagation in nested shadow tree', () => {
             [nodes['span-manual'], nodes['span-manual'], composedPath],
             [nodes['div-manual'], nodes['span-manual'], composedPath],
             [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
-            [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
-            [document.body, nodes['x-nested-shadow-tree'], composedPath],
-            [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
-            [document, nodes['x-nested-shadow-tree'], composedPath],
-        ]);
-    });
-
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('propagate event from a inner shadow root', () => {
-        const logs = dispatchEventWithLog(
-            nodes['x-shadow-tree'].shadowRoot,
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
-
-        const composedPath = [
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            nodes['x-nested-shadow-tree'].shadowRoot,
-            nodes['x-nested-shadow-tree'],
-            document.body,
-            document.documentElement,
-            document,
-            window,
-        ];
-        expect(logs).toEqual([
-            [nodes['x-shadow-tree'].shadowRoot, nodes['x-shadow-tree'].shadowRoot, composedPath],
             [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
             [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
             [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
