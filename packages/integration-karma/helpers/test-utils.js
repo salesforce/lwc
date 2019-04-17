@@ -58,10 +58,41 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         };
     }
 
+    function formatConsoleCall(args) {
+        return args.map(String).join(' ');
+    }
+
     // TODO: #869 - Improve lookup logWarning doesn't use console.group anymore.
     function consoleDevMatcherFactory(methodName, internalMethodName) {
         return function consoleDevMatcher() {
             return {
+                negativeCompare: function negativeCompare(actual) {
+                    var spy = spyConsole();
+                    try {
+                        actual();
+                    } finally {
+                        spy.reset();
+                    }
+
+                    var callsArgs = spy.calls[internalMethodName || methodName];
+                    var formattedCalls = callsArgs
+                        .map(function(arg) {
+                            return '"' + formatConsoleCall(arg) + '"';
+                        })
+                        .join(', ');
+
+                    if (callsArgs.length === 0) {
+                        return {
+                            pass: true,
+                        };
+                    }
+                    return {
+                        pass: false,
+                        message: function() {
+                            return 'Expect no message but received:\n' + formattedCalls;
+                        },
+                    };
+                },
                 compare: function compare(actual, expectedMessage) {
                     function matchMessage(message) {
                         if (typeof expectedMessage === 'string') {
@@ -69,10 +100,6 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
                         } else {
                             return expectedMessage.test(message);
                         }
-                    }
-
-                    function formatConsoleCall(args) {
-                        return args.map(String).join(' ');
                     }
 
                     if (typeof actual !== 'function') {
