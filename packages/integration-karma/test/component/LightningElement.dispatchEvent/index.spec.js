@@ -70,7 +70,7 @@ function testInvalidEvent(reason, name) {
             elm.dispatch(new CustomEvent(name));
         }).toLogWarningDev(
             new RegExp(
-                `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should 1\\) Start with a lowercase letter 2\\) End with a lowercase letter or number 3\\) Only contain lowercase letters, numbers, and underscores`
+                `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should 1\\) Start with a lowercase letter 2\\) Only contain lowercase letters, numbers, and underscores`
             )
         );
     });
@@ -90,10 +90,10 @@ function testValidEvent(reason, name) {
 testInvalidEvent('contains a hyphen', 'foo-bar');
 testInvalidEvent('contains an uppercase character', 'fooBar');
 testInvalidEvent('starts with a number', '1foo');
-testInvalidEvent('ends with an underscore', 'foo_');
 testInvalidEvent('is a single number', '7');
 testInvalidEvent('is a single underscore', '_');
 testInvalidEvent('is an empty string', '');
+testValidEvent('ends with an underscore', 'foo_');
 testValidEvent('ends with a number', 'foo1');
 testValidEvent('contains an underscore', 'foo_bar');
 testValidEvent('is a single letter', 'e');
