@@ -12,7 +12,8 @@
         "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
     },
     "dependencies": {
-        "observable-membrane": "0.26.1"
+        "observable-membrane": "0.26.1",
+        "@lwc/synthetic-shadow": "0.36.0"
     },
     "devDependencies": {
         "@lwc/template-compiler": "0.37.2"

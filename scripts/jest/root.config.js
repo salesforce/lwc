@@ -24,5 +24,6 @@ module.exports = {
         '<rootDir>/packages/@lwc/wire-service',
         '<rootDir>/packages/@lwc/rollup-plugin',
         '<rootDir>/packages/@lwc/synthetic-shadow',
+        '<rootDir>/packages/@lwc/node-reactions',
     ],
 };

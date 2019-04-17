@@ -37,7 +37,7 @@ const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
     ? getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
 
-const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
+const textContentSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
     Node.prototype,
     'textContent'
 )!.set!;
@@ -76,7 +76,7 @@ export {
     parentNodeGetter,
     removeChild,
     replaceChild,
-    textContextSetter,
+    textContentSetter,
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,

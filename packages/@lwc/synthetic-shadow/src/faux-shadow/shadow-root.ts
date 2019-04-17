@@ -207,6 +207,9 @@ const ShadowRootDescriptors = {
             throw new Error();
         },
     },
+};
+
+const NodePatchDescriptors = {
     insertBefore: {
         writable: true,
         enumerable: true,
@@ -244,49 +247,6 @@ const ShadowRootDescriptors = {
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
             Node.prototype.replaceChild.call(getHost(this), newChild, oldChild);
-            return oldChild;
-        },
-    },
-};
-
-const NodePatchDescriptors = {
-    insertBefore: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value<T extends Node>(
-            this: SyntheticShadowRootInterface,
-            newChild: T,
-            refChild: Node | null
-        ): T {
-            insertBefore.call(getHost(this), newChild, refChild);
-            return newChild;
-        },
-    },
-    removeChild: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
-            removeChild.call(getHost(this), oldChild);
-            return oldChild;
-        },
-    },
-    appendChild: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
-            appendChild.call(getHost(this), newChild);
-            return newChild;
-        },
-    },
-    replaceChild: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
-            replaceChild.call(getHost(this), newChild, oldChild);
             return oldChild;
         },
     },

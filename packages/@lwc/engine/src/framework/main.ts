@@ -5,14 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// library to control node insertion and removal, it
+// must run first...
+import '@lwc/node-reactions';
+
 // Polyfills
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
-// TODO: tbis should not be included here
+// TODO: this should not be included here in the future
 import '@lwc/synthetic-shadow';
-
-// TODO: Revisit all of this exports figure out a better separation
-import './reactions';
 
 export { createElement } from './upgrade';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
