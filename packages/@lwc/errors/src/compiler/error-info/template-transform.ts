@@ -234,7 +234,7 @@ export const ParserDiagnostics = {
     INVALID_EVENT_NAME: {
         code: 1056,
         message:
-            'Invalid event name {0}. Event name can only contain lower-case alphabetic characters',
+            'Invalid event type "{0}". Event type must begin with a lower-case alphabetic character and contain only lower-case alphabetic characters, underscores, and numeric characters',
         level: DiagnosticLevel.Error,
         url: '',
     },
