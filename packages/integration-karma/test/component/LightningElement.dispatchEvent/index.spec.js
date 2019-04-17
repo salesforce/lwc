@@ -92,7 +92,6 @@ testInvalidEvent('contains an uppercase character', 'fooBar');
 testInvalidEvent('starts with a number', '1foo');
 testInvalidEvent('is a single number', '7');
 testInvalidEvent('is a single underscore', '_');
-testInvalidEvent('is an empty string', '');
 testValidEvent('ends with an underscore', 'foo_');
 testValidEvent('ends with a number', 'foo1');
 testValidEvent('contains an underscore', 'foo_bar');
