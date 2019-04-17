@@ -13,7 +13,13 @@ import {
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
 } from '../env/node';
-import { querySelectorAll, innerHTMLSetter, tagNameGetter } from '../env/element';
+import {
+    getElementsByClassName,
+    getElementsByTagName,
+    querySelectorAll,
+    innerHTMLSetter,
+    tagNameGetter,
+} from '../env/element';
 import { wrapIframeWindow, HTMLIFrameElementConstructor } from './iframe';
 import { ArrayReduce, ArrayPush, isUndefined } from '../shared/language';
 import { isNull } from '../shared/language';
@@ -24,6 +30,7 @@ import { iFrameContentWindowGetter } from '../env/dom';
 import { getFilteredSlotAssignedNodes } from './slot';
 import '../polyfills/node-get-root-node/main';
 import { HTMLElementConstructor } from './custom-element';
+import { createStaticHTMLCollection } from '../shared/static-html-collection';
 
 // Extract the patched getRootNode
 export const { getRootNode: patchedGetRootNode } = Node.prototype;
@@ -158,7 +165,7 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
 
 export function getAllMatches(
     owner: HTMLElement,
-    nodeList: NodeList | Node[]
+    nodeList: NodeList | HTMLCollection | Node[]
 ): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -184,7 +191,7 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
 
 function getAllSlottedMatches(
     host: HTMLElement,
-    nodeList: NodeList | Node[]
+    nodeList: NodeList | HTMLCollection | Node[]
 ): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -204,6 +211,38 @@ function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | 
         }
     }
     return null;
+}
+
+function lightDomGetElementsByTagName(elm: Element, elementName: string): Element[] {
+    const owner = getNodeOwner(elm);
+    if (isNull(owner)) {
+        return [];
+    }
+
+    const nodeList = getElementsByTagName.call(elm, elementName);
+    if (getNodeKey(elm)) {
+        // it is a custom element, and we should then filter by slotted elements
+        return getAllSlottedMatches(elm as HTMLElement, nodeList);
+    } else {
+        // regular element, we should then filter by ownership
+        return getAllMatches(owner, nodeList);
+    }
+}
+
+function lightDomGetElementsByClassName(elm: Element, className: string): Element[] {
+    const owner = getNodeOwner(elm);
+    if (isNull(owner)) {
+        return [];
+    }
+
+    const nodeList = getElementsByClassName.call(elm, className);
+    if (getNodeKey(elm)) {
+        // it is a custom element, and we should then filter by slotted elements
+        return getAllSlottedMatches(elm as HTMLElement, nodeList);
+    } else {
+        // regular element, we should then filter by ownership
+        return getAllMatches(owner, nodeList);
+    }
 }
 
 function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {
@@ -299,6 +338,12 @@ export function getFilteredChildNodes(node: Node): Element[] {
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
     return class PatchedHTMLElement extends Ctor {
+        getElementsByTagName(elementName: string): HTMLCollectionOf<Element> {
+            return createStaticHTMLCollection(lightDomGetElementsByTagName(this, elementName));
+        }
+        getElementsByClassName(classNames: string): HTMLCollectionOf<Element> {
+            return createStaticHTMLCollection(lightDomGetElementsByClassName(this, classNames));
+        }
         querySelector(this: Element, selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
         }
