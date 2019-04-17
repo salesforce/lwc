@@ -9,22 +9,12 @@ const DEBUG_SUFFIX = '_debug';
 const PROD_SUFFIX = '.min';
 
 function generateTargetName({ prod, proddebug }) {
-    return ['engine', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
+    return ['shadow', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
 }
-
-function ignoreCircularDependencies({ code, message }) {
-    if (code !== 'CIRCULAR_DEPENDENCY') {
-        throw new Error(message);
-    }
-}
-
-const TS_WHITELIST = ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'];
 
 module.exports = {
-    TS_WHITELIST,
     COMPAT_SUFFIX,
     DEBUG_SUFFIX,
     PROD_SUFFIX,
     generateTargetName,
-    ignoreCircularDependencies,
 };

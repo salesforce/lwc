@@ -10,7 +10,7 @@ const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
 const { version } = require('../../package.json');
-const { generateTargetName, ignoreCircularDependencies } = require('./utils');
+const { TS_WHITELIST, generateTargetName, ignoreCircularDependencies } = require('./utils');
 
 const input = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
@@ -36,7 +36,7 @@ function rollupConfig(config) {
             rollupTypescriptPlugin({
                 target,
                 typescript,
-                include: ['*.ts', '**/*.ts', '/**/node_modules/**/*.js'],
+                include: TS_WHITELIST,
             }),
         ],
     };

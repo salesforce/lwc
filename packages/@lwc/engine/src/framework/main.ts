@@ -4,6 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+// Polyfills
+import '../polyfills/proxy-concat/main';
+import '../polyfills/aria-properties/main';
+// TODO: tbis should not be included here
+import '@lwc/synthetic-shadow';
+
 // TODO: Revisit all of this exports figure out a better separation
 export { createElement } from './upgrade';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';

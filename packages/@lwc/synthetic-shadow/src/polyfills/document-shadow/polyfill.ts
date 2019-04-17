@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { elementFromPoint, DocumentPrototypeActiveElement } from '../../env/document';
-import { getNodeOwnerKey } from '../../framework/vm';
 import { isNull, isUndefined, defineProperty } from '../../shared/language';
+import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { parentElementGetter } from '../../env/node';
 import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';

@@ -14,19 +14,16 @@ import {
     parentElementGetter,
 } from '../env/node';
 import { querySelectorAll, innerHTMLSetter, tagNameGetter } from '../env/element';
-import { wrapIframeWindow } from './iframe';
+import { wrapIframeWindow, HTMLIFrameElementConstructor } from './iframe';
 import { ArrayReduce, ArrayPush, isUndefined } from '../shared/language';
 import { isNull } from '../shared/language';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { getHost, SyntheticShadowRootInterface } from './shadow-root';
-import {
-    HTMLElementConstructor,
-    HTMLIFrameElementConstructor,
-} from '../framework/base-bridge-element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { iFrameContentWindowGetter } from '../env/dom';
 import { getFilteredSlotAssignedNodes } from './slot';
 import '../polyfills/node-get-root-node/main';
+import { HTMLElementConstructor } from './custom-element';
 
 // Extract the patched getRootNode
 export const { getRootNode: patchedGetRootNode } = Node.prototype;

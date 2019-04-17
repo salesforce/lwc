@@ -549,10 +549,6 @@ interface RestrictionsOptions {
     isPortal?: boolean;
 }
 
-export function patchNodeWithRestrictions(node: Node, options: RestrictionsOptions) {
-    defineProperties(node, getNodeRestrictionsDescriptors(node, options));
-}
-
 export function patchElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {
     defineProperties(elm, getElementRestrictionsDescriptors(elm, options));
 }

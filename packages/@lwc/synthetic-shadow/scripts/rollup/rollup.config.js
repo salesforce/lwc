@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { createDocumentFragment, createElement } = Document.prototype;
-
-export { createDocumentFragment, createElement };
+module.exports = [
+    ...require('./rollup.config.es-and-cjs'),
+    ...require('./rollup.config.umd.dev'),
+    ...require('./rollup.config.umd.prod'),
+];

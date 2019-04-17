@@ -5,18 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
-const typescript = require('typescript');
-const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const nodeResolve = require('rollup-plugin-node-resolve');
+const typescript = require('rollup-plugin-typescript');
 
-const { TS_WHITELIST, generateTargetName, ignoreCircularDependencies } = require('./utils');
 const { version } = require('../../package.json');
+const { generateTargetName } = require('./util');
 
-const entry = path.resolve(__dirname, '../../src/framework/main.ts');
+const entry = path.resolve(__dirname, '../../src/index.ts');
 const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
-const banner = `/* proxy-compat-disable */`;
+const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
@@ -27,22 +25,14 @@ function rollupConfig(config) {
 
     return {
         input: entry,
-        onwarn: ignoreCircularDependencies,
         output: {
-            name: 'Engine',
             file: path.join(targetDirectory, targetName),
-            format: format,
-            banner: banner,
-            footer: footer,
+            name: 'SyntheticShadow',
+            format,
+            banner,
+            footer,
         },
-        plugins: [
-            nodeResolve(),
-            rollupTypescriptPlugin({
-                target,
-                typescript,
-                include: TS_WHITELIST,
-            }),
-        ],
+        plugins: [typescript({ target: target, typescript: require('typescript') })],
     };
 }
 
