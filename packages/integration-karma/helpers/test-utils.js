@@ -76,8 +76,8 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
 
                     var callsArgs = spy.calls[internalMethodName || methodName];
                     var formattedCalls = callsArgs
-                        .map(arg => {
-                            return `"${formatConsoleCall(arg)}"`;
+                        .map(function(arg) {
+                            return '"' + formatConsoleCall(arg) + '"';
                         })
                         .join(', ');
 
@@ -88,7 +88,9 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
                     }
                     return {
                         pass: false,
-                        message: () => `Expect no message but received:\n${formattedCalls}`,
+                        message: function() {
+                            return 'Expect no message but received:\n' + formattedCalls;
+                        },
                     };
                 },
                 compare: function compare(actual, expectedMessage) {
