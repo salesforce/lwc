@@ -18,7 +18,7 @@ it('should fire slotchange on initial render', () => {
     return Promise.resolve()
         .then(setTimeout)
         .then(() => {
-            expect(child.slotChangeCount).toBe(1);
+            expect(child.getCount()).toBe(1);
         });
 });
 
@@ -26,7 +26,7 @@ it('should fire non-composed slotchange', () => {
     return Promise.resolve()
         .then(setTimeout)
         .then(() => {
-            expect(parent.slotChangeCount).toBe(0);
+            expect(parent.getCount()).toBe(0);
         });
 });
 
@@ -34,12 +34,12 @@ it('should fire slotchange on add', () => {
     return Promise.resolve()
         .then(setTimeout)
         .then(() => {
-            child.slotChangeCount = 0;
+            child.setCount(0);
             parent.add();
         })
         .then(setTimeout)
         .then(() => {
-            expect(child.slotChangeCount).toBe(1);
+            expect(child.getCount()).toBe(1);
         });
 });
 
@@ -47,12 +47,12 @@ it('should fire slotchange on remove', () => {
     return Promise.resolve()
         .then(setTimeout)
         .then(() => {
-            child.slotChangeCount = 0;
+            child.setCount(0);
             parent.clear();
         })
         .then(setTimeout)
         .then(() => {
-            expect(child.slotChangeCount).toBe(1);
+            expect(child.getCount()).toBe(1);
         });
 });
 
@@ -60,12 +60,12 @@ it('should fire slotchange on replace', () => {
     return Promise.resolve()
         .then(setTimeout)
         .then(() => {
-            child.slotChangeCount = 0;
+            child.setCount(0);
             parent.replace();
         })
         .then(setTimeout)
         .then(() => {
-            expect(child.slotChangeCount).toBe(1);
+            expect(child.getCount()).toBe(1);
         });
 });
 

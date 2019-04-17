@@ -21,19 +21,21 @@ export default class Parent extends LightningElement {
         this.items = [];
     }
 
-    _slotChangeCount = 0;
+    count = 0;
 
     @api
-    get slotChangeCount() {
-        return this._slotChangeCount;
+    getCount() {
+        return this.count;
     }
-    set slotChangeCount(value) {
-        this._slotChangeCount = value;
+
+    @api
+    setCount(value) {
+        this.count = value;
     }
 
     connectedCallback() {
         this.template.addEventListener('slotchange', () => {
-            this._slotChangeCount += 1;
+            this.count += 1;
         });
     }
 }
