@@ -17,7 +17,7 @@ import {
 import State from './state';
 import { mergeConfig, Config } from './config';
 
-import parse from './parser';
+import parseTemplate from './parser';
 import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
@@ -27,6 +27,21 @@ export {
     ModuleDependency as TemplateModuleDependency,
     DependencyParameter as TemplateModuleDependencyParameter,
 } from './shared/types';
+
+// export template-compiler parse function
+
+export { IRElement, IRAttributeType } from './shared/types';
+export { default as State } from './state';
+
+// TODO: perhaps don't allow the configuration from the outside?
+export { Config, mergeConfig } from './config';
+
+export function parse(source: string, config?: Config) {
+    const options = mergeConfig(config || {});
+    const state = new State(source, options);
+
+    return parseTemplate(source, state);
+}
 
 export default function compiler(
     source: string,
@@ -42,7 +57,7 @@ export default function compiler(
     let code = '';
     const warnings: CompilerDiagnostic[] = [];
     try {
-        const parsingResults = parse(source, state);
+        const parsingResults = parseTemplate(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
@@ -76,7 +91,7 @@ export function compileToFunction(source: string): Function {
 
     const state = new State(source, options);
 
-    const parsingResults = parse(source, state);
+    const parsingResults = parseTemplate(source, state);
 
     for (const warning of parsingResults.warnings) {
         if (warning.level === DiagnosticLevel.Error) {
