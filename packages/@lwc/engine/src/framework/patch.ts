@@ -18,7 +18,6 @@ import {
     PatchedSlotElement,
     PatchedNode,
     PatchedIframeElement,
-    PatchedCustomElement,
     markElementAsPortal,
     setCSSToken,
 } from '@lwc/synthetic-shadow';
@@ -103,7 +102,7 @@ export function patchCustomElementProto(
     const { def, shadowAttribute } = options;
     let patchedBridge = (def as PatchedComponentDef).patchedBridge;
     if (isUndefined(patchedBridge)) {
-        patchedBridge = (def as PatchedComponentDef).patchedBridge = PatchedCustomElement(
+        patchedBridge = (def as PatchedComponentDef).patchedBridge = PatchedElement(
             elm
         ) as HTMLElementConstructor;
     }

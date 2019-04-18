@@ -7,9 +7,9 @@
 export { patchEvent } from './events';
 export { PatchedSlotElement } from './slot';
 
-export { PatchedCustomElement } from './custom-element';
+export { PatchedElement } from './element';
 
 export { setCSSToken, PatchedNode } from './node';
 export { markElementAsPortal } from './portal';
 
-export { PatchedElement, PatchedIframeElement } from './traverse';
+export { PatchedIframeElement } from './iframe';

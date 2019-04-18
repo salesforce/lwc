@@ -72,6 +72,10 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
+export function hasSyntheticShadow(elm: HTMLElement): boolean {
+    return !isUndefined(getInternalField(elm, InternalSlot));
+}
+
 export function attachShadow(
     elm: HTMLElement,
     options: ShadowRootInit

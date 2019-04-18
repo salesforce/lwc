@@ -42,7 +42,10 @@ const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescrip
     'textContent'
 )!.set!;
 
-const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prototype, 'childNodes')
+const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnProperty.call(
+    Node.prototype,
+    'childNodes'
+)
     ? getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
 
