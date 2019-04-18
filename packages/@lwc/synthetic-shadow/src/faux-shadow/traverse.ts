@@ -298,6 +298,12 @@ export function getFilteredChildNodes(node: Node): Element[] {
 
 export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
     const Ctor = PatchedNode(elm) as HTMLElementConstructor;
+
+    // Note: Element.getElementsByTagName and Element.getElementsByClassName are purposefully
+    // omitted from the list of patched methods. In order for the querySelector* APIs to run
+    // properly in jsdom, we need to make sure those methods doesn't respect the shadow DOM
+    // semantic.
+    // https://github.com/salesforce/lwc/pull/1179#issuecomment-484041707
     return class PatchedHTMLElement extends Ctor {
         querySelector(this: Element, selector: string): Element | null {
             return lightDomQuerySelector(this, selector);
