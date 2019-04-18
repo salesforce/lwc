@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
 
 describe('Event target in slot elements', () => {
     const URL = 'http://localhost:4567/slotted-native-element-event-target/';
@@ -14,8 +13,24 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function() {
-        browser.click('p');
-        browser.waitForVisible('.correct-event-target');
-        assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');
+        browser.execute(function() {
+            document
+                .querySelector('integration-slotted-native-element-event-target')
+                .shadowRoot.querySelector('p')
+                .click();
+        });
+        browser.waitUntil(
+            () => {
+                var child = browser.execute(function() {
+                    return document
+                        .querySelector('integration-slotted-native-element-event-target')
+                        .shadowRoot.querySelector('integration-child')
+                        .shadowRoot.querySelector('.correct-event-target');
+                });
+                return child !== null && child.getText() === 'Event target is correct';
+            },
+            500,
+            "did not receive expected event target in slot element's parent handler"
+        );
     });
 });

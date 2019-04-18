@@ -29,7 +29,7 @@ describe('Composed focusin event', () => {
         });
         assert.deepEqual(focusInComposed.getText(), 'Focus In Composed');
     });
-    it('custom event shoud not be composed', () => {
+    it('custom event should not be composed', () => {
         const button = browser.execute(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
