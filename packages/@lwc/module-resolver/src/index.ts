@@ -6,13 +6,13 @@
  */
 /* eslint-env node */
 
-import glob from 'glob';
+import glob from 'fast-glob';
 import path from 'path';
 import fs from 'fs';
 import nodeModulePaths from './node-modules-paths';
 
 const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
-const PACKAGE_PATTERN = `**/*/package.json`;
+const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json'];
 const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
 
@@ -26,6 +26,10 @@ export interface RegistryEntry {
 export interface ModuleResolverConfig {
     moduleDirectories: string[];
     rootDir: string;
+}
+
+interface FlatEntry {
+    path: string;
 }
 
 function createRegistryEntry(entry, moduleSpecifier, moduleName, moduleNamespace): RegistryEntry {
@@ -50,27 +54,33 @@ function loadLwcConfig(modulePath) {
 }
 
 export function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
-    return glob.sync(MODULE_ENTRY_PATTERN, { cwd: absPath }).reduce((mappings, file) => {
-        const ext = path.extname(file);
-        const fileName = path.basename(file, ext);
-        const rootDir = path.dirname(file);
-        const rootParts = rootDir.split('/'); // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
-        const entry = path.join(absPath, file);
+    return glob
+        .sync<FlatEntry>(MODULE_ENTRY_PATTERN, {
+            cwd: absPath,
+            transform: entry =>
+                typeof entry === 'string' ? { path: entry } : { path: entry.path },
+        })
+        .reduce((mappings, { path: file }) => {
+            const ext = path.extname(file);
+            const fileName = path.basename(file, ext);
+            const rootDir = path.dirname(file);
+            const rootParts = rootDir.split('/'); // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
+            const entry = path.join(absPath, file);
 
-        const dirModuleName = rootParts.pop();
-        const dirModuleNamespace = rootParts.pop();
-        if (dirModuleNamespace && dirModuleName === fileName) {
-            const registryNode = createRegistryEntry(
-                entry,
-                `${dirModuleNamespace}/${fileName}`,
-                fileName,
-                dirModuleNamespace.toLowerCase()
-            );
-            mappings[registryNode.moduleSpecifier] = registryNode;
-        }
+            const dirModuleName = rootParts.pop();
+            const dirModuleNamespace = rootParts.pop();
+            if (dirModuleNamespace && dirModuleName === fileName) {
+                const registryNode = createRegistryEntry(
+                    entry,
+                    `${dirModuleNamespace}/${fileName}`,
+                    fileName,
+                    dirModuleNamespace.toLowerCase()
+                );
+                mappings[registryNode.moduleSpecifier] = registryNode;
+            }
 
-        return mappings;
-    }, {});
+            return mappings;
+        }, {});
 }
 
 function hasModuleBeenVisited(module, visited) {
@@ -123,8 +133,13 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
     const modulePaths = expandModuleDirectories(options);
     return modulePaths.reduce((m, nodeModulesDir) => {
         return glob
-            .sync(PACKAGE_PATTERN, { cwd: nodeModulesDir, ignore: DEFAULT_IGNORE })
-            .reduce((mappings, file) => {
+            .sync<FlatEntry>(PACKAGE_PATTERN, {
+                cwd: nodeModulesDir,
+                ignore: DEFAULT_IGNORE,
+                transform: entry =>
+                    typeof entry === 'string' ? { path: entry } : { path: entry.path },
+            })
+            .reduce((mappings, { path: file }) => {
                 const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
                 const lwcConfig = loadLwcConfig(moduleRoot);
 
