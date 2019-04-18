@@ -21,7 +21,6 @@ describe('Composed focusout event', () => {
         });
         input.click();
         browser.click('body');
-        browser.pause(50);
         const focusInComposed = browser.execute(function() {
             return document
                 .querySelector('integration-focusout-composed-true')

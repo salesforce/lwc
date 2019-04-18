@@ -21,7 +21,6 @@ describe('Composed focusin event', () => {
         });
         input.click();
         browser.click('body');
-        browser.pause(50);
         const focusInComposed = browser.execute(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
