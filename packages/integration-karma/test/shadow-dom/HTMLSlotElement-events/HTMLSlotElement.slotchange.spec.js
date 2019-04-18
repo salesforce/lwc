@@ -14,14 +14,6 @@ beforeEach(() => {
     child = parent.shadowRoot.querySelector('x-child');
 });
 
-it('should fire slotchange on initial render', () => {
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            expect(child.getCount()).toBe(1);
-        });
-});
-
 it('should fire non-composed slotchange', () => {
     return Promise.resolve()
         .then(setTimeout)
