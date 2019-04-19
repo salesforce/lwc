@@ -20,9 +20,21 @@ describe('Delegates focus', () => {
     it('should focus the input when clicked', function() {
         browser.keys(['Tab']); // focus first anchor
         browser.keys(['Tab']); // focus second anchor
-        browser.click('input'); // click into input
+        const input = browser.execute(function() {
+            return document
+                .querySelector(
+                    'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
+                )
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('input');
+        });
+        input.click(); // click into input
         const active = browser.execute(function() {
-            return document.querySelector('integration-child').shadowRoot.activeElement;
+            return document
+                .querySelector(
+                    'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
+                )
+                .shadowRoot.querySelector('integration-child').shadowRoot.activeElement;
         });
         assert.equal(active.getTagName(), 'input');
     });
