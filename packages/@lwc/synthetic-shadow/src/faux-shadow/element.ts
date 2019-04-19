@@ -22,7 +22,7 @@ import {
     isNodeOwnedBy,
     getFirstMatch,
 } from './traverse';
-import { hasAttribute, tabIndexGetter, childrenGetter } from '../env/element';
+import { hasAttribute, tabIndexGetter, childrenGetter, outerHTMLSetter } from '../env/element';
 import {
     isNull,
     isFalse,
@@ -222,7 +222,9 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         get outerHTML() {
             return getOuterHTML(this);
         }
-        // TODO: implement set outerHTML
+        set outerHTML(this: Element, value: string) {
+            outerHTMLSetter.call(this, value);
+        }
 
         // CE patches
         attachShadow(options: ShadowRootInit): SyntheticShadowRootInterface {
