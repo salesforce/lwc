@@ -14,18 +14,32 @@ describe('shadow root element from point should return correct element', () => {
     });
 
     it('should return correct shadow elements', function() {
-        browser.click('.shadow-element-from-point');
-        assert.equal(
-            browser.getText('.correct-shadow-element-indicator'),
-            'Correct shadow element selected'
-        );
+        browser.execute(function() {
+            document
+                .querySelector('integration-element-from-point')
+                .shadowRoot.querySelector('.shadow-element-from-point')
+                .click();
+        });
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-element-from-point')
+                .shadowRoot.querySelector('.correct-shadow-element-indicator');
+        });
+        assert.equal(indicator.getText(), 'Correct shadow element selected');
     });
 
     it('should return correct document elements', function() {
-        browser.click('.document-from-point');
-        assert.equal(
-            browser.getText('.correct-document-element-indicator'),
-            'Correct document element selected'
-        );
+        browser.execute(function() {
+            document
+                .querySelector('integration-element-from-point')
+                .shadowRoot.querySelector('.document-from-point')
+                .click();
+        });
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-element-from-point')
+                .shadowRoot.querySelector('.correct-document-element-indicator');
+        });
+        assert.equal(indicator.getText(), 'Correct document element selected');
     });
 });

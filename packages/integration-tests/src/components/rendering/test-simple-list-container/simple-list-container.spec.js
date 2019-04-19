@@ -22,20 +22,53 @@ describe('Testing component: simple-list-container', () => {
     });
 
     it('header item', () => {
-        assert.strictEqual(browser.element('li.first').getText(), 'header');
+        const first = browser.execute(function() {
+            return document
+                .querySelector('integration-simple-list-container')
+                .shadowRoot.querySelector('integration-simple-list')
+                .shadowRoot.querySelector('li.first');
+        });
+        assert.strictEqual(first.getText(), 'header');
     });
 
     it('footer item', () => {
-        assert.strictEqual(browser.element('li.last').getText(), 'footer');
+        const last = browser.execute(function() {
+            return document
+                .querySelector('integration-simple-list-container')
+                .shadowRoot.querySelector('integration-simple-list')
+                .shadowRoot.querySelector('li.last');
+        });
+        assert.strictEqual(last.getText(), 'footer');
     });
 
     it('should render number of items between min and max', function() {
-        var rangeChangeButton = browser.element('button.rangechange');
-
         // set min to 1 and max to 10
-        rangeChangeButton.click();
+        browser.execute(function() {
+            return document
+                .querySelector('integration-simple-list-container')
+                .shadowRoot.querySelector('button.rangechange')
+                .click();
+        });
 
-        browser.waitForExist('li.number[data-number="1"]');
-        assert.strictEqual(browser.elements('li.number').value.length, 9);
+        browser.waitUntil(
+            () => {
+                var listItem = browser.execute(function() {
+                    document
+                        .querySelector('integration-simple-list-container')
+                        .shadowRoot.querySelector('integration-simple-list')
+                        .shadowRoot.querySelector('li.number[data-number="1"]');
+                });
+                return listItem !== null;
+            },
+            500,
+            'list component did not rerender'
+        );
+        const items = browser.execute(function() {
+            return document
+                .querySelector('integration-simple-list-container')
+                .shadowRoot.querySelector('integration-simple-list')
+                .shadowRoot.querySelectorAll('li.number');
+        });
+        assert.strictEqual(items.value.length, 9);
     });
 });

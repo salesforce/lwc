@@ -13,7 +13,11 @@ describe('Object keys', () => {
     });
 
     it('should have the right value', function() {
-        const element = browser.element('.key');
+        const element = browser.execute(function() {
+            return document
+                .querySelector('integration-nested-state')
+                .shadowRoot.querySelector('.key');
+        });
         assert.ok(element);
         assert.deepEqual(element.getText(), 'yes');
     });
