@@ -11,20 +11,8 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-//import compile from '@lwc/template-compiler';
 import compile, { TemplateMetadata } from '@lwc/template-compiler';
-
-import { MetadataCollector } from '../bundler/meta-collector';
 import { NormalizedCompilerOptions } from '../compiler/options';
-//import { CompilationMetadata } from '@lwc/template-compiler';
-
-// TODO: once we come up with a strategy to export all types from the module,
-// below interface should be removed and resolved from template-compiler module.
-// export interface TemplateMetadata {
-//     templateUsedIds: string[];
-//     definedSlots: string[];
-//     templateDependencies: TemplateModuleDependency[];
-// }
 
 export interface TemplateTransformResult {
     code: string;
@@ -42,8 +30,7 @@ export interface TemplateTransformResult {
 export default function templateTransform(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector
+    options: NormalizedCompilerOptions
 ): {
     code: string;
     map: { mappings: string };
@@ -60,12 +47,6 @@ export default function templateTransform(
         }
 
         metadata = result.metadata;
-        if (metadataCollector) {
-            metadataCollector.collectExperimentalTemplateDependencies(
-                filename,
-                metadata.templateDependencies
-            );
-        }
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }

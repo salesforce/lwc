@@ -312,17 +312,6 @@ describe('compiler metadata', () => {
 
         expect(metadata).toEqual({
             declarationLoc: undefined,
-            experimentalTemplateDependencies: [
-                {
-                    moduleDependencies: [
-                        {
-                            moduleName: 'x/bar',
-                            tagName: 'x-bar',
-                        },
-                    ],
-                    templatePath: 'foo.html',
-                },
-            ],
         });
     });
 });
