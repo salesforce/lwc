@@ -6,13 +6,6 @@
  */
 import { Location } from '@lwc/babel-plugin-component';
 
-import { TemplateModuleDependency } from '@lwc/template-compiler';
-
-export interface TemplateModuleDependencies {
-    templatePath: string;
-    moduleDependencies: TemplateModuleDependency[];
-}
-
 export interface BundleMetadata {
     declarationLoc?: Location;
 }
