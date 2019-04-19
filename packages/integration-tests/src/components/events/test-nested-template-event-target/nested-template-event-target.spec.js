@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
 
 describe('Event target in slot elements', () => {
     const URL = 'http://localhost:4567/nested-template-event-target/';
@@ -15,12 +14,23 @@ describe('Event target in slot elements', () => {
 
     it('should receive event with correct target', function() {
         browser.execute(function() {
-            var child = document.querySelector('integration-child');
+            var child = document
+                .querySelector('integration-nested-template-event-target')
+                .shadowRoot.querySelector('integration-child');
             child.dispatchFoo();
         });
 
-        browser.waitForVisible('.evt-target-is-x-child');
-        const element = browser.element('.evt-target-is-x-child');
-        assert.strictEqual(element.getText(), 'Event Target Is x-child');
+        browser.waitUntil(
+            () => {
+                var child = browser.execute(function() {
+                    return document
+                        .querySelector('integration-nested-template-event-target')
+                        .shadowRoot.querySelector('.evt-target-is-x-child');
+                });
+                return child !== null && child.getText() === 'Event Target Is x-child';
+            },
+            500,
+            'Event never bubbled to parent'
+        );
     });
 });

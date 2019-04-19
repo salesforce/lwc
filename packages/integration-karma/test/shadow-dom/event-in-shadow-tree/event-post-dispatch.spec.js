@@ -62,24 +62,6 @@ describe('Event properties post dispatch on node in a shadow tree', () => {
         expect(evt.target).toBe(null);
     });
 
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('shadow root (composed: true)', () => {
-        const evt = new CustomEvent('test', { composed: true, bubbles: true });
-        nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
-
-        assertEventStateReset(evt);
-        expect(evt.target).toBe(nodes['x-shadow-tree']);
-    });
-
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('shadow root (composed: false)', () => {
-        const evt = new CustomEvent('test', { bubbles: true });
-        nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
-
-        assertEventStateReset(evt);
-        expect(evt.target).toBe(null);
-    });
-
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
     xit('component (composed: true)', () => {
         const evt = new CustomEvent('test', { composed: true, bubbles: true });
@@ -144,24 +126,6 @@ describe('Event properties post dispatch on node in a nested shadow tree', () =>
     xit('element added via lwc:dom="manual" (composed: false)', () => {
         const evt = new CustomEvent('test', { bubbles: true });
         nodes['span-manual'].dispatchEvent(evt);
-
-        assertEventStateReset(evt);
-        expect(evt.target).toBe(null);
-    });
-
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('shadow root (composed: true)', () => {
-        const evt = new CustomEvent('test', { composed: true, bubbles: true });
-        nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
-
-        assertEventStateReset(evt);
-        expect(evt.target).toBe(nodes['x-nested-shadow-tree']);
-    });
-
-    // TODO: #1131 - SyntheticShadowRoot doesn't patch dispatchEvent
-    xit('shadow root (composed: false)', () => {
-        const evt = new CustomEvent('test', { bubbles: true });
-        nodes['x-shadow-tree'].shadowRoot.dispatchEvent(evt);
 
         assertEventStateReset(evt);
         expect(evt.target).toBe(null);

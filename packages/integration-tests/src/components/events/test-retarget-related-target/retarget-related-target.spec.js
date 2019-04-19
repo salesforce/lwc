@@ -15,9 +15,18 @@ describe('Retarget relatedTarget', () => {
 
     it('should retarget relatedTarget from a foreign shadow', () => {
         browser.execute(function() {
-            document.querySelector('integration-child input').focus();
+            document
+                .querySelector('integration-retarget-related-target')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('input')
+                .focus();
         });
         browser.keys(['Shift', 'Tab', 'Shift']);
-        assert.equal(browser.getText('.related-target-tabname'), 'integration-child');
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-retarget-related-target')
+                .shadowRoot.querySelector('.related-target-tabname');
+        });
+        assert.equal(indicator.getText(), 'integration-child');
     });
 });

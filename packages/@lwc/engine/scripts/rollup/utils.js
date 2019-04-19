@@ -18,7 +18,10 @@ function ignoreCircularDependencies({ code, message }) {
     }
 }
 
+const TS_WHITELIST = ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'];
+
 module.exports = {
+    TS_WHITELIST,
     COMPAT_SUFFIX,
     DEBUG_SUFFIX,
     PROD_SUFFIX,

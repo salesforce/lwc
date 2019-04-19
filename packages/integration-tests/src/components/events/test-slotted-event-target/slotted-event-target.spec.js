@@ -14,10 +14,18 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function() {
-        const select = browser.element('select');
+        const select = browser.execute(function() {
+            return document
+                .querySelector('integration-slotted-event-target')
+                .shadowRoot.querySelector('select');
+        });
         select.selectByVisibleText('Second');
 
-        const element = browser.element('.target-is-select');
+        const element = browser.execute(function() {
+            return document
+                .querySelector('integration-slotted-event-target')
+                .shadowRoot.querySelector('.target-is-select');
+        });
         assert.strictEqual(element.getText(), 'Event Target is select element');
     });
 });

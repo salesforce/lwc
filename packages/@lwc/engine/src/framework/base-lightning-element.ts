@@ -219,11 +219,14 @@ BaseLightningElement.prototype = {
                 );
             }
 
-            if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
+            if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
                 assert.logWarning(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
-                    )}. Event name should only contain lowercase alphanumeric characters.`,
+                    )}. Event name should ${[
+                        '1) Start with a lowercase letter',
+                        '2) Only contain lowercase letters, numbers, and underscores',
+                    ].join(' ')}`,
                     elm
                 );
             }

@@ -20,6 +20,11 @@ describe('Retarget relatedTarget', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        assert.equal(browser.getText('.related-target-tagname'), 'body');
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-retarget-body-related-target')
+                .shadowRoot.querySelector('.related-target-tagname');
+        });
+        assert.equal(indicator.getText(), 'body');
     });
 });

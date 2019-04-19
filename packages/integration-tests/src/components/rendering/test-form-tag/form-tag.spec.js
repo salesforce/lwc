@@ -14,7 +14,11 @@ describe('Object keys', () => {
     });
 
     it('should have the right value', function() {
-        const element = browser.element('.form-text');
+        const element = browser.execute(function() {
+            return document
+                .querySelector('integration-form-tag')
+                .shadowRoot.querySelector('.form-text');
+        });
         assert.ok(element);
         assert.deepEqual(element.getText(), 'Form did render');
     });

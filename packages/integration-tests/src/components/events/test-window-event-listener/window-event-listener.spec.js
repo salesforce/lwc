@@ -14,10 +14,17 @@ describe('Event Target on window event listener', () => {
     });
 
     it('should return correct target', function() {
-        browser.click('button');
-        assert.deepEqual(
-            browser.getText('.window-event-target-tagname'),
-            'integration-window-event-listener'
-        );
+        browser.execute(function() {
+            document
+                .querySelector('integration-window-event-listener')
+                .shadowRoot.querySelector('button')
+                .click();
+        });
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-window-event-listener')
+                .shadowRoot.querySelector('.window-event-target-tagname');
+        });
+        assert.deepEqual(indicator.getText(), 'integration-window-event-listener');
     });
 });

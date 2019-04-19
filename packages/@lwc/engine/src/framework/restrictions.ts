@@ -269,6 +269,7 @@ function getShadowRootRestrictionsDescriptors(
         getElementById: 0,
         getSelection: 0,
         elementsFromPoint: 0,
+        dispatchEvent: 0,
     };
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
         const descriptor = generateAccessorDescriptor({
@@ -547,10 +548,6 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
 
 interface RestrictionsOptions {
     isPortal?: boolean;
-}
-
-export function patchNodeWithRestrictions(node: Node, options: RestrictionsOptions) {
-    defineProperties(node, getNodeRestrictionsDescriptors(node, options));
 }
 
 export function patchElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {

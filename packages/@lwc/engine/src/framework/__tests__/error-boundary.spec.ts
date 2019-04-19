@@ -6,8 +6,8 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
-import { querySelector, querySelectorAll } from '../../env/element';
 
+const { querySelector, querySelectorAll } = Element.prototype;
 const emptyTemplate = compileTemplate(`<template></template>`);
 
 function createBoundaryComponent({ name, ctor }) {

@@ -70,12 +70,29 @@ function testInvalidEvent(reason, name) {
             elm.dispatch(new CustomEvent(name));
         }).toLogWarningDev(
             new RegExp(
-                `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should only contain lowercase alphanumeric characters\\.`
+                `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should 1\\) Start with a lowercase letter 2\\) Only contain lowercase letters, numbers, and underscores`
             )
         );
     });
 }
 
-testInvalidEvent('contains a non-alphanumeric character', 'foo-bar');
-testInvalidEvent('should warn if an event name contains a uppercase characters', 'fooBar');
-testInvalidEvent('should warn if an event name starts with a non alphabetic character', '1foo');
+function testValidEvent(reason, name) {
+    it(`should not warn if an event name ${reason}`, () => {
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+
+        expect(() => {
+            elm.dispatch(new CustomEvent(name));
+        }).not.toLogWarningDev();
+    });
+}
+
+testInvalidEvent('contains a hyphen', 'foo-bar');
+testInvalidEvent('contains an uppercase character', 'fooBar');
+testInvalidEvent('starts with a number', '1foo');
+testInvalidEvent('is a single number', '7');
+testInvalidEvent('is a single underscore', '_');
+testValidEvent('ends with an underscore', 'foo_');
+testValidEvent('ends with a number', 'foo1');
+testValidEvent('contains an underscore', 'foo_bar');
+testValidEvent('is a single letter', 'e');

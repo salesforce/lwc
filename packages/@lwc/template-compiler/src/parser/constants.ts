@@ -12,7 +12,7 @@ export const VALID_IF_MODIFIER = new Set(['true', 'false', 'strict-true']);
 export const ITERATOR_RE = /^iterator:.*$/;
 
 export const EVENT_HANDLER_RE = /^on/;
-export const EVENT_HANDLER_NAME_RE = /^on[a-z]+$/;
+export const EVENT_HANDLER_NAME_RE = /^on[a-z][a-z0-9_]*$/;
 
 // These attributes take either an ID or a list of IDs as values.
 export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = new Set([
