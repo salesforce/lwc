@@ -21,15 +21,8 @@ import parseTemplate from './parser';
 import generate from './codegen';
 
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
-import { CompilationMetadata } from './shared/types';
 
-export {
-    ModuleDependency as TemplateModuleDependency,
-    DependencyParameter as TemplateModuleDependencyParameter,
-    CompilationMetadata as TemplateMetadata,
-    IRElement,
-    IRAttributeType,
-} from './shared/types';
+export { IRElement, IRAttributeType } from './shared/types';
 
 export { default as State } from './state';
 
@@ -49,7 +42,6 @@ export default function compiler(
 ): {
     code: string;
     warnings: CompilerDiagnostic[];
-    metadata: CompilationMetadata;
 } {
     const options = mergeConfig(config);
     const state = new State(source, options);
@@ -77,11 +69,6 @@ export default function compiler(
     return {
         code,
         warnings,
-        metadata: {
-            definedSlots: state.slots,
-            templateUsedIds: state.ids,
-            templateDependencies: state.extendedDependencies,
-        },
     };
 }
 

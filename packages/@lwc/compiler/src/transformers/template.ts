@@ -11,7 +11,7 @@ import {
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
-import compile, { TemplateMetadata } from '@lwc/template-compiler';
+import compile from '@lwc/template-compiler';
 import { NormalizedCompilerOptions } from '../compiler/options';
 
 export interface TemplateTransformResult {
@@ -34,10 +34,8 @@ export default function templateTransform(
 ): {
     code: string;
     map: { mappings: string };
-    metadata: TemplateMetadata;
 } {
     let result;
-    let metadata;
 
     try {
         result = compile(src, {});
@@ -45,8 +43,6 @@ export default function templateTransform(
         if (fatalError) {
             throw CompilerError.from(fatalError, { filename });
         }
-
-        metadata = result.metadata;
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
@@ -58,7 +54,6 @@ export default function templateTransform(
     return {
         code: serialize(code, filename, options),
         map: { mappings: '' },
-        metadata,
     };
 }
 

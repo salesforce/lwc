@@ -141,23 +141,6 @@ export interface CompilationOptions {
     experimentalComputedMemberExpression?: boolean;
 }
 
-export interface DependencyParameter {
-    type: 'literal' | 'expression';
-    value: string | boolean;
-}
-
-export interface ModuleDependency {
-    moduleName: string;
-    tagName: string;
-    properties?: { [name: string]: DependencyParameter };
-}
-
-export interface CompilationMetadata {
-    templateUsedIds: string[];
-    definedSlots: string[];
-    templateDependencies: ModuleDependency[];
-}
-
 export interface CompilationOutput {
     code: string;
     ast: babelTypes.Node;

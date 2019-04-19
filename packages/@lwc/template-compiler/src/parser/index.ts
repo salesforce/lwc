@@ -56,8 +56,6 @@ import {
     LWCDirectiveDomMode,
 } from '../shared/types';
 
-import { getModuleMetadata } from '../metadata/metadata';
-
 import { bindExpression } from '../shared/scope';
 
 import State from '../state';
@@ -195,7 +193,6 @@ export default function parse(
                 validateElement(element);
                 validateAttributes(element);
                 validateProperties(element);
-                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -905,12 +902,6 @@ export default function parse(
             } else {
                 seenIds.add(value);
             }
-        }
-    }
-
-    function collectMetadata(element: IRElement) {
-        if (isCustomElement(element)) {
-            state.extendedDependencies.push(getModuleMetadata(element));
         }
     }
 

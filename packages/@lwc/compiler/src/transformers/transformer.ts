@@ -6,7 +6,6 @@
  */
 import * as path from 'path';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
-import { TemplateMetadata } from '@lwc/template-compiler';
 
 import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from '../compiler/options';
 import styleTransform from './style';
@@ -18,7 +17,6 @@ import { SourceMap } from '../compiler/compiler';
 
 export interface FileTransformerResult {
     code: string;
-    metadata?: TemplateMetadata;
     map: SourceMap | null;
 }
 
