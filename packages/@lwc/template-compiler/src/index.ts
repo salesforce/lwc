@@ -26,11 +26,11 @@ import { CompilationMetadata } from './shared/types';
 export {
     ModuleDependency as TemplateModuleDependency,
     DependencyParameter as TemplateModuleDependencyParameter,
+    CompilationMetadata as TemplateMetadata,
+    IRElement,
+    IRAttributeType,
 } from './shared/types';
 
-// export template-compiler parse function
-
-export { IRElement, IRAttributeType } from './shared/types';
 export { default as State } from './state';
 
 // TODO: perhaps don't allow the configuration from the outside?
