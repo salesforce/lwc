@@ -14,12 +14,32 @@ describe('Non-composed events', () => {
     });
 
     it('should dispatch Event on the custom element', function() {
-        browser.element('integration-child').click();
-        assert.ok(browser.element('.event-received-indicator'));
+        browser.execute(function() {
+            document
+                .querySelector('integration-non-composed-events-on-custom-element')
+                .shadowRoot.querySelector('integration-child')
+                .click();
+        });
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-non-composed-events-on-custom-element')
+                .shadowRoot.querySelector('.event-received-indicator');
+        });
+        assert.ok(indicator);
     });
 
     it('should dispatch CustomEvent on the custom element', function() {
-        browser.element('integration-child').click();
-        assert.ok(browser.element('.custom-event-received-indicator'));
+        browser.execute(function() {
+            document
+                .querySelector('integration-non-composed-events-on-custom-element')
+                .shadowRoot.querySelector('integration-child')
+                .click();
+        });
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-non-composed-events-on-custom-element')
+                .shadowRoot.querySelector('.custom-event-received-indicator');
+        });
+        assert.ok(indicator);
     });
 });

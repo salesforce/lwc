@@ -14,10 +14,20 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function() {
-        const element = browser.element('integration-grand-child');
-        element.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-root-listener-event-target')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('integration-grand-child')
+                .click();
+        });
 
-        const verifyElement = browser.element('.event-target-correct');
+        const verifyElement = browser.execute(function() {
+            return document
+                .querySelector('integration-root-listener-event-target')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.event-target-correct');
+        });
         assert.strictEqual(verifyElement.getText(), 'Event Target is correct element');
     });
 });

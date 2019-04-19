@@ -23,6 +23,11 @@ describe('Composed change event', () => {
         });
         browser.keys('foo');
         browser.click('body');
-        assert.deepEqual(browser.getText('.verify-not-composed'), 'Not Composed');
+        const div = browser.execute(function() {
+            return document
+                .querySelector('integration-change-event-composed')
+                .shadowRoot.querySelector('.verify-not-composed');
+        });
+        assert.deepEqual(div.getText(), 'Not Composed');
     });
 });

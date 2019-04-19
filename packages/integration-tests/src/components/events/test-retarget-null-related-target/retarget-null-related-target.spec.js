@@ -8,7 +8,7 @@ const assert = require('assert');
 
 // Really hard to get the focus handler to execute, need to figure out a
 // reliable way to do it.
-describe.skip('Retarget relatedTarget', () => {
+describe('Retarget relatedTarget', () => {
     const URL = 'http://localhost:4567/retarget-null-related-target';
 
     before(() => {
@@ -23,7 +23,11 @@ describe.skip('Retarget relatedTarget', () => {
                 .shadowRoot.querySelector('.focus-input')
                 .focus();
         });
-        const elm = browser.element('.related-target-tabname');
+        const elm = browser.execute(function() {
+            return document
+                .querySelector('integration-retarget-null-related-target')
+                .shadowRoot.querySelector('.related-target-tabname');
+        });
         elm.waitForExist();
         assert.strictEqual(elm.getText(), 'Related target is null');
     });

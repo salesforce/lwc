@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import XAsyncEventTarget from 'x/asyncEventTarget';
 import XEventHandlingParent from 'x/eventHandlingParent';
+import XDocumentEventListener from 'x/documentEventListener';
 
 it('Async event target should be root node', function() {
     const elm = createElement('x-async-event-target', { is: XAsyncEventTarget });
@@ -21,5 +22,24 @@ it('parent should receive composed event with correct target', function() {
     expect(elm.evtTargetIsXChild).toBe(true);
     return Promise.resolve().then(() => {
         expect(elm.shadowRoot.querySelector('.evt-target-is-x-child')).not.toBe(null);
+    });
+});
+
+describe('event.target on document event listener', () => {
+    let actual;
+    const listener = evt => {
+        actual = evt.target.tagName.toLowerCase();
+    };
+    beforeAll(() => {
+        document.addEventListener('click', listener);
+    });
+    afterAll(() => {
+        document.removeEventListener(listener);
+    });
+    it('should return correct target', function() {
+        const elm = createElement('x-document-event-listener', { is: XDocumentEventListener });
+        document.body.appendChild(elm);
+        elm.shadowRoot.querySelector('button').click();
+        expect(actual).toBe('x-document-event-listener');
     });
 });

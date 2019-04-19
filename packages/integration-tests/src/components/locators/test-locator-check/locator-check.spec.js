@@ -21,8 +21,14 @@ describe('Locator Check', () => {
     });
 
     it('locator logged on simple button click', () => {
-        const button = browser.element('.simple-locator');
-        button.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-locator-check')
+                .shadowRoot.querySelector('integration-container')
+                .shadowRoot.querySelector('integration-root')
+                .shadowRoot.querySelector('.simple-locator')
+                .click();
+        });
         const clicked = browser.execute(function() {
             return window.clicked;
         }).value;
@@ -43,8 +49,13 @@ describe('Locator Check', () => {
     });
 
     it('locator logged on button click inside slot', () => {
-        const button = browser.element('.button-in-slot');
-        button.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-locator-check')
+                .shadowRoot.querySelector('integration-container')
+                .shadowRoot.querySelector('.button-in-slot')
+                .click();
+        });
         const clicked = browser.execute(function() {
             return window.clicked;
         }).value;
@@ -64,8 +75,14 @@ describe('Locator Check', () => {
     });
 
     it('locator logged clicking on iteration item', () => {
-        const button = browser.element('.todo-item');
-        button.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-locator-check')
+                .shadowRoot.querySelector('integration-container')
+                .shadowRoot.querySelector('integration-root')
+                .shadowRoot.querySelector('.todo-item')
+                .click();
+        });
         const clicked = browser.execute(function() {
             return window.clicked;
         }).value;

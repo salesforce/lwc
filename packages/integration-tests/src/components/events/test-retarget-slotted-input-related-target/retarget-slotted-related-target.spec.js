@@ -15,9 +15,18 @@ describe('Retarget relatedTarget', () => {
 
     it('should have correct relatedTarget from slotted input', () => {
         browser.execute(function() {
-            document.querySelector('.slotted-input').focus();
+            document
+                .querySelector('integration-retarget-slotted-input-related-target')
+                .shadowRoot.querySelector('.slotted-input')
+                .focus();
         });
         browser.keys(['Shift', 'Tab', 'Shift']);
-        assert.equal(browser.getText('.related-target-tagname'), 'input');
+        const indicator = browser.execute(function() {
+            return document
+                .querySelector('integration-retarget-slotted-input-related-target')
+                .shadowRoot.querySelector('integration-parent')
+                .shadowRoot.querySelector('.related-target-tagname');
+        });
+        assert.equal(indicator.getText(), 'input');
     });
 });
