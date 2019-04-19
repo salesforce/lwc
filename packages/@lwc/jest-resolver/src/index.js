@@ -31,7 +31,6 @@ const WHITELISTED_LWC_PACKAGES = {
     'wire-service': '@lwc/wire-service',
     'wire-service-jest-util': 'lwc-wire-service-jest-util',
 };
-
 const lwcMap = lwcNpmResolver.resolveLwcNpmModules();
 
 // This logic is somewhat the same in the compiler resolution system
