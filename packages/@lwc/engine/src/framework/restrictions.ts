@@ -60,6 +60,24 @@ function generateAccessorDescriptor(options: PropertyDescriptor): PropertyDescri
     );
 }
 
+let isDomMutationAllowed = false;
+
+export function unlockDomMutation() {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    isDomMutationAllowed = true;
+}
+
+export function lockDomMutation() {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    isDomMutationAllowed = false;
+}
+
 function getNodeRestrictionsDescriptors(
     node: Node,
     options: RestrictionsOptions
@@ -88,7 +106,7 @@ function getNodeRestrictionsDescriptors(
         }),
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
                         this
@@ -99,7 +117,7 @@ function getNodeRestrictionsDescriptors(
         }),
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
                         this
@@ -124,7 +142,7 @@ function getNodeRestrictionsDescriptors(
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
                     assert.logError(
                         `nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
                         this
@@ -261,11 +279,7 @@ function getShadowRootRestrictionsDescriptors(
         }),
     });
     const BlackListedShadowRootMethods = {
-        appendChild: 0,
-        removeChild: 0,
-        replaceChild: 0,
         cloneNode: 0,
-        insertBefore: 0,
         getElementById: 0,
         getSelection: 0,
         elementsFromPoint: 0,

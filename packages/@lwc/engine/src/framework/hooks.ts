@@ -18,7 +18,6 @@ import {
     runWithBoundaryProtection,
 } from './vm';
 import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
-import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
 import modProps from './modules/props';
@@ -29,7 +28,12 @@ import modStaticStyle from './modules/static-style-attr';
 import modContext from './modules/context';
 import { hasDynamicChildren } from './patch';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
-import { patchCustomElementWithRestrictions, patchElementWithRestrictions } from './restrictions';
+import {
+    patchCustomElementWithRestrictions,
+    patchElementWithRestrictions,
+    unlockDomMutation,
+    lockDomMutation,
+} from './restrictions';
 import {
     patchElementProto,
     patchTextNodeProto,
@@ -41,17 +45,39 @@ import { getComponentDef, setElementProto } from './def';
 const noop = () => void 0;
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
-    if (oldVnode.text !== vnode.text) {
-        nodeValueSetter.call(vnode.elm as Node, vnode.text);
+    const { text } = vnode;
+    if (oldVnode.text !== text) {
+        if (process.env.NODE_ENV !== 'production') {
+            unlockDomMutation();
+        }
+        /**
+         * Compiler will never produce a text property that is not string
+         */
+        (vnode.elm as Node).nodeValue = text as string;
+        if (process.env.NODE_ENV !== 'production') {
+            lockDomMutation();
+        }
     }
 }
 
 export function insertNodeHook(vnode: VNode, parentNode: Node, referenceNode: Node | null) {
-    insertBefore.call(parentNode, vnode.elm as Node, referenceNode);
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    parentNode.insertBefore(vnode.elm as Node, referenceNode);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
 }
 
 export function removeNodeHook(vnode: VNode, parentNode: Node) {
-    removeChild.call(parentNode, vnode.elm as Node);
+    if (process.env.NODE_ENV !== 'production') {
+        unlockDomMutation();
+    }
+    parentNode.removeChild(vnode.elm as Node);
+    if (process.env.NODE_ENV !== 'production') {
+        lockDomMutation();
+    }
 }
 
 export function createTextHook(vnode: VNode) {
@@ -72,7 +98,7 @@ export function createCommentHook(vnode: VNode) {
     }
 }
 
-export function createElmDefaultHook(vnode: VElement) {
+export function createElmHook(vnode: VElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -90,7 +116,7 @@ enum LWCDOMMode {
     manual = 'manual',
 }
 
-export function createElmHook(vnode: VElement) {
+export function fallbackElmHook(vnode: VElement) {
     const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, owner.uid);
@@ -121,7 +147,7 @@ export function createElmHook(vnode: VElement) {
     }
 }
 
-export function updateElmDefaultHook(oldVnode: VElement, vnode: VElement) {
+export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
@@ -162,7 +188,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmHook(vnode: VCustomElement) {
+export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
     if (hasOwnProperty.call(elm, ViewModelReflection)) {
         // There is a possibility that a custom element is registered under tagName,
@@ -182,7 +208,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
             shadowAttribute,
         });
     }
-    createVM(vnode.sel as string, elm, ctor, {
+    createVM(elm, ctor, {
         mode,
         fallback,
         owner,
@@ -200,7 +226,7 @@ export function createCustomElmHook(vnode: VCustomElement) {
     }
 }
 
-export function createCustomElmDefaultHook(vnode: VCustomElement) {
+export function createCustomElmHook(vnode: VCustomElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -237,7 +263,7 @@ export function rerenderCustomElmHook(vnode: VCustomElement) {
     rerenderVM(vm);
 }
 
-export function updateCustomElmDefaultHook(oldVnode: VCustomElement, vnode: VCustomElement) {
+export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElement) {
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.

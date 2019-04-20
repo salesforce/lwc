@@ -81,8 +81,6 @@ export interface VNodeData {
     context?: CustomElementContext;
     on?: On;
     ns?: string; // for SVGs
-    create: CreateHook;
-    update: UpdateHook;
 }
 
 export type CreateHook = (vNode: VNode) => void;
