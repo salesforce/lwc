@@ -43,19 +43,19 @@ import {
     VCustomElement,
 } from '../3rdparty/snabbdom/types';
 import {
-    createCustomElmHook,
+    createViewModelHook,
     insertCustomElmHook,
-    createElmHook,
+    fallbackElmHook,
     rerenderCustomElmHook,
     removeElmHook,
     createChildrenHook,
     updateNodeHook,
     insertNodeHook,
     removeNodeHook,
-    createElmDefaultHook,
-    updateElmDefaultHook,
-    createCustomElmDefaultHook,
-    updateCustomElmDefaultHook,
+    createElmHook,
+    updateElmHook,
+    createCustomElmHook,
+    updateCustomElmHook,
     updateChildrenHook,
     allocateChildrenHook,
     createTextHook,
@@ -139,7 +139,7 @@ const CommentHook: Hooks = {
 const ElementHook: Hooks = {
     create: (vnode: VElement) => {
         const { data, sel, elm } = vnode;
-        const { ns, create } = data;
+        const { ns } = data;
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
@@ -147,14 +147,11 @@ const ElementHook: Hooks = {
                 ? createElement.call(document, sel)
                 : createElementNS.call(document, ns, sel);
         }
+        fallbackElmHook(vnode);
         createElmHook(vnode);
-        create(vnode);
     },
     update: (oldVnode: VElement, vnode: VElement) => {
-        const {
-            data: { update },
-        } = vnode;
-        update(oldVnode, vnode);
+        updateElmHook(oldVnode, vnode);
         updateChildrenHook(oldVnode, vnode);
     },
     insert: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
@@ -172,25 +169,18 @@ const ElementHook: Hooks = {
 
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
-        const {
-            sel,
-            data: { create },
-            elm,
-        } = vnode;
+        const { sel, elm } = vnode;
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
             vnode.elm = createElement.call(document, sel);
         }
-        createCustomElmHook(vnode);
+        createViewModelHook(vnode);
         allocateChildrenHook(vnode);
-        create(vnode);
+        createCustomElmHook(vnode);
     },
     update: (oldVnode: VCustomElement, vnode: VCustomElement) => {
-        const {
-            data: { update },
-        } = vnode;
-        update(oldVnode, vnode);
+        updateCustomElmHook(oldVnode, vnode);
         // in fallback mode, the allocation will always the children to
         // empty and delegate the real allocation to the slot elements
         allocateChildrenHook(vnode);
@@ -280,12 +270,6 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
         });
     }
     const { key } = data;
-    if (isUndefined(data.create)) {
-        data.create = createElmDefaultHook;
-    }
-    if (isUndefined(data.update)) {
-        data.update = updateElmDefaultHook;
-    }
     let text, elm;
     const vnode: VElement = {
         sel,
@@ -407,12 +391,6 @@ export function c(
         }
     }
     const { key } = data;
-    if (isUndefined(data.create)) {
-        data.create = createCustomElmDefaultHook;
-    }
-    if (isUndefined(data.update)) {
-        data.update = updateCustomElmDefaultHook;
-    }
     let text, elm;
     children = arguments.length === 3 ? EmptyArray : (children as VNodes);
     const vnode: VCustomElement = {

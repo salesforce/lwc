@@ -13,13 +13,6 @@ const ShadowRootHostGetter: (this: ShadowRoot) => Element | null =
               throw new Error('Internal Error: Missing ShadowRoot');
           };
 
-const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void =
-    typeof (window as any).ShadowRoot !== 'undefined'
-        ? getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'innerHTML')!.set!
-        : () => {
-              throw new Error('Internal Error: Missing ShadowRoot');
-          };
-
 const dispatchEvent =
     'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
 
@@ -47,7 +40,6 @@ const focusEventRelatedTargetGetter: (
 export {
     dispatchEvent,
     ShadowRootHostGetter,
-    ShadowRootInnerHTMLSetter,
     isNativeShadowRootAvailable,
     iFrameContentWindowGetter,
     eventTargetGetter,

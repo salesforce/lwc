@@ -65,17 +65,11 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
-function noop() {
-    /** do nothing */
-}
-
 function createStyleVNode(elm: HTMLStyleElement) {
     const vnode = api.h(
         'style',
         {
             key: 'style', // special key
-            create: noop,
-            update: noop,
         },
         EmptyArray
     );

@@ -9,7 +9,6 @@ import {
     isUndefined,
     isObject,
     isNull,
-    StringToLowerCase,
     getOwnPropertyNames,
     isTrue,
     isFalse,
@@ -18,7 +17,6 @@ import {
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
-import { tagNameGetter } from '../env/element';
 import { isNativeShadowRootAvailable } from '../env/dom';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { patchCustomElementProto } from './patch';
@@ -48,14 +46,13 @@ export function buildCustomElementConstructor(
     return class extends BaseElement {
         constructor() {
             super();
-            const tagName = StringToLowerCase.call(tagNameGetter.call(this));
             if (isTrue(normalizedOptions.fallback)) {
                 const def = getComponentDef(Ctor);
                 patchCustomElementProto(this, {
                     def,
                 });
             }
-            createVM(tagName, this, Ctor, normalizedOptions);
+            createVM(this, Ctor, normalizedOptions);
             if (process.env.NODE_ENV !== 'production') {
                 patchCustomElementWithRestrictions(this, EmptyObject);
             }

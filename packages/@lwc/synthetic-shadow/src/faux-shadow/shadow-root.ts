@@ -33,6 +33,10 @@ import {
     parentElementGetter,
     textContextSetter,
     isConnected,
+    removeChild,
+    insertBefore,
+    replaceChild,
+    appendChild,
 } from '../env/node';
 import { isNativeShadowRootAvailable } from '../env/dom';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
@@ -210,6 +214,46 @@ const ShadowRootDescriptors = {
 };
 
 const NodePatchDescriptors = {
+    insertBefore: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(
+            this: SyntheticShadowRootInterface,
+            newChild: T,
+            refChild: Node | null
+        ): T {
+            insertBefore.call(getHost(this), newChild, refChild);
+            return newChild;
+        },
+    },
+    removeChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
+            removeChild.call(getHost(this), oldChild);
+            return oldChild;
+        },
+    },
+    appendChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
+            appendChild.call(getHost(this), newChild);
+            return newChild;
+        },
+    },
+    replaceChild: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
+            replaceChild.call(getHost(this), newChild, oldChild);
+            return oldChild;
+        },
+    },
     addEventListener: {
         writable: true,
         enumerable: true,

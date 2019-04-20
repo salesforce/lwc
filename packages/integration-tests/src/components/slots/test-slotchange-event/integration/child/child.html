@@ -1,20 +1,4 @@
 <template>
-    <slot class="default" onslotchange={handleChange}></slot>
-
-    <slot class="programmatic-listener" name="programmatic-listener">
-        <p>
-            This slot SHOULD NOT result in any slotchange event because
-            of the limitation we put in place where we only dispatch on
-            slots that have direct slotchange event listeners.
-        </p>
-    </slot>
-
-    <slot class="full" name="full" onslotchange={handleChange}>
-        <slot class="first" name="first" onslotchange={handleChange}>
-            <span>Awesome</span>
-        </slot>
-        <slot class="last" name="last" onslotchange={handleChange}>
-            <span>Possum</span>
-        </slot>
-    </slot>
+    <div>Slot Change Count: <span class="count">{slotChangeCount}</span></div>
+    <slot onslotchange={handleSlotChange}></slot>
 </template>
