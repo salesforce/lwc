@@ -1,37 +1,5 @@
 <template>
-    <div>
-        <button class="clear" onclick={handleClickClear}>set ""</button>
-        <button class="foo" onclick={handleClickFoo}>set "foo"</button>
-        <button class="foo-bar" onclick={handleClickFooBar}>set "foo bar"</button>
-        <button class="countries" onclick={handleClickCountries}>set countries</button>
-    </div>
-
-    <div>
-        <button class="add-slotchange" onclick={handleClickAddSlotChange}>add slotchange listener to "slot.programmatic-listener"</button>
-        <button class="toggle-content" onclick={handleClickToggle}>toggle assigned content for "slot.programmatic-listener"</button>
-    </div>
-
-    <div>
-        <button class="update-name" onclick={handleClickUpdateName}>update name</button>
-    </div>
-
-    <p>Leaked slotchange event count: <span class="leaked-slotchange-event-count">{leakedSlotChangeEventCount}</span></p>
-
-    <integration-child onmessage={handleMessage} onslotchange={handleLeakedSlotChange}>
-        <template for:each={things} for:item="thing">
-            <span key={thing}>{thing}</span>
-        </template>
-        <template if:true={state.toggle}>
-            <div slot="programmatic-listener">assigned by programmatic toggle</div>
-        </template>
-        <template if:true={state.updateName}>
-            <span slot="last">Eugene</span>
-        </template>
+    <integration-child>
+        <span>kamogawa</span>
     </integration-child>
-
-    <ol>
-        <template for:each={messages} for:item="message">
-            <li class="message" key={message}>{message}</li>
-        </template>
-    </ol>
 </template>
