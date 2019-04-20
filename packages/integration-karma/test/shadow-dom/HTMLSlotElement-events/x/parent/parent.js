@@ -2,18 +2,16 @@ import { LightningElement, api, track } from 'lwc';
 
 export default class Parent extends LightningElement {
     @track
-    items = [0];
+    items = ['foo'];
 
     @api
     add() {
-        const { items } = this;
-        const last = items[items.length - 1];
-        items.push(last + 1);
+        this.items.push('bar');
     }
 
     @api
     replace() {
-        this.items = [777];
+        this.items = ['baz'];
     }
 
     @api
@@ -21,21 +19,21 @@ export default class Parent extends LightningElement {
         this.items = [];
     }
 
-    count = 0;
+    slotChangeCount = 0;
 
     @api
-    getCount() {
-        return this.count;
+    getSlotChangeCount() {
+        return this.slotChangeCount;
     }
 
     @api
-    setCount(value) {
-        this.count = value;
+    setSlotChangeCount(value) {
+        this.slotChangeCount = value;
     }
 
     connectedCallback() {
         this.template.addEventListener('slotchange', () => {
-            this.count += 1;
+            this.slotChangeCount += 1;
         });
     }
 }

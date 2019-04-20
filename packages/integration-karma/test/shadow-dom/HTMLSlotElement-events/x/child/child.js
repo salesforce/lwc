@@ -1,19 +1,19 @@
 import { LightningElement, api } from 'lwc';
 
 export default class Child extends LightningElement {
-    count = 0;
+    slotChangeCount = 0;
 
     @api
-    getCount() {
-        return this.count;
+    getSlotChangeCount() {
+        return this.slotChangeCount;
     }
 
     @api
-    setCount(value) {
-        this.count = value;
+    setSlotChangeCount(value) {
+        this.slotChangeCount = value;
     }
 
     handleSlotChange() {
-        this.count += 1;
+        this.slotChangeCount += 1;
     }
 }

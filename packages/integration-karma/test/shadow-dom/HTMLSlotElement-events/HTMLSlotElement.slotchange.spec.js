@@ -2,11 +2,14 @@ import { createElement } from 'test-utils';
 
 import Parent from 'x/parent';
 
+// Macro-task timing is used because MutationObserver used in
+// slotchange implementation is not exactly micro-task timing.
+function waitForSlotChange() {
+    return new Promise(setTimeout);
+}
+
 let parent;
 let child;
-
-// These tests use task timing instead of the microtask timing to schedule
-// assertions due to MO timing inconsistency across browsers.
 
 beforeEach(() => {
     parent = createElement('x-parent', { is: Parent });
@@ -14,65 +17,64 @@ beforeEach(() => {
     child = parent.shadowRoot.querySelector('x-child');
 });
 
+it('should fire slotchange on initial render', () => {
+    return waitForSlotChange().then(() => {
+        expect(child.getSlotChangeCount()).toBe(1);
+    });
+});
+
 it('should fire non-composed slotchange', () => {
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            expect(parent.getCount()).toBe(0);
-        });
+    return waitForSlotChange().then(() => {
+        expect(parent.getSlotChangeCount()).toBe(0);
+    });
 });
 
 it('should fire slotchange on add', () => {
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            child.setCount(0);
-            parent.add();
-        })
-        .then(setTimeout)
-        .then(() => {
-            expect(child.getCount()).toBe(1);
-        });
+    const firedFirstSlotchange = waitForSlotChange();
+    const addNewElementToSlot = firedFirstSlotchange.then(() => {
+        child.setSlotChangeCount(0);
+        parent.add();
+    });
+    const firedSecondSlotchange = addNewElementToSlot.then(waitForSlotChange);
+    return firedSecondSlotchange.then(() => {
+        expect(child.getSlotChangeCount()).toBe(1);
+    });
 });
 
 it('should fire slotchange on remove', () => {
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            child.setCount(0);
-            parent.clear();
-        })
-        .then(setTimeout)
-        .then(() => {
-            expect(child.getCount()).toBe(1);
-        });
+    const firedFirstSlotChange = waitForSlotChange();
+    const removeElementsFromSlot = firedFirstSlotChange.then(() => {
+        child.setSlotChangeCount(0);
+        parent.clear();
+    });
+    const firedSecondSlotchange = removeElementsFromSlot.then(waitForSlotChange);
+    return firedSecondSlotchange.then(() => {
+        expect(child.getSlotChangeCount()).toBe(1);
+    });
 });
 
 it('should fire slotchange on replace', () => {
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            child.setCount(0);
-            parent.replace();
-        })
-        .then(setTimeout)
-        .then(() => {
-            expect(child.getCount()).toBe(1);
-        });
+    const firedFirstSlotChange = waitForSlotChange();
+    const replaceElementInSlot = firedFirstSlotChange.then(() => {
+        child.setSlotChangeCount(0);
+        parent.replace();
+    });
+    const firedSecondSlotchange = replaceElementInSlot.then(waitForSlotChange);
+    return firedSecondSlotchange.then(() => {
+        expect(child.getSlotChangeCount()).toBe(1);
+    });
 });
 
 it('should fire slotchange when listener added programmatically', () => {
     let count = 0;
-    return Promise.resolve()
-        .then(setTimeout)
-        .then(() => {
-            child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
-                count += 1;
-            });
-            parent.add();
-        })
-        .then(setTimeout)
-        .then(() => {
-            expect(count).toBe(1);
+    const firedFirstSlotChange = waitForSlotChange();
+    const addNewElementToSlot = firedFirstSlotChange.then(() => {
+        child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
+            count += 1;
         });
+        parent.add();
+    });
+    return addNewElementToSlot.then(waitForSlotChange).then(() => {
+        expect(count).toBe(1);
+    });
 });
