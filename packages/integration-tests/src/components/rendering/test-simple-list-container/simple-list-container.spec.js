@@ -58,7 +58,7 @@ describe('Testing component: simple-list-container', () => {
                         .shadowRoot.querySelector('integration-simple-list')
                         .shadowRoot.querySelector('li.number[data-number="1"]');
                 });
-                return listItem !== null;
+                return listItem.value !== null;
             },
             500,
             'list component did not rerender'

@@ -29,11 +29,19 @@ describe('Component with a wired method', () => {
                 .shadowRoot.querySelector('button')
                 .click();
         });
-        const todoText = browser.execute(function() {
-            return document
-                .querySelector('integration-wired-method-suite')
-                .shadowRoot.querySelector('integration-wired-method').shadowRoot.textContent;
-        });
-        assert.equal(todoText.value, 'Title:task 1 Completed:false');
+        browser.waitUntil(
+            () => {
+                const todoText = browser.execute(function() {
+                    return document
+                        .querySelector('integration-wired-method-suite')
+                        .shadowRoot.querySelector(
+                            'integration-wired-method'
+                        ).shadowRoot.textContent;
+                });
+                return todoText.value === 'Title:task 1 Completed:false';
+            },
+            500,
+            'Should update todo id'
+        );
     });
 });

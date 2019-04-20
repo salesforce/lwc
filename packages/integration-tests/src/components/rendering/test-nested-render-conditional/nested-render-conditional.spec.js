@@ -20,6 +20,7 @@ describe('Nested conditional render', () => {
                 .shadowRoot.querySelector('.click-me')
                 .click();
         });
+        browser.pause(50);
         const toggleElement = browser.execute(function() {
             return document
                 .querySelector('integration-nested-render-conditional')

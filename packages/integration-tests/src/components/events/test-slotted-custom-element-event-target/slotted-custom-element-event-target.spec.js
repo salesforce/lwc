@@ -27,7 +27,7 @@ describe('Event target in slot elements', () => {
                         .shadowRoot.querySelector('integration-parent')
                         .shadowRoot.querySelector('.correct-event-target');
                 });
-                return child !== null && child.getText() === 'Event target is correct';
+                return child.value !== null && child.getText() === 'Event target is correct';
             },
             500,
             'did not receive expected event target in parent'
