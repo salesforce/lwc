@@ -13,8 +13,20 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
     });
 
     it('should continue delegating focus (forward)', function() {
-        browser.click('.second-inside');
-        browser.click('.second-outside');
+        const secondInside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-after-inside-click')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.second-inside');
+        });
+        secondInside.click();
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-after-inside-click')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
+
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -28,8 +40,19 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
     });
 
     it('should continue delegating focus (backward)', function() {
-        browser.click('.second-inside');
-        browser.click('.third-outside');
+        const secondInside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-after-inside-click')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.second-inside');
+        });
+        secondInside.click();
+        const thirdOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-after-inside-click')
+                .shadowRoot.querySelector('.third-outside');
+        });
+        thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {

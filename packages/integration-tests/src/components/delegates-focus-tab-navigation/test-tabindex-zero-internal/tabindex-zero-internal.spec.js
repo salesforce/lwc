@@ -13,7 +13,13 @@ describe('Internal tab navigation when tabindex 0', () => {
     });
 
     it('should navigate (forward)', function() {
-        browser.click('.second-inside');
+        const secondInside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-internal')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.second-inside');
+        });
+        secondInside.click();
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -27,7 +33,13 @@ describe('Internal tab navigation when tabindex 0', () => {
     });
 
     it('should navigate (backward)', function() {
-        browser.click('.second-inside');
+        const secondInside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero-internal')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.second-inside');
+        });
+        secondInside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {

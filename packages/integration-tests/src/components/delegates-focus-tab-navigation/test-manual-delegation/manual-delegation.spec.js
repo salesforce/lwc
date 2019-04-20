@@ -13,7 +13,12 @@ describe('Tab navigation when component passes tabindex attribute to an internal
     });
 
     it('should focus on internal element when tabbing forward from a sibling element', function() {
-        browser.click('.second-outside');
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-manual-delegation')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -26,7 +31,12 @@ describe('Tab navigation when component passes tabindex attribute to an internal
     });
 
     it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        browser.click('.third-outside');
+        const thirdOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-manual-delegation')
+                .shadowRoot.querySelector('.third-outside');
+        });
+        thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
