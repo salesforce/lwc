@@ -67,11 +67,7 @@ describe('Properties overrides', () => {
 });
 
 const SHADOW_ROOT_RESTRICTED = [
-    'appendChild',
-    'removeChild',
-    'replaceChild',
     'cloneNode',
-    'insertBefore',
     'getElementById',
     'getSelection',
     'elementsFromPoint',
