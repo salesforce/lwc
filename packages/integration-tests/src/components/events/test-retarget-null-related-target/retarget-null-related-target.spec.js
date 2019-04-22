@@ -4,10 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
-
-// Really hard to get the focus handler to execute, need to figure out a
-// reliable way to do it.
 describe('Retarget relatedTarget', () => {
     const URL = 'http://localhost:4567/retarget-null-related-target';
 
@@ -16,19 +12,14 @@ describe('Retarget relatedTarget', () => {
     });
 
     it('should not throw when relatedTarget is null', () => {
-        browser.execute(function() {
-            document.body.focus();
-            document
-                .querySelector('integration-retarget-null-related-target')
-                .shadowRoot.querySelector('.focus-input')
-                .focus();
+        browser.keys(['Tab']);
+        browser.waitUntil(() => {
+            const text = browser.execute(function() {
+                return document
+                    .querySelector('integration-retarget-null-related-target')
+                    .shadowRoot.querySelector('.related-target-tabname').textContent;
+            }).value;
+            return text === 'Related target is null';
         });
-        const elm = browser.execute(function() {
-            return document
-                .querySelector('integration-retarget-null-related-target')
-                .shadowRoot.querySelector('.related-target-tabname');
-        });
-        elm.waitForExist();
-        assert.strictEqual(elm.getText(), 'Related target is null');
     });
 });
