@@ -14,9 +14,18 @@ describe('Nested conditional render', () => {
     });
 
     it('should toggle element with nested conditional', function() {
-        const clickElement = browser.element('.click-me');
-        clickElement.click();
-        const toggleElement = browser.elements('.toggle');
+        browser.execute(function() {
+            document
+                .querySelector('integration-nested-render-conditional')
+                .shadowRoot.querySelector('.click-me')
+                .click();
+        });
+        browser.pause(50);
+        const toggleElement = browser.execute(function() {
+            return document
+                .querySelector('integration-nested-render-conditional')
+                .shadowRoot.querySelectorAll('.toggle');
+        });
         assert.deepEqual(toggleElement.value.length, 0);
     });
 });

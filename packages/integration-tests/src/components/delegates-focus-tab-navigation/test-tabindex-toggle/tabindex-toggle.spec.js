@@ -13,7 +13,12 @@ describe('Tab navigation without tabindex', () => {
     });
 
     it('should support tabindex toggling', function() {
-        browser.click('.second-outside');
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-toggle')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -25,9 +30,14 @@ describe('Tab navigation without tabindex', () => {
         assert.equal(className, 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        browser.click('.toggle');
+        const toggle = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-toggle')
+                .shadowRoot.querySelector('.toggle');
+        });
+        toggle.click();
 
-        browser.click('.second-outside');
+        secondOutside.click();
         browser.keys(['Tab']);
 
         className = browser.execute(function() {
@@ -38,9 +48,9 @@ describe('Tab navigation without tabindex', () => {
         assert.equal(className, 'third-outside');
 
         // Toggle the tabindex <x-child>
-        browser.click('.toggle');
+        toggle.click();
 
-        browser.click('.second-outside');
+        secondOutside.click();
         browser.keys(['Tab']);
 
         className = browser.execute(function() {

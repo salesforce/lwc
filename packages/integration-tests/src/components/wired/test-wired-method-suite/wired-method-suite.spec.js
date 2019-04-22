@@ -14,20 +14,34 @@ describe('Component with a wired method', () => {
     });
 
     it('should display data correctly', () => {
-        const element = browser.element('integration-wired-method');
-        assert.equal(element.getText(), 'Title:task 0 Completed:true');
+        const todoText = browser.execute(function() {
+            return document
+                .querySelector('integration-wired-method-suite')
+                .shadowRoot.querySelector('integration-wired-method').shadowRoot.textContent;
+        });
+        assert.equal(todoText.value, 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
-        const element = browser.element('integration-wired-method');
-        const button = browser.element('button');
-        button.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-wired-method-suite')
+                .shadowRoot.querySelector('button')
+                .click();
+        });
         browser.waitUntil(
             () => {
-                return element.getText() === 'Title:task 1 Completed:false';
+                const todoText = browser.execute(function() {
+                    return document
+                        .querySelector('integration-wired-method-suite')
+                        .shadowRoot.querySelector(
+                            'integration-wired-method'
+                        ).shadowRoot.textContent;
+                });
+                return todoText.value === 'Title:task 1 Completed:false';
             },
             500,
-            'expect text to be different after 0.5s'
+            'Should update todo id'
         );
     });
 });

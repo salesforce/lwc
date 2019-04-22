@@ -13,7 +13,12 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on custom element when tabbing forward from a sibling element', function() {
-        browser.click('.second-outside');
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-zero')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
         browser.keys(['Tab']);
 
         var tagName = browser.execute(function() {
@@ -33,7 +38,12 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on internal element when tabbing forward twice from a sibling element', function() {
-        browser.click('.second-outside');
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-zero')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
         browser.keys(['Tab']);
         browser.keys(['Tab']);
 
@@ -47,7 +57,12 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        browser.click('.third-outside');
+        const thirdOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-zero')
+                .shadowRoot.querySelector('.third-outside');
+        });
+        thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
@@ -60,7 +75,13 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on custom element when tabbing backwards out of the shadow', function() {
-        browser.click('.first-inside');
+        const firstInside = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-zero')
+                .shadowRoot.querySelector('integration-child')
+                .shadowRoot.querySelector('.first-inside');
+        });
+        firstInside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {

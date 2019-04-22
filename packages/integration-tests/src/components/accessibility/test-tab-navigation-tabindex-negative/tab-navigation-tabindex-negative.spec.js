@@ -13,7 +13,12 @@ describe('Tab navigation when tabindex -1', () => {
     });
 
     it('should skip shadow (forward)', function() {
-        browser.click('.second-outside');
+        const secondInput = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-negative')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondInput.click();
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -26,7 +31,12 @@ describe('Tab navigation when tabindex -1', () => {
     });
 
     it('should skip shadow (backward)', function() {
-        browser.click('.third-outside');
+        const thirdInput = browser.execute(function() {
+            return document
+                .querySelector('integration-tab-navigation-tabindex-negative')
+                .shadowRoot.querySelector('.third-outside');
+        });
+        thirdInput.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
