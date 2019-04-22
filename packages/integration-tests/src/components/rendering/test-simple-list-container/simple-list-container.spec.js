@@ -44,31 +44,18 @@ describe('Testing component: simple-list-container', () => {
     it('should render number of items between min and max', function() {
         // set min to 1 and max to 10
         browser.execute(function() {
-            return document
+            document
                 .querySelector('integration-simple-list-container')
-                .shadowRoot.querySelector('button.rangechange')
+                .shadowRoot.querySelector('.rangechange')
                 .click();
         });
 
-        browser.waitUntil(
-            () => {
-                var listItem = browser.execute(function() {
-                    return document
-                        .querySelector('integration-simple-list-container')
-                        .shadowRoot.querySelector('integration-simple-list')
-                        .shadowRoot.querySelector('li.number[data-number="1"]');
-                });
-                return listItem.value !== null;
-            },
-            500,
-            'list component did not rerender'
-        );
-        const items = browser.execute(function() {
+        const count = browser.execute(function() {
             return document
                 .querySelector('integration-simple-list-container')
                 .shadowRoot.querySelector('integration-simple-list')
-                .shadowRoot.querySelectorAll('li.number');
-        });
-        assert.strictEqual(items.value.length, 9);
+                .shadowRoot.querySelectorAll('.number').length;
+        }).value;
+        assert.strictEqual(count, 9);
     });
 });
