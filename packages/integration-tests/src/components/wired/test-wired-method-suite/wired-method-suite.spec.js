@@ -32,15 +32,14 @@ describe('Component with a wired method', () => {
         browser.waitUntil(
             () => {
                 const todoText = browser.execute(function() {
-                    return document
+                    var innerElm = document
                         .querySelector('integration-wired-method-suite')
-                        .shadowRoot.querySelector(
-                            'integration-wired-method'
-                        ).shadowRoot.textContent;
+                        .shadowRoot.querySelector('integration-wired-method');
+                    return innerElm && innerElm.shadowRoot && innerElm.shadowRoot.textContent;
                 });
                 return todoText.value === 'Title:task 1 Completed:false';
             },
-            500,
+            1000,
             'Should update todo id'
         );
     });

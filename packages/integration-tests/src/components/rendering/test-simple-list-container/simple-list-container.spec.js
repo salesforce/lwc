@@ -49,7 +49,6 @@ describe('Testing component: simple-list-container', () => {
                 .shadowRoot.querySelector('button.rangechange')
                 .click();
         });
-
         browser.waitUntil(
             () => {
                 var listItem = browser.execute(function() {
@@ -60,7 +59,7 @@ describe('Testing component: simple-list-container', () => {
                 });
                 return listItem.value !== null;
             },
-            500,
+            1000,
             'list component did not rerender'
         );
         const items = browser.execute(function() {
