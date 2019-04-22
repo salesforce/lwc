@@ -53,7 +53,7 @@ describe('Testing component: simple-list-container', () => {
         browser.waitUntil(
             () => {
                 var listItem = browser.execute(function() {
-                    document
+                    return document
                         .querySelector('integration-simple-list-container')
                         .shadowRoot.querySelector('integration-simple-list')
                         .shadowRoot.querySelector('li.number[data-number="1"]');
