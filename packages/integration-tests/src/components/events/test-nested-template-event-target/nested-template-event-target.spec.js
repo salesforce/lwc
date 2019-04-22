@@ -27,7 +27,7 @@ describe('Event target in slot elements', () => {
                         .querySelector('integration-nested-template-event-target')
                         .shadowRoot.querySelector('.evt-target-is-x-child');
                 });
-                return child !== null && child.getText() === 'Event Target Is x-child';
+                return child.value !== null && child.getText() === 'Event Target Is x-child';
             },
             500,
             'Event never bubbled to parent'

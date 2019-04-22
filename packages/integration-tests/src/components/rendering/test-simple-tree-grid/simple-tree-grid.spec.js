@@ -22,16 +22,34 @@ describe('Testing component: simple-list-container', () => {
     });
 
     it('toggle collapsible', () => {
-        const toggleAnchor = browser.element('integration-tree-node a');
-        assert.ok(toggleAnchor);
+        function getNodesCount() {
+            const count = browser.execute(function() {
+                var treeNodes = document
+                    .querySelector('integration-simple-tree-grid')
+                    .shadowRoot.querySelector('integration-tree-grid')
+                    .shadowRoot.querySelectorAll('integration-tree-node');
+                if (treeNodes.length === 2) {
+                    var node2s =
+                        treeNodes[0].shadowRoot.querySelectorAll('integration-tree-node2').length +
+                        treeNodes[1].shadowRoot.querySelectorAll('integration-tree-node2').length;
+                    return node2s;
+                }
+                return 0;
+            });
+            return count.value;
+        }
+        const preCount = getNodesCount();
+        assert.equal(preCount, 3, 'expected 3 items in list');
+        browser.execute(function() {
+            return document
+                .querySelector('integration-simple-tree-grid')
+                .shadowRoot.querySelector('integration-tree-grid')
+                .shadowRoot.querySelector('integration-tree-node')
+                .shadowRoot.querySelector('a')
+                .click();
+        });
 
-        let nodes = browser.elements('integration-tree-node2');
-        assert.ok(nodes);
-        assert.equal(nodes.value.length, 3);
-        toggleAnchor.click();
-
-        nodes = browser.elements('integration-tree-node2');
-        assert.ok(nodes);
-        assert.equal(nodes.value.length, 1);
+        const postCount = getNodesCount();
+        assert.equal(postCount, 1, 'expect 1 item in list after collapsing');
     });
 });

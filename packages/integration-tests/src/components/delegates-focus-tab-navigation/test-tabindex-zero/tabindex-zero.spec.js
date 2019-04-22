@@ -13,7 +13,12 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should delegate focus (forward)', function() {
-        browser.click('.second-outside');
+        const secondOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero')
+                .shadowRoot.querySelector('.second-outside');
+        });
+        secondOutside.click();
         browser.keys(['Tab']);
 
         var className = browser.execute(function() {
@@ -27,7 +32,12 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should delegate focus (backward)', function() {
-        browser.click('.third-outside');
+        const thirdOutside = browser.execute(function() {
+            return document
+                .querySelector('integration-tabindex-zero')
+                .shadowRoot.querySelector('.third-outside');
+        });
+        thirdOutside.click();
         browser.keys(['Shift', 'Tab', 'Shift']);
 
         var className = browser.execute(function() {
