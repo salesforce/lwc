@@ -69,14 +69,14 @@ type ComposableEvent = Event & {
 
 function targetGetter(this: ComposableEvent): EventTarget | null {
     // currentTarget is always defined
-    const originalCurrentTarget = eventCurrentTargetGetter.call(this) as EventTarget;
-    const originalTarget: EventTarget = eventTargetGetter.call(this);
-    const composedPath = pathComposer(originalTarget as Node, this.composed);
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
+    const originalTarget = eventTargetGetter.call(this);
+    const composedPath = pathComposer(originalTarget, this.composed);
 
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
-        return retarget(document, composedPath) as EventTarget;
+        return retarget(originalCurrentTarget, composedPath);
     }
 
     const eventContext = eventToContextMap.get(this);
@@ -84,7 +84,7 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
         eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
             ? getShadowRoot(originalCurrentTarget as HTMLElement)
             : originalCurrentTarget;
-    return retarget(currentTarget as Node, composedPath);
+    return retarget(currentTarget, composedPath);
 }
 
 function composedPathValue(this: ComposableEvent): EventTarget[] {
@@ -124,20 +124,25 @@ export function patchEvent(event: Event) {
     // Note: we can't really use the super here because of issues with the typescript transpilation for accessors
     const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
     if (!isUndefined(originalRelatedTargetDescriptor)) {
+        const relatedTargetGetter: (
+            this: ComposableEvent
+        ) => EventTarget | null = originalRelatedTargetDescriptor.get!;
         defineProperty(event, 'relatedTarget', {
             get(this: ComposableEvent): EventTarget | null | undefined {
                 const eventContext = eventToContextMap.get(this);
                 const originalCurrentTarget = eventCurrentTargetGetter.call(this);
-                const relatedTarget = originalRelatedTargetDescriptor.get!.call(this);
+                const relatedTarget = relatedTargetGetter.call(this);
                 if (isNull(relatedTarget)) {
                     return null;
                 }
                 const currentTarget =
                     eventContext === EventListenerContext.SHADOW_ROOT_LISTENER
-                        ? getShadowRoot(originalCurrentTarget as HTMLElement)
+                        ? getShadowRoot(
+                              originalCurrentTarget as HTMLElement
+                          ) /* because the context is a host */
                         : originalCurrentTarget;
 
-                return retarget(currentTarget as Node, pathComposer(relatedTarget as Node, true));
+                return retarget(currentTarget, pathComposer(relatedTarget, true));
             },
             enumerable: true,
             configurable: true,
@@ -180,7 +185,12 @@ function getWrappedShadowRootListener(
             const target = eventTargetGetter.call(event);
             const currentTarget = eventCurrentTargetGetter.call(event);
             if (target !== currentTarget) {
-                const rootNode = getRootNodeHost(target, { composed });
+                const rootNode = getRootNodeHost(
+                    target as Node /* because wrapping on shadowRoot */,
+                    {
+                        composed,
+                    }
+                );
 
                 if (
                     isChildNode(rootNode as HTMLElement, currentTarget as Node) ||
@@ -332,7 +342,10 @@ function isValidEventForCustomElement(event: Event): boolean {
         target === currentTarget ||
         // it is coming from a slotted element
         isChildNode(
-            getRootNodeHost(target, GET_ROOT_NODE_CONFIG_FALSE) as HTMLElement,
+            getRootNodeHost(
+                target as Node /* because wrap on shadowRoot */,
+                GET_ROOT_NODE_CONFIG_FALSE
+            ) as Element,
             currentTarget as Node
         )
     );

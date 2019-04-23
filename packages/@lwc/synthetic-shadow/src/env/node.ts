@@ -30,6 +30,11 @@ const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescripto
     'parentNode'
 )!.get!;
 
+const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
+    Node.prototype,
+    'ownerDocument'
+)!.get!;
+
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
     Node.prototype,
     'parentElement'
@@ -58,9 +63,13 @@ const nodeValueGetter: (this: Node) => string = nodeValueDescriptor.get!;
 const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
     ? getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!
     : function(this: Node): boolean {
+          const doc = ownerDocumentGetter.call(this);
           // IE11
           return (
-              (compareDocumentPosition.call(document, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
+              // if doc is null, it means `this` is actually a document instance which
+              // is always connected
+              doc === null ||
+              (compareDocumentPosition.call(doc, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
           );
       };
 
@@ -80,6 +89,7 @@ export {
     removeChild,
     replaceChild,
     textContextSetter,
+    ownerDocumentGetter,
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,

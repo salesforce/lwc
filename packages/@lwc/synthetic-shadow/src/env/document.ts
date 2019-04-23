@@ -6,14 +6,23 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
 
-const DocumentPrototypeActiveElement = getOwnPropertyDescriptor(
+const DocumentPrototypeActiveElement: (this: Document) => Element | null = getOwnPropertyDescriptor(
     Document.prototype,
     'activeElement'
-)!.get as (this: Document) => Element | null;
+)!.get!;
 
-const elementFromPoint = hasOwnProperty.call(Document.prototype, 'elementFromPoint')
+const elementFromPoint: (x: number, y: number) => Element | null = hasOwnProperty.call(
+    Document.prototype,
+    'elementFromPoint'
+)
     ? Document.prototype.elementFromPoint
     : (Document.prototype as any).msElementFromPoint; // IE11
+
+// TODO: when does defaultView return a null?
+const defaultViewGetter: (this: Document) => Window = getOwnPropertyDescriptor(
+    Document.prototype,
+    'defaultView'
+)!.get!;
 
 const {
     createDocumentFragment,
@@ -48,4 +57,5 @@ export {
     getElementsByName,
     getElementsByTagName,
     getElementsByTagNameNS,
+    defaultViewGetter,
 };

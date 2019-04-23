@@ -231,10 +231,15 @@ function patchedTakeRecords(this: MutationObserver): MutationRecord[] {
     return filterMutationRecords(originalTakeRecords.call(this), this);
 }
 
+PatchedMutationObserver.prototype = OriginalMutationObserver.prototype;
+PatchedMutationObserver.prototype.disconnect = patchedDisconnect;
+PatchedMutationObserver.prototype.observe = patchedObserve;
+PatchedMutationObserver.prototype.takeRecords = patchedTakeRecords;
+
 export default function apply() {
-    (window as any).MutationObserver = PatchedMutationObserver;
-    (window as any).MutationObserver.prototype = OriginalMutationObserver.prototype;
-    (window as any).MutationObserver.prototype.disconnect = patchedDisconnect;
-    (window as any).MutationObserver.prototype.observe = patchedObserve;
-    (window as any).MutationObserver.prototype.takeRecords = patchedTakeRecords;
+    defineProperty(window, 'MutationObserver', {
+        value: PatchedMutationObserver,
+        configurable: true,
+        writable: true,
+    });
 }
