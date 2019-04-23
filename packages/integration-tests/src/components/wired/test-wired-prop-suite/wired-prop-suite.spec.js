@@ -14,20 +14,32 @@ describe('Component with a wired property', () => {
     });
 
     it('should display data correctly', () => {
-        const element = browser.element('integration-wired-prop');
-        assert.equal(element.getText(), 'Title:task 0 Completed:true');
+        const todoText = browser.execute(function() {
+            return document
+                .querySelector('integration-wired-prop-suite')
+                .shadowRoot.querySelector('integration-wired-prop').shadowRoot.textContent;
+        });
+        assert.equal(todoText.value, 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
-        const element = browser.element('integration-wired-prop');
-        const button = browser.element('button');
-        button.click();
+        browser.execute(function() {
+            document
+                .querySelector('integration-wired-prop-suite')
+                .shadowRoot.querySelector('button')
+                .click();
+        });
         browser.waitUntil(
             () => {
-                return element.getText() === 'Title:task 1 Completed:false';
+                const todoText = browser.execute(function() {
+                    return document
+                        .querySelector('integration-wired-prop-suite')
+                        .shadowRoot.querySelector('integration-wired-prop').shadowRoot.textContent;
+                });
+                return todoText.value === 'Title:task 1 Completed:false';
             },
             500,
-            'expect text to be different after 0.5s'
+            'expect todo item to be updated'
         );
     });
 });
