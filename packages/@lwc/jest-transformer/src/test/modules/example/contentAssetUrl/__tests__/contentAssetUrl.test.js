@@ -31,14 +31,18 @@ describe('example-content-asset-url', () => {
     it('returns default value as import path', () => {
         const element = createElement('example-content-asset-url', { is: ContentAssetUrl });
         document.body.appendChild(element);
-        const resourceUrl = document.body.querySelector('.unmockedAsset').textContent;
+        const resourceUrl = document.body
+            .querySelector('example-content-asset-url')
+            .shadowRoot.querySelector('.unmockedAsset').textContent;
         expect(resourceUrl).toBe('unmocked');
     });
 
     it('returns value from mock defined in test file', () => {
         const element = createElement('example-content-asset-url', { is: ContentAssetUrl });
         document.body.appendChild(element);
-        const resourceUrl = document.body.querySelector('.mockedAsset').textContent;
+        const resourceUrl = document.body
+            .querySelector('example-content-asset-url')
+            .shadowRoot.querySelector('.mockedAsset').textContent;
         expect(resourceUrl).toBe('value set in test');
     });
 });

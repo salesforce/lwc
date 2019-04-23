@@ -12,11 +12,11 @@ import {
     getElementsByName,
     getElementsByTagName as documentGetElementsByTagName,
     getElementsByTagNameNS as documentGetElementsByTagNameNS,
-    querySelector as documentQuerySelector,
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
 import {
     ArrayFilter,
+    ArrayFind,
     ArraySlice,
     defineProperty,
     isNull,
@@ -94,12 +94,12 @@ export default function apply() {
 
     defineProperty(Document.prototype, 'querySelector', {
         value(this: Document): Element | null {
-            const elm = documentQuerySelector.apply(this, ArraySlice.call(arguments) as [string]);
-            if (isNull(elm)) {
-                return null;
-            }
+            const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
+                string
+            ]);
             const ownerKey = getNodeOwnerKey(this);
-            return getNodeOwnerKey(elm) === ownerKey ? elm : null;
+            const filtered = ArrayFind.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            return !isUndefined(filtered) ? filtered : null;
         },
         writable: true,
         enumerable: true,
