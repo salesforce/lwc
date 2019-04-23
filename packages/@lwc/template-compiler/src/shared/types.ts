@@ -6,12 +6,23 @@
  */
 import * as babelTypes from '@babel/types';
 import * as parse5 from 'parse5-with-errors';
+import { CompilerDiagnostic } from '@lwc/errors';
 
 export type TemplateIdentifier = babelTypes.Identifier;
 export type TemplateExpression =
     | babelTypes.MemberExpression
     | babelTypes.Literal
     | babelTypes.Identifier;
+
+export type TemplateCompileResult = {
+    code: string;
+    warnings: CompilerDiagnostic[];
+};
+
+export type TemplateParseResult = {
+    root?: IRElement | undefined;
+    warnings: CompilerDiagnostic[];
+};
 
 export type HTMLText = parse5.AST.TextNode;
 export type HTMLElement = parse5.AST.Element;

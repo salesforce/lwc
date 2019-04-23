@@ -50,14 +50,14 @@ return code;
     -   `files` (BundleFiles, required) - key value pairs where each key is one of the bundle files and its value is a string value of the file content.
     -   `baseDir` (string, optional) - An optional directory prefix that contains the specified components. Only used when the component that is the compiler's entry point.
     -   `stylesheetConfig` (StylesheetConfig, optional) - css configuration.
-    -   `outputConfig` (OutputConfig, optional) - compiler output configuratoin. Dictates the shape of the bunlde output (ex: bundle compiled for production mode, minified).
+    -   `outputConfig` (OutputConfig, optional) - compiler output configuration. Dictates the shape of the bundle output (ex: bundle compiled for production mode, minified).
 
 **Return**
 
 -   output (object) - the object with the following fields:
     -   `success` (boolean) - compilation results (true only if all compilation steps were successful).
     -   `diagnostics` (Diagnostic[]) - an array of compilation `Diagnostic` objects (ex: warnings, errors)
-    -   `result` (BundleResult) - an object containing compiled code, metadata, and configuration used during compilation;
+    -   `result` (BundleResult) - an object containing compiled code and configuration used during compilation;
     -   `version` (string) - the version of compiler used for current compilation.
 
 ### `transform`
@@ -91,8 +91,7 @@ const { code } = await transform(source, filename, options);
 **Return**
 
 -   `code` (string)- the compiled source code.
--   `metadata` (object) - the metadata collected during transformation. Includes: `declarationLoc`.
--   `map` (null) - not currenlty supported.
+-   `map` (null) - not currently supported.
 
 ### `version`
 
@@ -205,12 +204,7 @@ export interface CompilerOutput {
 export interface BundleResult {
     code: string;
     map: null;
-    metadata: BundleMetadata;
     outputConfig: NormalizedOutputConfig;
-}
-
-export interface BundleMetadata {
-    declarationLoc?: Location;
 }
 
 export interface ModuleImportLocation {

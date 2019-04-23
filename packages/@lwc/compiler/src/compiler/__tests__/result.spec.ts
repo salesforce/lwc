@@ -6,7 +6,7 @@
  */
 import { SourceMapConsumer } from 'source-map';
 import { compile } from '../compiler';
-import { pretify, readFixture } from '../../__tests__/utils';
+import { readFixture } from '../../__tests__/utils';
 import { DiagnosticLevel } from '@lwc/errors';
 
 const VALID_CONFIG = {
@@ -97,12 +97,11 @@ describe('compiler result', () => {
     test('should return output object with expected properties', async () => {
         const output = await compile(VALID_CONFIG);
         const { success, diagnostics, result, version } = output;
-        const { code, metadata } = result;
+        const { code } = result;
 
         expect(code).toBeDefined();
         expect(diagnostics).toBeDefined();
         expect(version).toBeDefined();
-        expect(metadata).toBeDefined();
         expect(success).toBeDefined();
     });
 
@@ -119,7 +118,7 @@ describe('compiler result', () => {
                     }
                 }
                 `,
-                'foo.html': readFixture('metadata/metadata.html'),
+                'foo.html': `<template><x-bar></x-bar></template>`,
                 'utils/util.js': `export function main() { return 'here is your import'; }`,
             },
         });
@@ -290,28 +289,6 @@ export default class Test extends LightningElement {
                 line: 20,
                 column: 13,
             });
-        });
-    });
-});
-
-describe('compiler metadata', () => {
-    it('decorators, import locations and template dependencies', async () => {
-        const {
-            result: { code, metadata },
-        } = await compile({
-            name: 'foo',
-            namespace: 'x',
-            files: {
-                'foo.js': readFixture('metadata/metadata.js'),
-                'foo.html': readFixture('metadata/metadata.html'),
-            },
-            outputConfig: { format: 'es' },
-        });
-
-        expect(pretify(code)).toBe(pretify(readFixture('expected-sources-metadata.js')));
-
-        expect(metadata).toEqual({
-            declarationLoc: undefined,
         });
     });
 });

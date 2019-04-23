@@ -53,6 +53,7 @@ import {
     IRExpressionAttribute,
     ForEach,
     TemplateExpression,
+    TemplateParseResult,
     LWCDirectiveDomMode,
 } from '../shared/types';
 
@@ -132,13 +133,7 @@ function attributeExpressionReferencesForEachIndex(
     return index.name === value.name;
 }
 
-export default function parse(
-    source: string,
-    state: State
-): {
-    root?: IRElement | undefined;
-    warnings: CompilerDiagnostic[];
-} {
+export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
     const generateKey = getKeyGenerator();
     const { fragment, errors: parsingErrors } = parseHTML(source);

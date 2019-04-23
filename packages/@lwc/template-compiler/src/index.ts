@@ -20,36 +20,24 @@ import { mergeConfig, Config } from './config';
 import parseTemplate from './parser';
 import generate from './codegen';
 
+import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
-export { IRElement, IRAttributeType } from './shared/types';
+export { IRElement } from './shared/types';
+export { Config } from './config';
 
-export { default as State } from './state';
-
-// TODO: perhaps don't allow the configuration from the outside?
-export { Config, mergeConfig } from './config';
-
-export function parse(source: string, config?: Config) {
+export function parse(source: string, config?: Config): TemplateParseResult {
     const options = mergeConfig(config || {});
     const state = new State(source, options);
 
     return parseTemplate(source, state);
 }
 
-export default function compiler(
-    source: string,
-    config: Config
-): {
-    code: string;
-    warnings: CompilerDiagnostic[];
-} {
-    const options = mergeConfig(config);
-    const state = new State(source, options);
-
+export default function compile(source: string, config: Config): TemplateCompileResult {
     let code = '';
     const warnings: CompilerDiagnostic[] = [];
     try {
-        const parsingResults = parseTemplate(source, state);
+        const parsingResults = parse(source, config);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
@@ -57,6 +45,7 @@ export default function compiler(
         );
 
         if (!hasParsingError && parsingResults.root) {
+            const state = new State(source, mergeConfig(config));
             const output = generate(parsingResults.root, state);
             code = output.code;
         }

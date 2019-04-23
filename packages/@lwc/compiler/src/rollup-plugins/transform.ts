@@ -9,14 +9,8 @@ import { Plugin } from 'rollup';
 import { transformFile } from '../transformers/transformer';
 
 import { NormalizedCompilerOptions } from '../compiler/options';
-import { MetadataCollector } from '../bundler/meta-collector';
 
-export default function({
-    options,
-}: {
-    options: NormalizedCompilerOptions;
-    metadataCollector?: MetadataCollector;
-}): Plugin {
+export default function({ options }: { options: NormalizedCompilerOptions }): Plugin {
     return {
         name: 'lwc-file-transform',
         transform(src: string, id: string) {
