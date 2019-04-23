@@ -21,7 +21,6 @@ import {
 } from '../shared/language';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
-    PatchedElement,
     isSlotElement,
     isNodeOwnedBy,
     getNodeOwner,
@@ -31,6 +30,7 @@ import {
 import { childNodesGetter as nativeChildNodesGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
+import { PatchedElement } from './element';
 
 interface HTMLSlotElementConstructor {
     prototype: HTMLSlotElement;
