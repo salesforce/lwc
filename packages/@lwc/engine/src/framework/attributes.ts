@@ -38,8 +38,9 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-const OffsetPropertiesError =
-    'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use `this.getBoundingClientRect()` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
+function offsetPropertyErrorMessage(name) {
+    return `Using the \`${name}\` property is considered an anti-pattern because it will round the value to an integer. Use the \`getBoundingClientRect\` method instead to obtain fractional values for the size of an element and its position relative to the viewport.`;
+}
 
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
@@ -63,7 +64,7 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         className: {
             attribute: 'class',
-            error: `Using property "className" is an anti-pattern because of slow runtime behavior and conflicting with classes provided by the owner element. Instead use property "classList".`,
+            error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
         },
         contentEditable: {
             attribute: 'contenteditable',
@@ -78,7 +79,7 @@ export function getGlobalHTMLPropertiesInfo() {
         dataset: {
             readOnly: true,
             error:
-                'Using property "dataset" is an anti-pattern. Components should not rely on dataset to implement its internal logic, nor use that as a communication channel.',
+                'Using the `dataset` property is an anti-pattern because it is not statically analyzable. Components should instead expose its public API using the `@api` decorator.',
         },
         dir: {
             attribute: 'dir',
@@ -130,22 +131,22 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         offsetHeight: {
             readOnly: true,
-            error: OffsetPropertiesError,
+            error: offsetPropertyErrorMessage('offsetHeight'),
         },
         offsetLeft: {
             readOnly: true,
-            error: OffsetPropertiesError,
+            error: offsetPropertyErrorMessage('offsetLeft'),
         },
         offsetParent: {
             readOnly: true,
         },
         offsetTop: {
             readOnly: true,
-            error: OffsetPropertiesError,
+            error: offsetPropertyErrorMessage('offsetTop'),
         },
         offsetWidth: {
             readOnly: true,
-            error: OffsetPropertiesError,
+            error: offsetPropertyErrorMessage('offsetWidth'),
         },
         properties: {
             readOnly: true,
@@ -157,7 +158,8 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         style: {
             attribute: 'style',
-            error: `Using property or attribute "style" is an anti-pattern. Instead use property "classList".`,
+            error:
+                'Using the `style` attribute is an anti-pattern. Use the `classList` API along with classes defined in a CSS file instead.',
         },
         tabIndex: {
             attribute: 'tabindex',
@@ -177,7 +179,7 @@ export function getGlobalHTMLPropertiesInfo() {
         slot: {
             attribute: 'slot',
             experimental: true,
-            error: `Using property or attribute "slot" is an anti-pattern.`,
+            error: 'Using the `slot` attribute is an anti-pattern.',
         },
     };
 }
