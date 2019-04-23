@@ -18,6 +18,7 @@ import {
     getPropertyDescriptor,
     getPrototypeOf,
     isString,
+    isTrue,
     setPrototypeOf,
     StringToLowerCase,
     toString,
@@ -94,9 +95,9 @@ function getNodeRestrictionsDescriptors(
     return {
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `appendChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `appendChild` method is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -105,9 +106,9 @@ function getNodeRestrictionsDescriptors(
         }),
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `insertBefore` method is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -116,9 +117,9 @@ function getNodeRestrictionsDescriptors(
         }),
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `removeChild` method is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -127,9 +128,9 @@ function getNodeRestrictionsDescriptors(
         }),
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `replaceChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `replaceChild` method is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -141,9 +142,9 @@ function getNodeRestrictionsDescriptors(
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
+                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `nodeValue` property is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -155,9 +156,9 @@ function getNodeRestrictionsDescriptors(
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (this instanceof Element && options.isPortal !== true) {
+                if (this instanceof Element && !isTrue(options.isPortal)) {
                     assert.logError(
-                        `textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `textContent` property is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -184,9 +185,9 @@ function getElementRestrictionsDescriptors(
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                if (options.isPortal !== true) {
+                if (!isTrue(options.isPortal)) {
                     assert.logError(
-                        `innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
+                        'The `innerHTML` property is only available on elements using the `lwc:dom="manual"` directive.',
                         this
                     );
                 }
@@ -371,10 +372,9 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
         propName &&
         propsConfig[propName]
     ) {
+        const name = StringToLowerCase.call(attrName);
         assert.logError(
-            `Invalid attribute "${StringToLowerCase.call(
-                attrName
-            )}" for ${vm}. Instead access the public property with \`element.${propName};\`.`,
+            `Invalid attribute access for \`${name}\`. Use the corresponding property \`${propName}\` instead.`,
             elm
         );
     }
@@ -387,8 +387,9 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     }
     const { elm } = vm;
     if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
+        const name = StringToLowerCase.call(attrName);
         assert.logError(
-            `Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`,
+            `Invalid attribute access for \`${name}\`. Elements created via template should not be mutated using DOM APIs. Update the attribute through the template instead.`,
             elm
         );
     }
@@ -483,7 +484,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                             assert.logError(error, getComponentVM(this).elm);
                         } else if (experimental) {
                             assert.logError(
-                                `Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`,
+                                `Using the experimental \`${attrName}\` attribute and its corresponding \`${propName}\` property is disallowed as it is not standardized or supported by all browsers.`,
                                 getComponentVM(this).elm
                             );
                         }
