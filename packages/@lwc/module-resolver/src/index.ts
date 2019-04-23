@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import nodeModulePaths from './node-modules-paths';
 
-const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
+const DEFAULT_IGNORE = ['**/node_modules/**', '**/__*/**'];
 const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json'];
 const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
@@ -41,14 +41,16 @@ function loadLwcConfig(modulePath) {
     const lwcConfigPath = path.join(modulePath, LWC_CONFIG_FILE);
     let config;
     try {
-        const jsonPkg = require(packageJsonPath);
-        try {
-            config = fs.readFileSync(lwcConfigPath, 'utf8');
-        } catch (e) {
-            config = jsonPkg.lwc;
-        }
+        config = JSON.parse(fs.readFileSync(lwcConfigPath, 'utf8'));
     } catch (ignore) {
         // ignore
+    }
+    if (!config) {
+        try {
+            config = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).lwc;
+        } catch (ignore) {
+            // ignore
+        }
     }
     return config;
 }
@@ -97,7 +99,10 @@ function expandModuleDirectories({
     rootDir,
 }: Partial<ModuleResolverConfig> = {}) {
     if (!moduleDirectories && !rootDir) {
-        return module.paths;
+        // paths() is spec'd to return null only for built-in node
+        // modules like 'http'. To be safe, return empty array in
+        // instead of null in this case.
+        return require.resolve.paths('.') || [];
     }
 
     return nodeModulePaths(rootDir || __dirname, moduleDirectories);
