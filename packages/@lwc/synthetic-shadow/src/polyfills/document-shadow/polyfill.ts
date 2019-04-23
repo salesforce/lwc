@@ -44,7 +44,8 @@ export default function apply() {
     Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
 
     // Go until we reach to top of the LWC tree
-    defineProperty(Document.prototype, 'activeElement', {
+    // TODO: this should be patched on Document.prototype instead
+    defineProperty(document, 'activeElement', {
         get(this: Document): Element | null {
             let node = DocumentPrototypeActiveElement.call(this);
 
