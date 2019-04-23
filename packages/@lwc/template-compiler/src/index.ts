@@ -29,15 +29,17 @@ export { Config } from './config';
 export function parse(source: string, config?: Config): TemplateParseResult {
     const options = mergeConfig(config || {});
     const state = new State(source, options);
-
     return parseTemplate(source, state);
 }
 
-export default function compile(source: string, config: Config): TemplateCompileResult {
+export default function compiler(source: string, config: Config): TemplateCompileResult {
+    const options = mergeConfig(config);
+    const state = new State(source, options);
+
     let code = '';
     const warnings: CompilerDiagnostic[] = [];
     try {
-        const parsingResults = parse(source, config);
+        const parsingResults = parseTemplate(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
@@ -45,7 +47,6 @@ export default function compile(source: string, config: Config): TemplateCompile
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const state = new State(source, mergeConfig(config));
             const output = generate(parsingResults.root, state);
             code = output.code;
         }
@@ -60,7 +61,6 @@ export default function compile(source: string, config: Config): TemplateCompile
         warnings,
     };
 }
-
 export function compileToFunction(source: string): Function {
     const options = mergeConfig({});
     options.format = 'function';
