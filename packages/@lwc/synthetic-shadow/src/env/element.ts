@@ -18,7 +18,6 @@ const {
     querySelectorAll,
     getBoundingClientRect,
     getElementsByTagName,
-    getElementsByClassName,
     getElementsByTagNameNS,
 } = Element.prototype;
 
@@ -61,6 +60,13 @@ const childrenGetter: (this: HTMLElement) => HTMLCollectionOf<Element> = hasOwnP
 )
     ? getOwnPropertyDescriptor(Element.prototype, 'children')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'children')!.get!; // IE11
+
+const getElementsByClassName: (
+    this: Element,
+    s: string
+) => HTMLCollectionOf<Element> = hasOwnProperty.call(Element.prototype, 'getElementsByClassName')
+    ? Element.prototype.getElementsByClassName
+    : HTMLElement.prototype.getElementsByClassName; // IE11
 
 export {
     addEventListener,

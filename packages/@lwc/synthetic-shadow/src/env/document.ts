@@ -30,8 +30,6 @@ const {
     getElementsByTagNameNS,
 } = Document.prototype;
 
-const { document: globalDocument } = window;
-
 export {
     elementFromPoint,
     createDocumentFragment,
@@ -47,5 +45,4 @@ export {
     getElementsByName,
     getElementsByTagName,
     getElementsByTagNameNS,
-    globalDocument,
 };

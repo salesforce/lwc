@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { globalDocument } from '../../env/document';
 import {
     getElementsByClassName as elementGetElementsByClassName,
     getElementsByTagName as elementGetElementsByTagName,
@@ -23,7 +22,7 @@ import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 
 export default function apply() {
-    const body = globalDocument.body;
+    const HTMLBodyElementPrototype = HTMLBodyElement.prototype;
     // The following patched methods hide shadowed elements from global
     // traversing mechanisms. They are simplified for performance reasons to
     // filter by ownership and do not account for slotted elements. This
@@ -34,7 +33,7 @@ export default function apply() {
     // is not a big problem considering the amount of code that is relying on
     // the liveliness of these results are rare.
 
-    defineProperty(body, 'querySelector', {
+    defineProperty(HTMLBodyElementPrototype, 'querySelector', {
         value(this: HTMLBodyElement): Element | null {
             const elements = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
@@ -49,7 +48,7 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(body, 'querySelectorAll', {
+    defineProperty(HTMLBodyElementPrototype, 'querySelectorAll', {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const elements = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
@@ -63,7 +62,7 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(body, 'getElementsByClassName', {
+    defineProperty(HTMLBodyElementPrototype, 'getElementsByClassName', {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
             const elements = elementGetElementsByClassName.apply(this, ArraySlice.call(
                 arguments
@@ -77,7 +76,7 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(body, 'getElementsByTagName', {
+    defineProperty(HTMLBodyElementPrototype, 'getElementsByTagName', {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
                 string
@@ -92,7 +91,7 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(body, 'getElementsByTagNameNS', {
+    defineProperty(HTMLBodyElementPrototype, 'getElementsByTagNameNS', {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(
                 arguments
