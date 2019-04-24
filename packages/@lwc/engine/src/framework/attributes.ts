@@ -158,8 +158,7 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         style: {
             attribute: 'style',
-            error:
-                'Using the `style` attribute is an anti-pattern. Use the `classList` API and define classes in a CSS file instead.',
+            reflective: true,
         },
         tabIndex: {
             attribute: 'tabindex',
