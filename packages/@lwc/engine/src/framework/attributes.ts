@@ -39,7 +39,7 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
 ];
 
 function offsetPropertyErrorMessage(name) {
-    return `Using the \`${name}\` property is considered an anti-pattern because it will round the value to an integer. Use the \`getBoundingClientRect\` method instead to obtain fractional values for the size of an element and its position relative to the viewport.`;
+    return `Using the \`${name}\` property is an anti-pattern because it rounds the value to an integer. Instead, use the \`getBoundingClientRect\` method to obtain fractional values for the size of an element and its position relative to the viewport.`;
 }
 
 // Global HTML Attributes & Properties
@@ -79,7 +79,7 @@ export function getGlobalHTMLPropertiesInfo() {
         dataset: {
             readOnly: true,
             error:
-                'Using the `dataset` property is an anti-pattern because it is not statically analyzable. Components should instead expose its public API using the `@api` decorator.',
+                "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. To expose the component's public API, use the `@api` decorator instead.",
         },
         dir: {
             attribute: 'dir',
@@ -159,7 +159,7 @@ export function getGlobalHTMLPropertiesInfo() {
         style: {
             attribute: 'style',
             error:
-                'Using the `style` attribute is an anti-pattern. Use the `classList` API along with classes defined in a CSS file instead.',
+                'Using the `style` attribute is an anti-pattern. Use the `classList` API and define classes in a CSS file instead.',
         },
         tabIndex: {
             attribute: 'tabindex',

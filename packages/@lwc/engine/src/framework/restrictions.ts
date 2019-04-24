@@ -18,7 +18,7 @@ import {
     getPropertyDescriptor,
     getPrototypeOf,
     isString,
-    isTrue,
+    isFalse,
     setPrototypeOf,
     StringToLowerCase,
     toString,
@@ -78,6 +78,10 @@ export function lockDomMutation() {
     isDomMutationAllowed = false;
 }
 
+function portalRestrictionErrorMessage(name: string, type: string) {
+    return `The \`${name}\` ${type} is only available on elements that have the \`lwc:dom="manual"\` directive.`;
+}
+
 function getNodeRestrictionsDescriptors(
     node: Node,
     options: RestrictionsOptions
@@ -95,44 +99,32 @@ function getNodeRestrictionsDescriptors(
     return {
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `appendChild` method is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('appendChild', 'method'), this);
                 }
                 return appendChild.call(this, aChild);
             },
         }),
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `insertBefore` method is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('insertBefore', 'method'), this);
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
         }),
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `removeChild` method is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('removeChild', 'method'), this);
                 }
                 return removeChild.call(this, aChild);
             },
         }),
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
-                if (this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `replaceChild` method is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('replaceChild', 'method'), this);
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
@@ -142,11 +134,8 @@ function getNodeRestrictionsDescriptors(
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (!isDomMutationAllowed && this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `nodeValue` property is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('nodeValue', 'property'), this);
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             },
@@ -156,11 +145,8 @@ function getNodeRestrictionsDescriptors(
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (this instanceof Element && !isTrue(options.isPortal)) {
-                    assert.logError(
-                        'The `textContent` property is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('textContent', 'property'), this);
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             },
@@ -185,7 +171,7 @@ function getElementRestrictionsDescriptors(
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                if (!isTrue(options.isPortal)) {
+                if (isFalse(options.isPortal)) {
                     assert.logError(
                         'The `innerHTML` property is only available on elements using the `lwc:dom="manual"` directive.',
                         this
@@ -389,7 +375,7 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
         const name = StringToLowerCase.call(attrName);
         assert.logError(
-            `Invalid attribute access for \`${name}\`. Elements created via template should not be mutated using DOM APIs. Update the attribute through the template instead.`,
+            `Invalid attribute access for \`${name}\`. Don't use DOM APIs to mutate elements created by a template. Use the template to update the attribute instead.`,
             elm
         );
     }
@@ -484,7 +470,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                             assert.logError(error, getComponentVM(this).elm);
                         } else if (experimental) {
                             assert.logError(
-                                `Using the experimental \`${attrName}\` attribute and its corresponding \`${propName}\` property is disallowed as it is not standardized or supported by all browsers.`,
+                                `Using the experimental \`${attrName}\` attribute and its corresponding \`${propName}\` property is disallowed because it is not standardized or supported by all browsers.`,
                                 getComponentVM(this).elm
                             );
                         }
