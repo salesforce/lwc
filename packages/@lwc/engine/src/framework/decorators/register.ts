@@ -130,30 +130,16 @@ function getPublicPropertiesHash(
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
         const attrName = getAttrNameFromPropName(propName);
+
         if (process.env.NODE_ENV !== 'production') {
             const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
-            if (
-                globalHTMLProperty &&
-                globalHTMLProperty.attribute &&
-                globalHTMLProperty.reflective === false
-            ) {
-                const { error, attribute, experimental } = globalHTMLProperty;
-                const msg: string[] = [];
-                if (error) {
-                    msg.push(error);
-                } else if (experimental) {
-                    msg.push(
-                        `"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`
-                    );
-                } else {
-                    msg.push(
-                        `"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
-                    );
-                    msg.push(
-                        `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
-                    );
-                }
-                assert.logError(msg.join('\n'));
+            if (globalHTMLProperty && globalHTMLProperty.experimental) {
+                const attr = globalHTMLProperty.attribute || attrName;
+                // This error is for the component author and it is logged at runtime instead of at
+                // compile time for better visibility.
+                assert.logError(
+                    `Using the experimental \`${attr}\` attribute and its corresponding \`${propName}\` property is disallowed because it is not standardized or supported by all browsers.`
+                );
             }
         }
 

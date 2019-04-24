@@ -172,10 +172,7 @@ function getElementRestrictionsDescriptors(
             },
             set(this: HTMLElement, value: string) {
                 if (isFalse(options.isPortal)) {
-                    assert.logError(
-                        'The `innerHTML` property is only available on elements using the `lwc:dom="manual"` directive.',
-                        this
-                    );
+                    assert.logError(portalRestrictionErrorMessage('innerHTML', 'property'), this);
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
