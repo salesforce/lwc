@@ -21,6 +21,7 @@ import {
     defineProperty,
     isNull,
     isUndefined,
+    getOwnPropertyDescriptor,
 } from '../../shared/language';
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { parentElementGetter } from '../../env/node';
@@ -164,15 +165,26 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(Document.prototype, 'getElementsByName', {
-        value(this: Document): NodeListOf<Element> {
-            const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
-            return createStaticNodeList(filtered);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
+    defineProperty(
+        getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
+            ? HTMLDocument.prototype // FF54 has the property defined at this level
+            : Document.prototype,
+        'getElementsByName',
+        {
+            value(this: Document): NodeListOf<Element> {
+                const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
+                    string
+                ]);
+                const ownerKey = getNodeOwnerKey(this);
+                const filtered = ArrayFilter.call(
+                    elements,
+                    elm => getNodeOwnerKey(elm) === ownerKey
+                );
+                return createStaticNodeList(filtered);
+            },
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        }
+    );
 }
