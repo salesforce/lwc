@@ -166,8 +166,9 @@ export default function apply() {
     });
 
     defineProperty(
+        // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
         getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
-            ? HTMLDocument.prototype // FF54-57 has the property defined at this level
+            ? HTMLDocument.prototype
             : Document.prototype,
         'getElementsByName',
         {

@@ -29,7 +29,8 @@ const {
     getElementsByTagNameNS,
 } = Document.prototype;
 
-// FF54-FF57 getElementsByName is defined in HTMLDocument, all other browsers have the method on Document
+// In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
+// In all other browsers have the method on Document.prototype
 const { getElementsByName } = HTMLDocument.prototype;
 
 export {
