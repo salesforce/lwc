@@ -13,22 +13,22 @@ describe('should not provide access to elements inside shadow tree', () => {
         });
     }
 
-    testMethodReturnsEmptyNodeList('querySelectorAll', '.in-the-shadow');
-    testMethodReturnsEmptyNodeList('getElementsByClassName', 'in-the-shadow');
-    testMethodReturnsEmptyNodeList('getElementsByTagName', 'x-unique-tag-name');
+    // testMethodReturnsEmptyNodeList('querySelectorAll', '.in-the-shadow');
+    // testMethodReturnsEmptyNodeList('getElementsByClassName', 'in-the-shadow');
+    // testMethodReturnsEmptyNodeList('getElementsByTagName', 'x-unique-tag-name');
     testMethodReturnsEmptyNodeList('getElementsByName', 'in-the-shadow');
 
-    it('document.getElementById', () => {
+    xit('document.getElementById', () => {
         // get the dynamic id
         const id = document
             .querySelector('x-test-document-properties')
             .shadowRoot.querySelector('.in-the-shadow').id;
         expect(document.getElementById(`in-the-shadow-${id}`)).toBe(null);
     });
-    it('document.querySelector', () => {
+    xit('document.querySelector', () => {
         expect(document.querySelector('.in-the-shadow')).toBe(null);
     });
-    it('document.getElementsByTagNameNS', () => {
+    xit('document.getElementsByTagNameNS', () => {
         expect(
             document.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'x-unique-tag-name')
                 .length
@@ -36,7 +36,7 @@ describe('should not provide access to elements inside shadow tree', () => {
     });
 });
 
-describe('should provide access to elements outside shadow tree', () => {
+xdescribe('should provide access to elements outside shadow tree', () => {
     let container;
     // randomize the selectors so that it does not interfere with the test suite above
     const random = Math.floor(Math.random() * 100);
@@ -44,7 +44,7 @@ describe('should provide access to elements outside shadow tree', () => {
         container = document.createElement('div');
         document.body.appendChild(container);
         container.innerHTML = `<div class='in-the-shadow-${random}' id='in-the-shadow-${random}'></div>
-                               <input name='in-the-shadow-${random}'> </input>`;
+                               <input name='in-the-shadow-${random}'>`;
         container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
     });
     afterAll(() => {

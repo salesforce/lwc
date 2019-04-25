@@ -38,7 +38,7 @@ describe('should provide access to elements outside shadow tree', () => {
         container = document.createElement('div');
         document.body.appendChild(container);
         container.innerHTML = `<div class='in-the-shadow-${random}'></div>
-                               <input name='in-the-shadow-${random}'> </input>`;
+                               <input name='in-the-shadow-${random}'>`;
         container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
     });
     afterAll(() => {

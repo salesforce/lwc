@@ -167,7 +167,7 @@ export default function apply() {
 
     defineProperty(
         getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
-            ? HTMLDocument.prototype // FF54 has the property defined at this level
+            ? HTMLDocument.prototype // FF54-57 has the property defined at this level
             : Document.prototype,
         'getElementsByName',
         {

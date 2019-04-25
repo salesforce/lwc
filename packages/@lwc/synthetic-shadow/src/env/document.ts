@@ -25,10 +25,12 @@ const {
     querySelectorAll,
     getElementById,
     getElementsByClassName,
-    getElementsByName,
     getElementsByTagName,
     getElementsByTagNameNS,
 } = Document.prototype;
+
+// FF54-FF57 getElementsByName is defined in HTMLDocument, all other browsers have the method on Document
+const { getElementsByName } = HTMLDocument.prototype;
 
 export {
     elementFromPoint,
