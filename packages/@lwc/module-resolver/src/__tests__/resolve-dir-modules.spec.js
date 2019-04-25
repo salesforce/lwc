@@ -17,7 +17,9 @@ describe('resolve-src-modules', () => {
             const modules = lwcResolver.resolveModulesInDir(simpleStructurePath);
             const moduleNames = Object.keys(modules);
             expect(moduleNames).toHaveLength(2);
-            expect(moduleNames).toContain('ns/simpleCmp', 'ns/simple-module');
+            expect(moduleNames).toEqual(
+                expect.arrayContaining(['ns/simpleCmp', 'ns/simple-module'])
+            );
         });
     });
 });

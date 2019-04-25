@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import nodeModulePaths from './node-modules-paths';
 
-const DEFAULT_IGNORE = ['**/node_modules/**', '**/__*/**'];
+const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
 const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json'];
 const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
@@ -26,6 +26,8 @@ export interface RegistryEntry {
 export interface ModuleResolverConfig {
     moduleDirectories: string[];
     rootDir: string;
+    modulePaths: string[];
+    ignorePattern?: string[];
 }
 
 interface FlatEntry {
@@ -97,7 +99,11 @@ function hasModuleBeenVisited(module, visited) {
 function expandModuleDirectories({
     moduleDirectories,
     rootDir,
+    modulePaths,
 }: Partial<ModuleResolverConfig> = {}) {
+    if (modulePaths) {
+        return modulePaths;
+    }
     if (!moduleDirectories && !rootDir) {
         // paths() is spec'd to return null only for built-in node
         // modules like 'http'. To be safe, return empty array in
@@ -140,7 +146,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
         return glob
             .sync<FlatEntry>(PACKAGE_PATTERN, {
                 cwd: nodeModulesDir,
-                ignore: DEFAULT_IGNORE,
+                ignore: options.ignorePattern || DEFAULT_IGNORE,
                 transform: entry =>
                     typeof entry === 'string' ? { path: entry } : { path: entry.path },
             })
