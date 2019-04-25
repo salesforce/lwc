@@ -1,8 +1,0 @@
-<template>
-    <h1 if:true={header}>{header}</h1>
-    <div><button onclick={handleClick}>{label}</button></div>
-    <div><button class="rangechange" onclick={handleRangeChange}>Set Min to 1 and Max to 10</button></div>
-    <span>min:</span><input class="mininput" type="number" oninput={onMinChange} min="0" max="50" value={min}>
-    <span>max:</span><input class="maxinput" type="number" oninput={onMaxChange} min="0" max="50" value={max}>
-    <integration-simple-list class="simpleList" min={min} max={max}></integration-simple-list>
-</template>

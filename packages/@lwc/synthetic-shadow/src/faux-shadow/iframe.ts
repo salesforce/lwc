@@ -1,3 +1,6 @@
+import { PatchedElement } from './element';
+import { iFrameContentWindowGetter } from '../env/dom';
+
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
@@ -10,6 +13,12 @@ export interface HTMLIFrameElementConstructor {
     new (): HTMLIFrameElement;
 }
 
+/**
+ * This is needed for compat mode to function because we don't use a real WeakMap,
+ * instead compat will attempt to extract the proxy internal slot out of a cross
+ * domain iframe, just to see if it is a proxy or not, and that will throw. To prevent
+ * that from throwing, we just protect it by wrapping all iframes.
+ */
 export function wrapIframeWindow(win: Window) {
     return {
         postMessage() {
@@ -62,5 +71,19 @@ export function wrapIframeWindow(win: Window) {
         get window() {
             return win.window;
         },
+    };
+}
+
+export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementConstructor {
+    const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
+    return class PatchedHTMLIframeElement extends Ctor {
+        get contentWindow(this: HTMLIFrameElement) {
+            const original = iFrameContentWindowGetter.call(this);
+            if (original) {
+                const wrapped = wrapIframeWindow(original) as unknown;
+                return wrapped as Window;
+            }
+            return original;
+        }
     };
 }

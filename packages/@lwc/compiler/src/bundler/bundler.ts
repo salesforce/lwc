@@ -122,8 +122,6 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
 
         const { output } = await rollupBundler.generate({
             amd: { id: namespace + '/' + name },
-            interop: false,
-            strict: false,
             sourcemap: outputConfig.sourcemap,
             format,
         });

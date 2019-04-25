@@ -39,6 +39,13 @@ const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
     ? getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!; // IE11
 
+const outerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
+    Element.prototype,
+    'outerHTML'
+)
+    ? getOwnPropertyDescriptor(Element.prototype, 'outerHTML')!.set!
+    : getOwnPropertyDescriptor(HTMLElement.prototype, 'outerHTML')!.set!; // IE11
+
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
     Element.prototype,
     'tagName'
@@ -84,6 +91,7 @@ export {
     tagNameGetter,
     tabIndexGetter,
     innerHTMLSetter,
+    outerHTMLSetter,
     matches,
     childrenGetter,
 };
