@@ -25,6 +25,7 @@ const { isArray } = Array;
 const {
     concat: ArrayConcat,
     filter: ArrayFilter,
+    find: ArrayFind,
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
@@ -68,6 +69,7 @@ export {
     hasOwnProperty,
     preventExtensions,
     isExtensible,
+    ArrayFind,
     ArrayReduce,
     ArraySlice,
     ArraySplice,

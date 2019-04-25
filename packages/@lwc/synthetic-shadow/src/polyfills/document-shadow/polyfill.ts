@@ -12,15 +12,16 @@ import {
     getElementsByName,
     getElementsByTagName as documentGetElementsByTagName,
     getElementsByTagNameNS as documentGetElementsByTagNameNS,
-    querySelector as documentQuerySelector,
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
 import {
     ArrayFilter,
+    ArrayFind,
     ArraySlice,
     defineProperty,
     isNull,
     isUndefined,
+    getOwnPropertyDescriptor,
 } from '../../shared/language';
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { parentElementGetter } from '../../env/node';
@@ -94,12 +95,12 @@ export default function apply() {
 
     defineProperty(Document.prototype, 'querySelector', {
         value(this: Document): Element | null {
-            const elm = documentQuerySelector.apply(this, ArraySlice.call(arguments) as [string]);
-            if (isNull(elm)) {
-                return null;
-            }
+            const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
+                string
+            ]);
             const ownerKey = getNodeOwnerKey(this);
-            return getNodeOwnerKey(elm) === ownerKey ? elm : null;
+            const filtered = ArrayFind.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            return !isUndefined(filtered) ? filtered : null;
         },
         writable: true,
         enumerable: true,
@@ -164,15 +165,27 @@ export default function apply() {
         configurable: true,
     });
 
-    defineProperty(Document.prototype, 'getElementsByName', {
-        value(this: Document): NodeListOf<Element> {
-            const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
-            return createStaticNodeList(filtered);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
+    defineProperty(
+        // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
+        getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
+            ? HTMLDocument.prototype
+            : Document.prototype,
+        'getElementsByName',
+        {
+            value(this: Document): NodeListOf<Element> {
+                const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
+                    string
+                ]);
+                const ownerKey = getNodeOwnerKey(this);
+                const filtered = ArrayFilter.call(
+                    elements,
+                    elm => getNodeOwnerKey(elm) === ownerKey
+                );
+                return createStaticNodeList(filtered);
+            },
+            writable: true,
+            enumerable: true,
+            configurable: true,
+        }
+    );
 }
