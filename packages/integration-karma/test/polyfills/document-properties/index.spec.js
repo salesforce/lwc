@@ -13,22 +13,22 @@ describe('should not provide access to elements inside shadow tree', () => {
         });
     }
 
-    // testMethodReturnsEmptyNodeList('querySelectorAll', '.in-the-shadow');
-    // testMethodReturnsEmptyNodeList('getElementsByClassName', 'in-the-shadow');
-    // testMethodReturnsEmptyNodeList('getElementsByTagName', 'x-unique-tag-name');
+    testMethodReturnsEmptyNodeList('querySelectorAll', '.in-the-shadow');
+    testMethodReturnsEmptyNodeList('getElementsByClassName', 'in-the-shadow');
+    testMethodReturnsEmptyNodeList('getElementsByTagName', 'x-unique-tag-name');
     testMethodReturnsEmptyNodeList('getElementsByName', 'in-the-shadow');
 
-    xit('document.getElementById', () => {
+    it('document.getElementById', () => {
         // get the dynamic id
         const id = document
             .querySelector('x-test-document-properties')
             .shadowRoot.querySelector('.in-the-shadow').id;
         expect(document.getElementById(`in-the-shadow-${id}`)).toBe(null);
     });
-    xit('document.querySelector', () => {
+    it('document.querySelector', () => {
         expect(document.querySelector('.in-the-shadow')).toBe(null);
     });
-    xit('document.getElementsByTagNameNS', () => {
+    it('document.getElementsByTagNameNS', () => {
         expect(
             document.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'x-unique-tag-name')
                 .length
@@ -36,7 +36,7 @@ describe('should not provide access to elements inside shadow tree', () => {
     });
 });
 
-xdescribe('should provide access to elements outside shadow tree', () => {
+describe('should provide access to elements outside shadow tree', () => {
     let container;
     // randomize the selectors so that it does not interfere with the test suite above
     const random = Math.floor(Math.random() * 100);
