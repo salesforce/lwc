@@ -19,7 +19,7 @@ const elementFromPoint: (x: number, y: number) => Element | null = hasOwnPropert
     : (Document.prototype as any).msElementFromPoint; // IE11
 
 // TODO: when does defaultView return a null?
-const defaultViewGetter: (this: Document) => Window = getOwnPropertyDescriptor(
+const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescriptor(
     Document.prototype,
     'defaultView'
 )!.get!;

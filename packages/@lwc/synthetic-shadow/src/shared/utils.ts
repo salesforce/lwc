@@ -16,5 +16,11 @@ export function getOwnerDocument(node: Node): Document {
 
 export function getOwnerWindow(node: Node): Window {
     const doc = getOwnerDocument(node);
-    return defaultViewGetter.call(doc);
+    const win = defaultViewGetter.call(doc);
+    if (win === null) {
+        // this method should never be called with a node that is not part
+        // of a qualifying connected node.
+        throw new TypeError();
+    }
+    return win;
 }
