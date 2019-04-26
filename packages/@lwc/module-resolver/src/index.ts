@@ -12,7 +12,7 @@ import fs from 'fs';
 import nodeModulePaths from './node-modules-paths';
 
 const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
-const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json'];
+const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json', 'package.json'];
 const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
 
