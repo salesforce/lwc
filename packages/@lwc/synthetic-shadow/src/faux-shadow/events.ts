@@ -29,6 +29,7 @@ import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 
 import '../polyfills/event-listener/main';
+import { getOwnerDocument } from '../shared/utils';
 
 // intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
 // due to the issues with JSDOM patching hazard.
@@ -76,7 +77,8 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
-        return retarget(originalCurrentTarget, composedPath);
+        const doc = getOwnerDocument(originalTarget as Node);
+        return retarget(doc, composedPath);
     }
 
     const eventContext = eventToContextMap.get(this);
