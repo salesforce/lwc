@@ -27,7 +27,7 @@ export interface ModuleResolverConfig {
     moduleDirectories: string[];
     rootDir: string;
     modulePaths: string[];
-    ignorePattern?: string[];
+    ignorePatterns?: string[];
 }
 
 interface FlatEntry {
@@ -146,7 +146,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
         return glob
             .sync<FlatEntry>(PACKAGE_PATTERN, {
                 cwd: nodeModulesDir,
-                ignore: options.ignorePattern || DEFAULT_IGNORE,
+                ignore: options.ignorePatterns || DEFAULT_IGNORE,
                 transform: entry =>
                     typeof entry === 'string' ? { path: entry } : { path: entry.path },
             })

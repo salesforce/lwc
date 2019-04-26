@@ -46,7 +46,7 @@ describe('resolve-lwc-npm-modules', () => {
     it('resolve from npm: ignorePattern', () => {
         const resolverOptions = {
             modulePaths: [path.join(__dirname, 'fixtures', 'fake_node_modules')],
-            ignorePattern: ['**/fake-module-package/**'],
+            ignorePatterns: ['**/fake-module-package/**'],
         };
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
