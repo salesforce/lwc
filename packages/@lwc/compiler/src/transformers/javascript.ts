@@ -22,7 +22,6 @@ export default function(
         plugins: [[lwcClassTransformPlugin, { isExplicitImport }], ...BABEL_PLUGINS_BASE],
         filename,
         sourceMaps: options.outputConfig.sourcemap,
-        configFile: false,
     });
 
     let result;

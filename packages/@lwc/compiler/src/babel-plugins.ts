@@ -44,6 +44,7 @@ import transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread
 // Base babel configuration
 export const BABEL_CONFIG_BASE = {
     babelrc: false,
+    configFile: false,
     sourceMaps: true,
     parserOpts: {
         plugins: [
