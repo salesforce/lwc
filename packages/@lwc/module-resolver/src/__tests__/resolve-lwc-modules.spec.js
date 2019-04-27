@@ -17,11 +17,57 @@ describe('resolve-lwc-npm-modules', () => {
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
         const lwcModuleNames = Object.keys(lwcModules);
         expect(lwcModuleNames).toHaveLength(4);
-        expect(lwcModuleNames).toContain(
-            'alias-fake-package',
-            'fake-module1',
-            'fake-module2',
-            'other-resource'
+        expect(lwcModuleNames).toEqual(
+            expect.arrayContaining([
+                'alias-fake-package',
+                'fake/module1',
+                'fake/module2',
+                'other-resource',
+            ])
+        );
+    });
+    it('resolve from npm: modulePaths options', () => {
+        const resolverOptions = {
+            modulePaths: [path.join(__dirname, 'fixtures', 'fake_node_modules')],
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(4);
+        expect(lwcModuleNames).toEqual(
+            expect.arrayContaining([
+                'alias-fake-package',
+                'fake/module1',
+                'fake/module2',
+                'other-resource',
+            ])
+        );
+    });
+    it('resolve from npm: ignorePattern', () => {
+        const resolverOptions = {
+            modulePaths: [path.join(__dirname, 'fixtures', 'fake_node_modules')],
+            ignorePatterns: ['**/fake-module-package/**'],
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(3);
+        expect(lwcModuleNames).toEqual(
+            expect.arrayContaining(['fake/module1', 'fake/module2', 'other-resource'])
+        );
+    });
+    it('resolve from npm: modulePaths has direct package.json folder reference', () => {
+        const resolverOptions = {
+            modulePaths: [
+                path.join(__dirname, 'fixtures', 'fake_node_modules', 'fake-multi-component'),
+            ],
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(3);
+        expect(lwcModuleNames).toEqual(
+            expect.arrayContaining(['fake/module1', 'fake/module2', 'other-resource'])
         );
     });
 });

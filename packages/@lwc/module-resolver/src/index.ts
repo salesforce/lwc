@@ -12,7 +12,7 @@ import fs from 'fs';
 import nodeModulePaths from './node-modules-paths';
 
 const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
-const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json'];
+const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json', 'package.json'];
 const MODULE_ENTRY_PATTERN = `**/*.[jt]s`;
 const LWC_CONFIG_FILE = '.lwcrc';
 
@@ -26,6 +26,8 @@ export interface RegistryEntry {
 export interface ModuleResolverConfig {
     moduleDirectories: string[];
     rootDir: string;
+    modulePaths: string[];
+    ignorePatterns?: string[];
 }
 
 interface FlatEntry {
@@ -41,14 +43,16 @@ function loadLwcConfig(modulePath) {
     const lwcConfigPath = path.join(modulePath, LWC_CONFIG_FILE);
     let config;
     try {
-        const jsonPkg = require(packageJsonPath);
-        try {
-            config = fs.readFileSync(lwcConfigPath, 'utf8');
-        } catch (e) {
-            config = jsonPkg.lwc;
-        }
+        config = JSON.parse(fs.readFileSync(lwcConfigPath, 'utf8'));
     } catch (ignore) {
         // ignore
+    }
+    if (!config) {
+        try {
+            config = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).lwc;
+        } catch (ignore) {
+            // ignore
+        }
     }
     return config;
 }
@@ -95,9 +99,16 @@ function hasModuleBeenVisited(module, visited) {
 function expandModuleDirectories({
     moduleDirectories,
     rootDir,
+    modulePaths,
 }: Partial<ModuleResolverConfig> = {}) {
+    if (modulePaths) {
+        return modulePaths;
+    }
     if (!moduleDirectories && !rootDir) {
-        return module.paths;
+        // paths() is spec'd to return null only for built-in node
+        // modules like 'http'. To be safe, return empty array in
+        // instead of null in this case.
+        return require.resolve.paths('.') || [];
     }
 
     return nodeModulePaths(rootDir || __dirname, moduleDirectories);
@@ -135,7 +146,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
         return glob
             .sync<FlatEntry>(PACKAGE_PATTERN, {
                 cwd: nodeModulesDir,
-                ignore: DEFAULT_IGNORE,
+                ignore: options.ignorePatterns || DEFAULT_IGNORE,
                 transform: entry =>
                     typeof entry === 'string' ? { path: entry } : { path: entry.path },
             })
