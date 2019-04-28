@@ -79,7 +79,7 @@ export function lockDomMutation() {
 }
 
 function portalRestrictionErrorMessage(name: string, type: string) {
-    return `The \`${name}\` ${type} is only available on elements that have the \`lwc:dom="manual"\` directive.`;
+    return `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`;
 }
 
 function getNodeRestrictionsDescriptors(
@@ -355,9 +355,8 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
         propName &&
         propsConfig[propName]
     ) {
-        const name = StringToLowerCase.call(attrName);
         assert.logError(
-            `Invalid attribute access for \`${name}\`. Use the corresponding property \`${propName}\` instead.`,
+            `Invalid attribute access for \`${attrName}\`. Use the corresponding property \`${propName}\` instead.`,
             elm
         );
     }
