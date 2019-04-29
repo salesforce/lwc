@@ -87,13 +87,11 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         draggable: {
             attribute: 'draggable',
-            experimental: true,
             reflective: true,
         },
         dropzone: {
             attribute: 'dropzone',
             readOnly: true,
-            experimental: true,
         },
         hidden: {
             attribute: 'hidden',
@@ -101,29 +99,21 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         itemScope: {
             attribute: 'itemscope',
-            experimental: true,
         },
         itemType: {
             attribute: 'itemtype',
             readOnly: true,
-            experimental: true,
         },
         itemId: {
             attribute: 'itemid',
-            experimental: true,
         },
         itemRef: {
             attribute: 'itemref',
             readOnly: true,
-            experimental: true,
         },
         itemProp: {
             attribute: 'itemprop',
             readOnly: true,
-            experimental: true,
-        },
-        itemValue: {
-            experimental: true,
         },
         lang: {
             attribute: 'lang',
@@ -150,10 +140,8 @@ export function getGlobalHTMLPropertiesInfo() {
         },
         properties: {
             readOnly: true,
-            experimental: true,
         },
         spellcheck: {
-            experimental: true,
             reflective: true,
         },
         style: {
@@ -168,16 +156,12 @@ export function getGlobalHTMLPropertiesInfo() {
             attribute: 'title',
             reflective: true,
         },
-        translate: {
-            experimental: true,
-        },
         // additional global attributes that are not present in the link above.
         role: {
             attribute: 'role',
         },
         slot: {
             attribute: 'slot',
-            experimental: true,
             error: 'Using the `slot` attribute is an anti-pattern.',
         },
     };

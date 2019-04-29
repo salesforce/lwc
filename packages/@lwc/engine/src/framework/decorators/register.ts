@@ -17,7 +17,7 @@ import wireDecorator from './wire';
 import trackDecorator from './track';
 import apiDecorator from './api';
 import { EmptyObject } from '../utils';
-import { getAttrNameFromPropName, getGlobalHTMLPropertiesInfo } from '../attributes';
+import { getAttrNameFromPropName } from '../attributes';
 import decorate, { DecoratorMap } from './decorate';
 
 export interface PropDef {
@@ -129,25 +129,12 @@ function getPublicPropertiesHash(
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
-        const attrName = getAttrNameFromPropName(propName);
-
-        if (process.env.NODE_ENV !== 'production') {
-            const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
-            if (globalHTMLProperty && globalHTMLProperty.experimental) {
-                const attr = globalHTMLProperty.attribute || attrName;
-                // This error is for the component author and it is logged at runtime instead of at
-                // compile time for better visibility.
-                assert.logError(
-                    `Using the experimental \`${attr}\` attribute and its corresponding \`${propName}\` property is disallowed because it is not standardized or supported by all browsers.`
-                );
-            }
-        }
-
+        const attr = getAttrNameFromPropName(propName);
         propsHash[propName] = assign(
             {
                 config: 0,
                 type: 'any',
-                attr: attrName,
+                attr,
             },
             props[propName]
         );

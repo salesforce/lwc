@@ -456,19 +456,13 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     return {
         setAttribute: generateDataDescriptor({
             value(this: ComponentInterface, attrName: string, _value: any) {
-                // logging errors for experimental and special attributes
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
                     const info = getGlobalHTMLPropertiesInfo();
                     if (info[propName] && info[propName].attribute) {
-                        const { error, experimental } = info[propName];
+                        const { error } = info[propName];
                         if (error) {
                             assert.logError(error, getComponentVM(this).elm);
-                        } else if (experimental) {
-                            assert.logError(
-                                `Using the experimental \`${attrName}\` attribute and its corresponding \`${propName}\` property is disallowed because it is not standardized or supported by all browsers.`,
-                                getComponentVM(this).elm
-                            );
                         }
                     }
                 }
@@ -504,7 +498,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
         }
         descriptors[propName] = generateAccessorDescriptor({
             get(this: ComponentInterface) {
-                const { error, attribute, readOnly, experimental } = info[propName];
+                const { error, attribute, readOnly } = info[propName];
                 const msg: any[] = [];
                 msg.push(
                     `Accessing the global HTML property "${propName}" in ${this} is disabled.`
@@ -512,11 +506,6 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                 if (error) {
                     msg.push(error);
                 } else {
-                    if (experimental) {
-                        msg.push(
-                            `This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`
-                        );
-                    }
                     if (readOnly) {
                         // TODO - need to improve this message
                         msg.push(`Property is read-only.`);
