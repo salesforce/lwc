@@ -1,5 +1,33 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.37.1...v) (2019-04-01)
+# [](https://github.com/salesforce/lwc/compare/v0.37.2...v) (2019-04-30)
+
+
+### Bug Fixes
+
+* add `allow` as a valid iframe attribute ([#1156](https://github.com/salesforce/lwc/issues/1156)) ([74a42fc](https://github.com/salesforce/lwc/commit/74a42fc))
+* fix event tests to be shadow aware ([#1182](https://github.com/salesforce/lwc/issues/1182)) ([3cd1191](https://github.com/salesforce/lwc/commit/3cd1191))
+* **compiler:** add default export support and enable strict mode ([#1175](https://github.com/salesforce/lwc/issues/1175)) ([a429824](https://github.com/salesforce/lwc/commit/a429824))
+* **compiler:** don't use project-wide config ([#1163](https://github.com/salesforce/lwc/issues/1163)) ([1477d56](https://github.com/salesforce/lwc/commit/1477d56))
+* **engine:** add instaceof check workaround ([#1165](https://github.com/salesforce/lwc/issues/1165)) ([5490be7](https://github.com/salesforce/lwc/commit/5490be7))
+* **engine:** restrict access to ShadowRoot.dispatchEvent ([#1176](https://github.com/salesforce/lwc/issues/1176)) ([01a6506](https://github.com/salesforce/lwc/commit/01a6506))
+* **engine:** supporting objects with null prototype in iterators ([#1152](https://github.com/salesforce/lwc/issues/1152)) ([7c5f264](https://github.com/salesforce/lwc/commit/7c5f264))
+* **resolver:** use require.resolve.paths(); avoid require for json ([#1194](https://github.com/salesforce/lwc/issues/1194)) ([7ef45df](https://github.com/salesforce/lwc/commit/7ef45df))
+* incorrect import in dist type in [@lwc](https://github.com/lwc)/compiler ([#1196](https://github.com/salesforce/lwc/issues/1196)) ([0ed106b](https://github.com/salesforce/lwc/commit/0ed106b))
+
+
+### Features
+
+* **compiler:** expose transformSync method ([#1174](https://github.com/salesforce/lwc/issues/1174)) ([ebeb23a](https://github.com/salesforce/lwc/commit/ebeb23a))
+
+
+### Performance Improvements
+
+* optimize module resolution ([#1183](https://github.com/salesforce/lwc/issues/1183)) ([81ffabf](https://github.com/salesforce/lwc/commit/81ffabf)), closes [#1162](https://github.com/salesforce/lwc/issues/1162)
+
+
+
+<a name="0.37.2"></a>
+## [0.37.2](https://github.com/salesforce/lwc/compare/v0.37.1...v0.37.2) (2019-04-01)
 
 
 ### Bug Fixes
