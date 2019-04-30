@@ -1,7 +1,7 @@
 {
     "name": "integration-tests",
     "private": true,
-    "version": "0.38.0",
+    "version": "0.38.1",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
@@ -21,10 +21,10 @@
         "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "0.38.0",
-        "@lwc/engine": "0.38.0",
-        "@lwc/rollup-plugin": "0.38.0",
-        "@lwc/wire-service": "0.38.0",
+        "@lwc/compiler": "0.38.1",
+        "@lwc/engine": "0.38.1",
+        "@lwc/rollup-plugin": "0.38.1",
+        "@lwc/wire-service": "0.38.1",
         "compat-polyfills": "0.21.4",
         "deepmerge": "^1.5.2",
         "dotenv": "^4.0.0",
