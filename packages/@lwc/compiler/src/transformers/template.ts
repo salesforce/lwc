@@ -18,11 +18,19 @@ import { MetadataCollector } from '../bundler/meta-collector';
 import { NormalizedCompilerOptions } from '../compiler/options';
 
 // TODO: once we come up with a strategy to export all types from the module,
-// below interface should be removed and resolved from template-compiler module.
+// below interfaces should be removed and resolved from template-compiler module.
 export interface TemplateMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
     templateDependencies: TemplateModuleDependency[];
+}
+
+export interface TemplateTransformResult {
+    code: string;
+    map: {
+        mappings: string;
+    };
+    metadata: TemplateMetadata;
 }
 
 /**
@@ -35,7 +43,7 @@ export default function templateTransform(
     filename: string,
     options: NormalizedCompilerOptions,
     metadataCollector?: MetadataCollector
-) {
+): TemplateTransformResult {
     let result;
     let metadata;
 
