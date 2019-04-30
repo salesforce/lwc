@@ -498,29 +498,13 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
         }
         descriptors[propName] = generateAccessorDescriptor({
             get(this: ComponentInterface) {
-                const { error, attribute, readOnly } = info[propName];
-                const msg: any[] = [];
-                msg.push(
-                    `Accessing the global HTML property "${propName}" in ${this} is disabled.`
-                );
+                const { error, attribute } = info[propName];
+                const msg: string[] = [];
+                msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
                 if (error) {
                     msg.push(error);
-                } else {
-                    if (readOnly) {
-                        // TODO - need to improve this message
-                        msg.push(`Property is read-only.`);
-                    }
-                    if (attribute) {
-                        msg.push(
-                            `"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
-                        );
-                        msg.push(
-                            `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
-                        );
-                        msg.push(
-                            `  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`
-                        );
-                    }
+                } else if (attribute) {
+                    msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
                 assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
             },
