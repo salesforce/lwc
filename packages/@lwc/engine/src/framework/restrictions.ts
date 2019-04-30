@@ -459,7 +459,10 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
                     const info = getGlobalHTMLPropertiesInfo();
-                    if (info[propName] && info[propName].attribute) {
+                    const globalAttrName = info[propName] && info[propName].attribute;
+                    // Check that the attribute name of the global property is the same as the
+                    // attribute name being set by setAttribute.
+                    if (attrName === globalAttrName) {
                         const { error } = info[propName];
                         if (error) {
                             assert.logError(error, getComponentVM(this).elm);
