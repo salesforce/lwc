@@ -698,10 +698,12 @@ export function gid(id: string | undefined | null): string | null | undefined {
 export function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(
-                `Invalid url value "${url}". Expected a non-empty string.`,
-                vmBeingRendered!.elm
-            );
+            if (isUndefined(url)) {
+                assert.logError(
+                    `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
+                    vmBeingRendered!.elm
+                );
+            }
         }
         return url;
     }
