@@ -1,6 +1,6 @@
 {
     "name": "@lwc/jest-preset",
-    "version": "0.38.1",
+    "version": "0.38.2",
     "description": "Jest preset configuration and stubs to help test LWC",
     "license": "MIT",
     "scripts": {
@@ -15,10 +15,10 @@
         "jest": ">= 23.0.0"
     },
     "dependencies": {
-        "@lwc/jest-resolver": "0.38.1",
-        "@lwc/jest-serializer": "0.38.1",
-        "@lwc/jest-transformer": "0.38.1",
-        "@lwc/test-utils": "0.38.1"
+        "@lwc/jest-resolver": "0.38.2",
+        "@lwc/jest-serializer": "0.38.2",
+        "@lwc/jest-transformer": "0.38.2",
+        "@lwc/test-utils": "0.38.2"
     },
     "publishConfig": {
         "access": "public"
