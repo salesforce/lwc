@@ -11,10 +11,10 @@ import {
     create,
     defineProperty,
     defineProperties,
-    forEach,
     isUndefined,
+    isNull,
 } from '../../shared/language';
-import { getNodeNearestOwnerKey, getNodeKey } from '../../faux-shadow/node';
+import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 const OriginalMutationObserver: typeof MutationObserver = (window as any).MutationObserver;
@@ -25,8 +25,8 @@ const {
 } = OriginalMutationObserver.prototype;
 
 // Internal fields to maintain relationships
-const observedTargetsField = '$$lwcObservedTargets$$';
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
+const observerLookupField = '$$lwcNodeObservers$$';
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
@@ -69,13 +69,32 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 }
 
 /**
- * This function first gathers the OwnerKey of all the targets observed by the MutationObserver instance.
- * Next, process each MutationRecord to determine if the mutation occured in the same shadow tree as
- * one of the targets being observed.
+ * Utility to identify if a target node is being observed by the given observer
+ * Start at the current node, if the observer is registered to observe the current node, the mutation qualifies
+ * @param {MutationObserver} observer
+ * @param {Node} target
+ */
+function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
+    let parentNode: Node | null = target;
+    while (!isNull(parentNode)) {
+        let parentNodeObservers;
+        if (
+            !isUndefined((parentNodeObservers = parentNode[observerLookupField])) &&
+            ArrayIndexOf.call(parentNodeObservers, observer) !== -1
+        ) {
+            return true;
+        }
+        parentNode = parentNode.parentNode;
+    }
+    return false;
+}
+
+/**
+ * This function provides a shadow dom compliant filtered view of mutation records for a given observer.
  *
- * The key filtering logic is to match the observed target node's ownerKey/ownKey with the ownerKey of the nodes in the
- * MutationRecord.
- * The ownerKey of the rootnode will be undefined. Similarly ownerkey of nodes outside the shadow will be undefined.
+ * The key logic here is to determine if a given observer has been registered to observe any nodes
+ * between the target node of a mutation record to the target's root node.
+ * This function also retargets records when mutations occur directlt under the shadow root
  * @param {MutationRecords[]} mutations
  * @param {MutationObserver} observer
  */
@@ -83,47 +102,55 @@ function filterMutationRecords(
     mutations: MutationRecord[],
     observer: MutationObserver
 ): MutationRecord[] {
-    const observedTargets = observer[observedTargetsField];
-    const observedTargetOwnerKeys: Array<number | undefined> = [];
-    forEach.call(observedTargets, (node: Node) => {
-        // If the observed target is a shadowRoot, the ownerkey of the shadow tree will be fetched using the host
-        const observedTargetOwnerKey =
-            node instanceof (window as any).ShadowRoot
-                ? getNodeKey((node as ShadowRoot).host)
-                : getNodeNearestOwnerKey(node);
-        ArrayPush.call(observedTargetOwnerKeys, observedTargetOwnerKey);
-    });
     return ArrayReduce.call(
         mutations,
         (filteredSet, record: MutationRecord) => {
             const { target, addedNodes, removedNodes, type } = record;
-            // If the mutations affected a lwc host element or its shadow,
-            // because LWC uses synthetic shadow, target will be the host
+            // If target is an lwc host,
+            // Determine if the mutations affected the host or the shadowRoot
+            // Mutations affecting host: changes to slot content
+            // Mutations affecting shadowRoot: changes to template content
             if (type === 'childList' && !isUndefined(getNodeKey(target))) {
-                // Optimization: Peek in and test one node to decide if the MutationRecord qualifies
-                // The remaining nodes in this MutationRecord will have the same ownerKey
-                const sampleNode: Node = addedNodes.length > 0 ? addedNodes[0] : removedNodes[0];
-                const sampleNodeOwnerKey = getNodeNearestOwnerKey(sampleNode);
-                // Is node being added/removed to a subtree that is being observed
-                if (ArrayIndexOf.call(observedTargetOwnerKeys, sampleNodeOwnerKey) !== -1) {
-                    // If the target was being observed, then return record as-is
-                    if (observedTargets.indexOf(target) !== -1) {
+                // In case of added nodes, we can climb up the tree and determine eligibility
+                if (addedNodes.length > 0) {
+                    // Optimization: Peek in and test one node to decide if the MutationRecord qualifies
+                    // The remaining nodes in this MutationRecord will have the same ownerKey
+                    const sampleNode: Node = addedNodes[0];
+                    if (isQualifiedObserver(observer, sampleNode)) {
+                        // If the target was being observed, then return record as-is
+                        // this will be the case for slot content
+                        if (
+                            target[observerLookupField] &&
+                            ArrayIndexOf.call(target[observerLookupField], observer) !== -1
+                        ) {
+                            ArrayPush.call(filteredSet, record);
+                        } else {
+                            // else, must be observing the shadowRoot
+                            ArrayPush.call(filteredSet, retargetMutationRecord(record));
+                        }
+                    }
+                } else {
+                    // In the case of removed nodes, climbing the tree is not an option as the nodes are disconnected
+                    // We can only check if either the host or shadow root was observed and qualify the record
+                    const shadowRoot = (target as Element).shadowRoot;
+                    const sampleNode: Node = removedNodes[0];
+                    if (
+                        getNodeNearestOwnerKey(target) === getNodeNearestOwnerKey(sampleNode) && // trickery: sampleNode is slot content
+                        isQualifiedObserver(observer, target) // use target as a close enough reference to climb up
+                    ) {
                         ArrayPush.call(filteredSet, record);
-                    } else {
-                        // else, must be observing the shadowRoot
+                    } else if (
+                        shadowRoot &&
+                        shadowRoot[observerLookupField] &&
+                        ArrayIndexOf.call(shadowRoot[observerLookupField], observer) !== -1
+                    ) {
                         ArrayPush.call(filteredSet, retargetMutationRecord(record));
                     }
                 }
             } else {
-                // if target is shadowRoot, then fetch key of shadow tree from the host
-                // this should never be the case when synthetic shadow is on, only when running in native
-                const recordTargetOwnerKey =
-                    target instanceof (window as any).ShadowRoot
-                        ? getNodeKey((target as ShadowRoot).host)
-                        : getNodeNearestOwnerKey(target);
-                const mutationInScope =
-                    ArrayIndexOf.call(observedTargetOwnerKeys, recordTargetOwnerKey) !== -1;
-                if (mutationInScope) {
+                // Mutation happened under a root node(shadow root or document) and the decision is straighforward
+                // Ascend the tree starting from target and check if observer is qualified
+                if (isQualifiedObserver(observer, target)) {
                     ArrayPush.call(filteredSet, record);
                 }
             }
@@ -164,14 +191,10 @@ function PatchedMutationObserver(
 ): MutationObserver {
     const wrappedCallback: any = getWrappedCallback(callback);
     const observer = new OriginalMutationObserver(wrappedCallback);
-    defineProperty(observer, observedTargetsField, { value: [] });
     return observer;
 }
 
 function patchedDisconnect(this: MutationObserver): void {
-    if (!isUndefined(this[observedTargetsField])) {
-        this[observedTargetsField].length = 0;
-    }
     originalDisconnect.call(this);
 }
 
@@ -186,10 +209,11 @@ function patchedObserve(
     target: Node,
     options?: MutationObserverInit
 ): void {
-    // If the observer was created by the patched constructor, this field should be defined. Adding a guard for extra safety
-    if (!isUndefined(this[observedTargetsField])) {
-        ArrayPush.call(this[observedTargetsField], target);
+    // Maintain a list of all observers that want to observe a node
+    if (isUndefined(target[observerLookupField])) {
+        defineProperty(target, observerLookupField, { value: [] });
     }
+    ArrayPush.call(target[observerLookupField], this);
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
