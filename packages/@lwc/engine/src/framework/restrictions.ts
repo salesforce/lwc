@@ -24,11 +24,7 @@ import {
     toString,
 } from '../shared/language';
 import { ComponentInterface } from './component';
-import {
-    getGlobalHTMLPropertiesInfo,
-    getPropNameFromAttrName,
-    isAttributeLocked,
-} from './attributes';
+import { globalHTMLProperties, getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getShadowRootVM, getCustomElementVM, VM, getComponentVM } from './vm';
 import {
@@ -458,12 +454,12 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
             value(this: ComponentInterface, attrName: string, _value: any) {
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
-                    const info = getGlobalHTMLPropertiesInfo();
-                    const globalAttrName = info[propName] && info[propName].attribute;
+                    const globalAttrName =
+                        globalHTMLProperties[propName] && globalHTMLProperties[propName].attribute;
                     // Check that the attribute name of the global property is the same as the
                     // attribute name being set by setAttribute.
                     if (attrName === globalAttrName) {
-                        const { error } = info[propName];
+                        const { error } = globalHTMLProperties[propName];
                         if (error) {
                             assert.logError(error, getComponentVM(this).elm);
                         }
@@ -493,15 +489,14 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const info = getGlobalHTMLPropertiesInfo();
     const descriptors = {};
-    forEach.call(getOwnPropertyNames(info), (propName: string) => {
+    forEach.call(getOwnPropertyNames(globalHTMLProperties), (propName: string) => {
         if (propName in proto) {
             return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = generateAccessorDescriptor({
             get(this: ComponentInterface) {
-                const { error, attribute } = info[propName];
+                const { error, attribute } = globalHTMLProperties[propName];
                 const msg: string[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
                 if (error) {
@@ -512,7 +507,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                 assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
             },
             set() {
-                const { readOnly } = info[propName];
+                const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
                     assert.logWarning(`The global HTML property \`${propName}\` is read-only.`);
                 }

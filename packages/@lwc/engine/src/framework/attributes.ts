@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
-import { StringToLowerCase, StringReplace, create, forEach, isUndefined } from '../shared/language';
+import {
+    assign,
+    create,
+    forEach,
+    isUndefined,
+    StringReplace,
+    StringToLowerCase,
+} from '../shared/language';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
@@ -45,133 +52,114 @@ function offsetPropertyErrorMessage(name) {
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
-export function getGlobalHTMLPropertiesInfo() {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return {
-        id: {
-            attribute: 'id',
-            reflective: true,
-        },
-        accessKey: {
-            attribute: 'accesskey',
-            reflective: true,
-        },
-        accessKeyLabel: {
-            readOnly: true,
-        },
-        className: {
-            attribute: 'class',
-            error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
-        },
-        contentEditable: {
-            attribute: 'contenteditable',
-            reflective: true,
-        },
-        isContentEditable: {
-            readOnly: true,
-        },
-        contextMenu: {
-            attribute: 'contextmenu',
-        },
-        dataset: {
-            readOnly: true,
-            error:
-                "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
-        },
-        dir: {
-            attribute: 'dir',
-            reflective: true,
-        },
-        draggable: {
-            attribute: 'draggable',
-            reflective: true,
-        },
-        dropzone: {
-            attribute: 'dropzone',
-            readOnly: true,
-        },
-        hidden: {
-            attribute: 'hidden',
-            reflective: true,
-        },
-        itemScope: {
-            attribute: 'itemscope',
-        },
-        itemType: {
-            attribute: 'itemtype',
-            readOnly: true,
-        },
-        itemId: {
-            attribute: 'itemid',
-        },
-        itemRef: {
-            attribute: 'itemref',
-            readOnly: true,
-        },
-        itemProp: {
-            attribute: 'itemprop',
-            readOnly: true,
-        },
-        lang: {
-            attribute: 'lang',
-            reflective: true,
-        },
-        offsetHeight: {
-            readOnly: true,
-            error: offsetPropertyErrorMessage('offsetHeight'),
-        },
-        offsetLeft: {
-            readOnly: true,
-            error: offsetPropertyErrorMessage('offsetLeft'),
-        },
-        offsetParent: {
-            readOnly: true,
-        },
-        offsetTop: {
-            readOnly: true,
-            error: offsetPropertyErrorMessage('offsetTop'),
-        },
-        offsetWidth: {
-            readOnly: true,
-            error: offsetPropertyErrorMessage('offsetWidth'),
-        },
-        properties: {
-            readOnly: true,
-        },
-        spellcheck: {
-            reflective: true,
-        },
-        style: {
-            attribute: 'style',
-            reflective: true,
-        },
-        tabIndex: {
-            attribute: 'tabindex',
-            reflective: true,
-        },
-        title: {
-            attribute: 'title',
-            reflective: true,
-        },
-        // additional global attributes that are not present in the link above.
-        role: {
-            attribute: 'role',
-        },
-        slot: {
-            attribute: 'slot',
-            error: 'Using the `slot` attribute is an anti-pattern.',
-        },
+export const globalHTMLProperties: {
+    [prop: string]: {
+        attribute?: string;
+        error?: string;
+        readOnly?: boolean;
     };
-}
-
-// TODO: complete this list with Element properties
-// https://developer.mozilla.org/en-US/docs/Web/API/Element
-
-// TODO: complete this list with Node properties
-// https://developer.mozilla.org/en-US/docs/Web/API/Node
+} = assign(create(null), {
+    id: {
+        attribute: 'id',
+    },
+    accessKey: {
+        attribute: 'accesskey',
+    },
+    accessKeyLabel: {
+        readOnly: true,
+    },
+    className: {
+        attribute: 'class',
+        error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
+    },
+    contentEditable: {
+        attribute: 'contenteditable',
+    },
+    isContentEditable: {
+        readOnly: true,
+    },
+    contextMenu: {
+        attribute: 'contextmenu',
+    },
+    dataset: {
+        readOnly: true,
+        error:
+            "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
+    },
+    dir: {
+        attribute: 'dir',
+    },
+    draggable: {
+        attribute: 'draggable',
+    },
+    dropzone: {
+        attribute: 'dropzone',
+        readOnly: true,
+    },
+    hidden: {
+        attribute: 'hidden',
+    },
+    itemScope: {
+        attribute: 'itemscope',
+    },
+    itemType: {
+        attribute: 'itemtype',
+        readOnly: true,
+    },
+    itemId: {
+        attribute: 'itemid',
+    },
+    itemRef: {
+        attribute: 'itemref',
+        readOnly: true,
+    },
+    itemProp: {
+        attribute: 'itemprop',
+        readOnly: true,
+    },
+    lang: {
+        attribute: 'lang',
+    },
+    offsetHeight: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetHeight'),
+    },
+    offsetLeft: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetLeft'),
+    },
+    offsetParent: {
+        readOnly: true,
+    },
+    offsetTop: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetTop'),
+    },
+    offsetWidth: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetWidth'),
+    },
+    spellcheck: {
+        attribute: 'spellcheck',
+    },
+    style: {
+        attribute: 'style',
+    },
+    tabIndex: {
+        attribute: 'tabindex',
+    },
+    title: {
+        attribute: 'title',
+    },
+    // additional global attributes that are not present in the link above.
+    role: {
+        attribute: 'role',
+    },
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` attribute is an anti-pattern.',
+    },
+});
 
 const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);
