@@ -31,14 +31,18 @@ describe('example-labels', () => {
     it('returns default label value as import path', () => {
         const element = createElement('example-labels', { is: Labels });
         document.body.appendChild(element);
-        const label = document.body.querySelector('.unmockedLabel').textContent;
+        const label = document.body
+            .querySelector('example-labels')
+            .shadowRoot.querySelector('.unmockedLabel').textContent;
         expect(label).toBe('c.unmocked');
     });
 
     it('returns value from mock defined in test file', () => {
         const element = createElement('example-labels', { is: Labels });
         document.body.appendChild(element);
-        const label = document.body.querySelector('.mockedLabel').textContent;
+        const label = document.body
+            .querySelector('example-labels')
+            .shadowRoot.querySelector('.mockedLabel').textContent;
         expect(label).toBe('value set in test');
     });
 });

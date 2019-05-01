@@ -1,0 +1,10 @@
+<template>
+    <slot></slot>
+    <input class="bar" name="baz" placeholder="integration-child">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" viewport="0 0 100 100">
+        <defs>
+           <circle id="blk-circle" class="blk-circle" r="10" cx="10" cy="10" fill="black"></circle>
+        </defs>
+        <use class="blk-circle-use" href="#blk-circle"></use>
+    </svg>
+</template>

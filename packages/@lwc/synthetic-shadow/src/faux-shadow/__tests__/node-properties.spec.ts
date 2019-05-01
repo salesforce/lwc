@@ -45,7 +45,9 @@ describe('patched node properties', () => {
             const rootElem = createElement('x-root', { is: RootElement });
             document.body.appendChild(rootElem);
             expect(nestedRootElement.parentNode).not.toBeNull();
-            expect(nestedRootElement.parentNode).toBe(document.querySelector('.expectedParent'));
+            expect(nestedRootElement.parentNode).toBe(
+                rootElem.shadowRoot.querySelector('.expectedParent')
+            );
             assertLogger.logError.mockRestore();
         });
         it('should fetch parentNode of nested root element when parent node marked as lwc:dom="manual"', () => {
@@ -77,7 +79,9 @@ describe('patched node properties', () => {
             const rootElem = createElement('x-root', { is: RootElement });
             document.body.appendChild(rootElem);
             expect(nestedRootElement.parentNode).not.toBeNull();
-            expect(nestedRootElement.parentNode).toBe(document.querySelector('.expectedParent'));
+            expect(nestedRootElement.parentNode).toBe(
+                rootElem.shadowRoot.querySelector('.expectedParent')
+            );
         });
     });
 });
