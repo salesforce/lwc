@@ -77,10 +77,11 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
     while (!isNull(parentNode)) {
-        let parentNodeObservers;
+        const parentNodeObservers = parentNode[observerLookupField];
         if (
-            !isUndefined((parentNodeObservers = parentNode[observerLookupField])) &&
-            ArrayIndexOf.call(parentNodeObservers, observer) !== -1
+            !isUndefined(parentNodeObservers) &&
+            (parentNodeObservers[0] === observer || // perf optimization to check for the first item is a match
+                ArrayIndexOf.call(parentNodeObservers, observer) !== -1)
         ) {
             return true;
         }
@@ -94,7 +95,7 @@ function isQualifiedObserver(observer: MutationObserver, target: Node): boolean 
  *
  * The key logic here is to determine if a given observer has been registered to observe any nodes
  * between the target node of a mutation record to the target's root node.
- * This function also retargets records when mutations occur directlt under the shadow root
+ * This function also retargets records when mutations occur directly under the shadow root
  * @param {MutationRecords[]} mutations
  * @param {MutationObserver} observer
  */
@@ -121,7 +122,8 @@ function filterMutationRecords(
                         // this will be the case for slot content
                         if (
                             target[observerLookupField] &&
-                            ArrayIndexOf.call(target[observerLookupField], observer) !== -1
+                            (target[observerLookupField][0] === observer ||
+                                ArrayIndexOf.call(target[observerLookupField], observer) !== -1)
                         ) {
                             ArrayPush.call(filteredSet, record);
                         } else {
@@ -142,7 +144,8 @@ function filterMutationRecords(
                     } else if (
                         shadowRoot &&
                         shadowRoot[observerLookupField] &&
-                        ArrayIndexOf.call(shadowRoot[observerLookupField], observer) !== -1
+                        (shadowRoot[observerLookupField][0] === observer ||
+                            ArrayIndexOf.call(shadowRoot[observerLookupField], observer) !== -1)
                     ) {
                         ArrayPush.call(filteredSet, retargetMutationRecord(record));
                     }
