@@ -511,8 +511,12 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                 }
                 assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
             },
-            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
-            set() {},
+            set() {
+                const { readOnly } = info[propName];
+                if (readOnly) {
+                    assert.logWarning(`The global HTML property \`${propName}\` is read-only.`);
+                }
+            },
         });
     });
     return descriptors;

@@ -79,7 +79,7 @@ export function getGlobalHTMLPropertiesInfo() {
         dataset: {
             readOnly: true,
             error:
-                "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. To expose the component's public API, use the `@api` decorator instead.",
+                "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
         },
         dir: {
             attribute: 'dir',

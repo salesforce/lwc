@@ -136,7 +136,7 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('it should be an Array or an iterable Object.');
+            }).toLogWarning('It must be an Array or an iterable Object.');
         });
     });
 
@@ -225,7 +225,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('This attribute can only be set to 0 or -1.');
+            }).toLogWarning('This attribute must be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
@@ -275,7 +275,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('This attribute can only be set to 0 or -1.');
+            }).toLogWarning('This attribute must be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
