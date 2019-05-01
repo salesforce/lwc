@@ -506,7 +506,7 @@ describe('html-element', () => {
             MyComponent.track = { state: 1 };
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
 
-            expect(() => document.body.appendChild(elm)).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogError();
         });
 
         it('should not log a warning when initializing api value to null', function() {
@@ -518,7 +518,7 @@ describe('html-element', () => {
             };
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
-            expect(() => document.body.appendChild(elm)).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogError();
         });
     });
 

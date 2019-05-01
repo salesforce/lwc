@@ -139,6 +139,9 @@ export const globalHTMLProperties: {
         readOnly: true,
         error: offsetPropertyErrorMessage('offsetWidth'),
     },
+    properties: {
+        readOnly: true,
+    },
     spellcheck: {
         attribute: 'spellcheck',
     },

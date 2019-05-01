@@ -82,7 +82,7 @@ function validateSlots(vm: VM, html: any) {
         if (ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(
+            assert.logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm.elm
             );
@@ -102,7 +102,7 @@ function validateFields(vm: VM, html: Template) {
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(
+            assert.logError(
                 `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
                 vm.elm
             );

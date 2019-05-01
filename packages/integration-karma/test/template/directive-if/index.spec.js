@@ -83,7 +83,7 @@ describe('if:true directive', () => {
             // Testing the start of the error message to not miss errors thrown for other reasons
             expect(() => {
                 child.show = true;
-            }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
             return Promise.resolve()
                 .then(() => {
                     const slot = child.shadowRoot.querySelector('slot');
@@ -93,13 +93,13 @@ describe('if:true directive', () => {
                     expect(assignedNodes[0]).toBe(assignedSlotContent);
                     expect(() => {
                         child.show = false;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
                 })
                 .then(() => {
                     expect(child.shadowRoot.querySelector('slot')).toBeNull();
                     expect(() => {
                         child.show = true;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
                 })
                 .then(() => {
                     const slot = child.shadowRoot.querySelector('slot');
@@ -121,19 +121,19 @@ describe('if:true directive', () => {
             // Testing the start of the error message to not miss errors thrown for other reasons
             expect(() => {
                 child.show = true;
-            }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
             return Promise.resolve()
                 .then(() => {
                     expect(child.querySelector('.content')).not.toBeNull();
                     expect(() => {
                         child.show = false;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
                 })
                 .then(() => {
                     expect(child.querySelector('.content')).toBeNull();
                     expect(() => {
                         child.show = true;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    }).toLogErrorDev(/\[LWC error\]: If property show decorated with @api.*/);
                 })
                 .then(() => {
                     expect(child.querySelector('.content')).not.toBeNull();

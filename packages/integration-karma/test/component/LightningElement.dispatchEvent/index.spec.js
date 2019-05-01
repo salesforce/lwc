@@ -56,7 +56,7 @@ it('should log warning when element is not connected', function() {
 
     expect(() => {
         elm.dispatch(new CustomEvent('event'));
-    }).toLogWarningDev(
+    }).toLogErrorDev(
         /\[LWC warning\]: Unreachable event "event" dispatched from disconnected element <x-test>. Events can only reach the parent element after the element is connected \(via connectedCallback\) and before the element is disconnected\(via disconnectedCallback\)./
     );
 });
@@ -68,7 +68,7 @@ function testInvalidEvent(reason, name) {
 
         expect(() => {
             elm.dispatch(new CustomEvent(name));
-        }).toLogWarningDev(
+        }).toLogErrorDev(
             new RegExp(
                 `\\[LWC warning\\]: Invalid event type "${name}" dispatched in element <x-test>\\. Event name should 1\\) Start with a lowercase letter 2\\) Only contain lowercase letters, numbers, and underscores`
             )
@@ -83,7 +83,7 @@ function testValidEvent(reason, name) {
 
         expect(() => {
             elm.dispatch(new CustomEvent(name));
-        }).not.toLogWarningDev();
+        }).not.toLogErrorDev();
     });
 }
 

@@ -100,5 +100,4 @@ function createMatcher(methodName) {
 
 module.exports = {
     toLogError: createMatcher('logError'),
-    toLogWarning: createMatcher('logWarning'),
 };

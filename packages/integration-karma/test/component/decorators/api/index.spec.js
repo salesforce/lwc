@@ -33,7 +33,7 @@ describe('properties', () => {
 
         expect(() => {
             elm.publicProp = new Map();
-        }).toLogWarningDev(
+        }).toLogErrorDev(
             /Assigning a non-reactive value \[.+\] to member property publicProp of \[.+\] is not common because mutations on that value cannot be observed\./
         );
     });
@@ -44,7 +44,7 @@ describe('properties', () => {
 
         expect(() => {
             elm.setPropertyManually('manual');
-        }).toLogWarningDev(
+        }).toLogErrorDev(
             /If property publicProp decorated with @api in \[.+\] is used in the template, the value manual set manually may be overridden by the template, consider binding the property only in the template\./
         );
     });
@@ -107,7 +107,7 @@ describe('getter/setter', () => {
 
         expect(() => {
             elm.setAccessorManually('manual');
-        }).toLogWarningDev(
+        }).toLogErrorDev(
             /If property publicAccessor decorated with @api in \[.+\] is used in the template, the value manual set manually may be overridden by the template, consider binding the property only in the template\./
         );
     });

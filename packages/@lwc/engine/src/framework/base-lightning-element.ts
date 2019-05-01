@@ -220,7 +220,7 @@ BaseLightningElement.prototype = {
             );
 
             if (vm.state !== VMState.connected) {
-                assert.logWarning(
+                assert.logError(
                     `Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(
                         this
                     )}. Events can reach the parent element only after the element is connected via connectedCallback and before the element is disconnected via disconnectedCallback.`,
@@ -229,7 +229,7 @@ BaseLightningElement.prototype = {
             }
 
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
-                assert.logWarning(
+                assert.logError(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
                     )}. Event name must ${[

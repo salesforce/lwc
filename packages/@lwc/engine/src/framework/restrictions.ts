@@ -504,12 +504,12 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
                 } else if (attribute) {
                     msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
-                assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
+                assert.logError(msg.join('\n'), getComponentVM(this).elm);
             },
             set() {
                 const { readOnly } = globalHTMLProperties[propName];
                 if (readOnly) {
-                    assert.logWarning(`The global HTML property \`${propName}\` is read-only.`);
+                    assert.logError(`The global HTML property \`${propName}\` is read-only.`);
                 }
             },
         });

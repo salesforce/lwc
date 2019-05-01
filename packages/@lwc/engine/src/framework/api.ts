@@ -270,7 +270,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
+            assert.logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
@@ -321,7 +321,7 @@ export function ti(value: any): number {
     const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
         if (shouldNormalize) {
-            assert.logWarning(
+            assert.logError(
                 `Invalid tabindex value \`${toString(
                     value
                 )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
@@ -392,7 +392,7 @@ export function c(
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
+            assert.logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
@@ -444,7 +444,7 @@ export function i(
     markAsDynamicChildren(list);
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logWarning(
+            assert.logError(
                 `Invalid template iteration for value "${toString(
                     iterable
                 )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,

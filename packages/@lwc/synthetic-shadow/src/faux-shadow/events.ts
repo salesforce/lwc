@@ -299,7 +299,7 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         addEventListener.call(elm, type, domListener);
     } else if (process.env.NODE_ENV !== 'production') {
         if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-            assert.logWarning(
+            assert.logError(
                 `${toString(
                     elm
                 )} has a duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`,
@@ -374,7 +374,7 @@ export function addCustomElementEventListener(
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {
-            assert.logWarning(
+            assert.logError(
                 'The `addEventListener` method in `LightningElement` does not support any options.',
                 elm
             );
@@ -410,7 +410,7 @@ export function addShadowRootEventListener(
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
         if (!isUndefined(options)) {
-            assert.logWarning(
+            assert.logError(
                 `The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed but received: ${toString(
                     options
                 )}`,
