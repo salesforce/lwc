@@ -1,7 +1,7 @@
 {
     "name": "@lwc/module-resolver",
     "description": "Resolves paths for LWC components",
-    "version": "0.38.1",
+    "version": "0.39.0",
     "main": "./dist/commonjs/index.js",
     "scripts": {
         "build": "tsc"
