@@ -168,8 +168,9 @@ function resetComponentStateWhenRemoved(vm: VM) {
     const { state } = vm;
     if (state !== VMState.disconnected) {
         runDisconnectedCallback(vm);
-        runLightChildNodesDisconnectedCallback(vm);
+        // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runShadowChildNodesDisconnectedCallback(vm);
+        runLightChildNodesDisconnectedCallback(vm);
     }
 }
 
@@ -470,24 +471,31 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
         const { cmpSlots } = vm;
         const slotNames = keys(cmpSlots);
         for (let i = 0, len = slotNames.length; i < len; i += 1) {
-            disconnectFirstBoundary(cmpSlots[slotNames[i]]);
+            recursivelyDisconnectChildren(cmpSlots[slotNames[i]]);
         }
     } else {
         const { children } = vm;
-        disconnectFirstBoundary(children);
+        recursivelyDisconnectChildren(children);
     }
 }
 
-function disconnectFirstBoundary(vnodes: VNodes) {
+/**
+ * The recursion doesn't need to be a complete traversal of the vnode graph,
+ * instead it can be partial, when a custom element vnode is found, we don't
+ * need to continue into its children because by attempting to disconnect the
+ * custom element itself will trigger the removal of anything slotted or anything
+ * defined on its shadow.
+ */
+function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode: VCustomElement | VNode | null = vnodes[i];
         if (!isNull(vnode) && isArray(vnode.children)) {
             // vnode is a VElement with children
             if (isUndefined((vnode as any).ctor)) {
                 // it is a VElement, just keep looking (recursively)
-                disconnectFirstBoundary(vnode.children);
+                recursivelyDisconnectChildren(vnode.children);
             } else {
-                // it is a VCustomElement
+                // it is a VCustomElement, disconnect it and ignore its children
                 resetComponentStateWhenRemoved(getCustomElementVM(vnode.elm as HTMLElement));
             }
         }
