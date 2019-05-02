@@ -489,7 +489,7 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
 function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode: VCustomElement | VNode | null = vnodes[i];
-        if (!isNull(vnode) && isArray(vnode.children)) {
+        if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
             // vnode is a VElement with children
             if (isUndefined((vnode as any).ctor)) {
                 // it is a VElement, just keep looking (recursively)
