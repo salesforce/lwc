@@ -1,0 +1,53 @@
+import { createElement } from 'test-utils';
+
+import Container from 'x/container';
+
+function resetTimingBuffer() {
+    window.timingBuffer = [];
+}
+
+beforeEach(() => {
+    resetTimingBuffer();
+});
+
+afterEach(() => {
+    delete window.timingBuffer;
+});
+
+it('should connect and disconnect on the right order (issue #1199 and #1198)', () => {
+    const elm = createElement('x-container', { is: Container });
+    document.body.appendChild(elm);
+
+    expect(window.timingBuffer).toEqual([
+        'parent:constructor',
+        'parent:connectedCallback',
+        'ownChild:constructor',
+        'ownChild:connectedCallback',
+        'grandChild:constructor',
+        'grandChild:connectedCallback',
+        'grandChild:renderedCallback',
+        'ownChild:renderedCallback',
+        'adoptedChild:constructor',
+        'adoptedChild:connectedCallback',
+        'grandChild:constructor',
+        'grandChild:connectedCallback',
+        'grandChild:renderedCallback',
+        'adoptedChild:renderedCallback',
+        'parent:renderedCallback',
+    ]);
+
+    resetTimingBuffer();
+    elm.hide = true;
+
+    return Promise.resolve().then(() => {
+        expect(window.timingBuffer).toEqual([
+            'parent:disconnectedCallback',
+            'ownChild:disconnectedCallback',
+            'grandChild:disconnectedCallback',
+            'adoptedChild:disconnectedCallback',
+            'grandChild:disconnectedCallback',
+        ]);
+
+        resetTimingBuffer();
+    });
+});
