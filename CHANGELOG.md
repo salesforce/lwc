@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.37.1...v) (2019-04-01)
+# [](https://github.com/salesforce/lwc/compare/v0.37.2...v) (2019-05-03)
+
+
+### Bug Fixes
+
+* **engine:** fixes [#1199](https://github.com/salesforce/lwc/issues/1199) and [#1198](https://github.com/salesforce/lwc/issues/1198) - disconnecting bug ([#1202](https://github.com/salesforce/lwc/issues/1202)) ([4ca6a3b](https://github.com/salesforce/lwc/commit/4ca6a3b))
+
+
+
+<a name="0.37.2"></a>
+## [0.37.2](https://github.com/salesforce/lwc/compare/v0.37.1...v0.37.2) (2019-04-01)
 
 
 ### Bug Fixes
