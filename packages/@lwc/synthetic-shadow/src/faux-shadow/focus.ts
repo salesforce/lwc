@@ -243,7 +243,8 @@ function keyboardFocusHandler(event: FocusEvent) {
     const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
     if (position === 1) {
         // Focus is coming from above
-        const first = ArrayFind.call(segments.inner, isTabbable);
+        const findTabbableElms = isTabbableFrom.bind(null, patchedGetRootNode.call(host));
+        const first = ArrayFind.call(segments.inner, findTabbableElms);
         if (!isUndefined(first)) {
             const win = getOwnerWindow(first);
             muteFocusEventsDuringExecution(win, () => {
