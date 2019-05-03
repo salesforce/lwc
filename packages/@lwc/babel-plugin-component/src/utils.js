@@ -82,7 +82,16 @@ function getEngineImportSpecifiers(path) {
 function generateError(source, { errorInfo, messageArgs } = {}) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
-
+    const location = (source.node && (source.node.loc || source.node._loc)) || null;
+    const filename =
+        (source.hub && source.hub.file && source.hub.file.opts && source.hub.file.opts.filename) ||
+        null;
+    if (location) {
+        error.location = location;
+    }
+    if (filename) {
+        error.filename = filename;
+    }
     error.lwcCode = errorInfo && errorInfo.code;
     return error;
 }
