@@ -32,7 +32,7 @@ describe('Tab navigation when tabindex 0', () => {
         assert.equal(tagName, 'INPUT');
     });
 
-    it.only('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function() {
+    it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function() {
         const lastInput = browser.execute(function() {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
