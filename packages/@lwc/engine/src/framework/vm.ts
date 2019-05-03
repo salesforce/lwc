@@ -28,6 +28,7 @@ import {
     defineProperty,
     StringToLowerCase,
     isFalse,
+    isArray,
 } from '../shared/language';
 import { getInternalField, getHiddenField } from '../shared/fields';
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
@@ -35,7 +36,7 @@ import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
 
-import { VNodeData, VNodes, VCustomElement } from '../3rdparty/snabbdom/types';
+import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
@@ -81,7 +82,10 @@ export interface UninitializedVM {
     /** Component state, analogous to Element.isConnected */
     state: VMState;
     data: VNodeData;
+    /** Shadow Children List */
     children: VNodes;
+    /** Adopted Children List */
+    aChildren: VNodes;
     velements: VCustomElement[];
     cmpTemplate?: Template;
     cmpProps: any;
@@ -164,8 +168,13 @@ function resetComponentStateWhenRemoved(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    runDisconnectedCallback(vm);
-    runChildrenDisconnectedCallback(vm);
+    const { state } = vm;
+    if (state !== VMState.disconnected) {
+        runDisconnectedCallback(vm);
+        // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
+        runShadowChildNodesDisconnectedCallback(vm);
+        runLightChildNodesDisconnectedCallback(vm);
+    }
 }
 
 // this method is triggered by the diffing algo only when a vnode from the
@@ -240,6 +249,7 @@ export function createVM(
         getHook,
         component: undefined,
         children: EmptyArray,
+        aChildren: EmptyArray,
         velements: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
@@ -406,10 +416,7 @@ function runConnectedCallback(vm: VM) {
 function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { state } = vm;
-    if (state === VMState.disconnected) {
-        return; // nothing to do since it was already disconnected
+        assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
@@ -439,13 +446,13 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runChildrenDisconnectedCallback(vm: VM) {
+function runShadowChildNodesDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     const { velements: vCustomElementCollection } = vm;
-    // reporting disconnection for every child
-    for (let i = 0, len = vCustomElementCollection.length; i < len; i += 1) {
+    // reporting disconnection for every child in inverse order since they are inserted in reserved order
+    for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
         const elm = vCustomElementCollection[i].elm;
         // There are two cases where the element could be undefined:
         // * when there is an error during the construction phase, and an
@@ -455,8 +462,38 @@ function runChildrenDisconnectedCallback(vm: VM) {
         //   into it, as a result, the custom element was never initialized.
         if (!isUndefined(elm)) {
             const childVM = getCustomElementVM(elm as HTMLElement);
-            runDisconnectedCallback(childVM);
-            runChildrenDisconnectedCallback(childVM);
+            resetComponentStateWhenRemoved(childVM);
+        }
+    }
+}
+
+function runLightChildNodesDisconnectedCallback(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+    }
+    const { aChildren: adoptedChildren } = vm;
+    recursivelyDisconnectChildren(adoptedChildren);
+}
+
+/**
+ * The recursion doesn't need to be a complete traversal of the vnode graph,
+ * instead it can be partial, when a custom element vnode is found, we don't
+ * need to continue into its children because by attempting to disconnect the
+ * custom element itself will trigger the removal of anything slotted or anything
+ * defined on its shadow.
+ */
+function recursivelyDisconnectChildren(vnodes: VNodes) {
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode: VCustomElement | VNode | null = vnodes[i];
+        if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
+            // vnode is a VElement with children
+            if (isUndefined((vnode as any).ctor)) {
+                // it is a VElement, just keep looking (recursively)
+                recursivelyDisconnectChildren(vnode.children);
+            } else {
+                // it is a VCustomElement, disconnect it and ignore its children
+                resetComponentStateWhenRemoved(getCustomElementVM(vnode.elm as HTMLElement));
+            }
         }
     }
 }
@@ -479,7 +516,7 @@ export function resetShadowRoot(vm: VM) {
         ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     }
     // disconnecting any known custom element inside the shadow of the this vm
-    runChildrenDisconnectedCallback(vm);
+    runShadowChildNodesDisconnectedCallback(vm);
 }
 
 export function scheduleRehydration(vm: VM) {
