@@ -82,7 +82,10 @@ export interface UninitializedVM {
     /** Component state, analogous to Element.isConnected */
     state: VMState;
     data: VNodeData;
+    /** Shadow Children List */
     children: VNodes;
+    /** Adopted Children List */
+    aChildren: VNodes;
     velements: VCustomElement[];
     cmpTemplate?: Template;
     cmpProps: any;
@@ -246,6 +249,7 @@ export function createVM(
         getHook,
         component: undefined,
         children: EmptyArray,
+        aChildren: EmptyArray,
         velements: EmptyArray,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
@@ -467,16 +471,8 @@ function runLightChildNodesDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    if (isTrue(vm.fallback)) {
-        const { cmpSlots } = vm;
-        const slotNames = keys(cmpSlots);
-        for (let i = 0, len = slotNames.length; i < len; i += 1) {
-            recursivelyDisconnectChildren(cmpSlots[slotNames[i]]);
-        }
-    } else {
-        const { children } = vm;
-        recursivelyDisconnectChildren(children);
-    }
+    const { aChildren: adoptedChildren } = vm;
+    recursivelyDisconnectChildren(adoptedChildren);
 }
 
 /**

@@ -17,7 +17,7 @@ import {
     appendVM,
     runWithBoundaryProtection,
 } from './vm';
-import { VNode, VNodes, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
+import { VNode, VCustomElement, VElement } from '../3rdparty/snabbdom/types';
 import { nodeValueSetter, insertBefore, removeChild } from '../env/node';
 import modEvents from './modules/events';
 import modAttrs from './modules/attrs';
@@ -151,11 +151,12 @@ export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
 }
 
 export function allocateChildrenHook(vnode: VCustomElement) {
+    const elm = vnode.elm as HTMLElement;
+    const vm = getCustomElementVM(elm);
+    const { children } = vnode;
+    vm.aChildren = children;
     if (isTrue(vnode.owner.fallback)) {
         // slow path
-        const elm = vnode.elm as HTMLElement;
-        const vm = getCustomElementVM(elm);
-        const children = vnode.children as VNodes;
         allocateInSlot(vm, children);
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
