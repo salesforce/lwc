@@ -40,7 +40,7 @@ describe('Component with a wired method', () => {
                 });
                 return todoText.value === 'Title:task 1 Completed:false';
             },
-            500,
+            1000,
             'Should update todo id'
         );
     });

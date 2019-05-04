@@ -1,6 +1,7 @@
 import { createElement } from 'test-utils';
 import XTest from 'x/test';
 import XSlotted from 'x/slotted';
+import NestedRenderConditional from 'x/nestedRenderConditional';
 
 describe('if:true directive', () => {
     it('should render if the value is truthy', () => {
@@ -17,6 +18,21 @@ describe('if:true directive', () => {
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('.true')).toBeNull();
+    });
+
+    it('should remove element within a nested conditional', () => {
+        const elm = createElement('x-nested-render-conditional', { is: NestedRenderConditional });
+        document.body.appendChild(elm);
+
+        const elementToggler = elm.shadowRoot.querySelector('.click-me');
+
+        elementToggler.click();
+
+        return Promise.resolve().then(() => {
+            const elementInsideNestedCondition = elm.shadowRoot.querySelector('.toggle');
+
+            expect(elementInsideNestedCondition).toBeNull();
+        });
     });
 
     it('should update if the value change', () => {
