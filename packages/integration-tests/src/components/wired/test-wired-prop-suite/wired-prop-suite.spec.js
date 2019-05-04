@@ -38,7 +38,7 @@ describe('Component with a wired property', () => {
                 });
                 return todoText.value === 'Title:task 1 Completed:false';
             },
-            500,
+            1000,
             'expect todo item to be updated'
         );
     });
