@@ -42,6 +42,7 @@ import {
     focusEventRelatedTargetGetter,
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
+import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
@@ -140,7 +141,8 @@ interface QuerySegments {
 }
 
 function getTabbableSegments(host: HTMLElement): QuerySegments {
-    const all = documentQuerySelectorAll.call(document, TabbableElementsQuery);
+    const doc = getOwnerDocument(host);
+    const all = documentQuerySelectorAll.call(doc, TabbableElementsQuery);
     const inner = ArraySlice.call(querySelectorAll.call(host, TabbableElementsQuery));
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -169,7 +171,8 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
 }
 
 export function getActiveElement(host: HTMLElement): Element | null {
-    const activeElement = DocumentPrototypeActiveElement.call(document);
+    const doc = getOwnerDocument(host);
+    const activeElement = DocumentPrototypeActiveElement.call(doc);
     if (isNull(activeElement)) {
         return activeElement;
     }
@@ -211,16 +214,17 @@ function muteEvent(event) {
     event.preventDefault();
     event.stopPropagation();
 }
-function muteFocusEventsDuringExecution(func: Function) {
-    windowAddEventListener.call(window, 'focusin', muteEvent, true);
-    windowAddEventListener.call(window, 'focusout', muteEvent, true);
+function muteFocusEventsDuringExecution(win: Window, func: Function) {
+    windowAddEventListener.call(win, 'focusin', muteEvent, true);
+    windowAddEventListener.call(win, 'focusout', muteEvent, true);
     func();
-    windowRemoveEventListener.call(window, 'focusin', muteEvent, true);
-    windowRemoveEventListener.call(window, 'focusout', muteEvent, true);
+    windowRemoveEventListener.call(win, 'focusin', muteEvent, true);
+    windowRemoveEventListener.call(win, 'focusout', muteEvent, true);
 }
 
 function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    muteFocusEventsDuringExecution(() => {
+    const win = getOwnerWindow(focusEventTarget as Node);
+    muteFocusEventsDuringExecution(win, () => {
         const nextNode = getNextTabbableElement(segments);
         if (isNull(nextNode)) {
             // nothing to focus on, blur to invalidate the operation
@@ -232,7 +236,8 @@ function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegment
 }
 
 function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    muteFocusEventsDuringExecution(() => {
+    const win = getOwnerWindow(focusEventTarget as Node);
+    muteFocusEventsDuringExecution(win, () => {
         const prevNode = getPreviousTabbableElement(segments);
         if (isNull(prevNode)) {
             // nothing to focus on, blur to invalidate the operation
@@ -277,7 +282,8 @@ function keyboardFocusHandler(event: FocusEvent) {
         // probably tabbing into element
         const first = getFirstTabbableMatch(segments.inner);
         if (!isNull(first)) {
-            muteFocusEventsDuringExecution(() => {
+            const win = getOwnerWindow(host as HTMLElement);
+            muteFocusEventsDuringExecution(win, () => {
                 first.focus();
             });
         } else {
@@ -337,8 +343,9 @@ function keyboardFocusInHandler(event: FocusEvent) {
 }
 
 function willTriggerFocusInEvent(target: HTMLElement): boolean {
+    const doc = getOwnerDocument(target);
     return (
-        target !== DocumentPrototypeActiveElement.call(document) && isFocusable(target) // if the element is currently active, it will not fire a focusin event
+        target !== DocumentPrototypeActiveElement.call(doc) && isFocusable(target) // if the element is currently active, it will not fire a focusin event
     );
 }
 
