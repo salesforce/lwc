@@ -20,7 +20,6 @@ export interface TemplateTransformResult {
     map: {
         mappings: string;
     };
-    metadata: TemplateMetadata;
 }
 
 /**
