@@ -45,6 +45,7 @@ import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { getInternalChildNodes } from './node';
 import { innerHTMLSetter } from '../env/element';
+import { getOwnerDocument } from '../shared/utils';
 
 const InternalSlot = createFieldName('shadowRecord');
 const { createDocumentFragment } = document;
@@ -91,7 +92,8 @@ export function attachShadow(
     }
     const { mode, delegatesFocus } = options;
     // creating a real fragment for shadowRoot instance
-    const sr = createDocumentFragment.call(document) as SyntheticShadowRootInterface;
+    const doc = getOwnerDocument(elm);
+    const sr = createDocumentFragment.call(doc) as SyntheticShadowRootInterface;
     // creating shadow internal record
     const record: ShadowRootRecord = {
         mode,
@@ -131,12 +133,13 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         get(this: SyntheticShadowRootInterface): Element | null {
-            const activeElement = DocumentPrototypeActiveElement.call(document);
+            const host = getHost(this);
+            const doc = getOwnerDocument(host);
+            const activeElement = DocumentPrototypeActiveElement.call(doc);
             if (isNull(activeElement)) {
                 return activeElement;
             }
 
-            const host = getHost(this);
             if (
                 (compareDocumentPosition.call(host, activeElement) &
                     DOCUMENT_POSITION_CONTAINED_BY) ===
@@ -172,7 +175,9 @@ const ShadowRootDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, left: number, top: number) {
-            const element = elementFromPoint.call(document, left, top);
+            const host = getHost(this);
+            const doc = getOwnerDocument(host);
+            const element = elementFromPoint.call(doc, left, top);
             if (isNull(element)) {
                 return element;
             }
@@ -564,8 +569,9 @@ export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
     if (!isUndefined(c)) {
         return c;
     }
+    const doc = getOwnerDocument(host);
     // @ts-ignore $$placeholder$$ is fine, read the node above.
-    c = shadowRoot.$$placeholder$$ = createComment.call(document, '');
+    c = shadowRoot.$$placeholder$$ = createComment.call(doc, '');
     defineProperties(c, {
         childNodes: {
             get() {

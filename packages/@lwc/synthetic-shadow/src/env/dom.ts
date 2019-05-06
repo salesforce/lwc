@@ -23,12 +23,12 @@ const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPro
     'contentWindow'
 )!.get!;
 
-const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(
+const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,
     'target'
 )!.get!;
 
-const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnPropertyDescriptor(
+const eventCurrentTargetGetter: (this: Event) => EventTarget | null = getOwnPropertyDescriptor(
     Event.prototype,
     'currentTarget'
 )!.get!;

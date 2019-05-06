@@ -31,21 +31,22 @@ import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 
 export default function apply() {
-    function elemFromPoint(left: number, top: number): Element | null {
-        const element = elementFromPoint.call(document, left, top);
+    function elemFromPoint(this: Document, left: number, top: number) {
+        const element = elementFromPoint.call(this, left, top);
         if (isNull(element)) {
             return element;
         }
 
-        return retarget(document, pathComposer(element, true)) as (Element | null);
+        return retarget(this, pathComposer(element, true)) as Element | null;
     }
 
     // https://github.com/Microsoft/TypeScript/issues/14139
-    document.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
+    Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
 
     // Go until we reach to top of the LWC tree
+    // TODO: this should be patched on Document.prototype instead
     defineProperty(document, 'activeElement', {
-        get(): Element | null {
+        get(this: Document): Element | null {
             let node = DocumentPrototypeActiveElement.call(this);
 
             if (isNull(node)) {
@@ -60,7 +61,7 @@ export default function apply() {
             }
             if (node.tagName === 'HTML') {
                 // IE 11. Active element should never be html element
-                node = document.body;
+                node = this.body;
             }
 
             return node;

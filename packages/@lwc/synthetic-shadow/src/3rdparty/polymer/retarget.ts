@@ -7,6 +7,7 @@
 import { pathComposer } from './path-composer';
 import { patchedGetRootNode } from './../../faux-shadow/traverse';
 import { SyntheticShadowRoot } from './../../faux-shadow/shadow-root';
+import { isNull } from '../../shared/language';
 
 /**
 @license
@@ -17,14 +18,17 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-export function retarget(refNode: Node, path: Node[]): EventTarget | null {
+export function retarget(refNode: EventTarget | null, path: EventTarget[]): EventTarget | null {
+    if (isNull(refNode)) {
+        return null;
+    }
     // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
     // shadow-including inclusive ancestor, return ANCESTOR.
     const refNodePath = pathComposer(refNode, true);
     const p$ = path;
-    for (let i = 0, ancestor, lastRoot, root, rootIdx; i < p$.length; i++) {
+    for (let i = 0, ancestor, lastRoot, root: Window | Node, rootIdx; i < p$.length; i++) {
         ancestor = p$[i];
-        root = ancestor === window ? window : patchedGetRootNode.call(ancestor);
+        root = ancestor instanceof Window ? ancestor : patchedGetRootNode.call(ancestor);
         if (root !== lastRoot) {
             rootIdx = refNodePath.indexOf(root);
             lastRoot = root;
