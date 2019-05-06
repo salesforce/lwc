@@ -7,5 +7,9 @@
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
 export default function apply() {
-    (window as any).ShadowRoot = SyntheticShadowRoot;
+    Object.defineProperty(window, 'ShadowRoot', {
+        value: SyntheticShadowRoot,
+        configurable: true,
+        writable: true,
+    });
 }

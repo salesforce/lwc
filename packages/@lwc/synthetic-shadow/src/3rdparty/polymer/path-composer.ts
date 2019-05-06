@@ -7,6 +7,7 @@
 
 import { DOCUMENT_FRAGMENT_NODE } from './../../env/node';
 import { patchedGetRootNode } from './../../faux-shadow/traverse';
+import { getOwnerDocument } from '../../shared/utils';
 
 /**
 @license
@@ -17,10 +18,10 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-export function pathComposer(startNode: Node, composed: boolean): Node[] {
+export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: HTMLElement[] = [];
     let current = startNode;
-    const startRoot = (startNode as any) === window ? window : patchedGetRootNode.call(startNode);
+    const startRoot = startNode instanceof Window ? startNode : patchedGetRootNode.call(startNode);
     while (current) {
         composedPath.push(current as HTMLElement);
         if ((current as HTMLElement).assignedSlot) {
@@ -35,8 +36,14 @@ export function pathComposer(startNode: Node, composed: boolean): Node[] {
             current = (current as HTMLElement).parentNode as any;
         }
     }
+    let doc: Document;
+    if (startNode instanceof Window) {
+        doc = startNode.document;
+    } else {
+        doc = getOwnerDocument(startNode as Node);
+    }
     // event composedPath includes window when startNode's ownerRoot is document
-    if ((composedPath[composedPath.length - 1] as any) === document) {
+    if ((composedPath[composedPath.length - 1] as any) === doc) {
         composedPath.push(window as any);
     }
     return composedPath;
