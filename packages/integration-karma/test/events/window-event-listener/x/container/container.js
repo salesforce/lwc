@@ -1,6 +1,6 @@
 import { LightningElement, track } from 'lwc';
 
-export default class WindowEventListener extends LightningElement {
+export default class Container extends LightningElement {
     @track windowEventTargetTagName = '';
     connectedCallback() {
         window.addEventListener('click', evt => {
