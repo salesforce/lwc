@@ -18,4 +18,22 @@ describe('Event target in slot elements', () => {
             expect(elementWithResult.innerText).toBe('Event target is correct');
         });
     });
+
+    it('should receive event with correct target for slotted native element', function() {
+        const elm = createElement('x-container', { is: Container });
+        elm.isNativeElement = true;
+        document.body.appendChild(elm);
+
+        const trigger = elm.shadowRoot.querySelector('p');
+        trigger.click();
+
+        return Promise.resolve().then(() => {
+            const elementWithResult = elm.shadowRoot
+                .querySelector('x-slotted-native-element')
+                .shadowRoot.querySelector('.correct-event-target');
+
+            expect(elementWithResult).not.toBeNull();
+            expect(elementWithResult.innerText).toBe('Event target is correct');
+        });
+    });
 });
