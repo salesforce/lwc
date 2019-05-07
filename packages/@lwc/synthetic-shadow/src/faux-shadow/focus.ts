@@ -28,7 +28,6 @@ import {
     ArrayIndexOf,
     ArrayReverse,
     ArraySlice,
-    getOwnPropertyDescriptor,
     hasOwnProperty,
     isFalse,
     isNull,
@@ -299,19 +298,13 @@ function keyboardFocusInHandler(event: FocusEvent) {
     }
 }
 
-// TODO: Refactor this once #1192 is merged
-const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
-    Node.prototype,
-    'ownerDocument'
-)!.get!;
-
 // Use this function to determine whether you can start from one root and end up
 // at another element via tabbing.
 function isTabbableFrom(fromRoot: Node, toElm: HTMLElement): boolean {
     if (!isTabbable(toElm)) {
         return false;
     }
-    const ownerDocument = ownerDocumentGetter.call(toElm);
+    const ownerDocument = getOwnerDocument(toElm);
     let root = patchedGetRootNode.call(toElm);
     while (root !== ownerDocument && root !== fromRoot) {
         const sr = root as ShadowRoot;
