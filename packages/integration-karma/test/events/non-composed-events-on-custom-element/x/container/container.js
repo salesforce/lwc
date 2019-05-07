@@ -1,6 +1,6 @@
 import { LightningElement, track } from 'lwc';
 
-export default class ComposedEvents extends LightningElement {
+export default class Container extends LightningElement {
     @track eventReceived = false;
     @track customEventReceived = false;
 
