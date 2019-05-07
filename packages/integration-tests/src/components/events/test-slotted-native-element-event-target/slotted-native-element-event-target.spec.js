@@ -13,12 +13,13 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function() {
-        browser.execute(function() {
-            document
+        const p = browser.execute(function() {
+            return document
                 .querySelector('integration-slotted-native-element-event-target')
-                .shadowRoot.querySelector('p')
-                .click();
+                .shadowRoot.querySelector('p');
         });
+        p.click();
+
         browser.waitUntil(
             () => {
                 var child = browser.execute(function() {
