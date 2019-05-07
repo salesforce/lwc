@@ -5,14 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import {
-    isUndefined,
-    create,
-    emptyString,
-    isArray,
-    forEach,
-    ArrayReduce,
-} from '../shared/language';
+import { isUndefined, create, emptyString, isArray, forEach } from '../shared/language';
 import { VNode } from '../3rdparty/snabbdom/types';
 
 import * as api from './api';
@@ -106,6 +99,16 @@ export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttrib
     context.shadowAttribute = shadowAttribute;
 }
 
+function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative, fn) {
+    forEach.call(stylesheets, sheet => {
+        if (isArray(sheet)) {
+            collectStylesheets(sheet, hostSelector, shadowSelector, isNative, fn);
+        } else {
+            fn(sheet(hostSelector, shadowSelector, isNative));
+        }
+    });
+}
+
 export function evaluateCSS(
     vm: VM,
     stylesheets: StylesheetFactory[],
@@ -123,8 +126,7 @@ export function evaluateCSS(
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 
-        forEach.call(stylesheets, stylesheet => {
-            const textContent = stylesheet(hostSelector, shadowSelector, false);
+        collectStylesheets(stylesheets, hostSelector, shadowSelector, false, textContent => {
             insertGlobalStyle(textContent);
         });
 
@@ -132,13 +134,12 @@ export function evaluateCSS(
     } else {
         // Native shadow in place, we need to act accordingly by using the `:host` selector, and an
         // empty shadow selector since it is not really needed.
-        const textContent = ArrayReduce.call(
-            stylesheets,
-            (buffer, stylesheet) => {
-                return buffer + stylesheet(emptyString, emptyString, true);
-            },
-            ''
-        ) as string;
-        return createStyleVNode(getCachedStyleElement(textContent));
+
+        let buffer = '';
+        collectStylesheets(stylesheets, emptyString, emptyString, true, textContent => {
+            buffer += textContent;
+        });
+
+        return createStyleVNode(getCachedStyleElement(buffer));
     }
 }
