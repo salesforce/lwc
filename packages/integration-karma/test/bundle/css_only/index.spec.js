@@ -11,9 +11,9 @@ describe('CSS only modules', () => {
             expect(p).not.toBeNull();
 
             const styles = window.getComputedStyle(p);
-            expect(styles.border).toContain('1px solid');
+            expect(styles.borderBottomStyle).toContain('dashed');
             expect(styles.color).toContain('rgb(255, 0, 0)');
-            expect(styles.background).toContain('rgb(138, 43, 226)');
+            expect(styles.backgroundColor).toContain('rgb(138, 43, 226)');
         });
     });
 });
