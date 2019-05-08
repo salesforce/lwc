@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Transform property throws if track decorator is applied to a class method 1`] = `
+Object {
+  "end": Object {
+    "column": 6,
+    "line": 4,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 4,
+  },
+}
+`;
+
+exports[`Transform property throws if track decorator is applied to a getter 1`] = `
+Object {
+  "end": Object {
+    "column": 6,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 3,
+  },
+}
+`;
+
+exports[`Transform property throws if track decorator is applied to a setter 1`] = `
+Object {
+  "end": Object {
+    "column": 6,
+    "line": 4,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 4,
+  },
+}
+`;

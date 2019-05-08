@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`decorators compiler should throw when "api" decorator was not imported from lwc 1`] = `
+Object {
+  "end": Object {
+    "column": 20,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 3,
+  },
+}
+`;
+
+exports[`decorators compiler should throw when "track" decorator was not imported from lwc 1`] = `
+Object {
+  "end": Object {
+    "column": 22,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 3,
+  },
+}
+`;
+
+exports[`decorators compiler should throw when "wire" decorator was not imported from lwc 1`] = `
+Object {
+  "end": Object {
+    "column": 10,
+    "line": 5,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 4,
+  },
+}
+`;
+
+exports[`decorators should throw if an global decorator is used on class field 1`] = `
+Object {
+  "end": Object {
+    "column": 18,
+    "line": 2,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 2,
+  },
+}
+`;
+
+exports[`decorators should throw if an global decorator is used on class methods 1`] = `
+Object {
+  "end": Object {
+    "column": 9,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 2,
+  },
+}
+`;
+
+exports[`decorators throws if a decorator is dereferenced 1`] = `
+Object {
+  "end": Object {
+    "column": 20,
+    "line": 2,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 2,
+  },
+}
+`;
+
+exports[`decorators throws if a decorator is not used on class properties 1`] = `
+Object {
+  "end": Object {
+    "column": 12,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 2,
+  },
+}
+`;
+
+exports[`decorators throws if a decorator is used as a function 1`] = `
+Object {
+  "end": Object {
+    "column": 11,
+    "line": 2,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 2,
+  },
+}
+`;

@@ -94,10 +94,6 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@track decorator can only be applied to class properties.',
-                loc: {
-                    line: 2,
-                    column: 11,
-                },
             },
         }
     );
@@ -117,10 +113,6 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@track decorator can only be applied to class properties.',
-                loc: {
-                    line: 4,
-                    column: 11,
-                },
             },
         }
     );
@@ -140,10 +132,6 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@track decorator can only be applied to class properties.',
-                loc: {
-                    line: 4,
-                    column: 11,
-                },
             },
         }
     );

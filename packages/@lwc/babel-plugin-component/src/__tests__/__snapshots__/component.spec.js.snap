@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Element import throws if using default import on lwc 1`] = `
+Object {
+  "end": Object {
+    "column": 13,
+    "line": 1,
+  },
+  "start": Object {
+    "column": 7,
+    "line": 1,
+  },
+}
+`;
+
+exports[`Element import throws if using namespace import on lwc 1`] = `
+Object {
+  "end": Object {
+    "column": 18,
+    "line": 1,
+  },
+  "start": Object {
+    "column": 7,
+    "line": 1,
+  },
+}
+`;
+
+exports[`Element import throws non-whitelisted lwc api is imported 1`] = `
+Object {
+  "end": Object {
+    "column": 23,
+    "line": 3,
+  },
+  "start": Object {
+    "column": 0,
+    "line": 1,
+  },
+}
+`;
