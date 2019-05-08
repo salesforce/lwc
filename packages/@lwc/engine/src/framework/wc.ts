@@ -11,13 +11,11 @@ import {
     isNull,
     getOwnPropertyNames,
     isTrue,
-    isFalse,
     ArrayMap,
 } from '../shared/language';
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
-import { isNativeShadowRootAvailable } from '../env/dom';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { patchCustomElementProto } from './patch';
 import { HTMLElementConstructor } from './base-bridge-element';
@@ -41,7 +39,7 @@ export function buildCustomElementConstructor(
             normalizedOptions.mode = mode;
         }
         // fallback defaults to false to favor shadowRoot
-        normalizedOptions.fallback = isTrue(fallback) || isFalse(isNativeShadowRootAvailable);
+        normalizedOptions.fallback = isTrue(fallback);
     }
     return class extends BaseElement {
         constructor() {

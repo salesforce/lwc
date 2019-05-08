@@ -216,7 +216,7 @@ function getShadowRootRestrictionsDescriptors(
     }
     // blacklisting properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
-    // the component will not work when running in fallback mode.
+    // the component will not work when running with synthetic shadow.
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
     const originalAddEventListener = sr.addEventListener;

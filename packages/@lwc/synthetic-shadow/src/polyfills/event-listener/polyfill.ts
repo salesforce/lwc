@@ -100,11 +100,7 @@ function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture)
     nativeRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
 
-addEventListener.__lwcOriginal__ = nativeAddEventListener;
-removeEventListener.__lwcOriginal__ = nativeRemoveEventListener;
-windowAddEventListener.__lwcOriginal__ = nativeWindowAddEventListener;
-windowRemoveEventListener.__lwcOriginal__ = nativeWindowRemoveEventListener;
-
+// TODO: these patches should be on EventTarget.prototype instead of win and node protos
 function windowPatchListeners() {
     window.addEventListener = windowAddEventListener;
     window.removeEventListener = windowRemoveEventListener;

@@ -32,7 +32,14 @@ function createEnvFile(lwcConfig) {
         `    }`,
         `};`,
     ];
-
+    if (!lwcConfig.nativeShadow) {
+        // inserting the shadow dom polyfill as part of the environment
+        const file = require.resolve(
+            `@lwc/synthetic-shadow/dist/umd/${lwcConfig.compat ? 'es5' : 'es2017'}/shadow.js`
+        );
+        const shadowPolyfillSrc = fs.readFileSync(file);
+        content.push('\n', shadowPolyfillSrc);
+    }
     fs.writeFileSync(ENV_FILENAME, content.join('\n'));
 }
 

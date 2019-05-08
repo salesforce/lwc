@@ -8,8 +8,6 @@
 // Polyfills
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
-// TODO: tbis should not be included here
-import '@lwc/synthetic-shadow';
 
 // TODO: Revisit all of this exports figure out a better separation
 export { createElement } from './upgrade';

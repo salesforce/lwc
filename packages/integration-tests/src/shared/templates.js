@@ -64,6 +64,15 @@ const COMPAT = `
     <script src="../../shared/downgrade.js"></script>
     <script src="../../shared/polyfills.js"></script>
 `;
+const SHADOW_POLYFILL = `
+    <script>
+    var fallback = location.search.indexOf('nativeShadow=true') === -1 ? true : false;
+    if (fallback) {
+        /** shadow dom polyfill is needed, this hack evaluate it before engine */
+        document.write('<s' + 'cript src="../../shared/shadow.js"></scr' + 'ipt>');
+    }
+    </script>
+`;
 
 exports.html = function(cmpName, isCompat) {
     return `
@@ -72,6 +81,7 @@ exports.html = function(cmpName, isCompat) {
                 <title>${cmpName}</title>
             </head>
             <body>
+                ${SHADOW_POLYFILL}
                 ${isCompat ? COMPAT : ''}
                 <script src="../../shared/engine.js"></script>
                 <script src="./${cmpName}.js"></script>

@@ -6,11 +6,7 @@
  */
 const { CustomEvent: OriginalCustomEvent } = window as any;
 
-export function PatchedCustomEvent(
-    this: Event,
-    type: string,
-    eventInitDict: CustomEventInit<any>
-): Event {
+function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
     const event = new OriginalCustomEvent(type, eventInitDict);
     // support for composed on custom events
     Object.defineProperties(event, {

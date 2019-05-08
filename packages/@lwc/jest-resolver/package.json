@@ -13,6 +13,7 @@
     "license": "MIT",
     "devDependencies": {
         "@lwc/engine": "0.39.1",
+        "@lwc/synthetic-shadow": "0.39.1",
         "@lwc/jest-transformer": "0.39.1",
         "@lwc/module-resolver": "0.39.1",
         "@lwc/wire-service": "0.39.1"

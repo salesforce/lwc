@@ -48,13 +48,12 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { tagNameGetter, innerHTMLSetter } from '../env/element';
+import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 
 // Object of type ShadowRoot for instance checks
-const NativeShadowRoot = (window as any).ShadowRoot;
-const isNativeShadowRootAvailable = typeof NativeShadowRoot !== 'undefined';
+const GlobalShadowRoot = (window as any).ShadowRoot;
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -500,15 +499,8 @@ export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    const { fallback } = vm;
     vm.children = EmptyArray;
-    if (isTrue(fallback)) {
-        // synthetic-shadow does not have a real cmpRoot instance, instead
-        // we need to remove the content of the host entirely
-        innerHTMLSetter.call(vm.elm, '');
-    } else {
-        ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
-    }
+    ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     // disconnecting any known custom element inside the shadow of the this vm
     runShadowChildNodesDisconnectedCallback(vm);
 }
@@ -579,9 +571,7 @@ export function getErrorComponentStack(startingElement: Element): string {
 function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
     // If this is a shadow root, find the host instead
-    return isNull(parentElement) && isNativeShadowRootAvailable
-        ? getHostElement(elm)
-        : parentElement;
+    return isNull(parentElement) ? getHostElement(elm) : parentElement;
 }
 
 /**
@@ -590,16 +580,12 @@ function getParentOrHostElement(elm: Element): Element | null {
 function getHostElement(elm: Element): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            isNativeShadowRootAvailable,
-            'getHostElement should only be called if native shadow root is available'
-        );
-        assert.isTrue(
             isNull(parentElementGetter.call(elm)),
             `getHostElement should only be called if the parent element of ${elm} is null`
         );
     }
     const parentNode = parentNodeGetter.call(elm);
-    return parentNode instanceof NativeShadowRoot
+    return parentNode instanceof GlobalShadowRoot
         ? ShadowRootHostGetter.call(parentNode as unknown)
         : null;
 }
@@ -626,10 +612,6 @@ export function setNodeOwnerKey(node: Node, value: number) {
         // in prod, for better perf, we just let it roll
         node[OwnerKey] = value;
     }
-}
-
-export function getNodeKey(node: Node): number | undefined {
-    return node[OwnKey];
 }
 
 export function setNodeKey(node: Node, value: number) {

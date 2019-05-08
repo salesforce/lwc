@@ -12,21 +12,17 @@ import {
     isObject,
     isFunction,
     isTrue,
-    isFalse,
     toString,
 } from '../shared/language';
-import {
-    createVM,
-    removeRootVM,
-    appendRootVM,
-    getCustomElementVM,
-    getNodeKey,
-    VMState,
-} from './vm';
+import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
-import { EmptyObject, isCircularModuleDependency, resolveCircularModuleDependency } from './utils';
+import {
+    EmptyObject,
+    isCircularModuleDependency,
+    resolveCircularModuleDependency,
+    ViewModelReflection,
+} from './utils';
 import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
-import { isNativeShadowRootAvailable } from '../env/dom';
 import { patchCustomElementProto } from './patch';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
@@ -106,14 +102,11 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
 
     const mode = options.mode !== 'closed' ? 'open' : 'closed';
-    const fallback =
-        isUndefined(options.fallback) ||
-        isTrue(options.fallback) ||
-        isFalse(isNativeShadowRootAvailable);
+    const fallback = isUndefined(options.fallback) || isTrue(options.fallback);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getNodeKey(element))) {
+    if (!isUndefined(getInternalField(element, ViewModelReflection))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.

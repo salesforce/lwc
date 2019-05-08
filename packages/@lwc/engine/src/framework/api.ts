@@ -331,9 +331,7 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (isTrue(vnode.owner.fallback)) {
-        markAsDynamicChildren(children);
-    }
+    markAsDynamicChildren(children);
     return vnode;
 }
 

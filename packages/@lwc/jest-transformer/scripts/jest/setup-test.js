@@ -6,8 +6,8 @@
  */
 
 /**
- * Always polyfill the MutationObserver.
- */
-export default function detect(): boolean {
-    return true;
-}
+ * JEST doesn't support Web Components APIs, instead we need to
+ * polyfill it with out synthetic shadow.
+ **/
+
+require('@lwc/synthetic-shadow');

@@ -11,6 +11,7 @@
     "devDependencies": {
         "@lwc/compiler": "0.39.1",
         "@lwc/engine": "0.39.1",
+        "@lwc/synthetic-shadow": "0.39.1",
         "@lwc/rollup-plugin": "0.39.1",
         "chokidar": "^2.0.4",
         "istanbul-api": "^2.0.6",

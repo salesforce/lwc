@@ -13,14 +13,14 @@ import { HTMLElementConstructor } from './base-bridge-element';
 // TODO: eventually the engine should not do any of this work,
 // it should just interact with the DOM, and the polyfill should
 // take care of all these operation
-import {
+const {
     PatchedElement,
     PatchedSlotElement,
     PatchedNode,
     PatchedIframeElement,
     markElementAsPortal,
     setCSSToken,
-} from '@lwc/synthetic-shadow';
+} = (Element.prototype as any).$lwcPolyfill$;
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();

@@ -15,4 +15,20 @@ import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
 
 // TODO: eventually there is nothing to export here
-export * from './faux-shadow/faux';
+import {
+    PatchedNode,
+    PatchedElement,
+    PatchedSlotElement,
+    PatchedIframeElement,
+    markElementAsPortal,
+    setCSSToken,
+} from './faux-shadow/faux';
+
+(Element.prototype as any).$lwcPolyfill$ = {
+    PatchedNode,
+    PatchedElement,
+    PatchedSlotElement,
+    PatchedIframeElement,
+    markElementAsPortal,
+    setCSSToken,
+};

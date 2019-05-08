@@ -6,6 +6,7 @@
  */
 /* eslint-env node */
 
+const path = require('path');
 const BASE_CONFIG = require('../../../scripts/jest/base.config');
 
 module.exports = {
@@ -13,6 +14,8 @@ module.exports = {
 
     displayName: 'lwc-jest-resolver',
 
+    // Customize setup for the engine tests.
+    setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
     transform: {
         '^.+\\.(js|html|css)$': '@lwc/jest-transformer',
     },
