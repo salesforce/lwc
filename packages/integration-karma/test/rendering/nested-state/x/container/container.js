@@ -12,7 +12,7 @@ function getType(recordId, recordUi) {
     return masterRecordTypeId;
 }
 
-export default class ObjectKeys extends LightningElement {
+export default class Container extends LightningElement {
     state = {
         test: 1,
         type: 'default',
