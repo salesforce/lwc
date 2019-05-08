@@ -1,6 +1,6 @@
 import { LightningElement, track } from 'lwc';
 
-export default class App extends LightningElement {
+export default class Container extends LightningElement {
     @track text = [
         {
             text: 'a',
