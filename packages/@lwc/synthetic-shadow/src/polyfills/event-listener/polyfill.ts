@@ -96,6 +96,12 @@ function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
 }
 
 function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
+    if (!fnOrObj.hasOwnProperty('$$lwcEventWrapper$$')) {
+        // listener was added before framework loaded. Just call native and return.
+        nativeRemoveEventListener.call(this, type, fnOrObj, optionsOrCapture);
+        return;
+    }
+
     const wrapperFn = getEventListenerWrapper(fnOrObj);
     nativeRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
