@@ -22,19 +22,16 @@ import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 
-export default function apply() {
-    // Inside the apply() so that we fetch the value only when the polyfill is run
-    // Also helps to cache the flag value
-    let skipGlobalPatching: boolean;
-    function isGlobalPatchingSkipped() {
-        if (isUndefined(skipGlobalPatching)) {
-            skipGlobalPatching =
-                document.body.getAttribute('data-global-patching-skipped-temporarily') ===
-                'clock-is-ticking';
-        }
-        return isTrue(skipGlobalPatching);
+let skipGlobalPatching: boolean;
+function isGlobalPatchingSkipped() {
+    if (isUndefined(skipGlobalPatching)) {
+        skipGlobalPatching =
+            document.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
     }
+    return isTrue(skipGlobalPatching);
+}
 
+export default function apply() {
     const HTMLBodyElementPrototype = HTMLBodyElement.prototype;
     // The following patched methods hide shadowed elements from global
     // traversing mechanisms. They are simplified for performance reasons to
