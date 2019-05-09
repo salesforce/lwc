@@ -6,6 +6,7 @@
  */
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
+const lineColumn = require('line-column');
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
@@ -79,10 +80,43 @@ function getEngineImportSpecifiers(path) {
         }, []);
 }
 
+function normalizeFilename(source) {
+    return (
+        (source.hub && source.hub.file && source.hub.file.opts && source.hub.file.opts.filename) ||
+        null
+    );
+}
+
+function normalizeLocation(source) {
+    const location = (source.node && (source.node.loc || source.node._loc)) || null;
+    if (!location) {
+        return null;
+    }
+    const code = source.hub.getCode();
+    if (!code) {
+        return {
+            line: location.start.line,
+            column: location.start.column,
+        };
+    }
+    const lineFinder = lineColumn(code);
+    const startOffset = lineFinder.toIndex(location.start.line, location.start.column + 1);
+    const endOffset = lineFinder.toIndex(location.end.line, location.end.column) + 1;
+    const length = endOffset - startOffset;
+    return {
+        line: location.start.line,
+        column: location.start.column,
+        start: startOffset,
+        length,
+    };
+}
+
 function generateError(source, { errorInfo, messageArgs } = {}) {
     const message = generateErrorMessage(errorInfo, messageArgs);
     const error = source.buildCodeFrameError(message);
 
+    error.filename = normalizeFilename(source);
+    error.loc = normalizeLocation(source);
     error.lwcCode = errorInfo && errorInfo.code;
     return error;
 }
