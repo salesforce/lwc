@@ -2,182 +2,126 @@
 
 exports[`Transform method Does not allow computed api getters and setters 1`] = `
 Object {
-  "end": Object {
-    "column": 17,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 22,
+  "line": 3,
+  "start": 109,
 }
 `;
 
 exports[`Transform property Conflicting api properties with getter/setter 1`] = `
 Object {
-  "end": Object {
-    "column": 4,
-    "line": 5,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 5,
-  },
+  "column": 0,
+  "length": 4,
+  "line": 5,
+  "start": 84,
 }
 `;
 
 exports[`Transform property Conflicting api properties with method 1`] = `
 Object {
-  "end": Object {
-    "column": 4,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 4,
-  },
+  "column": 0,
+  "length": 4,
+  "line": 4,
+  "start": 69,
 }
 `;
 
 exports[`Transform property Duplicate api properties 1`] = `
 Object {
-  "end": Object {
-    "column": 4,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 4,
-  },
+  "column": 0,
+  "length": 4,
+  "line": 4,
+  "start": 69,
 }
 `;
 
 exports[`Transform property detecting @api on both getter and a setter should produce an error 1`] = `
 Object {
-  "end": Object {
-    "column": 1,
-    "line": 10,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 7,
-  },
+  "column": 0,
+  "length": 46,
+  "line": 7,
+  "start": 95,
 }
 `;
 
 exports[`Transform property throws correct error if property name is maxlength 1`] = `
 Object {
-  "end": Object {
-    "column": 15,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 15,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if default value is true 1`] = `
 Object {
-  "end": Object {
-    "column": 23,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 23,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name conflicts with disallowed global html attribute name 1`] = `
 Object {
-  "end": Object {
-    "column": 10,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 10,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name is "is" 1`] = `
 Object {
-  "end": Object {
-    "column": 8,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 8,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name is "part" 1`] = `
 Object {
-  "end": Object {
-    "column": 10,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 10,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name is ambiguous 1`] = `
 Object {
-  "end": Object {
-    "column": 14,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 14,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name prefixed with "data" 1`] = `
 Object {
-  "end": Object {
-    "column": 16,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 16,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws error if property name prefixed with "on" 1`] = `
 Object {
-  "end": Object {
-    "column": 21,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 21,
+  "line": 3,
+  "start": 55,
 }
 `;
 
 exports[`Transform property throws when combined with @track 1`] = `
 Object {
-  "end": Object {
-    "column": 4,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 4,
-  },
+  "column": 0,
+  "length": 4,
+  "line": 4,
+  "start": 69,
 }
 `;

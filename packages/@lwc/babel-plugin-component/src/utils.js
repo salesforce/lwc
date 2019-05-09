@@ -6,6 +6,7 @@
  */
 const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } = require('./constants');
 const { LWCClassErrors, generateErrorMessage } = require('@lwc/errors');
+const lineColumn = require('line-column');
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
@@ -91,17 +92,22 @@ function normalizeLocation(source) {
     if (!location) {
         return null;
     }
-    const start = {
+    const code = source.hub.getCode();
+    if (!code) {
+        return {
+            line: location.start.line,
+            column: location.start.column,
+        };
+    }
+    const lineFinder = lineColumn(code);
+    const startOffset = lineFinder.toIndex(location.start.line, location.start.column + 1);
+    const endOffset = lineFinder.toIndex(location.end.line, location.end.column + 1);
+    const length = endOffset - startOffset;
+    return {
         line: location.start.line,
         column: location.start.column,
-    };
-    const end = {
-        line: location.end.line,
-        column: location.end.column,
-    };
-    return {
-        start,
-        end,
+        start: startOffset,
+        length,
     };
 }
 

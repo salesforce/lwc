@@ -2,39 +2,27 @@
 
 exports[`Transform property throws if track decorator is applied to a class method 1`] = `
 Object {
-  "end": Object {
-    "column": 6,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 4,
-  },
+  "column": 0,
+  "length": 6,
+  "line": 4,
+  "start": 66,
 }
 `;
 
 exports[`Transform property throws if track decorator is applied to a getter 1`] = `
 Object {
-  "end": Object {
-    "column": 6,
-    "line": 3,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 3,
-  },
+  "column": 0,
+  "length": 6,
+  "line": 3,
+  "start": 57,
 }
 `;
 
 exports[`Transform property throws if track decorator is applied to a setter 1`] = `
 Object {
-  "end": Object {
-    "column": 6,
-    "line": 4,
-  },
-  "start": Object {
-    "column": 0,
-    "line": 4,
-  },
+  "column": 0,
+  "length": 6,
+  "line": 4,
+  "start": 66,
 }
 `;
