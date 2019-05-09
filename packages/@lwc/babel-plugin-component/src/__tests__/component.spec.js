@@ -15,6 +15,12 @@ describe('Element import', () => {
         {
             error: {
                 message: `Invalid import. "lwc" doesn't have default export.`,
+                loc: {
+                    line: 1,
+                    column: 7,
+                    length: 6,
+                    start: 7,
+                },
             },
         }
     );
@@ -28,6 +34,12 @@ describe('Element import', () => {
         {
             error: {
                 message: `Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
+                loc: {
+                    line: 1,
+                    column: 7,
+                    length: 11,
+                    start: 7,
+                },
             },
         }
     );
@@ -66,6 +78,12 @@ describe('Element import', () => {
         {
             error: {
                 message: `Invalid import. "registerTemplate" is not part of the lwc api.`,
+                loc: {
+                    line: 1,
+                    column: 0,
+                    length: 104,
+                    start: 0,
+                },
             },
         }
     );

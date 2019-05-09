@@ -112,6 +112,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: 'Failed to resolve @wire adapter "adapter". Ensure it is imported',
+                loc: {
+                    line: 3,
+                    column: 6,
+                    length: 7,
+                    start: 114,
+                },
             },
         }
     );
@@ -127,6 +133,12 @@ describe('Transform property', () => {
             error: {
                 message:
                     '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
+                loc: {
+                    line: 3,
+                    column: 0,
+                    length: 7,
+                    start: 56,
+                },
             },
         }
     );
@@ -264,6 +276,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@wire expects a function identifier to be imported as first parameter.',
+                loc: {
+                    line: 4,
+                    column: 6,
+                    length: 2,
+                    start: 85,
+                },
             },
         }
     );
@@ -280,6 +298,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@wire expects a configuration object expression as second parameter.',
+                loc: {
+                    line: 4,
+                    column: 14,
+                    length: 7,
+                    start: 109,
+                },
             },
         }
     );
@@ -298,6 +322,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@wire method or property cannot be used with @api',
+                loc: {
+                    line: 5,
+                    column: 0,
+                    length: 58,
+                    start: 105,
+                },
             },
         }
     );
@@ -316,6 +346,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: '@wire method or property cannot be used with @track',
+                loc: {
+                    line: 5,
+                    column: 0,
+                    length: 58,
+                    start: 109,
+                },
             },
         }
     );
@@ -334,6 +370,12 @@ describe('Transform property', () => {
         {
             error: {
                 message: 'Method or property can only have 1 @wire decorator',
+                loc: {
+                    line: 4,
+                    column: 0,
+                    length: 58,
+                    start: 95,
+                },
             },
         }
     );
@@ -457,6 +499,12 @@ describe('Transform method', () => {
         {
             error: {
                 message: '@wire method or property cannot be used with @api',
+                loc: {
+                    line: 5,
+                    column: 0,
+                    length: 49,
+                    start: 105,
+                },
             },
         }
     );

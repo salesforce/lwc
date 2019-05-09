@@ -101,7 +101,7 @@ function normalizeLocation(source) {
     }
     const lineFinder = lineColumn(code);
     const startOffset = lineFinder.toIndex(location.start.line, location.start.column + 1);
-    const endOffset = lineFinder.toIndex(location.end.line, location.end.column + 1);
+    const endOffset = lineFinder.toIndex(location.end.line, location.end.column) + 1;
     const length = endOffset - startOffset;
     return {
         line: location.start.line,
@@ -116,7 +116,7 @@ function generateError(source, { errorInfo, messageArgs } = {}) {
     const error = source.buildCodeFrameError(message);
 
     error.filename = normalizeFilename(source);
-    error.location = normalizeLocation(source);
+    error.loc = normalizeLocation(source);
     error.lwcCode = errorInfo && errorInfo.code;
     return error;
 }

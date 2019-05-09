@@ -49,7 +49,7 @@ function pluginTest(plugin, pluginOpts, opts = {}) {
             }
 
             expect(transformError.toString()).toContain(expected.error.message);
-            expect(transformError.location).toMatchSnapshot();
+            expect(transformError.loc).toEqual(expected.error.loc);
         } else if (expected.output) {
             const output = testTransform(actual);
             if (expected.output.code !== undefined) {
