@@ -77,37 +77,54 @@ describe('events', () => {
         });
     });
 
-    it('element supports native subscribe', () => {
-        const handler = jest.fn();
-        nativeAddEventListener.call(div, 'foo', handler);
+    // tests that work for window or Node. Need to test each because the
+    // polyfill has two cloned implementations.
+    // Using arrow function for late binding on 'div'
+    describe.each([() => div, () => window])('%p patch', elm => {
+        it('addEventListener does not throw for wrong arguments', () => {
+            elm().addEventListener(undefined as string, undefined as EventListener);
+            elm().addEventListener(null as string, undefined as EventListener);
+            elm().addEventListener('foo', undefined as EventListener);
+            elm().addEventListener('foo', null);
+        });
+        it('removeEventListener does not throw for wrong arguments', () => {
+            elm().removeEventListener(undefined as string, undefined as EventListener);
+            elm().removeEventListener(null as string, undefined as EventListener);
+            elm().removeEventListener('foo', undefined as EventListener);
+            elm().removeEventListener('foo', null);
+        });
+        it('supports native subscribe', () => {
+            const handler = jest.fn();
+            nativeAddEventListener.call(elm(), 'foo', handler);
 
-        div.dispatchEvent(new CustomEvent('foo'));
+            elm().dispatchEvent(new CustomEvent('foo'));
 
-        // Subscribing through native code is fine. This could happen before the framework loads, for example.
-        expect(handler).toBeCalled();
-    });
-    it('element does not support native unsubscribe', () => {
-        const handler = jest.fn();
-        div.addEventListener('foo', handler);
-        nativeRemoveEventListener.call(div, 'foo', handler);
+            // Subscribing through native code is fine. This could happen before the framework loads, for example.
+            expect(handler).toBeCalled();
+        });
+        it('does not support native unsubscribe', () => {
+            const handler = jest.fn();
+            elm().addEventListener('foo', handler);
+            nativeRemoveEventListener.call(elm(), 'foo', handler);
 
-        div.dispatchEvent(new CustomEvent('foo'));
+            elm().dispatchEvent(new CustomEvent('foo'));
 
-        // Unsubscribing a "wrapped" listener through native code should not work, so we'll still receive the event here.
-        expect(handler).toBeCalled();
-    });
-    it('element supports native subscribe and wrapped unsubscribe', () => {
-        const handler = jest.fn();
+            // Unsubscribing a "wrapped" listener through native code should not work, so we'll still receive the event here.
+            expect(handler).toBeCalled();
+        });
+        it('supports native subscribe and wrapped unsubscribe', () => {
+            const handler = jest.fn();
 
-        // Handler was subscribed through native method (perhaps before framework is loaded)
-        nativeAddEventListener.call(div, 'foo', handler);
+            // Handler was subscribed through native method (perhaps before framework is loaded)
+            nativeAddEventListener.call(elm(), 'foo', handler);
 
-        // But unsubscribed through our wrapped method (after framework is loaded)
-        div.removeEventListener('foo', handler);
+            // But unsubscribed through our wrapped method (after framework is loaded)
+            elm().removeEventListener('foo', handler);
 
-        div.dispatchEvent(new CustomEvent('foo'));
+            elm().dispatchEvent(new CustomEvent('foo'));
 
-        // Unsubscription should be successful and event should not be received
-        expect(handler).not.toBeCalled();
+            // Unsubscription should be successful and event should not be received
+            expect(handler).not.toBeCalled();
+        });
     });
 });

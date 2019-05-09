@@ -59,7 +59,7 @@ function getEventListenerWrapper(fnOrObj): EventListener | null {
 function windowAddEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
     const handlerType = typeof fnOrObj;
     // bail if `fnOrObj` is not a function, not an object
-    if (handlerType !== 'function' && handlerType !== 'object') {
+    if (!fnOrObj || (handlerType !== 'function' && handlerType !== 'object')) {
         return;
     }
     // bail if `fnOrObj` is an object without a `handleEvent` method
@@ -74,6 +74,12 @@ function windowAddEventListener(this: EventTarget, type, fnOrObj, optionsOrCaptu
 }
 
 function windowRemoveEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
+    if (fnOrObj && !fnOrObj.hasOwnProperty('$$lwcEventWrapper$$')) {
+        // listener was added before framework loaded. Just call native and return.
+        nativeWindowRemoveEventListener.call(this, type, fnOrObj, optionsOrCapture);
+        return;
+    }
+
     const wrapperFn = getEventListenerWrapper(fnOrObj);
     nativeWindowRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
@@ -81,7 +87,7 @@ function windowRemoveEventListener(this: EventTarget, type, fnOrObj, optionsOrCa
 function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
     const handlerType = typeof fnOrObj;
     // bail if `fnOrObj` is not a function, not an object
-    if (handlerType !== 'function' && handlerType !== 'object') {
+    if (!fnOrObj || (handlerType !== 'function' && handlerType !== 'object')) {
         return;
     }
     // bail if `fnOrObj` is an object without a `handleEvent` method
@@ -96,7 +102,7 @@ function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
 }
 
 function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
-    if (!fnOrObj.hasOwnProperty('$$lwcEventWrapper$$')) {
+    if (fnOrObj && !fnOrObj.hasOwnProperty('$$lwcEventWrapper$$')) {
         // listener was added before framework loaded. Just call native and return.
         nativeRemoveEventListener.call(this, type, fnOrObj, optionsOrCapture);
         return;
