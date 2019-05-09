@@ -18,6 +18,8 @@ describe('Element import', () => {
                 loc: {
                     line: 1,
                     column: 7,
+                    length: 6,
+                    start: 7,
                 },
             },
         }
@@ -35,6 +37,8 @@ describe('Element import', () => {
                 loc: {
                     line: 1,
                     column: 7,
+                    length: 11,
+                    start: 7,
                 },
             },
         }
@@ -76,7 +80,9 @@ describe('Element import', () => {
                 message: `Invalid import. "registerTemplate" is not part of the lwc api.`,
                 loc: {
                     line: 1,
-                    column: 7,
+                    column: 0,
+                    length: 104,
+                    start: 0,
                 },
             },
         }
