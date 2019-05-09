@@ -1,0 +1,8 @@
+<template>
+    <x-child
+        onevent={handleEvent}
+        oncustomevent={handleCustomEvent}
+    ></x-child>
+    <div if:true={eventReceived} class="event-received-indicator">Event received</div>
+    <div if:true={customEventReceived} class="custom-event-received-indicator">CustomEvent received</div>
+</template>
