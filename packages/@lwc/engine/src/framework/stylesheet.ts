@@ -99,12 +99,12 @@ export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttrib
     context.shadowAttribute = shadowAttribute;
 }
 
-function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative, fn) {
+function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative, aggregatorFn) {
     forEach.call(stylesheets, sheet => {
         if (isArray(sheet)) {
-            collectStylesheets(sheet, hostSelector, shadowSelector, isNative, fn);
+            collectStylesheets(sheet, hostSelector, shadowSelector, isNative, aggregatorFn);
         } else {
-            fn(sheet(hostSelector, shadowSelector, isNative));
+            aggregatorFn(sheet(hostSelector, shadowSelector, isNative));
         }
     });
 }
