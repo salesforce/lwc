@@ -157,8 +157,10 @@ describe('Transform property', () => {
             error: {
                 message: '@api get something and @api set something',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 7,
+                    column: 0,
+                    length: 46,
+                    start: 95,
                 },
             },
         }
@@ -426,8 +428,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Boolean public property must default to false.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 23,
+                    start: 55,
                 },
             },
         }
@@ -445,8 +449,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Invalid property name "is". "is" is a reserved attribute.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 8,
+                    start: 55,
                 },
             },
         }
@@ -465,8 +471,10 @@ describe('Transform property', () => {
                 message:
                     'Invalid property name "onChangeHandler". Properties starting with "on" are reserved for event handlers.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 21,
+                    start: 55,
                 },
             },
         }
@@ -522,8 +530,10 @@ describe('Transform property', () => {
                 message:
                     'Invalid property name "dataFooBar". Properties starting with "data" are reserved attributes.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 16,
+                    start: 55,
                 },
             },
         }
@@ -542,8 +552,10 @@ describe('Transform property', () => {
                 message:
                     'Ambiguous attribute name "tabindex". "tabindex" will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 14,
+                    start: 55,
                 },
             },
         }
@@ -562,8 +574,10 @@ describe('Transform property', () => {
                 message:
                     'Ambiguous attribute name "maxlength". "maxlength" will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 15,
+                    start: 55,
                 },
             },
         }
@@ -618,8 +632,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Invalid property name "slot". "slot" is a reserved attribute.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 10,
+                    start: 55,
                 },
             },
         }
@@ -638,8 +654,10 @@ describe('Transform property', () => {
                 message:
                     'Invalid property name "part". "part" is a future reserved attribute for web components.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 10,
+                    start: 55,
                 },
             },
         }
@@ -659,8 +677,10 @@ describe('Transform property', () => {
             error: {
                 message: '@api method or property cannot be used with @track',
                 loc: {
-                    line: 2,
-                    column: 20,
+                    line: 4,
+                    column: 0,
+                    length: 4,
+                    start: 69,
                 },
             },
         }
@@ -679,8 +699,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Duplicate @api property "foo".',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 4,
+                    column: 0,
+                    length: 4,
+                    start: 69,
                 },
             },
         }
@@ -704,8 +726,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Duplicate @api property "foo".',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 5,
+                    column: 0,
+                    length: 4,
+                    start: 84,
                 },
             },
         }
@@ -724,8 +748,10 @@ describe('Transform property', () => {
             error: {
                 message: 'Duplicate @api property "foo".',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 4,
+                    column: 0,
+                    length: 4,
+                    start: 69,
                 },
             },
         }
@@ -778,8 +804,10 @@ describe('Transform method', () => {
             error: {
                 message: '@api cannot be applied to a computed property, getter, setter or method.',
                 loc: {
-                    line: 2,
-                    column: 9,
+                    line: 3,
+                    column: 0,
+                    length: 22,
+                    start: 109,
                 },
             },
         }

@@ -19,8 +19,10 @@ describe('decorators', () => {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
                 loc: {
-                    line: 10,
+                    line: 2,
                     column: 0,
+                    length: 18,
+                    start: 28,
                 },
             },
         }
@@ -39,8 +41,10 @@ describe('decorators', () => {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
                 loc: {
-                    line: 10,
+                    line: 2,
                     column: 0,
+                    length: 14,
+                    start: 28,
                 },
             },
         }
@@ -56,8 +60,10 @@ describe('decorators', () => {
             error: {
                 message: '"track" can only be used as a class decorator',
                 loc: {
-                    line: 10,
+                    line: 2,
                     column: 0,
+                    length: 11,
+                    start: 29,
                 },
             },
         }
@@ -76,8 +82,10 @@ describe('decorators', () => {
             error: {
                 message: '"track" can only be used as a class decorator',
                 loc: {
-                    line: 10,
+                    line: 2,
                     column: 0,
+                    length: 20,
+                    start: 29,
                 },
             },
         }
@@ -94,8 +102,10 @@ describe('decorators', () => {
             error: {
                 message: '"@track" can only be applied on class properties',
                 loc: {
-                    line: 10,
+                    line: 2,
                     column: 0,
+                    length: 19,
+                    start: 29,
                 },
             },
         }
@@ -113,6 +123,12 @@ describe('decorators', () => {
             error: {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                loc: {
+                    line: 3,
+                    column: 0,
+                    length: 20,
+                    start: 93,
+                },
             },
         }
     );
@@ -129,6 +145,12 @@ describe('decorators', () => {
             error: {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                loc: {
+                    line: 3,
+                    column: 0,
+                    length: 22,
+                    start: 93,
+                },
             },
         }
     );
@@ -147,6 +169,12 @@ describe('decorators', () => {
             error: {
                 message:
                     'Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
+                loc: {
+                    line: 4,
+                    column: 0,
+                    length: 29,
+                    start: 125,
+                },
             },
         }
     );
