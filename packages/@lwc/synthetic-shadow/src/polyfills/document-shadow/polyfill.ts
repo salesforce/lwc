@@ -20,6 +20,7 @@ import {
     ArraySlice,
     defineProperty,
     isNull,
+    isTrue,
     isUndefined,
     getOwnPropertyDescriptor,
 } from '../../shared/language';
@@ -29,6 +30,15 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
+
+let skipGlobalPatching: boolean;
+function isGlobalPatchingSkipped() {
+    if (isUndefined(skipGlobalPatching)) {
+        skipGlobalPatching =
+            document.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+    }
+    return isTrue(skipGlobalPatching);
+}
 
 export default function apply() {
     function elemFromPoint(this: Document, left: number, top: number) {
@@ -87,7 +97,7 @@ export default function apply() {
                 return null;
             }
             const ownerKey = getNodeOwnerKey(this);
-            return getNodeOwnerKey(elm) === ownerKey ? elm : null;
+            return getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped() ? elm : null;
         },
         writable: true,
         enumerable: true,
@@ -100,7 +110,10 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFind.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            const filtered = ArrayFind.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+            );
             return !isUndefined(filtered) ? filtered : null;
         },
         writable: true,
@@ -114,7 +127,10 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+            );
             return createStaticNodeList(filtered);
         },
         writable: true,
@@ -128,7 +144,10 @@ export default function apply() {
                 arguments
             ) as [string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+            );
             return createStaticHTMLCollection(filtered);
         },
         writable: true,
@@ -142,7 +161,9 @@ export default function apply() {
                 arguments
             ) as [string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            const filtered =
+                ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey) ||
+                isGlobalPatchingSkipped();
             // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
             return createStaticNodeList(filtered);
         },
@@ -157,7 +178,9 @@ export default function apply() {
                 arguments
             ) as [string, string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey);
+            const filtered =
+                ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey) ||
+                isGlobalPatchingSkipped();
             // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
             return createStaticNodeList(filtered);
         },
@@ -180,7 +203,7 @@ export default function apply() {
                 const ownerKey = getNodeOwnerKey(this);
                 const filtered = ArrayFilter.call(
                     elements,
-                    elm => getNodeOwnerKey(elm) === ownerKey
+                    elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
                 );
                 return createStaticNodeList(filtered);
             },
