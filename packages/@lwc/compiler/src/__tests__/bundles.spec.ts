@@ -56,3 +56,41 @@ describe('test typescript like bundle', () => {
         expect(diagnostics[0].message).toContain('SyntaxError: LWC1007');
     });
 });
+
+describe('test css only module', () => {
+    test('test inline only module', async () => {
+        const customConfig = {
+            name: 'css_only',
+            files: {
+                'css_only.css': readFixture('./css_only/css_only.css'),
+            },
+            outputConfig: {
+                format: 'es',
+            },
+        };
+
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
+        const { success } = await compile(config);
+        expect(success).toBe(true);
+    });
+
+    test('test inline only module', async () => {
+        const customConfig = {
+            name: 'css_only_with_relative',
+            files: {
+                'css_only_with_relative.css': readFixture(
+                    './css_only_with_relative/css_only_with_relative.css'
+                ),
+                'other.css': readFixture('./css_only_with_relative/other.css'),
+            },
+            outputConfig: {
+                format: 'es',
+            },
+        };
+
+        const config = Object.assign({}, BASE_CONFIG, customConfig);
+        const result = await compile(config);
+        const { success } = result;
+        expect(success).toBe(true);
+    });
+});
