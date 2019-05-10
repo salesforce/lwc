@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.39.0...v) (2019-05-02)
+# [](https://github.com/salesforce/lwc/compare/v0.39.1-222.1...v) (2019-05-10)
+
+
+
+<a name="0.39.1-222.1"></a>
+## [0.39.1-222.1](https://github.com/salesforce/lwc/compare/v0.39.1...v0.39.1-222.1) (2019-05-10)
+
+
+
+<a name="0.39.1"></a>
+## [0.39.1](https://github.com/salesforce/lwc/compare/v0.39.0...v0.39.1) (2019-05-02)
 
 
 
