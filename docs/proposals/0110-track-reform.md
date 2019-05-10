@@ -58,7 +58,7 @@ export default class Foo extends LightningElement {
 }
 ```
 
-In the example above, calling `foo()` and `bar()` will always render the latest on the next tick, while calling `bar()` might or might not update on the next tick, depending on others mutations in the current job. With this reform, they will always get the latest on the next tick, no matter what.
+In the example above, calling `foo()` and `bar()` will always render the latest on the next tick, while calling `baz()` might or might not update on the next tick, depending on others mutations in the current job. With this reform, they will always get the latest on the next tick, no matter what.
 
 ### Benefits
 
