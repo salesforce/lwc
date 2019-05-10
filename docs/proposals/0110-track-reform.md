@@ -40,7 +40,7 @@ The following is an example:
 ```js
 export default class Foo extends LightningElement {
     // assume that x and y are used in the template
-    @x = 1;
+    @track x = 1;
     y = 2;
     foo() {
         // increment both
