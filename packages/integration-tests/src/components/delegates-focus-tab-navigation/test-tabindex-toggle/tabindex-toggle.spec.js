@@ -7,12 +7,41 @@
 const assert = require('assert');
 const URL = 'http://localhost:4567/tabindex-toggle';
 
-describe('Tab navigation without tabindex', () => {
-    before(() => {
+describe('Tab navigation and tabindex toggling', () => {
+    beforeEach(() => {
         browser.url(URL);
     });
 
-    it('should support tabindex toggling', function() {
+    it('should work when going from -1 to no tabindex', function() {
+        // Set the tabindex to -1
+        browser.click('.toggle');
+
+        browser.click('.second-outside');
+        browser.keys(['Tab']);
+
+        let className = browser.execute(function() {
+            var container = document.activeElement;
+            var input = container.shadowRoot.activeElement;
+            return input.className;
+        }).value;
+        assert.equal(className, 'third-outside');
+
+        // Remove the tabindex
+        browser.click('.toggle');
+
+        browser.click('.second-outside');
+        browser.keys(['Tab']);
+
+        className = browser.execute(function() {
+            var container = document.activeElement;
+            var child = container.shadowRoot.activeElement;
+            var input = child.shadowRoot.activeElement;
+            return input.className;
+        }).value;
+        assert.equal(className, 'first-inside');
+    });
+
+    it('should work when going from no tabindex to -1', function() {
         browser.click('.second-outside');
         browser.keys(['Tab']);
 
@@ -36,19 +65,5 @@ describe('Tab navigation without tabindex', () => {
             return input.className;
         }).value;
         assert.equal(className, 'third-outside');
-
-        // Toggle the tabindex <x-child>
-        browser.click('.toggle');
-
-        browser.click('.second-outside');
-        browser.keys(['Tab']);
-
-        className = browser.execute(function() {
-            var container = document.activeElement;
-            var child = container.shadowRoot.activeElement;
-            var input = child.shadowRoot.activeElement;
-            return input.className;
-        }).value;
-        assert.equal(className, 'first-inside');
     });
 });
