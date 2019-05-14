@@ -23,7 +23,9 @@ for (const location of PACKAGES) {
     for (const dep of Object.keys(peerDependencies)) {
         if (
             devDependencies.hasOwnProperty(dep) &&
-            !semver.satisfies(devDependencies[dep], peerDependencies[dep])
+            !semver.satisfies(devDependencies[dep], peerDependencies[dep], {
+                includePrerelease: true,
+            })
         ) {
             const error = [
                 `Peer and dev versions of ${dep} in ${name} are out of sync.`,
