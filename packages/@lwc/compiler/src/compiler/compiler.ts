@@ -7,7 +7,6 @@
 import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
 
 import { bundle } from '../bundler/bundler';
-import { BundleMetadata } from '../bundler/meta-collector';
 import {
     CompilerOptions,
     validateOptions,
@@ -28,7 +27,6 @@ export interface CompilerOutput {
 export interface BundleResult {
     code: string;
     map: SourceMap | null;
-    metadata: BundleMetadata;
     outputConfig: NormalizedOutputConfig;
 }
 
@@ -41,7 +39,7 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
     let result: BundleResult | undefined;
     const diagnostics: CompilerDiagnostic[] = [];
 
-    const { diagnostics: bundleDiagnostics, code, map, metadata } = await bundle(normalizedOptions);
+    const { diagnostics: bundleDiagnostics, code, map } = await bundle(normalizedOptions);
 
     diagnostics.push(...bundleDiagnostics);
 
@@ -49,7 +47,6 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
         result = {
             code,
             map,
-            metadata,
             outputConfig: normalizedOptions.outputConfig,
         };
     }
