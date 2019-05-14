@@ -7,7 +7,6 @@
 import { MarkupData } from 'parse5-with-errors';
 
 import { ResolvedConfig } from './config';
-import { ModuleDependency } from './shared/types';
 import { Statement, ImportDeclaration } from '@babel/types';
 
 export interface IdAttributeData {
@@ -21,7 +20,6 @@ export default class State {
 
     ids: string[] = [];
     slots: string[] = [];
-    extendedDependencies: ModuleDependency[] = [];
     dependencies: string[] = [];
     secureDependencies: string[] = []; // imports patched by locker service at runtime
 

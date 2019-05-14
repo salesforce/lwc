@@ -14,7 +14,6 @@ import {
     normalizeToDiagnostic,
 } from '@lwc/errors';
 
-import { MetadataCollector, BundleMetadata } from './meta-collector';
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
 
 import rollupEnvReplacement from '../rollup-plugins/env-replacement';
@@ -30,7 +29,6 @@ export interface BundleReport {
     code: string;
     diagnostics: CompilerDiagnostic[];
     map: SourceMap | null;
-    metadata: BundleMetadata;
 }
 
 const DEFAULT_FORMAT = 'amd';
@@ -77,7 +75,6 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: CompilerDiagnostic[] = [];
-    const metadataCollector = new MetadataCollector();
 
     const plugins: Plugin[] = [
         rollupModuleResolver({
@@ -97,7 +94,6 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
 
     plugins.push(
         rollupTransform({
-            metadataCollector,
             options,
         })
     );
@@ -153,6 +149,5 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         diagnostics,
         code,
         map,
-        metadata: metadataCollector.getMetadata(),
     };
 }
