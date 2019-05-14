@@ -16,6 +16,8 @@ const babelIstanbulInstrumenter = require('../karma-plugins/babel-istanbul-instr
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
 
+const SHADOW_POLYFILL = require.resolve('@lwc/synthetic-shadow/dist/umd/es2017/shadow.js');
+const SHADOW_POLYFILL_COMPAT = require.resolve('@lwc/synthetic-shadow/dist/umd/es5/shadow.js');
 const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
 const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
@@ -48,10 +50,17 @@ function getLwcConfig(config) {
 }
 
 function getFiles(lwcConfig) {
-    const frameworkFiles = lwcConfig.compat
-        ? [createPattern(POLYFILL_COMPAT), createPattern(LWC_ENGINE_COMPAT)]
-        : [createPattern(LWC_ENGINE)];
-
+    const frameworkFiles = [];
+    if (lwcConfig.compat) {
+        frameworkFiles.push(createPattern(POLYFILL_COMPAT));
+        frameworkFiles.push(createPattern(SHADOW_POLYFILL_COMPAT));
+        frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
+    } else {
+        if (!lwcConfig.nativeShadow) {
+            frameworkFiles.push(createPattern(SHADOW_POLYFILL));
+            frameworkFiles.push(createPattern(LWC_ENGINE));
+        }
+    }
     return [
         ...frameworkFiles,
         createPattern(TEST_UTILS),
