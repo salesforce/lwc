@@ -58,8 +58,8 @@ function getFiles(lwcConfig) {
     } else {
         if (!lwcConfig.nativeShadow) {
             frameworkFiles.push(createPattern(SHADOW_POLYFILL));
-            frameworkFiles.push(createPattern(LWC_ENGINE));
         }
+        frameworkFiles.push(createPattern(LWC_ENGINE));
     }
     return [
         ...frameworkFiles,
