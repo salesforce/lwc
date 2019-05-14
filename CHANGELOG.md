@@ -1,10 +1,24 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.39.1-222.1...v) (2019-05-10)
+# [](https://github.com/salesforce/lwc/compare/v0.39.1-222.2...v) (2019-05-14)
 
 
 
-<a name="0.39.1-222.1"></a>
-## [0.39.1-222.1](https://github.com/salesforce/lwc/compare/v0.39.1...v0.39.1-222.1) (2019-05-10)
+<a name="0.39.1-222.2"></a>
+## [0.39.1-222.2](https://github.com/salesforce/lwc/compare/v0.39.1...v0.39.1-222.2) (2019-05-14)
+
+
+### Bug Fixes
+
+* **engine:** fixes [#1199](https://github.com/salesforce/lwc/issues/1199) and [#1198](https://github.com/salesforce/lwc/issues/1198) - disconnecting bug ([#1202](https://github.com/salesforce/lwc/issues/1202)) ([#1209](https://github.com/salesforce/lwc/issues/1209)) ([90aff88](https://github.com/salesforce/lwc/commit/90aff88))
+* **synthetic-shadow:** types and bugs in preparation for final split ([#1192](https://github.com/salesforce/lwc/issues/1192)) ([a85fc48](https://github.com/salesforce/lwc/commit/a85fc48))
+* prevent tabbing into subtrees with tabindex -1 ([#1206](https://github.com/salesforce/lwc/issues/1206)) ([5c25431](https://github.com/salesforce/lwc/commit/5c25431))
+* provide a way to disable document patching ([#1221](https://github.com/salesforce/lwc/issues/1221)) ([4cffc78](https://github.com/salesforce/lwc/commit/4cffc78))
+* refactor mutation observer polyfill to fix memory leaks ([#1200](https://github.com/salesforce/lwc/issues/1200)) ([1a2be67](https://github.com/salesforce/lwc/commit/1a2be67))
+
+
+### Features
+
+* **babel:** add filename/location to error ([#1208](https://github.com/salesforce/lwc/issues/1208)) ([ea26c1d](https://github.com/salesforce/lwc/commit/ea26c1d))
 
 
 
