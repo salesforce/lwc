@@ -8,18 +8,15 @@ import * as path from 'path';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 
 import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from '../compiler/options';
-
 import styleTransform from './style';
-import templateTransformer, { TemplateMetadata } from './template';
+import templateTransformer from './template';
 import scriptTransformer from './javascript';
 
 import { isString } from '../utils';
-import { MetadataCollector } from '../bundler/meta-collector';
 import { SourceMap } from '../compiler/compiler';
 
 export interface FileTransformerResult {
     code: string;
-    metadata?: TemplateMetadata;
     map: SourceMap | null;
 }
 
@@ -66,8 +63,7 @@ function validateArguments(src: string, filename: string) {
 export function transformFile(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector
+    options: NormalizedCompilerOptions
 ): FileTransformerResult {
     let transformer;
 
@@ -92,5 +88,5 @@ export function transformFile(
             });
     }
 
-    return transformer(src, filename, options, metadataCollector);
+    return transformer(src, filename, options);
 }
