@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.37.3...v) (2019-05-03)
+# [](https://github.com/salesforce/lwc/compare/v0.37.4...v) (2019-05-14)
+
+
+### Features
+
+* **compiler:** expose transformSync method ([#1174](https://github.com/salesforce/lwc/issues/1174)) ([b68faf0](https://github.com/salesforce/lwc/commit/b68faf0))
+
+
+
+<a name="0.37.4"></a>
+## [0.37.4](https://github.com/salesforce/lwc/compare/v0.37.3...v0.37.4) (2019-05-03)
 
 
 
