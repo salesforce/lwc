@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.37.4...v) (2019-05-14)
+# [](https://github.com/salesforce/lwc/compare/v0.37.4-220.1...v) (2019-05-14)
+
+
+### Bug Fixes
+
+* incorrect import in dist type in [@lwc](https://github.com/lwc)/compiler ([#1196](https://github.com/salesforce/lwc/issues/1196)) ([88d3f2e](https://github.com/salesforce/lwc/commit/88d3f2e))
+
+
+
+<a name="0.37.4-220.1"></a>
+## [0.37.4-220.1](https://github.com/salesforce/lwc/compare/v0.37.4...v0.37.4-220.1) (2019-05-14)
 
 
 ### Features
