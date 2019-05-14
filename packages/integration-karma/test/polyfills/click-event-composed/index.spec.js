@@ -15,7 +15,10 @@ it('should set the composed property to true when invoking click() on an element
     elm.click();
 
     expect(clickEvent instanceof Event).toBe(true);
-    expect(clickEvent.composed).toBe(true);
+    // TODO: remove this condition again once Sauce Labs supports Safari version >= 12.0.0
+    if (!process.env.NATIVE_SHADOW) {
+        expect(clickEvent.composed).toBe(true);
+    }
 });
 
 // The composed-event-click-polyfill doesn't work when native Shadow DOM is enabled on Safari 12.0.0 (it has been fixed
