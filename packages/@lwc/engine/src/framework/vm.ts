@@ -31,7 +31,13 @@ import {
     isArray,
 } from '../shared/language';
 import { getInternalField, getHiddenField } from '../shared/fields';
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
+import {
+    ViewModelReflection,
+    addCallbackToNextTick,
+    EmptyObject,
+    EmptyArray,
+    useSyntheticShadow,
+} from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
@@ -102,7 +108,6 @@ export interface UninitializedVM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
-    fallback: boolean;
     mode: string;
     deps: VM[][];
     toString(): string;
@@ -197,7 +202,6 @@ export function removeRootVM(vm: VM) {
 export interface CreateVMInit {
     mode: 'open' | 'closed';
     // custom settings for now
-    fallback: boolean;
     isRoot?: boolean;
     owner: VM | null;
 }
@@ -210,7 +214,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         );
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, fallback, owner } = options;
+    const { isRoot, mode, owner } = options;
     const shadowRootOptions: ShadowRootInit = {
         mode,
         delegatesFocus: !!Ctor.delegatesFocus,
@@ -226,7 +230,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         isScheduled: false,
         isDirty: true,
         isRoot: isTrue(isRoot),
-        fallback,
         mode,
         def,
         owner,
@@ -236,7 +239,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         cmpTemplate: undefined,
         cmpProps: create(null),
         cmpTrack: create(null),
-        cmpSlots: fallback ? create(null) : undefined,
+        cmpSlots: useSyntheticShadow ? create(null) : undefined,
         cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
         setHook,

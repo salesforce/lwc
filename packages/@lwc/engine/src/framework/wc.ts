@@ -14,7 +14,7 @@ import {
     ArrayMap,
 } from '../shared/language';
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
-import { EmptyObject } from './utils';
+import { EmptyObject, useSyntheticShadow } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { patchCustomElementProto } from './patch';
@@ -27,24 +27,21 @@ export function buildCustomElementConstructor(
 ): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
     const normalizedOptions: CreateVMInit = {
-        fallback: false,
         mode: 'open',
         isRoot: true,
         owner: null,
     };
     if (isObject(options) && !isNull(options)) {
-        const { mode, fallback } = options as any;
+        const { mode } = options as any;
         // TODO: for now, we default to open, but eventually it should default to 'closed'
         if (mode === 'closed') {
             normalizedOptions.mode = mode;
         }
-        // fallback defaults to false to favor shadowRoot
-        normalizedOptions.fallback = isTrue(fallback);
     }
     return class extends BaseElement {
         constructor() {
             super();
-            if (isTrue(normalizedOptions.fallback)) {
+            if (isTrue(useSyntheticShadow)) {
                 const def = getComponentDef(Ctor);
                 patchCustomElementProto(this, {
                     def,

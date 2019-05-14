@@ -21,6 +21,7 @@ import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
     ViewModelReflection,
+    useSyntheticShadow,
 } from './utils';
 import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
 import { patchCustomElementProto } from './patch';
@@ -70,7 +71,6 @@ type ShadowDomMode = 'open' | 'closed';
 
 interface CreateElementOptions {
     is: ComponentConstructor;
-    fallback?: boolean;
     mode?: ShadowDomMode;
 }
 
@@ -102,7 +102,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
 
     const mode = options.mode !== 'closed' ? 'open' : 'closed';
-    const fallback = isUndefined(options.fallback) || isTrue(options.fallback);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -120,7 +119,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         patchCustomElementProto(element, {
             def,
         });
@@ -129,7 +128,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         patchCustomElementWithRestrictions(element, EmptyObject);
     }
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(element, Ctor, { mode, fallback, isRoot: true, owner: null });
+    createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
     setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);

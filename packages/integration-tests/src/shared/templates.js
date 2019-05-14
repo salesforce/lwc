@@ -3,10 +3,8 @@ exports.app = function(cmpName) {
         import { createElement } from 'lwc';
         import Cmp from 'integration/${cmpName}';
 
-        var fallback = location.search.indexOf('nativeShadow=true') !== -1 ? false : true;
         var element = createElement('integration-${cmpName}', {
-            is: Cmp,
-            fallback: fallback
+            is: Cmp
         });
 
         document.body.appendChild(element);

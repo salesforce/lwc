@@ -9,7 +9,7 @@ import { isUndefined, create, emptyString, isArray, forEach } from '../shared/la
 import { VNode } from '../3rdparty/snabbdom/types';
 
 import * as api from './api';
-import { EmptyArray } from './utils';
+import { EmptyArray, useSyntheticShadow } from './utils';
 import { VM } from './vm';
 import { removeAttribute, setAttribute } from '../env/element';
 import { appendChild } from '../env/node';
@@ -120,9 +120,7 @@ export function evaluateCSS(
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
 
-    const { fallback } = vm;
-
-    if (fallback) {
+    if (useSyntheticShadow) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 

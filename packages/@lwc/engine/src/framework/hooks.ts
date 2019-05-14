@@ -6,7 +6,7 @@
  */
 import assert from '../shared/assert';
 import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from '../shared/language';
-import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
+import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
@@ -82,18 +82,18 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
 
 export function createTextHook(vnode: VNode) {
     const text = vnode.elm as Text;
-    const { uid, fallback } = vnode.owner;
+    const { uid } = vnode.owner;
     setNodeOwnerKey(text, uid);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         patchTextNodeProto(text);
     }
 }
 
 export function createCommentHook(vnode: VNode) {
     const comment = vnode.elm as Comment;
-    const { uid, fallback } = vnode.owner;
+    const { uid } = vnode.owner;
     setNodeOwnerKey(comment, uid);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         patchCommentNodeProto(comment);
     }
 }
@@ -120,7 +120,7 @@ export function fallbackElmHook(vnode: VElement) {
     const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
     setNodeOwnerKey(elm, owner.uid);
-    if (isTrue(owner.fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         const {
             data: { context },
         } = vnode;
@@ -181,7 +181,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(elm);
     const { children } = vnode;
     vm.aChildren = children;
-    if (isTrue(vnode.owner.fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -198,11 +198,11 @@ export function createViewModelHook(vnode: VCustomElement) {
         return;
     }
     const { mode, ctor, owner } = vnode;
-    const { uid, fallback } = owner;
+    const { uid } = owner;
     setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
         patchCustomElementProto(elm, {
             def,
@@ -211,7 +211,6 @@ export function createViewModelHook(vnode: VCustomElement) {
     }
     createVM(elm, ctor, {
         mode,
-        fallback,
         owner,
     });
     const vm = getCustomElementVM(elm);

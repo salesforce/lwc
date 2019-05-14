@@ -273,9 +273,7 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
     });
 
     function createElement(name, config) {
-        config = Object.assign({}, config, {
-            fallback: !process.env.NATIVE_SHADOW,
-        });
+        config = Object.assign({}, config);
 
         return lwc.createElement(name, config);
     }

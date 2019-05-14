@@ -9,6 +9,7 @@ import { tagNameGetter } from '../env/element';
 import { setPrototypeOf, create, isUndefined, isTrue } from '../shared/language';
 import { ComponentDef } from './def';
 import { HTMLElementConstructor } from './base-bridge-element';
+import { useSyntheticShadow } from './utils';
 
 // TODO: eventually the engine should not do any of this work,
 // it should just interact with the DOM, and the polyfill should
@@ -20,7 +21,7 @@ const {
     PatchedIframeElement,
     markElementAsPortal,
     setCSSToken,
-} = (Element.prototype as any).$lwcPolyfill$;
+} = useSyntheticShadow ? (Element.prototype as any).$lwcPolyfill$ : ({} as any);
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const FromIteration: WeakMap<VNodes, 1> = new WeakMap();

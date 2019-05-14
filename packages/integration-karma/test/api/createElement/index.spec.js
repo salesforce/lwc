@@ -47,10 +47,12 @@ it('returns an HTMLElement', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-it('should create an element with a synthetic shadow root by default', () => {
-    const elm = createElement('x-component', { is: Test });
-    expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
-});
+if (!process.env.NATIVE_SHADOW) {
+    it('should create an element with a synthetic shadow root by default', () => {
+        const elm = createElement('x-component', { is: Test });
+        expect(elm.shadowRoot.constructor.name).toBe('SyntheticShadowRoot');
+    });
+}
 
 it('supports component constructors in circular dependency', () => {
     function Circular() {
@@ -66,7 +68,6 @@ if (process.env.NATIVE_SHADOW) {
     it('should create an element with a native shadow root if fallback is false', () => {
         const elm = createElement('x-component', {
             is: Test,
-            fallback: false,
         });
 
         expect(elm.shadowRoot instanceof ShadowRoot);
@@ -76,7 +77,6 @@ if (process.env.NATIVE_SHADOW) {
     it('should create a shadowRoot in open mode when mode in not specified', () => {
         const elm = createElement('x-component', {
             is: Test,
-            fallback: false,
         });
         expect(elm.shadowRoot.mode).toBe('open');
     });
@@ -84,7 +84,6 @@ if (process.env.NATIVE_SHADOW) {
     it('should create a shadowRoot in closed mode if the mode is passed as closed', () => {
         const elm = createElement('x-shadow-root-getter', {
             is: ShadowRootGetter,
-            fallback: false,
             mode: 'closed',
         });
 

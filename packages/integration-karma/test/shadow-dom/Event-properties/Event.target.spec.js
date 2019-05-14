@@ -34,7 +34,7 @@ describe('event.target on document event listener', () => {
         document.addEventListener('click', listener);
     });
     afterAll(() => {
-        document.removeEventListener(listener);
+        document.removeEventListener('click', listener);
     });
     it('should return correct target', function() {
         const elm = createElement('x-document-event-listener', { is: XDocumentEventListener });
