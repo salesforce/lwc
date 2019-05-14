@@ -79,8 +79,8 @@ exports.html = function(cmpName, isCompat) {
                 <title>${cmpName}</title>
             </head>
             <body>
-                ${SHADOW_POLYFILL}
                 ${isCompat ? COMPAT : ''}
+                ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
                 <script src="./${cmpName}.js"></script>
             </body>
