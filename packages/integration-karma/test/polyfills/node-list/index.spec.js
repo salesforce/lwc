@@ -33,7 +33,8 @@ describe('NodeList', () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
-            expect(elm.childNodes.length).toBe(0);
+            // Note: we can check for the length of childNodes on custom elements
+            // because in IE11 we do some tracks to show the shadowRoot instance in devtool
             expect(elm.childNodes instanceof NodeList).toBe(true);
             expect(elm.childNodes + '').toBe('[object NodeList]');
             // regular element
