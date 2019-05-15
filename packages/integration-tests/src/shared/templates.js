@@ -64,7 +64,7 @@ const COMPAT = `
 `;
 const SHADOW_POLYFILL = `
     <script>
-    var fallback = location.search.indexOf('nativeShadow=true') === -1 ? true : false;
+    var fallback = location.search.indexOf('nativeShadow=true') === -1;
     if (fallback) {
         /** shadow dom polyfill is needed, this hack evaluate it before engine */
         document.write('<s' + 'cript src="../../shared/shadow.js"></scr' + 'ipt>');
