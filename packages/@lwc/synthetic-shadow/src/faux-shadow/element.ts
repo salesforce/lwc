@@ -282,12 +282,13 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         }
         set tabIndex(this: HTMLElement, value: any) {
             if (hasSyntheticShadow(this)) {
-                // This tabIndex setter might be confusing unless it is understood that HTML
-                // elements have default tabIndex property values. Natively focusable elements have
-                // a default tabIndex value of 0 and all other elements have a default tabIndex
-                // value of -1. For example, the tabIndex property value is -1 for both <x-foo> and
-                // <x-foo tabindex="-1">, but our delegatesFocus polyfill should only kick in for
-                // the latter case when the value of the tabindex attribute is -1.
+                // This tabIndex setter might be confusing unless it is understood that HTML elements
+                // have default tabIndex property values. Natively focusable elements have a default
+                // tabIndex value of 0 and all other elements have a default tabIndex value of -1. An
+                // example of when this matters: We don't need to do anything for <x-foo> but we do need
+                // to add a listener for <x-foo tabindex="-1">. The tabIndex property value is -1 in
+                // both cases, so we need an additional check to see if the tabindex attribute is
+                // reflected on the host.
 
                 const delegatesFocus = isDelegatingFocus(this);
 
