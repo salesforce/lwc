@@ -1,6 +1,6 @@
 {
     "name": "@lwc/jest-transformer",
-    "version": "0.39.1-222.3",
+    "version": "0.39.1-222.4",
     "description": "Jest transformer for LWC and engine",
     "license": "MIT",
     "main": "src/index.js",
@@ -15,7 +15,7 @@
         "@babel/core": "7.1.0",
         "@babel/plugin-transform-modules-commonjs": "7.1.0",
         "@babel/template": "~7.1.2",
-        "@lwc/errors": "0.39.1-222.3",
+        "@lwc/errors": "0.39.1-222.4",
         "babel-preset-jest": "^24.0.0"
     },
     "peerDependencies": {
@@ -24,10 +24,10 @@
         "jest": "24.x"
     },
     "devDependencies": {
-        "@lwc/compiler": "0.39.1-222.3",
-        "@lwc/engine": "0.39.1-222.3",
-        "@lwc/jest-resolver": "0.39.1-222.3",
-        "@lwc/jest-serializer": "0.39.1-222.3"
+        "@lwc/compiler": "0.39.1-222.4",
+        "@lwc/engine": "0.39.1-222.4",
+        "@lwc/jest-resolver": "0.39.1-222.4",
+        "@lwc/jest-serializer": "0.39.1-222.4"
     },
     "engines": {
         "node": ">=8"

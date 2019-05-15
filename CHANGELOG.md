@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.39.1-222.2...v) (2019-05-14)
+# [](https://github.com/salesforce/lwc/compare/v0.39.1-222.3...v) (2019-05-15)
+
+
+### Features
+
+* **template-compiler:** remove metadata ([#1186](https://github.com/salesforce/lwc/issues/1186)) ([094460d](https://github.com/salesforce/lwc/commit/094460d))
+
+
+
+<a name="0.39.1-222.3"></a>
+## [0.39.1-222.3](https://github.com/salesforce/lwc/compare/v0.39.1-222.2...v0.39.1-222.3) (2019-05-14)
 
 
 
