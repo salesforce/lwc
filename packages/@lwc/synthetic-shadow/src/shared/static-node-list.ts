@@ -89,6 +89,21 @@ StaticNodeList.prototype = create(NodeList.prototype, {
             };
         },
     },
+    [Symbol.toStringTag]: {
+        configurable: true,
+        get() {
+            return 'NodeList';
+        },
+    },
+    // IE11 doesn't support Symbol.toStringTag, in which case we
+    // provide the regular toString method.
+    toString: {
+        writable: true,
+        configurable: true,
+        value() {
+            return `[object ${this[Symbol.toStringTag]}]`;
+        },
+    },
 });
 // prototype inheritance dance
 setPrototypeOf(StaticNodeList, NodeList);

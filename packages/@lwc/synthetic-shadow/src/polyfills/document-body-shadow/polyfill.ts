@@ -96,7 +96,7 @@ export default function apply() {
     });
 
     defineProperty(HTMLBodyElementPrototype, 'getElementsByTagName', {
-        value(this: HTMLBodyElement): NodeListOf<Element> {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
             const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
@@ -105,8 +105,7 @@ export default function apply() {
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
             );
-            // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
-            return createStaticNodeList(filtered);
+            return createStaticHTMLCollection(filtered);
         },
         writable: true,
         enumerable: true,
@@ -114,7 +113,7 @@ export default function apply() {
     });
 
     defineProperty(HTMLBodyElementPrototype, 'getElementsByTagNameNS', {
-        value(this: HTMLBodyElement): NodeListOf<Element> {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
             const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(
                 arguments
             ) as [string, string]);
@@ -123,8 +122,7 @@ export default function apply() {
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
             );
-            // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
-            return createStaticNodeList(filtered);
+            return createStaticHTMLCollection(filtered);
         },
         writable: true,
         enumerable: true,
