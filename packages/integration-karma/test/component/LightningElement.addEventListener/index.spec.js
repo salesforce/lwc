@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import EventHandler from 'x/eventHandler';
 import SameEventHandler from 'x/sameEventHandler';

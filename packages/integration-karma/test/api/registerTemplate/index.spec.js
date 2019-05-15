@@ -1,7 +1,7 @@
 // TODO: Open issue for this
 const { registerTemplate } = Engine;
 
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import { LightningElement } from 'lwc';
 
 it('should accepts a function return the same value', () => {

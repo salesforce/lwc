@@ -1,5 +1,5 @@
 import { unwrap, readonly } from 'lwc';
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Wrap from 'x/wrap';
 

@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XTest from 'x/test';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
 

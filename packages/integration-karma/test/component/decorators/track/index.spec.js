@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';

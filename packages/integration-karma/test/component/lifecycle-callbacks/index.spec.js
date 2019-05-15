@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Single from 'x/single';
 import Parent from 'x/parent';

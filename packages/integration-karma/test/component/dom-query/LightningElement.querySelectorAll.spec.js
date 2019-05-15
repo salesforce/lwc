@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import ConstructorQuerySelectorAll from 'x/constructorQuerySelectorAll';
 import Parent from 'x/parent';

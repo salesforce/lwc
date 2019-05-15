@@ -28,6 +28,7 @@ import {
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     EmptyObject,
+    useSyntheticShadow,
 } from './utils';
 import { VM, SlotSet } from './vm';
 import { ComponentConstructor } from './component';
@@ -331,7 +332,12 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    markAsDynamicChildren(children);
+    if (useSyntheticShadow) {
+        // the content of the slot has to be dynamic when in synthetic shadow mode because
+        // the `vnode.children` might be the slotted content vs default content, in which case
+        // the size and the keys are not matching.
+        markAsDynamicChildren(children);
+    }
     return vnode;
 }
 

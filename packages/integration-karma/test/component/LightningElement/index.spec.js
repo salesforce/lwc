@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';

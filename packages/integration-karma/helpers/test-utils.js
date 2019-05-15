@@ -272,12 +272,6 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         jasmine.addMatchers(customMatchers);
     });
 
-    function createElement(name, config) {
-        config = Object.assign({}, config);
-
-        return lwc.createElement(name, config);
-    }
-
     function extractDataIds(root) {
         var nodes = {};
 
@@ -326,7 +320,6 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
     }
 
     return {
-        createElement: createElement,
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
     };

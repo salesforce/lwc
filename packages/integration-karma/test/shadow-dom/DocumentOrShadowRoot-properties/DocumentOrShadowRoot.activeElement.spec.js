@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import WithInput from 'x/withInput';
 import WithInputDeep from 'x/withInputDeep';

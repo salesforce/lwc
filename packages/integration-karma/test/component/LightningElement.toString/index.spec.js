@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Anonymous from 'x/anonymous';
 import Named from 'x/named';

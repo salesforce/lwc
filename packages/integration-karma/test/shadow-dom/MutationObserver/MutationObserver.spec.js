@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XParent from 'x/parent';
 import XSlottedChild from 'x/slottedChild';
 import XNestedSlotContainer from 'x/nestedSlotContainer';

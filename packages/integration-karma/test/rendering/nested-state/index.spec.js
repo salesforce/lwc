@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Nested state', () => {

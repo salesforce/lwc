@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XTest from 'x/test';
 
 it('should always return null when accessing shadowRoot property from within the component', () => {

@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 describe('ShadowRoot.delegatesFocus', () => {
     // TODO - #985 delegatedFocus is only implemented the native ShadowRoot by Blink
