@@ -53,10 +53,9 @@ import {
     IRExpressionAttribute,
     ForEach,
     TemplateExpression,
+    TemplateParseResult,
     LWCDirectiveDomMode,
 } from '../shared/types';
-
-import { getModuleMetadata } from '../metadata/metadata';
 
 import { bindExpression } from '../shared/scope';
 
@@ -134,13 +133,7 @@ function attributeExpressionReferencesForEachIndex(
     return index.name === value.name;
 }
 
-export default function parse(
-    source: string,
-    state: State
-): {
-    root?: IRElement | undefined;
-    warnings: CompilerDiagnostic[];
-} {
+export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
     const generateKey = getKeyGenerator();
     const { fragment, errors: parsingErrors } = parseHTML(source);
@@ -195,7 +188,6 @@ export default function parse(
                 validateElement(element);
                 validateAttributes(element);
                 validateProperties(element);
-                collectMetadata(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -905,12 +897,6 @@ export default function parse(
             } else {
                 seenIds.add(value);
             }
-        }
-    }
-
-    function collectMetadata(element: IRElement) {
-        if (isCustomElement(element)) {
-            state.extendedDependencies.push(getModuleMetadata(element));
         }
     }
 

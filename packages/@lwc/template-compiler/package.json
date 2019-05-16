@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "0.39.1",
+    "version": "0.40.0",
     "description": "Template compiler package",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/",
@@ -21,8 +21,8 @@
         "@babel/template": "~7.1.2",
         "@babel/traverse": "~7.1.5",
         "@babel/types": "~7.1.5",
-        "@lwc/errors": "0.39.1",
-        "@lwc/style-compiler": "0.39.1",
+        "@lwc/errors": "0.40.0",
+        "@lwc/style-compiler": "0.40.0",
         "camelcase": "~5.0.0",
         "he": "^1.1.1",
         "parse5-with-errors": "^4.0.1"

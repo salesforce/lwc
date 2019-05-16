@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.39.0...v) (2019-05-02)
+# [](https://github.com/salesforce/lwc/compare/v0.39.1...v) (2019-05-15)
+
+
+### Bug Fixes
+
+* **engine:** fixes [#1199](https://github.com/salesforce/lwc/issues/1199) and [#1198](https://github.com/salesforce/lwc/issues/1198) - disconnecting bug ([#1202](https://github.com/salesforce/lwc/issues/1202)) ([#1209](https://github.com/salesforce/lwc/issues/1209)) ([01be207](https://github.com/salesforce/lwc/commit/01be207))
+* prevent tabbing into subtrees with tabindex -1 ([#1206](https://github.com/salesforce/lwc/issues/1206)) ([9f273f5](https://github.com/salesforce/lwc/commit/9f273f5))
+* provide a way to disable document patching ([#1221](https://github.com/salesforce/lwc/issues/1221)) ([f36bbce](https://github.com/salesforce/lwc/commit/f36bbce))
+* refactor mutation observer polyfill to fix memory leaks ([#1200](https://github.com/salesforce/lwc/issues/1200)) ([c2b68ed](https://github.com/salesforce/lwc/commit/c2b68ed))
+* **engine:** membrane should be used on the bridge instead of cmp setter ([#1134](https://github.com/salesforce/lwc/issues/1134)) ([7265f3d](https://github.com/salesforce/lwc/commit/7265f3d))
+* **synthetic-shadow:** types and bugs in preparation for final split ([#1192](https://github.com/salesforce/lwc/issues/1192)) ([6d2de54](https://github.com/salesforce/lwc/commit/6d2de54))
+
+
+### Features
+
+* **babel:** add filename/location to error ([#1208](https://github.com/salesforce/lwc/issues/1208)) ([eac328a](https://github.com/salesforce/lwc/commit/eac328a))
+* CSS only modules ([#1211](https://github.com/salesforce/lwc/issues/1211)) ([a7c563e](https://github.com/salesforce/lwc/commit/a7c563e))
+* **template-compiler:** remove metadata ([#1186](https://github.com/salesforce/lwc/issues/1186)) ([692a805](https://github.com/salesforce/lwc/commit/692a805))
+
+
+
+<a name="0.39.1"></a>
+## [0.39.1](https://github.com/salesforce/lwc/compare/v0.39.0...v0.39.1) (2019-05-02)
 
 
 

@@ -17,32 +17,29 @@ import {
 import State from './state';
 import { mergeConfig, Config } from './config';
 
-import parse from './parser';
+import parseTemplate from './parser';
 import generate from './codegen';
 
+import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
-import { CompilationMetadata } from './shared/types';
 
-export {
-    ModuleDependency as TemplateModuleDependency,
-    DependencyParameter as TemplateModuleDependencyParameter,
-} from './shared/types';
+export { IRElement } from './shared/types';
+export { Config } from './config';
 
-export default function compiler(
-    source: string,
-    config: Config
-): {
-    code: string;
-    warnings: CompilerDiagnostic[];
-    metadata: CompilationMetadata;
-} {
+export function parse(source: string, config?: Config): TemplateParseResult {
+    const options = mergeConfig(config || {});
+    const state = new State(source, options);
+    return parseTemplate(source, state);
+}
+
+export default function compile(source: string, config: Config): TemplateCompileResult {
     const options = mergeConfig(config);
     const state = new State(source, options);
 
     let code = '';
     const warnings: CompilerDiagnostic[] = [];
     try {
-        const parsingResults = parse(source, state);
+        const parsingResults = parseTemplate(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
@@ -62,21 +59,15 @@ export default function compiler(
     return {
         code,
         warnings,
-        metadata: {
-            definedSlots: state.slots,
-            templateUsedIds: state.ids,
-            templateDependencies: state.extendedDependencies,
-        },
     };
 }
-
 export function compileToFunction(source: string): Function {
     const options = mergeConfig({});
     options.format = 'function';
 
     const state = new State(source, options);
 
-    const parsingResults = parse(source, state);
+    const parsingResults = parseTemplate(source, state);
 
     for (const warning of parsingResults.warnings) {
         if (warning.level === DiagnosticLevel.Error) {
