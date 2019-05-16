@@ -979,7 +979,10 @@ describe('Shadow Root events', () => {
         const elm = createElement('x-root', { is: Root });
         document.body.appendChild(elm);
 
-        HTMLElement.prototype.querySelector.call(elm, 'x-grand-child').click();
+        elm.shadowRoot
+            .querySelector('x-child')
+            .shadowRoot.querySelector('x-grand-child')
+            .click();
     });
 
     it('should have correct target when native event gets dispatched from within shadow root event handler', () => {

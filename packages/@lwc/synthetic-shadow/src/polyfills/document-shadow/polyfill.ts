@@ -96,8 +96,7 @@ export default function apply() {
             if (isNull(elm)) {
                 return null;
             }
-            const ownerKey = getNodeOwnerKey(this);
-            return getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped() ? elm : null;
+            return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped() ? elm : null;
         },
         writable: true,
         enumerable: true,
@@ -109,10 +108,9 @@ export default function apply() {
             const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
-            const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFind.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
             );
             return !isUndefined(filtered) ? filtered : null;
         },
@@ -126,10 +124,9 @@ export default function apply() {
             const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
-            const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
             );
             return createStaticNodeList(filtered);
         },
@@ -143,10 +140,9 @@ export default function apply() {
             const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -156,16 +152,15 @@ export default function apply() {
     });
 
     defineProperty(Document.prototype, 'getElementsByTagName', {
-        value(this: Document): NodeListOf<Element> {
+        value(this: Document): HTMLCollectionOf<Element> {
             const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered =
-                ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey) ||
-                isGlobalPatchingSkipped();
-            // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
-            return createStaticNodeList(filtered);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+            );
+            return createStaticHTMLCollection(filtered);
         },
         writable: true,
         enumerable: true,
@@ -173,16 +168,15 @@ export default function apply() {
     });
 
     defineProperty(Document.prototype, 'getElementsByTagNameNS', {
-        value(this: Document): NodeListOf<Element> {
+        value(this: Document): HTMLCollectionOf<Element> {
             const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(
                 arguments
             ) as [string, string]);
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered =
-                ArrayFilter.call(elements, elm => getNodeOwnerKey(elm) === ownerKey) ||
-                isGlobalPatchingSkipped();
-            // NodeList because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
-            return createStaticNodeList(filtered);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+            );
+            return createStaticHTMLCollection(filtered);
         },
         writable: true,
         enumerable: true,
@@ -200,10 +194,9 @@ export default function apply() {
                 const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
                     string
                 ]);
-                const ownerKey = getNodeOwnerKey(this);
                 const filtered = ArrayFilter.call(
                     elements,
-                    elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                    elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
                 );
                 return createStaticNodeList(filtered);
             },
