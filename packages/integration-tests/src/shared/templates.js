@@ -96,6 +96,7 @@ exports.wireServiceHtml = function(cmpName, isCompat) {
             </head>
             <body>
                 ${isCompat ? COMPAT : ''}
+                ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
                 <script src="../../shared/todo.js"></script>
                 <script src="../../shared/wire.js"></script>
