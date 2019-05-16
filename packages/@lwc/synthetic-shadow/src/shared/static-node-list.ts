@@ -101,7 +101,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         writable: true,
         configurable: true,
         value() {
-            return `[object ${this[Symbol.toStringTag]}]`;
+            return '[object: NodeList]';
         },
     },
 });
