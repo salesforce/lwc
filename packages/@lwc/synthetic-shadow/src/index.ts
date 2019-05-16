@@ -13,13 +13,13 @@ import './polyfills/click-event-composed/main'; // must come before event-compos
 import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
+import './polyfills/iframe-content-window/main';
 
 // TODO: eventually there is nothing to export here
 import {
     PatchedNode,
     PatchedElement,
     PatchedSlotElement,
-    PatchedIframeElement,
     markElementAsPortal,
     setCSSToken,
 } from './faux-shadow/faux';
@@ -28,7 +28,6 @@ import {
     PatchedNode,
     PatchedElement,
     PatchedSlotElement,
-    PatchedIframeElement,
     markElementAsPortal,
     setCSSToken,
 };
