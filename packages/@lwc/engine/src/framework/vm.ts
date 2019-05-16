@@ -573,7 +573,7 @@ export function getErrorComponentStack(startingElement: Element): string {
  */
 function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
-    // If this is a shadow root, find the host instead
+    // If parentElement is a shadow root, find the host instead
     return isNull(parentElement) ? getHostElement(elm) : parentElement;
 }
 
