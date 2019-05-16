@@ -17,8 +17,8 @@
         "rollup-pluginutils": "^2.0.1"
     },
     "peerDependencies": {
-        "@lwc/compiler": "0.39.x",
-        "@lwc/engine": "0.39.x"
+        "@lwc/compiler": "0.40.x",
+        "@lwc/engine": "0.40.x"
     },
     "publishConfig": {
         "access": "public"

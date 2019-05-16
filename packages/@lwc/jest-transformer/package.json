@@ -19,8 +19,8 @@
         "babel-preset-jest": "^24.0.0"
     },
     "peerDependencies": {
-        "@lwc/compiler": "0.39.x",
-        "@lwc/engine": "0.39.x",
+        "@lwc/compiler": "0.40.x",
+        "@lwc/engine": "0.40.x",
         "jest": "24.x"
     },
     "devDependencies": {
