@@ -101,7 +101,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         writable: true,
         configurable: true,
         value() {
-            return '[object: NodeList]';
+            return '[object NodeList]';
         },
     },
 });

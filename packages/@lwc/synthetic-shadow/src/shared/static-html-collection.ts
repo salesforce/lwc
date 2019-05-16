@@ -129,7 +129,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         writable: true,
         configurable: true,
         value() {
-            return '[object: HTMLCollection]';
+            return '[object HTMLCollection]';
         },
     },
 });
