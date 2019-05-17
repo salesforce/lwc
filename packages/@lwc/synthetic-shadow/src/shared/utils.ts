@@ -7,6 +7,8 @@
 
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
+import { isUndefined } from './language';
+import { getNodeNearestOwnerKey } from '../faux-shadow/node';
 
 export function getOwnerDocument(node: Node): Document {
     const doc = ownerDocumentGetter.call(node);
@@ -23,4 +25,8 @@ export function getOwnerWindow(node: Node): Window {
         throw new TypeError();
     }
     return win;
+}
+
+export function isNodeShadowed(node: Node): boolean {
+    return !isUndefined(getNodeNearestOwnerKey(node));
 }

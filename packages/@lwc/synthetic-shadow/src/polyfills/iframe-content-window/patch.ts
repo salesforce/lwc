@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, defineProperty } from '../../shared/language';
-import { getNodeNearestOwnerKey } from '../../faux-shadow/node';
+import { getOwnPropertyDescriptor, defineProperty, isNull } from '../../shared/language';
+import { isNodeShadowed } from '../../shared/utils';
 
 export default function apply() {
     // the iframe property descriptor for `contentWindow` should always be available, otherwise this method should never be called
@@ -16,15 +16,14 @@ export default function apply() {
     const { get: originalGetter } = desc;
     desc.get = function(this: HTMLIFrameElement): WindowProxy | null {
         const original = (originalGetter as any).call(this);
-        const ownerKey = getNodeNearestOwnerKey(this);
-        if (ownerKey === undefined || original === null) {
+        if (isNull(original) || !isNodeShadowed(this)) {
             return original;
         }
         // only if the element is an iframe inside a shadowRoot, we care about this problem
         // because in that case, the code that is accessing the iframe, is very likely code
         // compiled with proxy-compat transformation. It is true that other code without those
         // transformations might also access an iframe from within a shadowRoot, but in that,
-        // case, with is more rare, we still return the wrapper, and it should work the same,
+        // case, which is more rare, we still return the wrapper, and it should work the same,
         // this part is just an optimization.
         return wrapIframeWindow(original);
     };

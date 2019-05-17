@@ -23,3 +23,7 @@ class foo extends LightningElement {
 ```
 
 In code compiled with compat-mode, the code will attempt to detect if `i.contentWindow` is a proxy, before trying to access `postMessage`, but at that point, the transformed code will try to check if that object contains a particular property (the proxy identification token), in which case, a cross-origin iframe will throw an error. This patch prevents that error from happening.
+
+## TODO
+
+-   [ ] Only apply this patch if compat-mode is detected.
