@@ -42,27 +42,6 @@ export const TemplateErrors = {
 };
 
 export const ParserDiagnostics = {
-    // TODO: Disabling until <style> is supported inside <template>
-    // EMPTY_STYLE_TAG: {
-    //     code: 1031,
-    //     message: 'A style tag must not be empty',
-    //     level: DiagnosticLevel.Error,
-    //     url: '',
-    // },
-
-    // INVALID_STYLE_TAG_POSITION: {
-    //     code: 1032,
-    //     message:
-    //         'Incorrectly positioned <style> element. The <style> element must be the first element in your template.',
-    //     level: DiagnosticLevel.Error,
-    //     url: '',
-    // },
-    // INVALID_STYLE_TAG_FUNCTION_FORMAT: {
-    //     code: 1033,
-    //     message: "compileToFunction doesn't support style tag",
-    //     level: DiagnosticLevel.Error,
-    //     url: '',
-    // },
     AMBIGUOUS_ATTRIBUTE_VALUE: {
         code: 1034,
         message:
@@ -474,7 +453,7 @@ export const ParserDiagnostics = {
     STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE: {
         code: 1122,
         message:
-            "The <style> element cannot be used inside the template. Please add css rules into '.css' file of your component bundle.",
+            "The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle.",
         level: DiagnosticLevel.Error,
         url: '',
     },
