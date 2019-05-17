@@ -54,56 +54,6 @@
                         "value": "blue"
                     }
                 }
-            },
-            {
-                "moduleName": "ns/buzz",
-                "tagName": "div",
-                "properties": {
-                    "bgColor": {
-                        "type": "literal",
-                        "value": "x"
-                    },
-                    "ariaHidden": {
-                        "type": "literal",
-                        "value": "hidden"
-                    }
-                }
-            },
-            {
-                "moduleName": "ns/table",
-                "tagName": "table",
-                "properties": {
-                    "bgColor": {
-                        "type": "literal",
-                        "value": "x"
-                    },
-                    "tabIndex": {
-                        "type": "literal",
-                        "value": "0"
-                    },
-                    "bar": {
-                        "type": "literal",
-                        "value": "test"
-                    },
-                    "min": {
-                        "type": "literal",
-                        "value": "3"
-                    }
-                }
-            },
-            {
-                "moduleName": "ns/input",
-                "tagName": "input",
-                "properties": {
-                    "minLength": {
-                        "type": "literal",
-                        "value": "3"
-                    },
-                    "maxLength": {
-                        "type": "literal",
-                        "value": "10"
-                    }
-                }
             }
         ]
     }
