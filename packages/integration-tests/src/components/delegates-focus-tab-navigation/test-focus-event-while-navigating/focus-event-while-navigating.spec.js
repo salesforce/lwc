@@ -12,7 +12,7 @@ describe('Focus event while sequential focus navigation', () => {
         browser.url(URL);
     });
 
-    describe('delegatesFocus: true, tabindex: -1', () => {
+    describe.skip('delegatesFocus: true, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
             browser.execute(function() {
@@ -81,7 +81,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    describe('delegatesFocus: true, tabindex: none', () => {
+    describe.skip('delegatesFocus: true, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters
             browser.execute(function() {
@@ -223,7 +223,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    describe('delegatesFocus: false, tabindex: -1', () => {
+    describe.skip('delegatesFocus: false, tabindex: -1', () => {
         beforeEach(() => {
             // Reset counters
             browser.execute(function() {
@@ -365,7 +365,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
     });
 
-    describe('delegatesFocus: false, tabindex: none', () => {
+    describe.skip('delegatesFocus: false, tabindex: none', () => {
         beforeEach(() => {
             // Reset counters
             browser.execute(function() {
