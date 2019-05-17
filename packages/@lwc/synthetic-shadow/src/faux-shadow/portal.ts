@@ -104,4 +104,5 @@ defineProperty(Element.prototype, '$domManual$', {
     get() {
         return this[DomManualPrivateKey];
     },
+    configurable: true,
 });

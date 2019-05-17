@@ -32,4 +32,5 @@ defineProperty(Element.prototype, '$shadowToken$', {
     get(this: Element): string | undefined {
         return this[ShadowTokenPrivateKey];
     },
+    configurable: true,
 });
