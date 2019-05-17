@@ -18,7 +18,6 @@ const {
     PatchedElement,
     PatchedSlotElement,
     PatchedNode,
-    PatchedIframeElement,
     markElementAsPortal,
     setCSSToken,
 } = useSyntheticShadow ? (Element.prototype as any).$lwcPolyfill$ : ({} as any);
@@ -64,8 +63,6 @@ function getPatchedElementClass(elm: HTMLElement): HTMLElementConstructor {
     switch (tagNameGetter.call(elm)) {
         case 'SLOT':
             return PatchedSlotElement(elm as HTMLSlotElement);
-        case 'IFRAME':
-            return PatchedIframeElement(elm as HTMLIFrameElement);
     }
     return PatchedElement(elm);
 }

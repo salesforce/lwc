@@ -11,5 +11,3 @@ export { PatchedElement } from './element';
 
 export { setCSSToken, PatchedNode } from './node';
 export { markElementAsPortal } from './portal';
-
-export { PatchedIframeElement } from './iframe';

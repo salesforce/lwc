@@ -18,11 +18,6 @@ const dispatchEvent =
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== 'undefined';
 
-const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(
-    HTMLIFrameElement.prototype,
-    'contentWindow'
-)!.get!;
-
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,
     'target'
@@ -41,7 +36,6 @@ export {
     dispatchEvent,
     ShadowRootHostGetter,
     isNativeShadowRootAvailable,
-    iFrameContentWindowGetter,
     eventTargetGetter,
     eventCurrentTargetGetter,
     focusEventRelatedTargetGetter,
