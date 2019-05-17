@@ -81,13 +81,13 @@ function markElementAsPortal(elm: Element) {
 }
 
 /**
- * Patching Element.prototype.$domManual$ to make elements a portal:
+ * Patching Element.prototype.$domManual$ to mark elements as portal:
  *
  *  - we use a property to allow engines to signal that a particular element in
  *    a shadow supports manual insertion of child nodes.
  *
  *  - this signal comes as a boolean value, and we use it to install the MO instance
- *    onto the element, to propagation the $ownerKey$ and $shadowToken$ to all new
+ *    onto the element, to propagate the $ownerKey$ and $shadowToken$ to all new
  *    child nodes.
  *
  *  - at the moment, there is no way to undo this operation, once the element is
