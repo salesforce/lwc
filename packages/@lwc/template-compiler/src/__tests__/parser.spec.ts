@@ -409,7 +409,7 @@ describe('root errors', () => {
                 code: expect.any(Number),
                 level: DiagnosticLevel.Error,
                 message: expect.stringContaining(
-                    `The <style> element cannot be used inside the template.`
+                    `The <style> element is disallowed inside the template.`
                 ),
                 location: EXPECTED_LOCATION,
             },
@@ -423,7 +423,7 @@ describe('root errors', () => {
                 code: expect.any(Number),
                 level: DiagnosticLevel.Error,
                 message: expect.stringContaining(
-                    `The <style> element cannot be used inside the template.`
+                    `The <style> element is disallowed inside the template.`
                 ),
                 location: EXPECTED_LOCATION,
             },

@@ -48,7 +48,7 @@ it('should throw if template contains a style tag', () => {
             </template>
         `);
     }).toThrowError(
-        "LWC1122: The <style> element cannot be used inside the template. Please add css rules into '.css' file of your component bundle."
+        "LWC1122: The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle."
     );
 });
 
