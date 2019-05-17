@@ -38,7 +38,7 @@ import {
     getForEachParent,
 } from './expression';
 
-import { parseStyleText, parseClassNames, parseInlineStyle } from './style';
+import { parseStyleText, parseClassNames } from './style';
 
 import { createElement, isCustomElement, createText } from '../shared/ir';
 
@@ -82,7 +82,6 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
     ParserDiagnostics,
-    TransformerErrors,
 } from '@lwc/errors';
 
 function getKeyGenerator() {
@@ -461,36 +460,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (!isStyleElement(element)) {
             return;
         }
-
-        const src = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
-
-        if (src.length === 0) {
-            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, node);
-        }
-
-        if (state.config.format === 'function') {
-            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_FUNCTION_FORMAT, node);
-        }
-
-        const isAtRoot = stack.length === 1;
-        const isFirstChildElement = element.parent!.children[0] === element;
-        if (!isAtRoot || !isFirstChildElement) {
-            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, node);
-        }
-
-        try {
-            element.inlineStyles = parseInlineStyle(src, state.config);
-        } catch (error) {
-            let message = error.message;
-            if (error.name === 'CssSyntaxError') {
-                message = error.reason;
-            }
-
-            return warnOnElement(TransformerErrors.CSS_IN_HTML_ERROR, node, [message]);
-        } finally {
-            // Clear all the nodes.
-            node.childNodes = [];
-        }
+        warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, node);
     }
 
     function applyForEach(element: IRElement) {

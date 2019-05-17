@@ -401,6 +401,34 @@ describe('root errors', () => {
             location: EXPECTED_LOCATION,
         });
     });
+
+    it('disallows <style> tag inside the template', () => {
+        const { warnings } = parseTemplate(`<template><style></style></template>`);
+        expect(warnings).toEqual([
+            {
+                code: expect.any(Number),
+                level: DiagnosticLevel.Error,
+                message: expect.stringContaining(
+                    `The <style> element cannot be used inside the template.`
+                ),
+                location: EXPECTED_LOCATION,
+            },
+        ]);
+    });
+
+    it('disallows nested <style> tag inside the template', () => {
+        const { warnings } = parseTemplate(`<template><div><style></style></div></template>`);
+        expect(warnings).toEqual([
+            {
+                code: expect.any(Number),
+                level: DiagnosticLevel.Error,
+                message: expect.stringContaining(
+                    `The <style> element cannot be used inside the template.`
+                ),
+                location: EXPECTED_LOCATION,
+            },
+        ]);
+    });
 });
 
 describe('expression', () => {
