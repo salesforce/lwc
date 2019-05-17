@@ -125,15 +125,17 @@ export function fallbackElmHook(vnode: VElement) {
             data: { context },
         } = vnode;
         const { shadowAttribute } = owner.context;
-        const isPortal =
+        if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual;
-        patchElementProto(elm, {
-            sel,
-            isPortal,
-            shadowAttribute,
-        });
+            context.lwc.dom === LWCDOMMode.manual
+        ) {
+            // this element will now accept any manual content inserted into it
+            (elm as any).$domManual$ = true;
+        }
+        // setting up the special class used for shadowing the css rules per component
+        (elm as any).$shadowToken$ = shadowAttribute;
+        patchElementProto(elm, { sel });
     }
     if (process.env.NODE_ENV !== 'production') {
         const {
@@ -204,10 +206,9 @@ export function createViewModelHook(vnode: VCustomElement) {
     setElementProto(elm, def);
     if (isTrue(useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
-        patchCustomElementProto(elm, {
-            def,
-            shadowAttribute,
-        });
+        // setting up the special class used for shadowing the css rules per template
+        (elm as any).$shadowToken$ = shadowAttribute;
+        patchCustomElementProto(elm, { def });
     }
     createVM(elm, ctor, {
         mode,

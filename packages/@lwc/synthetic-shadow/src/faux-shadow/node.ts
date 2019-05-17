@@ -13,7 +13,6 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
 } from '../env/node';
-import { setAttribute } from '../env/element';
 import { getNodeOwner, isSlotElement, patchedGetRootNode, isNodeOwnedBy } from './traverse';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot } from './shadow-root';
@@ -53,19 +52,6 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
 
 export function getNodeKey(node: Node): number | undefined {
     return node[OwnKey];
-}
-
-const ShadowTokenKey = '$$ShadowTokenKey$$';
-
-export function getCSSToken(elm: Element): string | undefined {
-    return elm[ShadowTokenKey];
-}
-
-export function setCSSToken(elm: Element, shadowToken: string | undefined) {
-    if (!isUndefined(shadowToken)) {
-        setAttribute.call(elm, shadowToken, '');
-        elm[ShadowTokenKey] = shadowToken;
-    }
 }
 
 function getShadowParent(node: Node, value: undefined | Element): (Node & ParentNode) | null {

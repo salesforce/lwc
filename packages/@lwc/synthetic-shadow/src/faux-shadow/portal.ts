@@ -4,18 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, forEach } from '../shared/language';
-import {
-    getNodeOwnerKey,
-    setNodeOwnerKey,
-    getCSSToken,
-    setCSSToken,
-    getInternalChildNodes,
-} from './node';
+import { isUndefined, forEach, defineProperty, isTrue } from '../shared/language';
+import { getNodeOwnerKey, setNodeOwnerKey, getInternalChildNodes } from './node';
 import '../polyfills/mutation-observer/main';
 
 const MutationObserver = (window as any).MutationObserver;
 const MutationObserverObserve = MutationObserver.prototype.observe;
+const DomManualPrivateKey = '$$DomManualKey$$';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -38,7 +33,7 @@ function patchPortalElement(node: Node, ownerKey: number, shadowToken: string | 
     }
     setNodeOwnerKey(node, ownerKey);
     if (node instanceof Element) {
-        setCSSToken(node, shadowToken);
+        (node as any).$shadowToken$ = shadowToken;
         const childNodes = getInternalChildNodes(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
             const child = childNodes[i];
@@ -52,7 +47,7 @@ function initPortalObserver() {
         forEach.call(mutations, mutation => {
             const { target: elm, addedNodes } = mutation;
             const ownerKey = getNodeOwnerKey(elm);
-            const shadowToken = getCSSToken(elm);
+            const shadowToken = elm.$shadowToken$;
 
             // OwnerKey might be undefined at this point.
             // We used to throw an error here, but we need to return early instead.
@@ -77,10 +72,37 @@ function initPortalObserver() {
     });
 }
 
-export function markElementAsPortal(elm: Element) {
+function markElementAsPortal(elm: Element) {
     if (isUndefined(portalObserver)) {
         portalObserver = initPortalObserver();
     }
     // install mutation observer for portals
     MutationObserverObserve.call(portalObserver, elm, portalObserverConfig);
 }
+
+/**
+ * Patching Element.prototype.$domManual$ to mark elements as portal:
+ *
+ *  - we use a property to allow engines to signal that a particular element in
+ *    a shadow supports manual insertion of child nodes.
+ *
+ *  - this signal comes as a boolean value, and we use it to install the MO instance
+ *    onto the element, to propagate the $ownerKey$ and $shadowToken$ to all new
+ *    child nodes.
+ *
+ *  - at the moment, there is no way to undo this operation, once the element is
+ *    marked as $domManual$, setting it to false does nothing.
+ *
+ **/
+defineProperty(Element.prototype, '$domManual$', {
+    set(this: Element, v: boolean) {
+        this[DomManualPrivateKey] = v;
+        if (isTrue(v)) {
+            markElementAsPortal(this);
+        }
+    },
+    get() {
+        return this[DomManualPrivateKey];
+    },
+    configurable: true,
+});

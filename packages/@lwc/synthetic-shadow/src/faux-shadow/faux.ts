@@ -6,8 +6,5 @@
  */
 export { patchEvent } from './events';
 export { PatchedSlotElement } from './slot';
-
 export { PatchedElement } from './element';
-
-export { setCSSToken, PatchedNode } from './node';
-export { markElementAsPortal } from './portal';
+export { PatchedNode } from './node';

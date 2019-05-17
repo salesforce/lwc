@@ -15,19 +15,15 @@ import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
 import './polyfills/iframe-content-window/main';
 
+// Internal Patches
+import './faux-shadow/portal';
+import './faux-shadow/shadow-token';
+
 // TODO: eventually there is nothing to export here
-import {
-    PatchedNode,
-    PatchedElement,
-    PatchedSlotElement,
-    markElementAsPortal,
-    setCSSToken,
-} from './faux-shadow/faux';
+import { PatchedNode, PatchedElement, PatchedSlotElement } from './faux-shadow/faux';
 
 (Element.prototype as any).$lwcPolyfill$ = {
     PatchedNode,
     PatchedElement,
     PatchedSlotElement,
-    markElementAsPortal,
-    setCSSToken,
 };
