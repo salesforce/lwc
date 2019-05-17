@@ -23,7 +23,6 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
-    isDeprecatedIsAttribute,
     isProhibitedIsAttribute,
     isSvgUseHref,
     isTabIndexAttribute,
@@ -652,32 +651,18 @@ export default function parse(
 
     function applyComponent(element: IRElement) {
         const { tag } = element;
-        let component: string | undefined;
 
-        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-            component = tag;
+        // Check if the element tag is a valid custom element name and is not part of known standard
+        // element name containing a dash.
+        if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+            return;
         }
 
-        const isAttr = getTemplateAttribute(element, 'lwc-deprecated:is');
-        if (isAttr) {
-            if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(
-                    ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION,
-                    [],
-                    isAttr.location
-                );
-            }
+        element.component = tag;
 
-            // Don't remove the is, because passed as attribute
-            component = isAttr.value;
-        }
-
-        if (component) {
-            element.component = component;
-
-            if (!state.dependencies.includes(component)) {
-                state.dependencies.push(component);
-            }
+        // Add the component to the list of dependencies if not already present.
+        if (!state.dependencies.includes(tag)) {
+            state.dependencies.push(tag);
         }
     }
 
@@ -780,9 +765,6 @@ export default function parse(
 
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-
-                // authored code for 'lwc-deprecated:is' attr maps to 'is'
-                const attrKey = isDeprecatedIsAttribute(name) ? 'is' : name;
                 const node = element.__original as parse5.AST.Default.Element;
 
                 // record secure import dependency if xlink attr is detected
@@ -791,7 +773,8 @@ export default function parse(
                         state.secureDependencies.push('sanitizeAttribute');
                     }
                 }
-                attrs[attrKey] = attr;
+
+                attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;

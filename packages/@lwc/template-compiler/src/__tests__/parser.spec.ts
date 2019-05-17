@@ -546,21 +546,6 @@ describe('props and attributes', () => {
             'data-xx': { value: 'foo' },
         });
     });
-
-    it('custom element using is with attribute / prop mix', () => {
-        const { root } = parseTemplate(`<template>
-            <table bgcolor="x" lwc-deprecated:is="x-table" tabindex="2" bar="test" min="3"></table>
-        </template>`);
-        expect(root.children[0].props).toMatchObject({
-            bar: { value: 'test' },
-            min: { value: '3' },
-            bgColor: { value: 'x' },
-            tabIndex: { value: '2' },
-        });
-        expect(root.children[0].attrs).toMatchObject({
-            is: { value: 'x-table' },
-        });
-    });
 });
 
 describe('metadata', () => {
@@ -580,15 +565,6 @@ describe('metadata', () => {
             </div>
         </template>`);
         expect(Array.from(state.ids)).toEqual(['state', 'componentProp']);
-    });
-
-    it('dependent component', () => {
-        const { state } = parseTemplate(`<template>
-            <x-menu></x-menu>
-            <button lwc-deprecated:is="x-button"></button>
-        </template>`);
-
-        expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);
     });
 
     it('slots', () => {

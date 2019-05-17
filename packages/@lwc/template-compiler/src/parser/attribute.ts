@@ -199,10 +199,6 @@ function isAriaAttribute(attrName: string): boolean {
     return attrName === 'role' || ARIA_RE.test(attrName);
 }
 
-export function isDeprecatedIsAttribute(attrName: string): boolean {
-    return attrName === 'lwc-deprecated:is';
-}
-
 export function isProhibitedIsAttribute(attrName: string): boolean {
     return attrName === 'is';
 }
@@ -225,16 +221,11 @@ function isDataAttribute(attrName: string): boolean {
 }
 
 function isFmkAttribute(attrName: string): boolean {
-    return attrName === 'lwc-deprecated:is' || attrName === 'key' || attrName === 'slot';
+    return attrName === 'key' || attrName === 'slot';
 }
 
 function isCustomElementAttribute(attrName: string): boolean {
-    return (
-        attrName === 'lwc-deprecated:is' ||
-        attrName === 'key' ||
-        attrName === 'slot' ||
-        !!attrName.match(DATA_RE)
-    );
+    return attrName === 'key' || attrName === 'slot' || !!attrName.match(DATA_RE);
 }
 
 function isInputStateAttribute(element: IRElement, attrName: string) {
@@ -260,13 +251,6 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
     if (isInputStateAttribute(element, attrName)) {
         return false;
-    }
-
-    // Handle attributes applied to a subclassed element via the is="" attribute.
-    // Returns true only attributes that are valid attribute for the base element.
-    const hasDeprecatedIsAttr = !!getAttribute(element, 'lwc-deprecated:is');
-    if (hasDeprecatedIsAttr) {
-        return isValidHTMLAttribute(element.tag, attrName);
     }
 
     // Handle general case where only standard element have attribute value.
