@@ -130,8 +130,9 @@ export default function({ options }: { options: NormalizedCompilerOptions }): Pl
         name: 'lwc-module-resolver',
 
         resolveId(importee: string, importer: string) {
+            // Mark non-relative imports (eg. 'lwc' or 'x/foo') as external dependencies.
             if (!isRelativeImport(importee) && importer) {
-                return;
+                return false;
             }
 
             if (isFirstCharacterUppercased(importee)) {

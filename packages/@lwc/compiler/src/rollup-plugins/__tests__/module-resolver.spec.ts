@@ -191,6 +191,23 @@ describe('module resolver', () => {
         expect(success).toBe(false);
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
     });
+
+    test('#492 - compiler should not report external modules in diagnostics', async () => {
+        const { diagnostics } = await compile({
+            ...VALID_CONFIG,
+            files: {
+                'class_and_template.js': `
+                    import { LightningElement } from 'lwc';
+                    export default class Test extends LightningElement {}
+                `,
+                'anotherTemplate.html': `
+                    <template><x-foo></x-foo></template>
+                `,
+            },
+        });
+
+        expect(diagnostics).toHaveLength(0);
+    });
 });
 
 describe('module entry validation', () => {
