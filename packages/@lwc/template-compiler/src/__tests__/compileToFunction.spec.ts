@@ -47,7 +47,9 @@ it('should throw if template contains a style tag', () => {
                 </style>
             </template>
         `);
-    }).toThrowError(`LWC1033: compileToFunction doesn't support style tag`);
+    }).toThrowError(
+        "LWC1122: The <style> element cannot be used inside the template. Please add css rules into '.css' file of your component bundle."
+    );
 });
 
 it('should compile correctly simple components', () => {
