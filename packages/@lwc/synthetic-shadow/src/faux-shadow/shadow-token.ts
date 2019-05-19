@@ -17,9 +17,9 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
 }
 
 /**
- * Patching Element.prototype.$shadowToken$ to make elements a portal:
+ * Patching Element.prototype.$shadowToken$ to mark elements a portal:
  *
- *  - we use a property to allow engines to set the a custom attribute that should be
+ *  - we use a property to allow engines to set a custom attribute that should be
  *    placed into the element to sandbox the css rules defined for the template.
  *
  *  - this custom attribute must be unique.
