@@ -73,4 +73,4 @@ export function resolveCircularModuleDependency(fn: CircularModuleDependency): a
     return fn();
 }
 
-export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$lwcPolyfill$');
+export const useSyntheticShadow = hasOwnProperty.call(Element.prototype, '$shadowToken$');

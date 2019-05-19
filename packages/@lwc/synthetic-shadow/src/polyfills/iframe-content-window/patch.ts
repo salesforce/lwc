@@ -30,7 +30,7 @@ export default function apply() {
     defineProperty(HTMLIFrameElement.prototype, 'contentWindow', desc);
 }
 
-export function wrapIframeWindow(win: WindowProxy): WindowProxy {
+function wrapIframeWindow(win: WindowProxy): WindowProxy {
     return {
         postMessage() {
             // Typescript does not like it when you treat the `arguments` object as an array

@@ -12,7 +12,7 @@ import {
     ArrayFilter,
     defineProperties,
     isUndefined,
-    isFalse,
+    defineProperty,
 } from '../shared/language';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
@@ -21,7 +21,6 @@ import {
     shadowRootChildNodes,
     isNodeOwnedBy,
     isSlotElement,
-    patchedGetRootNode,
 } from './traverse';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
 import { getTextContent } from '../3rdparty/polymer/text-content';
@@ -43,10 +42,11 @@ import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
-import { getInternalChildNodes } from './node';
+import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
 
+const ShadowRootResolverKey = '$shadowResolver$';
 const InternalSlot = createFieldName('shadowRecord');
 const { createDocumentFragment } = document;
 
@@ -64,6 +64,33 @@ function getInternalSlot(root: SyntheticShadowRootInterface | HTMLElement): Shad
     }
     return record;
 }
+const ShadowResolverPrivateKey = '$$ShadowResolverKey$$';
+
+defineProperty(Node.prototype, ShadowRootResolverKey, {
+    set(this: Node, fn: ShadowRootResolver) {
+        this[ShadowResolverPrivateKey] = fn;
+        // TODO: temporary propagation of the key
+        setNodeOwnerKey(this, (fn as any).nodeKey);
+    },
+    get(this: Node): string | undefined {
+        return this[ShadowResolverPrivateKey];
+    },
+    configurable: true,
+    enumerable: true,
+});
+
+// Function created per shadowRoot instance, it returns the shadowRoot, and is attached
+// into every new element inserted into the shadow via the GetShadowRootFnKey
+// property value.
+export type ShadowRootResolver = () => ShadowRoot;
+
+export function getShadowRootResolver(node: Node): undefined | ShadowRootResolver {
+    return node[ShadowRootResolverKey];
+}
+
+export function setShadowRootResolver(node: Node, fn: ShadowRootResolver) {
+    node[ShadowRootResolverKey] = fn;
+}
 
 export function isDelegatingFocus(host: HTMLElement): boolean {
     return getInternalSlot(host).delegatesFocus;
@@ -80,6 +107,8 @@ export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
 export function hasSyntheticShadow(elm: HTMLElement): boolean {
     return !isUndefined(getInternalField(elm, InternalSlot));
 }
+
+let uid = 0;
 
 export function attachShadow(
     elm: HTMLElement,
@@ -103,6 +132,10 @@ export function attachShadow(
     };
     setInternalField(sr, InternalSlot, record);
     setInternalField(elm, InternalSlot, record);
+    const shadowResolver = () => sr;
+    const x = (shadowResolver.nodeKey = uid++);
+    setNodeKey(elm, x);
+    setShadowRootResolver(sr, shadowResolver);
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     return sr;
@@ -151,7 +184,7 @@ const ShadowRootDescriptors = {
             // activeElement must be child of the host and owned by it
             let node = activeElement;
             while (!isNodeOwnedBy(host, node)) {
-                node = parentElementGetter.call(node) as HTMLElement;
+                node = parentElementGetter.call(node) as Element;
             }
 
             // If we have a slot element here that means that we were dealing
@@ -456,8 +489,9 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
-            const composed: boolean = isUndefined(options) ? false : !!options.composed;
-            return isFalse(composed) ? this : patchedGetRootNode.call(getHost(this), { composed });
+            return !isUndefined(options) && options.composed
+                ? getHost(this).getRootNode(options)
+                : this;
         },
     },
 };
@@ -485,7 +519,7 @@ const ParentNodePatchDescriptors = {
     childElementCount: {
         enumerable: true,
         configurable: true,
-        get(this: HTMLElement): number {
+        get(this: SyntheticShadowRootInterface): number {
             return this.children.length;
         },
     },

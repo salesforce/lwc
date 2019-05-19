@@ -41,12 +41,12 @@ it('should return true on elements rendered from the template', () => {
     expect(isNodeFromTemplate(div)).toBe(true);
 });
 
-it('should return false on elements manually inserted in the DOM', () => {
+it('should return true on elements manually inserted in the DOM inside a an element with lwc:dom=manual', () => {
     const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
 
     const div = document.createElement('div');
     elm.shadowRoot.querySelector('div').appendChild(div);
 
-    expect(isNodeFromTemplate(div)).toBe(false);
+    expect(isNodeFromTemplate(div)).toBe(true);
 });

@@ -20,7 +20,7 @@ export let vmBeingRendered: VM | null = null;
 export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpProps' in vm, `${vm} is not a vm.`);
     }
     return vmBeingConstructed === vm;
 }
@@ -51,7 +51,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
 export function invokeComponentConstructor(vm: UninitializedVM, Ctor: ComponentConstructor) {
     const vmBeingConstructedInception = vmBeingConstructed;
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        assert.isTrue(vm && 'cmpProps' in vm, `${vm} is not a vm.`);
     }
     const { context } = vm;
     const ctx = currentContext;

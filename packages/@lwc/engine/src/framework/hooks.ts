@@ -13,7 +13,6 @@ import {
     removeVM,
     getCustomElementVM,
     allocateInSlot,
-    setNodeOwnerKey,
     appendVM,
     runWithBoundaryProtection,
 } from './vm';
@@ -43,6 +42,14 @@ import {
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
+
+function observeElementChildNodes(elm: Element) {
+    (elm as any).$domManual$ = true;
+}
+
+function setElementShadowToken(elm: Element, token: string | undefined) {
+    (elm as any).$shadowToken$ = token;
+}
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     const { text } = vnode;
@@ -82,8 +89,6 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
 
 export function createTextHook(vnode: VNode) {
     const text = vnode.elm as Text;
-    const { uid } = vnode.owner;
-    setNodeOwnerKey(text, uid);
     if (isTrue(useSyntheticShadow)) {
         patchTextNodeProto(text);
     }
@@ -91,8 +96,6 @@ export function createTextHook(vnode: VNode) {
 
 export function createCommentHook(vnode: VNode) {
     const comment = vnode.elm as Comment;
-    const { uid } = vnode.owner;
-    setNodeOwnerKey(comment, uid);
     if (isTrue(useSyntheticShadow)) {
         patchCommentNodeProto(comment);
     }
@@ -119,7 +122,6 @@ enum LWCDOMMode {
 export function fallbackElmHook(vnode: VElement) {
     const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
-    setNodeOwnerKey(elm, owner.uid);
     if (isTrue(useSyntheticShadow)) {
         const {
             data: { context },
@@ -131,10 +133,10 @@ export function fallbackElmHook(vnode: VElement) {
             context.lwc.dom === LWCDOMMode.manual
         ) {
             // this element will now accept any manual content inserted into it
-            (elm as any).$domManual$ = true;
+            observeElementChildNodes(elm);
         }
         // setting up the special class used for shadowing the css rules per component
-        (elm as any).$shadowToken$ = shadowAttribute;
+        setElementShadowToken(elm, shadowAttribute);
         patchElementProto(elm, { sel });
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -200,14 +202,12 @@ export function createViewModelHook(vnode: VCustomElement) {
         return;
     }
     const { mode, ctor, owner } = vnode;
-    const { uid } = owner;
-    setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
     if (isTrue(useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
         // setting up the special class used for shadowing the css rules per template
-        (elm as any).$shadowToken$ = shadowAttribute;
+        setElementShadowToken(elm, shadowAttribute);
         patchCustomElementProto(elm, { def });
     }
     createVM(elm, ctor, {

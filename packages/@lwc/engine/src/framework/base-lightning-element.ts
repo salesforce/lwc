@@ -37,7 +37,7 @@ import {
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
-import { getComponentVM, VM, setNodeKey, VMState } from './vm';
+import { getComponentVM, VM, VMState } from './vm';
 import { observeMutation, notifyMutation } from './watcher';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
@@ -147,7 +147,7 @@ export function BaseLightningElement(this: ComponentInterface) {
     }
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            vmBeingConstructed && 'cmpRoot' in vmBeingConstructed,
+            vmBeingConstructed && 'cmpProps' in vmBeingConstructed,
             `${vmBeingConstructed} is not a vm.`
         );
         assert.invariant(
@@ -156,7 +156,11 @@ export function BaseLightningElement(this: ComponentInterface) {
         );
     }
     const vm = vmBeingConstructed;
-    const { elm, cmpRoot, uid } = vm;
+    const {
+        elm,
+        mode,
+        def: { ctor },
+    } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -168,11 +172,18 @@ export function BaseLightningElement(this: ComponentInterface) {
         vm.setHook = setHook;
         vm.getHook = getHook;
     }
+    // attaching the shadowRoot
+    const shadowRootOptions: ShadowRootInit = {
+        mode,
+        delegatesFocus: !!ctor.delegatesFocus,
+    };
+    const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
     setHiddenField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
-    setNodeKey(elm, uid);
+    // VM is now initialized
+    (vm as VM).cmpRoot = cmpRoot;
     if (process.env.NODE_ENV !== 'production') {
         patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot, EmptyObject);

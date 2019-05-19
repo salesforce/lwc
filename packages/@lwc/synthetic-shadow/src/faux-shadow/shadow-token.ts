@@ -9,6 +9,13 @@ import { setAttribute, removeAttribute } from '../env/element';
 
 const ShadowTokenPrivateKey = '$$ShadowTokenKey$$';
 
+export function getShadowToken(node: Node): string | undefined {
+    return (node as any).$shadowToken$;
+}
+export function setShadowToken(node: Node, shadowToken: string | undefined) {
+    (node as any).$shadowToken$ = shadowToken;
+}
+
 /**
  * Patching Element.prototype.$shadowToken$ to make elements a portal:
  *
