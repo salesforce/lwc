@@ -164,7 +164,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                     parent.children.push(element);
                 }
 
-                applyStylesheet(element, elementNode);
+                validateInlineStyleElement(element);
+
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -456,11 +457,11 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function applyStylesheet(element: IRElement, node: parse5.AST.Default.Element) {
-        if (!isStyleElement(element)) {
-            return;
+    function validateInlineStyleElement(element: IRElement) {
+        // disallow <style> element
+        if (isStyleElement(element)) {
+            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
         }
-        warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, node);
     }
 
     function applyForEach(element: IRElement) {

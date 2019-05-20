@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { transform as transformStyle } from '@lwc/style-compiler';
-
-import { ResolvedConfig } from '../config';
 
 export interface StyleMap {
     [name: string]: string;
@@ -75,9 +72,4 @@ export function parseClassNames(classNames: string): ClassMap {
         }
     }
     return classMap;
-}
-
-export function parseInlineStyle(src: string, config: ResolvedConfig) {
-    const { code } = transformStyle(src, '#template_inline_styles', config.stylesheetConfig);
-    return code;
 }
