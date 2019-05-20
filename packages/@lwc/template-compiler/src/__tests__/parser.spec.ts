@@ -384,23 +384,6 @@ describe('root errors', () => {
             location: EXPECTED_LOCATION,
         });
     });
-
-    it('disallows is attribute in non-custom component', () => {
-        const { warnings } = parseTemplate(`<template>
-            <x-menu></x-menu>
-            <button is="x-button"></button>
-        </template>`);
-
-        expect(warnings).toContainEqual({
-            code: expect.any(Number),
-            filename: undefined,
-            level: DiagnosticLevel.Error,
-            message: expect.stringContaining(
-                `is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`
-            ),
-            location: EXPECTED_LOCATION,
-        });
-    });
 });
 
 describe('expression', () => {
@@ -487,16 +470,6 @@ describe('props and attributes', () => {
             expect(warnings[0].message).toMatch(
                 /Duplicate id value "bar" detected\. Id values must be unique within a template\./
             );
-        });
-    });
-
-    it('invalid html attribute error', () => {
-        const { warnings } = parseTemplate(
-            `<template><div minlength="1" maxlength="5"></div></template>`
-        );
-        expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
-        expect(warnings[0]).toMatchObject({
-            location: EXPECTED_LOCATION,
         });
     });
 

@@ -239,14 +239,6 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_HTML_ATTRIBUTE: {
-        code: 1057,
-        message:
-            '{0} is not valid attribute for {1}. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{1}',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
     INVALID_HTML_SYNTAX: {
         code: 1058,
         message:

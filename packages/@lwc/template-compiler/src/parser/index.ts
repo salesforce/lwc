@@ -21,7 +21,6 @@ import {
     removeAttribute,
     attributeName,
     normalizeAttributeValue,
-    isValidHTMLAttribute,
     attributeToPropertyName,
     isProhibitedIsAttribute,
     isSvgUseHref,
@@ -729,12 +728,6 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const { name, location } = attr;
-            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
-                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
-            } else if (isCustomElement(element) && isProhibitedIsAttribute(name)) {
-                warnAt(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, [name, tag], location);
-            }
-
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
                     if (/\s+/.test(attr.value)) {
@@ -837,6 +830,10 @@ export default function parse(source: string, state: State): TemplateParseResult
         attrsList.forEach(attr => {
             const attrName = attr.name;
 
+            if (isProhibitedIsAttribute(attrName)) {
+                warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [attrName, tag]);
+            }
+
             if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
                     warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
@@ -853,19 +850,26 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateProperties(element: IRElement) {
-        const { props } = element;
+        const { tag, props } = element;
+        const node = element.__original as parse5.AST.Default.Element;
+
         if (props !== undefined) {
             for (const propName in props) {
                 const { name: attrName, type, value } = props[propName];
+
+                if (isProhibitedIsAttribute(attrName)) {
+                    warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [
+                        attrName,
+                        tag,
+                    ]);
+                }
+
                 if (isTabIndexAttribute(attrName)) {
                     if (
                         type !== IRAttributeType.Expression &&
                         !isValidTabIndexAttributeValue(value)
                     ) {
-                        warnOnElement(
-                            ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
-                            element.__original
-                        );
+                        warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
                     }
                 }
             }
