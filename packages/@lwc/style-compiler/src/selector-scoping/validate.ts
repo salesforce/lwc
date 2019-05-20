@@ -69,34 +69,21 @@ function validateAttribute(root: Root) {
                 }
             }
 
-            // If the tag selector is not present in the compound selector, we need to warn the user that
-            // the compound selector need to be more specific.
-            if (tagSelector === undefined) {
-                const message = [
-                    `Invalid usage of attribute selector "${attributeName}". `,
-                    `For validation purposes, attributes that are not global attributes must be associated `,
-                    `with a tag name when used in a CSS selector. (e.g., "input[min]" instead of "[min]")`,
-                ];
+            if (tagSelector !== undefined) {
+                // If compound selector is associated with a tag selector, we can validate the usage of the
+                // attribute against the specific tag.
+                const { value: tagName } = tagSelector;
+                if (!isKnowAttributeOnElement(tagName, attributeName)) {
+                    const message = [
+                        `Invalid usage of attribute selector "${attributeName}". `,
+                        `Attribute "${attributeName}" is not a known attribute on <${tagName}> element.`,
+                    ];
 
-                throw root.error(message.join(''), {
-                    index: sourceIndex,
-                    word: attributeName,
-                });
-            }
-
-            // If compound selector is associated with a tag selector, we can validate the usage of the
-            // attribute against the specific tag.
-            const { value: tagName } = tagSelector;
-            if (!isKnowAttributeOnElement(tagName, attributeName)) {
-                const message = [
-                    `Invalid usage of attribute selector "${attributeName}". `,
-                    `Attribute "${attributeName}" is not a known attribute on <${tagName}> element.`,
-                ];
-
-                throw root.error(message.join(''), {
-                    index: sourceIndex,
-                    word: attributeName,
-                });
+                    throw root.error(message.join(''), {
+                        index: sourceIndex,
+                        word: attributeName,
+                    });
+                }
             }
         }
     });
