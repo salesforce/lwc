@@ -33,9 +33,9 @@ import { createStaticHTMLCollection } from '../../shared/static-html-collection'
 import { getOwnerDocument } from '../../shared/utils';
 
 let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped(elm: Element) {
+function isGlobalPatchingSkipped(node: Node) {
     if (isUndefined(skipGlobalPatching)) {
-        const ownerDocument = getOwnerDocument(elm);
+        const ownerDocument = getOwnerDocument(node);
         skipGlobalPatching =
             ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
     }
