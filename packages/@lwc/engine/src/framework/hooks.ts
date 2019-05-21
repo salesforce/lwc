@@ -135,7 +135,8 @@ export function fallbackElmHook(vnode: VElement) {
             // this element will now accept any manual content inserted into it
             observeElementChildNodes(elm);
         }
-        // setting up the special class used for shadowing the css rules per component
+        // when running in synthetic shadow mode, we need to set the shadowToken value
+        // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
         patchElementProto(elm, { sel });
     }
@@ -206,7 +207,8 @@ export function createViewModelHook(vnode: VCustomElement) {
     setElementProto(elm, def);
     if (isTrue(useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
-        // setting up the special class used for shadowing the css rules per template
+        // when running in synthetic shadow mode, we need to set the shadowToken value
+        // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
         patchCustomElementProto(elm, { def });
     }

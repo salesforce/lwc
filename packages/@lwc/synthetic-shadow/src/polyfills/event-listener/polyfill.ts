@@ -13,24 +13,12 @@ import {
     addEventListener as nativeAddEventListener,
 } from '../../env/element';
 import { eventTargetGetter } from '../../env/dom';
-import { DOCUMENT_POSITION_CONTAINED_BY, compareDocumentPosition } from '../../env/node';
-import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { patchEvent } from '../../faux-shadow/events';
-import { getOwnerDocument } from '../../shared/utils';
+import { isNodeShadowed } from '../../faux-shadow/node';
 
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);
-    if (originalTarget instanceof Node) {
-        const doc = getOwnerDocument(originalTarget);
-        if (
-            (compareDocumentPosition.call(doc, originalTarget) & DOCUMENT_POSITION_CONTAINED_BY) !==
-                0 &&
-            getNodeOwnerKey(originalTarget)
-        ) {
-            return true;
-        }
-    }
-    return false;
+    return originalTarget instanceof Node && isNodeShadowed(originalTarget);
 }
 
 function getEventListenerWrapper(fnOrObj): EventListener | null {

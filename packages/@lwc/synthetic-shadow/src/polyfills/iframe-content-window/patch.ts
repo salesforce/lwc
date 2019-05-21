@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { getOwnPropertyDescriptor, defineProperty, isNull } from '../../shared/language';
-import { isNodeShadowed } from '../../shared/utils';
+import { isNodeShadowed } from '../../faux-shadow/node';
 
 export default function apply() {
     // the iframe property descriptor for `contentWindow` should always be available, otherwise this method should never be called

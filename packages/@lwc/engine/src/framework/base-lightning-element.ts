@@ -146,10 +146,7 @@ export function BaseLightningElement(this: ComponentInterface) {
         throw new ReferenceError();
     }
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(
-            vmBeingConstructed && 'cmpProps' in vmBeingConstructed,
-            `${vmBeingConstructed} is not a vm.`
-        );
+        assert.isTrue('cmpProps' in vmBeingConstructed, `${vmBeingConstructed} is not a vm.`);
         assert.invariant(
             vmBeingConstructed.elm instanceof HTMLElement,
             `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`

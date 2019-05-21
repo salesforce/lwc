@@ -65,7 +65,7 @@ import {
 } from './hooks';
 import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
-import { markNodeFromTemplate } from './restrictions';
+import { markNodeFromVNode } from './restrictions';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -110,7 +110,7 @@ const TextHook: Hooks = {
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromTemplate(vnode.elm as Node);
+            markNodeFromVNode(vnode.elm as Node);
         }
         createTextHook(vnode);
     },
@@ -129,7 +129,7 @@ const CommentHook: Hooks = {
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromTemplate(vnode.elm as Node);
+            markNodeFromVNode(vnode.elm as Node);
         }
         createCommentHook(vnode);
     },
@@ -157,7 +157,7 @@ const ElementHook: Hooks = {
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromTemplate(vnode.elm as Element);
+            markNodeFromVNode(vnode.elm as Element);
         }
         fallbackElmHook(vnode);
         createElmHook(vnode);
@@ -189,7 +189,7 @@ const CustomElementHook: Hooks = {
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromTemplate(vnode.elm as Element);
+            markNodeFromVNode(vnode.elm as Element);
         }
         createViewModelHook(vnode);
         allocateChildrenHook(vnode);

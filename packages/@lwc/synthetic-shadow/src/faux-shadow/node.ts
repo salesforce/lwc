@@ -82,6 +82,10 @@ export function getNodeKey(node: Node): number | undefined {
     return node[OwnKey];
 }
 
+export function isNodeShadowed(node: Node): boolean {
+    return !isUndefined(getNodeNearestOwnerKey(node));
+}
+
 function getShadowParent(node: Node, value: undefined | Element): (Node & ParentNode) | null {
     const owner = getNodeOwner(node);
     if (value === owner) {

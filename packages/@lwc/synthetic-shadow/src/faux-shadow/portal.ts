@@ -27,7 +27,7 @@ const portalObserverConfig: MutationObserverInit = {
 
 function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
     if (getShadowRootResolver(node) === fn) {
-        return; // nothing to do this here it is already correctly patched
+        return; // nothing to do here, it is already correctly patched
     }
     setShadowRootResolver(node, fn);
     if (node instanceof Element) {
@@ -66,7 +66,7 @@ function markElementAsPortal(elm: Element) {
     }
     // install mutation observer for portals
     MutationObserverObserve.call(portalObserver, elm, portalObserverConfig);
-    // TODO: optimization to syncronously adopt new child nodes added
+    // TODO: issue #1253 - optimization to synchronously adopt new child nodes added
     // to this elm, we can do that by patching the most common operations
     // on the node itself
 }

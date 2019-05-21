@@ -13,6 +13,7 @@ import {
     defineProperties,
     isUndefined,
     defineProperty,
+    isTrue,
 } from '../shared/language';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
@@ -184,7 +185,9 @@ const ShadowRootDescriptors = {
             // activeElement must be child of the host and owned by it
             let node = activeElement;
             while (!isNodeOwnedBy(host, node)) {
-                node = parentElementGetter.call(node) as Element;
+                // parentElement is always an element because we are talking up the tree knowing
+                // that it is a child of the host.
+                node = parentElementGetter.call(node)!;
             }
 
             // If we have a slot element here that means that we were dealing
@@ -489,7 +492,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: SyntheticShadowRootInterface, options?: GetRootNodeOptions): Node {
-            return !isUndefined(options) && options.composed
+            return !isUndefined(options) && isTrue(options.composed)
                 ? getHost(this).getRootNode(options)
                 : this;
         },

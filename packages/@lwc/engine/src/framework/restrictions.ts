@@ -365,7 +365,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     } = vm;
 
     if (
-        isNodeFromTemplate(elm) &&
+        isNodeFromVNode(elm) &&
         isAttributeLocked(elm, attrName) &&
         propsConfig &&
         propName &&
@@ -386,7 +386,7 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (isNodeFromTemplate(elm) && isAttributeLocked(elm, attrName)) {
+    if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
         assert.logError(
             `Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`,
             elm
@@ -563,11 +563,11 @@ interface RestrictionsOptions {
     isPortal?: boolean;
 }
 
-function isNodeFromTemplate(node: Node): boolean {
+function isNodeFromVNode(node: Node): boolean {
     return !!(node as any).$fromTemplate$;
 }
 
-export function markNodeFromTemplate(node: Node) {
+export function markNodeFromVNode(node: Node) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
