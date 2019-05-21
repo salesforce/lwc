@@ -30,12 +30,14 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
+import { getOwnerDocument } from '../../shared/utils';
 
 let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped() {
+function isGlobalPatchingSkipped(elm: Element) {
     if (isUndefined(skipGlobalPatching)) {
+        const doc = getOwnerDocument(elm);
         skipGlobalPatching =
-            document.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+            doc.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
     }
     return isTrue(skipGlobalPatching);
 }
@@ -96,7 +98,7 @@ export default function apply() {
             if (isNull(elm)) {
                 return null;
             }
-            return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped() ? elm : null;
+            return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
         },
         writable: true,
         enumerable: true,
@@ -110,7 +112,7 @@ export default function apply() {
             ]);
             const filtered = ArrayFind.call(
                 elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return !isUndefined(filtered) ? filtered : null;
         },
@@ -126,7 +128,7 @@ export default function apply() {
             ]);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);
         },
@@ -142,7 +144,7 @@ export default function apply() {
             ) as [string]);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -158,7 +160,7 @@ export default function apply() {
             ) as [string]);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -174,7 +176,7 @@ export default function apply() {
             ) as [string, string]);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -196,7 +198,7 @@ export default function apply() {
                 ]);
                 const filtered = ArrayFilter.call(
                     elements,
-                    elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped()
+                    elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
                 );
                 return createStaticNodeList(filtered);
             },
