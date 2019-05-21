@@ -1,6 +1,6 @@
 {
     "name": "@lwc/wire-service",
-    "version": "0.40.0",
+    "version": "0.40.1",
     "description": "@wire service",
     "license": "MIT",
     "main": "dist/commonjs/es2017/wire.js",
@@ -14,10 +14,10 @@
         "serve:playground": "node playground/server.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "0.40.0",
-        "@lwc/engine": "0.40.0",
-        "@lwc/jest-transformer": "0.40.0",
-        "@lwc/rollup-plugin": "0.40.0",
+        "@lwc/compiler": "0.40.1",
+        "@lwc/engine": "0.40.1",
+        "@lwc/jest-transformer": "0.40.1",
+        "@lwc/rollup-plugin": "0.40.1",
         "express": "^4.15.2"
     },
     "lwc": {
