@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import XTest from 'x/test';
+import XWithLwcDomManual from 'x/withLwcDomManual';
 
 describe('should not provide access to elements inside shadow tree', () => {
     beforeAll(() => {
@@ -34,6 +35,42 @@ describe('should not provide access to elements inside shadow tree', () => {
                 .length
         ).toBe(0);
     });
+});
+
+describe('dynamic nodes', () => {
+    it('if parent node has lwc:dom="manual", child node is not accessible', () => {
+        const elm = createElement('x-test-with-lwc-dom-manual', { is: XWithLwcDomManual });
+        document.body.appendChild(elm);
+        const span = document.createElement('span');
+        span.classList.add('manual-span');
+        const div = elm.shadowRoot.querySelector('div');
+        div.appendChild(span);
+        return new Promise(resolve => {
+            setTimeout(resolve);
+        }).then(() => {
+            expect(document.querySelector('span.manual-span')).toBe(null);
+        });
+    });
+    if (!process.env.NATIVE_SHADOW) {
+        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform
+        // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
+        // are still considered global elements
+        it('if parent node does not have lwc:dom="manual", child node is accessible', () => {
+            const elm = createElement('x-test', { is: XTest });
+            document.body.appendChild(elm);
+            spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual
+
+            const h2 = document.createElement('h2');
+            h2.classList.add('manual-h2');
+            const div = elm.shadowRoot.querySelector('.in-the-shadow');
+            div.appendChild(h2);
+            return new Promise(resolve => {
+                setTimeout(resolve);
+            }).then(() => {
+                expect(document.querySelector('h2.manual-h2')).toBe(h2);
+            });
+        });
+    }
 });
 
 describe('should provide access to elements outside shadow tree', () => {

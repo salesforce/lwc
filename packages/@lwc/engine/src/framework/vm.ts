@@ -25,7 +25,6 @@ import {
     isTrue,
     isObject,
     keys,
-    defineProperty,
     StringToLowerCase,
     isFalse,
     isArray,
@@ -80,8 +79,6 @@ export interface UninitializedVM {
     readonly context: Context;
     /** Back-pointer to the owner VM or null for root elements */
     readonly owner: VM | null;
-    /** Component Unique Identifier (TODO: this should be removed - Issue #951) */
-    uid: number;
     /** Component Creation Index */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -96,7 +93,6 @@ export interface UninitializedVM {
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    cmpRoot: ShadowRoot;
     component?: ComponentInterface;
     callHook: (
         cmp: ComponentInterface | undefined,
@@ -108,7 +104,7 @@ export interface UninitializedVM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
-    mode: string;
+    mode: 'open' | 'closed';
     deps: VM[][];
     toString(): string;
 }
@@ -116,10 +112,10 @@ export interface UninitializedVM {
 export interface VM extends UninitializedVM {
     cmpTemplate: Template;
     component: ComponentInterface;
+    cmpRoot: ShadowRoot;
 }
 
 let idx: number = 0;
-let uid: number = 0;
 
 function callHook(
     cmp: ComponentInterface | undefined,
@@ -136,11 +132,6 @@ function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
 function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
-
-// DO NOT CHANGE this:
-// these two values are used by the synthetic-shadow implementation to traverse the DOM
-const OwnerKey = '$$OwnerKey$$';
-const OwnKey = '$$OwnKey$$';
 
 export function rerenderVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -215,14 +206,8 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode, owner } = options;
-    const shadowRootOptions: ShadowRootInit = {
-        mode,
-        delegatesFocus: !!Ctor.delegatesFocus,
-    };
-    uid += 1;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
-        uid,
         // component creation index is defined once, and never reset, it can
         // be preserved from one insertion to another without any issue
         idx,
@@ -240,7 +225,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         cmpProps: create(null),
         cmpTrack: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
-        cmpRoot: elm.attachShadow(shadowRootOptions),
         callHook,
         setHook,
         getHook,
@@ -597,37 +581,19 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (isFalse(node instanceof Node)) {
         return false;
     }
-    return !isUndefined(getNodeOwnerKey(node));
-}
-
-export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
-}
-
-export function setNodeOwnerKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the owner key
-        defineProperty(node, OwnerKey, {
-            value,
-            enumerable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        node[OwnerKey] = value;
+    // TODO: issue #1250 - skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
+    if (node instanceof GlobalShadowRoot) {
+        return false;
     }
-}
-
-export function setNodeKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the own key
-        defineProperty(node, OwnKey, {
-            value,
-            enumerable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        node[OwnKey] = value;
+    if (useSyntheticShadow) {
+        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
+        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
+        if (isUndefined((node as any).$shadowResolver$)) {
+            return false;
+        }
     }
+    const root = node.getRootNode();
+    return root instanceof GlobalShadowRoot;
 }
 
 export function getCustomElementVM(elm: HTMLElement): VM {

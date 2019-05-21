@@ -65,6 +65,7 @@ import {
 } from './hooks';
 import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
+import { markNodeFromVNode } from './restrictions';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -94,8 +95,6 @@ export interface RenderAPI {
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
-const { createElement, createElementNS, createTextNode, createComment } = document;
-
 const CHAR_S = 115;
 const CHAR_V = 118;
 const CHAR_G = 103;
@@ -107,7 +106,11 @@ const TextHook: Hooks = {
         if (isUndefined(vnode.elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler
-            vnode.elm = createTextNode.call(document, vnode.text);
+            vnode.elm = document.createTextNode(vnode.text as string);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Node);
         }
         createTextHook(vnode);
     },
@@ -122,7 +125,11 @@ const CommentHook: Hooks = {
         if (isUndefined(vnode.elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler
-            vnode.elm = createComment.call(document, vnode.text);
+            vnode.elm = document.createComment(vnode.text);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Node);
         }
         createCommentHook(vnode);
     },
@@ -145,8 +152,12 @@ const ElementHook: Hooks = {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
             vnode.elm = isUndefined(ns)
-                ? createElement.call(document, sel)
-                : createElementNS.call(document, ns, sel);
+                ? document.createElement(sel)
+                : document.createElementNS(ns, sel);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Element);
         }
         fallbackElmHook(vnode);
         createElmHook(vnode);
@@ -174,7 +185,11 @@ const CustomElementHook: Hooks = {
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
-            vnode.elm = createElement.call(document, sel);
+            vnode.elm = document.createElement(sel);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Element);
         }
         createViewModelHook(vnode);
         allocateChildrenHook(vnode);
@@ -204,6 +219,11 @@ const CustomElementHook: Hooks = {
         removeCustomElmHook(vnode);
     },
 };
+
+function linkNodeToShadow(vnode: VNode) {
+    // TODO: this should eventually be done by the polyfill directly
+    (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
+}
 
 // TODO: this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
@@ -671,7 +691,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    return `${id}-${vmBeingRendered!.uid}`;
+    return `${id}-${vmBeingRendered!.idx}`;
 }
 
 // [f]ragment [id] function
@@ -691,7 +711,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
     }
     // Apply transformation only for fragment-only-urls
     if (/^#/.test(url)) {
-        return `${url}-${vmBeingRendered!.uid}`;
+        return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
 }

@@ -18,7 +18,6 @@ import {
     getPropertyDescriptor,
     getPrototypeOf,
     isString,
-    isUndefined,
     setPrototypeOf,
     StringToLowerCase,
     toString,
@@ -30,7 +29,7 @@ import {
     isAttributeLocked,
 } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
-import { getShadowRootVM, getCustomElementVM, VM, getNodeOwnerKey, getComponentVM } from './vm';
+import { getShadowRootVM, getCustomElementVM, VM, getComponentVM } from './vm';
 import {
     getAttribute,
     setAttribute,
@@ -366,7 +365,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     } = vm;
 
     if (
-        !isUndefined(getNodeOwnerKey(elm)) &&
+        isNodeFromVNode(elm) &&
         isAttributeLocked(elm, attrName) &&
         propsConfig &&
         propName &&
@@ -387,7 +386,7 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
+    if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
         assert.logError(
             `Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`,
             elm
@@ -562,6 +561,18 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
 
 interface RestrictionsOptions {
     isPortal?: boolean;
+}
+
+function isNodeFromVNode(node: Node): boolean {
+    return !!(node as any).$fromTemplate$;
+}
+
+export function markNodeFromVNode(node: Node) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    (node as any).$fromTemplate$ = true;
 }
 
 export function patchElementWithRestrictions(elm: HTMLElement, options: RestrictionsOptions) {

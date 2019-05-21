@@ -41,12 +41,41 @@ it('should return true on elements rendered from the template', () => {
     expect(isNodeFromTemplate(div)).toBe(true);
 });
 
-it('should return false on elements manually inserted in the DOM', () => {
+it('should return true on elements manually inserted in the DOM inside an element with lwc:dom="manual"', () => {
     const elm = createElement('x-test', { is: Test });
     document.body.appendChild(elm);
 
     const div = document.createElement('div');
     elm.shadowRoot.querySelector('div').appendChild(div);
 
-    expect(isNodeFromTemplate(div)).toBe(false);
+    // TODO: issue #1253 - optimization to synchronously adopt new child nodes added
+    // to this elm, we can do that by patching the most common operations
+    // on the node itself
+    if (!process.env.NATIVE_SHADOW) {
+        expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
+    }
+    return new Promise(resolve => {
+        setTimeout(resolve);
+    }).then(() => {
+        expect(isNodeFromTemplate(div)).toBe(true); // it is true async because MO has already pick up the element
+    });
 });
+
+// TODO: issue #1252 - old behavior that is still used by some pieces of the platform
+// if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document
+if (!process.env.NATIVE_SHADOW) {
+    it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+
+        const span = document.createElement('span');
+        elm.shadowRoot.querySelector('h2').appendChild(span);
+
+        return new Promise(resolve => {
+            setTimeout(resolve);
+        }).then(() => {
+            expect(isNodeFromTemplate(span)).toBe(false);
+        });
+    });
+}

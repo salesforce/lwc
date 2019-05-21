@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, getPrototypeOf, setPrototypeOf, isFalse } from '../shared/language';
+import {
+    isUndefined,
+    isNull,
+    getPrototypeOf,
+    setPrototypeOf,
+    isFalse,
+    defineProperty,
+} from '../shared/language';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -33,8 +40,29 @@ export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
 }
 
-export function setNodeOwnerKey(node: Node, key: number) {
-    node[OwnerKey] = key;
+export function setNodeOwnerKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the owner key
+        defineProperty(node, OwnerKey, {
+            value,
+            configurable: true,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnerKey] = value;
+    }
+}
+
+export function setNodeKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the own key
+        defineProperty(node, OwnKey, {
+            value, // can't be mutated
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnKey] = value;
+    }
 }
 
 export function getNodeNearestOwnerKey(node: Node): number | undefined {
@@ -52,6 +80,10 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
 
 export function getNodeKey(node: Node): number | undefined {
     return node[OwnKey];
+}
+
+export function isNodeShadowed(node: Node): boolean {
+    return !isUndefined(getNodeNearestOwnerKey(node));
 }
 
 function getShadowParent(node: Node, value: undefined | Element): (Node & ParentNode) | null {

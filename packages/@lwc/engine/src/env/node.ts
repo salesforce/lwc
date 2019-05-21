@@ -20,15 +20,10 @@ const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
     ? getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!; // IE11
 
-const nodeValueDescriptor = getOwnPropertyDescriptor(Node.prototype, 'nodeValue')!;
-
-const nodeValueSetter: (this: Node, value: string) => void = nodeValueDescriptor.set!;
-
 export {
     // Node.prototype
     appendChild,
     insertBefore,
-    nodeValueSetter,
     parentElementGetter,
     parentNodeGetter,
     removeChild,
