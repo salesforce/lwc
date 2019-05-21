@@ -585,10 +585,12 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (node instanceof GlobalShadowRoot) {
         return false;
     }
-    // TODO: issue #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
-    // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
-    if (isUndefined((node as any).$shadowResolver$)) {
-        return false;
+    if (useSyntheticShadow) {
+        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
+        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
+        if (isUndefined((node as any).$shadowResolver$)) {
+            return false;
+        }
     }
     const root = node.getRootNode();
     return root instanceof GlobalShadowRoot;

@@ -51,7 +51,9 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     // TODO: issue #1253 - optimization to synchronously adopt new child nodes added
     // to this elm, we can do that by patching the most common operations
     // on the node itself
-    expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
+    if (!process.env.NATIVE_SHADOW) {
+        expect(isNodeFromTemplate(div)).toBe(false); // it is false sync because MO hasn't pick up the element yet
+    }
     return new Promise(resolve => {
         setTimeout(resolve);
     }).then(() => {
@@ -59,19 +61,21 @@ it('should return true on elements manually inserted in the DOM inside an elemen
     });
 });
 
-// TODO: TODO: issue #1252 - old behavior that is still used by some pieces of the platform
+// TODO: issue #1252 - old behavior that is still used by some pieces of the platform
 // if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document
-it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
-    const elm = createElement('x-test', { is: Test });
-    document.body.appendChild(elm);
-    spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+if (!process.env.NATIVE_SHADOW) {
+    it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
 
-    const span = document.createElement('span');
-    elm.shadowRoot.querySelector('h2').appendChild(span);
+        const span = document.createElement('span');
+        elm.shadowRoot.querySelector('h2').appendChild(span);
 
-    return new Promise(resolve => {
-        setTimeout(resolve);
-    }).then(() => {
-        expect(isNodeFromTemplate(span)).toBe(false);
+        return new Promise(resolve => {
+            setTimeout(resolve);
+        }).then(() => {
+            expect(isNodeFromTemplate(span)).toBe(false);
+        });
     });
-});
+}

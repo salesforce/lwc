@@ -51,21 +51,26 @@ describe('dynamic nodes', () => {
             expect(document.querySelector('span.manual-span')).toBe(null);
         });
     });
-    it('if parent node does not have lwc:dom="manual", child node is accessible', () => {
-        const elm = createElement('x-test', { is: XTest });
-        document.body.appendChild(elm);
-        spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual
+    if (!process.env.NATIVE_SHADOW) {
+        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform
+        // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
+        // are still considered global elements
+        it('if parent node does not have lwc:dom="manual", child node is accessible', () => {
+            const elm = createElement('x-test', { is: XTest });
+            document.body.appendChild(elm);
+            spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual
 
-        const h2 = document.createElement('h2');
-        h2.classList.add('manual-h2');
-        const div = elm.shadowRoot.querySelector('.in-the-shadow');
-        div.appendChild(h2);
-        return new Promise(resolve => {
-            setTimeout(resolve);
-        }).then(() => {
-            expect(document.querySelector('h2.manual-h2')).toBe(h2);
+            const h2 = document.createElement('h2');
+            h2.classList.add('manual-h2');
+            const div = elm.shadowRoot.querySelector('.in-the-shadow');
+            div.appendChild(h2);
+            return new Promise(resolve => {
+                setTimeout(resolve);
+            }).then(() => {
+                expect(document.querySelector('h2.manual-h2')).toBe(h2);
+            });
         });
-    });
+    }
 });
 
 describe('should provide access to elements outside shadow tree', () => {
