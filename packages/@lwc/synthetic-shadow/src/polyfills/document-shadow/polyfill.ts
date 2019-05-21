@@ -35,9 +35,9 @@ import { getOwnerDocument } from '../../shared/utils';
 let skipGlobalPatching: boolean;
 function isGlobalPatchingSkipped(elm: Element) {
     if (isUndefined(skipGlobalPatching)) {
-        const doc = getOwnerDocument(elm);
+        const ownerDocument = getOwnerDocument(elm);
         skipGlobalPatching =
-            doc.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
     }
     return isTrue(skipGlobalPatching);
 }
