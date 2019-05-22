@@ -56,7 +56,7 @@ export interface Template {
 
         /**
          * HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs in fallback mode.
+         * This attribute is used for style encapsulation when the engine runs with synthetic shadow.
          */
         shadowAttribute: string;
     };

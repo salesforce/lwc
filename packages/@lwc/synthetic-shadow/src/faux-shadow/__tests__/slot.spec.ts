@@ -79,7 +79,7 @@ describe('slotted elements', () => {
             }
         }
 
-        const elm = createElement('x-mock', { is: MyMock, fallback: true });
+        const elm = createElement('x-mock', { is: MyMock });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');
         const button = child.shadowRoot.querySelector('button');
@@ -117,7 +117,7 @@ describe('slotted elements', () => {
                 return parentHTML;
             }
         }
-        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        const elm = createElement('x-parent', { is: ParentComponent });
         document.body.appendChild(elm);
         const slot = childTemplate.querySelector('slot');
         const slotContent = slot.querySelector('div');
@@ -157,7 +157,7 @@ describe('slotted elements', () => {
                 return parentHTML;
             }
         }
-        const elm = createElement('x-parent', { is: ParentComponent, fallback: true });
+        const elm = createElement('x-parent', { is: ParentComponent });
         document.body.appendChild(elm);
         const slot = childTemplate.querySelector('slot');
         const children = slot.childNodes;

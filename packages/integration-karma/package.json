@@ -4,6 +4,8 @@
     "version": "0.40.1",
     "scripts": {
         "start": "karma start ./scripts/karma-configs/local.js",
+        "start:compat": "yarn start --browsers Chrome --compat",
+        "start:native": "yarn start --browsers Chrome --native-shadow",
         "test": "karma start ./scripts/karma-configs/local.js --single-run --browsers Chrome",
         "sauce": "karma start ./scripts/karma-configs/sauce.js --single-run",
         "coverage": "node ./scripts/merge-coverage.js"
@@ -12,6 +14,7 @@
         "@lwc/compiler": "0.40.1",
         "@lwc/engine": "0.40.1",
         "@lwc/rollup-plugin": "0.40.1",
+        "@lwc/synthetic-shadow": "0.40.1",
         "chokidar": "^2.0.4",
         "istanbul-api": "^2.0.6",
         "karma": "^3.1.3",

@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XErrorBoundary from 'x/errorBoundary';
 import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
 import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';

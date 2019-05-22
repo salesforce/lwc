@@ -19,7 +19,6 @@ const {
     appendChild,
     cloneNode,
     compareDocumentPosition,
-    hasChildNodes,
     insertBefore,
     removeChild,
     replaceChild,
@@ -54,12 +53,6 @@ const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnPrope
     ? getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
 
-const nodeValueDescriptor = getOwnPropertyDescriptor(Node.prototype, 'nodeValue')!;
-
-const nodeValueSetter: (this: Node, value: string) => void = nodeValueDescriptor.set!;
-
-const nodeValueGetter: (this: Node) => string = nodeValueDescriptor.get!;
-
 const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
     ? getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!
     : function(this: Node): boolean {
@@ -79,11 +72,8 @@ export {
     childNodesGetter,
     cloneNode,
     compareDocumentPosition,
-    hasChildNodes,
     insertBefore,
     isConnected,
-    nodeValueGetter,
-    nodeValueSetter,
     parentElementGetter,
     parentNodeGetter,
     removeChild,

@@ -24,6 +24,7 @@
         "@lwc/compiler": "0.40.1",
         "@lwc/engine": "0.40.1",
         "@lwc/rollup-plugin": "0.40.1",
+        "@lwc/synthetic-shadow": "0.40.1",
         "@lwc/wire-service": "0.40.1",
         "compat-polyfills": "0.21.4",
         "deepmerge": "^1.5.2",

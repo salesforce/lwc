@@ -3,10 +3,8 @@ exports.app = function(cmpName) {
         import { createElement } from 'lwc';
         import Cmp from 'integration/${cmpName}';
 
-        var fallback = location.search.indexOf('nativeShadow=true') !== -1 ? false : true;
         var element = createElement('integration-${cmpName}', {
-            is: Cmp,
-            fallback: fallback
+            is: Cmp
         });
 
         document.body.appendChild(element);
@@ -64,6 +62,15 @@ const COMPAT = `
     <script src="../../shared/downgrade.js"></script>
     <script src="../../shared/polyfills.js"></script>
 `;
+const SHADOW_POLYFILL = `
+    <script>
+    var fallback = location.search.indexOf('nativeShadow=true') === -1;
+    if (fallback) {
+        /** shadow dom polyfill is needed, this hack evaluate it before engine */
+        document.write('<s' + 'cript src="../../shared/shadow.js"></scr' + 'ipt>');
+    }
+    </script>
+`;
 
 exports.html = function(cmpName, isCompat) {
     return `
@@ -73,6 +80,7 @@ exports.html = function(cmpName, isCompat) {
             </head>
             <body>
                 ${isCompat ? COMPAT : ''}
+                ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
                 <script src="./${cmpName}.js"></script>
             </body>
@@ -88,6 +96,7 @@ exports.wireServiceHtml = function(cmpName, isCompat) {
             </head>
             <body>
                 ${isCompat ? COMPAT : ''}
+                ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
                 <script src="../../shared/todo.js"></script>
                 <script src="../../shared/wire.js"></script>

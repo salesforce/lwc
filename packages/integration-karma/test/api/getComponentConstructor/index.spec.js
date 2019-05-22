@@ -1,5 +1,5 @@
 import { LightningElement, getComponentConstructor } from 'lwc';
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 function testInvalidComponentInstance(name, obj) {
     it(`should return ${name} for non-component instance`, () => {

@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { createDocumentFragment, createElement } = Document.prototype;
 
-export { createDocumentFragment, createElement };
+/**
+ * JEST doesn't support Web Components APIs, instead we need to
+ * polyfill it with out synthetic shadow.
+ **/
+
+require('@lwc/synthetic-shadow');

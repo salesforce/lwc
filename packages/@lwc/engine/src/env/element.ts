@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { hasOwnProperty, getOwnPropertyDescriptor } from '../shared/language';
+import { getOwnPropertyDescriptor } from '../shared/language';
 
 const {
     hasAttribute,
@@ -14,13 +14,6 @@ const {
     removeAttribute,
     removeAttributeNS,
 } = Element.prototype;
-
-const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(
-    Element.prototype,
-    'innerHTML'
-)
-    ? getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set!
-    : getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!; // IE11
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
     Element.prototype,
@@ -35,5 +28,4 @@ export {
     removeAttribute,
     removeAttributeNS,
     tagNameGetter,
-    innerHTMLSetter,
 };

@@ -1,4 +1,5 @@
-import { createElement, extractShadowDataIds } from 'test-utils';
+import { createElement } from 'lwc';
+import { extractShadowDataIds } from 'test-utils';
 
 import NoDirectChild from 'x/noDirectChild';
 import Basic from 'x/basic';

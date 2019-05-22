@@ -1,25 +1,36 @@
-import { PatchedElement } from './element';
-import { iFrameContentWindowGetter } from '../env/dom';
-
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { getOwnPropertyDescriptor, defineProperty, isNull } from '../../shared/language';
+import { isNodeShadowed } from '../../faux-shadow/node';
 
-export interface HTMLIFrameElementConstructor {
-    prototype: HTMLIFrameElement;
-    new (): HTMLIFrameElement;
+export default function apply() {
+    // the iframe property descriptor for `contentWindow` should always be available, otherwise this method should never be called
+    const desc = getOwnPropertyDescriptor(
+        HTMLIFrameElement.prototype,
+        'contentWindow'
+    ) as PropertyDescriptor;
+    const { get: originalGetter } = desc;
+    desc.get = function(this: HTMLIFrameElement): WindowProxy | null {
+        const original = (originalGetter as any).call(this);
+        if (isNull(original) || !isNodeShadowed(this)) {
+            return original;
+        }
+        // only if the element is an iframe inside a shadowRoot, we care about this problem
+        // because in that case, the code that is accessing the iframe, is very likely code
+        // compiled with proxy-compat transformation. It is true that other code without those
+        // transformations might also access an iframe from within a shadowRoot, but in that,
+        // case, which is more rare, we still return the wrapper, and it should work the same,
+        // this part is just an optimization.
+        return wrapIframeWindow(original);
+    };
+    defineProperty(HTMLIFrameElement.prototype, 'contentWindow', desc);
 }
 
-/**
- * This is needed for compat mode to function because we don't use a real WeakMap,
- * instead compat will attempt to extract the proxy internal slot out of a cross
- * domain iframe, just to see if it is a proxy or not, and that will throw. To prevent
- * that from throwing, we just protect it by wrapping all iframes.
- */
-export function wrapIframeWindow(win: Window) {
+function wrapIframeWindow(win: WindowProxy): WindowProxy {
     return {
         postMessage() {
             // Typescript does not like it when you treat the `arguments` object as an array
@@ -71,19 +82,5 @@ export function wrapIframeWindow(win: Window) {
         get window() {
             return win.window;
         },
-    };
-}
-
-export function PatchedIframeElement(elm: HTMLIFrameElement): HTMLIFrameElementConstructor {
-    const Ctor = PatchedElement(elm) as HTMLIFrameElementConstructor;
-    return class PatchedHTMLIframeElement extends Ctor {
-        get contentWindow(this: HTMLIFrameElement) {
-            const original = iFrameContentWindowGetter.call(this);
-            if (original) {
-                const wrapped = wrapIframeWindow(original) as unknown;
-                return wrapped as Window;
-            }
-            return original;
-        }
-    };
+    } as any; // this is limited
 }

@@ -6,14 +6,13 @@
  */
 import assert from '../shared/assert';
 import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from '../shared/language';
-import { EmptyArray, ViewModelReflection, EmptyObject } from './utils';
+import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
     createVM,
     removeVM,
     getCustomElementVM,
     allocateInSlot,
-    setNodeOwnerKey,
     appendVM,
     runWithBoundaryProtection,
 } from './vm';
@@ -43,6 +42,14 @@ import {
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
+
+function observeElementChildNodes(elm: Element) {
+    (elm as any).$domManual$ = true;
+}
+
+function setElementShadowToken(elm: Element, token: string | undefined) {
+    (elm as any).$shadowToken$ = token;
+}
 
 export function updateNodeHook(oldVnode: VNode, vnode: VNode) {
     const { text } = vnode;
@@ -82,18 +89,14 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
 
 export function createTextHook(vnode: VNode) {
     const text = vnode.elm as Text;
-    const { uid, fallback } = vnode.owner;
-    setNodeOwnerKey(text, uid);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         patchTextNodeProto(text);
     }
 }
 
 export function createCommentHook(vnode: VNode) {
     const comment = vnode.elm as Comment;
-    const { uid, fallback } = vnode.owner;
-    setNodeOwnerKey(comment, uid);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         patchCommentNodeProto(comment);
     }
 }
@@ -119,21 +122,23 @@ enum LWCDOMMode {
 export function fallbackElmHook(vnode: VElement) {
     const { owner, sel } = vnode;
     const elm = vnode.elm as HTMLElement;
-    setNodeOwnerKey(elm, owner.uid);
-    if (isTrue(owner.fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         const {
             data: { context },
         } = vnode;
         const { shadowAttribute } = owner.context;
-        const isPortal =
+        if (
             !isUndefined(context) &&
             !isUndefined(context.lwc) &&
-            context.lwc.dom === LWCDOMMode.manual;
-        patchElementProto(elm, {
-            sel,
-            isPortal,
-            shadowAttribute,
-        });
+            context.lwc.dom === LWCDOMMode.manual
+        ) {
+            // this element will now accept any manual content inserted into it
+            observeElementChildNodes(elm);
+        }
+        // when running in synthetic shadow mode, we need to set the shadowToken value
+        // into each element from the template, so they can be styled accordingly.
+        setElementShadowToken(elm, shadowAttribute);
+        patchElementProto(elm, { sel });
     }
     if (process.env.NODE_ENV !== 'production') {
         const {
@@ -181,7 +186,7 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     const vm = getCustomElementVM(elm);
     const { children } = vnode;
     vm.aChildren = children;
-    if (isTrue(vnode.owner.fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
@@ -198,20 +203,17 @@ export function createViewModelHook(vnode: VCustomElement) {
         return;
     }
     const { mode, ctor, owner } = vnode;
-    const { uid, fallback } = owner;
-    setNodeOwnerKey(elm, uid);
     const def = getComponentDef(ctor);
     setElementProto(elm, def);
-    if (isTrue(fallback)) {
+    if (isTrue(useSyntheticShadow)) {
         const { shadowAttribute } = owner.context;
-        patchCustomElementProto(elm, {
-            def,
-            shadowAttribute,
-        });
+        // when running in synthetic shadow mode, we need to set the shadowToken value
+        // into each element from the template, so they can be styled accordingly.
+        setElementShadowToken(elm, shadowAttribute);
+        patchCustomElementProto(elm, { def });
     }
     createVM(elm, ctor, {
         mode,
-        fallback,
         owner,
     });
     const vm = getCustomElementVM(elm);

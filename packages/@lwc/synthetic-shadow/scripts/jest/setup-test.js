@@ -15,6 +15,8 @@ const { toLogError, toLogWarning } = require('./matchers/log-matchers');
 // Extract original methods from console
 const { warn: originalWarn, error: originalError } = console;
 
+require('../../dist/commonjs/es2017/shadow.js');
+
 let currentSpec;
 jasmine.getEnv().addReporter({
     specStarted(spec) {

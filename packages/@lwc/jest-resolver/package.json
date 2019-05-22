@@ -15,6 +15,7 @@
         "@lwc/engine": "0.40.1",
         "@lwc/jest-transformer": "0.40.1",
         "@lwc/module-resolver": "0.40.1",
+        "@lwc/synthetic-shadow": "0.40.1",
         "@lwc/wire-service": "0.40.1"
     },
     "publishConfig": {

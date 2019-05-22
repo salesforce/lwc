@@ -14,6 +14,7 @@
         "best-cli": "http://npm.lwcjs.org/best-cli/-/best-cli-0.6.4/2ae2c5824183096397076cb8109e2bb53365fbbc.tgz"
     },
     "dependencies": {
-        "@lwc/engine": "0.40.1"
+        "@lwc/engine": "0.40.1",
+        "@lwc/synthetic-shadow": "0.40.1"
     }
 }
