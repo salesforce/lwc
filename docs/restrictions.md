@@ -1,6 +1,6 @@
- # Raptor Restrictions
+ # Lightning Web Components Restrictions
 
-This document describes a series of restrictions, and limitations of Raptor Elements, and why they are in place. This is mostly intended for authors of LWC components.
+This document describes a series of restrictions, and limitations of Lightning Web Components Elements, and why they are in place. This is mostly intended for authors of LWC components.
 
 ## Components Restrictions
 
@@ -75,7 +75,7 @@ LWC components will not allow users to manually create or attach shadow roots, t
 
 ### Styling distributed nodes
 
-In WC, you can attempt to style root elements allocated inside an slot. In Raptor, that's considered a bad practice, and the `slotted` keyword is forbidden inside the CSS for the component. The reason for this is that overriding styles defined by the owner of the slotted element is considered introspection, and therefore it is prompt for breakage.
+In WC, you can attempt to style root elements allocated inside an slot. In Lightning Web Components, that's considered a bad practice, and the `slotted` keyword is forbidden inside the CSS for the component. The reason for this is that overriding styles defined by the owner of the slotted element is considered introspection, and therefore it is prompt for breakage.
 
 ## Events Restrictions
 

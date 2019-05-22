@@ -1,4 +1,4 @@
-# Raptor.Element API
+# LWC.LightningElement API
 
 ## getBoundingClientRect()
 

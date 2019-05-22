@@ -2,7 +2,7 @@
 
 ## Goal
 
-Define a way to signal when a Raptor bundle is global (platform available), plus the mimimum set of metadata required by our platform to operate.
+Define a way to signal when a Lightning Web Components bundle is global (platform available), plus the mimimum set of metadata required by our platform to operate.
 
 ## Requirements
 
@@ -116,4 +116,4 @@ This will prevent false possitive breakages when a developer makes a mistake, or
 
 ## Annexes
 
-* [Raptor Access Checks](https://docs.google.com/document/d/1o6TJQ-rle-BLwOK7kh73lY5Um5O6lWM-sypOrJa0N68/edit#heading=h.x7bydnvqngs9)
+* [Lightning Web Components Access Checks](https://docs.google.com/document/d/1o6TJQ-rle-BLwOK7kh73lY5Um5O6lWM-sypOrJa0N68/edit#heading=h.x7bydnvqngs9)

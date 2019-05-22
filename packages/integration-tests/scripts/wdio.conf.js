@@ -8,7 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
-const RaptorIntegrationReporter = require('./reporter');
+const LWCIntegrationReporter = require('./reporter');
 const MODE_COMPAT = 'compat';
 const mode = process.env.MODE || MODE_COMPAT;
 const webDriverPort = process.env.WD_PORT || 4567;
@@ -177,9 +177,9 @@ const config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
-    reporters: [RaptorIntegrationReporter, 'junit'],
+    reporters: [LWCIntegrationReporter, 'junit'],
     reporterOptions: {
-        RaptorIntegrationReporter: {
+        LWCIntegrationReporter: {
             mode: mode.toUpperCase(),
         },
         junit: {

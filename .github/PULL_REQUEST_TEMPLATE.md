@@ -4,8 +4,13 @@
 
 ## Does this PR introduce a breaking change?
 
-* [ ] Yes
-* [ ] No
+* ⚠️ `Yes`
+* 💚 `No`
+
+## Is this PR free of breaking changes?
+
+* ✅ `Yes`
+* 🚨 `No`
 
 If yes, please describe the impact and migration path for existing applications:
 Please check if your PR fulfills the following requirements:

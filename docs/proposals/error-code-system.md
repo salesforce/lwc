@@ -3,13 +3,13 @@ This proposal will address two items:
 2. Introduce error code system
 
 Summary:
-Developers will replace assert blocks/statements with invariant( condition, message ) calls. With invariant calls, during development mode, error messages will appear in the console in its full length; however in production mode, only a friendly URL with an errorCode will be shown. User can follow the URL to Raptor site to read detailed error explanation. This minimizes amount of text being shipped and hides error verboseness in production code.
+Developers will replace assert blocks/statements with invariant( condition, message ) calls. With invariant calls, during development mode, error messages will appear in the console in its full length; however in production mode, only a friendly URL with an errorCode will be shown. User can follow the URL to Lightning Web Components site to read detailed error explanation. This minimizes amount of text being shipped and hides error verboseness in production code.
 
 NOTE: This proposal mimics, with some deviations, logic from React's [Error Code system](https://reactjs.org/blog/2016/07/11/introducing-reacts-error-code-system.html).
 Please read over above react doc for it will help you follow current proposal.
 
 
-# Raptor Error Code system will consist of following parts:
+# Lightning Web Components Error Code system will consist of following parts:
 **1.** errorCodes.json -  json object with key:value pairs, where key is a unique error code and value is a unique message key. The message key is a result of concatenating error name-space and error-key ex:
 ```
 {
@@ -22,7 +22,7 @@ Please read over above react doc for it will help you follow current proposal.
 Error-code keys follow numeric sequence, where each sequence represents a collection of error codes related to an individual engine part ( ex: 100x - events, 200x - props, 300x - render ... ). Leading digit of the error code will represent a specific engine part and will help developers to quickly identify failing area ( any error starting with '1' is related to events for example ).
 NOTE: this file is append only - since these codes will be served on our website for documentation purposes and can potentially be referenced by support groups, these codes must not change.
 
-**2.** errors.json - json object with key:value pairs, where key is a unique error identifier and value is a message string ( see below for 'discussion needed' ). This message key becomes the value in the error-code map ( error-code inverse map is used during prod build to retrieve an error code by the message key - see below ). This is the part where Raptor deviates from React ( see more in info section for explanation ).
+**2.** errors.json - json object with key:value pairs, where key is a unique error identifier and value is a message string ( see below for 'discussion needed' ). This message key becomes the value in the error-code map ( error-code inverse map is used during prod build to retrieve an error code by the message key - see below ). This is the part where Lightning Web Components deviates from React ( see more in info section for explanation ).
 
 **3.** extract-errors.js - ( this may not be needed - see discussion section below ) - script that will parse all error file(s) during build time to create new code entries.
 
@@ -106,7 +106,7 @@ Cons:
 ----------------------------------------------------------------------------------------------------
 
 ### More Info
-**React vs Raptor: ErrorCode to Message mapping:**
+**React vs Lightning Web Components: ErrorCode to Message mapping:**
 **React:**
 Here is a brief overview on how react creates/maintains error + messages:
 - Developers write invariant( condition, "This is an actual error message displayed in the console") instead of assertions
@@ -122,7 +122,7 @@ Here is a brief overview on how react creates/maintains error + messages:
 - No language support
 - Hard to find already existing messages since error code file will have unstructured labels for everything
 
-**Raptor:**
+**Lightning Web Components:**
 - We are introducing one layer of indirection into errorCode to errorMessage mapping. Instead of mapping errorCode directly to the message string, we are mapping it to a unique message identified, which in our case is represented by namespace + message key ( ex: ENGINE_vm_not_found )
 
 **Pros:**
