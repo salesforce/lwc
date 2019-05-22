@@ -23,7 +23,6 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
-    isDeprecatedIsAttribute,
     isProhibitedIsAttribute,
     isSvgUseHref,
     isTabIndexAttribute,
@@ -39,7 +38,7 @@ import {
     getForEachParent,
 } from './expression';
 
-import { parseStyleText, parseClassNames, parseInlineStyle } from './style';
+import { parseStyleText, parseClassNames } from './style';
 
 import { createElement, isCustomElement, createText } from '../shared/ir';
 
@@ -83,7 +82,6 @@ import {
     LWCErrorInfo,
     normalizeToDiagnostic,
     ParserDiagnostics,
-    TransformerErrors,
 } from '@lwc/errors';
 
 function getKeyGenerator() {
@@ -166,7 +164,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                     parent.children.push(element);
                 }
 
-                applyStylesheet(element, elementNode);
+                validateInlineStyleElement(element);
+
                 applyForEach(element);
                 applyIterator(element);
                 applyIf(element);
@@ -458,39 +457,10 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function applyStylesheet(element: IRElement, node: parse5.AST.Default.Element) {
-        if (!isStyleElement(element)) {
-            return;
-        }
-
-        const src = node.childNodes.reduce((acc, n: any) => acc + n.value.trim(), '');
-
-        if (src.length === 0) {
-            warnOnElement(ParserDiagnostics.EMPTY_STYLE_TAG, node);
-        }
-
-        if (state.config.format === 'function') {
-            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_FUNCTION_FORMAT, node);
-        }
-
-        const isAtRoot = stack.length === 1;
-        const isFirstChildElement = element.parent!.children[0] === element;
-        if (!isAtRoot || !isFirstChildElement) {
-            warnOnElement(ParserDiagnostics.INVALID_STYLE_TAG_POSITION, node);
-        }
-
-        try {
-            element.inlineStyles = parseInlineStyle(src, state.config);
-        } catch (error) {
-            let message = error.message;
-            if (error.name === 'CssSyntaxError') {
-                message = error.reason;
-            }
-
-            return warnOnElement(TransformerErrors.CSS_IN_HTML_ERROR, node, [message]);
-        } finally {
-            // Clear all the nodes.
-            node.childNodes = [];
+    function validateInlineStyleElement(element: IRElement) {
+        // disallow <style> element
+        if (isStyleElement(element)) {
+            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
         }
     }
 
@@ -644,32 +614,18 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function applyComponent(element: IRElement) {
         const { tag } = element;
-        let component: string | undefined;
 
-        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
-            component = tag;
+        // Check if the element tag is a valid custom element name and is not part of known standard
+        // element name containing a dash.
+        if (!tag.includes('-') || DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
+            return;
         }
 
-        const isAttr = getTemplateAttribute(element, 'lwc-deprecated:is');
-        if (isAttr) {
-            if (isAttr.type !== IRAttributeType.String) {
-                return warnAt(
-                    ParserDiagnostics.DEPRECATED_IS_ATTRIBUTE_CANNOT_BE_EXPRESSION,
-                    [],
-                    isAttr.location
-                );
-            }
+        element.component = tag;
 
-            // Don't remove the is, because passed as attribute
-            component = isAttr.value;
-        }
-
-        if (component) {
-            element.component = component;
-
-            if (!state.dependencies.includes(component)) {
-                state.dependencies.push(component);
-            }
+        // Add the component to the list of dependencies if not already present.
+        if (!state.dependencies.includes(tag)) {
+            state.dependencies.push(tag);
         }
     }
 
@@ -772,9 +728,6 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-
-                // authored code for 'lwc-deprecated:is' attr maps to 'is'
-                const attrKey = isDeprecatedIsAttribute(name) ? 'is' : name;
                 const node = element.__original as parse5.AST.Default.Element;
 
                 // record secure import dependency if xlink attr is detected
@@ -783,7 +736,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                         state.secureDependencies.push('sanitizeAttribute');
                     }
                 }
-                attrs[attrKey] = attr;
+
+                attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;

@@ -178,18 +178,14 @@ describe('compiler result', () => {
             },
         };
         const { success, diagnostics } = await compile(config);
+
         expect(success).toBe(false);
-        expect(diagnostics.length).toBe(3);
-
-        // check warning
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe(
-            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency"
-        );
-
-        // check error
-        expect(diagnostics[2].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[2].message).toContain('Unclosed block');
+        expect(diagnostics).toMatchObject([
+            {
+                level: DiagnosticLevel.Fatal,
+                message: expect.stringContaining('Unclosed block'),
+            },
+        ]);
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
@@ -204,19 +200,14 @@ describe('compiler result', () => {
             },
         };
         const { success, diagnostics } = await compile(config);
+
         expect(success).toBe(false);
-        expect(diagnostics.length).toBe(2);
-
-        // check warning
-        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe(
-            "LWC1002: Error in module resolution: 'lwc' is imported by foo.js, but could not be resolved – treating it as an external dependency"
-        );
-
-        // check error
-        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
-        expect(diagnostics[1].filename).toBe('foo.html');
-        expect(diagnostics[1].message).toContain('<template> has no matching closing tag.');
+        expect(diagnostics).toMatchObject([
+            {
+                level: DiagnosticLevel.Fatal,
+                message: expect.stringContaining('<template> has no matching closing tag.'),
+            },
+        ]);
     });
 
     test('sourcemaps correctness', async () => {
