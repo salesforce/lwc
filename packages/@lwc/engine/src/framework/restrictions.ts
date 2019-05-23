@@ -290,7 +290,6 @@ function getAttributePatched(this: HTMLElement, attrName: string): string | null
 function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any) {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
@@ -305,7 +304,6 @@ function setAttributeNSPatched(
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     setAttributeNS.apply(this, ArraySlice.call(arguments));
@@ -315,7 +313,6 @@ function removeAttributePatched(this: HTMLElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
@@ -325,7 +322,6 @@ function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attr
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
@@ -353,21 +349,6 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     ) {
         assert.logError(
             `Invalid attribute access for \`${attrName}\`. Use the corresponding property \`${propName}\` instead.`,
-            elm
-        );
-    }
-}
-
-function assertAttributeMutationCapability(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { elm } = vm;
-    if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
-        const name = StringToLowerCase.call(attrName);
-        assert.logError(
-            `Invalid attribute access for \`${name}\`. Don't use DOM APIs to mutate elements created by a template. Use the template to update the attribute instead.`,
             elm
         );
     }
