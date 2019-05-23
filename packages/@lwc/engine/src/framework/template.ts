@@ -14,8 +14,6 @@ import {
     create,
     ArrayIndexOf,
     toString,
-    hasOwnProperty,
-    forEach,
     ArrayUnshift,
 } from '../shared/language';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
@@ -40,12 +38,6 @@ export interface Template {
      * The stylesheet associated with the template.
      */
     stylesheets?: StylesheetFactory[];
-
-    /**
-     * List of property names that are accessed of the component instance
-     * from the template.
-     */
-    ids?: string[];
 
     stylesheetTokens?: {
         /**
@@ -88,35 +80,6 @@ function validateSlots(vm: VM, html: any) {
             );
         }
     }
-}
-
-function validateFields(vm: VM, html: Template) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { component } = vm;
-
-    // validating identifiers used by template that should be provided by the component
-    const { ids = [] } = html;
-    forEach.call(ids, (propName: string) => {
-        if (!(propName in component)) {
-            // eslint-disable-next-line no-production-assert
-            assert.logError(
-                `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
-                vm.elm
-            );
-        } else if (hasOwnProperty.call(component, propName)) {
-            // eslint-disable-next-line no-production-assert
-            assert.fail(
-                `${component}'s template is accessing \`this.${toString(
-                    propName
-                )}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(
-                    propName
-                )}\`.`
-            );
-        }
-    });
 }
 
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
@@ -165,13 +128,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
             applyStyleAttributes(vm, hostAttribute, shadowAttribute);
             // Caching style vnode so it can be reused on every render
             context.styleVNode = evaluateCSS(vm, stylesheets, hostAttribute, shadowAttribute);
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            // one time operation for any new template returned by render()
-            // so we can warn if the template is attempting to use a binding
-            // that is not provided by the component instance.
-            validateFields(vm, html);
         }
     }
 
