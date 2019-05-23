@@ -78,7 +78,7 @@ function validateSlots(vm: VM, html: any) {
             )} for slot "${slotName}" in ${vm}.`
         );
 
-        if (ArrayIndexOf.call(slots, slotName) === -1) {
+        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
             assert.logError(
