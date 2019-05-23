@@ -18,16 +18,13 @@ import {
     getPropertyDescriptor,
     getPrototypeOf,
     isString,
+    isFalse,
     setPrototypeOf,
     StringToLowerCase,
     toString,
 } from '../shared/language';
 import { ComponentInterface } from './component';
-import {
-    getGlobalHTMLPropertiesInfo,
-    getPropNameFromAttrName,
-    isAttributeLocked,
-} from './attributes';
+import { globalHTMLProperties, getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getShadowRootVM, getCustomElementVM, VM, getComponentVM } from './vm';
 import {
@@ -77,6 +74,10 @@ export function lockDomMutation() {
     isDomMutationAllowed = false;
 }
 
+function portalRestrictionErrorMessage(name: string, type: string) {
+    return `The \`${name}\` ${type} is available only on elements that use the \`lwc:dom="manual"\` directive.`;
+}
+
 function getNodeRestrictionsDescriptors(
     node: Node,
     options: RestrictionsOptions
@@ -94,44 +95,32 @@ function getNodeRestrictionsDescriptors(
     return {
         appendChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `appendChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('appendChild', 'method'), this);
                 }
                 return appendChild.call(this, aChild);
             },
         }),
         insertBefore: generateDataDescriptor({
             value(this: Node, newNode: Node, referenceNode: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `insertBefore is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('insertBefore', 'method'), this);
                 }
                 return insertBefore.call(this, newNode, referenceNode);
             },
         }),
         removeChild: generateDataDescriptor({
             value(this: Node, aChild: Node) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `removeChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('removeChild', 'method'), this);
                 }
                 return removeChild.call(this, aChild);
             },
         }),
         replaceChild: generateDataDescriptor({
             value(this: Node, newChild: Node, oldChild: Node) {
-                if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `replaceChild is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('replaceChild', 'method'), this);
                 }
                 return replaceChild.call(this, newChild, oldChild);
             },
@@ -141,11 +130,8 @@ function getNodeRestrictionsDescriptors(
                 return originalNodeValueDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (!isDomMutationAllowed && this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `nodeValue is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (!isDomMutationAllowed && this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('nodeValue', 'property'), this);
                 }
                 originalNodeValueDescriptor.set!.call(this, value);
             },
@@ -155,11 +141,8 @@ function getNodeRestrictionsDescriptors(
                 return originalTextContentDescriptor.get!.call(this);
             },
             set(this: Node, value: string) {
-                if (this instanceof Element && options.isPortal !== true) {
-                    assert.logError(
-                        `textContent is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (this instanceof Element && isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('textContent', 'property'), this);
                 }
                 originalTextContentDescriptor.set!.call(this, value);
             },
@@ -184,11 +167,8 @@ function getElementRestrictionsDescriptors(
                 return originalInnerHTMLDescriptor.get!.call(this);
             },
             set(this: HTMLElement, value: string) {
-                if (options.isPortal !== true) {
-                    assert.logError(
-                        `innerHTML is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`,
-                        this
-                    );
+                if (isFalse(options.isPortal)) {
+                    assert.logError(portalRestrictionErrorMessage('innerHTML', 'property'), this);
                 }
                 return originalInnerHTMLDescriptor.set!.call(this, value);
             },
@@ -310,7 +290,6 @@ function getAttributePatched(this: HTMLElement, attrName: string): string | null
 function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any) {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
@@ -325,7 +304,6 @@ function setAttributeNSPatched(
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     setAttributeNS.apply(this, ArraySlice.call(arguments));
@@ -335,7 +313,6 @@ function removeAttributePatched(this: HTMLElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
@@ -345,7 +322,6 @@ function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attr
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertAttributeMutationCapability(vm, attrName);
         assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
@@ -372,23 +348,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
         propsConfig[propName]
     ) {
         assert.logError(
-            `Invalid attribute "${StringToLowerCase.call(
-                attrName
-            )}" for ${vm}. Instead access the public property with \`element.${propName};\`.`,
-            elm
-        );
-    }
-}
-
-function assertAttributeMutationCapability(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { elm } = vm;
-    if (isNodeFromVNode(elm) && isAttributeLocked(elm, attrName)) {
-        assert.logError(
-            `Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`,
+            `Invalid attribute access for \`${attrName}\`. Use the corresponding property \`${propName}\` instead.`,
             elm
         );
     }
@@ -473,19 +433,16 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     return {
         setAttribute: generateDataDescriptor({
             value(this: ComponentInterface, attrName: string, _value: any) {
-                // logging errors for experimental and special attributes
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
-                    const info = getGlobalHTMLPropertiesInfo();
-                    if (info[propName] && info[propName].attribute) {
-                        const { error, experimental } = info[propName];
+                    const globalAttrName =
+                        globalHTMLProperties[propName] && globalHTMLProperties[propName].attribute;
+                    // Check that the attribute name of the global property is the same as the
+                    // attribute name being set by setAttribute.
+                    if (attrName === globalAttrName) {
+                        const { error } = globalHTMLProperties[propName];
                         if (error) {
                             assert.logError(error, getComponentVM(this).elm);
-                        } else if (experimental) {
-                            assert.logError(
-                                `Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`,
-                                getComponentVM(this).elm
-                            );
                         }
                     }
                 }
@@ -513,47 +470,29 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const info = getGlobalHTMLPropertiesInfo();
     const descriptors = {};
-    forEach.call(getOwnPropertyNames(info), (propName: string) => {
+    forEach.call(getOwnPropertyNames(globalHTMLProperties), (propName: string) => {
         if (propName in proto) {
             return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = generateAccessorDescriptor({
             get(this: ComponentInterface) {
-                const { error, attribute, readOnly, experimental } = info[propName];
-                const msg: any[] = [];
-                msg.push(
-                    `Accessing the global HTML property "${propName}" in ${this} is disabled.`
-                );
+                const { error, attribute } = globalHTMLProperties[propName];
+                const msg: string[] = [];
+                msg.push(`Accessing the global HTML property "${propName}" is disabled.`);
                 if (error) {
                     msg.push(error);
-                } else {
-                    if (experimental) {
-                        msg.push(
-                            `This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`
-                        );
-                    }
-                    if (readOnly) {
-                        // TODO - need to improve this message
-                        msg.push(`Property is read-only.`);
-                    }
-                    if (attribute) {
-                        msg.push(
-                            `"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
-                        );
-                        msg.push(
-                            `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
-                        );
-                        msg.push(
-                            `  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`
-                        );
-                    }
+                } else if (attribute) {
+                    msg.push(`Instead access it via \`this.getAttribute("${attribute}")\`.`);
                 }
-                assert.logWarning(msg.join('\n'), getComponentVM(this).elm);
+                assert.logError(msg.join('\n'), getComponentVM(this).elm);
             },
-            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
-            set() {},
+            set() {
+                const { readOnly } = globalHTMLProperties[propName];
+                if (readOnly) {
+                    assert.logError(`The global HTML property \`${propName}\` is read-only.`);
+                }
+            },
         });
     });
     return descriptors;

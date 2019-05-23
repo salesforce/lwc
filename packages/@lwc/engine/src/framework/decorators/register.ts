@@ -17,7 +17,7 @@ import wireDecorator from './wire';
 import trackDecorator from './track';
 import apiDecorator from './api';
 import { EmptyObject } from '../utils';
-import { getAttrNameFromPropName, getGlobalHTMLPropertiesInfo } from '../attributes';
+import { getAttrNameFromPropName } from '../attributes';
 import decorate, { DecoratorMap } from './decorate';
 
 export interface PropDef {
@@ -129,39 +129,12 @@ function getPublicPropertiesHash(
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
-        const attrName = getAttrNameFromPropName(propName);
-        if (process.env.NODE_ENV !== 'production') {
-            const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
-            if (
-                globalHTMLProperty &&
-                globalHTMLProperty.attribute &&
-                globalHTMLProperty.reflective === false
-            ) {
-                const { error, attribute, experimental } = globalHTMLProperty;
-                const msg: string[] = [];
-                if (error) {
-                    msg.push(error);
-                } else if (experimental) {
-                    msg.push(
-                        `"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`
-                    );
-                } else {
-                    msg.push(
-                        `"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`
-                    );
-                    msg.push(
-                        `  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`
-                    );
-                }
-                assert.logError(msg.join('\n'));
-            }
-        }
-
+        const attr = getAttrNameFromPropName(propName);
         propsHash[propName] = assign(
             {
                 config: 0,
                 type: 'any',
-                attr: attrName,
+                attr,
             },
             props[propName]
         );

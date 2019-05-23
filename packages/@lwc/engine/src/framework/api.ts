@@ -270,8 +270,8 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
-                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+            assert.logError(
+                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
         }
@@ -321,10 +321,10 @@ export function ti(value: any): number {
     const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
         if (shouldNormalize) {
-            assert.logWarning(
+            assert.logError(
                 `Invalid tabindex value \`${toString(
                     value
-                )}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`,
+                )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
                 vmBeingRendered!.elm
             );
         }
@@ -392,8 +392,8 @@ export function c(
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
-                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+            assert.logError(
+                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
         }
@@ -444,10 +444,10 @@ export function i(
     markAsDynamicChildren(list);
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logWarning(
+            assert.logError(
                 `Invalid template iteration for value "${toString(
                     iterable
-                )}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
+                )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
                 vmBeingRendered!.elm
             );
         }
@@ -459,7 +459,7 @@ export function i(
             isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
-            )}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`
+            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -502,15 +502,15 @@ export function i(
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
                             iterationError = `Duplicated "key" attribute value for "<${
                                 childVnode.sel
-                            }>" in ${vmBeingRendered} for item number ${j}. Key with value "${
+                            }>" in ${vmBeingRendered} for item number ${j}. A key with value "${
                                 childVnode.key
-                            }" appears more than once in iteration. Key values must be unique numbers or strings.`;
+                            }" appears more than once in the iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
                         iterationError = `Invalid "key" attribute value in "<${
                             childVnode.sel
-                        }>" in ${vmBeingRendered} for item number ${j}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
+                        }>" in ${vmBeingRendered} for item number ${j}. Set a unique "key" value on all iterated child elements.`;
                     }
                 }
             });
@@ -681,7 +681,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
-                `Invalid id value "${id}". Expected a non-empty string.`,
+                `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
                 vmBeingRendered!.elm
             );
         }
@@ -698,10 +698,12 @@ export function gid(id: string | undefined | null): string | null | undefined {
 export function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(
-                `Invalid url value "${url}". Expected a non-empty string.`,
-                vmBeingRendered!.elm
-            );
+            if (isUndefined(url)) {
+                assert.logError(
+                    `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
+                    vmBeingRendered!.elm
+                );
+            }
         }
         return url;
     }

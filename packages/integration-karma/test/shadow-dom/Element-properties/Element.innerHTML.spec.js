@@ -48,7 +48,7 @@ describe('Element.innerHTML - set', () => {
         expect(() => {
             div.innerHTML = '<span>Hello World!</span>';
         }).toLogErrorDev(
-            /\[LWC error\]: innerHTML is disallowed in Element unless `lwc:dom="manual"` directive is used in the template./
+            /\[LWC error\]: The `innerHTML` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

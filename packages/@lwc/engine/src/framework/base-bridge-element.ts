@@ -20,21 +20,15 @@ import {
     defineProperty,
     isFunction,
     defineProperties,
-    isTrue,
-    isNull,
-    isObject,
-    toString,
 } from '../shared/language';
 import { getCustomElementVM, VM } from './vm';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { reactiveMembrane } from './membrane';
 
-let vmBeingUpdated: VM | null = null;
 export function prepareForPropUpdate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    vmBeingUpdated = vm;
 }
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
@@ -61,38 +55,7 @@ function createSetter(key: string) {
     if (isUndefined(fn)) {
         fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
             const vm = getCustomElementVM(this);
-            const { setHook, isRoot } = vm;
-            if (isTrue(isRoot)) {
-                vmBeingUpdated = vm;
-                if (process.env.NODE_ENV !== 'production') {
-                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // if newValue is observable (plain object or array)
-                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(
-                            `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key
-                            )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm
-                        );
-                    }
-                }
-            }
-            if (process.env.NODE_ENV !== 'production') {
-                if (vmBeingUpdated !== vm) {
-                    // logic for setting new properties of the element directly from the DOM
-                    // is only recommended for root elements created via createElement()
-                    assert.logWarning(
-                        `If property ${toString(
-                            key
-                        )} decorated with @api in ${vm} is used in the template, the value ${toString(
-                            newValue
-                        )} set manually may be overridden by the template, consider binding the property only in the template.`,
-                        vm.elm
-                    );
-                }
-            }
-            vmBeingUpdated = null; // releasing the lock
+            const { setHook } = vm;
             newValue = reactiveMembrane.getReadOnlyProxy(newValue);
             setHook(vm.component, key, newValue);
         };

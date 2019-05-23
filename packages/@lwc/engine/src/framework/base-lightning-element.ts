@@ -37,7 +37,7 @@ import {
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
-import { getComponentVM, VM, VMState } from './vm';
+import { getComponentVM, VM } from './vm';
 import { observeMutation, notifyMutation } from './watcher';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
@@ -84,8 +84,9 @@ function createBridgeToElementDescriptor(
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
+                    const name = vm.elm.constructor.name;
                     assert.logError(
-                        `${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`,
+                        `\`${name}\` constructor can't read the value of property \`${propName}\` because the owner component hasn't set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
                         vm.elm
                     );
                 }
@@ -218,22 +219,13 @@ BaseLightningElement.prototype = {
                 )} because no one is listening for the event "${evtName}" just yet.`
             );
 
-            if (vm.state !== VMState.connected) {
-                assert.logWarning(
-                    `Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(
-                        this
-                    )}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`,
-                    elm
-                );
-            }
-
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
-                assert.logWarning(
+                assert.logError(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
-                    )}. Event name should ${[
+                    )}. Event name must ${[
                         '1) Start with a lowercase letter',
-                        '2) Only contain lowercase letters, numbers, and underscores',
+                        '2) Contain only lowercase letters, numbers, and underscores',
                     ].join(' ')}`,
                     elm
                 );

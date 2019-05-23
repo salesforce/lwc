@@ -495,7 +495,7 @@ describe('html-element', () => {
             }).not.toThrow();
         });
 
-        it('should not log a warning when setting tracked value to null', function() {
+        it('should not log an error when setting tracked value to null', function() {
             class MyComponent extends LightningElement {
                 state = {};
                 connectedCallback() {
@@ -506,10 +506,10 @@ describe('html-element', () => {
             MyComponent.track = { state: 1 };
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
 
-            expect(() => document.body.appendChild(elm)).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogError();
         });
 
-        it('should not log a warning when initializing api value to null', function() {
+        it('should not log an error when initializing api value to null', function() {
             class MyComponent extends LightningElement {
                 foo = null;
             }
@@ -518,7 +518,7 @@ describe('html-element', () => {
             };
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
-            expect(() => document.body.appendChild(elm)).not.toLogWarning();
+            expect(() => document.body.appendChild(elm)).not.toLogError();
         });
     });
 
@@ -1386,7 +1386,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                `constructor should not read the value of property "title". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`
+                "`PatchedHTMLElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `PatchedHTMLElement` constructor to set a default value for the property."
             );
         });
 
