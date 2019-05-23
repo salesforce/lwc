@@ -297,15 +297,6 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     // only add to DOM if there is no other listener on the same placement yet
     if (cmpEventHandlers.length === 0) {
         addEventListener.call(elm, type, domListener);
-    } else if (process.env.NODE_ENV !== 'production') {
-        if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-            assert.logError(
-                `${toString(
-                    elm
-                )} has a duplicate listener for event "${type}". Instead add the event listener in the connectedCallback() hook.`,
-                elm
-            );
-        }
     }
     ArrayPush.call(cmpEventHandlers, wrappedListener);
 }
@@ -323,18 +314,6 @@ function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
         if (listeners!.length === 0) {
             removeEventListener.call(elm, type, domListener);
         }
-    } else if (process.env.NODE_ENV !== 'production') {
-        const tagName = elm.tagName.toLowerCase();
-        assert.logError(
-            [
-                `Did not find an event listener for event "${type}" when executing removeEventListener`,
-                `for <${tagName}>. Check that the event "${type}" is spelled correctly or that`,
-                `removeEventListener is being called the same number of times as addEventListener. One`,
-                `way to guarantee this is to add event listeners in the connectedCallback hook and to`,
-                `remove event listeners in the disconnectedCallback hook.`,
-            ].join(' '),
-            elm
-        );
     }
 }
 

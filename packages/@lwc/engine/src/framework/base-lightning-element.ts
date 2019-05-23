@@ -37,7 +37,7 @@ import {
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
-import { getComponentVM, VM, VMState } from './vm';
+import { getComponentVM, VM } from './vm';
 import { observeMutation, notifyMutation } from './watcher';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
@@ -218,15 +218,6 @@ BaseLightningElement.prototype = {
                     this
                 )} because no one is listening for the event "${evtName}" just yet.`
             );
-
-            if (vm.state !== VMState.connected) {
-                assert.logError(
-                    `Unreachable event "${evtName}" dispatched from disconnected element ${getComponentAsString(
-                        this
-                    )}. Events can reach the parent element only after the element is connected via connectedCallback and before the element is disconnected via disconnectedCallback.`,
-                    elm
-                );
-            }
 
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
                 assert.logError(
