@@ -69,7 +69,7 @@ function createSetter(key: string) {
                     // if newValue is observable (plain object or array)
                     const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
                     if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(
+                        assert.logError(
                             `Assigning a non-reactive value ${newValue} to member property ${toString(
                                 key
                             )} of ${vm} is not common because mutations on that value cannot be observed.`,
@@ -82,7 +82,7 @@ function createSetter(key: string) {
                 if (vmBeingUpdated !== vm) {
                     // logic for setting new properties of the element directly from the DOM
                     // is only recommended for root elements created via createElement()
-                    assert.logWarning(
+                    assert.logError(
                         `If property ${toString(
                             key
                         )} decorated with @api in ${vm} is used in the template, the value ${toString(
