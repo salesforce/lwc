@@ -128,7 +128,7 @@ if (!fs.existsSync(engineModeFile)) {
     throw new Error(
         'Compat version of engine not generated in expected location: ' +
             engineModeFile +
-            '.\nGenerate artifacts from the top-level Raptor project first'
+            '.\nGenerate artifacts from the top-level Lightning Web Components project first'
     );
 }
 

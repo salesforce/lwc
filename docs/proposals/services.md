@@ -1,8 +1,8 @@
-# Services in Raptor
+# Services in Lightning Web Components
 
 Just like the virtual DOM implementation (currently snabbdom) provides hooks for controlling the diffing process of vnodes, we need similar capabilities for component instances. This API is not intended for component authors; it is a high-privilege low-level API for application developers.
 
-__This is the first draft of what we call Raptor Services.__
+__This is the first draft of what we call Lightning Web Components Services.__
 
 ## Use Cases
 
@@ -20,7 +20,7 @@ Services may not be unregistered. A sevice may instead choose not to exhibit beh
 The following code demonstrates the registration of a new service:
 
 ```js
-Raptor.register({
+Engine.register({
     declared: (Ctor, def) => {}, // removed from first implementation
     constructed: (cmp, data, def, context) => {}, // removed from first implementation
     connected: (cmp, data, def, context) => {},
@@ -55,13 +55,13 @@ _Note: the hooks are stateless, they return nothing, and they store nothing sinc
 #### 1. Focusable Decorator
 
 ```js
-Raptor.service({
+Engine.service({
     declared: (Ctor, def) => {
         if (!Ctor.x) {
             return; // exit fast if there is nothing to do
         }
         // Act if the constructor is marked to be decorated with `x`
-        // Assert: Ctor must extends Raptor.Element.
+        // Assert: Ctor must extends Engine.LightningElement.
         const selector = Ctor.x.selector;
         Ctor.prototype.focus = transferableFocusFactory(selector);
         Ctor.prototype.blur = transferableBlurFactory(selector);
@@ -77,7 +77,7 @@ Raptor.service({
 #### 2. Locker Service
 
 ```js
-Raptor.service({
+Engine.service({
     declared: (Ctor, def) => {
         if (!CheckIfLockerShouldBeAdded(Ctor)) {
             return;

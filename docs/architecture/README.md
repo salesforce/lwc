@@ -1,6 +1,6 @@
 # Architecture Diagrams
 
-The following are a series of flow diagrams describing the internal behavior of Raptor Engine:
+The following are a series of flow diagrams describing the internal behavior of Lightning Web Components Engine:
 
 ## Component Creation
 

@@ -1,4 +1,4 @@
-# Internationalization in Raptor Component
+# Internationalization in Lightning Web Component
 
 ## Status
 
@@ -6,7 +6,7 @@ _first draft_
 
 ## Goal
 
-Provide best-in-class localization infrastructure for Raptor Components.
+Provide best-in-class localization infrastructure for Lightning Web Components.
 
 ## Use Cases
 
@@ -29,7 +29,7 @@ The template grammar is following a simplified `Fluent` grammar by adding certai
 
 #### Interpolation
 
-Raptor already support interpolation in the body of the tags by using `{identifier}`, with no spaces, and where the `identifier` must be a JavaScript valid identifier. Additionally, you can reference any property member, e.g.: `{foo.bar}`.
+Lightning Web Components already support interpolation in the body of the tags by using `{identifier}`, with no spaces, and where the `identifier` must be a JavaScript valid identifier. Additionally, you can reference any property member, e.g.: `{foo.bar}`.
 
 Additionally, interpolation of text and HTML markup is supported. e.g.:
 
@@ -152,9 +152,9 @@ For custom elements, since we do not know what is localizable or not, the develo
 
 In the example above, even though the compiler does not know what `tooltip` attributes is, it will extract it for localization because it is marked with the `intl:` directive.
 
-### Raptor vs Fluent
+### Lightning Web Components vs Fluent
 
-As we mentioned above, Raptor template uses a more restrictive grammar, where:
+As we mentioned above, Lightning Web Components template uses a more restrictive grammar, where:
 
 * no spaces can be used between `{` and `}` and the identifier.
 * no `$` is needed before identifiers to reference local variables.
