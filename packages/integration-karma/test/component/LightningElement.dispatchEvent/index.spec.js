@@ -51,33 +51,19 @@ it('should throw when event is dispatched during construction', function() {
     );
 });
 
-it('should log warning when element is not connected', function() {
-    const elm = createElement('x-test', { is: Test });
-
-    expect(() => {
-        elm.dispatch(new CustomEvent('event'));
-    }).toLogErrorDev(
-        /Unreachable event "event" dispatched from disconnected element <x-test>. Events can only reach the parent element after the element is connected \(via connectedCallback\) and before the element is disconnected\(via disconnectedCallback\)./
-    );
-});
-
 function testInvalidEvent(reason, name) {
-    it(`should warn if an event name ${reason}`, () => {
+    it(`should log an error if an event name ${reason}`, () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(() => {
             elm.dispatch(new CustomEvent(name));
-        }).toLogErrorDev(
-            new RegExp(
-                `Invalid event type "${name}" dispatched in element <x-test>\\. Event name should 1\\) Start with a lowercase letter 2\\) Only contain lowercase letters, numbers, and underscores`
-            )
-        );
+        }).toLogErrorDev(new RegExp(`Invalid event type "${name}" dispatched in element <x-test>`));
     });
 }
 
 function testValidEvent(reason, name) {
-    it(`should not warn if an event name ${reason}`, () => {
+    it(`should not log an error if an event name ${reason}`, () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 

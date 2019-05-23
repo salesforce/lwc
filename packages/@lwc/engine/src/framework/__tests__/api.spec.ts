@@ -125,7 +125,7 @@ describe('api', () => {
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should log warning when invalid iteration value', () => {
+        it('should log an error when invalid iteration value', () => {
             const html = compileTemplate(`<template></template>`);
             class VmRendering extends LightningElement {
                 render() {

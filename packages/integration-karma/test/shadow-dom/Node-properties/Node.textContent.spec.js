@@ -47,7 +47,7 @@ describe('Node.textContent - setter', () => {
         expect(() => {
             div.textContent = '<span>Hello World!</span>';
         }).toLogErrorDev(
-            /\[LWC error\]: textContent is disallowed in Element unless `lwc:dom="manual"` directive is used in the template./
+            /\[LWC error\]: The `textContent` property is available only on elements that use the `lwc:dom="manual"` directive./
         );
     });
 });

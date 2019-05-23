@@ -495,7 +495,7 @@ describe('html-element', () => {
             }).not.toThrow();
         });
 
-        it('should not log a warning when setting tracked value to null', function() {
+        it('should not log an error when setting tracked value to null', function() {
             class MyComponent extends LightningElement {
                 state = {};
                 connectedCallback() {
@@ -509,7 +509,7 @@ describe('html-element', () => {
             expect(() => document.body.appendChild(elm)).not.toLogError();
         });
 
-        it('should not log a warning when initializing api value to null', function() {
+        it('should not log an error when initializing api value to null', function() {
             class MyComponent extends LightningElement {
                 foo = null;
             }
