@@ -2,11 +2,6 @@
 ## Details
 
 
-## Does this PR introduce a breaking change?
-
-* ⚠️ `Yes`
-* 💚 `No`
-
 ## Is this PR free of breaking changes?
 
 * ✅ `Yes`
@@ -15,5 +10,5 @@
 If yes, please describe the impact and migration path for existing applications.
 
 ## The PR fulfills these requirements:
-* Tests for the changes have been added (for bug fixes / features) ✅ / ❌
-* Docs have been added / updated (for bug fixes / features) ✅ / ❌
+* Have tests for the proposed changes been added? ✅ / ❌
+* Followed [these instructions](../CONTRIBUTING.md#-commit-message-conventions) to clearly describe issue being fixed or feature enhanced? ✅ / ❌

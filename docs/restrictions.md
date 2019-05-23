@@ -1,6 +1,6 @@
  # Lightning Web Components Restrictions
 
-This document describes a series of restrictions, and limitations of Lightning Web Components Elements, and why they are in place. This is mostly intended for authors of LWC components.
+This document describes a series of restrictions, and limitations of Lightning web component elements, and why they are in place. This is mostly intended for authors of Lightning web components.
 
 ## Components Restrictions
 
@@ -36,7 +36,7 @@ These are the restrictions that we are imposing up top of the standard set of re
 
 ### Nodes
 
-* [x] `node.childNodes` is discouraged since it returns a LiveNode collection. In LWC we force it to return an Array snapshot.
+* [x] `node.childNodes` is discouraged since it returns a LiveNode collection. In Lightning Web Components we force it to return an Array snapshot.
 
 ### Elements
 
@@ -60,7 +60,7 @@ These are the restrictions that we are imposing up top of the standard set of re
 * [ ] enable `this.template.getElementByTagName`.
 * [ ] `this.template.firstChild` and `this.template.lastChild` are disallowed to support auto-insertion of styles when needed.
 
-LWC components will not allow users to manually create or attach shadow roots, that's done by the engine. And as part of the process, we will create the shadow root with `open` mode unless otherwise specified. As a result of disallowing manual creation, the following APIs cannot be used by consumers:
+Lightning web components will not allow users to manually create or attach shadow roots, that's done by the engine. And as part of the process, we will create the shadow root with `open` mode unless otherwise specified. As a result of disallowing manual creation, the following APIs cannot be used by consumers:
 
  * [x] Element.attachShadowRoot
  * [ ] Event.composedPath()

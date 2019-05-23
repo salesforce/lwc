@@ -20,7 +20,7 @@ Services may not be unregistered. A sevice may instead choose not to exhibit beh
 The following code demonstrates the registration of a new service:
 
 ```js
-lwc.register({
+Engine.register({
     declared: (Ctor, def) => {}, // removed from first implementation
     constructed: (cmp, data, def, context) => {}, // removed from first implementation
     connected: (cmp, data, def, context) => {},
@@ -55,13 +55,13 @@ _Note: the hooks are stateless, they return nothing, and they store nothing sinc
 #### 1. Focusable Decorator
 
 ```js
-lwc.service({
+Engine.service({
     declared: (Ctor, def) => {
         if (!Ctor.x) {
             return; // exit fast if there is nothing to do
         }
         // Act if the constructor is marked to be decorated with `x`
-        // Assert: Ctor must extends lwc.LightningElement.
+        // Assert: Ctor must extends Engine.LightningElement.
         const selector = Ctor.x.selector;
         Ctor.prototype.focus = transferableFocusFactory(selector);
         Ctor.prototype.blur = transferableBlurFactory(selector);
@@ -77,7 +77,7 @@ lwc.service({
 #### 2. Locker Service
 
 ```js
-lwc.service({
+Engine.service({
     declared: (Ctor, def) => {
         if (!CheckIfLockerShouldBeAdded(Ctor)) {
             return;

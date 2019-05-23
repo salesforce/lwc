@@ -3,7 +3,7 @@ This proposal will address two items:
 2. Introduce error code system
 
 Summary:
-Developers will replace assert blocks/statements with invariant( condition, message ) calls. With invariant calls, during development mode, error messages will appear in the console in its full length; however in production mode, only a friendly URL with an errorCode will be shown. User can follow the URL to Lightning Web Components site to read detailed error explanation. This minimizes amount of text being shipped and hides error verboseness in production code.
+Developers will replace assert blocks/statements with invariant( condition, message ) calls. With invariant calls, during development mode, error messages will appear in the console in its full length; however in production mode, only a friendly URL with an errorCode will be shown. User can follow the URL to the Lightning Web Components site to read detailed error explanation. This minimizes amount of text being shipped and hides error verboseness in production code.
 
 NOTE: This proposal mimics, with some deviations, logic from React's [Error Code system](https://reactjs.org/blog/2016/07/11/introducing-reacts-error-code-system.html).
 Please read over above react doc for it will help you follow current proposal.

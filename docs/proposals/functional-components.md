@@ -8,7 +8,7 @@ This proposal has been _withdrawn_ with the following resolution:
 
 ## Lightning Web Components Functional Component Definition
 
-Functional components are a considerable lean implementation of a LWC Component. Its responsibilities are to receive some payload (public props), and should produce a new HTML fragment, which is usually the compiled `<template>` tag module.
+Functional components are a considerable lean implementation of a Lightning web component. Its responsibilities are to receive some payload (public props), and should produce a new HTML fragment, which is usually the compiled `<template>` tag module.
 
 ## Simple Example
 
