@@ -130,11 +130,11 @@ lwc-integration/src/components/<functional-area>
 ----<specific-repro>.spec.js
 ```
 
-Here `<functional-area>` would be the broader area under test such as events, slots, track, etc. These top level directory categories should be regulated by us (LWC core team) to ensure no duplicate or unnecessary categories are added.
+Here `<functional-area>` would be the broader area under test such as events, slots, track, etc. These top level directory categories should be regulated by us (Lightning Web Components core team) to ensure no duplicate or unnecessary categories are added.
 
 `<specific-repro>` will be the more specific area of the broader category that is under test. For example, you could have `connectedCallback-listener` under the `events` category for a test case that adds an event listener inside the connectedCallback. It is important to note we only want a single repro per component to make debugging as easy as possible.
 
-In the above example, `app` and `child` are present because the test verifies event handling between a child and parent component and to reflect the playground setup, but are not required for every test. `<specific-repro>.html` may also use the `<test-case>` template currently used in some lwc-integration tests to cleanly display Github issue and LWC playground links.
+In the above example, `app` and `child` are present because the test verifies event handling between a child and parent component and to reflect the playground setup, but are not required for every test. `<specific-repro>.html` may also use the `<test-case>` template currently used in some lwc-integration tests to cleanly display Github issue and Lightning Web Components playground links.
 
 The level describe blocks inside `<specific-repro>.spec.js` should also note the Github issue number if relevant. For example, `` describe('Issue 657: Cannot attach event in `connectedCallback`', () => {...}) ``.
 
