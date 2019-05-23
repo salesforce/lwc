@@ -21,8 +21,6 @@ import {
     isFunction,
     defineProperties,
     isTrue,
-    isNull,
-    isObject,
     toString,
 } from '../shared/language';
 import { getCustomElementVM, VM } from './vm';
@@ -64,19 +62,6 @@ function createSetter(key: string) {
             const { setHook, isRoot } = vm;
             if (isTrue(isRoot)) {
                 vmBeingUpdated = vm;
-                if (process.env.NODE_ENV !== 'production') {
-                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
-                    // if newValue is observable (plain object or array)
-                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logError(
-                            `Assigning a non-reactive value ${newValue} to member property ${toString(
-                                key
-                            )} of ${vm} is not common because mutations on that value cannot be observed.`,
-                            vm.elm
-                        );
-                    }
-                }
             }
             if (process.env.NODE_ENV !== 'production') {
                 if (vmBeingUpdated !== vm) {
