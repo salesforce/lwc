@@ -384,6 +384,21 @@ describe('root errors', () => {
             location: EXPECTED_LOCATION,
         });
     });
+
+    it('disallows is attribute in non-custom component', () => {
+        const { warnings } = parseTemplate(`<template>
+            <x-menu></x-menu>
+            <button is="x-button"></button>
+        </template>`);
+
+        expect(warnings).toContainEqual({
+            code: expect.any(Number),
+            filename: undefined,
+            level: DiagnosticLevel.Error,
+            message: expect.stringContaining('"is" attribute is not supported'),
+            location: EXPECTED_LOCATION,
+        });
+    });
 });
 
 describe('expression', () => {
