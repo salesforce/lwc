@@ -1,11 +1,11 @@
 # LWC Compiler
 
-@lwc/compiler is an open source project that enables developers to take full control of processing a single Lightning Web Component module for runtime consumption.
+@lwc/compiler is an open source project that enables developers to take full control of processing a single Lightning Web Components module for runtime consumption.
 
 ## Installation
 
 ```sh
-yarn add -D @lwc/compiler
+yarn add --dev @lwc/compiler
 ```
 
 ## APIs

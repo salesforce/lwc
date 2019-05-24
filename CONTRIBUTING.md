@@ -1,8 +1,13 @@
-# Contributing
+# Contributing to Lightning Web Components
+We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework. 
 
-Please familiarize yourself with the [project philosophy][project-philosophy].
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Building LWC](#building-lwc)
+- [Testing](#testing)
+- [Git Workflow](#git-workflow)
 
-[Set up SSH access to Github][setup-github-ssh] if you haven't done so already.
+Before you start, familiarize yourself with [Lightning Web Components](https://lwc.dev/guide/introduction).
 
 ## Requirements
 
@@ -11,6 +16,8 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
  * Yarn >= 1.6
 
 ## Installation
+
+[Set up SSH access to Github][setup-github-ssh] if you haven't done so already.
 
 ### 1) Download the repository
 
@@ -28,37 +35,17 @@ yarn install
 
 If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: unable to get local issuer certificate*, or a registry communication issue then re-verify that step 2 was successful.
 
-### 3) Start the server
-
-```bash
-cd packages/lwc-integration/
-yarn start
-```
-
-### 4) View examples
-
-Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
-
-
 ## Building LWC
 
-When using `yarn start` from packages/lwc-integration, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
-
 ```bash
-yarn build:prod
+yarn build
 ```
 
-## Integration Testing LWC
+## Testing
 
-When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
-- integration-tests: For tests related to keyboard navigation use this suite. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/master/packages/integration-tests/README.md) to learn more.
-- integration-karma: For all other types of integration tests, use this suite. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/master/packages/integration-karma/README.md) to learn more.
+### Unit Testing LWC
 
-
-
-## Unit Testing LWC
-
-When developing lwc, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the follwing command from the root directory:
+When developing LWC, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the follwing command from the root directory:
 
 ```bash
 yarn test
@@ -70,36 +57,34 @@ Additionally, the testing can be started in 'watch' mode which allows for automa
 yarn test --watch
 ```
 
+### Integration Testing LWC
+
+When developing LWC, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
+- integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
+- integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
+
+
 ## Editor Configurations
 
-Configuring your editor to use our lint and code style rules will help make the
-code review process delightful!
+Configuring your editor to use our lint and code style rules will make the code review process delightful!
 
-### types
+### Types
 
-LWC relies on type annotations heavily.
+LWC relies on type annotations.
 
 * Make sure your editor supports [typescript](https://www.typescriptlang.org/).
 
-### eslint
+### ESLint
 
 [Configure your editor][eslint-integrations] to use our eslint configurations.
 
-### editorconfig
-
-[Configure your editor][editorconfig-plugins] to use our editor configurations.
-
-### Visual Studio Code
-
-```
-ext install EditorConfig
-```
 
 ## Git Workflow
 
 The process of submitting a pull request is fairly straightforward and
 generally follows the same pattern each time:
 
+1. [Fork the LWC repo](#form-the-lwc-repo)
 1. [Create a feature branch](#create-a-feature-branch)
 1. [Make your changes](#make-your-changes)
 1. [Rebase](#rebase)
@@ -107,6 +92,15 @@ generally follows the same pattern each time:
 1. [Create a pull request](#create-a-pull-request)
 1. [Update the pull request](#update-the-pull-request)
 1. [Commit Message Guidelines](#commit)
+
+### Fork the LWC repo
+
+[Fork][fork-a-repo] the [salesforce/lwc](https://github.com/salesforce/lwc) repo. Clone your fork in your local workspace and [configure][configuring-a-remote-for-a-fork] your remote repository settings.
+```bash
+git clone git@github.com:<YOUR-USERNAME>/lwc.git
+cd lwc
+git remote add upstream git@github.com:salesforce/lwc.git
+```
 
 ### Create a feature branch
 
@@ -139,9 +133,9 @@ and it will require a rebase. The following steps can help:
 
 ```bash
 git checkout master
-git pull origin master
+git pull upstream master
 git checkout <name-of-the-feature>
-git rebase master <name-of-the-feature>
+git rebase upstream/master
 ```
 
 _note: If no conflicts arise, these commands will ensure that your changes are applied on top of the master branch. Any conflicts will have to be manually resolved._
@@ -163,17 +157,15 @@ the ones related to the files you make changes to!
 
 #### Run tests
 
-```sh
-yarn test
-```
+Test your change by running the unit tests and integration tests. Insructions [here](#testing).
 
 ### Create a pull request
 
 If you've never created a pull request before, follow [these
 instructions][creating-a-pull-request]. Pull request samples can be found [here](https://github.com/salesforce/lwc/pulls)
 
-#### PR Title
-LWC PR title follows [conventional commit](#commit) format and is automatically validated by our CI.
+#### Pull Request Title
+A pull request title follows [conventional commit](#commit) format and is automatically validated by our CI.
 ```shell
 ex:
 commit-type(optional scope): commit description. ( NOTE: space between column and the message )
@@ -252,7 +244,7 @@ Must be one of the following:
 * **test**: Adding missing tests or correcting existing tests
 
 #### Commit Scope
-The scope should be the name of the npm package affected (as perceived by person reading changelog generated from commit messages.
+The scope should be the name of the npm package affected (as perceived by the person reading the changelog generated from commit messages.
 
 There are currently a few exceptions to the "use package name" rule:
 
@@ -269,17 +261,17 @@ The subject contains succinct description of the change:
 * no dot (.) at the end
 
 #### Commit Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
+Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes". The body should include the motivation for the change and contrast this with previous behavior.
 
 #### Commit Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
+The footer should contain any information about **Breaking Changes** and is also the place to reference GitHub issues that this commit **closes**.
 
 **Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
+[fork-a-repo]: https://help.github.com/en/articles/fork-a-repo
+[configuring-a-remote-for-a-fork]: https://help.github.com/en/articles/configuring-a-remote-for-a-fork
 [setup-github-ssh]: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 [creating-a-pull-request]: https://help.github.com/articles/creating-a-pull-request/
 [eslint-integrations]: http://eslint.org/docs/user-guide/integrations
-[editorconfig-plugins]: http://editorconfig.org/#download
-[project-philosophy]: https://docs.google.com/document/d/1tTUv-rGEnNFYteR7kSh-bpYe-CF12X-PrQoasIRTDOI/edit#heading=h.q2bg3fxu2csu
+[integration-test-readme]: https://github.com/salesforce/lwc/blob/master/packages/integration-tests/README.md
+[integration-karma-readme]: https://github.com/salesforce/lwc/blob/master/packages/integration-karma/README.md
