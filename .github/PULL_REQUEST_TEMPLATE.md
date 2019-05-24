@@ -2,12 +2,12 @@
 ## Details
 
 
-## Is this PR free of breaking changes?
+## Does this PR introduce breaking changes?
 
-* ✅ `Yes`
-* 🚨 `No`
+* ✅ `No, it does not introduce breaking changes.`
+* 🚨 `Yes, it does introduce breaking changes.`
 
-If no, please describe the impact and migration path for existing applications.
+If yes, please describe the impact and migration path for existing applications.
 
 ## The PR fulfills these requirements:
 * Have tests for the proposed changes been added? ✅ / ❌
