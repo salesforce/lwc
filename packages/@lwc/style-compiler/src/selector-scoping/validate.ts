@@ -15,6 +15,7 @@ import {
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
+const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
 
 function validateSelectors(root: Root) {
     root.walk(node => {
@@ -55,35 +56,20 @@ function validateAttribute(root: Root) {
                 return;
             }
 
-            // If the attribute name is not a globally available attribute, the attribute selector is required
-            // to be associated with a tag selector, so we can validate its usage. Let's walk the compound selector
-            // backward to find the associated tag selector.
-            let tagSelector: Tag | undefined;
-            let runner = node.prev();
+            const isTemplateDirective = TEMPLATE_DIRECTIVES.some(directiveRegex =>
+                directiveRegex.test(attributeName)
+            );
 
-            while (tagSelector === undefined && runner !== undefined && !isCombinator(runner)) {
-                if (isTag(runner)) {
-                    tagSelector = runner;
-                } else {
-                    runner = runner.prev();
-                }
-            }
+            if (isTemplateDirective) {
+                const message = [
+                    `Invalid usage of attribute selector "${attributeName}". `,
+                    `"${attributeName}" is a template directive and therefore not supported in css rules.`,
+                ];
 
-            if (tagSelector !== undefined) {
-                // If compound selector is associated with a tag selector, we can validate the usage of the
-                // attribute against the specific tag.
-                const { value: tagName } = tagSelector;
-                if (!isKnowAttributeOnElement(tagName, attributeName)) {
-                    const message = [
-                        `Invalid usage of attribute selector "${attributeName}". `,
-                        `Attribute "${attributeName}" is not a known attribute on <${tagName}> element.`,
-                    ];
-
-                    throw root.error(message.join(''), {
-                        index: sourceIndex,
-                        word: attributeName,
-                    });
-                }
+                throw root.error(message.join(''), {
+                    index: sourceIndex,
+                    word: attributeName,
+                });
             }
         }
     });

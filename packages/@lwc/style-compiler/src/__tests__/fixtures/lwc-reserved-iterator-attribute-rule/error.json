@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"iterator:iteratorName\". \"iterator:iteratorName\" is a template directive and therefore not supported in css rules.",
+    "column": 1,
+    "line": 1
+}
