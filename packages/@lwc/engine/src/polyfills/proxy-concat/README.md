@@ -26,4 +26,4 @@ Proxy {0: 3, 1: 4}
 undefined
 ```
 
-> TODO: #XXX - Remove this polyfill once https://bugs.webkit.org/show_bug.cgi?id=184267 is fixed
+> TODO: #1178 - Remove this polyfill once browser usage shows that it is safe to do so
