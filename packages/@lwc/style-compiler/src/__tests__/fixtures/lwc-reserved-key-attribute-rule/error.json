@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"key\". \"key\" is a template directive and therefore not supported in css rules.",
+    "column": 2,
+    "line": 1
+}
