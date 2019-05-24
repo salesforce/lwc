@@ -50,7 +50,10 @@ yarn build:prod
 
 ## Integration Testing LWC
 
-When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/apapko/contribute-update/packages/lwc-integration/README.md) to learn more about integration testing.
+When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
+- integration-tests: For tests related to keyboard navigation use this suite. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/master/packages/integration-tests/README.md) to learn more.
+- integration-karma: For all other types of integration tests, use this suite. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/master/packages/integration-karma/README.md) to learn more.
+
 
 
 ## Unit Testing LWC
@@ -74,7 +77,7 @@ code review process delightful!
 
 ### types
 
-LWC relies on type annotataions heavily.
+LWC relies on type annotations heavily.
 
 * Make sure your editor supports [typescript](https://www.typescriptlang.org/).
 
@@ -170,7 +173,7 @@ If you've never created a pull request before, follow [these
 instructions][creating-a-pull-request]. Pull request samples can be found [here](https://github.com/salesforce/lwc/pulls)
 
 #### PR Title
-LWC PR title follows [conventional commit](../CONTRIBUTING.md#create-a-pull-request) format and is automatically validated by our CI.
+LWC PR title follows [conventional commit](#commit) format and is automatically validated by our CI.
 ```shell
 ex:
 commit-type(optional scope): commit description. ( NOTE: space between column and the message )
