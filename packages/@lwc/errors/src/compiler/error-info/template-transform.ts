@@ -132,7 +132,7 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    // TODO: consolidate with other 'should be expression' errors
+    // TODO: #XXX - consolidate with other 'should be expression' errors
     FOR_EACH_DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1045,
         message: 'for:each directive is expected to be a expression.',

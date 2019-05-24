@@ -581,12 +581,12 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (isFalse(node instanceof Node)) {
         return false;
     }
-    // TODO: issue #1250 - skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
+    // TODO: #1250 - skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
     if (node instanceof GlobalShadowRoot) {
         return false;
     }
     if (useSyntheticShadow) {
-        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
+        // TODO: #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
         // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
         if (isUndefined((node as any).$shadowResolver$)) {
             return false;
@@ -613,7 +613,7 @@ export function getComponentVM(component: ComponentInterface): VM {
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {
-    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    // TODO: #XXX - this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
         const vm = getInternalField(root, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);

@@ -152,7 +152,7 @@ describe('api', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            // TODO: once we switch to shadow DOM this test will have to be adjusted
+            // TODO: #XXX - once we switch to shadow DOM this test will have to be adjusted
             expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
     });
@@ -169,7 +169,7 @@ describe('api', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            // TODO: once we switch to shadow DOM this test will have to be adjusted
+            // TODO: #XXX - once we switch to shadow DOM this test will have to be adjusted
             expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
         });
     });

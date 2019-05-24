@@ -9,7 +9,7 @@
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
 
-// TODO: Revisit all of this exports figure out a better separation
+// TODO: #XXX - Revisit all of this exports figure out a better separation
 export { createElement } from './upgrade';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';

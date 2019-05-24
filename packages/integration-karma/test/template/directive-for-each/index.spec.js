@@ -58,12 +58,12 @@ function iterator() {
 }
 testForEach('Iterator', { [Symbol.iterator]: iterator });
 
-// TODO: revisit
+// TODO: #XXX - revisit
 xit('should throw an error when the passing a non iterable', () => {
     const elm = createElement('x-test', { is: XTest });
     elm.items = {};
 
-    // TODO: Improve this error message. The vm should not be exposed and the message is not helpful.
+    // TODO: #XXX - Improve this error message. The vm should not be exposed and the message is not helpful.
     expect(() => document.body.appendChild(elm)).toThrowError(
         TypeError,
         /Invalid template iteration for value `\[.*\]` in \[object:vm undefined \(\d*\)\], it requires an array-like object, not `null` or `undefined`/

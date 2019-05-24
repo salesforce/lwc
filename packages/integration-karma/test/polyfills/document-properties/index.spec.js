@@ -52,7 +52,7 @@ describe('dynamic nodes', () => {
         });
     });
     if (!process.env.NATIVE_SHADOW) {
-        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform
+        // TODO: #1252 - old behavior that is still used by some pieces of the platform
         // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
         // are still considered global elements
         it('if parent node does not have lwc:dom="manual", child node is accessible', () => {

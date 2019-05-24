@@ -88,7 +88,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
         if (elmOwnerKey === hostKey) {
             // we have reached an element inside the host's template, and only if
             // that element is an slot, then the node is considered slotted
-            // TODO: add the examples
+            // TODO: #XXX - add the examples
             return isSlotElement(currentElement);
         } else if (parent === host) {
             return false;

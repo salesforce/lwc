@@ -70,7 +70,7 @@ const ShadowResolverPrivateKey = '$$ShadowResolverKey$$';
 defineProperty(Node.prototype, ShadowRootResolverKey, {
     set(this: Node, fn: ShadowRootResolver) {
         this[ShadowResolverPrivateKey] = fn;
-        // TODO: temporary propagation of the key
+        // TODO: #XXX - temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
     },
     get(this: Node): string | undefined {
@@ -143,7 +143,7 @@ export function attachShadow(
 }
 
 export interface SyntheticShadowRootInterface extends ShadowRoot {
-    // TODO: TS doesn't support delegatesFocus just yet
+    // TODO: #XXX - TS doesn't support delegatesFocus just yet
     delegatesFocus: boolean;
 }
 

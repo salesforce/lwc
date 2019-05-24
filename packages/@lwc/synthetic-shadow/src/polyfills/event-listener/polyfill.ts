@@ -88,7 +88,7 @@ function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture)
     nativeRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
 
-// TODO: these patches should be on EventTarget.prototype instead of win and node protos
+// TODO: #XXX - these patches should be on EventTarget.prototype instead of win and node protos
 function windowPatchListeners() {
     window.addEventListener = windowAddEventListener;
     window.removeEventListener = windowRemoveEventListener;

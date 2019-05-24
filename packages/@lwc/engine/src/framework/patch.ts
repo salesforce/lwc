@@ -11,7 +11,7 @@ import { ComponentDef } from './def';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { useSyntheticShadow } from './utils';
 
-// TODO: eventually the engine should not do any of this work,
+// TODO: #XXX - eventually the engine should not do any of this work,
 // it should just interact with the DOM, and the polyfill should
 // take care of all these operation
 const { PatchedElement, PatchedSlotElement, PatchedNode } = useSyntheticShadow

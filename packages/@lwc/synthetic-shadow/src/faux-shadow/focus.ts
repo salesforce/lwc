@@ -232,7 +232,7 @@ function keyboardFocusHandler(event: FocusEvent) {
         // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
         // edge case and only comes up if the custom element is the first or last tabbable element
         // in the document.
-        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
+        // TODO: #XXX - Is the above statement true? Couldn't we figure it out by looking at the position
         // of the target relative to all tabbable elements in the document?
         return;
     }
@@ -270,7 +270,7 @@ function keyboardFocusInHandler(event: FocusEvent) {
         // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
         // edge case and only comes up if the custom element is the first or last tabbable element
         // in the document.
-        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
+        // TODO: #XXX - Is the above statement true? Couldn't we figure it out by looking at the position
         // of the target relative to all tabbable elements in the document?
         return;
     }
