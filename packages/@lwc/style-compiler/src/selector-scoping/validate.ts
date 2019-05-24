@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Root, isAttribute, isCombinator, isTag, Tag } from 'postcss-selector-parser';
-
-import {
-    isGlobalAttribute,
-    isAriaAttribute,
-    isDataAttribute,
-    isKnowAttributeOnElement,
-} from '../utils/html-attributes';
+import { Root, Attribute } from 'postcss-selector-parser';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set(['::slotted', ':root', ':host-context']);
@@ -42,35 +35,22 @@ function validateSelectors(root: Root) {
 }
 
 function validateAttribute(root: Root) {
-    root.walk(node => {
-        if (isAttribute(node)) {
-            const { attribute: attributeName, sourceIndex } = node;
+    root.walkAttributes((node: Attribute) => {
+        const { attribute: attributeName, sourceIndex } = node;
+        const isTemplateDirective = TEMPLATE_DIRECTIVES.some((directive: RegExp) => {
+            return directive.test(attributeName);
+        });
 
-            // Let's check if the attribute name is either a Global HTML attribute, an ARIA attribute
-            // or a data-* attribute since those are available on all the elements.
-            if (
-                isGlobalAttribute(attributeName) ||
-                isAriaAttribute(attributeName) ||
-                isDataAttribute(attributeName)
-            ) {
-                return;
-            }
+        if (isTemplateDirective) {
+            const message = [
+                `Invalid usage of attribute selector "${attributeName}". `,
+                `"${attributeName}" is a template directive and therefore not supported in css rules.`,
+            ];
 
-            const isTemplateDirective = TEMPLATE_DIRECTIVES.some(directiveRegex =>
-                directiveRegex.test(attributeName)
-            );
-
-            if (isTemplateDirective) {
-                const message = [
-                    `Invalid usage of attribute selector "${attributeName}". `,
-                    `"${attributeName}" is a template directive and therefore not supported in css rules.`,
-                ];
-
-                throw root.error(message.join(''), {
-                    index: sourceIndex,
-                    word: attributeName,
-                });
-            }
+            throw root.error(message.join(''), {
+                index: sourceIndex,
+                word: attributeName,
+            });
         }
     });
 }
