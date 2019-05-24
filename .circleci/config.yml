@@ -21,6 +21,11 @@ save_yarn_cache: &save_yarn_cache
     paths:
       - ~/.cache/yarn
 
+checkout_repo: &checkout_repo
+  run:
+    name: Checkout
+    command: ./.circleci/checkout.sh
+
 # Workspace
 save_workspace: &save_workspace
   persist_to_workspace:
@@ -47,7 +52,7 @@ run_sanity_checks: &run_sanity_checks
 run_format: &run_format
   run:
     name: Run format
-    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this 
+    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this
     # command checks if the files are properly formatted.
     command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
 
@@ -188,7 +193,7 @@ jobs:
   build:
     <<: *env_default
     steps:
-      - checkout
+      - *checkout_repo
 
       - *restore_yarn_cache
       - *install_and_build
