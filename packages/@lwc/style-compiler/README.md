@@ -35,6 +35,10 @@ const source = `
 const { code } = compile(source, 'example.css');
 ```
 
+### API
+
+#### `compile(source, id, options)`
+
 **Options:**
 
 -   `source` (string, required) - the css source file to compiler
@@ -48,7 +52,7 @@ const { code } = compile(source, 'example.css');
 
 **Return:**
 
-The method returns an object with the generated code.
+-   `code` - the generated code
 
 ## Selector scoping caveats
 
