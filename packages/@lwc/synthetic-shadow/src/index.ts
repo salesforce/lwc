@@ -19,7 +19,7 @@ import './polyfills/iframe-content-window/main';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';
 
-// TODO: #XXX - eventually there is nothing to export here
+// TODO: #1164 - eventually there is nothing to export here
 import { PatchedNode, PatchedElement, PatchedSlotElement } from './faux-shadow/faux';
 
 (Element.prototype as any).$lwcPolyfill$ = {
