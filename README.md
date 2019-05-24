@@ -12,6 +12,4 @@ Read our [contributing documentation](CONTRIBUTING.md) to set up your environmen
 
 ## License
 
-The [Salesforce Developer MSA](https://c1.sfdcstatic.com/content/dam/web/en_us/www/documents/legal/developer%20msa%20archive/salesforce-developer-msa-10252010-07232013.pdf) governs your use of Lightning Web Components.
-
-[project-philosophy]: https://docs.google.com/document/d/1tTUv-rGEnNFYteR7kSh-bpYe-CF12X-PrQoasIRTDOI/edit#heading=h.q2bg3fxu2csu
+The [MIT license](https://github.com/salesforce/lwc/blob/master/LICENSE) governs your use of Lightning Web Components.
