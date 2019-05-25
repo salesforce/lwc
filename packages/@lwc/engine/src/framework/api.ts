@@ -221,11 +221,11 @@ const CustomElementHook: Hooks = {
 };
 
 function linkNodeToShadow(vnode: VNode) {
-    // TODO: #XXX - this should eventually be done by the polyfill directly
+    // TODO: #1164 - this should eventually be done by the polyfill directly
     (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
 }
 
-// TODO: #XXX - this should be done by the compiler, adding ns to every sub-element
+// TODO: #1136 - this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
     const { data, children, sel } = vnode;
     // TODO: #XXX - review why `sel` equal `foreignObject` should get this `ns`
@@ -380,8 +380,6 @@ export function c(
             arguments.length === 3 || isArray(children),
             `c() 4nd argument data must be an array.`
         );
-        // TODO: #XXX - enable this once all tests are changed to use compileTemplate utility
-        // assert.isTrue("key" in compilerData, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
