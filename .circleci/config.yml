@@ -59,7 +59,7 @@ checkout_repo: &checkout_repo
       then
         git fetch --force origin "refs/tags/${CIRCLE_TAG}"
       else
-        git fetch --force origin "pull/1269/head:remotes/origin/pull/1269"
+        git fetch --force origin "${CIRCLE_BRANCH}/head:remotes/origin/${CIRCLE_BRANCH}"
       fi
 
 
