@@ -31,7 +31,8 @@ import {
     HTML_TAG,
     DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
-    HTML_KNOWN_ATTRIBUTES,
+    KNOWN_HTML_ELEMENTS,
+    TEMPLATE_DIRECTIVES,
 } from './constants';
 
 import { isCustomElement } from '../shared/ir';
@@ -264,13 +265,20 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
         isAriaOrDataOrFmkAttribute(attrName) ||
         SVG_TAG_WHITELIST.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
-        !HTML_KNOWN_ATTRIBUTES.has(tagName)
+        isTemplateDirective(attrName) ||
+        !KNOWN_HTML_ELEMENTS.has(tagName)
     ) {
         return true;
     }
 
     const validElements = HTML_ATTRIBUTES_REVERSE_LOOKUP[attrName];
     return !!validElements && (!validElements.length || validElements.includes(tagName));
+}
+
+function isTemplateDirective(attrName: string): boolean {
+    return TEMPLATE_DIRECTIVES.some((directive: RegExp) => {
+        return directive.test(attrName);
+    });
 }
 
 function shouldCamelCaseAttribute(element: IRElement, attrName: string) {

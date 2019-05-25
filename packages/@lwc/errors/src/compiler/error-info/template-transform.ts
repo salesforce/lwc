@@ -469,4 +469,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    UNKNOWN_HTML_TAG_IN_TEMPLATE: {
+        code: 1121,
+        message:
+            "Unknown html tag '<{0}>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };

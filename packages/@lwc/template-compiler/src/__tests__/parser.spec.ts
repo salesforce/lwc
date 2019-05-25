@@ -488,6 +488,16 @@ describe('props and attributes', () => {
         });
     });
 
+    it('invalid html attribute error', () => {
+        const { warnings } = parseTemplate(
+            `<template><div minlength="1" maxlength="5"></div></template>`
+        );
+        expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
+        expect(warnings[0]).toMatchObject({
+            location: EXPECTED_LOCATION,
+        });
+    });
+
     it('element specific attribute validation', () => {
         const { root } = parseTemplate(
             `<template><textarea minlength="1" maxlength="5"></textarea></template>`

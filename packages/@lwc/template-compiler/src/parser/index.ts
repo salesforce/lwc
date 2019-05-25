@@ -74,6 +74,7 @@ import {
     HTML_NAMESPACE_URI,
     MATHML_TAG_BLACKLIST,
     MATHML_NAMESPACE_URI,
+    KNOWN_HTML_ELEMENTS,
 } from './constants';
 import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
@@ -824,6 +825,16 @@ export default function parse(source: string, state: State): TemplateParseResult
                     node,
                     [tag]
                 );
+            }
+
+            const isKnownTag =
+                isCustomElement(element) ||
+                KNOWN_HTML_ELEMENTS.has(tag) ||
+                SVG_TAG_WHITELIST.has(tag) ||
+                DASHED_TAGNAME_ELEMENT_SET.has(tag);
+
+            if (!isKnownTag) {
+                return warnOnElement(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE, node, [tag]);
             }
         }
     }
