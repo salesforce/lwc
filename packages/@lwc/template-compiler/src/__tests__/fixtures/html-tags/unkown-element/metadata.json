@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1121,
-            "message": "LWC1121: Unknown html tag '<unknonwtag>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+            "code": 1123,
+            "message": "LWC1123: Unknown html tag '<unknonwtag>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
             "location": {
                 "line": 2,
@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1121,
-            "message": "LWC1121: Unknown html tag '<spam>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+            "code": 1123,
+            "message": "LWC1123: Unknown html tag '<spam>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
             "location": {
                 "line": 5,

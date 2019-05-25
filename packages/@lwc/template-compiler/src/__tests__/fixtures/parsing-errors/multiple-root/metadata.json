@@ -12,7 +12,7 @@
             }
         },
         {
-            "code": 1121,
+            "code": 1123,
             "level": 2,
             "location": {
                 "column": 3,
@@ -20,7 +20,7 @@
                 "line": 2,
                "start": 13
              },
-             "message": "LWC1121: Unknown html tag '<root>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element"
+             "message": "LWC1123: Unknown html tag '<root>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element"
         }
     ],
     "metadata": {
