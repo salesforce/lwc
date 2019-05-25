@@ -9,6 +9,53 @@ env_perf: &env_perf
   environment:
     - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
+checkout_repo: &checkout_repo
+  run:
+    name: Custom checkout
+    # Overwrite the yarn installed in the docker container with our own version.
+    command: |
+      # Add GitHub to known hosts.
+      mkdir -p ~/.ssh
+      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+
+      (umask 077; touch ~/.ssh/id_rsa)
+      chmod 0600 ~/.ssh/id_rsa
+      echo LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0NCmIzQmxibk56YUMxclpYa3RkakVBQUFBQUJHNXZibVVBQUFBRWJtOXVaUUFBQUFBQUFBQUJBQUFDRndBQUFBZHpjMmd0Y24NCk5oQUFBQUF3RUFBUUFBQWdFQXZ3RTUvcjBqUDE3TS83WUVRS29aMFNSOEI2S3ZnejBicmNkYUtQY05PeEpab2JmVlZkQmcNCnc2ODRXUEZmVDZZRkl5OFJSRENFcTlSbHAvTEhyNnAvZE9SZS96S0VJUmlPRjN1Wm5pOWsrV2R4Q0VlQnNzNE1IRmFncmYNCktoWHRmOVQwd0h2dkxNWGcwMEtoUmgyOThKb3JRSEV6d0N3Q1Q2QUlSdG02V3Zzd2ZLNjQwOXRXTld3SFVXL1kxYkdEb3MNClJNYVJuRzlwaE1hZlRRYzk3QlNEUHE3NExBSFF6NGl6QnVpWWlDZzFsbHNyd2h5SEdsZDh6MlhLeU8rcVR3eEJJVU5nWUENClNGWUkrTXBVdGp4b2FaQTAzU1NJUFdqRmxmN2p6RG5MU0tYN1dMdkVHNXk4d3BjSXNSNlV3WFRoZ2VvSkNnVTF4YmRvNkcNCno5ZDhyRVRYNkxXSEFzb0Q3Q1hCcmFTRFJ2aGsrNGdzR05WbkJpVURmU3dSYm5lRDFTZEdzY2pHeG9ObkNOZFdsOTZ3U3YNClB6OVRVQXd6UmFSdWtZSVJHeFlCSW1CQ0ZHNDlBcWprNEd4OThsQUNRLzYxUzYxdjFLR3F3ZkhQcWZCeEw3RnlBTTJXdzUNCmVqeHgySDV4WlBuanUvdVhPRGVtZk9zT1VsZ3pMZkdvZ0NPbTBIYmVmU0ZRSXQ2c0gybzVzT2ZHckZkR1dNb2xtWmh6Q1ANCmRaZ01zRlhVanRVQ2pvYmJGT1N6dlVidmRVc054M1FtOHNCRXRXSk9rU3Q2UTU2T05UQzhLdjJlQjkwSnFPSXNMTE5leHcNCk9HaFdoaFFCVFVnYnQ2UmpzTnNDdzlPOGxQczZzb2JETnd1VmZ5aUgvTUFSUlFuVmwvcldSdWp2Z3ZPRFh4MmFGQ0RmK3cNCjhBQUFkUU5CcTN3alFhdDhJQUFBQUhjM05vTFhKellRQUFBZ0VBdndFNS9yMGpQMTdNLzdZRVFLb1owU1I4QjZLdmd6MGINCnJjZGFLUGNOT3hKWm9iZlZWZEJndzY4NFdQRmZUNllGSXk4UlJEQ0VxOVJscC9MSHI2cC9kT1JlL3pLRUlSaU9GM3VabmkNCjlrK1dkeENFZUJzczRNSEZhZ3JmS2hYdGY5VDB3SHZ2TE1YZzAwS2hSaDI5OEpvclFIRXp3Q3dDVDZBSVJ0bTZXdnN3ZksNCjY0MDl0V05Xd0hVVy9ZMWJHRG9zUk1hUm5HOXBoTWFmVFFjOTdCU0RQcTc0TEFIUXo0aXpCdWlZaUNnMWxsc3J3aHlIR2wNCmQ4ejJYS3lPK3FUd3hCSVVOZ1lBU0ZZSStNcFV0anhvYVpBMDNTU0lQV2pGbGY3anpEbkxTS1g3V0x2RUc1eTh3cGNJc1INCjZVd1hUaGdlb0pDZ1UxeGJkbzZHejlkOHJFVFg2TFdIQXNvRDdDWEJyYVNEUnZoays0Z3NHTlZuQmlVRGZTd1JibmVEMVMNCmRHc2NqR3hvTm5DTmRXbDk2d1N2UHo5VFVBd3pSYVJ1a1lJUkd4WUJJbUJDRkc0OUFxams0R3g5OGxBQ1EvNjFTNjF2MUsNCkdxd2ZIUHFmQnhMN0Z5QU0yV3c1ZWp4eDJINXhaUG5qdS91WE9EZW1mT3NPVWxnekxmR29nQ09tMEhiZWZTRlFJdDZzSDINCm81c09mR3JGZEdXTW9sbVpoekNQZFpnTXNGWFVqdFVDam9iYkZPU3p2VWJ2ZFVzTngzUW04c0JFdFdKT2tTdDZRNTZPTlQNCkM4S3YyZUI5MEpxT0lzTExOZXh3T0doV2hoUUJUVWdidDZSanNOc0N3OU84bFBzNnNvYkROd3VWZnlpSC9NQVJSUW5WbC8NCnJXUnVqdmd2T0RYeDJhRkNEZit3OEFBQUFEQVFBQkFBQUNBQlp6TjNUWW1FYi9ob3Jid3Y0eXdCd1Q5THdWQkJvaDJab0ENClgzbUhLRGYwUFRMRDM4QlpZTFkvWnhrVkxjVzMxc3krNElHcVRqM0FGajY2UzN3N1J3WGZQY2N6RWRLdUJ5MTlhcDNzSmkNCnNtWEdQRHU5dmZXZzhPbzQ0dWdZY2JUZnUvRFA0Rm5iM0VRWWhjb3UvcjlENzZlQVpydkVzSFRaYzMrWVljNEZ6am9wY3oNCkg3aXROMm9obVJVdVF6SEN6S2M4eTZxZWNjR1ljdXJqMmdSZ21OaUtTa01wNTNndE1oV3l5eExkM3dhUUtzR0RCdUl5dkUNCm5JUmlCK0F2K05paTQxdENNMUJOUkhxeGxXbGlDa2UyR25DUHRhKzZHOWM0Z1Yva3Z4OEgyMVlmbzdvM0h2eWtNZkpYak4NClo4UFhFK3A5ZFVxM0JVMFhEWU5xYVkzNS9ZSjVaTGtoditFOWlBYktwNkdTdDZXTENZRk9IZmxiWHVpWVJQb0pQWjl3WHANClFMZFlZWnRxbTJLblJSSFZ5QVBLa2Z2aSs2WnVPZmhXQUhDTVQ5UzlacDNURnVkNjlKbllOZTRsOEd0QWU3MmluVFhBZUwNCis2Wk52M1pIUWlQNmQ2VHJLT1pKRlpTYUZtSllZUy9YRGhsVjF1VmdURUMwYmpnNURCdHRQSnlOV2xyZ3FPU2RuL3FaTUUNClFZd3VTT09YSXpWbDFSTS90ai9Fcjc3K0xYcU8ya2JtYVRqcGRMTE1jUzVPS3QrUHI2SUtjMWU3Z3pKTWRZN2hSbTRPR0gNCmpzYXQ1ai9EczVBRW9weHZEVzlzZ29zV3YxaEtleS9WQXVBbEV3aEJpWWsvVXBWZHNjb1c0RCtSMC83SGV1dlRwWTNseHINCkd6ZHVwaG5Nbm9jdDRPMm9RUkFBQUJBUURxTU9obXY2QU1VR0I1RkNjbEV0S2xROVJ2Q09lV09sOWIzQkpDOCsyYXVmS3INCjVGTCtOVk1UN2NERWtZOHBYM2VnWVFQa3lpazV2d1NBZy9tU2owSlV2SGVGaWk2eFdiTjl3WDNTcGtaSHZzek82STVSV3gNCkhhTnVxeVl5cE1FL09TRkRhS285VnNiTm1OR3loSW5UdEZCZ3IvUEY4eURPS0xyQkhLYTBIOGNuM2YxUEVjVnN1bXNmRWkNCkVvWThiN2JObVJLelVRZEdLQk9HOWpQY202V0hzVWVySGp4L3NQUlg0UzdtRUJ2YzBaNzc3V1JkT0V5RzZhN0dJNkJ0dWINCnVrQ0VLRDdJSXpBbzdabkxMZlVhWHk1T01pczZnUWZvME4vREFrK04veDhadjJIdUE0OC82aXduRUdNS0VUazBybU1IRUwNCkhOMmp0YUJhbFJuK3lpMERBQUFCQVFEMSszRks2ZlhndmlUN2h4RVdqM0k0ckxoVmRHYnFsS1BtTEpOaEVPWkZsOFdFNUYNCndmcjBQd2tWUys0U2hyME1hWENWaVc3Vm1Vd2NZZCtUUityZkNMaVJ3WU1zTGhyR2pQRFU3N3VTSVBDYjRjWEczM0hKUkENCmpaU0Q5UlE5b1ozdDVhaFBydCtJR3F5b2RjNG9ObTU3UjVUVXMvM25KM1BwelhHWlZEcTJOZ3RyR09oUi9DQWhMSzNobDANClZJU1FJRUZCaWJUQXJDZU1mLzhYM2xQWEVra2lnVHFIc055SzlDQy9DenQzNllMQXF4d0tSLzZFblZtRlVpSUhSbUMvQzMNCllGZlNoWHVVeWdKSXlYMkgvai9xUDRBb1RRbGhoQk5hNUtkSkhjcTRRZi92NzkzQnhxYk1LOUFvSkQwUXR3S3JQQlNXZlgNCnl2Zkk2NkFWWE93aFozQUFBQkFRREd5Sm4wbFNCMmZYVTZtZ2U5OTdFckd0M1dSNmJMU2xOdlFFV1lSWU5lMTFyTXNHblINCkVKOUpWaVZDNmlxditybDgydlBpWFhqMjJjYlpQU05NZEVPbW94M251SmVSakZyK3dNbmh2SlBGREJHZHhJakg2ZFR6dEENCjlEN3pSN2VSeCtLdFB6NE1zdFYxWkpSUHBIdzgvUjFRTXFtc1VsMzVxTXBhSmkxdTNTeGdPOW1leUlXT3JPeWNVMVdDTDkNCjZFbXYwUEVxMXI4eVEwdFl3ZlZudjhlMVJiaWpzTkdNM0F6U1RIUW9mcGhkenZvcERvUTBPWm0zL0JoVFlqd25XemgzbmENCkh0TGFiT3ZGYkhVTVdEVXhIWDY4WTNwMEZINzB2aFFRLytVR1lRL2xNUTQxL3B0OFFlYlR4Mm9yWE0zMk0vOW5pU3N2ZnMNCnBqZ2pHT2pOaHk0cEFBQUFFMlIyWVd4QWMyRnNaWE5tYjNKalpTNWpiMjBCQWdNRUJRWUgNCi0tLS0tRU5EIE9QRU5TU0ggUFJJVkFURSBLRVktLS0tLQ== | base64 --decode >> ~/.ssh/id_rsa
+
+      # use git+ssh instead of https
+      git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+      git config --global gc.auto 0 || true
+
+      if [ -e /home/circleci/lwc/.git ]
+      then
+        cd /home/circleci/lwc
+        git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
+      else
+        mkdir -p /home/circleci/lwc
+        cd /home/circleci/lwc
+        git clone "$CIRCLE_REPOSITORY_URL" .
+      fi
+
+      if [ -n "$CIRCLE_TAG" ]
+      then
+        git fetch --force origin "refs/tags/${CIRCLE_TAG}"
+      else
+        git fetch --force origin "pull/1269/head:remotes/origin/pull/1269"
+      fi
+
+
+      if [ -n "$CIRCLE_TAG" ]
+      then
+        git reset --hard "$CIRCLE_SHA1"
+        git checkout -q "$CIRCLE_TAG"
+      elif [ -n "$CIRCLE_BRANCH" ]
+      then
+        git reset --hard "$CIRCLE_SHA1"
+        git checkout -q -B "$CIRCLE_BRANCH"
+      fi
+
+      git reset --hard "$CIRCLE_SHA1"
+
 # Yarn cache
 restore_yarn_cache: &restore_yarn_cache
   restore_cache:
@@ -47,7 +94,7 @@ run_sanity_checks: &run_sanity_checks
 run_format: &run_format
   run:
     name: Run format
-    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this 
+    # Can't use the "yarn format" script directly since the "--write" flag fixes the formatting issues while this
     # command checks if the files are properly formatted.
     command: yarn prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
 
@@ -188,7 +235,7 @@ jobs:
   build:
     <<: *env_default
     steps:
-      - checkout
+      - *checkout_repo
 
       - *restore_yarn_cache
       - *install_and_build
