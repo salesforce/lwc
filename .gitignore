@@ -8,7 +8,7 @@ coverage/
 .project/
 
 lib/
-playground/index.js
+playground/
 packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/
