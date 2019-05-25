@@ -25,7 +25,7 @@ checkout_repo: &checkout_repo
       (cat <<EOF > ~/.ssh/config
       Host github.com
       HostName github.com
-      IdentityFile ~/.ssh/id_rsa_github
+      IdentityFile ~/.ssh/id_rsa
       User git
       EOF
       )
