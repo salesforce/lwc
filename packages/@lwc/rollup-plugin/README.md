@@ -24,7 +24,7 @@ export default {
 
 ## Options
 
--   `rootDir` (string, optional) - set the LWC module directory, when not set the `rootDir` is set to the `input` directory
+-   `rootDir` (string, optional, default: `input`) - set the LWC module directory
 -   `sourcemap` (boolean, optional, default: `false`) - make the LWC compiler produce source maps
 -   `resolveFromPackages` (boolean, optional, default: `true`) - let the rollup plugin resolve modules from the `node_modules` directory
--   `stylesheetConfig` (object, optional) - the configuration to pass to the `@lwc/style-compiler`
+-   `stylesheetConfig` (object, optional, default: `{}`) - the configuration to pass to the `@lwc/style-compiler`
