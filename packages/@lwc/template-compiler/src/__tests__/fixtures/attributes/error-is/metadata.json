@@ -2,7 +2,7 @@
     "warnings": [
         {
             "code": 1063,
-            "message": "LWC1063: \"is\" attribute is not supported",
+            "message": "LWC1063: \"is\" attribute is disallowed",
             "level": 1,
             "location": {
                 "line": 3,

@@ -395,7 +395,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             filename: undefined,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining('"is" attribute is not supported'),
+            message: expect.stringContaining('"is" attribute is disallowed'),
             location: EXPECTED_LOCATION,
         });
     });

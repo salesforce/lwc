@@ -286,7 +286,7 @@ export const ParserDiagnostics = {
 
     IS_ATTRIBUTE_NOT_SUPPORTED: {
         code: 1063,
-        message: '"is" attribute is not supported',
+        message: '"is" attribute is disallowed',
         level: DiagnosticLevel.Error,
         url: '',
     },
