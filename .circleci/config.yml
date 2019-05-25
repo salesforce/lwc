@@ -9,6 +9,13 @@ env_perf: &env_perf
   environment:
     - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
+env_test: &env_test
+  <<: *env_default
+  environment:
+    - SAUCE_USERNAME: lwc_ci
+    - SAUCE_KEY: 88a951ae-4087-42bc-8f89-b7d0716847b6
+
+
 checkout_repo: &checkout_repo
   run:
     name: Custom checkout
@@ -275,7 +282,7 @@ jobs:
 
 
   test_karma:
-    <<: *env_default
+    <<: *env_test
     steps:
       - *load_workspace
 
@@ -296,14 +303,14 @@ jobs:
 
 
   test_integration:
-    <<: *env_default
+    <<: *env_test
     steps:
       - *load_workspace
       - *run_integration_tests_chrome
 
 
   test_integration_compat:
-    <<: *env_default
+    <<: *env_test
     steps:
       - *load_workspace
 
