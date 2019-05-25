@@ -4,7 +4,7 @@ This repository contains the source code for the Lightning Web Components Engine
 
 ## Getting Started
 
-Read the [Lightning Web Components Dev Guide][https://lwc.dev/guide/introduction].
+Read the [Lightning Web Components Dev Guide](https://lwc.dev/guide/introduction).
 
 ## Contributing
 
