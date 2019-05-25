@@ -14,4 +14,4 @@ Read our [contributing documentation](CONTRIBUTING.md) to set up your environmen
 
 The [Salesforce Developer MSA](http://www.sfdcstatic.com/assets/pdf/misc/salesforce_Developer_MSA.pdf) governs your use of Lightning Web Components.
 
-[project-philosophy]: https://docs.google.com/document/d/1tTUv-rGEnNFYteR7kSh-bpYe-CF12X-PrQoasIRTDOI/edit#heading=h.q2bg3fxu2csu
+[project-philosophy]: https://docs.google.com/document/d/1tTUv-rGEnNFYteR7kSh-bpYe-CF12X-PrQoasIRTDOI/view
