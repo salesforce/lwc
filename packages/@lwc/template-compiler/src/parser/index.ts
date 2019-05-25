@@ -21,6 +21,7 @@ import {
     removeAttribute,
     attributeName,
     normalizeAttributeValue,
+    isValidHTMLAttribute,
     attributeToPropertyName,
     isProhibitedIsAttribute,
     isSvgUseHref,
@@ -728,6 +729,10 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const { name, location } = attr;
+            if (!isValidHTMLAttribute(element.tag, name)) {
+                warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            }
+
             if (attr.type === IRAttributeType.String) {
                 if (name === 'id') {
                     if (/\s+/.test(attr.value)) {

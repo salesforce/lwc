@@ -26,9 +26,12 @@ import {
     ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
+    HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_NAMESPACE_URI,
     HTML_TAG,
+    DASHED_TAGNAME_ELEMENT_SET,
     ID_REFERENCING_ATTRIBUTES_SET,
+    HTML_KNOWN_ATTRIBUTES,
 } from './constants';
 
 import { isCustomElement } from '../shared/ir';
@@ -253,6 +256,21 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle general case where only standard element have attribute value.
     return !isCustomElement(element);
+}
+
+export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
+    if (
+        GLOBAL_ATTRIBUTE_SET.has(attrName) ||
+        isAriaOrDataOrFmkAttribute(attrName) ||
+        SVG_TAG_WHITELIST.has(tagName) ||
+        DASHED_TAGNAME_ELEMENT_SET.has(tagName) ||
+        !HTML_KNOWN_ATTRIBUTES.has(tagName)
+    ) {
+        return true;
+    }
+
+    const validElements = HTML_ATTRIBUTES_REVERSE_LOOKUP[attrName];
+    return !!validElements && (!validElements.length || validElements.includes(tagName));
 }
 
 function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
