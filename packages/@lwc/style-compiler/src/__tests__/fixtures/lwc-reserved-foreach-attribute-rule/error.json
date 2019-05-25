@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of attribute selector \"for:each\". \"for:each\" is a template directive and therefore not supported in css rules.",
+    "column": 1,
+    "line": 1
+}

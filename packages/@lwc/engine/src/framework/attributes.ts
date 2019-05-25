@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
-import { StringToLowerCase, StringReplace, create, forEach, isUndefined } from '../shared/language';
+import {
+    assign,
+    create,
+    forEach,
+    isUndefined,
+    StringReplace,
+    StringToLowerCase,
+} from '../shared/language';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
@@ -38,155 +45,124 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-const OffsetPropertiesError =
-    'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use `this.getBoundingClientRect()` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
+function offsetPropertyErrorMessage(name) {
+    return `Using the \`${name}\` property is an anti-pattern because it rounds the value to an integer. Instead, use the \`getBoundingClientRect\` method to obtain fractional values for the size of an element and its position relative to the viewport.`;
+}
 
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
-export function getGlobalHTMLPropertiesInfo() {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return {
-        id: {
-            attribute: 'id',
-            reflective: true,
-        },
-        accessKey: {
-            attribute: 'accesskey',
-            reflective: true,
-        },
-        accessKeyLabel: {
-            readOnly: true,
-        },
-        className: {
-            attribute: 'class',
-            error: `Using property "className" is an anti-pattern because of slow runtime behavior and conflicting with classes provided by the owner element. Instead use property "classList".`,
-        },
-        contentEditable: {
-            attribute: 'contenteditable',
-            reflective: true,
-        },
-        isContentEditable: {
-            readOnly: true,
-        },
-        contextMenu: {
-            attribute: 'contextmenu',
-        },
-        dataset: {
-            readOnly: true,
-            error:
-                'Using property "dataset" is an anti-pattern. Components should not rely on dataset to implement its internal logic, nor use that as a communication channel.',
-        },
-        dir: {
-            attribute: 'dir',
-            reflective: true,
-        },
-        draggable: {
-            attribute: 'draggable',
-            experimental: true,
-            reflective: true,
-        },
-        dropzone: {
-            attribute: 'dropzone',
-            readOnly: true,
-            experimental: true,
-        },
-        hidden: {
-            attribute: 'hidden',
-            reflective: true,
-        },
-        itemScope: {
-            attribute: 'itemscope',
-            experimental: true,
-        },
-        itemType: {
-            attribute: 'itemtype',
-            readOnly: true,
-            experimental: true,
-        },
-        itemId: {
-            attribute: 'itemid',
-            experimental: true,
-        },
-        itemRef: {
-            attribute: 'itemref',
-            readOnly: true,
-            experimental: true,
-        },
-        itemProp: {
-            attribute: 'itemprop',
-            readOnly: true,
-            experimental: true,
-        },
-        itemValue: {
-            experimental: true,
-        },
-        lang: {
-            attribute: 'lang',
-            reflective: true,
-        },
-        offsetHeight: {
-            readOnly: true,
-            error: OffsetPropertiesError,
-        },
-        offsetLeft: {
-            readOnly: true,
-            error: OffsetPropertiesError,
-        },
-        offsetParent: {
-            readOnly: true,
-        },
-        offsetTop: {
-            readOnly: true,
-            error: OffsetPropertiesError,
-        },
-        offsetWidth: {
-            readOnly: true,
-            error: OffsetPropertiesError,
-        },
-        properties: {
-            readOnly: true,
-            experimental: true,
-        },
-        spellcheck: {
-            experimental: true,
-            reflective: true,
-        },
-        style: {
-            attribute: 'style',
-            error: `Using property or attribute "style" is an anti-pattern. Instead use property "classList".`,
-        },
-        tabIndex: {
-            attribute: 'tabindex',
-            reflective: true,
-        },
-        title: {
-            attribute: 'title',
-            reflective: true,
-        },
-        translate: {
-            experimental: true,
-        },
-        // additional global attributes that are not present in the link above.
-        role: {
-            attribute: 'role',
-        },
-        slot: {
-            attribute: 'slot',
-            experimental: true,
-            error: `Using property or attribute "slot" is an anti-pattern.`,
-        },
+export const globalHTMLProperties: {
+    [prop: string]: {
+        attribute?: string;
+        error?: string;
+        readOnly?: boolean;
     };
-}
-
-// TODO: complete this list with Element properties
-// https://developer.mozilla.org/en-US/docs/Web/API/Element
-
-// TODO: complete this list with Node properties
-// https://developer.mozilla.org/en-US/docs/Web/API/Node
+} = assign(create(null), {
+    id: {
+        attribute: 'id',
+    },
+    accessKey: {
+        attribute: 'accesskey',
+    },
+    accessKeyLabel: {
+        readOnly: true,
+    },
+    className: {
+        attribute: 'class',
+        error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
+    },
+    contentEditable: {
+        attribute: 'contenteditable',
+    },
+    isContentEditable: {
+        readOnly: true,
+    },
+    contextMenu: {
+        attribute: 'contextmenu',
+    },
+    dataset: {
+        readOnly: true,
+        error:
+            "Using the `dataset` property is an anti-pattern because it can't be statically analyzed. Expose each property individually using the `@api` decorator instead.",
+    },
+    dir: {
+        attribute: 'dir',
+    },
+    draggable: {
+        attribute: 'draggable',
+    },
+    dropzone: {
+        attribute: 'dropzone',
+        readOnly: true,
+    },
+    hidden: {
+        attribute: 'hidden',
+    },
+    itemScope: {
+        attribute: 'itemscope',
+    },
+    itemType: {
+        attribute: 'itemtype',
+        readOnly: true,
+    },
+    itemId: {
+        attribute: 'itemid',
+    },
+    itemRef: {
+        attribute: 'itemref',
+        readOnly: true,
+    },
+    itemProp: {
+        attribute: 'itemprop',
+        readOnly: true,
+    },
+    lang: {
+        attribute: 'lang',
+    },
+    offsetHeight: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetHeight'),
+    },
+    offsetLeft: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetLeft'),
+    },
+    offsetParent: {
+        readOnly: true,
+    },
+    offsetTop: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetTop'),
+    },
+    offsetWidth: {
+        readOnly: true,
+        error: offsetPropertyErrorMessage('offsetWidth'),
+    },
+    properties: {
+        readOnly: true,
+    },
+    spellcheck: {
+        attribute: 'spellcheck',
+    },
+    style: {
+        attribute: 'style',
+    },
+    tabIndex: {
+        attribute: 'tabindex',
+    },
+    title: {
+        attribute: 'title',
+    },
+    // additional global attributes that are not present in the link above.
+    role: {
+        attribute: 'role',
+    },
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` attribute is an anti-pattern.',
+    },
+});
 
 const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);

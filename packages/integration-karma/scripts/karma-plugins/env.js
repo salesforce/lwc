@@ -32,7 +32,6 @@ function createEnvFile(lwcConfig) {
         `    }`,
         `};`,
     ];
-
     fs.writeFileSync(ENV_FILENAME, content.join('\n'));
 }
 

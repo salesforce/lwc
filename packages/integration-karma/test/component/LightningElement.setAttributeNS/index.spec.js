@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Test from 'x/test';
 import ConstructorInvocation from 'x/constructorInvocation';

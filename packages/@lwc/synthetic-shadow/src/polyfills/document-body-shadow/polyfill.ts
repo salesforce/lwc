@@ -21,12 +21,14 @@ import {
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
+import { getOwnerDocument } from '../../shared/utils';
 
 let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped() {
+function isGlobalPatchingSkipped(node: Node) {
     if (isUndefined(skipGlobalPatching)) {
+        const ownerDocument = getOwnerDocument(node);
         skipGlobalPatching =
-            document.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
     }
     return isTrue(skipGlobalPatching);
 }
@@ -52,7 +54,7 @@ export default function apply() {
             // Return the first non shadow element
             const filtered = ArrayFind.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
             return !isUndefined(filtered) ? filtered : null;
         },
@@ -69,7 +71,7 @@ export default function apply() {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);
         },
@@ -86,7 +88,7 @@ export default function apply() {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -103,7 +105,7 @@ export default function apply() {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },
@@ -120,7 +122,7 @@ export default function apply() {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped()
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
             return createStaticHTMLCollection(filtered);
         },

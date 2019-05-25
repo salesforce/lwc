@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import AriaStatic from 'x/ariaStatic';
 import AriaDynamic from 'x/ariaDynamic';

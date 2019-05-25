@@ -1,0 +1,68 @@
+<template>
+    <p>host focus count: {renderedHostFocusCount}</p>
+    <p>shadow focus count: {renderedShadowFocusCount}</p>
+
+    <section class="delegates-true-tabindex-negative">
+        <h2>delegatesFocus: true, tabindex: -1</h2>
+        <input class="head">
+        <integration-delegates-focus-true
+            tabindex="-1"
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-true>
+        <input class="tail">
+    </section>
+
+    <section class="delegates-true-tabindex-zero">
+        <h2>delegatesFocus: true, tabindex: 0</h2>
+        <input class="head">
+        <integration-delegates-focus-true
+            tabindex="0"
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-true>
+        <input class="tail">
+    </section>
+
+    <section class="delegates-true-tabindex-none">
+        <h2>delegatesFocus: true, tabindex: none</h2>
+        <input class="head">
+        <integration-delegates-focus-true
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-true>
+        <input class="tail">
+    </section>
+
+    <section class="delegates-false-tabindex-negative">
+        <h2>delegatesFocus: false, tabindex: -1</h2>
+        <input class="head">
+        <integration-delegates-focus-false
+            tabindex="-1"
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-false>
+        <input class="tail">
+    </section>
+
+    <section class="delegates-false-tabindex-zero">
+        <h2>delegatesFocus: false, tabindex: 0</h2>
+        <input class="head">
+        <integration-delegates-focus-false
+            tabindex="0"
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-false>
+        <input class="tail">
+    </section>
+
+    <section class="delegates-false-tabindex-none">
+        <h2>delegatesFocus: false, tabindex: none</h2>
+        <input class="head">
+        <integration-delegates-focus-false
+            onfocus={handleHostFocus}
+            onshadowfocus={handleShadowFocus}
+        ></integration-delegates-focus-false>
+        <input class="tail">
+    </section>
+</template>

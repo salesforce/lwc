@@ -9,11 +9,9 @@ import { isUndefined, create, emptyString, isArray, forEach } from '../shared/la
 import { VNode } from '../3rdparty/snabbdom/types';
 
 import * as api from './api';
-import { EmptyArray } from './utils';
+import { EmptyArray, useSyntheticShadow } from './utils';
 import { VM } from './vm';
 import { removeAttribute, setAttribute } from '../env/element';
-import { appendChild } from '../env/node';
-import { createElement, createDocumentFragment } from '../env/document';
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
@@ -27,7 +25,7 @@ export type StylesheetFactory = (
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
 function createStyleElement(styleContent: string): HTMLStyleElement {
-    const elm = createElement.call(document, 'style') as HTMLStyleElement;
+    const elm = document.createElement('style');
     elm.type = 'text/css';
     elm.textContent = styleContent;
     return elm;
@@ -37,9 +35,9 @@ function getCachedStyleElement(styleContent: string): HTMLStyleElement {
     let fragment = CachedStyleFragments[styleContent];
 
     if (isUndefined(fragment)) {
-        fragment = createDocumentFragment.call(document);
-        const elm = createStyleElement(styleContent);
-        appendChild.call(fragment, elm);
+        fragment = document.createDocumentFragment();
+        const styleElm = createStyleElement(styleContent);
+        fragment.appendChild(styleElm);
         CachedStyleFragments[styleContent] = fragment;
     }
 
@@ -54,7 +52,7 @@ function insertGlobalStyle(styleContent: string) {
     if (isUndefined(InsertedGlobalStyleContent[styleContent])) {
         InsertedGlobalStyleContent[styleContent] = true;
         const elm = createStyleElement(styleContent);
-        appendChild.call(globalStyleParent, elm);
+        globalStyleParent.appendChild(elm);
     }
 }
 
@@ -120,9 +118,7 @@ export function evaluateCSS(
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
 
-    const { fallback } = vm;
-
-    if (fallback) {
+    if (useSyntheticShadow) {
         const hostSelector = `[${hostAttribute}]`;
         const shadowSelector = `[${shadowAttribute}]`;
 

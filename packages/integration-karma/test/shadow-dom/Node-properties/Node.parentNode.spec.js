@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Container from 'x/container';

@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import TestWithDiv from 'x/testWithDiv';
 

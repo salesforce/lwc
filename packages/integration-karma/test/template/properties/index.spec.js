@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import RadioButton from 'misc/radioButton';
 import InputValue from 'live/inputValue';

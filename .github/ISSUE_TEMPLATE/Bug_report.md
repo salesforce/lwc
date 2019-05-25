@@ -12,7 +12,7 @@ about: Create an issue to help us improve
 <!--
 If LWC specific issue, update playground link with your example
 -->
-http://playground.sfdc.es/projects/edit
+https://developer.salesforce.com/docs/component-library/tools/playground
 
 <!--
 if specific code snipet, paste the example here

@@ -25,13 +25,18 @@ import {
     isTrue,
     isObject,
     keys,
-    defineProperty,
     StringToLowerCase,
     isFalse,
     isArray,
 } from '../shared/language';
 import { getInternalField, getHiddenField } from '../shared/fields';
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from './utils';
+import {
+    ViewModelReflection,
+    addCallbackToNextTick,
+    EmptyObject,
+    EmptyArray,
+    useSyntheticShadow,
+} from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
@@ -48,13 +53,12 @@ import {
     endGlobalMeasure,
     GlobalMeasurementPhase,
 } from './performance-timing';
-import { tagNameGetter, innerHTMLSetter } from '../env/element';
+import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 
 // Object of type ShadowRoot for instance checks
-const NativeShadowRoot = (window as any).ShadowRoot;
-const isNativeShadowRootAvailable = typeof NativeShadowRoot !== 'undefined';
+const GlobalShadowRoot = (window as any).ShadowRoot;
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -75,8 +79,6 @@ export interface UninitializedVM {
     readonly context: Context;
     /** Back-pointer to the owner VM or null for root elements */
     readonly owner: VM | null;
-    /** Component Unique Identifier (TODO: this should be removed - Issue #951) */
-    uid: number;
     /** Component Creation Index */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -91,7 +93,6 @@ export interface UninitializedVM {
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    cmpRoot: ShadowRoot;
     component?: ComponentInterface;
     callHook: (
         cmp: ComponentInterface | undefined,
@@ -103,8 +104,7 @@ export interface UninitializedVM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
-    fallback: boolean;
-    mode: string;
+    mode: 'open' | 'closed';
     deps: VM[][];
     toString(): string;
 }
@@ -112,10 +112,10 @@ export interface UninitializedVM {
 export interface VM extends UninitializedVM {
     cmpTemplate: Template;
     component: ComponentInterface;
+    cmpRoot: ShadowRoot;
 }
 
 let idx: number = 0;
-let uid: number = 0;
 
 function callHook(
     cmp: ComponentInterface | undefined,
@@ -132,11 +132,6 @@ function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
 function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
-
-// DO NOT CHANGE this:
-// these two values are used by the synthetic-shadow implementation to traverse the DOM
-const OwnerKey = '$$OwnerKey$$';
-const OwnKey = '$$OwnKey$$';
 
 export function rerenderVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -198,7 +193,6 @@ export function removeRootVM(vm: VM) {
 export interface CreateVMInit {
     mode: 'open' | 'closed';
     // custom settings for now
-    fallback: boolean;
     isRoot?: boolean;
     owner: VM | null;
 }
@@ -211,15 +205,9 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         );
     }
     const def = getComponentDef(Ctor);
-    const { isRoot, mode, fallback, owner } = options;
-    const shadowRootOptions: ShadowRootInit = {
-        mode,
-        delegatesFocus: !!Ctor.delegatesFocus,
-    };
-    uid += 1;
+    const { isRoot, mode, owner } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
-        uid,
         // component creation index is defined once, and never reset, it can
         // be preserved from one insertion to another without any issue
         idx,
@@ -227,7 +215,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         isScheduled: false,
         isDirty: true,
         isRoot: isTrue(isRoot),
-        fallback,
         mode,
         def,
         owner,
@@ -237,8 +224,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         cmpTemplate: undefined,
         cmpProps: create(null),
         cmpTrack: create(null),
-        cmpSlots: fallback ? create(null) : undefined,
-        cmpRoot: elm.attachShadow(shadowRootOptions),
+        cmpSlots: useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
         getHook,
@@ -500,15 +486,8 @@ export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    const { fallback } = vm;
     vm.children = EmptyArray;
-    if (isTrue(fallback)) {
-        // synthetic-shadow does not have a real cmpRoot instance, instead
-        // we need to remove the content of the host entirely
-        innerHTMLSetter.call(vm.elm, '');
-    } else {
-        ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
-    }
+    ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
     // disconnecting any known custom element inside the shadow of the this vm
     runShadowChildNodesDisconnectedCallback(vm);
 }
@@ -578,10 +557,8 @@ export function getErrorComponentStack(startingElement: Element): string {
  */
 function getParentOrHostElement(elm: Element): Element | null {
     const parentElement = parentElementGetter.call(elm);
-    // If this is a shadow root, find the host instead
-    return isNull(parentElement) && isNativeShadowRootAvailable
-        ? getHostElement(elm)
-        : parentElement;
+    // If parentElement is a shadow root, find the host instead
+    return isNull(parentElement) ? getHostElement(elm) : parentElement;
 }
 
 /**
@@ -590,16 +567,12 @@ function getParentOrHostElement(elm: Element): Element | null {
 function getHostElement(elm: Element): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            isNativeShadowRootAvailable,
-            'getHostElement should only be called if native shadow root is available'
-        );
-        assert.isTrue(
             isNull(parentElementGetter.call(elm)),
             `getHostElement should only be called if the parent element of ${elm} is null`
         );
     }
     const parentNode = parentNodeGetter.call(elm);
-    return parentNode instanceof NativeShadowRoot
+    return parentNode instanceof GlobalShadowRoot
         ? ShadowRootHostGetter.call(parentNode as unknown)
         : null;
 }
@@ -608,41 +581,19 @@ export function isNodeFromTemplate(node: Node): boolean {
     if (isFalse(node instanceof Node)) {
         return false;
     }
-    return !isUndefined(getNodeOwnerKey(node));
-}
-
-export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
-}
-
-export function setNodeOwnerKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the owner key
-        defineProperty(node, OwnerKey, {
-            value,
-            enumerable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        node[OwnerKey] = value;
+    // TODO: issue #1250 - skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
+    if (node instanceof GlobalShadowRoot) {
+        return false;
     }
-}
-
-export function getNodeKey(node: Node): number | undefined {
-    return node[OwnKey];
-}
-
-export function setNodeKey(node: Node, value: number) {
-    if (process.env.NODE_ENV !== 'production') {
-        // in dev-mode, we are more restrictive about what you can do with the own key
-        defineProperty(node, OwnKey, {
-            value,
-            enumerable: true,
-        });
-    } else {
-        // in prod, for better perf, we just let it roll
-        node[OwnKey] = value;
+    if (useSyntheticShadow) {
+        // TODO: issue #1252 - old behavior that is still used by some pieces of the platform, specifically, nodes inserted
+        // manually on places where `lwc:dom="manual"` directive is not used, will be considered global elements.
+        if (isUndefined((node as any).$shadowResolver$)) {
+            return false;
+        }
     }
+    const root = node.getRootNode();
+    return root instanceof GlobalShadowRoot;
 }
 
 export function getCustomElementVM(elm: HTMLElement): VM {

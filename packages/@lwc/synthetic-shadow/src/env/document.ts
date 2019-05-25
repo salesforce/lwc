@@ -25,12 +25,7 @@ const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescr
 )!.get!;
 
 const {
-    createDocumentFragment,
-    createElement,
-    createElementNS,
-    createTextNode,
     createComment,
-    querySelector,
     querySelectorAll,
     getElementById,
     getElementsByClassName,
@@ -44,13 +39,8 @@ const { getElementsByName } = HTMLDocument.prototype;
 
 export {
     elementFromPoint,
-    createDocumentFragment,
-    createElement,
-    createElementNS,
-    createTextNode,
     createComment,
     DocumentPrototypeActiveElement,
-    querySelector,
     querySelectorAll,
     getElementById,
     getElementsByClassName,

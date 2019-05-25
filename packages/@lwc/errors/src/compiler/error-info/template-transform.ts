@@ -42,26 +42,6 @@ export const TemplateErrors = {
 };
 
 export const ParserDiagnostics = {
-    EMPTY_STYLE_TAG: {
-        code: 1031,
-        message: 'A style tag must not be empty',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-
-    INVALID_STYLE_TAG_POSITION: {
-        code: 1032,
-        message:
-            'Incorrectly positioned <style> element. The <style> element must be the first element in your template.',
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
-    INVALID_STYLE_TAG_FUNCTION_FORMAT: {
-        code: 1033,
-        message: "compileToFunction doesn't support style tag",
-        level: DiagnosticLevel.Error,
-        url: '',
-    },
     AMBIGUOUS_ATTRIBUTE_VALUE: {
         code: 1034,
         message:
@@ -470,8 +450,16 @@ export const ParserDiagnostics = {
         url: '',
     },
 
+    STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE: {
+        code: 1122,
+        message:
+            "The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
     UNKNOWN_HTML_TAG_IN_TEMPLATE: {
-        code: 1121,
+        code: 1123,
         message:
             "Unknown html tag '<{0}>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
         level: DiagnosticLevel.Warning,

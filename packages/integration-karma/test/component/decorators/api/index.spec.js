@@ -1,8 +1,6 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Properties from 'x/properties';
-import ConstructorPropertyAccess from 'x/constructorPropertyAccess';
-import ManualMutation from 'x/manualMutation';
 import Mutate from 'x/mutate';
 import GetterSetter from 'x/getterSetter';
 import ConstructorGetterAccess from 'x/constructorGetterAccess';
@@ -17,36 +15,6 @@ describe('properties', () => {
 
         expect(elm.publicProp).toBeDefined();
         expect(elm.privateProp).toBeUndefined();
-    });
-
-    it('logs an error when attempting to read a public property during construction', () => {
-        expect(() => {
-            createElement('x-constructor-get', { is: ConstructorPropertyAccess });
-        }).toLogErrorDev(
-            /\[.+\] constructor should not read the value of property "prop"\. The owner component has not yet set the value\. Instead use the constructor to set default values for properties\./
-        );
-    });
-
-    it('logs a warning when attempting to set a non trackable value', () => {
-        const elm = createElement('x-properties', { is: Properties });
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.publicProp = new Map();
-        }).toLogWarningDev(
-            /Assigning a non-reactive value \[.+\] to member property publicProp of \[.+\] is not common because mutations on that value cannot be observed\./
-        );
-    });
-
-    it('logs a warning when attempting to set a public property manually', () => {
-        const elm = createElement('x-manual-mutation', { is: ManualMutation });
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.setPropertyManually('manual');
-        }).toLogWarningDev(
-            /If property publicProp decorated with @api in \[.+\] is used in the template, the value manual set manually may be overridden by the template, consider binding the property only in the template\./
-        );
     });
 
     it('should make the public property reactive if used in the template', () => {
@@ -99,17 +67,6 @@ describe('getter/setter', () => {
         expect(() => {
             createElement('x-constructor-getter-access', { is: ConstructorGetterAccess });
         }).not.toThrow();
-    });
-
-    it('logs a warning when attempting to set a public accessor manually', () => {
-        const elm = createElement('x-manual-mutation', { is: ManualMutation });
-        document.body.appendChild(elm);
-
-        expect(() => {
-            elm.setAccessorManually('manual');
-        }).toLogWarningDev(
-            /If property publicAccessor decorated with @api in \[.+\] is used in the template, the value manual set manually may be overridden by the template, consider binding the property only in the template\./
-        );
     });
 });
 

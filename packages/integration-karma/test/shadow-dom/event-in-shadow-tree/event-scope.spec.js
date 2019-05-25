@@ -1,7 +1,8 @@
 // Inspired from WPT:
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-composed.html
 
-import { createElement, extractDataIds } from 'test-utils';
+import { createElement } from 'lwc';
+import { extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
 

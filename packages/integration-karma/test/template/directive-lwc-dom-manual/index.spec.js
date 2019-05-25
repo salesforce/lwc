@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import withLwcDomManual from 'x/withLwcDomManual';
 import withoutLwcDomManual from 'x/withoutLwcDomManual';
@@ -22,7 +22,7 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
 
             expect(() => fn(elm)).toLogErrorDev(
                 new RegExp(
-                    `\\[LWC error\\]: ${method} is disallowed in Element unless \`lwc:dom="manual"\` directive is used in the template.`
+                    `\\[LWC error\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
                 )
             );
         });

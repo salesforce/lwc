@@ -11,12 +11,12 @@ function decorateCompatPreface(reporter, preface) {
     return preface + modePreface;
 }
 
-class RaptorIntegrationReporter extends SpecReporter {
+class LWCIntegrationReporter extends SpecReporter {
     getResultList(cid, suites, preface = '') {
         return super.getResultList.call(this, cid, suites, decorateCompatPreface(this, preface));
     }
 }
 
-RaptorIntegrationReporter.reporterName = 'RaptorIntegrationReporter';
+LWCIntegrationReporter.reporterName = 'LWCIntegrationReporter';
 
-module.exports = RaptorIntegrationReporter;
+module.exports = LWCIntegrationReporter;

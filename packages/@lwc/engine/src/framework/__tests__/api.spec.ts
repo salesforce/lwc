@@ -125,7 +125,7 @@ describe('api', () => {
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should log warning when invalid iteration value', () => {
+        it('should log an error when invalid iteration value', () => {
             const html = compileTemplate(`<template></template>`);
             class VmRendering extends LightningElement {
                 render() {
@@ -136,7 +136,7 @@ describe('api', () => {
             const elm = createElement('x-vm-aux', { is: VmRendering });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('it should be an Array or an iterable Object.');
+            }).toLogError('It must be an Array or an iterable Object.');
         });
     });
 
@@ -225,7 +225,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('This attribute can only be set to 0 or -1.');
+            }).toLogError('This attribute must be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 
@@ -275,7 +275,7 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             expect(() => {
                 document.body.appendChild(elm);
-            }).toLogWarning('This attribute can only be set to 0 or -1.');
+            }).toLogError('This attribute must be set to 0 or -1.');
             expect(normalized).toBe(0);
         });
 

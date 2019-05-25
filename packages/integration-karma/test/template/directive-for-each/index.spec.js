@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XTest from 'x/test';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
 
@@ -59,7 +59,7 @@ function iterator() {
 testForEach('Iterator', { [Symbol.iterator]: iterator });
 
 // TODO: revisit
-xit('should log a warning when the passing a non iterable', () => {
+xit('should throw an error when the passing a non iterable', () => {
     const elm = createElement('x-test', { is: XTest });
     elm.items = {};
 

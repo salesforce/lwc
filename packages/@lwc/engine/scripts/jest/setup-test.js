@@ -9,11 +9,13 @@
 
 const chalk = require('chalk');
 
+require('@lwc/synthetic-shadow');
+
 const { CONSOLE_WHITELIST } = require('./test-whitelist');
-const { toLogError, toLogWarning } = require('./matchers/log-matchers');
+const { toLogError } = require('./matchers/log-error');
 
 // Extract original methods from console
-const { warn: originalWarn, error: originalError } = console;
+const { error: originalError } = console;
 
 let currentSpec;
 jasmine.getEnv().addReporter({
@@ -26,7 +28,6 @@ jasmine.getEnv().addReporter({
 });
 
 beforeEach(() => {
-    console.warn = jest.spyOn(console, 'warn');
     console.error = jest.spyOn(console, 'error');
 });
 
@@ -34,16 +35,16 @@ afterEach(() => {
     const { fullName } = currentSpec;
 
     const isWhitelistedTest = CONSOLE_WHITELIST.includes(fullName);
-    const didTestLogged = [...console.warn.mock.calls, ...console.error.mock.calls].length > 0;
+    const didTestLogged = console.error.mock.calls.length > 0;
 
     try {
         if (isWhitelistedTest) {
             if (!didTestLogged) {
+                const boldedName = chalk.green.bold(fullName);
+                const boldedFile = chalk.green.bold('test-whitelist.js');
                 const message = [
-                    `This test used to used to log a warning or an error, but don't log anymore.`,
-                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold(
-                        'test-whitelist.js'
-                    )}"`,
+                    `This test used to log an error but no longer does.`,
+                    `Please remove "${boldedName}" from "${boldedFile}"`,
                 ].join('\n');
 
                 throw new Error(message);
@@ -51,19 +52,15 @@ afterEach(() => {
         } else {
             if (didTestLogged) {
                 const message = [
-                    `Expect test not to log an error or a warning.\n`,
-                    `If the message expected, make sure you asserts against those logs in the tests.\n`,
-                    `Use instead: ${chalk.green.bold(
-                        `expect(<function>).toLogError(<message>)`
-                    )} or ${chalk.green.bold(`expect(<function>).toLogWarning(<message>)`)}`,
+                    `Expected the test to not result in an error being logged.`,
+                    `If this is expected, make sure to add an assertion for it:`,
+                    `${chalk.green.bold(`expect(<function>).toLogError(<message>)`)}`,
                 ].join('\n');
 
                 throw new Error(message);
             }
         }
     } finally {
-        // Make sure to reset the original console methods after each tests
-        console.warn = originalWarn;
         console.error = originalError;
     }
 });
@@ -71,5 +68,4 @@ afterEach(() => {
 // Register custom console matchers in jasmine
 expect.extend({
     toLogError,
-    toLogWarning,
 });

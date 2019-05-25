@@ -46,10 +46,6 @@ export interface ComponentMeta {
 
 const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
 
-export function isComponentRegistered(Ctor: ComponentConstructor): boolean {
-    return signedComponentToMetaMap.has(Ctor);
-}
-
 // chaining this method as a way to wrap existing
 // assignment of component constructor easily, without too much transformation
 export function registerComponent(
@@ -67,7 +63,7 @@ export function getComponentRegisteredMeta(Ctor: ComponentConstructor): Componen
 export function createComponent(uninitializedVm: UninitializedVM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            uninitializedVm && 'cmpRoot' in uninitializedVm,
+            uninitializedVm && 'cmpProps' in uninitializedVm,
             `${uninitializedVm} is not a vm.`
         );
     }

@@ -28,6 +28,7 @@ import {
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     EmptyObject,
+    useSyntheticShadow,
 } from './utils';
 import { VM, SlotSet } from './vm';
 import { ComponentConstructor } from './component';
@@ -64,6 +65,7 @@ import {
 } from './hooks';
 import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
+import { markNodeFromVNode } from './restrictions';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -93,8 +95,6 @@ export interface RenderAPI {
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
-const { createElement, createElementNS, createTextNode, createComment } = document;
-
 const CHAR_S = 115;
 const CHAR_V = 118;
 const CHAR_G = 103;
@@ -106,7 +106,11 @@ const TextHook: Hooks = {
         if (isUndefined(vnode.elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler
-            vnode.elm = createTextNode.call(document, vnode.text);
+            vnode.elm = document.createTextNode(vnode.text as string);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Node);
         }
         createTextHook(vnode);
     },
@@ -121,7 +125,11 @@ const CommentHook: Hooks = {
         if (isUndefined(vnode.elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler
-            vnode.elm = createComment.call(document, vnode.text);
+            vnode.elm = document.createComment(vnode.text);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Node);
         }
         createCommentHook(vnode);
     },
@@ -144,8 +152,12 @@ const ElementHook: Hooks = {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
             vnode.elm = isUndefined(ns)
-                ? createElement.call(document, sel)
-                : createElementNS.call(document, ns, sel);
+                ? document.createElement(sel)
+                : document.createElementNS(ns, sel);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Element);
         }
         fallbackElmHook(vnode);
         createElmHook(vnode);
@@ -173,7 +185,11 @@ const CustomElementHook: Hooks = {
         if (isUndefined(elm)) {
             // supporting the ability to inject an element via a vnode
             // this is used mostly for caching in compiler and style tags
-            vnode.elm = createElement.call(document, sel);
+            vnode.elm = document.createElement(sel);
+        }
+        linkNodeToShadow(vnode);
+        if (process.env.NODE_ENV !== 'production') {
+            markNodeFromVNode(vnode.elm as Element);
         }
         createViewModelHook(vnode);
         allocateChildrenHook(vnode);
@@ -203,6 +219,11 @@ const CustomElementHook: Hooks = {
         removeCustomElmHook(vnode);
     },
 };
+
+function linkNodeToShadow(vnode: VNode) {
+    // TODO: this should eventually be done by the polyfill directly
+    (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
+}
 
 // TODO: this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
@@ -249,8 +270,8 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
-                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+            assert.logError(
+                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
         }
@@ -300,10 +321,10 @@ export function ti(value: any): number {
     const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
         if (shouldNormalize) {
-            assert.logWarning(
+            assert.logError(
                 `Invalid tabindex value \`${toString(
                     value
-                )}\` in template for ${vmBeingRendered}. This attribute can only be set to 0 or -1.`,
+                )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
                 vmBeingRendered!.elm
             );
         }
@@ -331,7 +352,10 @@ export function s(
         children = slotset[slotName];
     }
     const vnode = h('slot', data, children);
-    if (isTrue(vnode.owner.fallback)) {
+    if (useSyntheticShadow) {
+        // the content of the slot has to be dynamic when in synthetic shadow mode because
+        // the `vnode.children` might be the slotted content vs default content, in which case
+        // the size and the keys are not matching.
         markAsDynamicChildren(children);
     }
     return vnode;
@@ -368,8 +392,8 @@ export function c(
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logWarning(
-                `Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`,
+            assert.logError(
+                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
         }
@@ -420,10 +444,10 @@ export function i(
     markAsDynamicChildren(list);
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logWarning(
+            assert.logError(
                 `Invalid template iteration for value "${toString(
                     iterable
-                )}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`,
+                )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
                 vmBeingRendered!.elm
             );
         }
@@ -435,7 +459,7 @@ export function i(
             isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
                 iterable
-            )}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`
+            )}\` in ${vmBeingRendered}. It must be an array-like object and not \`null\` nor \`undefined\`.`
         );
     }
     const iterator = iterable[SymbolIterator]();
@@ -478,15 +502,15 @@ export function i(
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
                             iterationError = `Duplicated "key" attribute value for "<${
                                 childVnode.sel
-                            }>" in ${vmBeingRendered} for item number ${j}. Key with value "${
+                            }>" in ${vmBeingRendered} for item number ${j}. A key with value "${
                                 childVnode.key
-                            }" appears more than once in iteration. Key values must be unique numbers or strings.`;
+                            }" appears more than once in the iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
                         iterationError = `Invalid "key" attribute value in "<${
                             childVnode.sel
-                        }>" in ${vmBeingRendered} for item number ${j}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
+                        }>" in ${vmBeingRendered} for item number ${j}. Set a unique "key" value on all iterated child elements.`;
                     }
                 }
             });
@@ -657,7 +681,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
-                `Invalid id value "${id}". Expected a non-empty string.`,
+                `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
                 vmBeingRendered!.elm
             );
         }
@@ -667,17 +691,19 @@ export function gid(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    return `${id}-${vmBeingRendered!.uid}`;
+    return `${id}-${vmBeingRendered!.idx}`;
 }
 
 // [f]ragment [id] function
 export function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(
-                `Invalid url value "${url}". Expected a non-empty string.`,
-                vmBeingRendered!.elm
-            );
+            if (isUndefined(url)) {
+                assert.logError(
+                    `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
+                    vmBeingRendered!.elm
+                );
+            }
         }
         return url;
     }
@@ -687,7 +713,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
     }
     // Apply transformation only for fragment-only-urls
     if (/^#/.test(url)) {
-        return `${url}-${vmBeingRendered!.uid}`;
+        return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
 }

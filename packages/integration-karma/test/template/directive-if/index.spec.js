@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XSlotted from 'x/slotted';
 import NestedRenderConditional from 'x/nestedRenderConditional';
@@ -79,11 +79,8 @@ describe('if:true directive', () => {
             expect(child).not.toBeNull();
             expect(child.shadowRoot.querySelector('slot')).toBeNull();
 
-            // The warning message is not of concern here. That is covered by a test in decorators/api/index.spec.js
-            // Testing the start of the error message to not miss errors thrown for other reasons
-            expect(() => {
-                child.show = true;
-            }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            child.show = true;
+
             return Promise.resolve()
                 .then(() => {
                     const slot = child.shadowRoot.querySelector('slot');
@@ -91,15 +88,11 @@ describe('if:true directive', () => {
                     const assignedNodes = slot.assignedNodes({ flatten: true });
                     expect(assignedNodes.length).toBe(1);
                     expect(assignedNodes[0]).toBe(assignedSlotContent);
-                    expect(() => {
-                        child.show = false;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    child.show = false;
                 })
                 .then(() => {
                     expect(child.shadowRoot.querySelector('slot')).toBeNull();
-                    expect(() => {
-                        child.show = true;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    child.show = true;
                 })
                 .then(() => {
                     const slot = child.shadowRoot.querySelector('slot');
@@ -117,23 +110,16 @@ describe('if:true directive', () => {
             expect(child).not.toBeNull();
             expect(child.querySelector('.content')).toBeNull();
 
-            // The warning message is not of concern here. That is covered by a test in decorators/api/index.spec.js
-            // Testing the start of the error message to not miss errors thrown for other reasons
-            expect(() => {
-                child.show = true;
-            }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+            child.show = true;
+
             return Promise.resolve()
                 .then(() => {
                     expect(child.querySelector('.content')).not.toBeNull();
-                    expect(() => {
-                        child.show = false;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    child.show = false;
                 })
                 .then(() => {
                     expect(child.querySelector('.content')).toBeNull();
-                    expect(() => {
-                        child.show = true;
-                    }).toLogWarningDev(/\[LWC warning\]: If property show decorated with @api.*/);
+                    child.show = true;
                 })
                 .then(() => {
                     expect(child.querySelector('.content')).not.toBeNull();

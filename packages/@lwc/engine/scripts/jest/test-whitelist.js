@@ -26,7 +26,6 @@ const CONSOLE_WHITELIST = [
     'html-element global HTML Properties should log console error when user land code changes attribute via querySelector',
     'html-element global HTML Properties should log console error when user land code removes attribute via querySelector',
     'html-element global HTML Properties should log error message when attribute is set via elm.setAttribute if reflective property is defined',
-    'html-element life-cycles should not throw error when accessing a non-observable property from tracked property when not rendering',
 ];
 
 for (let i = 0; i < CONSOLE_WHITELIST.length; i++) {

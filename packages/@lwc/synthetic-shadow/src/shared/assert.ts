@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, forEach, isNull, StringToLowerCase } from './language';
+import { ArrayJoin, ArrayPush, isNull, StringToLowerCase } from './language';
 import { tagNameGetter } from '../env/element';
 import { parentNodeGetter } from '../env/node';
 import { ShadowRootHostGetter } from '../env/dom';
-
-const StringSplit = String.prototype.split;
 
 function isLWC(element): element is HTMLElement {
     return element instanceof Element && tagNameGetter.call(element).indexOf('-') !== -1;
@@ -83,42 +81,6 @@ const assert = {
         } catch (e) {
             /* eslint-disable-next-line no-console */
             console.error(e);
-        }
-    },
-    logWarning(message: string, elm?: Element) {
-        let msg = `[LWC warning]: ${message}`;
-
-        if (elm) {
-            msg = `${msg}\n${getFormattedComponentStack(elm)}`;
-        }
-
-        if (process.env.NODE_ENV === 'test') {
-            /* eslint-disable-next-line no-console */
-            console.warn(msg);
-            return;
-        }
-        try {
-            throw new Error('error to get stacktrace');
-        } catch (e) {
-            // first line is the dummy message and second this function (which does not need to be there)
-            // Typescript is inferring the wrong function type for this particular
-            // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-            // @ts-ignore type-mismatch
-            const stackTraceLines: string[] = StringSplit.call(e.stack, '\n').splice(2);
-
-            /* eslint-disable-next-line no-console */
-            console.group(msg);
-
-            forEach.call(stackTraceLines, trace => {
-                // We need to format this as a string, because Safari will detect that the string is a stack trace line
-                // item and will format it as so
-
-                /* eslint-disable-next-line no-console */
-                console.log('%s', trace.trim());
-            });
-
-            /* eslint-disable-next-line no-console */
-            console.groupEnd();
         }
     },
 };

@@ -1,7 +1,8 @@
 // Inspired from WPT:
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
-import { createElement, extractDataIds } from 'test-utils';
+import { createElement } from 'lwc';
+import { extractDataIds } from 'test-utils';
 
 import ShadowTree from 'x/shadowTree';
 import NestedShadowTree from 'x/nestedShadowTree';

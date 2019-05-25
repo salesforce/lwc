@@ -1,4 +1,4 @@
-import { createElement } from 'test-utils';
+import { createElement } from 'lwc';
 
 import Static from 'x/static';
 import Dynamic from 'x/dynamic';

@@ -1,5 +1,24 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.39.1...v) (2019-05-15)
+# [](https://github.com/salesforce/lwc/compare/v0.40.0...v) (2019-05-21)
+
+
+### Bug Fixes
+
+* **compiler:** stop reporting warnings on absolute imports ([#1238](https://github.com/salesforce/lwc/issues/1238)) ([57210ae](https://github.com/salesforce/lwc/commit/57210ae))
+* **synthetic-shadow:** htmlcollection and nodelist ([#1232](https://github.com/salesforce/lwc/issues/1232)) ([7bc96eb](https://github.com/salesforce/lwc/commit/7bc96eb))
+* isGlobalPatchingSkipped on iframe document ([#1251](https://github.com/salesforce/lwc/issues/1251)) ([dd9ff2a](https://github.com/salesforce/lwc/commit/dd9ff2a))
+
+
+### Features
+
+* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/client ([#1235](https://github.com/salesforce/lwc/issues/1235)) ([fbf9324](https://github.com/salesforce/lwc/commit/fbf9324))
+* **template-compiler:** disallow <style> inside <template> ([a3eae33](https://github.com/salesforce/lwc/commit/a3eae33))
+* **template-compiler:** remove lwc-depracated:is ([#1237](https://github.com/salesforce/lwc/issues/1237)) ([149d1f6](https://github.com/salesforce/lwc/commit/149d1f6))
+
+
+
+<a name="0.40.0"></a>
+# [0.40.0](https://github.com/salesforce/lwc/compare/v0.39.1...v0.40.0) (2019-05-15)
 
 
 ### Bug Fixes

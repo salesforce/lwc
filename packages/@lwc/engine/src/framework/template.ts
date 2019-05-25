@@ -14,7 +14,6 @@ import {
     create,
     ArrayIndexOf,
     toString,
-    hasOwnProperty,
     forEach,
     ArrayUnshift,
 } from '../shared/language';
@@ -56,7 +55,7 @@ export interface Template {
 
         /**
          * HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs in fallback mode.
+         * This attribute is used for style encapsulation when the engine runs with synthetic shadow.
          */
         shadowAttribute: string;
     };
@@ -79,11 +78,11 @@ function validateSlots(vm: VM, html: any) {
             )} for slot "${slotName}" in ${vm}.`
         );
 
-        if (ArrayIndexOf.call(slots, slotName) === -1) {
+        if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(
-                `Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`,
+            assert.logError(
+                `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm.elm
             );
         }
@@ -102,18 +101,9 @@ function validateFields(vm: VM, html: Template) {
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
             // eslint-disable-next-line no-production-assert
-            assert.logWarning(
-                `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`,
+            assert.logError(
+                `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
                 vm.elm
-            );
-        } else if (hasOwnProperty.call(component, propName)) {
-            // eslint-disable-next-line no-production-assert
-            assert.fail(
-                `${component}'s template is accessing \`this.${toString(
-                    propName
-                )}\`, which is considered a non-reactive private field. Instead access it via a getter or make it reactive by decorating it with \`@track ${toString(
-                    propName
-                )}\`.`
             );
         }
     });

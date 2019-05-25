@@ -23,6 +23,13 @@ const engineModeFile = path.join(
         `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`
     )
 );
+const shadowModeFile = path.join(
+    require.resolve(
+        `@lwc/synthetic-shadow/dist/umd/${isCompat ? 'es5' : 'es2017'}/shadow${
+            isProd ? '.min' : ''
+        }.js`
+    )
+);
 const wireServicePath = path.join(
     require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`)
 );
@@ -121,12 +128,13 @@ if (!fs.existsSync(engineModeFile)) {
     throw new Error(
         'Compat version of engine not generated in expected location: ' +
             engineModeFile +
-            '.\nGenerate artifacts from the top-level Raptor project first'
+            '.\nGenerate artifacts from the top-level Lightning Web Components project first'
     );
 }
 
 // copy static files
 fs.copySync(engineModeFile, path.join(testSharedOutput, 'engine.js'));
+fs.copySync(shadowModeFile, path.join(testSharedOutput, 'shadow.js'));
 fs.writeFileSync(path.join(testSharedOutput, 'downgrade.js'), compatPolyfills.loadDowngrade());
 fs.writeFileSync(path.join(testSharedOutput, 'polyfills.js'), compatPolyfills.loadPolyfills());
 
