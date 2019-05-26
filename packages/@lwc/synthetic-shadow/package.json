@@ -13,6 +13,11 @@
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
     },
+    "lwc": {
+        "modules": {
+            "@lwc/synthetic-shadow": "dist/modules/es2017/shadow.js"
+        }
+    },
     "devDependencies": {
         "express": "^4.15.2"
     },

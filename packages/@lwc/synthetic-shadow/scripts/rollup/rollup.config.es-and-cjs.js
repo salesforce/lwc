@@ -14,7 +14,7 @@ const entry = path.resolve(__dirname, '../../src/index.ts');
 const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
-const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
+const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {

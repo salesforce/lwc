@@ -14,7 +14,7 @@ const { generateTargetName } = require('./util');
 const input = path.resolve(__dirname, '../../src/index.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
 
-const banner = `/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`;
+const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
