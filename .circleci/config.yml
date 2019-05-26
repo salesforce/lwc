@@ -65,8 +65,11 @@ checkout_repo: &checkout_repo
       if [ -n "$CIRCLE_TAG" ]
       then
         git fetch --force origin "refs/tags/${CIRCLE_TAG}"
-      else
+      elif [[ $CIRCLE_BRANCH == *"pull/"* ]]
+      then
         git fetch --force origin "${CIRCLE_BRANCH}/head:remotes/origin/${CIRCLE_BRANCH}"
+      else
+        git checkout "${CIRCLE_BRANCH}"
       fi
 
 
