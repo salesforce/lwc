@@ -228,8 +228,8 @@ function linkNodeToShadow(vnode: VNode) {
 // TODO: #1136 - this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
     const { data, children, sel } = vnode;
-    // TODO: #XXX - review why `sel` equal `foreignObject` should get this `ns`
     data.ns = NamespaceAttributeForSVG;
+    // TODO: #1275 - review why `sel` equal `foreignObject` should get this `ns`
     if (isArray(children) && sel !== 'foreignObject') {
         for (let j = 0, n = children.length; j < n; ++j) {
             const childNode = children[j];
@@ -241,12 +241,6 @@ function addNS(vnode: VElement) {
 }
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: #XXX - remove this condition after refactoring all failing tests
-        if (isNull(vmBeingRendered)) {
-            return;
-        }
-    }
     ArrayPush.call((vmBeingRendered as VM).velements, vnode);
 }
 
@@ -540,8 +534,8 @@ export function f(items: any[]): any[] {
     // flattened nodes are because of a conditional or iteration.
     // We have to mark as dynamic because this could switch from an
     // iterator to "static" text at any time.
-    // TODO: #XXX - compiler should give us some sort of indicator
-    // to describe whether a vnode is dynamic or not
+
+    // TODO: #1276 - compiler should give us some sort of indicator to describe whether a vnode is dynamic or not
     markAsDynamicChildren(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
