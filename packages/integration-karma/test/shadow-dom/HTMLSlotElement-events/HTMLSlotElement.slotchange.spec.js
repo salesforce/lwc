@@ -17,7 +17,7 @@ beforeEach(() => {
     child = parent.shadowRoot.querySelector('x-child');
 });
 
-// TODO: #XXX - Investigate why this test fails only in Safari
+// TODO: #1282 - This test fails on Safari 12.0.0 but passes locally with 12.1.1 (expected 0 to be 1)
 xit('should fire slotchange on initial render', () => {
     return waitForSlotChange().then(() => {
         expect(child.getSlotChangeCount()).toBe(1);
