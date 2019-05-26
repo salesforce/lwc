@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const typescript = require('typescript');
 const path = require('path');
-const typescript = require('rollup-plugin-typescript');
-
+const rollupTypescript = require('rollup-plugin-typescript');
 const { version } = require('../../package.json');
 const { generateTargetName } = require('./util');
 
@@ -32,11 +32,12 @@ function rollupConfig(config) {
             banner,
             footer,
         },
-        plugins: [typescript({ target: target, typescript: require('typescript') })],
+        plugins: [rollupTypescript({ target, typescript })],
     };
 }
 
 module.exports = [
+    rollupConfig({ format: 'es', target: 'es2017', test: true }),
     rollupConfig({ format: 'es', target: 'es2017' }),
     rollupConfig({ format: 'cjs', target: 'es2017' }),
     rollupConfig({ format: 'cjs', target: 'es5' }),
