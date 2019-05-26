@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.40.0...v) (2019-05-21)
+# [](https://github.com/salesforce/lwc/compare/v0.40.1...v) (2019-05-26)
+
+
+### Bug Fixes
+
+* **css-compiler:** relaxation of attribute css rules ([#1248](https://github.com/salesforce/lwc/issues/1248)) ([35fb5f5](https://github.com/salesforce/lwc/commit/35fb5f5))
+* **synthetic-shadow:** new added tests using the old test utils ([#1254](https://github.com/salesforce/lwc/issues/1254)) ([34dd4b9](https://github.com/salesforce/lwc/commit/34dd4b9))
+* **synthetic-shadow:** prevent tabbing into tabindex -1 subtrees ([#1255](https://github.com/salesforce/lwc/issues/1255)) ([5eeb2a1](https://github.com/salesforce/lwc/commit/5eeb2a1))
+* **template-compiler:** remove HTML attributes validation ([#1247](https://github.com/salesforce/lwc/issues/1247)) ([990063a](https://github.com/salesforce/lwc/commit/990063a))
+
+
+
+<a name="0.40.1"></a>
+## [0.40.1](https://github.com/salesforce/lwc/compare/v0.40.0...v0.40.1) (2019-05-21)
 
 
 ### Bug Fixes

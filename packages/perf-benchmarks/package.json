@@ -1,6 +1,6 @@
 {
     "name": "perf-benchmarks",
-    "version": "0.40.1",
+    "version": "0.41.0",
     "private": true,
     "scripts": {
         "start": "best",
@@ -10,11 +10,11 @@
         "@best/runner-headless": "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.6.4/62bcbb1e4cd405aa76576da7c368cdf8375065b5.tgz",
         "@best/runner-remote": "http://npm.lwcjs.org/@best/runner-remote/-/@best/runner-remote-0.6.4/9ea65393034c498691b7f363e39385214c0cb8b1.tgz",
         "@best/store-aws": "http://npm.lwcjs.org/@best/store-aws/-/@best/store-aws-0.6.4/b829bd12cc708a707895ca7cd25def338b13c008.tgz",
-        "@lwc/rollup-plugin": "0.40.1",
+        "@lwc/rollup-plugin": "0.41.0",
         "best-cli": "http://npm.lwcjs.org/best-cli/-/best-cli-0.6.4/2ae2c5824183096397076cb8109e2bb53365fbbc.tgz"
     },
     "dependencies": {
-        "@lwc/engine": "0.40.1",
-        "@lwc/synthetic-shadow": "0.40.1"
+        "@lwc/engine": "0.41.0",
+        "@lwc/synthetic-shadow": "0.41.0"
     }
 }
