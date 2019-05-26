@@ -223,7 +223,7 @@ export const ParserDiagnostics = {
         code: 1057,
         message:
             '{0} is not valid attribute for {1}. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/{1}',
-        level: DiagnosticLevel.Error,
+        level: DiagnosticLevel.Warning,
         url: '',
     },
 
@@ -266,7 +266,7 @@ export const ParserDiagnostics = {
 
     IS_ATTRIBUTE_NOT_SUPPORTED: {
         code: 1063,
-        message: '"is" attribute is not supported',
+        message: '"is" attribute is disallowed',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -455,6 +455,14 @@ export const ParserDiagnostics = {
         message:
             "The <style> element is disallowed inside the template. Please add css rules into '.css' file of your component bundle.",
         level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    UNKNOWN_HTML_TAG_IN_TEMPLATE: {
+        code: 1123,
+        message:
+            "Unknown html tag '<{0}>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+        level: DiagnosticLevel.Warning,
         url: '',
     },
 };

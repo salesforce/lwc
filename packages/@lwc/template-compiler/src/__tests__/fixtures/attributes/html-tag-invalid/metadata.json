@@ -2,19 +2,15 @@
     "warnings": [
         {
             "code": 1057,
-            "message": "LWC1057: raptor is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
-            "level": 1,
+            "message": "LWC1057: unknown-attr is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+            "level": 2,
             "location": {
                 "line": 3,
                 "column": 47,
                 "start": 71,
-                "length": 21
+                "length": 27
             }
         }
     ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [],
-        "templateDependencies": []
-    }
+    "metadata": {}
 }

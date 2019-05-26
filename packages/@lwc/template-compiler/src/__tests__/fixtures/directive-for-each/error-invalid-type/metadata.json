@@ -12,17 +12,6 @@
             }
         },
         {
-            "code": 1057,
-            "message": "LWC1057: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-            "level": 1,
-            "location": {
-                "line": 2,
-                "column": 43,
-                "start": 53,
-                "length": 17
-            }
-        },
-        {
             "code": 1045,
             "message": "LWC1045: for:each directive is expected to be a expression.",
             "level": 1,
@@ -31,17 +20,6 @@
                 "column": 10,
                 "start": 87,
                 "length": 16
-            }
-        },
-        {
-            "code": 1057,
-            "message": "LWC1057: for:index is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
-            "level": 1,
-            "location": {
-                "line": 3,
-                "column": 43,
-                "start": 120,
-                "length": 17
             }
         },
         {

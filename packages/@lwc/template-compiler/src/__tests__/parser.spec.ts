@@ -395,9 +395,7 @@ describe('root errors', () => {
             code: expect.any(Number),
             filename: undefined,
             level: DiagnosticLevel.Error,
-            message: expect.stringContaining(
-                `is is not valid attribute for button. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button`
-            ),
+            message: expect.stringContaining('"is" attribute is disallowed'),
             location: EXPECTED_LOCATION,
         });
     });

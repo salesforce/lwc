@@ -74,6 +74,7 @@ import {
     HTML_NAMESPACE_URI,
     MATHML_TAG_BLACKLIST,
     MATHML_NAMESPACE_URI,
+    KNOWN_HTML_ELEMENTS,
 } from './constants';
 import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
@@ -700,10 +701,8 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const { name, location } = attr;
-            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
+            if (!isValidHTMLAttribute(element.tag, name)) {
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
-            } else if (isCustomElement(element) && isProhibitedIsAttribute(name)) {
-                warnAt(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, [name, tag], location);
             }
 
             if (attr.type === IRAttributeType.String) {
@@ -798,6 +797,16 @@ export default function parse(source: string, state: State): TemplateParseResult
                     [tag]
                 );
             }
+
+            const isKnownTag =
+                isCustomElement(element) ||
+                KNOWN_HTML_ELEMENTS.has(tag) ||
+                SVG_TAG_WHITELIST.has(tag) ||
+                DASHED_TAGNAME_ELEMENT_SET.has(tag);
+
+            if (!isKnownTag) {
+                return warnOnElement(ParserDiagnostics.UNKNOWN_HTML_TAG_IN_TEMPLATE, node, [tag]);
+            }
         }
     }
 
@@ -807,6 +816,10 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         attrsList.forEach(attr => {
             const attrName = attr.name;
+
+            if (isProhibitedIsAttribute(attrName)) {
+                warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [attrName, tag]);
+            }
 
             if (isTabIndexAttribute(attrName)) {
                 if (!isExpression(attr.value) && !isValidTabIndexAttributeValue(attr.value)) {
@@ -824,19 +837,26 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     function validateProperties(element: IRElement) {
-        const { props } = element;
+        const { tag, props } = element;
+        const node = element.__original as parse5.AST.Default.Element;
+
         if (props !== undefined) {
             for (const propName in props) {
                 const { name: attrName, type, value } = props[propName];
+
+                if (isProhibitedIsAttribute(attrName)) {
+                    warnOnElement(ParserDiagnostics.IS_ATTRIBUTE_NOT_SUPPORTED, node, [
+                        attrName,
+                        tag,
+                    ]);
+                }
+
                 if (isTabIndexAttribute(attrName)) {
                     if (
                         type !== IRAttributeType.Expression &&
                         !isValidTabIndexAttributeValue(value)
                     ) {
-                        warnOnElement(
-                            ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE,
-                            element.__original
-                        );
+                        warnOnElement(ParserDiagnostics.INVALID_TABINDEX_ATTRIBUTE, node);
                     }
                 }
             }
