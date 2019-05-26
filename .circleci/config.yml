@@ -13,7 +13,7 @@ env_test: &env_test
   <<: *env_default
   environment:
     - SAUCE_USERNAME: lwc_ci
-    - SAUCE_KEY: 88a951ae-4087-42bc-8f89-b7d0716847b6
+    - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
 
 checkout_repo: &checkout_repo
