@@ -165,7 +165,7 @@ function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) 
     let enumerable;
     let get;
     let set;
-    // TODO: #XXX - this does not cover the override of existing descriptors at the instance level
+    // This does not cover the override of existing descriptors at the instance level
     // and that's ok because eventually we will not need to do any of these :)
     if (descriptor === null || (descriptor.get === undefined && descriptor.set === undefined)) {
         let value = cmp[prop];
