@@ -79,7 +79,7 @@ function validateSlots(vm: VM, html: any) {
         );
 
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
-            // TODO: #XXX - this should never really happen because the compiler should always validate
+            // TODO: #1297 - this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
             assert.logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
@@ -120,7 +120,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         );
     }
 
-    // TODO: #XXX - add identity to the html functions
     const { component, context, cmpSlots, cmpTemplate } = vm;
     // reset the cache memoizer for template when needed
     if (html !== cmpTemplate) {
