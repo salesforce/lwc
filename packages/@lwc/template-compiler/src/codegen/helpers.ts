@@ -54,7 +54,7 @@ export function isSlot(element: IRElement) {
 
 /**
  * Returns true if the passed element should be flattened
- * TODO: #XXX - Move this logic into the optimizing compiler. This kind of
+ * TODO: #1303 - Move this logic into the optimizing compiler. This kind of
  *       optimization should be done before the actual code generation.
  */
 export function shouldFlatten(element: IRElement): boolean {

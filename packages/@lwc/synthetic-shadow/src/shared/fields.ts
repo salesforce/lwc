@@ -20,7 +20,7 @@ export function createFieldName(key: string): symbol {
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {
-    // TODO: #XXX - improve this to use a WeakMap
+    // TODO: #1299 - improve this to use a WeakMap
     defineProperty(o, fieldName, {
         value,
     });
