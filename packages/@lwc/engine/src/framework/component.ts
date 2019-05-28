@@ -28,7 +28,7 @@ import { Template } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
-    // TODO: complete the entire interface used by the engine
+    // TODO: #1291 - complete the entire interface used by the engine
     setAttribute(attrName: string, value: any): void;
 }
 

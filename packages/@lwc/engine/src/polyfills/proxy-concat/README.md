@@ -26,4 +26,4 @@ Proxy {0: 3, 1: 4}
 undefined
 ```
 
-> TODO: Remove this polyfill once the issue is fixed
+> TODO: #1178 - Remove this polyfill once browser usage shows that it is safe to do so

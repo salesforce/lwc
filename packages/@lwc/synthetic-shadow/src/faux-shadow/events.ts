@@ -350,8 +350,8 @@ export function addCustomElementEventListener(
                 elm
             )} for event "${type}". Expected an EventListener but received ${listener}.`
         );
-        // TODO: issue #420
-        // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
+        // TODO: #420 - this is triggered when the component author attempts to add a listener
+        // programmatically into a lighting element node
         if (!isUndefined(options)) {
             assert.logError(
                 'The `addEventListener` method in `LightningElement` does not support any options.',
@@ -386,8 +386,8 @@ export function addShadowRootEventListener(
                 sr
             )} for event "${type}". Expected an EventListener but received ${listener}.`
         );
-        // TODO: issue #420
-        // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
+        // TODO: #420 - this is triggered when the component author attempts to add a listener
+        // programmatically into its Component's shadow root
         if (!isUndefined(options)) {
             assert.logError(
                 'The `addEventListener` method in `LightningElement` does not support any options.',

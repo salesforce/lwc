@@ -19,12 +19,6 @@ describe('scoped-ids', () => {
         const html = compileTemplate(
             `
             <template>
-                <!--
-                    TODO: JSDOM ends up invoking elm.setAttribute('id', value) when setting
-                    property values, which we guard against for components by throwing. Add
-                    coverage for custom elements when the following issue is resolved:
-                    https://github.com/jsdom/jsdom/issues/2158
-                -->
                 <x-child></x-child>
                 <div id={identifier}></div>
             </template>

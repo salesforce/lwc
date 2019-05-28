@@ -221,15 +221,15 @@ const CustomElementHook: Hooks = {
 };
 
 function linkNodeToShadow(vnode: VNode) {
-    // TODO: this should eventually be done by the polyfill directly
+    // TODO: #1164 - this should eventually be done by the polyfill directly
     (vnode.elm as any).$shadowResolver$ = (vnode.owner.cmpRoot as any).$shadowResolver$;
 }
 
-// TODO: this should be done by the compiler, adding ns to every sub-element
+// TODO: #1136 - this should be done by the compiler, adding ns to every sub-element
 function addNS(vnode: VElement) {
     const { data, children, sel } = vnode;
-    // TODO: review why `sel` equal `foreignObject` should get this `ns`
     data.ns = NamespaceAttributeForSVG;
+    // TODO: #1275 - review why `sel` equal `foreignObject` should get this `ns`
     if (isArray(children) && sel !== 'foreignObject') {
         for (let j = 0, n = children.length; j < n; ++j) {
             const childNode = children[j];
@@ -241,12 +241,6 @@ function addNS(vnode: VElement) {
 }
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: remove this condition after refactoring all failing tests
-        if (isNull(vmBeingRendered)) {
-            return;
-        }
-    }
     ArrayPush.call((vmBeingRendered as VM).velements, vnode);
 }
 
@@ -380,8 +374,6 @@ export function c(
             arguments.length === 3 || isArray(children),
             `c() 4nd argument data must be an array.`
         );
-        // TODO: enable this once all tests are changed to use compileTemplate utility
-        // assert.isTrue("key" in compilerData, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
         assert.isFalse(
             data.className && data.classMap,
@@ -428,7 +420,7 @@ export function c(
         hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered as VM,
-        mode: 'open', // TODO: this should be defined in Ctor
+        mode: 'open', // TODO: #1294 - this should be defined in Ctor
     };
     addVNodeToChildLWC(vnode);
     return vnode;
@@ -542,8 +534,8 @@ export function f(items: any[]): any[] {
     // flattened nodes are because of a conditional or iteration.
     // We have to mark as dynamic because this could switch from an
     // iterator to "static" text at any time.
-    // TODO: compiler should give us some sort of indicator
-    // to describe whether a vnode is dynamic or not
+
+    // TODO: #1276 - compiler should give us some sort of indicator to describe whether a vnode is dynamic or not
     markAsDynamicChildren(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
@@ -664,7 +656,7 @@ export function ll(
 // [k]ey function
 export function k(compilerKey: number, obj: any): string | void {
     switch (typeof obj) {
-        case 'number': // TODO: when obj is a numeric key, we might be able to use some other strategy to combine two numbers into a new unique number
+        case 'number':
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':

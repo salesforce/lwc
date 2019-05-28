@@ -103,8 +103,7 @@ function createComponentDef(
 
     let decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
 
-    // TODO: eventually, the compiler should do this call directly, but we will also
-    // have to fix all our tests, which are using this declaration manually.
+    // TODO: #1295 - refactor tests that are using this declaration manually
     if (isUndefined(decoratorsMeta)) {
         registerDecorators(Ctor, {
             publicMethods: getOwnValue(Ctor, 'publicMethods'),
@@ -232,9 +231,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 
         let meta = getComponentRegisteredMeta(Ctor);
         if (isUndefined(meta)) {
-            // TODO: remove this workaround:
-            // this is temporary until
-            // all tests are updated to call registerComponent:
+            // TODO: #1295 - remove this workaround after refactoring tests
             meta = {
                 template: undefined,
                 name: Ctor.name,

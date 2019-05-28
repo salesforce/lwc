@@ -18,7 +18,8 @@ const elementFromPoint: (x: number, y: number) => Element | null = hasOwnPropert
     ? Document.prototype.elementFromPoint
     : (Document.prototype as any).msElementFromPoint; // IE11
 
-// TODO: when does defaultView return a null?
+// defaultView can be null when a document has no browsing context. For example, the owner document
+// of a node in a template doesn't have a default view: https://jsfiddle.net/hv9z0q5a/
 const defaultViewGetter: (this: Document) => Window | null = getOwnPropertyDescriptor(
     Document.prototype,
     'defaultView'

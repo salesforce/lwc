@@ -45,7 +45,7 @@ export function buildCustomElementConstructor(
     };
     if (isObject(options) && !isNull(options)) {
         const { mode } = options as any;
-        // TODO: for now, we default to open, but eventually it should default to 'closed'
+        // TODO: #1300 - use a default value of 'closed'
         if (mode === 'closed') {
             normalizedOptions.mode = mode;
         }

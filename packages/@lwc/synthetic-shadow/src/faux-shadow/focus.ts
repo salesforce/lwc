@@ -229,11 +229,10 @@ function keyboardFocusHandler(event: FocusEvent) {
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
     if (isNull(relatedTarget)) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
-        // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
-        // edge case and only comes up if the custom element is the first or last tabbable element
-        // in the document.
-        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
-        // of the target relative to all tabbable elements in the document?
+        // browser chrome. We could probably deduce whether focus is coming in from the top or the
+        // bottom by comparing the position of the target to all tabbable elements. This is an edge
+        // case and only comes up if the custom element is the first or last tabbable element in the
+        // document.
         return;
     }
 
@@ -267,11 +266,10 @@ function keyboardFocusInHandler(event: FocusEvent) {
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
     if (isNull(relatedTarget)) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
-        // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
-        // edge case and only comes up if the custom element is the first or last tabbable element
-        // in the document.
-        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
-        // of the target relative to all tabbable elements in the document?
+        // browser chrome. We could probably deduce whether focus is coming in from the top or the
+        // bottom by comparing the position of the target to all tabbable elements. This is an edge
+        // case and only comes up if the custom element is the first or last tabbable element in the
+        // document.
         return;
     }
 

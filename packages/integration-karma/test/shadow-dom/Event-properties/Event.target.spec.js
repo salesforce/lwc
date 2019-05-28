@@ -6,7 +6,7 @@ import XDocumentEventListener from 'x/documentEventListener';
 // The composed-event-click-polyfill doesn't work when native Shadow DOM is enabled on Safari 12.0.0 (it has been fixed
 // with Safari 12.0.1). The polyfill only patches the event javascript wrapper and doesn't have any effect on how Webkit
 // make the event bubbles.
-// TODO: Enable this test again once Sauce Labs supports Safari version >= 12.0.0
+// TODO: #1278 - Enable this test again once Sauce Labs supports Safari version >= 12.0.0
 if (!process.env.NATIVE_SHADOW) {
     it('Async event target should be root node', function() {
         const elm = createElement('x-async-event-target', { is: XAsyncEventTarget });
@@ -34,7 +34,7 @@ it('parent should receive composed event with correct target', function() {
 // The composed-event-click-polyfill doesn't work when native Shadow DOM is enabled on Safari 12.0.0 (it has been fixed
 // with Safari 12.0.1). The polyfill only patches the event javascript wrapper and doesn't have any effect on how Webkit
 // make the event bubbles.
-// TODO: Enable this test again once Sauce Labs supports Safari version >= 12.0.0
+// TODO: #1278 - Enable this test again once Sauce Labs supports Safari version >= 12.0.0
 if (!process.env.NATIVE_SHADOW) {
     describe('event.target on document event listener', () => {
         let actual;

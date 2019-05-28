@@ -196,7 +196,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         Text: {
             enter(node: parse5.AST.Default.TextNode) {
                 // Extract the raw source to avoid HTML entity decoding done by parse5
-                // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+                // TODO: #1286 - Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
                 const location = node.__location as parse5.MarkupData.Location;
 
                 const { startOffset, endOffset } = location;
@@ -1004,7 +1004,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         );
     }
 
-    // TODO: Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
+    // TODO: #1286 - Update parse5-with-error to match version used for jsdom (interface for ElementLocation changed)
     function normalizeLocation(
         location?: parse5.MarkupData.Location
     ): { line: number; column: number; start: number; length: number } {
