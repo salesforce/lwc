@@ -171,6 +171,10 @@ function createComponentDef(
     return def;
 }
 
+/**
+ * EXPERIMENTAL: This function allows you to verify whether or not a constructor
+ * is an LWC constructor or not. This API is subject to change or being removed.
+ */
 export function isComponentConstructor(ctor: any): ctor is ComponentConstructor {
     if (!isFunction(ctor)) {
         return false;
@@ -212,6 +216,10 @@ function getOwnValue(o: any, key: string): any | undefined {
     return d && d.value;
 }
 
+/**
+ * EXPERIMENTAL: This function allows you to collect the internal metadata
+ * of the LWC component. This API is subject to change or being removed.
+ */
 export function getComponentDef(Ctor: any, subclassComponentName?: string): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
 
@@ -241,9 +249,10 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 }
 
 /**
- * Returns the component constructor for a given HTMLElement if it can be found
- * @param {HTMLElement} element
- * @return {ComponentConstructor | null}
+ * EXPERIMENTAL: This function allows you to collect the internal metadata
+ * of the LWC component. This API is subject to change or being removed.
+ * It returns the component constructor for a given HTMLElement if it can
+ * be found.
  */
 export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;

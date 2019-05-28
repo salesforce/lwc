@@ -26,6 +26,3 @@ export { default as readonly } from './decorators/readonly';
 export { default as wire } from './decorators/wire';
 export { default as decorate } from './decorators/decorate';
 export { buildCustomElementConstructor } from './wc';
-
-// Deprecated APIs
-export { BaseLightningElement as Element } from './base-lightning-element';

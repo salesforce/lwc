@@ -7,7 +7,11 @@
 import assert from '../../shared/assert';
 import { reactiveMembrane } from '../membrane';
 
-// when used with exactly one argument, we assume it is a function invocation.
+/**
+ * EXPERIMENTAL: This function allows you to create a reactive readonly
+ * membrane around any object value. This API is subject to change or
+ * being removed.
+ */
 export default function readonly(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
         // TODO: enable the usage of this function as @readonly decorator

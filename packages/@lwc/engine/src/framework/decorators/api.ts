@@ -13,6 +13,11 @@ import { getComponentVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';
 import { getDecoratorsRegisteredMeta } from './register';
 
+/**
+ * @api decorator to mark public fields and public methods in
+ * LWC Components. This function implements the internals of this
+ * decorator.
+ */
 export default function api(
     target: ComponentConstructor,
     propName: PropertyKey,

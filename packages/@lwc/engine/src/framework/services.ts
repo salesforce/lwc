@@ -42,6 +42,11 @@ const hooks: Array<keyof ServiceDef> = [
     'disconnected',
 ];
 
+/**
+ * EXPERIMENTAL: This function allows you to register a "service" into LWC,
+ * which allows you to control certain parts of the life-cycle of the
+ * component instances. This API is subject to change or being removed.
+ */
 export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(

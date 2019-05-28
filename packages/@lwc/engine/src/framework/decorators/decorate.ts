@@ -19,6 +19,11 @@ export type DecoratorFunction = (
 ) => PropertyDescriptor;
 export type DecoratorMap = Record<string, DecoratorFunction>;
 
+/**
+ * EXPERIMENTAL: This function implements a you to register a "service" into LWC,
+ * which allows you to control certain parts of the life-cycle of the
+ * component instances. This API is subject to change or being removed.
+ */
 export default function decorate(Ctor: any, decorators: DecoratorMap): any {
     // intentionally comparing decorators with null and undefined
     if (!isFunction(Ctor) || decorators == null) {

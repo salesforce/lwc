@@ -17,20 +17,30 @@ export function isTemplateRegistered(tpl: Template): boolean {
     return signedTemplateSet.has(tpl);
 }
 
-// chaining this method as a way to wrap existing
-// assignment of templates easily, without too much transformation
+/**
+ * INTERNAL: This function can only be invoked by the compiled code,
+ * and can never be imported directly use user-land, the compiler
+ * will prevent such import statement.
+ */
 export function registerTemplate(tpl: Template): Template {
     signedTemplateSet.add(tpl);
+    // chaining this method as a way to wrap existing
+    // assignment of templates easily, without too much transformation
     return tpl;
 }
 
-// locker-service patches this function during runtime to sanitize vulnerable attributes.
-// when ran off-core this function becomes a noop and returns the user authored value.
+/**
+ * EXPERIMENTAL: This function acts like a hook for Lightning Locker
+ * Service and other similar libraries to sanitize vulnerable attributes.
+ * This API is subject to change or being removed.
+ */
 export function sanitizeAttribute(
     tagName: string,
     namespaceUri: string,
     attrName: string,
     attrValue: any
 ) {
+    // locker-service patches this function during runtime to sanitize vulnerable attributes.
+    // when ran off-core this function becomes a noop and returns the user authored value.
     return attrValue;
 }

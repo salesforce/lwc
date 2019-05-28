@@ -141,6 +141,10 @@ interface ComponentHooks {
     getHook: VM['getHook'];
 }
 
+/**
+ * The LightningElement represents the base class for any Lightning Element.
+ * Some elements directly extends this class, others implement it via inheritance.
+ **/
 export function BaseLightningElement(this: ComponentInterface) {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {

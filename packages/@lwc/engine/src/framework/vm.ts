@@ -577,6 +577,11 @@ function getHostElement(elm: Element): Element | null {
         : null;
 }
 
+/**
+ * EXPERIMENTAL: This function detects whether or not a Node is
+ * controlled by a LWC template. This API is subject to
+ * change or being removed.
+ */
 export function isNodeFromTemplate(node: Node): boolean {
     if (isFalse(node instanceof Node)) {
         return false;
