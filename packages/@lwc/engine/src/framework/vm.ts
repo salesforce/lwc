@@ -613,7 +613,7 @@ export function getComponentVM(component: ComponentInterface): VM {
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {
-    // TODO: #XXX - this eventually should not rely on the symbol, and should use a Weak Ref
+    // TODO: #1299 - use a weak map instead of an internal field
     if (process.env.NODE_ENV !== 'production') {
         const vm = getInternalField(root, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
