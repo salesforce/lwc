@@ -1579,22 +1579,6 @@
     libnpm "^2.0.1"
     write-file-atomic "^2.3.0"
 
-"@lwc/errors@0.40.1":
-  version "0.40.1"
-  resolved "https://registry.yarnpkg.com/@lwc/errors/-/errors-0.40.1.tgz#5894c4883b408bfb0d4e6214f9fa5cdd2715f94a"
-  integrity sha512-ixWUAVNgpZP3+5KqxK5EP0nSeYGBGXKmp6Bf0VZ5kqV+qMtUCyq+/CBPiKjuFXieAiBtPbz+BJd3CzEwzSbz/w==
-
-"@lwc/jest-transformer@0.40.1":
-  version "0.40.1"
-  resolved "https://registry.yarnpkg.com/@lwc/jest-transformer/-/jest-transformer-0.40.1.tgz#7ae45c2be8a291cf2e697b1f1df49e4ddf9dcca2"
-  integrity sha512-4kkU5FZdPueterFwoYSBAa2gRuE9RtOpnj71o9unx+weqrRkSW/UTzVPLMntmq25UX2t/LczVgZL5vDFRBWS2w==
-  dependencies:
-    "@babel/core" "7.1.0"
-    "@babel/plugin-transform-modules-commonjs" "7.1.0"
-    "@babel/template" "~7.1.2"
-    "@lwc/errors" "0.40.1"
-    babel-preset-jest "^24.0.0"
-
 "@marionebl/sander@^0.6.0":
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/@marionebl/sander/-/sander-0.6.1.tgz#1958965874f24bc51be48875feb50d642fc41f7b"

@@ -16,7 +16,6 @@
     "devDependencies": {
         "@lwc/compiler": "0.41.0",
         "@lwc/engine": "0.41.0",
-        "@lwc/jest-transformer": "0.40.1",
         "@lwc/rollup-plugin": "0.41.0",
         "express": "^4.15.2"
     },
