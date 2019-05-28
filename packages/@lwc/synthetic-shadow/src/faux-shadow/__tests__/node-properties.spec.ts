@@ -6,6 +6,8 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '@lwc/engine';
+// TODO: #1311 move this tests to integration or remove the assertion mocking, you
+// can't load local files.
 import assertLogger from '../../shared/assert';
 
 describe('patched node properties', () => {
