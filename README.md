@@ -16,4 +16,4 @@ If you have a general question, post it on the [Salesforce stackexchange](https:
 
 ## License
 
-The [MIT license](license) governs your use of Lightning Web Components.
+The [MIT license](LICENSE) governs your use of Lightning Web Components.
