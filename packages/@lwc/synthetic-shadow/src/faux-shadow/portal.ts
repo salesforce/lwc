@@ -85,7 +85,7 @@ function markElementAsPortal(elm: Element) {
  *    marked as $domManual$, setting it to false does nothing.
  *
  **/
-// TODO: #XXX - rename this to $observerConnection$
+// TODO: #1306 - rename this to $observerConnection$
 defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
         this[DomManualPrivateKey] = v;
