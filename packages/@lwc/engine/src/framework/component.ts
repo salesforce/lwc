@@ -46,13 +46,17 @@ export interface ComponentMeta {
 
 const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new Map();
 
-// chaining this method as a way to wrap existing
-// assignment of component constructor easily, without too much transformation
+/**
+ * INTERNAL: This function can only be invoked by compiled code. The compiler
+ * will prevent this function from being imported by userland code.
+ */
 export function registerComponent(
     Ctor: ComponentConstructor,
     { name, tmpl: template }
 ): ComponentConstructor {
     signedComponentToMetaMap.set(Ctor, { name, template });
+    // chaining this method as a way to wrap existing
+    // assignment of component constructor easily, without too much transformation
     return Ctor;
 }
 

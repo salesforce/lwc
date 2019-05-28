@@ -59,6 +59,10 @@ export interface DecoratorMeta {
 
 const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
 
+/**
+ * INTERNAL: This function can only be invoked by compiled code. The compiler
+ * will prevent this function from being imported by userland code.
+ */
 export function registerDecorators(
     Ctor: ComponentConstructor,
     meta: RegisterDecoratorMeta

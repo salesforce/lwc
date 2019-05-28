@@ -40,7 +40,11 @@ function wireDecorator(
     );
 }
 
-// @wire is a factory that when invoked, returns the wire decorator
+/**
+ * @wire decorator to wire fields and methods to a wire adapter in
+ * LWC Components. This function implements the internals of this
+ * decorator.
+ */
 export default function wire(_adapter: any, _config: any): DecoratorFunction {
     const len = arguments.length;
     if (len > 0 && len < 3) {

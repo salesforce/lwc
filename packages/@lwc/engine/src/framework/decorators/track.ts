@@ -12,6 +12,11 @@ import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';
 
+/**
+ * @track decorator to mark fields as reactive in
+ * LWC Components. This function implements the internals of this
+ * decorator.
+ */
 export default function track(
     target: ComponentConstructor,
     prop: PropertyKey,

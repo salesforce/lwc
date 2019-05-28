@@ -141,6 +141,10 @@ interface ComponentHooks {
     getHook: VM['getHook'];
 }
 
+/**
+ * This class is the base class for any LWC element.
+ * Some elements directly extends this class, others implement it via inheritance.
+ **/
 export function BaseLightningElement(this: ComponentInterface) {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {

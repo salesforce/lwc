@@ -17,8 +17,11 @@ export const reactiveMembrane = new ObservableMembrane({
     valueDistortion,
 });
 
-// Universal unwrap mechanism that works for observable membrane
-// and wrapped iframe contentWindow
+/**
+ * EXPERIMENTAL: This function implements an unwrap mechanism that
+ * works for observable membrane objects. This API is subject to
+ * change or being removed.
+ */
 export const unwrap = function(value: any): any {
     const unwrapped = reactiveMembrane.unwrapProxy(value);
     if (unwrapped !== value) {

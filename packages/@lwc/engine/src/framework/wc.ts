@@ -21,6 +21,18 @@ import { patchCustomElementProto } from './patch';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { patchCustomElementWithRestrictions } from './restrictions';
 
+/**
+ * This function builds a Web Component class from a LWC constructor
+ * so it can be registered as a new element via customElements.define()
+ * at any given time. E.g.:
+ *
+ *      import { buildCustomElementConstructor } from 'lwc';
+ *      import Foo from 'ns/foo';
+ *      const WC = buildCustomElementConstructor(Foo);
+ *      customElements.define('x-foo', Foo);
+ *      const elm = document.createElement('x-foo');
+ *
+ */
 export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
     options?: ShadowRootInit
