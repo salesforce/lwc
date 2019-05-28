@@ -3,7 +3,7 @@
     "version": "0.41.0",
     "description": "Template compiler package",
     "main": "dist/commonjs/index.js",
-    "typings": "dist/types/",
+    "typings": "dist/types/index.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/",

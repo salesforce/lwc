@@ -4,7 +4,6 @@
     "description": "LWC compiler",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
-    "author": "",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/",

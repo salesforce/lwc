@@ -2,9 +2,9 @@
     "name": "@lwc/engine",
     "version": "0.41.0",
     "description": "LWC Engine",
-    "main": "dist/commonjs/es2017/engine.js",
+    "main": "lib/framework/main.js",
     "module": "dist/modules/es2017/engine.js",
-    "typings": "types/engine.d.ts",
+    "typings": "lib/framework/main.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/ lib/",
