@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+// TODO: #1311 move this tests to integration
 jest.mock('./../../env/element');
 import { isFocusable, isTabbable } from '../focus';
 

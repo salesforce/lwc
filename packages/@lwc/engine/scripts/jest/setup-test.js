@@ -9,8 +9,6 @@
 
 const chalk = require('chalk');
 
-require('@lwc/synthetic-shadow');
-
 const { CONSOLE_WHITELIST } = require('./test-whitelist');
 const { toLogError } = require('./matchers/log-error');
 

@@ -83,7 +83,8 @@ describe('events', () => {
         });
     });
     describe('relatedTarget', () => {
-        it('should report correct the retargeted value', () => {
+        // TODO: #1311 move this focus tests to integration
+        it.skip('should report correct the retargeted value', () => {
             let relatedTarget;
             class Root extends LightningElement {
                 render() {
