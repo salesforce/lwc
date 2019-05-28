@@ -1,6 +1,6 @@
 # @lwc/errors
 
-This is a utility package for the `@lwc/compiler`. Besides the ability to create error objects, it contains error codes used by the compiler.
+This is a utility package. It provides LWC specific error codes and helper funtions.
 
 ## Usage
 
