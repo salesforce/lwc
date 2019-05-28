@@ -1,4 +1,4 @@
-// TODO: #XXX - Open issue for this
+// TODO: #1284 - Import this from the lwc module once we move validation from compiler to linter
 const { isNodeFromTemplate } = Engine;
 
 import { createElement } from 'lwc';
