@@ -1,17 +1,17 @@
-# lwc-template-compiler
+# @lwc/template-compiler
 
 Compile LWC HTML template for consumption at runtime.
 
 ## Installation
 
 ```sh
-npm install --save-dev lwc-template-compiler
+yarn add --dev @lwc/template-compiler
 ```
 
 ## Usage
 
 ```js
-import compile from 'lwc-template-compiler';
+import compile from '@lwc/template-compiler';
 
 const { code, warnings } = compile(`
     <template>
@@ -33,7 +33,7 @@ console.log(code);
 Compile a LWC template to javascript source code consumable by the engine.
 
 ```js
-import compile from 'lwc-template-compiler';
+import compile from '@lwc/template-compiler';
 const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`);
 ```
 
@@ -57,7 +57,7 @@ Compile a LWC template to a javascript function. This method is mainly used for 
 
 ```js
 import { LightningElement } from 'lwc';
-import { compileToFunction } from 'lwc-template-compiler';
+import { compileToFunction } from '@lwc/template-compiler';
 
 const html = compileToFunction(`<template><h1>Hello World!</h1></template>`);
 

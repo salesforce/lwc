@@ -1,11 +1,11 @@
 # LWC Compiler
 
-lwc-compiler is an open source project that enables developers to take full control of processing a single Lightning Web Component module for runtime consumption.
+@lwc/compiler is an open source project that enables developers to take full control of processing a single Lightning Web Components module for runtime consumption.
 
 ## Installation
 
 ```sh
-yarn install --save-dev lwc-compiler
+yarn add --dev @lwc/compiler
 ```
 
 ## APIs
@@ -13,7 +13,7 @@ yarn install --save-dev lwc-compiler
 ### `compile`
 
 ```js
-import { compile } from 'lwc-compiler';
+import { compile } from '@lwc/compiler';
 
 const options = {
     name: 'foo',
@@ -65,7 +65,7 @@ return code;
 Transform the content of individual file for manual bundling.
 
 ```js
-import { transform } from 'lwc-compiler';
+import { transform } from '@lwc/compiler';
 
 const source = `
     import { LightningElement } from 'lwc';
@@ -96,7 +96,7 @@ const { code } = await transform(source, filename, options);
 ### `version`
 
 ```js
-import { version } from 'lwc-compiler';
+import { version } from '@lwc/compiler';
 
 console.log(version);
 ```

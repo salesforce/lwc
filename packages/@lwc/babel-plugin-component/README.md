@@ -1,4 +1,4 @@
-# babel-plugin-transform-lwc-class
+# @lwc/babel-plugin-component
 
 This babel plugin does the following transform:
 
@@ -11,4 +11,3 @@ This babel plugin does the following transform:
     -   Import and inject `render` from a collocated template if a component class doesn't already implement a `render` method.
 -   Optimization:
     -   If the compiler inject the default template a component, it will also wire the template style to the component.
--   [babel-plugin-transform-class-properties](https://github.com/babel/babel/blob/7.0/packages/babel-plugin-transform-class-properties)
