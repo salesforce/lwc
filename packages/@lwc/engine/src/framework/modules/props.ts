@@ -46,6 +46,7 @@ function update(oldVnode: VNode, vnode: VNode) {
 
         if (process.env.NODE_ENV !== 'production') {
             if (!(key in elm)) {
+                // TODO: #1297 - Move this validation to the compiler
                 assert.fail(
                     `Unknown public property "${key}" of element <${sel}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(
                         key
