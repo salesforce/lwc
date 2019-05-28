@@ -42,7 +42,6 @@ export function addCallbackToNextTick(callback: Callback) {
     if (nextTickCallbackQueue.length === 0) {
         Promise.resolve().then(flushCallbackQueue);
     }
-    // TODO: #XXX - eventually, we might want to have priority when inserting callbacks
     ArrayPush.call(nextTickCallbackQueue, callback);
 }
 
