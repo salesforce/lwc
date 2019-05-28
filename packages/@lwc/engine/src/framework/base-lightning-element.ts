@@ -142,7 +142,7 @@ interface ComponentHooks {
 }
 
 /**
- * The LightningElement represents the base class for any Lightning Element.
+ * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  **/
 export function BaseLightningElement(this: ComponentInterface) {
