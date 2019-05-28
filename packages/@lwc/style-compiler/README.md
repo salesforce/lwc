@@ -14,7 +14,7 @@ Transform style sheet to be consumed by the LWC engine.
 ## Installation
 
 ```sh
-yarn add -D @lwc/style-compiler
+yarn add --dev @lwc/style-compiler
 ```
 
 ## Usage
