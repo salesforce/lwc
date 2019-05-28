@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import '@lwc/synthetic-shadow';
+
 import { createElement } from 'lwc';
 import Table from 'benchmark/tableComponent';
 
