@@ -84,7 +84,7 @@ LWC relies on type annotations.
 The process of submitting a pull request is fairly straightforward and
 generally follows the same pattern each time:
 
-1. [Fork the LWC repo](#form-the-lwc-repo)
+1. [Fork the LWC repo](#fork-the-lwc-repo)
 1. [Create a feature branch](#create-a-feature-branch)
 1. [Make your changes](#make-your-changes)
 1. [Rebase](#rebase)
