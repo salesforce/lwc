@@ -5,7 +5,7 @@ Rollup plugin to compile LWC
 ## Installation
 
 ```sh
-yarn add -D @lwc/rollup-plugin
+yarn add --dev @lwc/rollup-plugin
 ```
 
 Note that both `@lwc/engine` and `@lwc/compiler` are peer dependencies of this plugin that need to be installed separately.
