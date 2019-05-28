@@ -32,7 +32,6 @@ function wireDecorator(
             );
         }
     }
-    // TODO: #XXX - eventually this decorator should have its own logic
     return createTrackedPropertyDescriptor(
         target,
         prop,
