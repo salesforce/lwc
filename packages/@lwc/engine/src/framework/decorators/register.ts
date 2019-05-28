@@ -22,7 +22,7 @@ import decorate, { DecoratorMap } from './decorate';
 
 export interface PropDef {
     config: number;
-    type: string; // TODO: #XXX - make this an enum
+    type: string; // TODO: #1301 - make this an enum
     attr: string;
 }
 export interface WireDef {
@@ -105,7 +105,7 @@ function getTrackHash(target: ComponentConstructor, track: TrackDef | undefined)
         return EmptyObject;
     }
 
-    // TODO: #XXX - check that anything in `track` is correctly defined in the prototype
+    // TODO: #1302 - check that anything in `track` is correctly defined in the prototype
     return assign(create(null), track);
 }
 
@@ -117,7 +117,7 @@ function getWireHash(
         return;
     }
 
-    // TODO: #XXX - check that anything in `wire` is correctly defined in the prototype
+    // TODO: #1302 - check that anything in `wire` is correctly defined in the prototype
     return assign(create(null), wire);
 }
 
