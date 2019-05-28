@@ -420,7 +420,7 @@ export function c(
         hook: CustomElementHook,
         ctor: Ctor,
         owner: vmBeingRendered as VM,
-        mode: 'open', // TODO: #XXX - this should be defined in Ctor
+        mode: 'open', // TODO: #1294 - this should be defined in Ctor
     };
     addVNodeToChildLWC(vnode);
     return vnode;
@@ -656,7 +656,7 @@ export function ll(
 // [k]ey function
 export function k(compilerKey: number, obj: any): string | void {
     switch (typeof obj) {
-        case 'number': // TODO: #XXX - when obj is a numeric key, we might be able to use some other strategy to combine two numbers into a new unique number
+        case 'number':
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
