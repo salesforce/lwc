@@ -1,6 +1,6 @@
 coverage/
 scripts/
-test/
+__test__/
 src/
 tsconfig.json
 global.d.ts
