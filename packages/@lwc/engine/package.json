@@ -4,7 +4,7 @@
     "description": "LWC Engine",
     "main": "lib/framework/main.js",
     "module": "dist/modules/es2017/engine.js",
-    "typings": "lib/framework/main.d.ts",
+    "typings": "types/engine.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/ lib/",
