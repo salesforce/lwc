@@ -1,5 +1,17 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.40.1...v) (2019-05-26)
+# [](https://github.com/salesforce/lwc/compare/v0.41.0...v) (2019-05-29)
+
+
+### Bug Fixes
+
+* make synthetic-shadow resolvable by module-resolver ([#1281](https://github.com/salesforce/lwc/issues/1281)) ([37f8cf2](https://github.com/salesforce/lwc/commit/37f8cf2))
+* synthetic-shadow in Best ([#1310](https://github.com/salesforce/lwc/issues/1310)) ([6fc3b23](https://github.com/salesforce/lwc/commit/6fc3b23))
+* **engine:** using jest environment - upgrading jsdom ([#1312](https://github.com/salesforce/lwc/issues/1312)) ([2a81f7f](https://github.com/salesforce/lwc/commit/2a81f7f))
+
+
+
+<a name="0.41.0"></a>
+# [0.41.0](https://github.com/salesforce/lwc/compare/v0.40.1...v0.41.0) (2019-05-26)
 
 
 ### Bug Fixes
