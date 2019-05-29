@@ -4,7 +4,7 @@
     "description": "LWC Error Utilities",
     "main": "dist/commonjs/index.js",
     "license": "MIT",
-    "typings": "dist/types/",
+    "typings": "dist/types/index.d.ts",
     "scripts": {
         "clean": "rm -rf dist/",
         "build": "tsc",
