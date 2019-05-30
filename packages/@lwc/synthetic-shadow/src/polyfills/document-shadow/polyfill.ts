@@ -57,7 +57,7 @@ export default function apply() {
 
     // Go until we reach to top of the LWC tree
     // TODO: #1304 - this should be patched on Document.prototype instead
-    defineProperty(document, 'activeElement', {
+    defineProperty(Document.prototype, 'activeElement', {
         get(this: Document): Element | null {
             let node = DocumentPrototypeActiveElement.call(this);
 
