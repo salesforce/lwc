@@ -5,10 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { DOCUMENT_FRAGMENT_NODE } from './../../env/node';
-import { patchedGetRootNode } from './../../faux-shadow/traverse';
-import { getOwnerDocument } from '../../shared/utils';
-
 /**
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
@@ -18,22 +14,29 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+
+import { getOwnerDocument } from '../../shared/utils';
+import { isNull } from '../../shared/language';
+
+const GlobalShadowRoot = (window as any).ShadowRoot;
+
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
-    const composedPath: HTMLElement[] = [];
-    let current = startNode;
-    const startRoot = startNode instanceof Window ? startNode : patchedGetRootNode.call(startNode);
+    const composedPath: (Element | Document | Window)[] = [];
+    let current: Node | null = startNode as Element;
+    const startRoot: Window | Node =
+        startNode instanceof Window ? startNode : (startNode as Node).getRootNode();
     while (current) {
-        composedPath.push(current as HTMLElement);
-        if ((current as HTMLElement).assignedSlot) {
-            current = (current as HTMLElement).assignedSlot as HTMLSlotElement;
-        } else if (
-            (current as HTMLElement).nodeType === DOCUMENT_FRAGMENT_NODE &&
-            (current as ShadowRoot).host &&
-            (composed || current !== startRoot)
-        ) {
-            current = (current as ShadowRoot).host as HTMLElement;
+        composedPath.push(current as Element);
+        let assignedSlot: HTMLSlotElement | null = null;
+        if (current instanceof Element) {
+            assignedSlot = current.assignedSlot;
+        }
+        if (!isNull(assignedSlot)) {
+            current = assignedSlot;
+        } else if (current instanceof GlobalShadowRoot && (composed || current !== startRoot)) {
+            current = (current as ShadowRoot).host;
         } else {
-            current = (current as HTMLElement).parentNode as any;
+            current = (current as Element).parentNode;
         }
     }
     let doc: Document;
@@ -44,7 +47,7 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     }
     // event composedPath includes window when startNode's ownerRoot is document
     if ((composedPath[composedPath.length - 1] as any) === doc) {
-        composedPath.push(window as any);
+        composedPath.push(window);
     }
     return composedPath;
 }

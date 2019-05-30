@@ -20,7 +20,6 @@ import {
     ArraySlice,
     defineProperty,
     isNull,
-    isTrue,
     isUndefined,
     getOwnPropertyDescriptor,
 } from '../../shared/language';
@@ -30,17 +29,7 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
-import { getOwnerDocument } from '../../shared/utils';
-
-let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped(node: Node) {
-    if (isUndefined(skipGlobalPatching)) {
-        const ownerDocument = getOwnerDocument(node);
-        skipGlobalPatching =
-            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
-    }
-    return isTrue(skipGlobalPatching);
-}
+import { isGlobalPatchingSkipped } from '../../shared/utils';
 
 export default function apply() {
     function elemFromPoint(this: Document, left: number, top: number) {

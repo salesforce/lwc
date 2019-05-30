@@ -33,12 +33,6 @@ import {
     unlockDomMutation,
     lockDomMutation,
 } from './restrictions';
-import {
-    patchElementProto,
-    patchTextNodeProto,
-    patchCommentNodeProto,
-    patchCustomElementProto,
-} from './patch';
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
@@ -87,20 +81,6 @@ export function removeNodeHook(vnode: VNode, parentNode: Node) {
     }
 }
 
-export function createTextHook(vnode: VNode) {
-    const text = vnode.elm as Text;
-    if (isTrue(useSyntheticShadow)) {
-        patchTextNodeProto(text);
-    }
-}
-
-export function createCommentHook(vnode: VNode) {
-    const comment = vnode.elm as Comment;
-    if (isTrue(useSyntheticShadow)) {
-        patchCommentNodeProto(comment);
-    }
-}
-
 export function createElmHook(vnode: VElement) {
     modEvents.create(vnode);
     // Attrs need to be applied to element before props
@@ -120,7 +100,7 @@ enum LWCDOMMode {
 }
 
 export function fallbackElmHook(vnode: VElement) {
-    const { owner, sel } = vnode;
+    const { owner } = vnode;
     const elm = vnode.elm as HTMLElement;
     if (isTrue(useSyntheticShadow)) {
         const {
@@ -138,7 +118,6 @@ export function fallbackElmHook(vnode: VElement) {
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
-        patchElementProto(elm, { sel });
     }
     if (process.env.NODE_ENV !== 'production') {
         const {
@@ -210,7 +189,6 @@ export function createViewModelHook(vnode: VCustomElement) {
         // when running in synthetic shadow mode, we need to set the shadowToken value
         // into each element from the template, so they can be styled accordingly.
         setElementShadowToken(elm, shadowAttribute);
-        patchCustomElementProto(elm, { def });
     }
     createVM(elm, ctor, {
         mode,

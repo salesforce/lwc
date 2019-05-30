@@ -5,15 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import {
-    isUndefined,
-    assign,
-    isNull,
-    isObject,
-    isFunction,
-    isTrue,
-    toString,
-} from '../shared/language';
+import { isUndefined, assign, isNull, isObject, isFunction, toString } from '../shared/language';
 import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -21,10 +13,8 @@ import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
     ViewModelReflection,
-    useSyntheticShadow,
 } from './utils';
 import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
-import { patchCustomElementProto } from './patch';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
@@ -121,11 +111,6 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     const def = getComponentDef(Ctor);
     setElementProto(element, def);
 
-    if (isTrue(useSyntheticShadow)) {
-        patchCustomElementProto(element, {
-            def,
-        });
-    }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(element, EmptyObject);
     }

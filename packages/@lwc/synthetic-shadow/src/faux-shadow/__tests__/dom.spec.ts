@@ -18,8 +18,8 @@ describe('dom', () => {
             });
             elm.click();
         });
-        // Flapper
-        it.skip('should get custom events as composed false', function() {
+
+        it('should get custom events as composed false', function() {
             expect.assertions(1);
             const elm = document.createElement('div');
             document.body.appendChild(elm);

@@ -45,7 +45,6 @@ import {
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
 import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
-import { patchedGetRootNode } from './traverse';
 
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
@@ -241,7 +240,7 @@ function keyboardFocusHandler(event: FocusEvent) {
     const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
     if (position === 1) {
         // Focus is coming from above
-        const findTabbableElms = isTabbableFrom.bind(null, patchedGetRootNode.call(host));
+        const findTabbableElms = isTabbableFrom.bind(null, (host as Node).getRootNode());
         const first = ArrayFind.call(segments.inner, findTabbableElms);
         if (!isUndefined(first)) {
             const win = getOwnerWindow(first);
@@ -303,14 +302,14 @@ function isTabbableFrom(fromRoot: Node, toElm: HTMLElement): boolean {
         return false;
     }
     const ownerDocument = getOwnerDocument(toElm);
-    let root = patchedGetRootNode.call(toElm);
+    let root = toElm.getRootNode();
     while (root !== ownerDocument && root !== fromRoot) {
         const sr = root as ShadowRoot;
         const host = sr.host!;
         if (getAttribute.call(host, 'tabindex') === '-1') {
             return false;
         }
-        root = host && patchedGetRootNode.call(host);
+        root = host && host.getRootNode();
     }
     return true;
 }
@@ -320,7 +319,7 @@ function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): 
     if (len > 0) {
         for (let i = 0; i < len; i += 1) {
             const next = tabbables[i];
-            if (isTabbableFrom(patchedGetRootNode.call(relatedTarget), next)) {
+            if (isTabbableFrom((relatedTarget as Node).getRootNode(), next)) {
                 return next;
             }
         }

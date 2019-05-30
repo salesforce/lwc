@@ -22,9 +22,26 @@ const {
     insertBefore,
     removeChild,
     replaceChild,
+    hasChildNodes,
+    contains,
 } = Node.prototype;
 
-const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
+const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
+    Node.prototype,
+    'firstChild'
+)!.get!;
+
+const lastChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
+    Node.prototype,
+    'lastChild'
+)!.get!;
+
+const textContentGetter: (this: Node) => string = getOwnPropertyDescriptor(
+    Node.prototype,
+    'textContent'
+)!.get!;
+
+const parentNodeGetter: (this: Node) => (Node & ParentNode) | null = getOwnPropertyDescriptor(
     Node.prototype,
     'parentNode'
 )!.get!;
@@ -80,6 +97,11 @@ export {
     replaceChild,
     textContextSetter,
     ownerDocumentGetter,
+    hasChildNodes,
+    contains,
+    firstChildGetter,
+    lastChildGetter,
+    textContentGetter,
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,

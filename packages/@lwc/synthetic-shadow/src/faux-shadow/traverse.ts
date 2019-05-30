@@ -12,15 +12,10 @@ import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
 } from '../env/node';
-import { querySelectorAll, tagNameGetter } from '../env/element';
-import { ArrayReduce, ArrayPush, isUndefined } from '../shared/language';
+import { querySelectorAll } from '../env/element';
+import { ArrayReduce, ArrayPush, isUndefined, ArraySlice } from '../shared/language';
 import { isNull } from '../shared/language';
 import { getHost, SyntheticShadowRootInterface } from './shadow-root';
-import { getFilteredSlotAssignedNodes } from './slot';
-import '../polyfills/node-get-root-node/main';
-
-// Extract the patched getRootNode
-export const { getRootNode: patchedGetRootNode } = Node.prototype;
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -42,11 +37,11 @@ export function getNodeOwner(node: Node): HTMLElement | null {
     return nodeOwner as HTMLElement;
 }
 
-export function isSlotElement(elm: Element): boolean {
-    return tagNameGetter.call(elm) === 'SLOT';
+export function isSlotElement(node: Node): node is HTMLSlotElement {
+    return node instanceof HTMLSlotElement;
 }
 
-export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
+export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             owner instanceof HTMLElement,
@@ -70,10 +65,7 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-export function getAllMatches(
-    owner: HTMLElement,
-    nodeList: NodeList | Node[]
-): Array<Element & Node> {
+export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -87,7 +79,7 @@ export function getAllMatches(
     return filteredAndPatched;
 }
 
-export function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
+export function getFirstMatch(owner: Element, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
             return nodeList[i] as Element;
@@ -147,6 +139,27 @@ export function getFilteredChildNodes(node: Node): Element[] {
         children,
         (seed, child) => {
             if (isNodeOwnedBy(owner, child)) {
+                ArrayPush.call(seed, child);
+            }
+            return seed;
+        },
+        []
+    );
+}
+
+export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
+    if (isNull(owner)) {
+        return [];
+    }
+    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    // Typescript is inferring the wrong function type for this particular
+    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+    // @ts-ignore type-mismatch
+    return ArrayReduce.call(
+        childNodes,
+        (seed, child) => {
+            if (!isNodeOwnedBy(owner, child)) {
                 ArrayPush.call(seed, child);
             }
             return seed;

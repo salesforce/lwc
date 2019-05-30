@@ -9,11 +9,8 @@ import {
     attachShadow,
     getShadowRoot,
     SyntheticShadowRootInterface,
-    isDelegatingFocus,
-    getIE11FakeShadowRootPlaceholder,
     hasSyntheticShadow,
 } from './shadow-root';
-import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
 import {
     getNodeOwner,
     getAllMatches,
@@ -22,35 +19,51 @@ import {
     isNodeOwnedBy,
     getFirstMatch,
 } from './traverse';
-import { hasAttribute, tabIndexGetter, childrenGetter, outerHTMLSetter } from '../env/element';
+import {
+    childrenGetter,
+    outerHTMLSetter,
+    childElementCountGetter,
+    firstElementChildGetter,
+    lastElementChildGetter,
+    innerHTMLGetter,
+    outerHTMLGetter,
+} from '../env/element';
 import {
     isNull,
-    isFalse,
-    getPropertyDescriptor,
     ArrayFilter,
-    ArrayUnshift,
     ArrayPush,
+    defineProperties,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    hasOwnProperty,
+    ArrayFind,
+    ArraySlice,
+    isUndefined,
 } from '../shared/language';
-import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from './node';
-import { getNodeKey, getNodeNearestOwnerKey, PatchedNode, getInternalChildNodes } from './node';
+import {
+    getNodeKey,
+    getNodeNearestOwnerKey,
+    getInternalChildNodes,
+    hasMountedChildren,
+} from './node';
 import {
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
     parentElementGetter,
-    childNodesGetter,
 } from '../env/node';
-import { querySelectorAll, innerHTMLSetter } from '../env/element';
+import {
+    innerHTMLSetter,
+    getElementsByClassName as elementGetElementsByClassName,
+    getElementsByTagName as elementGetElementsByTagName,
+    getElementsByTagNameNS as elementGetElementsByTagNameNS,
+    querySelectorAll as elementQuerySelectorAll,
+} from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
-import '../polyfills/node-get-root-node/main';
-import { HTMLElementConstructor } from './element';
-
-export interface HTMLElementConstructor {
-    prototype: HTMLElement;
-    new (): HTMLElement;
-}
+import { isGlobalPatchingSkipped } from '../shared/utils';
+import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
+import { assignedSlotGetterPatched } from './slot';
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
@@ -131,10 +144,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
     return false;
 }
 
-function getAllSlottedMatches(
-    host: HTMLElement,
-    nodeList: NodeList | Node[]
-): Array<Node & Element> {
+function getAllSlottedMatches(host: Element, nodeList: NodeList | Node[]): Array<Node & Element> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -145,7 +155,7 @@ function getAllSlottedMatches(
     return filteredAndPatched;
 }
 
-function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | null {
+function getFirstSlottedMatch(host: Element, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i] as Element;
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
@@ -155,261 +165,308 @@ function getFirstSlottedMatch(host: HTMLElement, nodeList: NodeList): Element | 
     return null;
 }
 
-function lightDomQuerySelectorAll(elm: Element, selectors: string): Element[] {
-    const owner = getNodeOwner(elm);
-    if (isNull(owner)) {
-        return [];
+function innerHTMLGetterPatched(this: Element): string {
+    const childNodes = getInternalChildNodes(this);
+    let innerHTML = '';
+    for (let i = 0, len = childNodes.length; i < len; i += 1) {
+        innerHTML += getOuterHTML(childNodes[i]);
     }
-    const nodeList = querySelectorAll.call(elm, selectors);
-    if (getNodeKey(elm)) {
-        // it is a custom element, and we should then filter by slotted elements
-        return getAllSlottedMatches(elm as HTMLElement, nodeList);
-    } else {
-        // regular element, we should then filter by ownership
-        return getAllMatches(owner, nodeList);
-    }
+    return innerHTML;
 }
 
-function lightDomQuerySelector(elm: Element, selector: string): Element | null {
-    const owner = getNodeOwner(elm);
-    if (isNull(owner)) {
-        // the it is a root, and those can't have a lightdom
-        return null;
-    }
-    const nodeList = querySelectorAll.call(elm, selector);
-    if (getNodeKey(elm)) {
-        // it is a custom element, and we should then filter by slotted elements
-        return getFirstSlottedMatch(elm as HTMLElement, nodeList);
-    } else {
-        // regular element, we should then filter by ownership
-        return getFirstMatch(owner, nodeList);
-    }
+function outerHTMLGetterPatched(this: Element) {
+    return getOuterHTML(this);
 }
 
-export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
-    const Ctor = PatchedNode(elm) as HTMLElementConstructor;
-    const {
-        addEventListener: superAddEventListener,
-        removeEventListener: superRemoveEventListener,
-        blur: superBlur,
-    } = elm;
+function attachShadowPatched(this: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
+    return attachShadow(this, options);
+}
 
-    // Note: Element.getElementsByTagName and Element.getElementsByClassName are purposefully
-    // omitted from the list of patched methods. In order for the querySelector* APIs to run
-    // properly in jsdom, we need to make sure those methods doesn't respect the shadow DOM
-    // semantic.
-    // https://github.com/salesforce/lwc/pull/1179#issuecomment-484041707
-    return class PatchedHTMLElement extends Ctor {
-        // Regular Elements
-        querySelector(this: Element, selector: string): Element | null {
-            return lightDomQuerySelector(this, selector);
+function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | null {
+    if (hasSyntheticShadow(this)) {
+        const shadow = getShadowRoot(this);
+        if (shadow.mode === 'open') {
+            return shadow;
         }
-        querySelectorAll(this: Element, selectors: string): NodeListOf<Element> {
-            return createStaticNodeList(lightDomQuerySelectorAll(this, selectors));
-        }
-        get innerHTML(this: Element): string {
-            const childNodes = getInternalChildNodes(this);
-            let innerHTML = '';
-            for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                innerHTML += getOuterHTML(childNodes[i]);
+    }
+    return null;
+}
+
+function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
+    // We cannot patch `children` in test mode
+    // because JSDOM uses children for its "native"
+    // querySelector implementation. If we patch this,
+    // HTMLElement.prototype.querySelector.call(element) will not
+    // return any elements from shadow, which is not what we want
+    if (process.env.NODE_ENV === 'test') {
+        return childrenGetter.call(this);
+    }
+    const owner = getNodeOwner(this);
+    const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
+    return createStaticHTMLCollection(
+        ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
+    );
+}
+
+function childElementCountGetterPatched(this: ParentNode) {
+    return this.children.length;
+}
+
+function firstElementChildGetterPatched(this: ParentNode) {
+    return this.children[0] || null;
+}
+
+function lastElementChildGetterPatched(this: ParentNode) {
+    const { children } = this;
+    return children.item(children.length - 1) || null;
+}
+
+// Non-deep-traversing patches
+defineProperties(Element.prototype, {
+    innerHTML: {
+        get(this: Element): string {
+            if (isNodeShadowed(this) || hasSyntheticShadow(this)) {
+                return innerHTMLGetterPatched.call(this);
             }
-            return innerHTML;
-        }
-        set innerHTML(this: Element, value: string) {
-            innerHTMLSetter.call(this, value);
-        }
-        get outerHTML() {
-            return getOuterHTML(this);
-        }
-        set outerHTML(this: Element, value: string) {
-            outerHTMLSetter.call(this, value);
-        }
-
-        // CE patches
-        attachShadow(options: ShadowRootInit): SyntheticShadowRootInterface {
-            return attachShadow(this, options) as SyntheticShadowRootInterface;
-        }
-        addEventListener(
-            this: EventTarget,
-            type: string,
-            listener: EventListener,
-            options?: boolean | AddEventListenerOptions
-        ) {
-            if (hasSyntheticShadow(this as HTMLElement)) {
-                addCustomElementEventListener(this as HTMLElement, type, listener, options);
-            } else {
-                superAddEventListener.call(this as HTMLElement, type, listener, options);
+            // TODO: make this a global patch with a way to disable it
+            return innerHTMLGetter.call(this);
+        },
+        set(v: string) {
+            innerHTMLSetter.call(this, v);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    outerHTML: {
+        get(this: Element): string {
+            if (isNodeShadowed(this) || hasSyntheticShadow(this)) {
+                return outerHTMLGetterPatched.call(this);
             }
-        }
-        removeEventListener(
-            this: EventTarget,
-            type: string,
-            listener: EventListener,
-            options?: boolean | AddEventListenerOptions
-        ) {
-            if (hasSyntheticShadow(this as HTMLElement)) {
-                removeCustomElementEventListener(this as HTMLElement, type, listener, options);
-            } else {
-                superRemoveEventListener.call(this as HTMLElement, type, listener, options);
+            // TODO: make this a global patch with a way to disable it
+            return outerHTMLGetter.call(this);
+        },
+        set(v: string) {
+            outerHTMLSetter.call(this, v);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    attachShadow: {
+        value: attachShadowPatched,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+    shadowRoot: {
+        get: shadowRootGetterPatched,
+        enumerable: true,
+        configurable: true,
+    },
+    // patched in HTMLElement if exists (IE11 is the one off here)
+    children: {
+        get(this: Element): HTMLCollectionOf<Element> {
+            if (hasMountedChildren(this)) {
+                return childrenGetterPatched.call(this);
             }
-        }
-        get shadowRoot(this: HTMLElement): SyntheticShadowRootInterface | null {
-            if (hasSyntheticShadow(this)) {
-                const shadow = getShadowRoot(this);
-                if (shadow.mode === 'open') {
-                    return shadow;
-                }
-            }
-            return null;
-        }
-        get tabIndex(this: HTMLElement) {
-            if (
-                hasSyntheticShadow(this) &&
-                isDelegatingFocus(this) &&
-                isFalse(hasAttribute.call(this, 'tabindex'))
-            ) {
-                // this cover the case where the default tabindex should be 0 because the
-                // custom element is delegating its focus
-                return 0;
-            }
-
-            // NOTE: Technically this should be `super.tabIndex` however Typescript
-            // has a known bug while transpiling down to ES5
-            // https://github.com/Microsoft/TypeScript/issues/338
-            const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
-            return descriptor!.get!.call(this);
-        }
-        set tabIndex(this: HTMLElement, value: any) {
-            if (hasSyntheticShadow(this)) {
-                // This tabIndex setter might be confusing unless it is understood that HTML
-                // elements have default tabIndex property values. Natively focusable elements have
-                // a default tabIndex value of 0 and all other elements have a default tabIndex
-                // value of -1. For example, the tabIndex property value is -1 for both <x-foo> and
-                // <x-foo tabindex="-1">, but our delegatesFocus polyfill should only kick in for
-                // the latter case when the value of the tabindex attribute is -1.
-
-                const delegatesFocus = isDelegatingFocus(this);
-
-                // Record the state of things before invoking component setter.
-                const prevValue = tabIndexGetter.call(this);
-                const prevHasAttr = hasAttribute.call(this, 'tabindex');
-
-                // NOTE: Technically this should be `super.tabIndex` however Typescript
-                // has a known bug while transpiling down to ES5
-                // https://github.com/Microsoft/TypeScript/issues/338
-                const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
-                descriptor!.set!.call(this, value);
-
-                // Record the state of things after invoking component setter.
-                const currValue = tabIndexGetter.call(this);
-                const currHasAttr = hasAttribute.call(this, 'tabindex');
-
-                const didValueChange = prevValue !== currValue;
-
-                // If the tabindex attribute is initially rendered, we can assume that this setter has
-                // previously executed and a listener has been added. We must remove that listener if
-                // the tabIndex property value has changed or if the component no longer renders a
-                // tabindex attribute.
-                if (prevHasAttr && (didValueChange || isFalse(currHasAttr))) {
-                    if (prevValue === -1) {
-                        ignoreFocusIn(this);
-                    }
-                    if (prevValue === 0 && delegatesFocus) {
-                        ignoreFocus(this);
-                    }
-                }
-
-                // If a tabindex attribute was not rendered after invoking its setter, it means the
-                // component is taking control. Do nothing.
-                if (isFalse(currHasAttr)) {
-                    return;
-                }
-
-                // If the tabindex attribute is initially rendered, we can assume that this setter has
-                // previously executed and a listener has been added. If the tabindex attribute is still
-                // rendered after invoking the setter AND the tabIndex property value has not changed,
-                // we don't need to do any work.
-                if (prevHasAttr && currHasAttr && isFalse(didValueChange)) {
-                    return;
-                }
-
-                // At this point we know that a tabindex attribute was rendered after invoking the
-                // setter and that either:
-                // 1) This is the first time this setter is being invoked.
-                // 2) This is not the first time this setter is being invoked and the value is changing.
-                // We need to add the appropriate listeners in either case.
-                if (currValue === -1) {
-                    // Add the magic to skip the shadow tree
-                    handleFocusIn(this);
-                }
-                if (currValue === 0 && delegatesFocus) {
-                    // Add the magic to skip the host element
-                    handleFocus(this);
-                }
-                return;
-            }
-            // NOTE: Technically this should be `super.tabIndex` however Typescript
-            // has a known bug while transpiling down to ES5
-            // https://github.com/Microsoft/TypeScript/issues/338
-            const descriptor = getPropertyDescriptor(Ctor.prototype, 'tabIndex');
-            descriptor!.set!.call(this, value);
-        }
-        blur(this: HTMLElement) {
-            if (hasSyntheticShadow(this) && isDelegatingFocus(this)) {
-                const currentActiveElement = getActiveElement(this);
-                if (!isNull(currentActiveElement)) {
-                    // if there is an active element, blur it
-                    (currentActiveElement as HTMLElement).blur();
-                    return;
-                }
-            }
-            // NOTE: Technically this should be `super.blur` however Typescript
-            // has a known bug while transpiling down to ES5
-            // https://github.com/Microsoft/TypeScript/issues/338
-            return superBlur.call(this);
-        }
-        get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
-            if (hasSyntheticShadow(this)) {
-                const owner = getNodeOwner(this);
-                const childNodes = isNull(owner)
-                    ? []
-                    : getAllMatches(owner, getFilteredChildNodes(this));
-                if (
-                    process.env.NODE_ENV !== 'production' &&
-                    isFalse(hasNativeSymbolsSupport) &&
-                    isExternalChildNodeAccessorFlagOn()
-                ) {
-                    // inserting a comment node as the first childNode to trick the IE11
-                    // DevTool to show the content of the shadowRoot, this should only happen
-                    // in dev-mode and in IE11 (which we detect by looking at the symbol).
-                    // Plus it should only be in place if we know it is an external invoker.
-                    ArrayUnshift.call(childNodes, getIE11FakeShadowRootPlaceholder(this));
-                }
-                return createStaticNodeList(childNodes);
-            }
-            // nothing to do here since this does not have a synthetic shadow attached to it
-            return childNodesGetter.call(this);
-        }
-        get children(this: HTMLElement): HTMLCollectionOf<Element> {
-            if (hasSyntheticShadow(this)) {
-                // We cannot patch `children` in test mode
-                // because JSDOM uses children for its "native"
-                // querySelector implementation. If we patch this,
-                // HTMLElement.prototype.querySelector.call(element) will not
-                // return any elements from shadow, which is not what we want
-                if (process.env.NODE_ENV === 'test') {
-                    return childrenGetter.call(this);
-                }
-                const owner = getNodeOwner(this);
-                const childNodes = isNull(owner)
-                    ? []
-                    : getAllMatches(owner, getFilteredChildNodes(this));
-                return createStaticHTMLCollection(
-                    ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
-                );
-            }
-            // nothing to do here since this does not have a synthetic shadow attached to it
             return childrenGetter.call(this);
-        }
-    };
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    childElementCount: {
+        get(this: Element): number {
+            if (hasMountedChildren(this)) {
+                return childElementCountGetterPatched.call(this);
+            }
+            return childElementCountGetter.call(this);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    firstElementChild: {
+        get(this: Element): Element | null {
+            if (hasMountedChildren(this)) {
+                return firstElementChildGetterPatched.call(this);
+            }
+            return firstElementChildGetter.call(this);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    lastElementChild: {
+        get(this: Element): Element | null {
+            if (hasMountedChildren(this)) {
+                return lastElementChildGetterPatched.call(this);
+            }
+            return lastElementChildGetter.call(this);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    assignedSlot: {
+        get: assignedSlotGetterPatched,
+        enumerable: true,
+        configurable: true,
+    },
+});
+
+// IE11 extra patches for wrong prototypes
+if (hasOwnProperty.call(HTMLElement.prototype, 'innerHTML')) {
+    defineProperty(HTMLElement.prototype, 'innerHTML', getOwnPropertyDescriptor(
+        Element.prototype,
+        'innerHTML'
+    ) as PropertyDescriptor);
 }
+if (hasOwnProperty.call(HTMLElement.prototype, 'outerHTML')) {
+    defineProperty(HTMLElement.prototype, 'outerHTML', getOwnPropertyDescriptor(
+        Element.prototype,
+        'outerHTML'
+    ) as PropertyDescriptor);
+}
+if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
+    defineProperty(HTMLElement.prototype, 'children', getOwnPropertyDescriptor(
+        Element.prototype,
+        'children'
+    ) as PropertyDescriptor);
+}
+
+// Deep-traversing patches from this point on:
+
+function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
+    const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
+    if (hasSyntheticShadow(this)) {
+        // element with shadowRoot attached
+        const owner = getNodeOwner(this);
+        if (isNull(owner)) {
+            return null;
+        } else if (getNodeKey(this)) {
+            // it is a custom element, and we should then filter by slotted elements
+            return getFirstSlottedMatch(this, nodeList);
+        } else {
+            // regular element, we should then filter by ownership
+            return getFirstMatch(owner, nodeList);
+        }
+    } else if (isNodeShadowed(this)) {
+        // element inside a shadowRoot
+        const ownerKey = getNodeOwnerKey(this);
+        const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        return isUndefined(elm) ? null : elm;
+    } else {
+        // element belonging to the document where we still allow skipping
+        const elm = ArrayFind.call(
+            nodeList,
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+        );
+        return isUndefined(elm) ? null : elm;
+    }
+}
+
+function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
+    const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
+    let filtered: Element[];
+    if (hasSyntheticShadow(this)) {
+        // element with shadowRoot attached
+        const owner = getNodeOwner(this);
+        if (isNull(owner)) {
+            filtered = [];
+        } else if (getNodeKey(this)) {
+            // it is a custom element, and we should then filter by slotted elements
+            filtered = getAllSlottedMatches(this, nodeList);
+        } else {
+            // regular element, we should then filter by ownership
+            filtered = getAllMatches(owner, nodeList);
+        }
+    } else if (isNodeShadowed(this)) {
+        // element inside a shadowRoot
+        const ownerKey = getNodeOwnerKey(this);
+        filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+    } else {
+        // element belonging to the document where we still allow skipping
+        filtered = ArrayFilter.call(
+            nodeList,
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+        );
+    }
+    return createStaticNodeList(filtered);
+}
+
+// The following patched methods hide shadowed elements from global
+// traversing mechanisms. They are simplified for performance reasons to
+// filter by ownership and do not account for slotted elements. This
+// compromise is fine for our synthetic shadow dom because root elements
+// cannot have slotted elements.
+// Another compromise here is that all these traversing methods will return
+// static HTMLCollection or static NodeList. We decided that this compromise
+// is not a big problem considering the amount of code that is relying on
+// the liveliness of these results are rare.
+defineProperty(Element.prototype, 'querySelector', {
+    value: querySelectorPatched,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Element.prototype, 'querySelectorAll', {
+    value: querySelectorAllPatched,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+// Note: Element.getElementsByTagName, Element.getElementsByTagNameNS and Element.getElementsByClassName are purposefully
+// omitted from the list of patched methods. In order for the querySelector* APIs to run
+// properly in jsdom, we need to make sure those methods doesn't respect the shadow DOM
+// semantic.
+// https://github.com/salesforce/lwc/pull/1179#issuecomment-484041707
+
+defineProperty(HTMLBodyElement.prototype, 'getElementsByClassName', {
+    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+        const elements = elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const ownerKey = getNodeOwnerKey(this);
+        const filtered = ArrayFilter.call(
+            elements,
+            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(HTMLBodyElement.prototype, 'getElementsByTagName', {
+    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+        const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const ownerKey = getNodeOwnerKey(this);
+        const filtered = ArrayFilter.call(
+            elements,
+            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(HTMLBodyElement.prototype, 'getElementsByTagNameNS', {
+    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+        const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+            string,
+            string
+        ]);
+        const ownerKey = getNodeOwnerKey(this);
+        const filtered = ArrayFilter.call(
+            elements,
+            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});

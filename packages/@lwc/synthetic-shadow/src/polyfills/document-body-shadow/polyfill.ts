@@ -15,23 +15,12 @@ import {
     ArrayFind,
     ArraySlice,
     defineProperty,
-    isTrue,
     isUndefined,
 } from '../../shared/language';
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
-import { getOwnerDocument } from '../../shared/utils';
-
-let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped(node: Node) {
-    if (isUndefined(skipGlobalPatching)) {
-        const ownerDocument = getOwnerDocument(node);
-        skipGlobalPatching =
-            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
-    }
-    return isTrue(skipGlobalPatching);
-}
+import { isGlobalPatchingSkipped } from '../../shared/utils';
 
 export default function apply() {
     const HTMLBodyElementPrototype = HTMLBodyElement.prototype;

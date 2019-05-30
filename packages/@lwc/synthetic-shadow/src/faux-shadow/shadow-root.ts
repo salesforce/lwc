@@ -54,11 +54,11 @@ const { createDocumentFragment } = document;
 interface ShadowRootRecord {
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
-    host: HTMLElement;
+    host: Element;
     shadowRoot: SyntheticShadowRootInterface;
 }
 
-function getInternalSlot(root: SyntheticShadowRootInterface | HTMLElement): ShadowRootRecord {
+function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
     const record: ShadowRootRecord | undefined = getInternalField(root, InternalSlot);
     if (isUndefined(record)) {
         throw new TypeError();
@@ -97,24 +97,24 @@ export function isDelegatingFocus(host: HTMLElement): boolean {
     return getInternalSlot(host).delegatesFocus;
 }
 
-export function getHost(root: SyntheticShadowRootInterface): HTMLElement {
+export function getHost(root: SyntheticShadowRootInterface): Element {
     return getInternalSlot(root).host;
 }
 
-export function getShadowRoot(elm: HTMLElement): SyntheticShadowRootInterface {
+export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
     return getInternalSlot(elm).shadowRoot;
 }
 
-export function hasSyntheticShadow(elm: HTMLElement): boolean {
+// Intentionally adding Node here as possible the first argument
+// since this check is harmless for nodes as well, and it speeds up things
+// to avoid casting before calling this method in few places.
+export function hasSyntheticShadow(elm: Element | Node): boolean {
     return !isUndefined(getInternalField(elm, InternalSlot));
 }
 
 let uid = 0;
 
-export function attachShadow(
-    elm: HTMLElement,
-    options: ShadowRootInit
-): SyntheticShadowRootInterface {
+export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
     if (!isUndefined(getInternalField(elm, InternalSlot))) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
@@ -597,7 +597,7 @@ if (isNativeShadowRootAvailable) {
  * and a comment node that is intended to use to trick the IE11 DevTools
  * to show the content of the shadowRoot in the DOM Explorer.
  */
-export function getIE11FakeShadowRootPlaceholder(host: HTMLElement): Comment {
+export function getIE11FakeShadowRootPlaceholder(host: Element): Comment {
     const shadowRoot = getShadowRoot(host);
     // @ts-ignore this $$placeholder$$ is not a security issue because you must
     // have access to the shadowRoot in order to extract the fake node, which give
