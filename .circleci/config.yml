@@ -15,76 +15,6 @@ env_test: &env_test
     - SAUCE_USERNAME: lwc_ci
     - SAUCE_KEY: ca71d9ad-af28-4c2b-abf7-1ddaa87fed36
 
-
-checkout_repo: &checkout_repo
-  run:
-    name: Custom checkout
-    # We need this to allow forks from a private repo
-    # We can remove this job once the repo is public
-    command: |
-      # Add GitHub to known hosts.
-      mkdir -p ~/.ssh
-      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-
-      # Prepare SSL deploy cert
-      (umask 077; touch ~/.ssh/id_rsa)
-      chmod 0600 ~/.ssh/id_rsa
-
-      # Private key (this is write only for deployment is fine to expose it)
-      echo "LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUNGd0FBQUFkemMyZ3RjbgpOaEFBQUFBd0VBQVFBQUFnRUFubzF1d1FFQTRNdlV5RlcxNDdRM3hnVU0yWSs2SENsN3hxeXVGbU5JTUR6UHBxYzM1MW5QCjNMdmtKeDFMRzZEb0hxeW9nMGpubGE4aENhcjJlSEJBZnZRQjR4MXhiWFpzN3B6Znd2NlJHcEtST2xRMVdmTWFORXhELzcKbHZwb0pqNmVpdytQdTRiR0RCRTdnZldidy9KNWF2ajhpdTlkYVFZSCtlWDdQK1puMUlMT2JsMWdsSk83U0dFV0gzelZRWAo0WnU4QXVpbnJYM044S0h2YlBsbU00d0xzVXZOL1h4Sno3K1VMby9zN3BFS3RSUEhIVFRoc2QwL2RUOUFaclVEbUtyQ0lwCm84VjhNeUxBZmIzZE53dTB2RUw4OWFJdEdCTC9vb2cxQVVpR1pWQ0s3N1FmaXBCTjhZNHE3NlZNZVJXOTR5aXNXeTR0MUkKTHhiSXpFSkpvZE5NT3VJbHUvRFRmNlBqVGtDRkdBZ3l2REdjaTZTWFBUVmdhdzNpeG1VaVZia2RwRDhMN2xDL3U1aU5GQgp6NTNqU0pzdVBscjlQdHNwVGFtVnRwaDh2aThOUUlvVUUwMHlRTWdFbDZtUDJ6M2diK2E3SEFxT3FVVDdFUXI5M2xwWUxtClZ2OXRPVHFtZ0N6bmxuOCtYQzVROWFwU3kzVzl6TFdVMkVBRWJORGxrUC8rMkFVVWRTRmpSZUMvbzZESVB6TlhDOXZFU2QKdzRsQjRNMnFucmptcCtMNjBhMVVRYlc1S2FuVldydWtGKzg2cW96TEpuZEZFaS9BUHl6QmdPRTByb1FFTXpBUjlTRWxXdQovWUl4QlhxdnZRdGJ4bUZMUzJaNklBaDk2VjIvaDRFcVlSNHZxNGd0eTRacVJSYk4zczkrdzNJVTVZd1NaZEdQT1dHZndaCjhBQUFkUUFqRzdKUUl4dXlVQUFBQUhjM05vTFhKellRQUFBZ0VBbm8xdXdRRUE0TXZVeUZXMTQ3UTN4Z1VNMlkrNkhDbDcKeHF5dUZtTklNRHpQcHFjMzUxblAzTHZrSngxTEc2RG9IcXlvZzBqbmxhOGhDYXIyZUhCQWZ2UUI0eDF4YlhaczdwemZ3dgo2UkdwS1JPbFExV2ZNYU5FeEQvN2x2cG9KajZlaXcrUHU0YkdEQkU3Z2ZXYncvSjVhdmo4aXU5ZGFRWUgrZVg3UCtabjFJCkxPYmwxZ2xKTzdTR0VXSDN6VlFYNFp1OEF1aW5yWDNOOEtIdmJQbG1NNHdMc1V2Ti9YeEp6NytVTG8vczdwRUt0UlBISFQKVGhzZDAvZFQ5QVpyVURtS3JDSXBvOFY4TXlMQWZiM2ROd3UwdkVMODlhSXRHQkwvb29nMUFVaUdaVkNLNzdRZmlwQk44WQo0cTc2Vk1lUlc5NHlpc1d5NHQxSUx4Ykl6RUpKb2ROTU91SWx1L0RUZjZQalRrQ0ZHQWd5dkRHY2k2U1hQVFZnYXczaXhtClVpVmJrZHBEOEw3bEMvdTVpTkZCejUzalNKc3VQbHI5UHRzcFRhbVZ0cGg4dmk4TlFJb1VFMDB5UU1nRWw2bVAyejNnYisKYTdIQXFPcVVUN0VRcjkzbHBZTG1Wdjl0T1RxbWdDem5sbjgrWEM1UTlhcFN5M1c5ekxXVTJFQUViTkRsa1AvKzJBVVVkUwpGalJlQy9vNkRJUHpOWEM5dkVTZHc0bEI0TTJxbnJqbXArTDYwYTFVUWJXNUthblZXcnVrRis4NnFvekxKbmRGRWkvQVB5CnpCZ09FMHJvUUVNekFSOVNFbFd1L1lJeEJYcXZ2UXRieG1GTFMyWjZJQWg5NlYyL2g0RXFZUjR2cTRndHk0WnFSUmJOM3MKOSt3M0lVNVl3U1pkR1BPV0dmd1o4QUFBQURBUUFCQUFBQ0FDb3ZYVUZ5MytYdnRheWJ5V3BOUCsycTJGRm1nVkVPNUlUbQoydWJRQVp2OEFnL0lQQUtORGRZZ0U4TW9jeHhsd255dTJhTWNtYWxrMERoL1NWYWdIempuK1R5UlQrV2M5YnpDOW5JdVF6Ck03dmZJMEI0SG9RWmVhbHhrS0lKKy8zNCtUdnNwd1J4Qm02ZGd5Uy8wWExnSjlnRGFVWWFDOU51ckY2Y0J5NW9Ra1h6aTcKTW5teFBNL3E1eVRtMlFURGxCc04wWWRBbWFSNmJYblJ6QjlGZUNETTZTdUNETXVkN3hHY1duUE5EWEFvSFI0eXBlNnFiRQpaanBJZXdqWlVHSW0vVE54WDN6WWhZUWhnZSt5dlpId3htUzB1aE1zMUN5c21XR0lOZm9pYnNlMEYxTlJySGEwa0ZodHlCClM4K1V6YU1ReW9mTHRCM1NYR3RTOTVnSkp3ZkJOUGxweWNLSWtYZEphalFGQ2JQMkxtNkV6aHM3ODRKcDM0ajNLTU9ibjIKOFlvaFRVVm4rMlhQVzZYMzN3cVV1OTFDbjNqV1pvcDN0eHozSWtwUWlmUHVzWWpaZGVkbStYYmx6UmpjK0xucTZFejE3RQpYOW1LdDNnQ09jTW5JVFVqK1VieUt0THI0UGNvOHhvRWJiZ3hLQVl0Q1Z2ZnA5b3dXT3k2YlRSR1Y2MTQweUJ0cVdmWTl0CjhqM2g3Q3IyS0dtZGZaMGxSa29aeUVrMHJRdGdHNnVHeTRhZStSYmJZOVRDcExyTm83K0FsTnlkdmU4SFFCbnRPdUM4NWoKRFEzYWd5bDU5TUVMRUhUa0c5c1lLWEhRSXVSUlAwWmJlN0F3eFhGSitnNjlKZngwRmdrYW16eUo0S3F6TlF1SXcrOUJmZgpGQXhDbVZMY0JkakIyMDc2UzVBQUFCQVFESDNJWTlMWHZqUlpzVzcyNzBLTXVXazkzbTdGb0JrdkdLY09SSFZub0NpTFlhCjFYQ29yQTZ3R2IyRlBLbTFtWG5FY2dhSE9OV1NST3ZkeklDWDlaM1E2UDBuN0pINkk4SlVkTVp4MWV1S1hqUVdYd1hGamUKbWkveTdENDJmYTJLRERGcFNxc05BdURHSEJaVXEyZ1dsUGc2dWNlaktWdmNEZkRsaUFTU0U0b1p0TDFHa0wxSFhDR2F2KwpXNzBLV2cwY3U3S1ZjaXFnYjVxdU1ZV0I0cnJIbmhTcUVtOHoweEFGNWo2cktqS01KQkhXVWhndFlHQXViN1REQ3BuR3ArCmhXa2NZMnRKSWU4UmFlbUg1UVJVdmRqWEd0dDl6ZCt3RnJSNm1ROUZrbXJVQU8wc2RnTmh4S0RSYXdxYytlaW5SUWFoZHIKQkFpN1BCbjZQOGZ4MFdTTUFBQUJBUURNaVg3eElDbVhxajd2QmppN0xvWHg4bk4zcS9ZWnpnRFBkYlNKN014c0FJM0FCbAo1Tnd6aDJsSFpsK0tqL0dSUm5icWlNeEJmLzJrVXFFWVJuazVoSDNFNmxQeEdweURreTBYODEvRzNCNzhnZU9UTTIvQ0JHCnJVYkY1bmcxRmphZFRVcWFybFVJNU82UHpoYXRWOFhLNHZOQitsQ3F2N1lVbHBEczJ2eTliTTdmREJkekZxQlVsajMxa2cKN1l2cFMrY2VCeXkvNkhDMG5OaSsrejJNN1dmaGRiK0dTbkRzTzkwN0o5OU1adTI1bSt2UkFBUWdwSnNCemhQTmtHZUxFUwpuWUo3S2p6c3dybnJNOHo2UWN0UTFwNVRjMTR2NEtZYVZiWVpHbU80QnVYMVY5RE9pK2Z0SnYwSmFZeDNuOTZ5OG5lL0JrClEwWERFRFRtNTEvQ2pkQUFBQkFRREdjZ0d1aHV6THRLUHM0WGVwb24wQmp5ZzMybW9rbTJ5dUFONmRiQ0xQcThhbWxDV0kKMGlSMnoxazdtd2ovbmI4NmpwblRlajEycFJoVmY3K3lOUVgxb3pTMkRVbVc5UkI3YWFoNWw4bFltTkZBYjArbWphZmpnSgpQRDdNRmpMNGlvL0o1M21abHBXemxacGppaTk5UTZkeUxwVUdmOFhzU1NTNllMVTU4MXlHd2xtN0FLeHkzMGNlTVorb1pPCjhYZS9SOUoxMEVFL1JheUh5KzhsTjhoNnBLNlZiRUlrTThoZUtPdjllUjJZRmFnbGtvbXFqUlNjaW9FYVdaRk9veGozU0UKb3AxcWlnNGkyNmpySzlnNFpPdDY4STVZVkVDL0RNR0tOdm8vNEw4N2NHSjlobTh1VVQyZ2pSeHZCYThyN3k5NktscVY0Sgp1QmVabFhFb1QrNnJBQUFBRTJSMllXeEFjMkZzWlhObWIzSmpaUzVqYjIwQkFnTUVCUVlICi0tLS0tRU5EIE9QRU5TU0ggUFJJVkFURSBLRVktLS0tLQo=" | base64 --decode > ~/.ssh/id_rsa
-
-      # Public key (doesn't work without this - git somehow needs it)
-      echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCejW7BAQDgy9TIVbXjtDfGBQzZj7ocKXvGrK4WY0gwPM+mpzfnWc/cu+QnHUsboOgerKiDSOeVryEJqvZ4cEB+9AHjHXFtdmzunN/C/pEakpE6VDVZ8xo0TEP/uW+mgmPp6LD4+7hsYMETuB9ZvD8nlq+PyK711pBgf55fs/5mfUgs5uXWCUk7tIYRYffNVBfhm7wC6Ketfc3woe9s+WYzjAuxS839fEnPv5Quj+zukQq1E8cdNOGx3T91P0BmtQOYqsIimjxXwzIsB9vd03C7S8Qvz1oi0YEv+iiDUBSIZlUIrvtB+KkE3xjirvpUx5Fb3jKKxbLi3UgvFsjMQkmh00w64iW78NN/o+NOQIUYCDK8MZyLpJc9NWBrDeLGZSJVuR2kPwvuUL+7mI0UHPneNImy4+Wv0+2ylNqZW2mHy+Lw1AihQTTTJAyASXqY/bPeBv5rscCo6pRPsRCv3eWlguZW/205OqaALOeWfz5cLlD1qlLLdb3MtZTYQARs0OWQ//7YBRR1IWNF4L+joMg/M1cL28RJ3DiUHgzaqeuOan4vrRrVRBtbkpqdVau6QX7zqqjMsmd0USL8A/LMGA4TSuhAQzMBH1ISVa79gjEFeq+9C1vGYUtLZnogCH3pXb+HgSphHi+riC3LhmpFFs3ez37DchTljBJl0Y85YZ/Bnw== dval@salesforce.com" > ~/.ssh/id_rsa.pub
-
-      # SSH Config
-      (cat <<EOF > ~/.ssh/config
-      Host github.com
-      HostName github.com
-      IdentityFile ~/.ssh/id_rsa
-      User git
-      EOF
-      )
-
-      # Add key to the daemon
-      ssh-add ~/.ssh/id_rsa
-
-      # use git+ssh instead of https
-      git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
-      git config --global gc.auto 0 || true
-
-      if [ -e /home/circleci/lwc/.git ]
-      then
-        cd /home/circleci/lwc
-        git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
-      else
-        mkdir -p /home/circleci/lwc
-        cd /home/circleci/lwc
-        git clone "$CIRCLE_REPOSITORY_URL" .
-      fi
-
-      if [ -n "$CIRCLE_TAG" ]
-      then
-        git fetch --force origin "refs/tags/${CIRCLE_TAG}"
-      elif [[ $CIRCLE_BRANCH == *"pull/"* ]]
-      then
-        git fetch --force origin "${CIRCLE_BRANCH}/head:remotes/origin/${CIRCLE_BRANCH}"
-      else
-        git checkout "${CIRCLE_BRANCH}"
-      fi
-
-
-      if [ -n "$CIRCLE_TAG" ]
-      then
-        git reset --hard "$CIRCLE_SHA1"
-        git checkout -q "$CIRCLE_TAG"
-      elif [ -n "$CIRCLE_BRANCH" ]
-      then
-        git reset --hard "$CIRCLE_SHA1"
-        git checkout -q -B "$CIRCLE_BRANCH"
-      fi
-
-      git reset --hard "$CIRCLE_SHA1"
-
 # Yarn cache
 restore_yarn_cache: &restore_yarn_cache
   restore_cache:
@@ -264,8 +194,7 @@ jobs:
   build:
     <<: *env_default
     steps:
-      - *checkout_repo
-
+      - checkout
       - *restore_yarn_cache
       - *install_and_build
       - *save_yarn_cache
