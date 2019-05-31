@@ -1,5 +1,5 @@
 # Contributing to Lightning Web Components
-We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework. 
+We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework.
 
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -11,8 +11,7 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 ## Requirements
 
- * Node 8.x
- * NPM 6.x
+ * Node >= 10.13.0
  * Yarn >= 1.6
 
 ## Installation
