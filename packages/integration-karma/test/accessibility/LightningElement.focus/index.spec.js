@@ -8,7 +8,7 @@ beforeEach(() => {
     document.body.focus();
 });
 
-// TODO: #1327 - enable after implementing LightningElement.focus
+// TODO: #1327 - enable after patching focus method
 xit('should focus the first internally focusable element (delegatesFocus=true)', () => {
     const elm = createElement('x-focus', { is: DelegatesFocusTrue });
     document.body.appendChild(elm);
@@ -26,7 +26,7 @@ it('should not focus the first internally focusable element (delegatesFocus=fals
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
-// TODO: #1329 - enable after fixing bug
+// TODO: #1329 - enable after fixing bug where the custom element does not gain focus
 xit('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
     const container = createElement('x-container', { is: Container });
     document.body.appendChild(container);
@@ -50,9 +50,10 @@ it('should focus the host element (delegatesFocus=false, tabIndex=0)', () => {
 // Tests that apply regardless of whether focus is being delegated
 function runFocusTests({ delegatesFocus }) {
     const category = `(delegatesFocus=${delegatesFocus})`;
+    const Ctor = delegatesFocus ? DelegatesFocusTrue : DelegatesFocusFalse;
 
     it(`should focus the internal element when invoking the focus method directly on the internal element ${category}`, () => {
-        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+        const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
         const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
@@ -61,7 +62,7 @@ function runFocusTests({ delegatesFocus }) {
     });
 
     it(`should blur the internal element when invoking the blur method directly on the internal element ${category}`, () => {
-        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+        const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
         const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
@@ -71,7 +72,7 @@ function runFocusTests({ delegatesFocus }) {
     });
 
     it(`should not move focus if an internal element is already focused ${category}`, () => {
-        const elm = createElement('x-focus', { is: DelegatesFocusTrue });
+        const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
         const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
