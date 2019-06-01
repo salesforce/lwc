@@ -2,6 +2,11 @@ import { createElement } from 'lwc';
 
 import DelegatesFocusTrue from 'x/delegatesFocusTrue';
 import DelegatesFocusFalse from 'x/delegatesFocusFalse';
+import Container from 'x/container';
+
+beforeEach(() => {
+    document.body.focus();
+});
 
 // TODO: #1327 - enable after implementing LightningElement.focus
 xit('should focus the first internally focusable element (delegatesFocus=true)', () => {
@@ -22,22 +27,22 @@ it('should not focus the first internally focusable element (delegatesFocus=fals
 });
 
 it('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
-    const elm = createElement('x-focus', { is: DelegatesFocusFalse });
-    elm.tabIndex = -1;
-    document.body.appendChild(elm);
+    const container = createElement('x-container', { is: Container });
+    document.body.appendChild(container);
 
+    const elm = container.shadowRoot.querySelector('x-delegates-focus-false[tabindex="-1"]');
     elm.focus();
-    expect(document.activeElement).toBe(elm);
+    expect(container.shadowRoot.activeElement).toBe(elm);
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
 it('should focus the host element (delegatesFocus=false, tabIndex=0)', () => {
-    const elm = createElement('x-focus', { is: DelegatesFocusFalse });
-    elm.tabIndex = 0;
-    document.body.appendChild(elm);
+    const container = createElement('x-container', { is: Container });
+    document.body.appendChild(container);
 
+    const elm = container.shadowRoot.querySelector('x-delegates-focus-false[tabindex="0"]');
     elm.focus();
-    expect(document.activeElement).toBe(elm);
+    expect(container.shadowRoot.activeElement).toBe(elm);
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
