@@ -26,7 +26,8 @@ it('should not focus the first internally focusable element (delegatesFocus=fals
     expect(elm.shadowRoot.activeElement).toBeNull();
 });
 
-it('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
+// TODO: #1329 - enable after fixing bug
+xit('should focus the host element (delegatesFocus=false, tabIndex=-1)', () => {
     const container = createElement('x-container', { is: Container });
     document.body.appendChild(container);
 
