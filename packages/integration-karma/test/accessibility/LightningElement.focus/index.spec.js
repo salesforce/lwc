@@ -56,7 +56,7 @@ function runFocusTests({ delegatesFocus }) {
         const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
-        const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
+        const input = elm.shadowRoot.querySelector('.second');
         input.focus();
         expect(elm.shadowRoot.activeElement).toBe(input);
     });
@@ -65,7 +65,7 @@ function runFocusTests({ delegatesFocus }) {
         const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
-        const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
+        const input = elm.shadowRoot.querySelector('.second');
         input.focus();
         input.blur();
         expect(elm.shadowRoot.activeElement).toBeNull();
@@ -75,7 +75,7 @@ function runFocusTests({ delegatesFocus }) {
         const elm = createElement('x-focus', { is: Ctor });
         document.body.appendChild(elm);
 
-        const input = elm.shadowRoot.querySelector('.delegates-focus-true-second');
+        const input = elm.shadowRoot.querySelector('.second');
         input.focus();
         elm.focus();
         expect(elm.shadowRoot.activeElement).toBe(input);
