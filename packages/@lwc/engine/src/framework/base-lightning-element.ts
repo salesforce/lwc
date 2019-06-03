@@ -167,7 +167,6 @@ export function BaseLightningElement(this: ComponentInterface) {
     const component = this;
     vm.component = component;
     vm.tro = getTemplateReactiveObserver(vm as VM);
-    vm.oar = create(null);
     // interaction hooks
     // We are intentionally hiding this argument from the formal API of LWCElement because
     // we don't want folks to know about it just yet.
