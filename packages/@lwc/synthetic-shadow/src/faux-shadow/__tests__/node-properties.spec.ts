@@ -6,9 +6,6 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '@lwc/engine';
-// TODO: #1311 move this tests to integration or remove the assertion mocking, you
-// can't load local files.
-import assertLogger from '../../shared/assert';
 
 describe('patched node properties', () => {
     describe('parentNode', () => {
@@ -18,7 +15,6 @@ describe('patched node properties', () => {
             }
         });
         it('should fetch parentNode of nested root element', () => {
-            jest.spyOn(assertLogger, 'logError').mockImplementation(() => {});
             const nestedRootElementTmpl = compileTemplate(`
             <template>
                 <div></div>
@@ -50,7 +46,6 @@ describe('patched node properties', () => {
             expect(nestedRootElement.parentNode).toBe(
                 rootElem.shadowRoot.querySelector('.expectedParent')
             );
-            assertLogger.logError.mockRestore();
         });
         it('should fetch parentNode of nested root element when parent node marked as lwc:dom="manual"', () => {
             const nestedRootElementTmpl = compileTemplate(`
