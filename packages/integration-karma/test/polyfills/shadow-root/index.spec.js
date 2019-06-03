@@ -24,7 +24,7 @@ describe('ShadowRoot.activeElement', () => {
         expect(document.activeElement).toBe(outsideInput);
     });
 
-    it('should be a local input when focused', () => {
+    it('should reference an element in the shadow when that element has focus', () => {
         const elm = createElement('x-parent', { is: XTest });
         document.body.appendChild(elm);
         const input = elm.shadowRoot.querySelector('input');
