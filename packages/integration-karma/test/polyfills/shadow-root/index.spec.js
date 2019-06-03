@@ -11,7 +11,7 @@ describe('ShadowRoot.activeElement', () => {
         let template;
         const elm = createElement('x-parent', { is: XTest });
         document.body.appendChild(elm);
-        expect(template.activeElement).toBe(null);
+        expect(elm.shadowRoot.activeElement).toBe(null);
     });
 
     it('should be null when the active element is outside of the shadow', () => {
