@@ -8,7 +8,6 @@ it('should attach ShadowRoot to the global object if not present', () => {
 
 describe('ShadowRoot.activeElement', () => {
     it('should be null when no active element is found', () => {
-        let template;
         const elm = createElement('x-parent', { is: XTest });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.activeElement).toBe(null);
