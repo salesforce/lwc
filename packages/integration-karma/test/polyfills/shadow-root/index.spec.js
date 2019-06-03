@@ -14,7 +14,7 @@ describe('ShadowRoot.activeElement', () => {
         expect(elm.shadowRoot.activeElement).toBe(null);
     });
 
-    it('should be null when the active element is outside of the shadow', () => {
+    it('should be null when no element in the shadow has focus', () => {
         const elm = createElement('x-parent', { is: XTest });
         const outsideInput = document.createElement('input');
         document.body.appendChild(elm);
