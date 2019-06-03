@@ -1,6 +1,6 @@
 # Wire Service
 
-This is the implementation of Lightning Web Component's wire service. It enables declarative binding of services to a LWC component using the `@wire` decorator. It fulfills the goals of the [data service proposal](/docs/proposals/data-service.md).
+This is the implementation of Lightning Web Component's wire service. It enables declarative binding of services to a LWC component using the `@wire` decorator. It fulfills the goals of the [data service proposal](https://github.com/salesforce/lwc-rfcs/blob/master/text/0000-data-service.md).
 
 ## Summary
 
@@ -46,7 +46,7 @@ export default class TodoViewer extends LightningElement {
 
 ## Wire Adapter Specification
 
-The following is a summary of the [wire adapter RFC](/docs/proposals/0103-wire-adapters.md).
+The following is a summary of the [wire adapter RFC](https://github.com/salesforce/lwc-rfcs/blob/master/text/0103-wire-adapters.md).
 
 A `wire adapter` provisions data to a wired property or method using an [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget). A factory function is registered for declarative `@wire` use by a component.
 
