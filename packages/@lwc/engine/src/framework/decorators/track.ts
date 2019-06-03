@@ -7,7 +7,7 @@
 import assert from '../../shared/assert';
 import { isUndefined, isFalse } from '../../shared/language';
 import { isRendering, vmBeingRendered } from '../invoker';
-import { valueObserved, valueMutated } from '@lwc/reactive-service';
+import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';

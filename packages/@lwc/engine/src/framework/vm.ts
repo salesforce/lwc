@@ -55,7 +55,7 @@ import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
-import { ReactiveObserver } from '@lwc/reactive-service';
+import { ReactiveObserver } from '../libs/mutation-tracker';
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -169,9 +169,7 @@ function resetComponentStateWhenRemoved(vm: VM) {
     if (state !== VMState.disconnected) {
         const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
-        if (!isNull(tro)) {
-            tro.reset();
-        }
+        tro.reset();
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runShadowChildNodesDisconnectedCallback(vm);

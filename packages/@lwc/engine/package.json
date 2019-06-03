@@ -12,8 +12,7 @@
         "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
     },
     "dependencies": {
-        "observable-membrane": "0.26.1",
-        "@lwc/reactive-service": "1.0.0"
+        "observable-membrane": "0.26.1"
     },
     "devDependencies": {
         "@lwc/template-compiler": "1.0.2"

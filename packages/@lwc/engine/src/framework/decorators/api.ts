@@ -7,7 +7,7 @@
 import assert from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
 import { isObject, toString, isFalse } from '../../shared/language';
-import { valueObserved, valueMutated } from '@lwc/reactive-service';
+import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
 import { getComponentVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';

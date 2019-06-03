@@ -39,7 +39,7 @@ import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
-import { valueObserved, valueMutated } from '@lwc/reactive-service';
+import { valueObserved, valueMutated } from '../libs/mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';

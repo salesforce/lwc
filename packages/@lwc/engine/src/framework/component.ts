@@ -18,7 +18,7 @@ import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
 import { Template } from './template';
-import { ReactiveObserver } from '@lwc/reactive-service';
+import { ReactiveObserver } from '../libs/mutation-tracker';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
