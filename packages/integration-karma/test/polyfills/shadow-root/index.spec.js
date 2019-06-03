@@ -1,4 +1,34 @@
+import { createElement } from 'lwc';
+import XTest from 'x/test';
+
 it('should attach ShadowRoot to the global object if not present', () => {
     expect(typeof window.ShadowRoot).toBe('function');
     expect(String(window.ShadowRoot)).toMatch(/ShadowRoot|SyntheticShadowRoot/);
+});
+
+describe('ShadowRoot.activeElement', () => {
+    it('should be null when no active element is found', () => {
+        let template;
+        const elm = createElement('x-parent', { is: XTest });
+        document.body.appendChild(elm);
+        expect(template.activeElement).toBe(null);
+    });
+
+    it('should be null when the active element is outside of the shadow', () => {
+        const elm = createElement('x-parent', { is: XTest });
+        const outsideInput = document.createElement('input');
+        document.body.appendChild(elm);
+        document.body.appendChild(outsideInput);
+        outsideInput.focus();
+        expect(elm.shadowRoot.activeElement).toBe(null);
+        expect(document.activeElement).toBe(outsideInput);
+    });
+
+    it('should be a local input when focused', () => {
+        const elm = createElement('x-parent', { is: XTest });
+        document.body.appendChild(elm);
+        const input = elm.shadowRoot.querySelector('input');
+        input.focus();
+        expect(elm.shadowRoot.activeElement).toBe(input);
+    });
 });
