@@ -378,7 +378,7 @@ describe('events', () => {
 
     describe('composed path', () => {
         it('should report correct composedPath for event.composed=true', () => {
-            expect.assertions(4);
+            expect.assertions(2);
             class Parent extends LightningElement {
                 render() {
                     return parentHTML;
@@ -390,7 +390,6 @@ describe('events', () => {
                     event = evt;
                     // div, child's shadow, x-child, parent's shadow, x-parent, body, html, document, window
                     expect(evt.composedPath().length).toBe(9);
-                    expect(evt.path.length).toBe(9);
                 }
                 render() {
                     return childHTML;
@@ -423,13 +422,11 @@ describe('events', () => {
             div.click();
             // checking the value after the dispatch mechanism has finished
             const composedPath = event.composedPath();
-            const path = event.path;
-            // div, child's shadow, x-child, parent's shadow, x-parent, body, html, document, window
-            expect(composedPath.length).toBe(9);
-            expect(path.length).toBe(9);
+            // empty list
+            expect(composedPath.length).toBe(0);
         });
         it('should report correct composedPath for event.composed=false', () => {
-            expect.assertions(4);
+            expect.assertions(2);
             class Parent extends LightningElement {
                 render() {
                     return parentHTML;
@@ -441,7 +438,6 @@ describe('events', () => {
                     event = evt;
                     // div, child's shadow
                     expect(evt.composedPath().length).toBe(2);
-                    expect(evt.path.length).toBe(2);
                 }
                 render() {
                     return childHTML;
@@ -474,10 +470,8 @@ describe('events', () => {
             div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: false }));
             // checking the value after the dispatch mechanism has finished
             const composedPath = event.composedPath();
-            const path = event.path;
-            // div, child's shadow
-            expect(composedPath.length).toBe(2);
-            expect(path.length).toBe(2);
+            // empty list
+            expect(composedPath.length).toBe(0);
         });
     });
 

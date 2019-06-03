@@ -85,7 +85,9 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
 
 function composedPathValue(this: ComposableEvent): EventTarget[] {
     const originalTarget: EventTarget = eventTargetGetter.call(this);
-    return pathComposer(originalTarget as Node, this.composed);
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
+    // if the dispatch phase is done, the composedPath should be empty array
+    return isNull(originalCurrentTarget) ? [] : pathComposer(originalTarget as Node, this.composed);
 }
 
 export function patchEvent(event: Event) {

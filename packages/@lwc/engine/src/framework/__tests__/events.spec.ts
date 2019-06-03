@@ -951,7 +951,7 @@ describe('Shadow Root events', () => {
             connectedCallback() {
                 this.template.addEventListener('click', evt => {
                     expect(evt.target.tagName).toBe('X-GRAND-CHILD');
-                    expect(evt.currentTarget.tagName).toBe('X-CHILD');
+                    expect(evt.currentTarget).toBe(this.template);
                 });
             }
 

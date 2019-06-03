@@ -8,7 +8,8 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '@lwc/engine';
 
 describe('#childNodes', () => {
-    it('should always return an empty array for slots not rendering default content', () => {
+    // TODO: issue #xxx move this test to karma, and only test this for synthetic
+    it.skip('should always return an empty array for slots not rendering default content', () => {
         const hasSlotTmpl = compileTemplate(`
             <template>
                 <slot>
