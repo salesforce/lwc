@@ -1,0 +1,10 @@
+<template>
+    <h1>child</h1>
+    <ol>
+        <template for:each={formattedEvents} for:item="event">
+            <li key={event}>{event}</li>
+        </template>
+    </ol>
+
+    <input onfocus={handleFocusOrBlur} onblur={handleFocusOrBlur} placeholder="child">
+</template>
