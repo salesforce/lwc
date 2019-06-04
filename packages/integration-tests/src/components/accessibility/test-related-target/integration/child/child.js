@@ -11,9 +11,7 @@ export default class Child extends LightningElement {
 
     handleFocusOrBlur(event) {
         const { type, relatedTarget } = event;
-        const component = 'child';
         this.events.push({
-            component,
             type,
             relatedTarget: relatedTarget ? relatedTarget.tagName : 'NULL',
         });
