@@ -23,7 +23,5 @@ function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEven
     return event;
 }
 
-export default function apply() {
-    (window as any).CustomEvent = PatchedCustomEvent;
-    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
-}
+(window as any).CustomEvent = PatchedCustomEvent;
+(window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;

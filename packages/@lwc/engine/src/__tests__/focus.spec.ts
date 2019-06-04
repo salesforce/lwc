@@ -5,10 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 // TODO: #1311 move this tests to integration
-jest.mock('./../../env/element');
-import { isFocusable, isTabbable } from '../focus';
+// TODO: issue #1341 fine ways to test this in browsers
+// import { isFocusable, isTabbable } from '../focus';
 
-describe('focus', () => {
+// fake functions for now until we can enable this test again in karma
+function isFocusable(el: Element) {
+    return el && false;
+}
+function isTabbable(el: Element) {
+    return el && false;
+}
+
+describe.skip('focus', () => {
     describe('isFocusable', () => {
         describe('Form control elements', () => {
             it('<button type="button"> is focusable', () => {

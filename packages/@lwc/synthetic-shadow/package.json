@@ -7,7 +7,7 @@
     "module": "dist/modules/es2017/shadow.js",
     "scripts": {
         "clean": "rm -rf dist/ lib/",
-        "test": "jest",
+        "test": "echo '@lwc/synthetic-shadow package does not contain any unit test, use integration-karma tests instead from this package'",
         "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
         "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve:playground\"",
         "build:playground": "rollup -c playground/rollup.config.js",

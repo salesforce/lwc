@@ -399,74 +399,65 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
 // static HTMLCollection or static NodeList. We decided that this compromise
 // is not a big problem considering the amount of code that is relying on
 // the liveliness of these results are rare.
-defineProperty(Element.prototype, 'querySelector', {
-    value: querySelectorPatched,
-    writable: true,
-    enumerable: true,
-    configurable: true,
-});
-
-defineProperty(Element.prototype, 'querySelectorAll', {
-    value: querySelectorAllPatched,
-    writable: true,
-    enumerable: true,
-    configurable: true,
-});
-
-// Note: Element.getElementsByTagName, Element.getElementsByTagNameNS and Element.getElementsByClassName are purposefully
-// omitted from the list of patched methods. In order for the querySelector* APIs to run
-// properly in jsdom, we need to make sure those methods doesn't respect the shadow DOM
-// semantic.
-// https://github.com/salesforce/lwc/pull/1179#issuecomment-484041707
-
-defineProperty(HTMLBodyElement.prototype, 'getElementsByClassName', {
-    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-        const elements = elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
-        const ownerKey = getNodeOwnerKey(this);
-        const filtered = ArrayFilter.call(
-            elements,
-            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-        );
-        return createStaticHTMLCollection(filtered);
+defineProperties(Element.prototype, {
+    querySelector: {
+        value: querySelectorPatched,
+        writable: true,
+        enumerable: true,
+        configurable: true,
     },
-    writable: true,
-    enumerable: true,
-    configurable: true,
-});
-
-defineProperty(HTMLBodyElement.prototype, 'getElementsByTagName', {
-    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-        const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
-        const ownerKey = getNodeOwnerKey(this);
-        const filtered = ArrayFilter.call(
-            elements,
-            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-        );
-        return createStaticHTMLCollection(filtered);
+    querySelectorAll: {
+        value: querySelectorAllPatched,
+        writable: true,
+        enumerable: true,
+        configurable: true,
     },
-    writable: true,
-    enumerable: true,
-    configurable: true,
-});
-
-defineProperty(HTMLBodyElement.prototype, 'getElementsByTagNameNS', {
-    value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-        const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-            string,
-            string
-        ]);
-        const ownerKey = getNodeOwnerKey(this);
-        const filtered = ArrayFilter.call(
-            elements,
-            elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-        );
-        return createStaticHTMLCollection(filtered);
+    getElementsByClassName: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = elementGetElementsByClassName.apply(this, ArraySlice.call(
+                arguments
+            ) as [string]);
+            const ownerKey = getNodeOwnerKey(this);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+            );
+            return createStaticHTMLCollection(filtered);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
     },
-    writable: true,
-    enumerable: true,
-    configurable: true,
+    getElementsByTagName: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
+                string
+            ]);
+            const ownerKey = getNodeOwnerKey(this);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+            );
+            return createStaticHTMLCollection(filtered);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    },
+    getElementsByTagNameNS: {
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(
+                arguments
+            ) as [string, string]);
+            const ownerKey = getNodeOwnerKey(this);
+            const filtered = ArrayFilter.call(
+                elements,
+                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+            );
+            return createStaticHTMLCollection(filtered);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    },
 });

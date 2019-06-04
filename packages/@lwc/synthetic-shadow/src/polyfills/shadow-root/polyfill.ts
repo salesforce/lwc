@@ -6,10 +6,8 @@
  */
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
-export default function apply() {
-    Object.defineProperty(window, 'ShadowRoot', {
-        value: SyntheticShadowRoot,
-        configurable: true,
-        writable: true,
-    });
-}
+Object.defineProperty(window, 'ShadowRoot', {
+    value: SyntheticShadowRoot,
+    configurable: true,
+    writable: true,
+});

@@ -236,10 +236,8 @@ PatchedMutationObserver.prototype.disconnect = patchedDisconnect;
 PatchedMutationObserver.prototype.observe = patchedObserve;
 PatchedMutationObserver.prototype.takeRecords = patchedTakeRecords;
 
-export default function apply() {
-    defineProperty(window, 'MutationObserver', {
-        value: PatchedMutationObserver,
-        configurable: true,
-        writable: true,
-    });
-}
+defineProperty(window, 'MutationObserver', {
+    value: PatchedMutationObserver,
+    configurable: true,
+    writable: true,
+});

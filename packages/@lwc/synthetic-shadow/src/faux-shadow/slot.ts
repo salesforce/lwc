@@ -119,12 +119,6 @@ defineProperties((window as any).HTMLSlotElement.prototype, {
                 type === 'slotchange' &&
                 !getInternalField(this, SlotChangeKey)
             ) {
-                if (process.env.NODE_ENV === 'test') {
-                    /* eslint-disable-next-line no-console */
-                    console.warn(
-                        'The "slotchange" event is not supported in our jest test environment.'
-                    );
-                }
                 setInternalField(this, SlotChangeKey, true);
                 if (!observer) {
                     observer = initSlotObserver();

@@ -2,7 +2,7 @@
     "name": "@lwc/engine",
     "version": "1.0.0",
     "description": "LWC Engine",
-    "main": "lib/framework/main.js",
+    "main": "lib/index.js",
     "module": "dist/modules/es2017/engine.js",
     "typings": "types/engine.d.ts",
     "license": "MIT",

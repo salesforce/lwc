@@ -16,7 +16,6 @@ import './env/mutation-observer';
 // Initialization Routines
 import './polyfills/HTMLSlotElement/main';
 import './polyfills/document-shadow/main';
-import './polyfills/document-body-shadow/main';
 import './polyfills/shadow-root/main';
 import './polyfills/event-listener/main';
 import './polyfills/click-event-composed/main'; // must come before event-composed
