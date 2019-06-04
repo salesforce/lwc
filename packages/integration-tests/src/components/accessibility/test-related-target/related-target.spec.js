@@ -40,7 +40,7 @@ function getChildInput() {
 }
 
 // FocusEvent.relatedTarget is always null in IE11
-if (!process.env.COMPAT) {
+if (process.env.COMPAT === 'false') {
     describe('relatedTarget', () => {
         beforeEach(() => {
             browser.url(URL);
