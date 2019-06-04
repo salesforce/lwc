@@ -1,0 +1,12 @@
+<template>
+    <h1>parent</h1>
+    <ol>
+        <template for:each={formattedEvents} for:item="event">
+            <li key={event}>{event}</li>
+        </template>
+    </ol>
+
+    <input onfocus={handleFocusOrBlur} onblur={handleFocusOrBlur} placeholder="parent">
+
+    <integration-child onfocus={handleFocusOrBlur} onblur={handleFocusOrBlur}></integration-child>
+</template>
