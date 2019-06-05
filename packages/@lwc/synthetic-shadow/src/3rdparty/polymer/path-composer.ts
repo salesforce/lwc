@@ -23,9 +23,11 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     let current: Node | null = startNode as Element;
     const startRoot: Window | Node =
         startNode instanceof Window ? startNode : (startNode as Node).getRootNode();
-    while (current) {
+    while (!isNull(current)) {
         composedPath.push(current as Element);
         let assignedSlot: HTMLSlotElement | null = null;
+        // Text also implements the Slottable mixin but is not an EventTarget, nor a ParentNode,
+        // which means it is safe to only look for Elements here.
         if (current instanceof Element) {
             assignedSlot = current.assignedSlot;
         }

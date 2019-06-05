@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-// Eventually, import the patched MutationObserver polyfill here
-// to ensure rest of the framework uses the patched version
+// There is code in the polyfills that requires access to the unpatched
+// Mutation Observer constructor, this the code for that.
+// Eventually, the polyfill should uses the patched version, and this file can be removed.
 
 const MO = MutationObserver;
 const MutationObserverObserve = MO.prototype.observe;

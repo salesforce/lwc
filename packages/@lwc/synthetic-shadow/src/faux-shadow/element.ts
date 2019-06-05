@@ -9,7 +9,7 @@ import {
     attachShadow,
     getShadowRoot,
     SyntheticShadowRootInterface,
-    hasSyntheticShadow,
+    isHostElement,
 } from './shadow-root';
 import {
     getNodeOwner,
@@ -183,7 +183,7 @@ function attachShadowPatched(this: Element, options: ShadowRootInit): SyntheticS
 }
 
 function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | null {
-    if (hasSyntheticShadow(this)) {
+    if (isHostElement(this)) {
         const shadow = getShadowRoot(this);
         if (shadow.mode === 'open') {
             return shadow;
@@ -225,7 +225,7 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (isNodeShadowed(this) || hasSyntheticShadow(this)) {
+            if (isNodeShadowed(this) || isHostElement(this)) {
                 return innerHTMLGetterPatched.call(this);
             }
             // TODO: make this a global patch with a way to disable it
@@ -239,7 +239,7 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (isNodeShadowed(this) || hasSyntheticShadow(this)) {
+            if (isNodeShadowed(this) || isHostElement(this)) {
                 return outerHTMLGetterPatched.call(this);
             }
             // TODO: make this a global patch with a way to disable it
@@ -334,7 +334,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
-    if (hasSyntheticShadow(this)) {
+    if (isHostElement(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
         if (isNull(owner)) {
@@ -364,7 +364,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
 function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
     const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
     let filtered: Element[];
-    if (hasSyntheticShadow(this)) {
+    if (isHostElement(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
         if (isNull(owner)) {

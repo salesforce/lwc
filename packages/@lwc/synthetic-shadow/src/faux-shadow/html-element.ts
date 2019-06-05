@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isDelegatingFocus, hasSyntheticShadow } from './shadow-root';
+import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { hasAttribute, tabIndexGetter, tabIndexSetter } from '../env/element';
 import { isNull, isFalse, defineProperties } from '../shared/language';
 import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
@@ -16,7 +16,7 @@ const { blur } = HTMLElement.prototype;
  */
 function tabIndexGetterPatched(this: HTMLElement) {
     if (isDelegatingFocus(this) && isFalse(hasAttribute.call(this, 'tabindex'))) {
-        // this cover the case where the default tabindex should be 0 because the
+        // this covers the case where the default tabindex should be 0 because the
         // custom element is delegating its focus
         return 0;
     }
@@ -109,13 +109,13 @@ function blurPatched(this: HTMLElement) {
 defineProperties(HTMLElement.prototype, {
     tabIndex: {
         get(this: HTMLElement): number {
-            if (hasSyntheticShadow(this)) {
+            if (isHostElement(this)) {
                 return tabIndexGetterPatched.call(this);
             }
             return tabIndexGetter.call(this);
         },
         set(this: HTMLElement, v: any) {
-            if (hasSyntheticShadow(this)) {
+            if (isHostElement(this)) {
                 return tabIndexSetterPatched.call(this, v);
             }
             return tabIndexSetter.call(this, v);
@@ -125,7 +125,7 @@ defineProperties(HTMLElement.prototype, {
     },
     blur: {
         value(this: HTMLElement) {
-            if (hasSyntheticShadow(this)) {
+            if (isHostElement(this)) {
                 return blurPatched.call(this);
             }
             blur.call(this);

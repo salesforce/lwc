@@ -104,7 +104,7 @@ export function assignedSlotGetterPatched(this: Element): HTMLSlotElement | null
     return parentNode as HTMLSlotElement;
 }
 
-defineProperties((window as any).HTMLSlotElement.prototype, {
+defineProperties(HTMLSlotElement.prototype, {
     addEventListener: {
         value(
             this: HTMLSlotElement,

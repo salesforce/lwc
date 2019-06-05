@@ -6,5 +6,5 @@
  */
 
 export default function() {
-    return typeof (window as any).HTMLSlotElement === 'undefined';
+    return typeof HTMLSlotElement === 'undefined';
 }

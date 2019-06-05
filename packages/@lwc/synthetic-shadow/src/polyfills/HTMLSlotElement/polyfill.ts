@@ -39,7 +39,7 @@ export default function apply() {
         ) {
             // the new element is the `slot`, resetting the proto chain
             // the new newly created global HTMLSlotElement.prototype
-            setPrototypeOf(elm, (window as any).HTMLSlotElement.prototype);
+            setPrototypeOf(elm, HTMLSlotElement.prototype);
         }
         return elm;
     };

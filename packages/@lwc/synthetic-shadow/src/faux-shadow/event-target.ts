@@ -6,7 +6,7 @@
  */
 import { getOwnPropertyDescriptor, defineProperties } from '../shared/language';
 import { addCustomElementEventListener, removeCustomElementEventListener } from './events';
-import { hasSyntheticShadow } from './shadow-root';
+import { isHostElement } from './shadow-root';
 
 const eventTargetGetter: (this: Event) => Element = getOwnPropertyDescriptor(
     Event.prototype,
@@ -31,7 +31,7 @@ function addEventListenerPatched(
     listener: EventListener,
     options?: boolean | AddEventListenerOptions
 ) {
-    if (hasSyntheticShadow(this)) {
+    if (isHostElement(this)) {
         addCustomElementEventListener(this, type, listener, options);
     } else {
         superAddEventListener.call(this, type, listener, options);
@@ -44,7 +44,7 @@ function removeEventListenerPatched(
     listener: EventListener,
     options?: boolean | AddEventListenerOptions
 ) {
-    if (hasSyntheticShadow(this)) {
+    if (isHostElement(this)) {
         removeCustomElementEventListener(this, type, listener, options);
     } else {
         superRemoveEventListener.call(this, type, listener, options);

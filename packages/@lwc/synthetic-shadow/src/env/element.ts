@@ -17,8 +17,6 @@ const {
     getElementsByTagNameNS,
 } = Element.prototype;
 
-// console.error(222, querySelectorAll.toString());
-
 const { addEventListener, removeEventListener } = Element.prototype;
 
 const childElementCountGetter: (this: Element) => number = getOwnPropertyDescriptor(
