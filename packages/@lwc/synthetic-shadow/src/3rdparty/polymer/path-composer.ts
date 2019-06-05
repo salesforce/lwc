@@ -18,8 +18,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { getOwnerDocument } from '../../shared/utils';
 import { isNull } from '../../shared/language';
 
-const GlobalShadowRoot = (window as any).ShadowRoot;
-
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: (Element | Document | Window)[] = [];
     let current: Node | null = startNode as Element;
@@ -33,7 +31,9 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
         }
         if (!isNull(assignedSlot)) {
             current = assignedSlot;
-        } else if (current instanceof GlobalShadowRoot && (composed || current !== startRoot)) {
+        }
+        // @ts-ignore type-mismatch
+        else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
             current = (current as ShadowRoot).host;
         } else {
             current = (current as Element).parentNode;

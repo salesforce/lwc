@@ -6,7 +6,7 @@ This is a polyfill for ShadowRoot that was tailor-made for LWC in order to meet 
 
 ## Compromises
 
-TBD
+-   Default content for `<slot>` elements is always empty.
 
 ## Missing features
 

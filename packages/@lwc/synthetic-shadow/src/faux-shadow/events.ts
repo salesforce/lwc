@@ -27,7 +27,7 @@ import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 import { getOwnerDocument } from '../shared/utils';
-import { addEventListener } from '../env/element';
+import { addEventListener, removeEventListener } from '../env/element';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;

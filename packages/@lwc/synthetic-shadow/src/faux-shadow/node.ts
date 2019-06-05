@@ -12,6 +12,8 @@ import {
     defineProperties,
     ArrayUnshift,
     isTrue,
+    hasOwnProperty,
+    getOwnPropertyDescriptor,
 } from '../shared/language';
 import {
     parentNodeGetter,
@@ -454,3 +456,18 @@ export const getInternalChildNodes =
         : function(node: Node): NodeListOf<ChildNode> {
               return node.childNodes;
           };
+
+// IE11 extra patches for wrong prototypes
+if (hasOwnProperty.call(HTMLElement.prototype, 'contains')) {
+    defineProperty(HTMLElement.prototype, 'contains', getOwnPropertyDescriptor(
+        Node.prototype,
+        'contains'
+    ) as PropertyDescriptor);
+}
+
+if (hasOwnProperty.call(HTMLElement.prototype, 'parentElement')) {
+    defineProperty(HTMLElement.prototype, 'parentElement', getOwnPropertyDescriptor(
+        Node.prototype,
+        'parentElement'
+    ) as PropertyDescriptor);
+}
