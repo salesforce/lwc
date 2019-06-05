@@ -60,7 +60,7 @@ export function bindExpression(
     applyBinding: boolean = true
 ): BindingResult {
     const wrappedExpression = types.expressionStatement(expression);
-    const boundIdentifiers = new Set();
+    const boundIdentifiers: Set<string> = new Set();
 
     traverse(wrappedExpression, {
         noScope: true,
