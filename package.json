@@ -44,7 +44,7 @@
     "jest": "~24.8.0",
     "jest-environment-jsdom-fifteen": "^1.0.0",
     "lerna": "~3.14.1",
-    "lint-staged": "^8.1.4",
+    "lint-staged": "~8.2.0",
     "mime-types": "~2.1.21",
     "prettier": "^1.16.4",
     "rollup": "~1.7.4",
