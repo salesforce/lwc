@@ -461,3 +461,11 @@ defineProperties(Element.prototype, {
         configurable: true,
     },
 });
+
+// IE11 extra patches for wrong prototypes
+if (hasOwnProperty.call(HTMLElement.prototype, 'getElementsByClassName')) {
+    defineProperty(HTMLElement.prototype, 'getElementsByClassName', getOwnPropertyDescriptor(
+        Element.prototype,
+        'getElementsByClassName'
+    ) as PropertyDescriptor);
+}
