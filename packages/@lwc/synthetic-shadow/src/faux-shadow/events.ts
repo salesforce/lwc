@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import {
     ArraySlice,
@@ -336,21 +335,14 @@ export function addCustomElementEventListener(
     elm: Element,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isFunction(listener),
-            `Invalid second argument for this.addEventListener() in ${toString(
-                elm
-            )} for event "${type}". Expected an EventListener but received ${listener}.`
-        );
-        // TODO: #420 - this is triggered when the component author attempts to add a listener
-        // programmatically into a lighting element node
-        if (!isUndefined(options)) {
-            assert.logError(
-                'The `addEventListener` method in `LightningElement` does not support any options.',
-                elm
+        if (!isFunction(listener)) {
+            throw new TypeError(
+                `Invalid second argument for Element.addEventListener() in ${toString(
+                    elm
+                )} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
     }
@@ -372,21 +364,14 @@ export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isFunction(listener),
-            `Invalid second argument for this.template.addEventListener() in ${toString(
-                sr
-            )} for event "${type}". Expected an EventListener but received ${listener}.`
-        );
-        // TODO: #420 - this is triggered when the component author attempts to add a listener
-        // programmatically into its Component's shadow root
-        if (!isUndefined(options)) {
-            assert.logError(
-                'The `addEventListener` method in `LightningElement` does not support any options.',
-                getHost(sr)
+        if (!isFunction(listener)) {
+            throw new TypeError(
+                `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
+                    sr
+                )} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
     }

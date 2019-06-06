@@ -17,7 +17,7 @@ import {
 import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
-const OriginalMutationObserver: typeof MutationObserver = (window as any).MutationObserver;
+const OriginalMutationObserver = MutationObserver;
 const {
     disconnect: originalDisconnect,
     observe: originalObserve,

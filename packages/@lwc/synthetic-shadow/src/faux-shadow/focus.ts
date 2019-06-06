@@ -86,8 +86,7 @@ function hasFocusableTabIndex(element: HTMLElement) {
 // There are a lot of edge cases here that we can't realistically handle
 // Determines if a particular element is tabbable, as opposed to simply focusable
 
-// Exported for jest purposes
-export function isTabbable(element: HTMLElement): boolean {
+function isTabbable(element: HTMLElement): boolean {
     return matches.call(element, TabbableElementsQuery) && isVisible(element);
 }
 
@@ -105,8 +104,7 @@ const focusableTagNames = {
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
-// Exported for jest purposes
-export function isFocusable(element: HTMLElement): boolean {
+function isFocusable(element: HTMLElement): boolean {
     const tagName = tagNameGetter.call(element);
     return (
         isVisible(element) &&

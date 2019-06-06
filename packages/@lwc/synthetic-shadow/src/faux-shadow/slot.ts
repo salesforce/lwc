@@ -51,7 +51,7 @@ function initSlotObserver() {
         const slots: Node[] = [];
         forEach.call(mutations, mutation => {
             if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(
+                assert.invariant(
                     mutation.type === 'childList',
                     `Invalid mutation type: ${
                         mutation.type

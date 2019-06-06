@@ -51,7 +51,7 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
             node instanceof Node,
             `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`
         );
-        assert.isTrue(
+        assert.invariant(
             compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS,
             `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`
         );

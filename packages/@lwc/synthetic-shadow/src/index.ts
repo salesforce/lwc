@@ -23,6 +23,7 @@ import './polyfills/event-composed/main';
 import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
 import './polyfills/iframe-content-window/main';
+import './polyfills/mutation-observer/main';
 
 // Internal Patches
 import './faux-shadow/node';

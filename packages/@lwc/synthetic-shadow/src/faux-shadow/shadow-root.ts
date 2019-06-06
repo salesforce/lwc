@@ -38,7 +38,6 @@ import {
     replaceChild,
     appendChild,
 } from '../env/node';
-import { isNativeShadowRootAvailable } from '../env/dom';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { retarget } from '../3rdparty/polymer/retarget';
@@ -583,13 +582,6 @@ export function SyntheticShadowRoot() {
     throw new TypeError('Illegal constructor');
 }
 SyntheticShadowRoot.prototype = create(DocumentFragment.prototype, SyntheticShadowRootDescriptors);
-
-// Is native ShadowDom is available on window,
-// we need to make sure that our synthetic shadow dom
-// passed instanceof checks against window.ShadowDom
-if (isNativeShadowRootAvailable) {
-    setPrototypeOf(SyntheticShadowRoot.prototype, (window as any).ShadowRoot.prototype);
-}
 
 /**
  * This method is only intended to be used in non-production mode in IE11

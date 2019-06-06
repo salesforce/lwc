@@ -6,17 +6,8 @@
  */
 import { getOwnPropertyDescriptor } from '../shared/language';
 
-const ShadowRootHostGetter: (this: ShadowRoot) => Element | null =
-    typeof (window as any).ShadowRoot !== 'undefined'
-        ? getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, 'host')!.get!
-        : () => {
-              throw new Error('Internal Error: Missing ShadowRoot');
-          };
-
 const dispatchEvent =
     'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
-
-const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== 'undefined';
 
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,
@@ -34,8 +25,6 @@ const focusEventRelatedTargetGetter: (
 
 export {
     dispatchEvent,
-    ShadowRootHostGetter,
-    isNativeShadowRootAvailable,
     eventTargetGetter,
     eventCurrentTargetGetter,
     focusEventRelatedTargetGetter,

@@ -57,9 +57,6 @@ import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 
-// Object of type ShadowRoot for instance checks
-const GlobalShadowRoot = (window as any).ShadowRoot;
-
 export interface SlotSet {
     [key: string]: VNodes;
 }
@@ -572,7 +569,7 @@ function getHostElement(elm: Element): Element | null {
         );
     }
     const parentNode = parentNodeGetter.call(elm);
-    return parentNode instanceof GlobalShadowRoot
+    return parentNode instanceof ShadowRoot
         ? ShadowRootHostGetter.call(parentNode as unknown)
         : null;
 }
@@ -587,7 +584,7 @@ export function isNodeFromTemplate(node: Node): boolean {
         return false;
     }
     // TODO: #1250 - skipping the shadowRoot instances itself makes no sense, we need to revisit this with locker
-    if (node instanceof GlobalShadowRoot) {
+    if (node instanceof ShadowRoot) {
         return false;
     }
     if (useSyntheticShadow) {
@@ -598,7 +595,7 @@ export function isNodeFromTemplate(node: Node): boolean {
         }
     }
     const root = node.getRootNode();
-    return root instanceof GlobalShadowRoot;
+    return root instanceof ShadowRoot;
 }
 
 export function getCustomElementVM(elm: HTMLElement): VM {

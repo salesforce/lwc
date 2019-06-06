@@ -86,7 +86,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
             node instanceof Node,
             `isNodeSlotted() should be called with a node as the second argument instead of ${node}`
         );
-        assert.isTrue(
+        assert.invariant(
             compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS,
             `isNodeSlotted() should never be called with a node that is not a child node of ${host}`
         );

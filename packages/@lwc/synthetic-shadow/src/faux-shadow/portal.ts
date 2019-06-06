@@ -6,12 +6,11 @@
  */
 import { isUndefined, forEach, defineProperty, isTrue } from '../shared/language';
 import { getInternalChildNodes } from './node';
-import '../polyfills/mutation-observer/main';
 import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
-const MutationObserver = (window as any).MutationObserver;
-const MutationObserverObserve = MutationObserver.prototype.observe;
+const MO = MutationObserver;
+const MutationObserverObserve = MO.prototype.observe;
 const DomManualPrivateKey = '$$DomManualKey$$';
 
 // We can use a single observer without having to worry about leaking because
@@ -42,7 +41,7 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
 }
 
 function initPortalObserver() {
-    return new MutationObserver(mutations => {
+    return new MO(mutations => {
         forEach.call(mutations, mutation => {
             const { target: elm, addedNodes } = mutation;
             // the target of the mutation should always have a ShadowRootResolver attached to it

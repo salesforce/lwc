@@ -5,25 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const {
-    freeze,
-    seal,
-    keys,
     create,
     assign,
     defineProperty,
     getPrototypeOf,
     setPrototypeOf,
     getOwnPropertyDescriptor,
-    getOwnPropertyNames,
     defineProperties,
-    getOwnPropertySymbols,
     hasOwnProperty,
-    preventExtensions,
-    isExtensible,
 } = Object;
-const { isArray } = Array;
 const {
-    concat: ArrayConcat,
     filter: ArrayFilter,
     find: ArrayFind,
     slice: ArraySlice,
@@ -32,31 +23,15 @@ const {
     indexOf: ArrayIndexOf,
     push: ArrayPush,
     map: ArrayMap,
-    join: ArrayJoin,
     forEach,
     reduce: ArrayReduce,
     reverse: ArrayReverse,
 } = Array.prototype;
 
-const {
-    replace: StringReplace,
-    toLowerCase: StringToLowerCase,
-    indexOf: StringIndexOf,
-    charCodeAt: StringCharCodeAt,
-    slice: StringSlice,
-    split: StringSplit,
-} = String.prototype;
+const { charCodeAt: StringCharCodeAt } = String.prototype;
 
 export {
-    StringToLowerCase,
-    StringReplace,
-    StringIndexOf,
     StringCharCodeAt,
-    StringSlice,
-    StringSplit,
-    freeze,
-    seal,
-    keys,
     create,
     assign,
     defineProperty,
@@ -64,11 +39,7 @@ export {
     getPrototypeOf,
     setPrototypeOf,
     getOwnPropertyDescriptor,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
     hasOwnProperty,
-    preventExtensions,
-    isExtensible,
     ArrayFind,
     ArrayReduce,
     ArraySlice,
@@ -76,9 +47,6 @@ export {
     ArrayUnshift,
     ArrayFilter,
     ArrayMap,
-    ArrayJoin,
-    ArrayConcat,
-    isArray,
     ArrayIndexOf,
     ArrayPush,
     ArrayReverse,
@@ -136,5 +104,3 @@ export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescripto
         o = getPrototypeOf(o);
     } while (o !== null);
 }
-
-export const emptyString = '';
