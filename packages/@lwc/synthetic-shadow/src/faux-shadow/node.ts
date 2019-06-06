@@ -119,16 +119,12 @@ export function PatchedNode(node: Node): NodeConstructor {
         hasChildNodes(this: Node) {
             return getInternalChildNodes(this).length > 0;
         }
-        // @ts-ignore until ts@3.x
         get firstChild(this: Node): ChildNode | null {
             const childNodes = getInternalChildNodes(this);
-            // @ts-ignore until ts@3.x
             return childNodes[0] || null;
         }
-        // @ts-ignore until ts@3.x
         get lastChild(this: Node): ChildNode | null {
             const childNodes = getInternalChildNodes(this);
-            // @ts-ignore until ts@3.x
             return childNodes[childNodes.length - 1] || null;
         }
         get textContent(this: Node): string {
