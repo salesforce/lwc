@@ -228,8 +228,11 @@ defineProperties(Element.prototype, {
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return innerHTMLGetterPatched.call(this);
             }
-            // TODO: make this a global patch with a way to disable it
-            return innerHTMLGetter.call(this);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return innerHTMLGetter.call(this);
+            }
+            return innerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             innerHTMLSetter.call(this, v);
@@ -242,8 +245,11 @@ defineProperties(Element.prototype, {
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return outerHTMLGetterPatched.call(this);
             }
-            // TODO: make this a global patch with a way to disable it
-            return outerHTMLGetter.call(this);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return outerHTMLGetter.call(this);
+            }
+            return outerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             outerHTMLSetter.call(this, v);
@@ -352,9 +358,10 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         return isUndefined(elm) ? null : elm;
     } else {
-        // element belonging to the document where we still allow skipping
+        // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
@@ -381,9 +388,10 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
         const ownerKey = getNodeOwnerKey(this);
         filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
     } else {
-        // element belonging to the document where we still allow skipping
+        // element belonging to the document
         filtered = ArrayFilter.call(
             nodeList,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
     }
@@ -420,6 +428,7 @@ defineProperties(Element.prototype, {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
+                // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
             return createStaticHTMLCollection(filtered);
@@ -436,6 +445,7 @@ defineProperties(Element.prototype, {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
+                // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
             return createStaticHTMLCollection(filtered);
@@ -452,6 +462,7 @@ defineProperties(Element.prototype, {
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
+                // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
             return createStaticHTMLCollection(filtered);

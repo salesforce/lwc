@@ -18,6 +18,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { getInnerHTML } from './inner-html';
 import { tagNameGetter } from '../../env/element';
+import {
+    ELEMENT_NODE,
+    TEXT_NODE,
+    CDATA_SECTION_NODE,
+    PROCESSING_INSTRUCTION_NODE,
+    COMMENT_NODE,
+} from '../../env/node';
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
 const escapeAttrRegExp = /[&\u00A0"]/g;
@@ -82,7 +89,7 @@ const plaintextParents = new Set([
 
 export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
-        case Node.ELEMENT_NODE: {
+        case ELEMENT_NODE: {
             const { attributes: attrs } = node as Element;
             const tagName = tagNameGetter.call(node as Element);
             let s = '<' + toLowerCase.call(tagName);
@@ -95,7 +102,7 @@ export function getOuterHTML(node: Node): string {
             }
             return s + getInnerHTML(node) + '</' + toLowerCase.call(tagName) + '>';
         }
-        case Node.TEXT_NODE: {
+        case TEXT_NODE: {
             const { data, parentNode } = node as Text;
             if (
                 parentNode instanceof Element &&
@@ -105,11 +112,22 @@ export function getOuterHTML(node: Node): string {
             }
             return escapeData(data);
         }
-        case Node.COMMENT_NODE: {
-            return '<!--' + (node as Comment).data + '-->';
+        case CDATA_SECTION_NODE: {
+            return `<!CDATA[[${(node as CDATASection).data}]]>`;
+        }
+        case PROCESSING_INSTRUCTION_NODE: {
+            return `<?${(node as ProcessingInstruction).target} ${
+                (node as ProcessingInstruction).data
+            }?>`;
+        }
+        case COMMENT_NODE: {
+            return `<!--${(node as Comment).data}-->`;
         }
         default: {
-            throw new Error();
+            // intentionally ignoring unknown node types
+            // Note: since this routine is always invoked for childNodes
+            // we can safety ignore type 9, 10 and 99 (document, fragment and doctype)
+            return '';
         }
     }
 }

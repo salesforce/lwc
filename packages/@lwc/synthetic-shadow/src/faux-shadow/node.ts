@@ -41,6 +41,7 @@ import {
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from './shadow-root';
 import { createStaticNodeList } from '../shared/static-node-list';
+import { isGlobalPatchingSkipped } from '../shared/utils';
 
 // DO NOT CHANGE this:
 // these two values need to be in sync with engine
@@ -329,8 +330,11 @@ defineProperties(Node.prototype, {
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return textContentGetterPatched.call(this);
             }
-            // TODO: make this a global patch with a way to disable it
-            return textContentGetter.call(this);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return textContentGetter.call(this);
+            }
+            return textContentGetterPatched.call(this);
         },
         set: textContentSetterPatched,
         enumerable: true,
@@ -379,11 +383,11 @@ defineProperties(Node.prototype, {
     },
     compareDocumentPosition: {
         value(this: Node, otherNode: Node): number {
-            if (isNodeShadowed(this) || isHostElement(this)) {
-                return compareDocumentPositionPatched.call(this, otherNode);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return compareDocumentPosition.call(this, otherNode);
             }
-            // TODO: make this a global patch with a way to disable it
-            return compareDocumentPosition.call(this, otherNode);
+            return compareDocumentPositionPatched.call(this, otherNode);
         },
         enumerable: true,
         writable: true,
@@ -391,11 +395,11 @@ defineProperties(Node.prototype, {
     },
     contains: {
         value(this: Node, otherNode: Node): boolean {
-            if (isNodeShadowed(this) || isHostElement(this)) {
-                return containsPatched.call(this, otherNode);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                contains.call(otherNode, otherNode);
             }
-            // TODO: make this a global patch with a way to disable it
-            return contains.call(otherNode, otherNode);
+            return containsPatched.call(this, otherNode);
         },
         enumerable: true,
         writable: true,
@@ -407,8 +411,11 @@ defineProperties(Node.prototype, {
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return cloneNodePatched.call(this, deep);
             }
-            // TODO: make this a global patch with a way to disable it
-            return cloneNode.call(this, deep);
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return cloneNode.call(this, deep);
+            }
+            return cloneNodePatched.call(this, deep);
         },
         enumerable: true,
         writable: true,

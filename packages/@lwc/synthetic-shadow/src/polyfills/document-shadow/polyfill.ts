@@ -85,6 +85,7 @@ defineProperty(Document.prototype, 'getElementById', {
         if (isNull(elm)) {
             return null;
         }
+        // TODO: issue #1222 - remove global bypass
         return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
     },
     writable: true,
@@ -99,6 +100,7 @@ defineProperty(Document.prototype, 'querySelector', {
         ]);
         const filtered = ArrayFind.call(
             elements,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return !isUndefined(filtered) ? filtered : null;
@@ -115,6 +117,7 @@ defineProperty(Document.prototype, 'querySelectorAll', {
         ]);
         const filtered = ArrayFilter.call(
             elements,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticNodeList(filtered);
@@ -131,6 +134,7 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
         ]);
         const filtered = ArrayFilter.call(
             elements,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -147,6 +151,7 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
         ]);
         const filtered = ArrayFilter.call(
             elements,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -164,6 +169,7 @@ defineProperty(Document.prototype, 'getElementsByTagNameNS', {
         ]);
         const filtered = ArrayFilter.call(
             elements,
+            // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
@@ -184,6 +190,7 @@ defineProperty(
             const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
             const filtered = ArrayFilter.call(
                 elements,
+                // TODO: issue #1222 - remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);

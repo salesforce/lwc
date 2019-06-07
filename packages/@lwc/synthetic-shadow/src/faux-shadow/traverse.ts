@@ -15,7 +15,13 @@ import {
 import { querySelectorAll } from '../env/element';
 import { ArrayReduce, ArrayPush, isUndefined, ArraySlice } from '../shared/language';
 import { isNull } from '../shared/language';
-import { getHost, SyntheticShadowRootInterface } from './shadow-root';
+import {
+    getHost,
+    SyntheticShadowRootInterface,
+    isHostElement,
+    getShadowRootResolver,
+    getShadowRoot,
+} from './shadow-root';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -108,15 +114,22 @@ export function shadowRootQuerySelectorAll(
 
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
-    if (!isUndefined(getNodeKey(node))) {
-        // node itself is a custom element
-        // lwc element, in which case we need to get only the nodes
-        // that were slotted
+    if (!isHostElement(node) && !isSlotElement(node)) {
+        // regular element - fast path
+        children = nativeChildNodesGetter.call(node);
+        return ArraySlice.call(children);
+    }
+    if (isHostElement(node)) {
+        // we need to get only the nodes that were slotted
         const slots = querySelectorAll.call(node, 'slot');
-        children = ArrayReduce.call(
+        const resolver = getShadowRootResolver(getShadowRoot(node as Element));
+        // Typescript is inferring the wrong function type for this particular
+        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+        // @ts-ignore type-mismatch
+        return ArrayReduce.call(
             slots,
             (seed, slot) => {
-                if (isNodeOwnedBy(node as HTMLElement, slot)) {
+                if (resolver === getShadowRootResolver(slot)) {
                     ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
                 }
                 return seed;
@@ -124,27 +137,23 @@ export function getFilteredChildNodes(node: Node): Element[] {
             []
         );
     } else {
-        // regular element
+        // slot element
         children = nativeChildNodesGetter.call(node);
+        const resolver = getShadowRootResolver(node);
+        // Typescript is inferring the wrong function type for this particular
+        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+        // @ts-ignore type-mismatch
+        return ArrayReduce.call(
+            children,
+            (seed, child) => {
+                if (resolver === getShadowRootResolver(child)) {
+                    ArrayPush.call(seed, child);
+                }
+                return seed;
+            },
+            []
+        );
     }
-    const owner = getNodeOwner(node);
-    if (isNull(owner)) {
-        return [];
-    }
-
-    // Typescript is inferring the wrong function type for this particular
-    // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-    // @ts-ignore type-mismatch
-    return ArrayReduce.call(
-        children,
-        (seed, child) => {
-            if (isNodeOwnedBy(owner, child)) {
-                ArrayPush.call(seed, child);
-            }
-            return seed;
-        },
-        []
-    );
 }
 
 export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
