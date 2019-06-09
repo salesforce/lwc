@@ -18,19 +18,21 @@ import {
     getAttribute,
 } from '../env/element';
 import {
-    DOCUMENT_POSITION_CONTAINED_BY,
     compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
 } from '../env/node';
 import {
-    ArraySlice,
+    ArrayFind,
     ArrayIndexOf,
+    ArrayReverse,
+    ArraySlice,
+    hasOwnProperty,
     isFalse,
     isNull,
+    isUndefined,
     toString,
-    ArrayReverse,
-    hasOwnProperty,
 } from '../shared/language';
 import {
     DocumentPrototypeActiveElement,
@@ -43,6 +45,7 @@ import {
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
 import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
+import { patchedGetRootNode } from './traverse';
 
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
@@ -114,26 +117,6 @@ export function isFocusable(element: HTMLElement): boolean {
     );
 }
 
-function getFirstTabbableMatch(elements: HTMLElement[]): HTMLElement | null {
-    for (let i = 0, len = elements.length; i < len; i += 1) {
-        const elm = elements[i];
-        if (isTabbable(elm)) {
-            return elm;
-        }
-    }
-    return null;
-}
-
-function getLastTabbableMatch(elements: HTMLElement[]): HTMLElement | null {
-    for (let i = elements.length - 1; i >= 0; i -= 1) {
-        const elm = elements[i];
-        if (isTabbable(elm)) {
-            return elm;
-        }
-    }
-    return null;
-}
-
 interface QuerySegments {
     prev: HTMLElement[];
     inner: HTMLElement[];
@@ -146,7 +129,7 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     const inner = ArraySlice.call(querySelectorAll.call(host, TabbableElementsQuery));
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
-            tabIndexGetter.call(host) === -1 || isDelegatingFocus(host),
+            getAttribute.call(host, 'tabindex') === '-1' || isDelegatingFocus(host),
             `The focusin event is only relevant when the tabIndex property is -1 on the host.`
         );
     }
@@ -200,16 +183,6 @@ function relatedTargetPosition(host: HTMLElement, relatedTarget: EventTarget): n
     return -1;
 }
 
-function getPreviousTabbableElement(segments: QuerySegments): HTMLElement | null {
-    const { prev } = segments;
-    return getFirstTabbableMatch(ArrayReverse.call(prev));
-}
-
-function getNextTabbableElement(segments: QuerySegments): HTMLElement | null {
-    const { next } = segments;
-    return getFirstTabbableMatch(next);
-}
-
 function muteEvent(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -222,76 +195,66 @@ function muteFocusEventsDuringExecution(win: Window, func: Function) {
     windowRemoveEventListener.call(win, 'focusout', muteEvent, true);
 }
 
-function focusOnNextOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const win = getOwnerWindow(focusEventTarget as Node);
-    muteFocusEventsDuringExecution(win, () => {
-        const nextNode = getNextTabbableElement(segments);
-        if (isNull(nextNode)) {
-            // nothing to focus on, blur to invalidate the operation
-            (focusEventTarget as HTMLElement).blur();
-        } else {
-            nextNode.focus();
-        }
-    });
-}
-
-function focusOnPrevOrBlur(focusEventTarget: EventTarget, segments: QuerySegments) {
-    const win = getOwnerWindow(focusEventTarget as Node);
-    muteFocusEventsDuringExecution(win, () => {
-        const prevNode = getPreviousTabbableElement(segments);
-        if (isNull(prevNode)) {
-            // nothing to focus on, blur to invalidate the operation
-            (focusEventTarget as HTMLElement).blur();
-        } else {
-            prevNode.focus();
-        }
-    });
-}
-
-function isFirstTabbableChild(target: EventTarget, segments: QuerySegments): boolean {
-    return getFirstTabbableMatch(segments.inner) === target;
-}
-
-function isLastTabbableChild(target: EventTarget, segments: QuerySegments): boolean {
-    return getLastTabbableMatch(segments.inner) === target;
+function focusOnNextOrBlur(
+    segment: HTMLElement[],
+    target: EventTarget,
+    relatedTarget: EventTarget
+) {
+    const win = getOwnerWindow(relatedTarget as Node);
+    const next = getNextTabbable(segment, relatedTarget);
+    if (isNull(next)) {
+        // nothing to focus on, blur to invalidate the operation
+        muteFocusEventsDuringExecution(win, () => {
+            (target as HTMLElement).blur();
+        });
+    } else {
+        muteFocusEventsDuringExecution(win, () => {
+            next.focus();
+        });
+    }
 }
 
 function keyboardFocusHandler(event: FocusEvent) {
     const host = eventCurrentTargetGetter.call(event);
     const target = eventTargetGetter.call(event);
 
-    // Ideally, we would be able to use a "focus" event that doesn't bubble
-    // but, IE11 doesn't support relatedTarget on focus events so we have to use
-    // focusin instead. The logic below is predicated on non-bubbling events
-    // So, if currentTarget(host) ir not target, we know that the event is bubbling
-    // and we escape because focus occured on something below the host.
+    // If the host delegating focus with tabindex=0 is not the target, we know
+    // that the event was dispatched on a descendant node of the host. This
+    // means the focus is coming from below and we don't need to do anything.
     if (host !== target) {
+        // Focus is coming from above
         return;
     }
 
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
-
     if (isNull(relatedTarget)) {
+        // If relatedTarget is null, the user is most likely tabbing into the document from the
+        // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
+        // edge case and only comes up if the custom element is the first or last tabbable element
+        // in the document.
+        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
+        // of the target relative to all tabbable elements in the document?
         return;
     }
 
     const segments = getTabbableSegments(host as HTMLElement);
-    const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
 
+    const position = relatedTargetPosition(host as HTMLElement, relatedTarget);
     if (position === 1) {
-        // probably tabbing into element
-        const first = getFirstTabbableMatch(segments.inner);
-        if (!isNull(first)) {
-            const win = getOwnerWindow(host as HTMLElement);
+        // Focus is coming from above
+        const findTabbableElms = isTabbableFrom.bind(null, patchedGetRootNode.call(host));
+        const first = ArrayFind.call(segments.inner, findTabbableElms);
+        if (!isUndefined(first)) {
+            const win = getOwnerWindow(first);
             muteFocusEventsDuringExecution(win, () => {
                 first.focus();
             });
         } else {
-            focusOnNextOrBlur(target, segments);
+            focusOnNextOrBlur(segments.next, target, relatedTarget);
         }
     } else if (host === target) {
-        // Shift tabbed back to the host
-        focusOnPrevOrBlur(host, segments);
+        // Host is receiving focus from below, either from its shadow or from a sibling
+        focusOnNextOrBlur(ArrayReverse.call(segments.prev), target, relatedTarget);
     }
 }
 
@@ -301,45 +264,70 @@ function keyboardFocusHandler(event: FocusEvent) {
 // via keyboard navigation (tab or shift+tab)
 // Focusing via mouse should be disqualified before this gets called
 function keyboardFocusInHandler(event: FocusEvent) {
-    const host = eventCurrentTargetGetter.call(event);
-    const target = eventTargetGetter.call(event);
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
-    const segments = getTabbableSegments(host as HTMLElement);
-    const isFirstFocusableChildReceivingFocus = isFirstTabbableChild(target, segments);
-    const isLastFocusableChildReceivingFocus = isLastTabbableChild(target, segments);
-    if (
-        // If we receive a focusin event that is not focusing on the first or last
-        // element inside of a shadow, we can assume that the user is tabbing between
-        // elements inside of the custom element shadow, so we do nothing
-        (isFalse(isFirstFocusableChildReceivingFocus) &&
-            isFalse(isLastFocusableChildReceivingFocus)) ||
-        // If related target is null, user is probably tabbing into the document from the browser chrome (location bar?)
-        // If relatedTarget is null, we can't do much here because we don't know what direction the user is tabbing
-        // This is a bit of an edge case, and only comes up if the custom element is the very first or very last
-        // tabbable element in a document
-        isNull(relatedTarget)
-    ) {
+    if (isNull(relatedTarget)) {
+        // If relatedTarget is null, the user is most likely tabbing into the document from the
+        // browser chrome. We can't do much in this case because the tab direction is unknown. This is an
+        // edge case and only comes up if the custom element is the first or last tabbable element
+        // in the document.
+        // TODO: Is the above statement true? Couldn't we figure it out by looking at the position
+        // of the target relative to all tabbable elements in the document?
         return;
     }
 
-    // Determine where the focus is coming from (Tab or Shift+Tab)
-    const post = relatedTargetPosition(host as HTMLElement, relatedTarget);
-    switch (post) {
-        case 1: // focus is probably coming from above
-            if (isFirstFocusableChildReceivingFocus) {
-                // the focus was on the immediate focusable elements from above,
-                // it is almost certain that the focus is due to tab keypress
-                focusOnNextOrBlur(target, segments);
-            }
-            break;
-        case 2: // focus is probably coming from below
-            if (isLastFocusableChildReceivingFocus) {
-                // the focus was on the immediate focusable elements from above,
-                // it is almost certain that the focus is due to tab keypress
-                focusOnPrevOrBlur(target, segments);
-            }
-            break;
+    const host = eventCurrentTargetGetter.call(event) as HTMLElement;
+    const segments = getTabbableSegments(host);
+
+    if (ArrayIndexOf.call(segments.inner, relatedTarget) !== -1) {
+        // If relatedTarget is contained by the host's subtree we can assume that the user is
+        // tabbing between elements inside of the shadow. Do nothing.
+        return;
     }
+
+    const target = eventTargetGetter.call(event) as HTMLElement;
+
+    // Determine where the focus is coming from (Tab or Shift+Tab)
+    const position = relatedTargetPosition(host, relatedTarget);
+    if (position === 1) {
+        // Focus is coming from above
+        focusOnNextOrBlur(segments.next, target, relatedTarget);
+    }
+    if (position === 2) {
+        // Focus is coming from below
+        focusOnNextOrBlur(ArrayReverse.call(segments.prev), target, relatedTarget);
+    }
+}
+
+// Use this function to determine whether you can start from one root and end up
+// at another element via tabbing.
+function isTabbableFrom(fromRoot: Node, toElm: HTMLElement): boolean {
+    if (!isTabbable(toElm)) {
+        return false;
+    }
+    const ownerDocument = getOwnerDocument(toElm);
+    let root = patchedGetRootNode.call(toElm);
+    while (root !== ownerDocument && root !== fromRoot) {
+        const sr = root as ShadowRoot;
+        const host = sr.host!;
+        if (getAttribute.call(host, 'tabindex') === '-1') {
+            return false;
+        }
+        root = host && patchedGetRootNode.call(host);
+    }
+    return true;
+}
+
+function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): HTMLElement | null {
+    const len = tabbables.length;
+    if (len > 0) {
+        for (let i = 0; i < len; i += 1) {
+            const next = tabbables[i];
+            if (isTabbableFrom(patchedGetRootNode.call(relatedTarget), next)) {
+                return next;
+            }
+        }
+    }
+    return null;
 }
 
 function willTriggerFocusInEvent(target: HTMLElement): boolean {
