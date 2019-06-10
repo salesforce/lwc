@@ -28,7 +28,7 @@
         "@lwc/wire-service": "1.0.0",
         "compat-polyfills": "0.21.5",
         "deepmerge": "~3.2.0",
-        "dotenv": "^4.0.0",
+        "dotenv": "~8.0.0",
         "fs-extra": "~8.0.1",
         "http-server": "~0.11.1",
         "minimist": "^1.2.0",
