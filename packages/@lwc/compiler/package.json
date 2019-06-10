@@ -23,7 +23,6 @@
         "terser": "^3.17.0"
     },
     "devDependencies": {
-        "magic-string": "^0.22.4",
         "source-map": "^0.7.3"
     },
     "publishConfig": {
