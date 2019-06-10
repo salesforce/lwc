@@ -9,7 +9,7 @@
         "clean": "rm -rf dist/ lib/",
         "test": "jest",
         "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
-        "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve:playground\"",
+        "start": "concurrently 'yarn build:playground --watch' 'yarn serve:playground'",
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
     },

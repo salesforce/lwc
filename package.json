@@ -32,7 +32,7 @@
     "@typescript-eslint/parser": "~1.10.2",
     "aws-sdk": "~2.378.0",
     "commitizen": "~2.9.6",
-    "concurrently": "^3.5.1",
+    "concurrently": "~4.1.0",
     "conventional-changelog-cli": "~2.0.21",
     "cz-conventional-changelog": "~2.1.0",
     "es5-proxy-compat": "0.21.5",
