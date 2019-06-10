@@ -38,6 +38,7 @@
     "es5-proxy-compat": "0.21.5",
     "eslint": "~5.16.0",
     "execa": "^1.0.0",
+    "express": "~4.17.1",
     "glob": "^7.1.2",
     "husky": "~2.4.0",
     "isbinaryfile": "^3.0.3",

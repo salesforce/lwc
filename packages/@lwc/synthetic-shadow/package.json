@@ -19,9 +19,7 @@
             "@lwc/synthetic-shadow-runtime": "dist/modules/es2017/shadow.runtime.js"
         }
     },
-    "devDependencies": {
-        "express": "^4.15.2"
-    },
+    "devDependencies": {},
     "publishConfig": {
         "access": "public"
     }
