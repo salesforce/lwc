@@ -60,8 +60,8 @@ import {
     updateChildrenHook,
     allocateChildrenHook,
     removeCustomElmHook,
+    markAsDynamicChildren,
 } from './hooks';
-import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
 import { markNodeFromVNode } from './restrictions';
 

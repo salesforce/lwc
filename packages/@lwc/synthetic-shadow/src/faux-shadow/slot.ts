@@ -28,11 +28,7 @@ import {
     getFilteredChildNodes,
     getFilteredSlotAssignedNodes,
 } from '../faux-shadow/traverse';
-import {
-    childNodesGetter as nativeChildNodesGetter,
-    childNodesGetter,
-    parentNodeGetter,
-} from '../env/node';
+import { childNodesGetter, parentNodeGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
@@ -68,7 +64,7 @@ function initSlotObserver() {
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

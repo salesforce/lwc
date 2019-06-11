@@ -33,9 +33,7 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
         }
         if (!isNull(assignedSlot)) {
             current = assignedSlot;
-        }
-        // @ts-ignore type-mismatch
-        else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
+        } else if (current instanceof ShadowRoot && (composed || current !== startRoot)) {
             current = (current as ShadowRoot).host;
         } else {
             current = (current as Element).parentNode;

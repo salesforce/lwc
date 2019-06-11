@@ -303,7 +303,8 @@ function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
     return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
 }
 
-// Non-deep-traversing patches
+// Non-deep-traversing patches: this descriptor map includes all descriptors that
+// do not five access to nodes beyond the immediate children.
 defineProperties(Node.prototype, {
     firstChild: {
         get(this: Node): ChildNode | null {

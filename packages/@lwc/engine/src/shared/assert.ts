@@ -27,6 +27,10 @@ function getFormattedComponentStack(elm: Element): string {
         } else if (newRootNode instanceof ShadowRoot) {
             currentNode = newRootNode.host;
         } else {
+            // When the element is part of a tree that is not connected,
+            // the root node will be the top element of that tree, e.g.:
+            // `<div><p /></div>`, when calling p.getRootNode() it returns
+            // the div reference. This branch covers that case.
             currentNode = newRootNode;
         }
     } while (!isNull(currentNode));

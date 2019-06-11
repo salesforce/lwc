@@ -19,17 +19,17 @@ const {
 
 const { addEventListener, removeEventListener } = Element.prototype;
 
-const childElementCountGetter: (this: Element) => number = getOwnPropertyDescriptor(
+const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
     'childElementCount'
 )!.get!;
 
-const firstElementChildGetter: (this: Element) => Element | null = getOwnPropertyDescriptor(
+const firstElementChildGetter: (this: ParentNode) => Element | null = getOwnPropertyDescriptor(
     Element.prototype,
     'firstElementChild'
 )!.get!;
 
-const lastElementChildGetter: (this: Element) => Element | null = getOwnPropertyDescriptor(
+const lastElementChildGetter: (this: ParentNode) => Element | null = getOwnPropertyDescriptor(
     Element.prototype,
     'lastElementChild'
 )!.get!;
@@ -64,7 +64,7 @@ const matches: (this: Element, selector: string) => boolean = hasOwnProperty.cal
     ? Element.prototype.matches
     : (Element.prototype as any).msMatchesSelector; // IE11
 
-const childrenGetter: (this: Element) => HTMLCollectionOf<Element> = hasOwnProperty.call(
+const childrenGetter: (this: ParentNode) => HTMLCollectionOf<Element> = hasOwnProperty.call(
     Element.prototype,
     'children'
 )

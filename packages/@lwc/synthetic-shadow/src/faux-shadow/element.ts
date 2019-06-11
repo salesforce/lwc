@@ -221,7 +221,8 @@ function lastElementChildGetterPatched(this: ParentNode) {
     return children.item(children.length - 1) || null;
 }
 
-// Non-deep-traversing patches
+// Non-deep-traversing patches: this descriptor map includes all descriptors that
+// do not five access to nodes beyond the immediate children.
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {

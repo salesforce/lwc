@@ -105,7 +105,8 @@ function blurPatched(this: HTMLElement) {
     return blur.call(this);
 }
 
-// Non-deep-traversing patches
+// Non-deep-traversing patches: this descriptor map includes all descriptors that
+// do not five access to nodes beyond the immediate children.
 defineProperties(HTMLElement.prototype, {
     tabIndex: {
         get(this: HTMLElement): number {

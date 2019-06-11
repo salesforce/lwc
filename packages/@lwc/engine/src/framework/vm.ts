@@ -14,7 +14,6 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import { hasDynamicChildren } from './patch';
 import {
     ArrayPush,
     isUndefined,
@@ -56,6 +55,7 @@ import {
 import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
+import { hasDynamicChildren } from './hooks';
 
 export interface SlotSet {
     [key: string]: VNodes;

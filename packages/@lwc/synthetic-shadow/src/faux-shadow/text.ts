@@ -8,7 +8,8 @@
 import { defineProperties } from '../shared/language';
 import { assignedSlotGetterPatched } from './slot';
 
-// Non-deep-traversing patches
+// Non-deep-traversing patches: this descriptor map includes all descriptors that
+// do not five access to nodes beyond the immediate children.
 defineProperties(Text.prototype, {
     assignedSlot: {
         get: assignedSlotGetterPatched,

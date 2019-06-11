@@ -7,7 +7,7 @@
 import assert from '../shared/assert';
 import { getNodeKey, getNodeNearestOwnerKey } from './node';
 import {
-    childNodesGetter as nativeChildNodesGetter,
+    childNodesGetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
@@ -68,7 +68,7 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
 
 export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
-    return getAllMatches(elm, nativeChildNodesGetter.call(elm));
+    return getAllMatches(elm, childNodesGetter.call(elm));
 }
 
 export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Array<Element & Node> {
@@ -116,7 +116,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
     let children;
     if (!isHostElement(node) && !isSlotElement(node)) {
         // regular element - fast path
-        children = nativeChildNodesGetter.call(node);
+        children = childNodesGetter.call(node);
         return ArraySlice.call(children);
     }
     if (isHostElement(node)) {
@@ -138,7 +138,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
         );
     } else {
         // slot element
-        children = nativeChildNodesGetter.call(node);
+        children = childNodesGetter.call(node);
         const resolver = getShadowRootResolver(node);
         // Typescript is inferring the wrong function type for this particular
         // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
@@ -161,7 +161,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

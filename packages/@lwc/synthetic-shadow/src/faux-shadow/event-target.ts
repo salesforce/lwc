@@ -17,7 +17,7 @@ const eventCurrentTargetGetter: (this: Event) => Element | null = getOwnProperty
     'currentTarget'
 )!.get!;
 
-// These methods are usually from EventTarget.prototype, but that's not available in IE11, the best best thing
+// These methods are usually from EventTarget.prototype, but that's not available in IE11, the next best thing
 // is Node.prototype, which is an EventTarget as well.
 const {
     dispatchEvent,
