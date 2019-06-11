@@ -1,6 +1,6 @@
 {
     "name": "@lwc/compiler",
-    "version": "0.40.1-222.3",
+    "version": "0.40.1-222.4",
     "description": "LWC compiler",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
@@ -14,10 +14,10 @@
     "dependencies": {
         "@babel/core": "7.1.0",
         "@babel/plugin-proposal-object-rest-spread": "7.0.0",
-        "@lwc/babel-plugin-component": "0.40.1-222.3",
-        "@lwc/errors": "0.40.1-222.3",
-        "@lwc/style-compiler": "0.40.1-222.3",
-        "@lwc/template-compiler": "0.40.1-222.3",
+        "@lwc/babel-plugin-component": "0.40.1-222.4",
+        "@lwc/errors": "0.40.1-222.4",
+        "@lwc/style-compiler": "0.40.1-222.4",
+        "@lwc/template-compiler": "0.40.1-222.4",
         "babel-preset-compat": "0.21.4",
         "rollup": "^1.7.4",
         "rollup-plugin-replace": "^2.1.0",
