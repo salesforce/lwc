@@ -8,6 +8,7 @@
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { isUndefined, isTrue } from './language';
+import { getAttribute } from '../env/element';
 
 export function getOwnerDocument(node: Node): Document {
     const doc = ownerDocumentGetter.call(node);
@@ -35,7 +36,9 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
     if (isUndefined(skipGlobalPatching)) {
         const ownerDocument = getOwnerDocument(node);
         skipGlobalPatching =
-            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+            ownerDocument.body &&
+            getAttribute.call(ownerDocument.body, 'data-global-patching-bypass') ===
+                'temporary-bypass';
     }
     return isTrue(skipGlobalPatching);
 }
