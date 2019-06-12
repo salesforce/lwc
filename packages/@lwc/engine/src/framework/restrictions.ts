@@ -341,6 +341,8 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     } = vm;
 
     if (
+        // TODO: #1257 - enable this restriction for tests once the jsdom issue is addressed
+        process.env.NODE_ENV !== 'test' &&
         isNodeFromVNode(elm) &&
         isAttributeLocked(elm, attrName) &&
         propsConfig &&
