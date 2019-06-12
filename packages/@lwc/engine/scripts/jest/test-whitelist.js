@@ -22,7 +22,6 @@ const CONSOLE_WHITELIST = [
     'component public methods should allow calling removeAttribute on child when referenced with querySelector',
     'component public methods should allow calling setAttribute on child when referenced with querySelector',
     'html-element #removeAttribute() should remove attribute on host element when element is nested in template',
-    'html-element global HTML Properties should correctly set child attribute',
     'html-element global HTML Properties should log console error when user land code changes attribute via querySelector',
     'html-element global HTML Properties should log console error when user land code removes attribute via querySelector',
     'html-element global HTML Properties should log error message when attribute is set via elm.setAttribute if reflective property is defined',
