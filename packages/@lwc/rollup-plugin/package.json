@@ -13,7 +13,6 @@
     },
     "dependencies": {
         "@lwc/module-resolver": "1.0.0",
-        "glob": "^7.1.2",
         "rollup-pluginutils": "^2.0.1"
     },
     "peerDependencies": {

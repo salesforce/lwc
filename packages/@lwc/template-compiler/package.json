@@ -11,9 +11,8 @@
         "test": "jest"
     },
     "devDependencies": {
-        "@types/he": "~1.1.0",
-        "ast-pretty-print": "~1.1.5",
-        "esutils": "~2.0.2"
+        "@types/he": "^1.1.0",
+        "esutils": "^2.0.2"
     },
     "dependencies": {
         "@babel/generator": "~7.1.5",
