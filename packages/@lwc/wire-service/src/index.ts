@@ -20,8 +20,9 @@ import {
     Context,
     WireContext,
     WireEventTarget,
-    ValueChangedEvent,
 } from './wiring';
+import { ValueChangedEvent } from './value-changed-event';
+import { LinkContextEvent } from './link-context-event';
 
 export interface WireEventTarget {
     dispatchEvent(evt: ValueChangedEvent): boolean;
@@ -165,4 +166,4 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     adapterFactories.set(adapterId, adapterFactory);
 }
 
-export { ValueChangedEvent } from './wiring';
+export { ValueChangedEvent, LinkContextEvent };
