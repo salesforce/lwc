@@ -1,15 +1,3 @@
 {
-    "warnings": [],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "someProvider"
-        ],
-        "templateDependencies": [
-            {
-                "moduleName": "x/someCmp",
-                "tagName": "x-some-cmp"
-            }
-        ]
-    }
+    "warnings": []
 }

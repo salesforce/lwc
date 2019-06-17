@@ -1,21 +1,3 @@
 {
-    "warnings": [],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "computed"
-        ],
-        "templateDependencies": [
-            {
-                "moduleName": "x/foo",
-                "tagName": "x-foo",
-                "properties": {
-                    "tabIndex": {
-                        "type": "expression",
-                        "value": "computed"
-                    }
-                }
-            }
-        ]
-    }
+    "warnings": []
 }

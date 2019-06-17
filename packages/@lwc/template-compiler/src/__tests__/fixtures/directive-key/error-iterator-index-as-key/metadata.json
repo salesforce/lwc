@@ -11,12 +11,5 @@
                 "length": 13
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "items"
-        ],
-        "templateDependencies": []
-    }
+    ]
 }

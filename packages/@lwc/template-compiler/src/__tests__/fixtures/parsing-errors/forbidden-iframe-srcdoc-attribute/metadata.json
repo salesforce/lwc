@@ -12,16 +12,16 @@
             }
         },
         {
-            "message": "LWC1049: Forbidden svg namespace tag found in template: '<iframe>' tag is not allowed within <svg>",
             "code": 1049,
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<iframe>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
-                "column": 9,
-                "length": 56,
                 "line": 6,
-                "start": 207
+                "column": 9,
+                "start": 207,
+                "length": 56
             }
-        }, 
+        },
         {
             "code": 1048,
             "message": "LWC1048: srcdoc attribute is disallowed on <iframe> for security reasons",
@@ -44,10 +44,5 @@
                 "length": 56
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [],
-        "templateDependencies": []
-    }
+    ]
 }

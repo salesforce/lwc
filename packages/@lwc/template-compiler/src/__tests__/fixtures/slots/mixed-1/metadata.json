@@ -1,12 +1,3 @@
 {
-    "warnings": [],
-    "metadata": {
-        "definedSlots": [
-            "header",
-            "",
-            "footer"
-        ],
-        "templateUsedIds": [],
-        "templateDependencies": []
-    }
+    "warnings": []
 }

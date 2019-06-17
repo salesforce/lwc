@@ -66,8 +66,6 @@ describe('fixtures', () => {
                 ...configOverride,
             });
 
-            const actualMeta = actual.metadata;
-
             if (expectedCode === null) {
                 // write compiled js file if doesn't exist (ie new fixture)
                 expectedCode = actual.code;
@@ -83,7 +81,6 @@ describe('fixtures', () => {
                 // write metadata file if doesn't exist (ie new fixture)
                 const metadata = {
                     warnings: actual.warnings,
-                    metadata: { ...actualMeta },
                 };
                 expectedMetaData = metadata;
                 writeFixtureFile(EXPECTED_META_FILENAME, JSON.stringify(expectedMetaData, null, 4));
@@ -95,18 +92,6 @@ describe('fixtures', () => {
             expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
                 prettier.format(expectedCode, { parser: 'babel' })
             );
-
-            if (actualMeta) {
-                const expectMeta = expectedMetaData.metadata || {};
-
-                expect(Array.from(actualMeta.templateUsedIds)).toEqual(
-                    expectMeta.templateUsedIds || []
-                );
-                expect(Array.from(actualMeta.templateDependencies)).toEqual(
-                    expectMeta.templateDependencies || []
-                );
-                expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
-            }
         });
     }
 });

@@ -1,15 +1,3 @@
 {
-    "warnings": [],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "isTrue"
-        ],
-        "templateDependencies": [
-            {
-                "moduleName": "ns/cmp",
-                "tagName": "ns-cmp"
-            }
-        ]
-    }
+    "warnings": []
 }

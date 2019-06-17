@@ -88,12 +88,5 @@
                 "length": 18
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "handleClick"
-        ],
-        "templateDependencies": []
-    }
+    ]
 }

@@ -1,11 +1,3 @@
 {
-    "warnings": [],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "handleClick",
-            "handlePress"
-        ],
-        "templateDependencies": []
-    }
+    "warnings": []
 }
