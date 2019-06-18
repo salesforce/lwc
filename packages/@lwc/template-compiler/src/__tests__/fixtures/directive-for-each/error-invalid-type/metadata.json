@@ -33,14 +33,5 @@
                 "length": 17
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "items",
-            "item",
-            "index"
-        ],
-        "templateDependencies": []
-    }
+    ]
 }

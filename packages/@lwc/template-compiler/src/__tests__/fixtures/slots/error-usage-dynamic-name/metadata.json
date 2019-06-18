@@ -11,17 +11,5 @@
                 "length": 13
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "mySlot"
-        ],
-        "templateDependencies": [
-            {
-                "moduleName": "ns/cmp",
-                "tagName": "ns-cmp"
-            }
-        ]
-    }
+    ]
 }

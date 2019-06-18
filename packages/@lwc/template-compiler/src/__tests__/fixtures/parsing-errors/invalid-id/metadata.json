@@ -44,13 +44,5 @@
                 "length": 8
             }
         }
-    ],
-    "metadata": {
-        "definedSlots": [],
-        "templateUsedIds": [
-            "hogera",
-            "fuga"
-        ],
-        "templateDependencies": []
-    }
+    ]
 }
