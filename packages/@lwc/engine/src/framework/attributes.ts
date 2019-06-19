@@ -146,6 +146,10 @@ export const globalHTMLProperties: {
     properties: {
         readOnly: true,
     },
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` attribute is an anti-pattern.',
+    },
     spellcheck: {
         attribute: 'spellcheck',
     },
@@ -161,10 +165,6 @@ export const globalHTMLProperties: {
     // additional global attributes that are not present in the link above.
     role: {
         attribute: 'role',
-    },
-    slot: {
-        attribute: 'slot',
-        error: 'Using the `slot` attribute is an anti-pattern.',
     },
 });
 
