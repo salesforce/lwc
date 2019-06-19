@@ -59,9 +59,6 @@ export const globalHTMLProperties: {
         readOnly?: boolean;
     };
 } = assign(create(null), {
-    id: {
-        attribute: 'id',
-    },
     accessKey: {
         attribute: 'accesskey',
     },
@@ -74,9 +71,6 @@ export const globalHTMLProperties: {
     },
     contentEditable: {
         attribute: 'contenteditable',
-    },
-    isContentEditable: {
-        readOnly: true,
     },
     contextMenu: {
         attribute: 'contextmenu',
@@ -99,6 +93,23 @@ export const globalHTMLProperties: {
     hidden: {
         attribute: 'hidden',
     },
+    id: {
+        attribute: 'id',
+    },
+    isContentEditable: {
+        readOnly: true,
+    },
+    itemId: {
+        attribute: 'itemid',
+    },
+    itemProp: {
+        attribute: 'itemprop',
+        readOnly: true,
+    },
+    itemRef: {
+        attribute: 'itemref',
+        readOnly: true,
+    },
     itemScope: {
         attribute: 'itemscope',
     },
@@ -106,15 +117,8 @@ export const globalHTMLProperties: {
         attribute: 'itemtype',
         readOnly: true,
     },
-    itemId: {
-        attribute: 'itemid',
-    },
-    itemRef: {
-        attribute: 'itemref',
-        readOnly: true,
-    },
-    itemProp: {
-        attribute: 'itemprop',
+    itemValue: {
+        attribute: 'itemvalue',
         readOnly: true,
     },
     lang: {
