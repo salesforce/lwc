@@ -9,7 +9,6 @@
 
 import assert from '../shared/assert';
 import {
-    ArraySlice,
     assign,
     create,
     defineProperties,
@@ -17,17 +16,14 @@ import {
     getOwnPropertyNames,
     getPropertyDescriptor,
     getPrototypeOf,
-    isString,
     isFalse,
     setPrototypeOf,
-    StringToLowerCase,
     toString,
 } from '../shared/language';
 import { ComponentInterface } from './component';
-import { globalHTMLProperties, getPropNameFromAttrName, isAttributeLocked } from './attributes';
+import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
-import { getShadowRootVM, getCustomElementVM, VM, getComponentVM } from './vm';
-import { setAttribute, setAttributeNS, removeAttribute, removeAttributeNS } from '../env/element';
+import { getShadowRootVM, getComponentVM } from './vm';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -272,76 +268,6 @@ function getShadowRootRestrictionsDescriptors(
 // Custom Elements Restrictions:
 // -----------------------------
 
-function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any) {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV !== 'production') {
-        assertAttributeReflectionCapability(vm, attrName);
-    }
-    setAttribute.apply(this, ArraySlice.call(arguments));
-}
-
-function setAttributeNSPatched(
-    this: HTMLElement,
-    attrNameSpace: string,
-    attrName: string,
-    _newValue: any
-) {
-    const vm = getCustomElementVM(this);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertAttributeReflectionCapability(vm, attrName);
-    }
-    setAttributeNS.apply(this, ArraySlice.call(arguments));
-}
-
-function removeAttributePatched(this: HTMLElement, attrName: string) {
-    const vm = getCustomElementVM(this);
-    // marking the set is needed for the AOM polyfill
-    if (process.env.NODE_ENV !== 'production') {
-        assertAttributeReflectionCapability(vm, attrName);
-    }
-    removeAttribute.apply(this, ArraySlice.call(arguments));
-}
-
-function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
-    const vm = getCustomElementVM(this);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertAttributeReflectionCapability(vm, attrName);
-    }
-    removeAttributeNS.apply(this, ArraySlice.call(arguments));
-}
-
-// Logs an error if the attribute has a corresponding property that is reactive
-function assertAttributeReflectionCapability(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const propName = isString(attrName)
-        ? getPropNameFromAttrName(StringToLowerCase.call(attrName))
-        : null;
-    const {
-        elm,
-        def: { props: propsConfig },
-    } = vm;
-
-    if (
-        // TODO: #1257 - enable this restriction for tests once the jsdom issue is addressed
-        process.env.NODE_ENV !== 'test' &&
-        isNodeFromVNode(elm) &&
-        isAttributeLocked(elm, attrName) &&
-        propsConfig &&
-        propName &&
-        propsConfig[propName]
-    ) {
-        assert.logError(
-            `Invalid attribute access for \`${attrName}\`. Use the corresponding property \`${propName}\` instead.`,
-            elm
-        );
-    }
-}
-
 function getCustomElementRestrictionsDescriptors(
     elm: HTMLElement,
     options: RestrictionsOptions
@@ -393,51 +319,15 @@ function getCustomElementRestrictionsDescriptors(
                 return originalAddEventListener.apply(this, arguments);
             },
         }),
-        // replacing mutators and accessors on the element itself to catch any mutation
-        setAttribute: generateDataDescriptor({
-            value: setAttributePatched,
-        }),
-        setAttributeNS: generateDataDescriptor({
-            value: setAttributeNSPatched,
-        }),
-        removeAttribute: generateDataDescriptor({
-            value: removeAttributePatched,
-        }),
-        removeAttributeNS: generateDataDescriptor({
-            value: removeAttributeNSPatched,
-        }),
     });
 }
 
-function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyDescriptorMap {
+function getComponentRestrictionsDescriptors(): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalSetAttribute = cmp.setAttribute;
     return {
-        setAttribute: generateDataDescriptor({
-            value(this: ComponentInterface, attrName: string, _value: any) {
-                if (isString(attrName)) {
-                    const propName = getPropNameFromAttrName(attrName);
-                    const globalAttrName =
-                        globalHTMLProperties[propName] && globalHTMLProperties[propName].attribute;
-                    // Check that the attribute name of the global property is the same as the
-                    // attribute name being set by setAttribute.
-                    if (attrName === globalAttrName) {
-                        const { error } = globalHTMLProperties[propName];
-                        if (error) {
-                            assert.logError(error, getComponentVM(this).elm);
-                        }
-                    }
-                }
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-ignore type-mismatch
-                originalSetAttribute.apply(this, arguments);
-            },
-            configurable: true,
-            enumerable: false, // no enumerable properties on component
-        }),
         tagName: generateAccessorDescriptor({
             get(this: ComponentInterface) {
                 throw new Error(
@@ -487,10 +377,6 @@ interface RestrictionsOptions {
     isPortal?: boolean;
 }
 
-function isNodeFromVNode(node: Node): boolean {
-    return !!(node as any).$fromTemplate$;
-}
-
 export function markNodeFromVNode(node: Node) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -516,7 +402,7 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement, options: Re
 }
 
 export function patchComponentWithRestrictions(cmp: ComponentInterface) {
-    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
+    defineProperties(cmp, getComponentRestrictionsDescriptors());
 }
 
 export function patchLightningElementPrototypeWithRestrictions(proto: object) {
