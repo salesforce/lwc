@@ -149,7 +149,7 @@ export const globalHTMLProperties: {
     },
     slot: {
         attribute: 'slot',
-        error: 'Using the `slot` attribute is an anti-pattern.',
+        error: 'Using the `slot` property is an anti-pattern.',
     },
     spellcheck: {
         attribute: 'spellcheck',
