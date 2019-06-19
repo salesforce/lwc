@@ -94,6 +94,9 @@ export const globalHTMLProperties: {
     id: {
         attribute: 'id',
     },
+    inputMode: {
+        attribute: 'inputmode',
+    },
     isContentEditable: {
         readOnly: true,
     },
