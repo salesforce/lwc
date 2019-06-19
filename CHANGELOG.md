@@ -1,5 +1,16 @@
-<a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.41.0...v) (2019-05-29)
+# [](https://github.com/salesforce/lwc/compare/v1.0.0...v) (2019-06-19)
+
+
+### Bug Fixes
+
+* **engine:** update typescript to the latest ([#1342](https://github.com/salesforce/lwc/issues/1342)) ([8b10e72](https://github.com/salesforce/lwc/commit/8b10e72))
+* **synthetic-shadow:** cleaning up tests ([#1334](https://github.com/salesforce/lwc/issues/1334)) ([64a3f5e](https://github.com/salesforce/lwc/commit/64a3f5e)), closes [#1311](https://github.com/salesforce/lwc/issues/1311)
+* disable attribute reflection restriction for tests ([#1354](https://github.com/salesforce/lwc/issues/1354)) ([90dd79d](https://github.com/salesforce/lwc/commit/90dd79d))
+* issue [#1304](https://github.com/salesforce/lwc/issues/1304) activeElement should be patched in the prototype ([#1321](https://github.com/salesforce/lwc/issues/1321)) ([504e27a](https://github.com/salesforce/lwc/commit/504e27a))
+
+
+
+# [1.0.0](https://github.com/salesforce/lwc/compare/v0.41.0...v1.0.0) (2019-05-29)
 
 
 ### Bug Fixes
@@ -10,7 +21,6 @@
 
 
 
-<a name="0.41.0"></a>
 # [0.41.0](https://github.com/salesforce/lwc/compare/v0.40.1...v0.41.0) (2019-05-26)
 
 
@@ -23,7 +33,6 @@
 
 
 
-<a name="0.40.1"></a>
 ## [0.40.1](https://github.com/salesforce/lwc/compare/v0.40.0...v0.40.1) (2019-05-21)
 
 
@@ -36,13 +45,12 @@
 
 ### Features
 
-* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/client ([#1235](https://github.com/salesforce/lwc/issues/1235)) ([fbf9324](https://github.com/salesforce/lwc/commit/fbf9324))
+* **jest-transformer:** add transform for @salesforce/client ([#1235](https://github.com/salesforce/lwc/issues/1235)) ([fbf9324](https://github.com/salesforce/lwc/commit/fbf9324))
 * **template-compiler:** disallow <style> inside <template> ([a3eae33](https://github.com/salesforce/lwc/commit/a3eae33))
 * **template-compiler:** remove lwc-depracated:is ([#1237](https://github.com/salesforce/lwc/issues/1237)) ([149d1f6](https://github.com/salesforce/lwc/commit/149d1f6))
 
 
 
-<a name="0.40.0"></a>
 # [0.40.0](https://github.com/salesforce/lwc/compare/v0.39.1...v0.40.0) (2019-05-15)
 
 
@@ -64,22 +72,18 @@
 
 
 
-<a name="0.39.1"></a>
 ## [0.39.1](https://github.com/salesforce/lwc/compare/v0.39.0...v0.39.1) (2019-05-02)
 
 
 
-<a name="0.39.0"></a>
 # [0.39.0](https://github.com/salesforce/lwc/compare/v0.38.1...v0.39.0) (2019-05-01)
 
 
 
-<a name="0.38.1"></a>
 ## [0.38.1](https://github.com/salesforce/lwc/compare/v0.38.0...v0.38.1) (2019-04-30)
 
 
 
-<a name="0.38.0"></a>
 # [0.38.0](https://github.com/salesforce/lwc/compare/v0.37.2...v0.38.0) (2019-04-30)
 
 
@@ -93,7 +97,7 @@
 * **engine:** restrict access to ShadowRoot.dispatchEvent ([#1176](https://github.com/salesforce/lwc/issues/1176)) ([01a6506](https://github.com/salesforce/lwc/commit/01a6506))
 * **engine:** supporting objects with null prototype in iterators ([#1152](https://github.com/salesforce/lwc/issues/1152)) ([7c5f264](https://github.com/salesforce/lwc/commit/7c5f264))
 * **resolver:** use require.resolve.paths(); avoid require for json ([#1194](https://github.com/salesforce/lwc/issues/1194)) ([7ef45df](https://github.com/salesforce/lwc/commit/7ef45df))
-* incorrect import in dist type in [@lwc](https://github.com/lwc)/compiler ([#1196](https://github.com/salesforce/lwc/issues/1196)) ([0ed106b](https://github.com/salesforce/lwc/commit/0ed106b))
+* incorrect import in dist type in @lwc/compiler ([#1196](https://github.com/salesforce/lwc/issues/1196)) ([0ed106b](https://github.com/salesforce/lwc/commit/0ed106b))
 
 
 ### Features
@@ -107,7 +111,6 @@
 
 
 
-<a name="0.37.2"></a>
 ## [0.37.2](https://github.com/salesforce/lwc/compare/v0.37.1...v0.37.2) (2019-04-01)
 
 
@@ -126,7 +129,6 @@
 
 
 
-<a name="0.37.1"></a>
 ## [0.37.1](https://github.com/salesforce/lwc/compare/v0.37.0...v0.37.1) (2019-03-27)
 
 
@@ -139,7 +141,6 @@
 
 
 
-<a name="0.37.0"></a>
 # [0.37.0](https://github.com/salesforce/lwc/compare/v0.36.0...v0.37.0) (2019-03-08)
 
 
@@ -161,7 +162,6 @@
 
 
 
-<a name="0.36.0"></a>
 # [0.36.0](https://github.com/salesforce/lwc/compare/v0.35.12...v0.36.0) (2019-03-06)
 
 
@@ -172,7 +172,6 @@
 
 
 
-<a name="0.35.12"></a>
 ## [0.35.12](https://github.com/salesforce/lwc/compare/v0.35.11...v0.35.12) (2019-03-05)
 
 
@@ -183,7 +182,6 @@
 
 
 
-<a name="0.35.11"></a>
 ## [0.35.11](https://github.com/salesforce/lwc/compare/v0.35.10...v0.35.11) (2019-02-27)
 
 
@@ -199,7 +197,6 @@
 
 
 
-<a name="0.35.10"></a>
 ## [0.35.10](https://github.com/salesforce/lwc/compare/v0.35.9...v0.35.10) (2019-02-26)
 
 
@@ -209,7 +206,6 @@
 
 
 
-<a name="0.35.9"></a>
 ## [0.35.9](https://github.com/salesforce/lwc/compare/v0.35.7...v0.35.9) (2019-02-22)
 
 
@@ -227,7 +223,6 @@
 
 
 
-<a name="0.35.7"></a>
 ## [0.35.7](https://github.com/salesforce/lwc/compare/v0.35.6...v0.35.7) (2019-02-14)
 
 
@@ -242,7 +237,6 @@
 
 
 
-<a name="0.35.6"></a>
 ## [0.35.6](https://github.com/salesforce/lwc/compare/v0.35.5...v0.35.6) (2019-02-06)
 
 
@@ -252,7 +246,6 @@
 
 
 
-<a name="0.35.5"></a>
 ## [0.35.5](https://github.com/salesforce/lwc/compare/v0.35.4...v0.35.5) (2019-01-28)
 
 
@@ -274,12 +267,10 @@
 
 
 
-<a name="0.35.4"></a>
 ## [0.35.4](https://github.com/salesforce/lwc/compare/v0.35.2...v0.35.4) (2019-01-19)
 
 
 
-<a name="0.35.2"></a>
 ## [0.35.2](https://github.com/salesforce/lwc/compare/v0.35.1...v0.35.2) (2019-01-18)
 
 
@@ -301,7 +292,6 @@
 
 
 
-<a name="0.35.1"></a>
 ## [0.35.1](https://github.com/salesforce/lwc/compare/v0.34.0...v0.35.1) (2019-01-11)
 
 
@@ -311,7 +301,6 @@
 
 
 
-<a name="0.34.0"></a>
 # [0.34.0](https://github.com/salesforce/lwc/compare/v0.33.28-1...v0.34.0) (2019-01-10)
 
 
@@ -326,19 +315,17 @@
 
 
 
-<a name="0.33.28-1"></a>
 ## [0.33.28-1](https://github.com/salesforce/lwc/compare/v0.33.28-alpha3...v0.33.28-1) (2019-01-09)
 
 
 
-<a name="0.33.28-alpha3"></a>
 ## [0.33.28-alpha3](https://github.com/salesforce/lwc/compare/v0.33.26...v0.33.28-alpha3) (2019-01-09)
 
 
 ### Bug Fixes
 
 * **engine:** to show shadow in IE11 devtool DOM explorer ([#904](https://github.com/salesforce/lwc/issues/904)) ([6e2817f](https://github.com/salesforce/lwc/commit/6e2817f))
-* **jest-transformer:** update [@salesforce](https://github.com/salesforce)/apex transform ([#924](https://github.com/salesforce/lwc/issues/924)) ([a3d6af5](https://github.com/salesforce/lwc/commit/a3d6af5))
+* **jest-transformer:** update @salesforce/apex transform ([#924](https://github.com/salesforce/lwc/issues/924)) ([a3d6af5](https://github.com/salesforce/lwc/commit/a3d6af5))
 * Add crossorigin as valid img tag attribute ([#918](https://github.com/salesforce/lwc/issues/918)) ([e861600](https://github.com/salesforce/lwc/commit/e861600))
 
 
@@ -348,7 +335,6 @@
 
 
 
-<a name="0.33.26"></a>
 ## [0.33.26](https://github.com/salesforce/lwc/compare/v0.33.25...v0.33.26) (2018-12-21)
 
 
@@ -364,7 +350,6 @@
 
 
 
-<a name="0.33.25"></a>
 ## [0.33.25](https://github.com/salesforce/lwc/compare/v0.33.24...v0.33.25) (2018-12-14)
 
 
@@ -374,37 +359,30 @@
 
 
 
-<a name="0.33.24"></a>
 ## [0.33.24](https://github.com/salesforce/lwc/compare/v0.33.23...v0.33.24) (2018-12-13)
 
 
 
-<a name="0.33.23"></a>
 ## [0.33.23](https://github.com/salesforce/lwc/compare/v0.33.22...v0.33.23) (2018-12-13)
 
 
 
-<a name="0.33.22"></a>
 ## [0.33.22](https://github.com/salesforce/lwc/compare/v0.33.21...v0.33.22) (2018-12-13)
 
 
 
-<a name="0.33.21"></a>
 ## [0.33.21](https://github.com/salesforce/lwc/compare/v0.33.20...v0.33.21) (2018-12-13)
 
 
 
-<a name="0.33.20"></a>
 ## [0.33.20](https://github.com/salesforce/lwc/compare/v0.33.19...v0.33.20) (2018-12-13)
 
 
 
-<a name="0.33.19"></a>
 ## [0.33.19](https://github.com/salesforce/lwc/compare/v0.33.18...v0.33.19) (2018-12-13)
 
 
 
-<a name="0.33.18"></a>
 ## [0.33.18](https://github.com/salesforce/lwc/compare/v0.33.17...v0.33.18) (2018-12-13)
 
 
@@ -416,7 +394,6 @@
 
 
 
-<a name="0.33.17"></a>
 ## [0.33.17](https://github.com/salesforce/lwc/compare/v0.33.16...v0.33.17) (2018-12-12)
 
 
@@ -426,12 +403,10 @@
 
 
 
-<a name="0.33.16"></a>
 ## [0.33.16](https://github.com/salesforce/lwc/compare/v0.33.15...v0.33.16) (2018-12-07)
 
 
 
-<a name="0.33.15"></a>
 ## [0.33.15](https://github.com/salesforce/lwc/compare/v0.33.14...v0.33.15) (2018-12-06)
 
 
@@ -441,7 +416,6 @@
 
 
 
-<a name="0.33.14"></a>
 ## [0.33.14](https://github.com/salesforce/lwc/compare/v0.33.13...v0.33.14) (2018-12-06)
 
 
@@ -451,17 +425,14 @@
 
 
 
-<a name="0.33.13"></a>
 ## [0.33.13](https://github.com/salesforce/lwc/compare/v0.33.12...v0.33.13) (2018-12-06)
 
 
 
-<a name="0.33.12"></a>
 ## [0.33.12](https://github.com/salesforce/lwc/compare/v0.33.11...v0.33.12) (2018-12-05)
 
 
 
-<a name="0.33.11"></a>
 ## [0.33.11](https://github.com/salesforce/lwc/compare/v0.33.10...v0.33.11) (2018-12-05)
 
 
@@ -474,7 +445,6 @@
 
 
 
-<a name="0.33.10"></a>
 ## [0.33.10](https://github.com/salesforce/lwc/compare/v0.33.9...v0.33.10) (2018-11-29)
 
 
@@ -487,12 +457,10 @@
 
 
 
-<a name="0.33.9"></a>
 ## [0.33.9](https://github.com/salesforce/lwc/compare/v0.33.8...v0.33.9) (2018-11-26)
 
 
 
-<a name="0.33.8"></a>
 ## [0.33.8](https://github.com/salesforce/lwc/compare/v0.33.7...v0.33.8) (2018-11-26)
 
 
@@ -505,12 +473,10 @@
 
 
 
-<a name="0.33.7"></a>
 ## [0.33.7](https://github.com/salesforce/lwc/compare/v0.33.6...v0.33.7) (2018-11-20)
 
 
 
-<a name="0.33.6"></a>
 ## [0.33.6](https://github.com/salesforce/lwc/compare/v0.33.5...v0.33.6) (2018-11-19)
 
 
@@ -529,17 +495,14 @@
 
 
 
-<a name="0.33.5"></a>
 ## [0.33.5](https://github.com/salesforce/lwc/compare/v0.33.4...v0.33.5) (2018-11-15)
 
 
 
-<a name="0.33.4"></a>
 ## [0.33.4](https://github.com/salesforce/lwc/compare/v0.33.3...v0.33.4) (2018-11-15)
 
 
 
-<a name="0.33.3"></a>
 ## [0.33.3](https://github.com/salesforce/lwc/compare/v0.33.2...v0.33.3) (2018-11-15)
 
 
@@ -554,7 +517,6 @@
 
 
 
-<a name="0.33.2"></a>
 ## [0.33.2](https://github.com/salesforce/lwc/compare/v0.33.1...v0.33.2) (2018-11-14)
 
 
@@ -571,7 +533,6 @@
 
 
 
-<a name="0.33.1"></a>
 ## [0.33.1](https://github.com/salesforce/lwc/compare/v0.33.0...v0.33.1) (2018-11-13)
 
 
@@ -583,7 +544,6 @@
 
 
 
-<a name="0.33.0"></a>
 # [0.33.0](https://github.com/salesforce/lwc/compare/v0.32.1...v0.33.0) (2018-11-13)
 
 
@@ -598,7 +558,6 @@
 
 
 
-<a name="0.32.1"></a>
 ## [0.32.1](https://github.com/salesforce/lwc/compare/v0.31.6...v0.32.1) (2018-11-12)
 
 
@@ -613,7 +572,6 @@
 
 
 
-<a name="0.31.6"></a>
 ## [0.31.6](https://github.com/salesforce/lwc/compare/v0.31.4...v0.31.6) (2018-11-09)
 
 
@@ -633,7 +591,6 @@
 
 
 
-<a name="0.31.4"></a>
 ## [0.31.4](https://github.com/salesforce/lwc/compare/v0.31.3...v0.31.4) (2018-11-07)
 
 
@@ -643,7 +600,6 @@
 
 
 
-<a name="0.31.3"></a>
 ## [0.31.3](https://github.com/salesforce/lwc/compare/v0.31.2...v0.31.3) (2018-11-06)
 
 
@@ -662,7 +618,6 @@
 
 
 
-<a name="0.31.2"></a>
 ## [0.31.2](https://github.com/salesforce/lwc/compare/v0.31.1...v0.31.2) (2018-11-03)
 
 
@@ -672,7 +627,6 @@
 
 
 
-<a name="0.31.1"></a>
 ## [0.31.1](https://github.com/salesforce/lwc/compare/v0.30.7...v0.31.1) (2018-11-02)
 
 
@@ -690,17 +644,14 @@
 
 
 
-<a name="0.30.7"></a>
 ## [0.30.7](https://github.com/salesforce/lwc/compare/v0.30.6...v0.30.7) (2018-10-29)
 
 
 
-<a name="0.30.6"></a>
 ## [0.30.6](https://github.com/salesforce/lwc/compare/v0.30.5...v0.30.6) (2018-10-29)
 
 
 
-<a name="0.30.5"></a>
 ## [0.30.5](https://github.com/salesforce/lwc/compare/v0.30.4...v0.30.5) (2018-10-29)
 
 
@@ -710,7 +661,6 @@
 
 
 
-<a name="0.30.4"></a>
 ## [0.30.4](https://github.com/salesforce/lwc/compare/v0.30.3...v0.30.4) (2018-10-26)
 
 
@@ -720,7 +670,6 @@
 
 
 
-<a name="0.30.3"></a>
 ## [0.30.3](https://github.com/salesforce/lwc/compare/v0.30.2...v0.30.3) (2018-10-26)
 
 
@@ -733,12 +682,11 @@
 
 ### Features
 
-* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/i18n ([#758](https://github.com/salesforce/lwc/issues/758)) ([00a13cc](https://github.com/salesforce/lwc/commit/00a13cc))
+* **jest-transformer:** add transform for @salesforce/i18n ([#758](https://github.com/salesforce/lwc/issues/758)) ([00a13cc](https://github.com/salesforce/lwc/commit/00a13cc))
 * **wire:** use class property default values ([#767](https://github.com/salesforce/lwc/issues/767)) ([4c76b9a](https://github.com/salesforce/lwc/commit/4c76b9a))
 
 
 
-<a name="0.30.2"></a>
 ## [0.30.2](https://github.com/salesforce/lwc/compare/v0.30.1...v0.30.2) (2018-10-24)
 
 
@@ -756,12 +704,10 @@
 
 
 
-<a name="0.30.1"></a>
 ## [0.30.1](https://github.com/salesforce/lwc/compare/v0.30.0...v0.30.1) (2018-10-22)
 
 
 
-<a name="0.30.0"></a>
 # [0.30.0](https://github.com/salesforce/lwc/compare/v0.29.26-1...v0.30.0) (2018-10-21)
 
 
@@ -772,7 +718,6 @@
 
 
 
-<a name="0.29.26-1"></a>
 ## [0.29.26-1](https://github.com/salesforce/lwc/compare/v0.29.26...v0.29.26-1) (2018-10-16)
 
 
@@ -782,7 +727,6 @@
 
 
 
-<a name="0.29.26"></a>
 ## [0.29.26](https://github.com/salesforce/lwc/compare/v0.29.25...v0.29.26) (2018-10-16)
 
 
@@ -792,22 +736,18 @@
 
 
 
-<a name="0.29.25"></a>
 ## [0.29.25](https://github.com/salesforce/lwc/compare/v0.29.24...v0.29.25) (2018-10-15)
 
 
 
-<a name="0.29.24"></a>
 ## [0.29.24](https://github.com/salesforce/lwc/compare/v0.29.23...v0.29.24) (2018-10-15)
 
 
 
-<a name="0.29.23"></a>
 ## [0.29.23](https://github.com/salesforce/lwc/compare/v0.29.22...v0.29.23) (2018-10-15)
 
 
 
-<a name="0.29.22"></a>
 ## [0.29.22](https://github.com/salesforce/lwc/compare/v0.29.21...v0.29.22) (2018-10-15)
 
 
@@ -817,12 +757,10 @@
 
 
 
-<a name="0.29.21"></a>
 ## [0.29.21](https://github.com/salesforce/lwc/compare/v0.29.20...v0.29.21) (2018-10-13)
 
 
 
-<a name="0.29.20"></a>
 ## [0.29.20](https://github.com/salesforce/lwc/compare/v0.29.19...v0.29.20) (2018-10-12)
 
 
@@ -832,7 +770,6 @@
 
 
 
-<a name="0.29.19"></a>
 ## [0.29.19](https://github.com/salesforce/lwc/compare/v0.29.18...v0.29.19) (2018-10-11)
 
 
@@ -849,12 +786,10 @@
 
 
 
-<a name="0.29.18"></a>
 ## [0.29.18](https://github.com/salesforce/lwc/compare/v0.29.17...v0.29.18) (2018-10-10)
 
 
 
-<a name="0.29.17"></a>
 ## [0.29.17](https://github.com/salesforce/lwc/compare/v0.29.16...v0.29.17) (2018-10-10)
 
 
@@ -870,7 +805,6 @@
 
 
 
-<a name="0.29.16"></a>
 ## [0.29.16](https://github.com/salesforce/lwc/compare/v0.29.14...v0.29.16) (2018-10-07)
 
 
@@ -880,7 +814,6 @@
 
 
 
-<a name="0.29.14"></a>
 ## [0.29.14](https://github.com/salesforce/lwc/compare/v0.29.13...v0.29.14) (2018-10-05)
 
 
@@ -898,7 +831,6 @@
 
 
 
-<a name="0.29.13"></a>
 ## [0.29.13](https://github.com/salesforce/lwc/compare/v0.29.12...v0.29.13) (2018-10-03)
 
 
@@ -913,12 +845,10 @@
 
 
 
-<a name="0.29.12"></a>
 ## [0.29.12](https://github.com/salesforce/lwc/compare/v0.29.11-1...v0.29.12) (2018-10-03)
 
 
 
-<a name="0.29.11-1"></a>
 ## [0.29.11-1](https://github.com/salesforce/lwc/compare/v0.29.11...v0.29.11-1) (2018-10-02)
 
 
@@ -938,7 +868,6 @@
 
 
 
-<a name="0.29.11"></a>
 ## [0.29.11](https://github.com/salesforce/lwc/compare/v0.29.10...v0.29.11) (2018-10-02)
 
 
@@ -948,7 +877,6 @@
 
 
 
-<a name="0.29.10"></a>
 ## [0.29.10](https://github.com/salesforce/lwc/compare/v0.29.9...v0.29.10) (2018-10-02)
 
 
@@ -959,7 +887,6 @@
 
 
 
-<a name="0.29.9"></a>
 ## [0.29.9](https://github.com/salesforce/lwc/compare/v0.29.8...v0.29.9) (2018-09-29)
 
 
@@ -972,11 +899,10 @@
 
 ### Features
 
-* **jest-transformer:** add transform for [@salesforce](https://github.com/salesforce)/contentAssetUrl ([#684](https://github.com/salesforce/lwc/issues/684)) ([b711b32](https://github.com/salesforce/lwc/commit/b711b32))
+* **jest-transformer:** add transform for @salesforce/contentAssetUrl ([#684](https://github.com/salesforce/lwc/issues/684)) ([b711b32](https://github.com/salesforce/lwc/commit/b711b32))
 
 
 
-<a name="0.29.8"></a>
 ## [0.29.8](https://github.com/salesforce/lwc/compare/v0.29.7...v0.29.8) (2018-09-27)
 
 
@@ -986,7 +912,6 @@
 
 
 
-<a name="0.29.7"></a>
 ## [0.29.7](https://github.com/salesforce/lwc/compare/v0.29.7-pre01...v0.29.7) (2018-09-27)
 
 
@@ -996,7 +921,6 @@
 
 
 
-<a name="0.29.7-pre01"></a>
 ## [0.29.7-pre01](https://github.com/salesforce/lwc/compare/v0.29.1...v0.29.7-pre01) (2018-09-26)
 
 
@@ -1029,18 +953,16 @@
 
 
 
-<a name="0.29.1"></a>
 ## [0.29.1](https://github.com/salesforce/lwc/compare/v0.29.0...v0.29.1) (2018-09-13)
 
 
 
-<a name="0.29.0"></a>
 # [0.29.0](https://github.com/salesforce/lwc/compare/v0.28.2...v0.29.0) (2018-09-13)
 
 
 ### Bug Fixes
 
-* rename [@salesforce](https://github.com/salesforce)/resource-url to [@salesforce](https://github.com/salesforce)/resourceUrl ([#638](https://github.com/salesforce/lwc/issues/638)) ([2a86c4d](https://github.com/salesforce/lwc/commit/2a86c4d))
+* rename @salesforce/resource-url to @salesforce/resourceUrl ([#638](https://github.com/salesforce/lwc/issues/638)) ([2a86c4d](https://github.com/salesforce/lwc/commit/2a86c4d))
 
 
 ### Features
@@ -1050,7 +972,6 @@
 
 
 
-<a name="0.28.2"></a>
 ## [0.28.2](https://github.com/salesforce/lwc/compare/v0.28.0-rc1...v0.28.2) (2018-09-09)
 
 
@@ -1060,12 +981,10 @@
 
 
 
-<a name="0.28.0-rc1"></a>
 # [0.28.0-rc1](https://github.com/salesforce/lwc/compare/v0.27.1...v0.28.0-rc1) (2018-09-08)
 
 
 
-<a name="0.27.1"></a>
 ## [0.27.1](https://github.com/salesforce/lwc/compare/v0.27.0...v0.27.1) (2018-09-05)
 
 
@@ -1087,7 +1006,6 @@
 
 
 
-<a name="0.27.0"></a>
 # [0.27.0](https://github.com/salesforce/lwc/compare/v0.26.0...v0.27.0) (2018-08-25)
 
 
@@ -1097,7 +1015,6 @@
 
 
 
-<a name="0.26.0"></a>
 # [0.26.0](https://github.com/salesforce/lwc/compare/v0.25.5...v0.26.0) (2018-08-24)
 
 
@@ -1113,7 +1030,6 @@
 
 
 
-<a name="0.25.5"></a>
 ## [0.25.5](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v0.25.5) (2018-08-15)
 
 
@@ -1125,7 +1041,6 @@
 
 
 
-<a name="0.25.5-alpha"></a>
 ## [0.25.5-alpha](https://github.com/salesforce/lwc/compare/v0.25.4...v0.25.5-alpha) (2018-08-14)
 
 
@@ -1140,7 +1055,6 @@
 
 
 
-<a name="0.25.4"></a>
 ## [0.25.4](https://github.com/salesforce/lwc/compare/v0.25.3...v0.25.4) (2018-08-12)
 
 
@@ -1150,27 +1064,22 @@
 
 
 
-<a name="0.25.3"></a>
 ## [0.25.3](https://github.com/salesforce/lwc/compare/v0.25.3-alpha11...v0.25.3) (2018-08-11)
 
 
 
-<a name="0.25.3-alpha11"></a>
 ## [0.25.3-alpha11](https://github.com/salesforce/lwc/compare/v0.25.3-alpha10...v0.25.3-alpha11) (2018-08-11)
 
 
 
-<a name="0.25.3-alpha07"></a>
 ## [0.25.3-alpha07](https://github.com/salesforce/lwc/compare/v0.25.3-alpha06...v0.25.3-alpha07) (2018-08-10)
 
 
 
-<a name="0.25.2"></a>
 ## [0.25.2](https://github.com/salesforce/lwc/compare/v0.25.2-alpha01...v0.25.2) (2018-08-10)
 
 
 
-<a name="0.25.2-alpha01"></a>
 ## [0.25.2-alpha01](https://github.com/salesforce/lwc/compare/v0.24.20...v0.25.2-alpha01) (2018-08-09)
 
 
@@ -1181,22 +1090,18 @@
 
 
 
-<a name="0.24.20"></a>
 ## [0.24.20](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v0.24.20) (2018-08-07)
 
 
 
-<a name="0.24.19-alpha03"></a>
 ## [0.24.19-alpha03](https://github.com/salesforce/lwc/compare/v0.24.19-alpha02...v0.24.19-alpha03) (2018-08-06)
 
 
 
-<a name="0.24.17"></a>
 ## [0.24.17](https://github.com/salesforce/lwc/compare/v0.24.17-alpha02...v0.24.17) (2018-08-06)
 
 
 
-<a name="0.24.17-alpha02"></a>
 ## [0.24.17-alpha02](https://github.com/salesforce/lwc/compare/v0.24.17-alpha01...v0.24.17-alpha02) (2018-08-06)
 
 
@@ -1211,17 +1116,14 @@
 
 
 
-<a name="0.24.16"></a>
 ## [0.24.16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha24...v0.24.16) (2018-08-02)
 
 
 
-<a name="0.25.1-alpha24"></a>
 ## [0.25.1-alpha24](https://github.com/salesforce/lwc/compare/v0.25.1-alpha22...v0.25.1-alpha24) (2018-08-02)
 
 
 
-<a name="0.25.1-alpha19"></a>
 ## [0.25.1-alpha19](https://github.com/salesforce/lwc/compare/v0.24.14...v0.25.1-alpha19) (2018-08-01)
 
 
@@ -1231,7 +1133,6 @@
 
 
 
-<a name="0.25.1-alpha18"></a>
 ## [0.25.1-alpha18](https://github.com/salesforce/lwc/compare/v0.25.1-alpha17...v0.25.1-alpha18) (2018-08-01)
 
 
@@ -1242,12 +1143,10 @@
 
 
 
-<a name="0.25.1-alpha17"></a>
 ## [0.25.1-alpha17](https://github.com/salesforce/lwc/compare/v0.25.1-alpha16...v0.25.1-alpha17) (2018-07-31)
 
 
 
-<a name="0.25.1-alpha16"></a>
 ## [0.25.1-alpha16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha15...v0.25.1-alpha16) (2018-07-31)
 
 
@@ -1257,17 +1156,14 @@
 
 
 
-<a name="0.25.1-alpha15"></a>
 ## [0.25.1-alpha15](https://github.com/salesforce/lwc/compare/v0.25.1-alpha14...v0.25.1-alpha15) (2018-07-31)
 
 
 
-<a name="0.25.1-alpha14"></a>
 ## [0.25.1-alpha14](https://github.com/salesforce/lwc/compare/v0.25.1-alpha13...v0.25.1-alpha14) (2018-07-31)
 
 
 
-<a name="0.25.1-alpha11"></a>
 ## [0.25.1-alpha11](https://github.com/salesforce/lwc/compare/v0.25.1-alpha10...v0.25.1-alpha11) (2018-07-30)
 
 
@@ -1277,7 +1173,6 @@
 
 
 
-<a name="0.25.1-alpha06"></a>
 ## [0.25.1-alpha06](https://github.com/salesforce/lwc/compare/v0.25.1-alpha05...v0.25.1-alpha06) (2018-07-27)
 
 
@@ -1287,7 +1182,6 @@
 
 
 
-<a name="0.24.13-alpha01"></a>
 ## [0.24.13-alpha01](https://github.com/salesforce/lwc/compare/v0.24.12-alpha06...v0.24.13-alpha01) (2018-07-26)
 
 
@@ -1305,12 +1199,10 @@
 
 
 
-<a name="0.24.2"></a>
 ## [0.24.2](https://github.com/salesforce/lwc/compare/v0.24.1...v0.24.2) (2018-07-18)
 
 
 
-<a name="0.24.1"></a>
 ## [0.24.1](https://github.com/salesforce/lwc/compare/v0.23.2...v0.24.1) (2018-07-13)
 
 
@@ -1349,7 +1241,6 @@
 
 
 
-<a name="0.23.2"></a>
 ## [0.23.2](https://github.com/salesforce/lwc/compare/v0.23.1...v0.23.2) (2018-06-14)
 
 
@@ -1364,7 +1255,6 @@
 
 
 
-<a name="0.23.1"></a>
 ## [0.23.1](https://github.com/salesforce/lwc/compare/v0.23.0...v0.23.1) (2018-06-13)
 
 
@@ -1375,7 +1265,6 @@
 
 
 
-<a name="0.23.0"></a>
 # [0.23.0](https://github.com/salesforce/lwc/compare/v0.22.8...v0.23.0) (2018-06-13)
 
 
@@ -1393,17 +1282,14 @@
 
 
 
-<a name="0.22.8"></a>
 ## [0.22.8](https://github.com/salesforce/lwc/compare/v0.22.7...v0.22.8) (2018-06-12)
 
 
 
-<a name="0.22.7"></a>
 ## [0.22.7](https://github.com/salesforce/lwc/compare/v0.22.6...v0.22.7) (2018-06-10)
 
 
 
-<a name="0.22.6"></a>
 ## [0.22.6](https://github.com/salesforce/lwc/compare/v0.22.5...v0.22.6) (2018-06-08)
 
 
@@ -1425,7 +1311,6 @@
 
 
 
-<a name="0.22.5"></a>
 ## [0.22.5](https://github.com/salesforce/lwc/compare/v0.22.4...v0.22.5) (2018-06-03)
 
 
@@ -1435,7 +1320,6 @@
 
 
 
-<a name="0.22.4"></a>
 ## [0.22.4](https://github.com/salesforce/lwc/compare/v0.22.3...v0.22.4) (2018-06-03)
 
 
@@ -1445,12 +1329,10 @@
 
 
 
-<a name="0.22.3"></a>
 ## [0.22.3](https://github.com/salesforce/lwc/compare/v0.22.2...v0.22.3) (2018-06-02)
 
 
 
-<a name="0.22.2"></a>
 ## [0.22.2](https://github.com/salesforce/lwc/compare/v0.22.1...v0.22.2) (2018-06-02)
 
 
@@ -1461,7 +1343,6 @@
 
 
 
-<a name="0.22.1"></a>
 ## [0.22.1](https://github.com/salesforce/lwc/compare/v0.22.0...v0.22.1) (2018-05-31)
 
 
@@ -1473,7 +1354,6 @@
 
 
 
-<a name="0.22.0"></a>
 # [0.22.0](https://github.com/salesforce/lwc/compare/v0.21.0...v0.22.0) (2018-05-31)
 
 
@@ -1489,7 +1369,6 @@
 
 
 
-<a name="0.21.0"></a>
 # [0.21.0](https://github.com/salesforce/lwc/compare/v0.20.5...v0.21.0) (2018-05-29)
 
 
@@ -1507,7 +1386,6 @@
 
 
 
-<a name="0.20.5"></a>
 ## [0.20.5](https://github.com/salesforce/lwc/compare/v0.20.4...v0.20.5) (2018-05-23)
 
 
@@ -1518,7 +1396,6 @@
 
 
 
-<a name="0.20.4"></a>
 ## [0.20.4](https://github.com/salesforce/lwc/compare/v0.20.3...v0.20.4) (2018-05-21)
 
 
@@ -1538,7 +1415,6 @@
 
 
 
-<a name="0.20.3"></a>
 ## [0.20.3](https://github.com/salesforce/lwc/compare/v0.20.2...v0.20.3) (2018-05-15)
 
 
@@ -1549,7 +1425,6 @@
 
 
 
-<a name="0.20.2"></a>
 ## [0.20.2](https://github.com/salesforce/lwc/compare/v0.20.0...v0.20.2) (2018-05-11)
 
 
@@ -1574,7 +1449,6 @@
 
 
 
-<a name="0.20.0"></a>
 # [0.20.0](https://github.com/salesforce/lwc/compare/v0.19.0-0...v0.20.0) (2018-04-24)
 
 
@@ -1595,7 +1469,6 @@
 
 
 
-<a name="0.19.0-0"></a>
 # [0.19.0-0](https://github.com/salesforce/lwc/compare/v0.18.1...v0.19.0-0) (2018-03-27)
 
 
@@ -1616,7 +1489,6 @@
 
 
 
-<a name="0.18.1"></a>
 ## [0.18.1](https://github.com/salesforce/lwc/compare/v0.18.0...v0.18.1) (2018-03-15)
 
 
@@ -1632,7 +1504,6 @@
 
 
 
-<a name="0.18.0"></a>
 # [0.18.0](https://github.com/salesforce/lwc/compare/v0.17.19...v0.18.0) (2018-03-13)
 
 
@@ -1648,7 +1519,6 @@
 
 
 
-<a name="0.17.19"></a>
 ## [0.17.19](https://github.com/salesforce/lwc/compare/v0.17.18...v0.17.19) (2018-03-05)
 
 
@@ -1658,7 +1528,6 @@
 
 
 
-<a name="0.17.18"></a>
 ## [0.17.18](https://github.com/salesforce/lwc/compare/v0.17.16...v0.17.18) (2018-03-03)
 
 
@@ -1679,7 +1548,6 @@
 
 
 
-<a name="0.17.16"></a>
 ## [0.17.16](https://github.com/salesforce/lwc/compare/v0.17.15...v0.17.16) (2018-02-15)
 
 
@@ -1701,7 +1569,6 @@
 
 
 
-<a name="0.17.15"></a>
 ## [0.17.15](https://github.com/salesforce/lwc/compare/v0.17.14...v0.17.15) (2018-02-07)
 
 
@@ -1723,7 +1590,6 @@
 
 
 
-<a name="0.17.14"></a>
 ## [0.17.14](https://github.com/salesforce/lwc/compare/v0.17.13...v0.17.14) (2018-02-06)
 
 
@@ -1740,7 +1606,6 @@
 
 
 
-<a name="0.17.13"></a>
 ## [0.17.13](https://github.com/salesforce/lwc/compare/v0.17.9...v0.17.13) (2018-02-02)
 
 
@@ -1759,7 +1624,6 @@
 
 
 
-<a name="0.17.9"></a>
 ## [0.17.9](https://github.com/salesforce/lwc/compare/v0.17.8...v0.17.9) (2018-01-24)
 
 
@@ -1770,7 +1634,6 @@
 
 
 
-<a name="0.17.8"></a>
 ## [0.17.8](https://github.com/salesforce/lwc/compare/v0.17.7...v0.17.8) (2018-01-17)
 
 
@@ -1781,7 +1644,6 @@
 
 
 
-<a name="0.17.7"></a>
 ## [0.17.7](https://github.com/salesforce/lwc/compare/v0.17.6...v0.17.7) (2018-01-12)
 
 
@@ -1801,347 +1663,278 @@
 
 
 
-<a name="0.17.6"></a>
 ## [0.17.6](https://github.com/salesforce/lwc/compare/v0.17.5...v0.17.6) (2017-12-26)
 
 
 
-<a name="0.17.5"></a>
 ## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
 
 
 
-<a name="0.17.2"></a>
 ## [0.17.2](https://github.com/salesforce/lwc/compare/v0.17.0...v0.17.2) (2017-12-14)
 
 
 
-<a name="0.17.0"></a>
 # [0.17.0](https://github.com/salesforce/lwc/compare/v0.16.5...v0.17.0) (2017-12-12)
 
 
 
-<a name="0.16.5"></a>
 ## [0.16.5](https://github.com/salesforce/lwc/compare/v0.16.4...v0.16.5) (2017-11-17)
 
 
 
-<a name="0.16.4"></a>
 ## [0.16.4](https://github.com/salesforce/lwc/compare/v0.16.3...v0.16.4) (2017-11-17)
 
 
 
-<a name="0.16.3"></a>
 ## [0.16.3](https://github.com/salesforce/lwc/compare/v0.16.2...v0.16.3) (2017-11-11)
 
 
 
-<a name="0.16.2"></a>
 ## [0.16.2](https://github.com/salesforce/lwc/compare/v0.16.1...v0.16.2) (2017-11-10)
 
 
 
-<a name="0.16.1"></a>
 ## [0.16.1](https://github.com/salesforce/lwc/compare/v0.16.0...v0.16.1) (2017-11-10)
 
 
 
-<a name="0.16.0"></a>
 # [0.16.0](https://github.com/salesforce/lwc/compare/v0.15.3...v0.16.0) (2017-11-03)
 
 
 
-<a name="0.15.3"></a>
 ## [0.15.3](https://github.com/salesforce/lwc/compare/v0.15.2...v0.15.3) (2017-10-26)
 
 
 
-<a name="0.15.2"></a>
 ## [0.15.2](https://github.com/salesforce/lwc/compare/v0.15.1...v0.15.2) (2017-10-23)
 
 
 
-<a name="0.15.1"></a>
 ## [0.15.1](https://github.com/salesforce/lwc/compare/v0.15.0...v0.15.1) (2017-10-22)
 
 
 
-<a name="0.15.0"></a>
 # [0.15.0](https://github.com/salesforce/lwc/compare/v0.14.11...v0.15.0) (2017-10-20)
 
 
 
-<a name="0.14.11"></a>
 ## [0.14.11](https://github.com/salesforce/lwc/compare/v0.14.10...v0.14.11) (2017-10-19)
 
 
 
-<a name="0.14.10"></a>
 ## [0.14.10](https://github.com/salesforce/lwc/compare/v0.14.9...v0.14.10) (2017-10-09)
 
 
 
-<a name="0.14.9"></a>
 ## [0.14.9](https://github.com/salesforce/lwc/compare/v0.14.8...v0.14.9) (2017-10-06)
 
 
 
-<a name="0.14.8"></a>
 ## [0.14.8](https://github.com/salesforce/lwc/compare/v0.14.7...v0.14.8) (2017-10-03)
 
 
 
-<a name="0.14.7"></a>
 ## [0.14.7](https://github.com/salesforce/lwc/compare/v0.14.6...v0.14.7) (2017-10-02)
 
 
 
-<a name="0.14.6"></a>
 ## [0.14.6](https://github.com/salesforce/lwc/compare/v0.14.5...v0.14.6) (2017-09-27)
 
 
 
-<a name="0.14.5"></a>
 ## [0.14.5](https://github.com/salesforce/lwc/compare/v0.14.4...v0.14.5) (2017-09-25)
 
 
 
-<a name="0.14.4"></a>
 ## [0.14.4](https://github.com/salesforce/lwc/compare/v0.14.3...v0.14.4) (2017-09-21)
 
 
 
-<a name="0.14.3"></a>
 ## [0.14.3](https://github.com/salesforce/lwc/compare/v0.14.2...v0.14.3) (2017-09-16)
 
 
 
-<a name="0.14.2"></a>
 ## [0.14.2](https://github.com/salesforce/lwc/compare/v0.14.1...v0.14.2) (2017-09-11)
 
 
 
-<a name="0.14.1"></a>
 ## [0.14.1](https://github.com/salesforce/lwc/compare/v0.14.0...v0.14.1) (2017-09-08)
 
 
 
-<a name="0.14.0"></a>
 # [0.14.0](https://github.com/salesforce/lwc/compare/v0.13.1...v0.14.0) (2017-08-31)
 
 
 
-<a name="0.13.1"></a>
 ## [0.13.1](https://github.com/salesforce/lwc/compare/v0.13.0...v0.13.1) (2017-08-01)
 
 
 
-<a name="0.13.0"></a>
 # [0.13.0](https://github.com/salesforce/lwc/compare/v0.12.4...v0.13.0) (2017-07-30)
 
 
 
-<a name="0.12.4"></a>
 ## [0.12.4](https://github.com/salesforce/lwc/compare/v0.12.3...v0.12.4) (2017-07-14)
 
 
 
-<a name="0.12.3"></a>
 ## [0.12.3](https://github.com/salesforce/lwc/compare/v0.12.2...v0.12.3) (2017-07-08)
 
 
 
-<a name="0.12.2"></a>
 ## [0.12.2](https://github.com/salesforce/lwc/compare/v0.12.1...v0.12.2) (2017-07-06)
 
 
 
-<a name="0.12.1"></a>
 ## [0.12.1](https://github.com/salesforce/lwc/compare/v0.12.0...v0.12.1) (2017-07-06)
 
 
 
-<a name="0.12.0"></a>
 # [0.12.0](https://github.com/salesforce/lwc/compare/v0.11.9...v0.12.0) (2017-07-05)
 
 
 
-<a name="0.11.9"></a>
 ## [0.11.9](https://github.com/salesforce/lwc/compare/v0.11.8...v0.11.9) (2017-06-24)
 
 
 
-<a name="0.11.8"></a>
 ## [0.11.8](https://github.com/salesforce/lwc/compare/v0.11.7...v0.11.8) (2017-06-24)
 
 
 
-<a name="0.11.7"></a>
 ## [0.11.7](https://github.com/salesforce/lwc/compare/v0.11.5...v0.11.7) (2017-06-20)
 
 
 
-<a name="0.11.5"></a>
 ## [0.11.5](https://github.com/salesforce/lwc/compare/v0.11.4...v0.11.5) (2017-06-20)
 
 
 
-<a name="0.11.4"></a>
 ## [0.11.4](https://github.com/salesforce/lwc/compare/v0.11.3...v0.11.4) (2017-06-15)
 
 
 
-<a name="0.11.3"></a>
 ## [0.11.3](https://github.com/salesforce/lwc/compare/v0.11.2...v0.11.3) (2017-06-13)
 
 
 
-<a name="0.11.2"></a>
 ## [0.11.2](https://github.com/salesforce/lwc/compare/v0.11.1...v0.11.2) (2017-06-13)
 
 
 
-<a name="0.11.1"></a>
 ## [0.11.1](https://github.com/salesforce/lwc/compare/v0.10.5...v0.11.1) (2017-06-13)
 
 
 
-<a name="0.10.5"></a>
 ## [0.10.5](https://github.com/salesforce/lwc/compare/v0.10.3...v0.10.5) (2017-06-05)
 
 
 
-<a name="0.10.3"></a>
 ## [0.10.3](https://github.com/salesforce/lwc/compare/v0.10.2...v0.10.3) (2017-05-24)
 
 
 
-<a name="0.10.2"></a>
 ## [0.10.2](https://github.com/salesforce/lwc/compare/v0.10.1...v0.10.2) (2017-05-23)
 
 
 
-<a name="0.10.1"></a>
 ## [0.10.1](https://github.com/salesforce/lwc/compare/v0.10.0...v0.10.1) (2017-05-23)
 
 
 
-<a name="0.10.0"></a>
 # [0.10.0](https://github.com/salesforce/lwc/compare/v0.9.1...v0.10.0) (2017-05-23)
 
 
 
-<a name="0.9.1"></a>
 ## [0.9.1](https://github.com/salesforce/lwc/compare/v0.9.0...v0.9.1) (2017-05-09)
 
 
 
-<a name="0.9.0"></a>
 # [0.9.0](https://github.com/salesforce/lwc/compare/v0.8.1...v0.9.0) (2017-05-08)
 
 
 
-<a name="0.8.1"></a>
 ## [0.8.1](https://github.com/salesforce/lwc/compare/v0.8.0...v0.8.1) (2017-04-15)
 
 
 
-<a name="0.8.0"></a>
 # [0.8.0](https://github.com/salesforce/lwc/compare/v0.7.1...v0.8.0) (2017-04-14)
 
 
 
-<a name="0.7.1"></a>
 ## [0.7.1](https://github.com/salesforce/lwc/compare/v0.7.0-rc...v0.7.1) (2017-04-10)
 
 
 
-<a name="0.7.0-rc"></a>
 # [0.7.0-rc](https://github.com/salesforce/lwc/compare/v0.7.0...v0.7.0-rc) (2017-04-10)
 
 
 
-<a name="0.7.0"></a>
 # [0.7.0](https://github.com/salesforce/lwc/compare/v0.6.3...v0.7.0) (2017-04-10)
 
 
 
-<a name="0.6.3"></a>
 ## [0.6.3](https://github.com/salesforce/lwc/compare/v0.6.2...v0.6.3) (2017-04-06)
 
 
 
-<a name="0.6.2"></a>
 ## [0.6.2](https://github.com/salesforce/lwc/compare/v0.6.1...v0.6.2) (2017-04-04)
 
 
 
-<a name="0.6.1"></a>
 ## [0.6.1](https://github.com/salesforce/lwc/compare/v0.6.0...v0.6.1) (2017-03-31)
 
 
 
-<a name="0.6.0"></a>
 # [0.6.0](https://github.com/salesforce/lwc/compare/v0.5.1...v0.6.0) (2017-03-29)
 
 
 
-<a name="0.5.1"></a>
 ## [0.5.1](https://github.com/salesforce/lwc/compare/v0.5.0...v0.5.1) (2017-03-28)
 
 
 
-<a name="0.5.0"></a>
 # [0.5.0](https://github.com/salesforce/lwc/compare/v0.4.10...v0.5.0) (2017-03-21)
 
 
 
-<a name="0.4.10"></a>
 ## [0.4.10](https://github.com/salesforce/lwc/compare/v0.4.9...v0.4.10) (2017-03-15)
 
 
 
-<a name="0.4.9"></a>
 ## [0.4.9](https://github.com/salesforce/lwc/compare/v0.4.8...v0.4.9) (2017-03-15)
 
 
 
-<a name="0.4.8"></a>
 ## [0.4.8](https://github.com/salesforce/lwc/compare/v0.4.7...v0.4.8) (2017-03-15)
 
 
 
-<a name="0.4.7"></a>
 ## [0.4.7](https://github.com/salesforce/lwc/compare/v0.4.6...v0.4.7) (2017-03-14)
 
 
 
-<a name="0.4.6"></a>
 ## [0.4.6](https://github.com/salesforce/lwc/compare/v0.4.5...v0.4.6) (2017-03-14)
 
 
 
-<a name="0.4.5"></a>
 ## [0.4.5](https://github.com/salesforce/lwc/compare/v0.4.4...v0.4.5) (2017-03-14)
 
 
 
-<a name="0.4.4"></a>
 ## [0.4.4](https://github.com/salesforce/lwc/compare/v0.4.3...v0.4.4) (2017-03-13)
 
 
 
-<a name="0.4.3"></a>
 ## [0.4.3](https://github.com/salesforce/lwc/compare/v0.4.2...v0.4.3) (2017-03-13)
 
 
 
-<a name="0.4.2"></a>
 ## [0.4.2](https://github.com/salesforce/lwc/compare/v0.4.1...v0.4.2) (2017-03-13)
 
 
 
-<a name="0.4.1"></a>
 ## 0.4.1 (2017-03-11)
 
 
