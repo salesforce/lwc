@@ -327,6 +327,7 @@ function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attr
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
+// Logs an error if the attribute has a corresponding property that is reactive
 function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
