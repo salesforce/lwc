@@ -122,9 +122,6 @@ export const globalHTMLProperties: {
         readOnly: true,
         error: offsetPropertyErrorMessage('offsetWidth'),
     },
-    properties: {
-        readOnly: true,
-    },
     slot: {
         attribute: 'slot',
         error: 'Using the `slot` property is an anti-pattern.',
