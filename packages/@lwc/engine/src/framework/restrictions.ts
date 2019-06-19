@@ -27,13 +27,7 @@ import { ComponentInterface } from './component';
 import { globalHTMLProperties, getPropNameFromAttrName, isAttributeLocked } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getShadowRootVM, getCustomElementVM, VM, getComponentVM } from './vm';
-import {
-    getAttribute,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-} from '../env/element';
+import { setAttribute, setAttributeNS, removeAttribute, removeAttributeNS } from '../env/element';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -278,15 +272,6 @@ function getShadowRootRestrictionsDescriptors(
 // Custom Elements Restrictions:
 // -----------------------------
 
-function getAttributePatched(this: HTMLElement, attrName: string): string | null {
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getCustomElementVM(this);
-        assertAttributeReflectionCapability(vm, attrName);
-    }
-
-    return getAttribute.apply(this, ArraySlice.call(arguments));
-}
-
 function setAttributePatched(this: HTMLElement, attrName: string, _newValue: any) {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV !== 'production') {
@@ -327,6 +312,7 @@ function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attr
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
+// Logs an error if the attribute has a corresponding property that is reactive
 function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -408,9 +394,6 @@ function getCustomElementRestrictionsDescriptors(
             },
         }),
         // replacing mutators and accessors on the element itself to catch any mutation
-        getAttribute: generateDataDescriptor({
-            value: getAttributePatched,
-        }),
         setAttribute: generateDataDescriptor({
             value: setAttributePatched,
         }),
@@ -467,7 +450,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     };
 }
 
-function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+function getLightningElementPrototypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -537,5 +520,5 @@ export function patchComponentWithRestrictions(cmp: ComponentInterface) {
 }
 
 export function patchLightningElementPrototypeWithRestrictions(proto: object) {
-    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
+    defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }

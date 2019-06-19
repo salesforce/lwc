@@ -16,14 +16,14 @@ import {
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [
-    'dir',
-    'id',
     'accessKey',
-    'title',
-    'lang',
-    'hidden',
+    'dir',
     'draggable',
+    'hidden',
+    'id',
+    'lang',
     'tabIndex',
+    'title',
 ];
 
 // Few more exceptions that are using the attribute name to match the property in lowercase.
@@ -59,9 +59,6 @@ export const globalHTMLProperties: {
         readOnly?: boolean;
     };
 } = assign(create(null), {
-    id: {
-        attribute: 'id',
-    },
     accessKey: {
         attribute: 'accesskey',
     },
@@ -70,16 +67,11 @@ export const globalHTMLProperties: {
     },
     className: {
         attribute: 'class',
-        error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
+        error:
+            'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.',
     },
     contentEditable: {
         attribute: 'contenteditable',
-    },
-    isContentEditable: {
-        readOnly: true,
-    },
-    contextMenu: {
-        attribute: 'contextmenu',
     },
     dataset: {
         readOnly: true,
@@ -99,26 +91,38 @@ export const globalHTMLProperties: {
     hidden: {
         attribute: 'hidden',
     },
-    itemScope: {
-        attribute: 'itemscope',
+    id: {
+        attribute: 'id',
     },
-    itemType: {
-        attribute: 'itemtype',
-        readOnly: true,
-    },
-    itemId: {
-        attribute: 'itemid',
-    },
-    itemRef: {
-        attribute: 'itemref',
-        readOnly: true,
-    },
-    itemProp: {
-        attribute: 'itemprop',
-        readOnly: true,
+    inputMode: {
+        attribute: 'inputmode',
     },
     lang: {
         attribute: 'lang',
+    },
+    slot: {
+        attribute: 'slot',
+        error: 'Using the `slot` property is an anti-pattern.',
+    },
+    spellcheck: {
+        attribute: 'spellcheck',
+    },
+    style: {
+        attribute: 'style',
+    },
+    tabIndex: {
+        attribute: 'tabindex',
+    },
+    title: {
+        attribute: 'title',
+    },
+    translate: {
+        attribute: 'translate',
+    },
+
+    // additional "global attributes" that are not present in the link above.
+    isContentEditable: {
+        readOnly: true,
     },
     offsetHeight: {
         readOnly: true,
@@ -139,28 +143,8 @@ export const globalHTMLProperties: {
         readOnly: true,
         error: offsetPropertyErrorMessage('offsetWidth'),
     },
-    properties: {
-        readOnly: true,
-    },
-    spellcheck: {
-        attribute: 'spellcheck',
-    },
-    style: {
-        attribute: 'style',
-    },
-    tabIndex: {
-        attribute: 'tabindex',
-    },
-    title: {
-        attribute: 'title',
-    },
-    // additional global attributes that are not present in the link above.
     role: {
         attribute: 'role',
-    },
-    slot: {
-        attribute: 'slot',
-        error: 'Using the `slot` attribute is an anti-pattern.',
     },
 });
 
