@@ -67,7 +67,8 @@ export const globalHTMLProperties: {
     },
     className: {
         attribute: 'class',
-        error: `Using the \`className\` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the \`classList\` API instead.`,
+        error:
+            'Using the `className` property is an anti-pattern because of slow runtime behavior and potential conflicts with classes provided by the owner element. Use the `classList` API instead.',
     },
     contentEditable: {
         attribute: 'contenteditable',
