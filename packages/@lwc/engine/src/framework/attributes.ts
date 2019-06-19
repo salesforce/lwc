@@ -100,28 +100,6 @@ export const globalHTMLProperties: {
     isContentEditable: {
         readOnly: true,
     },
-    itemId: {
-        attribute: 'itemid',
-    },
-    itemProp: {
-        attribute: 'itemprop',
-        readOnly: true,
-    },
-    itemRef: {
-        attribute: 'itemref',
-        readOnly: true,
-    },
-    itemScope: {
-        attribute: 'itemscope',
-    },
-    itemType: {
-        attribute: 'itemtype',
-        readOnly: true,
-    },
-    itemValue: {
-        attribute: 'itemvalue',
-        readOnly: true,
-    },
     lang: {
         attribute: 'lang',
     },
