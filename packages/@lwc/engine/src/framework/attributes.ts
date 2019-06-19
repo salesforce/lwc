@@ -73,9 +73,6 @@ export const globalHTMLProperties: {
     contentEditable: {
         attribute: 'contenteditable',
     },
-    contextMenu: {
-        attribute: 'contextmenu',
-    },
     dataset: {
         readOnly: true,
         error:
