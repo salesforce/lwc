@@ -116,6 +116,10 @@ export const globalHTMLProperties: {
     title: {
         attribute: 'title',
     },
+    translate: {
+        attribute: 'translate',
+    },
+
     // additional "global attributes" that are not present in the link above.
     isContentEditable: {
         readOnly: true,
