@@ -468,7 +468,7 @@ function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyD
     };
 }
 
-function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
+function getLightningElementPrototypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -538,5 +538,5 @@ export function patchComponentWithRestrictions(cmp: ComponentInterface) {
 }
 
 export function patchLightningElementPrototypeWithRestrictions(proto: object) {
-    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
+    defineProperties(proto, getLightningElementPrototypeRestrictionsDescriptors(proto));
 }
