@@ -64,7 +64,6 @@ export interface IRElement {
 
     attrsList: parse5.AST.Default.Attribute[];
 
-    parent?: IRElement;
     children: IRNode[];
 
     __original: HTMLElement;
@@ -101,8 +100,6 @@ export interface IRElement {
 export interface IRText {
     type: 'text';
     value: string | TemplateExpression;
-
-    parent?: IRElement;
 
     __original: HTMLText;
 }

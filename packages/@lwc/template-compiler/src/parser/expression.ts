@@ -8,6 +8,7 @@ import traverse from '@babel/traverse';
 import * as types from '@babel/types';
 import * as babylon from '@babel/parser';
 import * as esutils from 'esutils';
+import { isUndefined } from 'util';
 
 import { ParserDiagnostics, invariant, generateCompilerError } from '@lwc/errors';
 
@@ -15,7 +16,7 @@ import State from '../state';
 
 import { TemplateExpression, TemplateIdentifier, IRNode, IRElement } from '../shared/types';
 
-import { isBoundToIterator } from '../shared/ir';
+import { isBoundToIterator, irParentMap } from '../shared/ir';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
@@ -104,8 +105,8 @@ export function parseIdentifier(source: string): TemplateIdentifier | never {
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
 export function getForOfParent(element: IRElement): IRElement | null {
-    const parent = element.parent;
-    if (!parent) {
+    const parent = irParentMap.get(element);
+    if (isUndefined(parent)) {
         return null;
     }
 
@@ -122,8 +123,8 @@ export function getForEachParent(element: IRElement): IRElement | null {
         return element;
     }
 
-    const parent = element.parent;
-    if (parent && parent.tag.toLowerCase() === 'template') {
+    const parent = irParentMap.get(element);
+    if (!isUndefined(parent) && parent.tag.toLowerCase() === 'template') {
         return getForEachParent(parent);
     }
 
