@@ -9,6 +9,18 @@ import { createElement, LightningElement } from '../main';
 import { registerTemplate } from '../template';
 import { compileTemplate } from 'test-utils';
 
+function runTestWithVmBeingRendered(testFn: Function) {
+    const html = compileTemplate(`<template></template>`);
+    class VmRendering extends LightningElement {
+        render() {
+            testFn();
+            return html;
+        }
+    }
+    const elm = createElement('x-vm-aux', { is: VmRendering });
+    document.body.appendChild(elm);
+}
+
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
 
@@ -45,6 +57,19 @@ describe('api', () => {
                 createElement('x-foo');
             }).toThrow();
         });
+
+        it('CustomElementHook.create should not reuse element in vnode', () => {
+            runTestWithVmBeingRendered(() => {
+                const vnode = api.c('x-foo', Foo, {});
+                expect(vnode.elm).not.toBeDefined();
+                vnode.hook.create(vnode);
+                const firstCreateElement = vnode.elm;
+                expect(firstCreateElement).toBeDefined();
+
+                vnode.hook.create(vnode);
+                expect(vnode.elm).not.toBe(firstCreateElement);
+            });
+        });
     });
 
     describe('#h()', () => {
@@ -60,6 +85,33 @@ describe('api', () => {
 
             expect(() => {
                 api.h('p', {}, [undefined]);
+            });
+        });
+
+        it('ElementHook.create should not reuse element in vnode when is not a style element (clonedElement=undefined)', () => {
+            runTestWithVmBeingRendered(() => {
+                const vnode = api.h('span', { key: 123 }, []);
+                expect(vnode.elm).not.toBeDefined();
+                vnode.hook.create(vnode);
+                const firstCreateElement = vnode.elm;
+                expect(firstCreateElement).toBeDefined();
+
+                vnode.hook.create(vnode);
+                expect(vnode.elm).not.toBe(firstCreateElement);
+            });
+        });
+
+        it('ElementHook.create should reuse element in vnode when is style element (clonedElement!=undefined)', () => {
+            runTestWithVmBeingRendered(() => {
+                const vnode = api.h('style', { key: 123 }, []);
+                expect(vnode.elm).not.toBeDefined();
+                vnode.hook.create(vnode);
+                const firstCreateElement = vnode.elm;
+                expect(firstCreateElement).toBeDefined();
+
+                vnode.clonedElement = vnode.elm as HTMLStyleElement;
+                vnode.hook.create(vnode);
+                expect(vnode.elm).toBe(firstCreateElement);
             });
         });
     });
@@ -154,6 +206,19 @@ describe('api', () => {
             document.body.appendChild(elm);
             expect(elm.shadowRoot.querySelector('span').textContent).toEqual('miami');
         });
+
+        it('TextHook.create should not reuse element in vnode', () => {
+            runTestWithVmBeingRendered(() => {
+                const vnode = api.t('some text');
+                expect(vnode.elm).not.toBeDefined();
+                vnode.hook.create(vnode);
+                const firstCreateElement = vnode.elm;
+                expect(firstCreateElement).toBeDefined();
+
+                vnode.hook.create(vnode);
+                expect(vnode.elm).not.toBe(firstCreateElement);
+            });
+        });
     });
 
     describe('#p()', () => {
@@ -169,6 +234,19 @@ describe('api', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             expect(elm.shadowRoot.querySelector('span').innerHTML).toEqual('<!--miami-->');
+        });
+
+        it('CommentHook.create should not reuse element in vnode', () => {
+            runTestWithVmBeingRendered(() => {
+                const vnode = api.p('miami');
+                expect(vnode.elm).not.toBeDefined();
+                vnode.hook.create(vnode);
+                const firstCreateElement = vnode.elm;
+                expect(firstCreateElement).toBeDefined();
+
+                vnode.hook.create(vnode);
+                expect(vnode.elm).not.toBe(firstCreateElement);
+            });
         });
     });
 
