@@ -64,8 +64,9 @@ function createStyleVNode(elm: HTMLStyleElement) {
         },
         EmptyArray
     );
-    // Force the diffing algo to use the cloned style.
-    vnode.elm = elm;
+    // TODO: issue #1364 - supporting the ability to inject a cloned StyleElement
+    // forcing the diffing algo to use the cloned style for native shadow
+    vnode.clonedElement = elm;
     return vnode;
 }
 

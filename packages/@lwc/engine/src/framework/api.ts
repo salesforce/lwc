@@ -103,11 +103,7 @@ const SymbolIterator = Symbol.iterator;
 
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
-        if (isUndefined(vnode.elm)) {
-            // supporting the ability to inject an element via a vnode
-            // this is used mostly for caching in compiler
-            vnode.elm = document.createTextNode(vnode.text as string);
-        }
+        vnode.elm = document.createTextNode(vnode.text as string);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
@@ -122,11 +118,7 @@ const TextHook: Hooks = {
 
 const CommentHook: Hooks = {
     create: (vnode: VComment) => {
-        if (isUndefined(vnode.elm)) {
-            // supporting the ability to inject an element via a vnode
-            // this is used mostly for caching in compiler
-            vnode.elm = document.createComment(vnode.text);
-        }
+        vnode.elm = document.createComment(vnode.text);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
@@ -146,14 +138,16 @@ const CommentHook: Hooks = {
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks = {
     create: (vnode: VElement) => {
-        const { data, sel, elm } = vnode;
+        const { data, sel, clonedElement } = vnode;
         const { ns } = data;
-        if (isUndefined(elm)) {
-            // supporting the ability to inject an element via a vnode
-            // this is used mostly for caching in compiler and style tags
+        // TODO: issue #1364 - supporting the ability to inject a cloned StyleElement
+        // via a vnode this is used for style tags for native shadow
+        if (isUndefined(clonedElement)) {
             vnode.elm = isUndefined(ns)
                 ? document.createElement(sel)
                 : document.createElementNS(ns, sel);
+        } else {
+            vnode.elm = clonedElement;
         }
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
@@ -181,12 +175,8 @@ const ElementHook: Hooks = {
 
 const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
-        const { sel, elm } = vnode;
-        if (isUndefined(elm)) {
-            // supporting the ability to inject an element via a vnode
-            // this is used mostly for caching in compiler and style tags
-            vnode.elm = document.createElement(sel);
-        }
+        const { sel } = vnode;
+        vnode.elm = document.createElement(sel);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Element);
@@ -197,7 +187,7 @@ const CustomElementHook: Hooks = {
     },
     update: (oldVnode: VCustomElement, vnode: VCustomElement) => {
         updateCustomElmHook(oldVnode, vnode);
-        // in fallback mode, the allocation will always the children to
+        // in fallback mode, the allocation will always set children to
         // empty and delegate the real allocation to the slot elements
         allocateChildrenHook(vnode);
         // in fallback mode, the children will be always empty, so, nothing
