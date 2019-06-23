@@ -32,10 +32,10 @@ export default function apply() {
 
 function wrapIframeWindow(win: WindowProxy): WindowProxy {
     return {
-        postMessage() {
+        addEventListener() {
             // Typescript does not like it when you treat the `arguments` object as an array
             // @ts-ignore type-mismatch
-            return win.postMessage.apply(win, arguments);
+            return win.addEventListener.apply(win, arguments);
         },
         blur() {
             // Typescript does not like it when you treat the `arguments` object as an array
@@ -51,6 +51,16 @@ function wrapIframeWindow(win: WindowProxy): WindowProxy {
             // Typescript does not like it when you treat the `arguments` object as an array
             // @ts-ignore type-mismatch
             return win.focus.apply(win, arguments);
+        },
+        postMessage() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.postMessage.apply(win, arguments);
+        },
+        removeEventListener() {
+            // Typescript does not like it when you treat the `arguments` object as an array
+            // @ts-ignore type-mismatch
+            return win.removeEventListener.apply(win, arguments);
         },
         get closed() {
             return win.closed;
