@@ -14,18 +14,25 @@ it('should not throw when unwrapping contentWindow', () => {
 });
 
 describe('HTMLIFrameElement.contentWindow patching', () => {
-    let iframe;
+    let iframe, sameOriginFrame;
 
     beforeAll(() => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         iframe = elm.shadowRoot.querySelector('iframe');
+        sameOriginFrame = elm.shadowRoot.querySelector('[data-id="same_origin_iframe"]');
     });
 
     function testContentWindowProperty(name, fn) {
         it(`should not throw when accessing ${name}`, () => {
             expect(() => fn(iframe.contentWindow)).not.toThrowError();
+        });
+    }
+
+    function testSameOriginContentWindowProperty(name, fn) {
+        it(`should not throw when accessing ${name}`, () => {
+            expect(() => fn(sameOriginFrame.contentWindow)).not.toThrowError();
         });
     }
 
@@ -47,4 +54,11 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     testContentWindowProperty('self', contentWindow => contentWindow.self);
     testContentWindowProperty('top', contentWindow => contentWindow.top);
     testContentWindowProperty('window', contentWindow => contentWindow.window);
+
+    testSameOriginContentWindowProperty('addEventListener', contentWindow =>
+        contentWindow.addEventListener('resize', () => {})
+    );
+    testSameOriginContentWindowProperty('removeEventListener', contentWindow => {
+        contentWindow.removeEventListener('resize', () => {});
+    });
 });
