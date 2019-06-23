@@ -14,6 +14,9 @@
         "@types/he": "^1.1.0",
         "esutils": "^2.0.2"
     },
+    "files": [
+        "dist/"
+    ],
     "dependencies": {
         "@babel/generator": "~7.1.5",
         "@babel/parser": "~7.1.5",
@@ -24,8 +27,5 @@
         "camelcase": "~5.0.0",
         "he": "^1.1.1",
         "parse5-with-errors": "^4.0.1"
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }

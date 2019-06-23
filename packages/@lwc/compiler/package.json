@@ -10,6 +10,9 @@
         "build": "tsc && node ./scripts/update-compiler-version.js",
         "test": "jest"
     },
+    "files": [
+        "dist/"
+    ],
     "dependencies": {
         "@babel/core": "7.1.0",
         "@babel/plugin-proposal-object-rest-spread": "7.0.0",
@@ -24,8 +27,5 @@
     },
     "devDependencies": {
         "source-map": "^0.7.3"
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }

@@ -9,12 +9,10 @@ const path = require('path');
 const rollupTypescript = require('rollup-plugin-typescript');
 const rollupCleanup = require('rollup-plugin-cleanup');
 const { version } = require('../../package.json');
-const { generateTargetName } = require('./util');
 
 const entry = path.resolve(__dirname, '../../src/index.ts');
-const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
-const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
-
+const targetDirectory = path.resolve(__dirname, '../../dist/');
+const targetName = 'synthetic-shadow.js';
 const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
@@ -26,23 +24,19 @@ function wrapModule() {
     };
 }
 
-function rollupConfig(config) {
-    const { format, target, wrap } = config;
-    const targetName = generateTargetName(config);
-    const targetDirectory = (format === 'es' ? modulesDirectory : commonJSDirectory) + `/${target}`;
-
+function rollupConfig({ wrap } = {}) {
     return {
         input: entry,
         output: {
             file: path.join(targetDirectory, targetName),
             name: 'SyntheticShadow',
-            format,
+            format: 'es',
             banner,
             footer,
         },
         plugins: [
             wrap && wrapModule(),
-            rollupTypescript({ target, typescript }),
+            rollupTypescript({ target: 'es2017', typescript }),
             rollupCleanup({ comments: 'none', extensions: ['js', 'ts'], sourcemap: false }),
         ].filter(Boolean),
     };
@@ -51,9 +45,7 @@ function rollupConfig(config) {
 module.exports = [
     // Wrap encloses de module into a function so it can be conditionally enabled at runtime
     // This is very useful for testing.
-    rollupConfig({ format: 'es', target: 'es2017', wrap: true }),
+    //rollupConfig({ format: 'es', target: 'es2017', wrap: true }),
 
-    rollupConfig({ format: 'es', target: 'es2017' }),
-    rollupConfig({ format: 'cjs', target: 'es2017' }),
-    rollupConfig({ format: 'cjs', target: 'es5' }),
+    rollupConfig(),
 ];

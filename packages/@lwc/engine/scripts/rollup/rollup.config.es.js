@@ -9,32 +9,31 @@ const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
+const { TS_WHITELIST, ignoreCircularDependencies } = require('./utils');
 const { version } = require('../../package.json');
-const { TS_WHITELIST, generateTargetName, ignoreCircularDependencies } = require('./utils');
 
-const input = path.resolve(__dirname, '../../src/framework/main.ts');
-const outputDir = path.resolve(__dirname, '../../dist/umd');
+const entry = path.resolve(__dirname, '../../src/framework/main.ts');
+const targetDirectory = path.resolve(__dirname, '../../dist/');
+const targetName = 'engine.js';
 
-const banner = `/* proxy-compat-disable */\ntypeof process === 'undefined' && (process = { env: { NODE_ENV: 'dev' } });`;
+const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
-function rollupConfig(config) {
-    const { format, target } = config;
-    const targetName = generateTargetName(config);
+function rollupConfig() {
     return {
-        input: input,
+        input: entry,
         onwarn: ignoreCircularDependencies,
         output: {
-            name: 'Engine',
+            name: 'LWC',
+            file: path.join(targetDirectory, targetName),
+            format: 'es',
             banner: banner,
             footer: footer,
-            file: path.join(outputDir + `/${target}`, targetName),
-            format: format,
         },
         plugins: [
             nodeResolve(),
             rollupTypescriptPlugin({
-                target,
+                target: 'es2017',
                 typescript,
                 include: TS_WHITELIST,
             }),
@@ -42,7 +41,4 @@ function rollupConfig(config) {
     };
 }
 
-module.exports = [
-    rollupConfig({ format: 'umd', target: 'es5' }),
-    rollupConfig({ format: 'umd', target: 'es2017' }),
-];
+module.exports = [rollupConfig()];

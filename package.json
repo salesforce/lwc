@@ -12,6 +12,7 @@
     "lint": "eslint packages/ scripts/ --ext=js,ts --rulesdir=./scripts/eslint/rules",
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
+    "build:artifacts": "lerna exec --scope lwc -- yarn build:artifacts ",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
@@ -42,6 +43,7 @@
     "glob": "^7.1.2",
     "husky": "^2.4.0",
     "isbinaryfile": "^3.0.3",
+    "is-ci":"^2.0.0",
     "jest": "^24.8.0",
     "jest-environment-jsdom-fifteen": "^1.0.0",
     "lerna": "^3.14.1",
@@ -58,7 +60,8 @@
     "semver": "^6.1.1",
     "ts-jest": "^24.0.0",
     "tslib": "^1.9.3",
-    "typescript": "~3.5.1"
+    "typescript": "~3.5.1",
+    "worker-farm": "~1.7.0"
   },
   "config": {
     "commitizen": {
@@ -82,6 +85,7 @@
   },
   "workspaces": [
     "packages/@lwc/*",
+    "packages/lwc",
     "packages/integration-karma",
     "packages/integration-tests",
     "packages/perf-benchmarks"

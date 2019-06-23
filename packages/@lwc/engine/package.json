@@ -2,15 +2,18 @@
     "name": "@lwc/engine",
     "version": "1.0.2",
     "description": "LWC Engine",
-    "main": "lib/index.js",
-    "module": "dist/modules/es2017/engine.js",
+    "main": "index.js",
+    "module": "dist/engine.js",
     "typings": "types/engine.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/ lib/",
         "test": "jest",
-        "build": "tsc && rollup -c scripts/rollup/rollup.config.js"
+        "build": "rollup -c scripts/rollup/rollup.config.js"
     },
+    "files": [
+        "dist/"
+    ],
     "dependencies": {
         "observable-membrane": "0.26.1"
     },
@@ -19,10 +22,7 @@
     },
     "lwc": {
         "modules": {
-            "lwc": "dist/modules/es2017/engine.js"
+            "lwc": "dist/engine.js"
         }
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }

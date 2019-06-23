@@ -5,6 +5,7 @@
         "noImplicitAny": false,
         "strictFunctionTypes": false,
         "strictPropertyInitialization": false,
+        "allowJs": true,
 
         "outDir": "lib",
 

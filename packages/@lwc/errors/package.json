@@ -10,10 +10,10 @@
         "build": "tsc",
         "test": "jest"
     },
+    "files": [
+        "dist/"
+    ],
     "keywords": [
         "lwc"
-    ],
-    "publishConfig": {
-        "access": "public"
-    }
+    ]
 }

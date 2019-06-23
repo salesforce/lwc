@@ -3,8 +3,9 @@
 
     "compilerOptions": {
         "noImplicitAny": false,
-
-        "outDir": "lib"
+        "outDir": "lib",
+        "allowJs": true,
+        "declaration": false
     },
 
     "include": ["src/"]
