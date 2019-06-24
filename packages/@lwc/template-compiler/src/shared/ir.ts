@@ -37,12 +37,10 @@ export function createElement(tag: string, original: HTMLElement): IRElement {
 }
 
 export function createText(original: HTMLText, value: string | TemplateExpression): IRText {
-    const text: IRText = {
+    return {
         type: 'text',
         value,
     };
-    irTextMap.set(text, original);
-    return text;
 }
 
 export function isElement(node: IRNode): node is IRElement {
@@ -112,4 +110,3 @@ export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode)
 
 export const irParentMap: WeakMap<IRElement | IRText, IRElement> = new WeakMap();
 export const irElementMap: WeakMap<IRElement, HTMLElement> = new WeakMap();
-export const irTextMap: WeakMap<IRText, HTMLText> = new WeakMap();
