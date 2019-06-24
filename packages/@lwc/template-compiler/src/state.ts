@@ -10,7 +10,6 @@ import { ResolvedConfig } from './config';
 import { Statement, ImportDeclaration } from '@babel/types';
 
 export interface IdAttributeData {
-    key: number;
     location: MarkupData.Location;
     value: string;
 }

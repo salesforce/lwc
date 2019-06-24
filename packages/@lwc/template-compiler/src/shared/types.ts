@@ -86,8 +86,6 @@ export interface IRElement {
     forOf?: ForIterator;
     forKey?: TemplateExpression;
 
-    key?: number;
-
     locator?: Locator;
     lwc?: LWCDirective;
 

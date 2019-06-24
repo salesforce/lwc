@@ -10,6 +10,11 @@ import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
 import { isUndefined } from 'util';
 
+function getKeyGenerator() {
+    let count = 1;
+    return () => count++;
+}
+
 type RenderPrimitive =
     | 'iterator'
     | 'flatten'
@@ -56,6 +61,13 @@ export default class CodeGen {
     memorizedIds: t.Identifier[] = [];
     inlineStyleImports: t.ImportDeclaration[] = [];
     inlineStyleBody: t.Statement[] = [];
+
+    generateKey() {
+        this._generateKey = this._generateKey || getKeyGenerator();
+        return this._generateKey();
+    }
+
+    _generateKey;
 
     genInlineStyles(src: string | undefined): void {
         if (src) {

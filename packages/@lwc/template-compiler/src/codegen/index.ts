@@ -498,12 +498,17 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         if (forKey) {
             // If element has user-supplied `key` or is in iterator, call `api.k`
             const { expression: forKeyExpression } = bindExpression(forKey, element);
-            const generatedKey = codeGen.genKey(t.numericLiteral(element.key!), forKeyExpression);
+            const generatedKey = codeGen.genKey(
+                t.numericLiteral(codeGen.generateKey()),
+                forKeyExpression
+            );
             data.push(t.objectProperty(t.identifier('key'), generatedKey));
         } else {
             // If stand alone element with no user-defined key
             // member expression id
-            data.push(t.objectProperty(t.identifier('key'), t.numericLiteral(element.key!)));
+            data.push(
+                t.objectProperty(t.identifier('key'), t.numericLiteral(codeGen.generateKey()))
+            );
         }
 
         // Event handler
