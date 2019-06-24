@@ -1,0 +1,31 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "slot",
+                "attrsList": [],
+                "children": [],
+                "key": 2,
+                "slotName": ""
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1088,
+            "message": "LWC1088: Invalid directive \"lwc:dom\" on <slot>.. \"lwc:dom\" cannot be added to a <slot>",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 30
+            }
+        }
+    ]
+}

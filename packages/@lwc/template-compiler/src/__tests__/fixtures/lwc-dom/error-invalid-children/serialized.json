@@ -1,0 +1,43 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "span",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "Invalid child"
+                            }
+                        ],
+                        "key": 3
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1086,
+            "message": "LWC1086: Invalid contents for element with \"lwc:dom\". Element must be empty",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 68
+            }
+        }
+    ]
+}

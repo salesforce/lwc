@@ -1,0 +1,109 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "x"
+                    }
+                ],
+                "key": 2,
+                "props": {
+                    "hidden": {
+                        "name": "hidden",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 8,
+                            "startOffset": 18,
+                            "endLine": 2,
+                            "endCol": 14,
+                            "endOffset": 24
+                        },
+                        "type": 2,
+                        "value": true
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "title",
+                        "value": "foo"
+                    }
+                ],
+                "children": [],
+                "key": 3,
+                "props": {
+                    "readOnly": {
+                        "name": "readonly",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 12,
+                            "startOffset": 42,
+                            "endLine": 3,
+                            "endCol": 34,
+                            "endOffset": 64
+                        },
+                        "type": 0,
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 12,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 12
+                                },
+                                "identifierName": "getReadOnly"
+                            },
+                            "name": "getReadOnly"
+                        }
+                    },
+                    "disabled": {
+                        "name": "disabled",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 35,
+                            "startOffset": 65,
+                            "endLine": 3,
+                            "endCol": 43,
+                            "endOffset": 73
+                        },
+                        "type": 2,
+                        "value": true
+                    }
+                },
+                "attrs": {
+                    "title": {
+                        "name": "title",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 44,
+                            "startOffset": 74,
+                            "endLine": 3,
+                            "endCol": 55,
+                            "endOffset": 85
+                        },
+                        "type": 1,
+                        "value": "foo"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

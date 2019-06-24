@@ -1,0 +1,46 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "color-profile",
+                        "attrsList": [
+                            {
+                                "name": "local",
+                                "value": "x"
+                            }
+                        ],
+                        "children": [],
+                        "key": 3,
+                        "attrs": {
+                            "local": {
+                                "name": "local",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 24,
+                                    "startOffset": 48,
+                                    "endLine": 3,
+                                    "endCol": 33,
+                                    "endOffset": 57
+                                },
+                                "type": 1,
+                                "value": "x"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

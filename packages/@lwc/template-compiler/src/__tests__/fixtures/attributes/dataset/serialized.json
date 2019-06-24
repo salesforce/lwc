@@ -1,0 +1,63 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "p",
+                        "attrsList": [
+                            {
+                                "name": "data-foo",
+                                "value": "1"
+                            },
+                            {
+                                "name": "data-bar-baz",
+                                "value": "xyz"
+                            }
+                        ],
+                        "children": [],
+                        "key": 3,
+                        "attrs": {
+                            "data-foo": {
+                                "name": "data-foo",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 8,
+                                    "startOffset": 30,
+                                    "endLine": 3,
+                                    "endCol": 20,
+                                    "endOffset": 42
+                                },
+                                "type": 1,
+                                "value": "1"
+                            },
+                            "data-bar-baz": {
+                                "name": "data-bar-baz",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 21,
+                                    "startOffset": 43,
+                                    "endLine": 3,
+                                    "endCol": 39,
+                                    "endOffset": 61
+                                },
+                                "type": 1,
+                                "value": "xyz"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

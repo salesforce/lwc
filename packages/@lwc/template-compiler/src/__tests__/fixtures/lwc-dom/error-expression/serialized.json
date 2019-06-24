@@ -1,0 +1,30 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1085,
+            "message": "LWC1085: Invalid value for \"lwc:dom\". 'lwc:dom' can only be set to \"manual\"",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 39
+            }
+        }
+    ]
+}

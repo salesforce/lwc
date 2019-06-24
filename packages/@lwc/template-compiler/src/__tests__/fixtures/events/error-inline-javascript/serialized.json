@@ -1,0 +1,35 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "h1",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Hello"
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1043,
+            "message": "LWC1043: Event handler should be an expression",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 9,
+                "start": 19,
+                "length": 24
+            }
+        }
+    ]
+}

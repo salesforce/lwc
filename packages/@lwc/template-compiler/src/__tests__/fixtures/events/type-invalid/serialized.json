@@ -1,0 +1,182 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 2
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 3
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [
+                    {
+                        "name": "onz",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 4
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [
+                    {
+                        "name": "onfoobar",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 5
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 6
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 7
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1056,
+            "message": "LWC1056: Invalid event type \"on123\". Event type must begin with a lower-case alphabetic character and contain only lower-case alphabetic characters, underscores, and numeric characters",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 10,
+                "start": 20,
+                "length": 19
+            }
+        },
+        {
+            "code": 1056,
+            "message": "LWC1056: Invalid event type \"on_foo\". Event type must begin with a lower-case alphabetic character and contain only lower-case alphabetic characters, underscores, and numeric characters",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 10,
+                "start": 61,
+                "length": 20
+            }
+        },
+        {
+            "code": 1055,
+            "message": "LWC1055: onZ={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 10,
+                "start": 103,
+                "length": 17
+            }
+        },
+        {
+            "code": 1055,
+            "message": "LWC1055: onZ={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 10,
+                "start": 103,
+                "length": 17
+            }
+        },
+        {
+            "code": 1055,
+            "message": "LWC1055: onfooBar={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 10,
+                "start": 142,
+                "length": 22
+            }
+        },
+        {
+            "code": 1055,
+            "message": "LWC1055: onfooBar={handleClick} is not valid attribute for div. All attributes name should be all lowercase.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 10,
+                "start": 142,
+                "length": 22
+            }
+        },
+        {
+            "code": 1056,
+            "message": "LWC1056: Invalid event type \"on!f\". Event type must begin with a lower-case alphabetic character and contain only lower-case alphabetic characters, underscores, and numeric characters",
+            "level": 1,
+            "location": {
+                "line": 6,
+                "column": 10,
+                "start": 186,
+                "length": 18
+            }
+        },
+        {
+            "code": 1056,
+            "message": "LWC1056: Invalid event type \"on-f\". Event type must begin with a lower-case alphabetic character and contain only lower-case alphabetic characters, underscores, and numeric characters",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 10,
+                "start": 226,
+                "length": 18
+            }
+        }
+    ]
+}

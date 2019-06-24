@@ -1,0 +1,41 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "root",
+                "attrsList": [],
+                "children": [],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1075,
+            "message": "LWC1075: Multiple roots found",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 38,
+                "length": 10
+            }
+        },
+        {
+            "code": 1123,
+            "message": "LWC1123: Unknown html tag '<root>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
+            "level": 2,
+            "location": {
+                "line": 2,
+                "column": 3,
+                "start": 13,
+                "length": 13
+            }
+        }
+    ]
+}

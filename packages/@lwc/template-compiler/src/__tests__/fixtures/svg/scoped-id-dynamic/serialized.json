@@ -1,0 +1,391 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "svg",
+                "attrsList": [
+                    {
+                        "name": "width",
+                        "value": "100px"
+                    },
+                    {
+                        "name": "height",
+                        "value": "100px"
+                    },
+                    {
+                        "name": "viewport",
+                        "value": "0 0 100 100"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "defs",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "circle",
+                                "attrsList": [
+                                    {
+                                        "name": "id",
+                                        "value": "{blackId}"
+                                    },
+                                    {
+                                        "name": "r",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cx",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cy",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "fill",
+                                        "value": "black"
+                                    }
+                                ],
+                                "children": [],
+                                "key": 4,
+                                "attrs": {
+                                    "id": {
+                                        "name": "id",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 21,
+                                            "startOffset": 108,
+                                            "endLine": 4,
+                                            "endCol": 33,
+                                            "endOffset": 120
+                                        },
+                                        "type": 0,
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 8,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 1
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 8
+                                                },
+                                                "identifierName": "blackId"
+                                            },
+                                            "name": "blackId"
+                                        }
+                                    },
+                                    "r": {
+                                        "name": "r",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 34,
+                                            "startOffset": 121,
+                                            "endLine": 4,
+                                            "endCol": 40,
+                                            "endOffset": 127
+                                        },
+                                        "type": 1,
+                                        "value": "10"
+                                    },
+                                    "cx": {
+                                        "name": "cx",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 41,
+                                            "startOffset": 128,
+                                            "endLine": 4,
+                                            "endCol": 48,
+                                            "endOffset": 135
+                                        },
+                                        "type": 1,
+                                        "value": "10"
+                                    },
+                                    "cy": {
+                                        "name": "cy",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 49,
+                                            "startOffset": 136,
+                                            "endLine": 4,
+                                            "endCol": 56,
+                                            "endOffset": 143
+                                        },
+                                        "type": 1,
+                                        "value": "10"
+                                    },
+                                    "fill": {
+                                        "name": "fill",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 57,
+                                            "startOffset": 144,
+                                            "endLine": 4,
+                                            "endCol": 69,
+                                            "endOffset": 156
+                                        },
+                                        "type": 1,
+                                        "value": "black"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "element",
+                                "tag": "circle",
+                                "attrsList": [
+                                    {
+                                        "name": "id",
+                                        "value": "{redId}"
+                                    },
+                                    {
+                                        "name": "r",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cx",
+                                        "value": "14"
+                                    },
+                                    {
+                                        "name": "cy",
+                                        "value": "14"
+                                    },
+                                    {
+                                        "name": "fill",
+                                        "value": "red"
+                                    }
+                                ],
+                                "children": [],
+                                "key": 5,
+                                "attrs": {
+                                    "id": {
+                                        "name": "id",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 21,
+                                            "startOffset": 187,
+                                            "endLine": 5,
+                                            "endCol": 31,
+                                            "endOffset": 197
+                                        },
+                                        "type": 0,
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 6,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 1
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 6
+                                                },
+                                                "identifierName": "redId"
+                                            },
+                                            "name": "redId"
+                                        }
+                                    },
+                                    "r": {
+                                        "name": "r",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 32,
+                                            "startOffset": 198,
+                                            "endLine": 5,
+                                            "endCol": 38,
+                                            "endOffset": 204
+                                        },
+                                        "type": 1,
+                                        "value": "10"
+                                    },
+                                    "cx": {
+                                        "name": "cx",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 39,
+                                            "startOffset": 205,
+                                            "endLine": 5,
+                                            "endCol": 46,
+                                            "endOffset": 212
+                                        },
+                                        "type": 1,
+                                        "value": "14"
+                                    },
+                                    "cy": {
+                                        "name": "cy",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 47,
+                                            "startOffset": 213,
+                                            "endLine": 5,
+                                            "endCol": 54,
+                                            "endOffset": 220
+                                        },
+                                        "type": 1,
+                                        "value": "14"
+                                    },
+                                    "fill": {
+                                        "name": "fill",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 55,
+                                            "startOffset": 221,
+                                            "endLine": 5,
+                                            "endCol": 65,
+                                            "endOffset": 231
+                                        },
+                                        "type": 1,
+                                        "value": "red"
+                                    }
+                                }
+                            }
+                        ],
+                        "key": 3
+                    },
+                    {
+                        "type": "element",
+                        "tag": "use",
+                        "attrsList": [
+                            {
+                                "name": "href",
+                                "value": "{blackUrl}"
+                            }
+                        ],
+                        "children": [],
+                        "key": 6,
+                        "attrs": {
+                            "href": {
+                                "name": "href",
+                                "location": {
+                                    "startLine": 7,
+                                    "startCol": 14,
+                                    "startOffset": 271,
+                                    "endLine": 7,
+                                    "endCol": 29,
+                                    "endOffset": 286
+                                },
+                                "type": 0,
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 9
+                                        },
+                                        "identifierName": "blackUrl"
+                                    },
+                                    "name": "blackUrl"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "element",
+                        "tag": "use",
+                        "attrsList": [
+                            {
+                                "name": "href",
+                                "value": "{redUrl}",
+                                "prefix": "xlink",
+                                "namespace": "http://www.w3.org/1999/xlink"
+                            }
+                        ],
+                        "children": [],
+                        "key": 7,
+                        "attrs": {
+                            "xlink:href": {
+                                "name": "xlink:href",
+                                "location": {
+                                    "startLine": 8,
+                                    "startCol": 14,
+                                    "startOffset": 307,
+                                    "endLine": 8,
+                                    "endCol": 33,
+                                    "endOffset": 326
+                                },
+                                "type": 0,
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 7,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 7
+                                        },
+                                        "identifierName": "redUrl"
+                                    },
+                                    "name": "redUrl"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "key": 2,
+                "attrs": {
+                    "width": {
+                        "name": "width",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 10,
+                            "startOffset": 20,
+                            "endLine": 2,
+                            "endCol": 23,
+                            "endOffset": 33
+                        },
+                        "type": 1,
+                        "value": "100px"
+                    },
+                    "height": {
+                        "name": "height",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 24,
+                            "startOffset": 34,
+                            "endLine": 2,
+                            "endCol": 38,
+                            "endOffset": 48
+                        },
+                        "type": 1,
+                        "value": "100px"
+                    },
+                    "viewport": {
+                        "name": "viewport",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 39,
+                            "startOffset": 49,
+                            "endLine": 2,
+                            "endCol": 61,
+                            "endOffset": 71
+                        },
+                        "type": 1,
+                        "value": "0 0 100 100"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

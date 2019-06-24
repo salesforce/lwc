@@ -1,0 +1,113 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "type",
+                        "value": "checkbox"
+                    },
+                    {
+                        "name": "minlength",
+                        "value": "5"
+                    },
+                    {
+                        "name": "maxlength",
+                        "value": "10"
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "type": {
+                        "name": "type",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 12,
+                            "startOffset": 22,
+                            "endLine": 2,
+                            "endCol": 27,
+                            "endOffset": 37
+                        },
+                        "type": 1,
+                        "value": "checkbox"
+                    },
+                    "minlength": {
+                        "name": "minlength",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 54,
+                            "startOffset": 64,
+                            "endLine": 2,
+                            "endCol": 67,
+                            "endOffset": 77
+                        },
+                        "type": 1,
+                        "value": "5"
+                    },
+                    "maxlength": {
+                        "name": "maxlength",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 68,
+                            "startOffset": 78,
+                            "endLine": 2,
+                            "endCol": 82,
+                            "endOffset": 92
+                        },
+                        "type": 1,
+                        "value": "10"
+                    }
+                },
+                "props": {
+                    "required": {
+                        "name": "required",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 28,
+                            "startOffset": 38,
+                            "endLine": 2,
+                            "endCol": 36,
+                            "endOffset": 46
+                        },
+                        "type": 2,
+                        "value": true
+                    },
+                    "readOnly": {
+                        "name": "readonly",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 37,
+                            "startOffset": 47,
+                            "endLine": 2,
+                            "endCol": 45,
+                            "endOffset": 55
+                        },
+                        "type": 2,
+                        "value": true
+                    },
+                    "checked": {
+                        "name": "checked",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 46,
+                            "startOffset": 56,
+                            "endLine": 2,
+                            "endCol": 53,
+                            "endOffset": 63
+                        },
+                        "type": 2,
+                        "value": true
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

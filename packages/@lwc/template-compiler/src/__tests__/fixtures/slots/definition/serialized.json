@@ -1,0 +1,40 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "slot",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "Default slot content"
+                                    }
+                                ],
+                                "key": 4
+                            }
+                        ],
+                        "key": 3,
+                        "slotName": ""
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

@@ -1,0 +1,54 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "x-foo",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 3,
+                        "component": "x-foo",
+                        "props": {
+                            "is": {
+                                "name": "is",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 16,
+                                    "startOffset": 40,
+                                    "endLine": 3,
+                                    "endCol": 29,
+                                    "endOffset": 53
+                                },
+                                "type": 1,
+                                "value": "x-button"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1063,
+            "message": "LWC1063: \"is\" attribute is disallowed",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 33,
+                "length": 29
+            }
+        }
+    ]
+}

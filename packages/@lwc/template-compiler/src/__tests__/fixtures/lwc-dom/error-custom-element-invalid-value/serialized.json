@@ -1,0 +1,31 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [],
+                "key": 2,
+                "component": "x-foo"
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1087,
+            "message": "LWC1087: Invalid directive \"lwc:dom\" on element <x-foo>. \"lwc:dom\" cannot be added to a custom element",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 33
+            }
+        }
+    ]
+}

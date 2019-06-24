@@ -1,0 +1,97 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "textarea",
+                        "attrsList": [
+                            {
+                                "name": "minlength",
+                                "value": "1"
+                            },
+                            {
+                                "name": "maxlength",
+                                "value": "5"
+                            },
+                            {
+                                "name": "unknown-attr",
+                                "value": "should-error"
+                            }
+                        ],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "x"
+                            }
+                        ],
+                        "key": 3,
+                        "attrs": {
+                            "minlength": {
+                                "name": "minlength",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 19,
+                                    "startOffset": 43,
+                                    "endLine": 3,
+                                    "endCol": 32,
+                                    "endOffset": 56
+                                },
+                                "type": 1,
+                                "value": "1"
+                            },
+                            "maxlength": {
+                                "name": "maxlength",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 33,
+                                    "startOffset": 57,
+                                    "endLine": 3,
+                                    "endCol": 46,
+                                    "endOffset": 70
+                                },
+                                "type": 1,
+                                "value": "5"
+                            },
+                            "unknown-attr": {
+                                "name": "unknown-attr",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 47,
+                                    "startOffset": 71,
+                                    "endLine": 3,
+                                    "endCol": 74,
+                                    "endOffset": 98
+                                },
+                                "type": 1,
+                                "value": "should-error"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1057,
+            "message": "LWC1057: unknown-attr is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
+            "level": 2,
+            "location": {
+                "line": 3,
+                "column": 47,
+                "start": 71,
+                "length": 27
+            }
+        }
+    ]
+}

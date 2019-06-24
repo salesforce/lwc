@@ -1,0 +1,52 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "slot",
+                "attrsList": [
+                    {
+                        "name": "name",
+                        "value": "secret-slot"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "p",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "Test slot content"
+                            }
+                        ],
+                        "key": 3
+                    }
+                ],
+                "key": 2,
+                "slotName": "secret-slot",
+                "attrs": {
+                    "name": {
+                        "name": "name",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 11,
+                            "startOffset": 21,
+                            "endLine": 2,
+                            "endCol": 29,
+                            "endOffset": 39
+                        },
+                        "type": 1,
+                        "value": "secret-slot"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

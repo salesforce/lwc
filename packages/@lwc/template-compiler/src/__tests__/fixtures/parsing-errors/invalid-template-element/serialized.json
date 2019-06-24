@@ -1,0 +1,35 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "template",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "true"
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1077,
+            "message": "LWC1077: Invalid template tag. A directive is expected to be associated with the template tag.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 39
+            }
+        }
+    ]
+}

@@ -1,0 +1,106 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [
+                    {
+                        "name": "for:index",
+                        "value": "index"
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "for:index": {
+                        "name": "for:index",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 43,
+                            "startOffset": 53,
+                            "endLine": 2,
+                            "endCol": 60,
+                            "endOffset": 70
+                        },
+                        "type": 1,
+                        "value": "index"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [
+                    {
+                        "name": "for:index",
+                        "value": "index"
+                    }
+                ],
+                "children": [],
+                "key": 3,
+                "attrs": {
+                    "for:index": {
+                        "name": "for:index",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 43,
+                            "startOffset": 120,
+                            "endLine": 3,
+                            "endCol": 60,
+                            "endOffset": 137
+                        },
+                        "type": 1,
+                        "value": "index"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [],
+                "key": 4
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1047,
+            "message": "LWC1047: for:item directive is expected to be a string.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 27,
+                "start": 37,
+                "length": 15
+            }
+        },
+        {
+            "code": 1045,
+            "message": "LWC1045: for:each directive is expected to be a expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 10,
+                "start": 87,
+                "length": 16
+            }
+        },
+        {
+            "code": 1046,
+            "message": "LWC1046: for:index directive is expected to be a string.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 43,
+                "start": 187,
+                "length": 17
+            }
+        }
+    ]
+}

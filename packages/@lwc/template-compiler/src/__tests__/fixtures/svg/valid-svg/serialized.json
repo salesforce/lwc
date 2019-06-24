@@ -1,0 +1,166 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "svg",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "a",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 3
+                    },
+                    {
+                        "type": "element",
+                        "tag": "circle",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 4
+                    },
+                    {
+                        "type": "element",
+                        "tag": "defs",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 5
+                    },
+                    {
+                        "type": "element",
+                        "tag": "desc",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 6
+                    },
+                    {
+                        "type": "element",
+                        "tag": "ellipse",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 7
+                    },
+                    {
+                        "type": "element",
+                        "tag": "filter",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 8
+                    },
+                    {
+                        "type": "element",
+                        "tag": "g",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 9
+                    },
+                    {
+                        "type": "element",
+                        "tag": "line",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 10
+                    },
+                    {
+                        "type": "element",
+                        "tag": "marker",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 11
+                    },
+                    {
+                        "type": "element",
+                        "tag": "mask",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 12
+                    },
+                    {
+                        "type": "element",
+                        "tag": "path",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 13
+                    },
+                    {
+                        "type": "element",
+                        "tag": "pattern",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 14
+                    },
+                    {
+                        "type": "element",
+                        "tag": "polygon",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 15
+                    },
+                    {
+                        "type": "element",
+                        "tag": "polyline",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 16
+                    },
+                    {
+                        "type": "element",
+                        "tag": "rect",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 17
+                    },
+                    {
+                        "type": "element",
+                        "tag": "stop",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 18
+                    },
+                    {
+                        "type": "element",
+                        "tag": "symbol",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 19
+                    },
+                    {
+                        "type": "element",
+                        "tag": "text",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 20
+                    },
+                    {
+                        "type": "element",
+                        "tag": "title",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 21
+                    },
+                    {
+                        "type": "element",
+                        "tag": "tspan",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 22
+                    },
+                    {
+                        "type": "element",
+                        "tag": "use",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 23
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

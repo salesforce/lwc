@@ -1,0 +1,466 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "ns-foo",
+                "attrsList": [],
+                "children": [],
+                "key": 2,
+                "component": "ns-foo",
+                "props": {
+                    "d": {
+                        "name": "d",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 13,
+                            "startOffset": 23,
+                            "endLine": 2,
+                            "endCol": 22,
+                            "endOffset": 32
+                        },
+                        "type": 0,
+                        "value": {
+                            "type": "MemberExpression",
+                            "start": 1,
+                            "end": 6,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 6
+                                }
+                            },
+                            "object": {
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 2,
+                                "loc": {
+                                    "start": {
+                                        "line": 1,
+                                        "column": 1
+                                    },
+                                    "end": {
+                                        "line": 1,
+                                        "column": 2
+                                    },
+                                    "identifierName": "p"
+                                },
+                                "name": "p"
+                            },
+                            "property": {
+                                "type": "Identifier",
+                                "start": 3,
+                                "end": 6,
+                                "loc": {
+                                    "start": {
+                                        "line": 1,
+                                        "column": 3
+                                    },
+                                    "end": {
+                                        "line": 1,
+                                        "column": 6
+                                    },
+                                    "identifierName": "foo"
+                                },
+                                "name": "foo"
+                            },
+                            "computed": false
+                        }
+                    },
+                    "id": {
+                        "name": "id",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 23,
+                            "startOffset": 33,
+                            "endLine": 2,
+                            "endCol": 34,
+                            "endOffset": 44
+                        },
+                        "type": 1,
+                        "value": "ns-foo"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "a",
+                "attrsList": [
+                    {
+                        "name": "data-foo",
+                        "value": "datafoo"
+                    },
+                    {
+                        "name": "aria-hidden",
+                        "value": "h"
+                    },
+                    {
+                        "name": "role",
+                        "value": "presentation"
+                    },
+                    {
+                        "name": "href",
+                        "value": "/foo"
+                    },
+                    {
+                        "name": "title",
+                        "value": "test"
+                    },
+                    {
+                        "name": "tabindex",
+                        "value": "-1"
+                    }
+                ],
+                "children": [],
+                "key": 3,
+                "classMap": {
+                    "test": true
+                },
+                "attrs": {
+                    "data-foo": {
+                        "name": "data-foo",
+                        "location": {
+                            "startLine": 5,
+                            "startCol": 9,
+                            "startOffset": 91,
+                            "endLine": 5,
+                            "endCol": 27,
+                            "endOffset": 109
+                        },
+                        "type": 1,
+                        "value": "datafoo"
+                    },
+                    "aria-hidden": {
+                        "name": "aria-hidden",
+                        "location": {
+                            "startLine": 6,
+                            "startCol": 9,
+                            "startOffset": 118,
+                            "endLine": 6,
+                            "endCol": 24,
+                            "endOffset": 133
+                        },
+                        "type": 1,
+                        "value": "h"
+                    },
+                    "role": {
+                        "name": "role",
+                        "location": {
+                            "startLine": 7,
+                            "startCol": 9,
+                            "startOffset": 142,
+                            "endLine": 7,
+                            "endCol": 28,
+                            "endOffset": 161
+                        },
+                        "type": 1,
+                        "value": "presentation"
+                    },
+                    "href": {
+                        "name": "href",
+                        "location": {
+                            "startLine": 8,
+                            "startCol": 9,
+                            "startOffset": 170,
+                            "endLine": 8,
+                            "endCol": 20,
+                            "endOffset": 181
+                        },
+                        "type": 1,
+                        "value": "/foo"
+                    },
+                    "title": {
+                        "name": "title",
+                        "location": {
+                            "startLine": 9,
+                            "startCol": 9,
+                            "startOffset": 190,
+                            "endLine": 9,
+                            "endCol": 21,
+                            "endOffset": 202
+                        },
+                        "type": 1,
+                        "value": "test"
+                    },
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 10,
+                            "startCol": 9,
+                            "startOffset": 211,
+                            "endLine": 10,
+                            "endCol": 22,
+                            "endOffset": 224
+                        },
+                        "type": 1,
+                        "value": "-1"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "ns-bar",
+                "attrsList": [
+                    {
+                        "name": "data-xx",
+                        "value": "foo"
+                    }
+                ],
+                "children": [],
+                "key": 4,
+                "classMap": {
+                    "r": true
+                },
+                "component": "ns-bar",
+                "attrs": {
+                    "data-xx": {
+                        "name": "data-xx",
+                        "location": {
+                            "startLine": 14,
+                            "startCol": 9,
+                            "startOffset": 273,
+                            "endLine": 14,
+                            "endCol": 22,
+                            "endOffset": 286
+                        },
+                        "type": 1,
+                        "value": "foo"
+                    }
+                },
+                "props": {
+                    "ariaDescribedBy": {
+                        "name": "aria-describedby",
+                        "location": {
+                            "startLine": 15,
+                            "startCol": 9,
+                            "startOffset": 295,
+                            "endLine": 15,
+                            "endCol": 34,
+                            "endOffset": 320
+                        },
+                        "type": 1,
+                        "value": "ns-foo"
+                    },
+                    "ariaHidden": {
+                        "name": "aria-hidden",
+                        "location": {
+                            "startLine": 16,
+                            "startCol": 9,
+                            "startOffset": 329,
+                            "endLine": 16,
+                            "endCol": 29,
+                            "endOffset": 349
+                        },
+                        "type": 1,
+                        "value": "hidden"
+                    },
+                    "fooBar": {
+                        "name": "foo-bar",
+                        "location": {
+                            "startLine": 17,
+                            "startCol": 9,
+                            "startOffset": 358,
+                            "endLine": 17,
+                            "endCol": 20,
+                            "endOffset": 369
+                        },
+                        "type": 1,
+                        "value": "x"
+                    },
+                    "foo": {
+                        "name": "foo",
+                        "location": {
+                            "startLine": 18,
+                            "startCol": 9,
+                            "startOffset": 378,
+                            "endLine": 18,
+                            "endCol": 18,
+                            "endOffset": 387
+                        },
+                        "type": 1,
+                        "value": "bar"
+                    },
+                    "role": {
+                        "name": "role",
+                        "location": {
+                            "startLine": 19,
+                            "startCol": 9,
+                            "startOffset": 396,
+                            "endLine": 19,
+                            "endCol": 18,
+                            "endOffset": 405
+                        },
+                        "type": 1,
+                        "value": "xx"
+                    },
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 20,
+                            "startCol": 9,
+                            "startOffset": 414,
+                            "endLine": 20,
+                            "endCol": 21,
+                            "endOffset": 426
+                        },
+                        "type": 1,
+                        "value": "0"
+                    },
+                    "bgColor": {
+                        "name": "bgcolor",
+                        "location": {
+                            "startLine": 21,
+                            "startCol": 9,
+                            "startOffset": 435,
+                            "endLine": 21,
+                            "endCol": 23,
+                            "endOffset": 449
+                        },
+                        "type": 1,
+                        "value": "blue"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "svg",
+                "attrsList": [
+                    {
+                        "name": "focusable",
+                        "value": "true"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "use",
+                        "attrsList": [
+                            {
+                                "name": "href",
+                                "value": "xx",
+                                "prefix": "xlink",
+                                "namespace": "http://www.w3.org/1999/xlink"
+                            }
+                        ],
+                        "children": [],
+                        "key": 6,
+                        "attrs": {
+                            "xlink:href": {
+                                "name": "xlink:href",
+                                "location": {
+                                    "startLine": 25,
+                                    "startCol": 14,
+                                    "startOffset": 521,
+                                    "endLine": 25,
+                                    "endCol": 29,
+                                    "endOffset": 536
+                                },
+                                "type": 1,
+                                "value": "xx"
+                            }
+                        }
+                    }
+                ],
+                "key": 5,
+                "classMap": {
+                    "cubano": true
+                },
+                "attrs": {
+                    "focusable": {
+                        "name": "focusable",
+                        "location": {
+                            "startLine": 24,
+                            "startCol": 25,
+                            "startOffset": 490,
+                            "endLine": 24,
+                            "endCol": 41,
+                            "endOffset": 506
+                        },
+                        "type": 1,
+                        "value": "true"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "table",
+                "attrsList": [
+                    {
+                        "name": "bgcolor",
+                        "value": "x"
+                    }
+                ],
+                "children": [],
+                "key": 7,
+                "attrs": {
+                    "bgcolor": {
+                        "name": "bgcolor",
+                        "location": {
+                            "startLine": 27,
+                            "startCol": 12,
+                            "startOffset": 566,
+                            "endLine": 27,
+                            "endCol": 23,
+                            "endOffset": 577
+                        },
+                        "type": 1,
+                        "value": "x"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [
+                    {
+                        "name": "aria-hidden",
+                        "value": "hidden"
+                    }
+                ],
+                "children": [],
+                "key": 8,
+                "className": {
+                    "type": "Identifier",
+                    "start": 1,
+                    "end": 4,
+                    "loc": {
+                        "start": {
+                            "line": 1,
+                            "column": 1
+                        },
+                        "end": {
+                            "line": 1,
+                            "column": 4
+                        },
+                        "identifierName": "foo"
+                    },
+                    "name": "foo"
+                },
+                "attrs": {
+                    "aria-hidden": {
+                        "name": "aria-hidden",
+                        "location": {
+                            "startLine": 28,
+                            "startCol": 22,
+                            "startOffset": 608,
+                            "endLine": 28,
+                            "endCol": 42,
+                            "endOffset": 628
+                        },
+                        "type": 1,
+                        "value": "hidden"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

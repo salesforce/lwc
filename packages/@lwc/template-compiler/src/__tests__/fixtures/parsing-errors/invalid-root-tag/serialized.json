@@ -1,0 +1,27 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "section",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "text",
+                "value": "Misnamed root tag"
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1079,
+            "message": "LWC1079: Expected root tag to be template, found section",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 1,
+                "start": 0,
+                "length": 42
+            }
+        }
+    ]
+}

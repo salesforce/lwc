@@ -1,0 +1,104 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "svg",
+                "attrsList": [
+                    {
+                        "name": "aria-hidden",
+                        "value": "true"
+                    },
+                    {
+                        "name": "title",
+                        "value": "when needed"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "use",
+                        "attrsList": [
+                            {
+                                "name": "href",
+                                "value": "{getXLink}",
+                                "prefix": "xlink",
+                                "namespace": "http://www.w3.org/1999/xlink"
+                            }
+                        ],
+                        "children": [],
+                        "key": 3,
+                        "attrs": {
+                            "xlink:href": {
+                                "name": "xlink:href",
+                                "location": {
+                                    "startLine": 3,
+                                    "startCol": 14,
+                                    "startOffset": 91,
+                                    "endLine": 3,
+                                    "endCol": 35,
+                                    "endOffset": 112
+                                },
+                                "type": 0,
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 9,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 9
+                                        },
+                                        "identifierName": "getXLink"
+                                    },
+                                    "name": "getXLink"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "key": 2,
+                "classMap": {
+                    "slds-icon": true
+                },
+                "attrs": {
+                    "aria-hidden": {
+                        "name": "aria-hidden",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 10,
+                            "startOffset": 20,
+                            "endLine": 2,
+                            "endCol": 28,
+                            "endOffset": 38
+                        },
+                        "type": 1,
+                        "value": "true"
+                    },
+                    "title": {
+                        "name": "title",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 47,
+                            "startOffset": 57,
+                            "endLine": 2,
+                            "endCol": 66,
+                            "endOffset": 76
+                        },
+                        "type": 1,
+                        "value": "when needed"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

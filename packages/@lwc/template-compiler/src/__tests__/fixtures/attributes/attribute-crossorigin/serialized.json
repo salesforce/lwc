@@ -1,0 +1,143 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "img",
+                "attrsList": [
+                    {
+                        "name": "src",
+                        "value": "http://www.example.com/image.png"
+                    },
+                    {
+                        "name": "crossorigin",
+                        "value": "anonymous"
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "src": {
+                        "name": "src",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 10,
+                            "startOffset": 44,
+                            "endLine": 3,
+                            "endCol": 48,
+                            "endOffset": 82
+                        },
+                        "type": 1,
+                        "value": "http://www.example.com/image.png"
+                    },
+                    "crossorigin": {
+                        "name": "crossorigin",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 49,
+                            "startOffset": 83,
+                            "endLine": 3,
+                            "endCol": 72,
+                            "endOffset": 106
+                        },
+                        "type": 1,
+                        "value": "anonymous"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "video",
+                "attrsList": [
+                    {
+                        "name": "src",
+                        "value": "http://www.example.com/video.mp4"
+                    },
+                    {
+                        "name": "crossorigin",
+                        "value": "anonymous"
+                    }
+                ],
+                "children": [],
+                "key": 3,
+                "attrs": {
+                    "src": {
+                        "name": "src",
+                        "location": {
+                            "startLine": 4,
+                            "startCol": 12,
+                            "startOffset": 119,
+                            "endLine": 4,
+                            "endCol": 50,
+                            "endOffset": 157
+                        },
+                        "type": 1,
+                        "value": "http://www.example.com/video.mp4"
+                    },
+                    "crossorigin": {
+                        "name": "crossorigin",
+                        "location": {
+                            "startLine": 4,
+                            "startCol": 51,
+                            "startOffset": 158,
+                            "endLine": 4,
+                            "endCol": 74,
+                            "endOffset": 181
+                        },
+                        "type": 1,
+                        "value": "anonymous"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "audio",
+                "attrsList": [
+                    {
+                        "name": "src",
+                        "value": "http://www.example.com/video.mp3"
+                    },
+                    {
+                        "name": "crossorigin",
+                        "value": "anonymous"
+                    }
+                ],
+                "children": [],
+                "key": 4,
+                "attrs": {
+                    "src": {
+                        "name": "src",
+                        "location": {
+                            "startLine": 5,
+                            "startCol": 12,
+                            "startOffset": 202,
+                            "endLine": 5,
+                            "endCol": 50,
+                            "endOffset": 240
+                        },
+                        "type": 1,
+                        "value": "http://www.example.com/video.mp3"
+                    },
+                    "crossorigin": {
+                        "name": "crossorigin",
+                        "location": {
+                            "startLine": 5,
+                            "startCol": 51,
+                            "startOffset": 241,
+                            "endLine": 5,
+                            "endCol": 74,
+                            "endOffset": 264
+                        },
+                        "type": 1,
+                        "value": "anonymous"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

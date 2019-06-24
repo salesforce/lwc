@@ -1,0 +1,81 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "p",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "1"
+                            }
+                        ],
+                        "key": 3
+                    },
+                    {
+                        "type": "element",
+                        "tag": "template",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "2"
+                                    }
+                                ],
+                                "key": 5
+                            }
+                        ],
+                        "key": 4,
+                        "if": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 4
+                                },
+                                "identifierName": "bar"
+                            },
+                            "name": "bar"
+                        },
+                        "ifModifier": "true"
+                    },
+                    {
+                        "type": "element",
+                        "tag": "p",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "3"
+                            }
+                        ],
+                        "key": 6
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

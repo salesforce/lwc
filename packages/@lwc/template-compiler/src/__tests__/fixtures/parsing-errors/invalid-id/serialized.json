@@ -1,0 +1,239 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "id",
+                        "value": "foo"
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "id": {
+                        "name": "id",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 12,
+                            "startOffset": 22,
+                            "endLine": 2,
+                            "endCol": 20,
+                            "endOffset": 30
+                        },
+                        "type": 1,
+                        "value": "foo"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "id",
+                        "value": "foo"
+                    }
+                ],
+                "children": [],
+                "key": 3,
+                "attrs": {
+                    "id": {
+                        "name": "id",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 12,
+                            "startOffset": 43,
+                            "endLine": 3,
+                            "endCol": 20,
+                            "endOffset": 51
+                        },
+                        "type": 1,
+                        "value": "foo"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "id",
+                        "value": "bar baz"
+                    }
+                ],
+                "children": [],
+                "key": 4,
+                "attrs": {
+                    "id": {
+                        "name": "id",
+                        "location": {
+                            "startLine": 4,
+                            "startCol": 12,
+                            "startOffset": 64,
+                            "endLine": 4,
+                            "endCol": 24,
+                            "endOffset": 76
+                        },
+                        "type": 1,
+                        "value": "bar baz"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "input",
+                "attrsList": [
+                    {
+                        "name": "id",
+                        "value": " boof"
+                    }
+                ],
+                "children": [],
+                "key": 5,
+                "attrs": {
+                    "id": {
+                        "name": "id",
+                        "location": {
+                            "startLine": 5,
+                            "startCol": 12,
+                            "startOffset": 89,
+                            "endLine": 5,
+                            "endCol": 22,
+                            "endOffset": 99
+                        },
+                        "type": 1,
+                        "value": " boof"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "template",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "input",
+                        "attrsList": [
+                            {
+                                "name": "id",
+                                "value": "piyo"
+                            }
+                        ],
+                        "children": [],
+                        "key": 7,
+                        "forKey": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 5,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 5
+                                },
+                                "identifierName": "fuga"
+                            },
+                            "name": "fuga"
+                        },
+                        "attrs": {
+                            "id": {
+                                "name": "id",
+                                "location": {
+                                    "startLine": 7,
+                                    "startCol": 16,
+                                    "startOffset": 165,
+                                    "endLine": 7,
+                                    "endCol": 25,
+                                    "endOffset": 174
+                                },
+                                "type": 1,
+                                "value": "piyo"
+                            }
+                        }
+                    }
+                ],
+                "key": 6,
+                "forEach": {
+                    "expression": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 7,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 7
+                            },
+                            "identifierName": "hogera"
+                        },
+                        "name": "hogera"
+                    },
+                    "item": {
+                        "type": "Identifier",
+                        "name": "hoge"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1040,
+            "message": "LWC1040: Invalid id value \"bar baz\". Id values must not contain any whitespace.",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 12,
+                "start": 64,
+                "length": 12
+            }
+        },
+        {
+            "code": 1040,
+            "message": "LWC1040: Invalid id value \" boof\". Id values must not contain any whitespace.",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 12,
+                "start": 89,
+                "length": 10
+            }
+        },
+        {
+            "code": 1041,
+            "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
+            "level": 1,
+            "location": {
+                "line": 7,
+                "column": 16,
+                "start": 165,
+                "length": 9
+            }
+        },
+        {
+            "code": 1042,
+            "message": "LWC1042: Duplicate id value \"foo\" detected. Id values must be unique within a template.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 43,
+                "length": 8
+            }
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "base",
+                "attrsList": [
+                    {
+                        "name": "href",
+                        "value": "https://salesforce.com"
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "href": {
+                        "name": "href",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 11,
+                            "startOffset": 21,
+                            "endLine": 2,
+                            "endCol": 40,
+                            "endOffset": 50
+                        },
+                        "type": 1,
+                        "value": "https://salesforce.com"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1051,
+            "message": "LWC1051: Forbidden tag found in template: '<base>' tag is not allowed.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 38
+            }
+        }
+    ]
+}

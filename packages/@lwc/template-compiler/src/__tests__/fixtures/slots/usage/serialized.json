@@ -1,0 +1,92 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "ns-cmp",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [
+                                    {
+                                        "name": "slot",
+                                        "value": "header"
+                                    }
+                                ],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "Header Slot Content"
+                                    }
+                                ],
+                                "key": 4,
+                                "attrs": {
+                                    "slot": {
+                                        "name": "slot",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startCol": 16,
+                                            "startOffset": 57,
+                                            "endLine": 4,
+                                            "endCol": 29,
+                                            "endOffset": 70
+                                        },
+                                        "type": 1,
+                                        "value": "header"
+                                    }
+                                }
+                            },
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [
+                                    {
+                                        "name": "slot",
+                                        "value": ""
+                                    }
+                                ],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "Default Content"
+                                    }
+                                ],
+                                "key": 5,
+                                "attrs": {
+                                    "slot": {
+                                        "name": "slot",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startCol": 16,
+                                            "startOffset": 110,
+                                            "endLine": 5,
+                                            "endCol": 20,
+                                            "endOffset": 114
+                                        },
+                                        "type": 2,
+                                        "value": true
+                                    }
+                                }
+                            }
+                        ],
+                        "key": 3,
+                        "component": "ns-cmp"
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

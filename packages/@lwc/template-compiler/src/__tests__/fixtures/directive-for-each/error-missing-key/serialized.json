@@ -1,0 +1,86 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "template",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "p",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "text",
+                                "value": "1"
+                            },
+                            {
+                                "type": "text",
+                                "value": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 5,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 5
+                                        },
+                                        "identifierName": "item"
+                                    },
+                                    "name": "item"
+                                }
+                            }
+                        ],
+                        "key": 3
+                    }
+                ],
+                "key": 2,
+                "forEach": {
+                    "expression": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 6,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 6
+                            },
+                            "identifierName": "items"
+                        },
+                        "name": "items"
+                    },
+                    "item": {
+                        "type": "Identifier",
+                        "name": "item"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1071,
+            "message": "LWC1071: Missing key for element <p> inside of iterator. Elements within iterators must have a unique, computed key value.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 9,
+                "start": 67,
+                "length": 14
+            }
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "title",
+                        "value": ""
+                    }
+                ],
+                "children": [],
+                "key": 2,
+                "attrs": {
+                    "title": {
+                        "name": "title",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 8,
+                            "startOffset": 18,
+                            "endLine": 2,
+                            "endCol": 16,
+                            "endOffset": 26
+                        },
+                        "type": 1,
+                        "value": ""
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "foo-bar",
+                "attrsList": [],
+                "children": [],
+                "key": 3,
+                "component": "foo-bar",
+                "props": {
+                    "content": {
+                        "name": "content",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 14,
+                            "startOffset": 45,
+                            "endLine": 3,
+                            "endCol": 24,
+                            "endOffset": 55
+                        },
+                        "type": 1,
+                        "value": ""
+                    },
+                    "visible": {
+                        "name": "visible",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 25,
+                            "startOffset": 56,
+                            "endLine": 3,
+                            "endCol": 32,
+                            "endOffset": 63
+                        },
+                        "type": 2,
+                        "value": true
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

@@ -1,0 +1,30 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "a",
+                "attrsList": [],
+                "children": [],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1068,
+            "message": "LWC1068: locator:context must be used with locator:id",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 44
+            }
+        }
+    ]
+}

@@ -1,0 +1,552 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": ""
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "empty"
+                    }
+                ],
+                "key": 2,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 2,
+                            "startCol": 8,
+                            "startOffset": 18,
+                            "endLine": 2,
+                            "endCol": 19,
+                            "endOffset": 29
+                        },
+                        "type": 1,
+                        "value": ""
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "1"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "one"
+                    }
+                ],
+                "key": 3,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 3,
+                            "startCol": 8,
+                            "startOffset": 47,
+                            "endLine": 3,
+                            "endCol": 18,
+                            "endOffset": 57
+                        },
+                        "type": 1,
+                        "value": "1"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "true"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "invalid"
+                    }
+                ],
+                "key": 4,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 4,
+                            "startCol": 8,
+                            "startOffset": 73,
+                            "endLine": 4,
+                            "endCol": 23,
+                            "endOffset": 88
+                        },
+                        "type": 1,
+                        "value": "true"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "2"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "two"
+                    }
+                ],
+                "key": 5,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 5,
+                            "startCol": 8,
+                            "startOffset": 108,
+                            "endLine": 5,
+                            "endCol": 20,
+                            "endOffset": 120
+                        },
+                        "type": 1,
+                        "value": "2"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "{computed}"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "valid"
+                    }
+                ],
+                "key": 6,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 6,
+                            "startCol": 8,
+                            "startOffset": 136,
+                            "endLine": 6,
+                            "endCol": 27,
+                            "endOffset": 155
+                        },
+                        "type": 0,
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 9
+                                },
+                                "identifierName": "computed"
+                            },
+                            "name": "computed"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "0"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "zero"
+                    }
+                ],
+                "key": 7,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 7,
+                            "startCol": 8,
+                            "startOffset": 173,
+                            "endLine": 7,
+                            "endCol": 18,
+                            "endOffset": 183
+                        },
+                        "type": 1,
+                        "value": "0"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "p",
+                "attrsList": [
+                    {
+                        "name": "tabindex",
+                        "value": "-1"
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "minus-one"
+                    }
+                ],
+                "key": 8,
+                "attrs": {
+                    "tabindex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 8,
+                            "startCol": 8,
+                            "startOffset": 200,
+                            "endLine": 8,
+                            "endCol": 19,
+                            "endOffset": 211
+                        },
+                        "type": 1,
+                        "value": "-1"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "empty"
+                    }
+                ],
+                "key": 9,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 10,
+                            "startCol": 12,
+                            "startOffset": 238,
+                            "endLine": 10,
+                            "endCol": 23,
+                            "endOffset": 249
+                        },
+                        "type": 1,
+                        "value": ""
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "one"
+                    }
+                ],
+                "key": 10,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 11,
+                            "startCol": 12,
+                            "startOffset": 275,
+                            "endLine": 11,
+                            "endCol": 22,
+                            "endOffset": 285
+                        },
+                        "type": 1,
+                        "value": "1"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "invalid"
+                    }
+                ],
+                "key": 11,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 12,
+                            "startCol": 12,
+                            "startOffset": 309,
+                            "endLine": 12,
+                            "endCol": 27,
+                            "endOffset": 324
+                        },
+                        "type": 1,
+                        "value": "true"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "two"
+                    }
+                ],
+                "key": 12,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 13,
+                            "startCol": 12,
+                            "startOffset": 352,
+                            "endLine": 13,
+                            "endCol": 24,
+                            "endOffset": 364
+                        },
+                        "type": 1,
+                        "value": "2"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "valid"
+                    }
+                ],
+                "key": 13,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 14,
+                            "startCol": 12,
+                            "startOffset": 388,
+                            "endLine": 14,
+                            "endCol": 31,
+                            "endOffset": 407
+                        },
+                        "type": 0,
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 9,
+                            "loc": {
+                                "start": {
+                                    "line": 1,
+                                    "column": 1
+                                },
+                                "end": {
+                                    "line": 1,
+                                    "column": 9
+                                },
+                                "identifierName": "computed"
+                            },
+                            "name": "computed"
+                        }
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "zero"
+                    }
+                ],
+                "key": 14,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 15,
+                            "startCol": 12,
+                            "startOffset": 433,
+                            "endLine": 15,
+                            "endCol": 22,
+                            "endOffset": 443
+                        },
+                        "type": 1,
+                        "value": "0"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "minus-one"
+                    }
+                ],
+                "key": 15,
+                "component": "x-foo",
+                "props": {
+                    "tabIndex": {
+                        "name": "tabindex",
+                        "location": {
+                            "startLine": 16,
+                            "startCol": 12,
+                            "startOffset": 468,
+                            "endLine": 16,
+                            "endCol": 23,
+                            "endOffset": 479
+                        },
+                        "type": 1,
+                        "value": "-1"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 24
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 5,
+                "start": 44,
+                "length": 21
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 5,
+                "start": 70,
+                "length": 30
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 5,
+                "column": 5,
+                "start": 105,
+                "length": 23
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 10,
+                "column": 5,
+                "start": 231,
+                "length": 32
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 11,
+                "column": 5,
+                "start": 268,
+                "length": 29
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 12,
+                "column": 5,
+                "start": 302,
+                "length": 38
+            }
+        },
+        {
+            "code": 1061,
+            "message": "LWC1061: The attribute \"tabindex\" can only be set to \"0\" or \"-1\".",
+            "level": 1,
+            "location": {
+                "line": 13,
+                "column": 5,
+                "start": 345,
+                "length": 31
+            }
+        }
+    ]
+}

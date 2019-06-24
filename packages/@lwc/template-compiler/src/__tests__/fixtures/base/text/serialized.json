@@ -1,0 +1,15 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "text",
+                "value": "foo"
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

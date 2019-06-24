@@ -1,0 +1,28 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "x-foo",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "slot",
+                        "attrsList": [],
+                        "children": [],
+                        "key": 3,
+                        "slotName": ""
+                    }
+                ],
+                "key": 2,
+                "component": "x-foo"
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

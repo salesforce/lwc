@@ -1,0 +1,214 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "template",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 5,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 1
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 5
+                                                },
+                                                "identifierName": "item"
+                                            },
+                                            "name": "item"
+                                        }
+                                    }
+                                ],
+                                "key": 4,
+                                "forKey": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 12,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 12
+                                        }
+                                    },
+                                    "object": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 5,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 1
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 5
+                                            },
+                                            "identifierName": "item"
+                                        },
+                                        "name": "item"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 6,
+                                        "end": 12,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 6
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 12
+                                            },
+                                            "identifierName": "keyOne"
+                                        },
+                                        "name": "keyOne"
+                                    },
+                                    "computed": false
+                                }
+                            },
+                            {
+                                "type": "element",
+                                "tag": "p",
+                                "attrsList": [],
+                                "children": [
+                                    {
+                                        "type": "text",
+                                        "value": "2"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "value": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 5,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 1
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 5
+                                                },
+                                                "identifierName": "item"
+                                            },
+                                            "name": "item"
+                                        }
+                                    }
+                                ],
+                                "key": 5,
+                                "forKey": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 12,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 12
+                                        }
+                                    },
+                                    "object": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 5,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 1
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 5
+                                            },
+                                            "identifierName": "item"
+                                        },
+                                        "name": "item"
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 6,
+                                        "end": 12,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 6
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 12
+                                            },
+                                            "identifierName": "keyTwo"
+                                        },
+                                        "name": "keyTwo"
+                                    },
+                                    "computed": false
+                                }
+                            }
+                        ],
+                        "key": 3,
+                        "forEach": {
+                            "expression": {
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 6,
+                                "loc": {
+                                    "start": {
+                                        "line": 1,
+                                        "column": 1
+                                    },
+                                    "end": {
+                                        "line": 1,
+                                        "column": 6
+                                    },
+                                    "identifierName": "items"
+                                },
+                                "name": "items"
+                            },
+                            "item": {
+                                "type": "Identifier",
+                                "name": "item"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

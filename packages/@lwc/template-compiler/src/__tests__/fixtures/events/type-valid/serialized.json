@@ -1,0 +1,135 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 2,
+                "on": {
+                    "a123": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 12,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 12
+                            },
+                            "identifierName": "handleClick"
+                        },
+                        "name": "handleClick"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 3,
+                "on": {
+                    "foo_bar": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 12,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 12
+                            },
+                            "identifierName": "handleClick"
+                        },
+                        "name": "handleClick"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 4,
+                "on": {
+                    "foo_": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 12,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 12
+                            },
+                            "identifierName": "handleClick"
+                        },
+                        "name": "handleClick"
+                    }
+                }
+            },
+            {
+                "type": "element",
+                "tag": "div",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "text",
+                        "value": "Click"
+                    }
+                ],
+                "key": 5,
+                "on": {
+                    "a123": {
+                        "type": "Identifier",
+                        "start": 1,
+                        "end": 12,
+                        "loc": {
+                            "start": {
+                                "line": 1,
+                                "column": 1
+                            },
+                            "end": {
+                                "line": 1,
+                                "column": 12
+                            },
+                            "identifierName": "handleClick"
+                        },
+                        "name": "handleClick"
+                    }
+                }
+            }
+        ],
+        "key": 1
+    },
+    "warnings": []
+}

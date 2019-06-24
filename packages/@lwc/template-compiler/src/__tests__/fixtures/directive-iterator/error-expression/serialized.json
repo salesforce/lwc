@@ -1,0 +1,152 @@
+{
+    "root": {
+        "type": "element",
+        "tag": "template",
+        "attrsList": [],
+        "children": [
+            {
+                "type": "element",
+                "tag": "section",
+                "attrsList": [],
+                "children": [
+                    {
+                        "type": "element",
+                        "tag": "template",
+                        "attrsList": [],
+                        "children": [
+                            {
+                                "type": "element",
+                                "tag": "div",
+                                "attrsList": [],
+                                "children": [],
+                                "key": 4,
+                                "forKey": {
+                                    "type": "MemberExpression",
+                                    "start": 1,
+                                    "end": 11,
+                                    "loc": {
+                                        "start": {
+                                            "line": 1,
+                                            "column": 1
+                                        },
+                                        "end": {
+                                            "line": 1,
+                                            "column": 11
+                                        }
+                                    },
+                                    "object": {
+                                        "type": "MemberExpression",
+                                        "start": 1,
+                                        "end": 8,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 1
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 8
+                                            }
+                                        },
+                                        "object": {
+                                            "type": "Identifier",
+                                            "start": 1,
+                                            "end": 2,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 1
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 2
+                                                },
+                                                "identifierName": "x"
+                                            },
+                                            "name": "x"
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 3,
+                                            "end": 8,
+                                            "loc": {
+                                                "start": {
+                                                    "line": 1,
+                                                    "column": 3
+                                                },
+                                                "end": {
+                                                    "line": 1,
+                                                    "column": 8
+                                                },
+                                                "identifierName": "value"
+                                            },
+                                            "name": "value"
+                                        },
+                                        "computed": false
+                                    },
+                                    "property": {
+                                        "type": "Identifier",
+                                        "start": 9,
+                                        "end": 11,
+                                        "loc": {
+                                            "start": {
+                                                "line": 1,
+                                                "column": 9
+                                            },
+                                            "end": {
+                                                "line": 1,
+                                                "column": 11
+                                            },
+                                            "identifierName": "id"
+                                        },
+                                        "name": "id"
+                                    },
+                                    "computed": false
+                                }
+                            }
+                        ],
+                        "key": 3,
+                        "forOf": {
+                            "expression": {
+                                "type": "Identifier",
+                                "start": 1,
+                                "end": 6,
+                                "loc": {
+                                    "start": {
+                                        "line": 1,
+                                        "column": 1
+                                    },
+                                    "end": {
+                                        "line": 1,
+                                        "column": 6
+                                    },
+                                    "identifierName": "items"
+                                },
+                                "name": "items"
+                            },
+                            "iterator": {
+                                "type": "Identifier",
+                                "name": "x"
+                            }
+                        }
+                    }
+                ],
+                "key": 2
+            }
+        ],
+        "key": 1
+    },
+    "warnings": [
+        {
+            "code": 1073,
+            "message": "Invalid expression {x.next} - LWC1073: Template expression doesn't allow to modify iterators",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 35,
+                "start": 97,
+                "length": 14
+            }
+        }
+    ]
+}
