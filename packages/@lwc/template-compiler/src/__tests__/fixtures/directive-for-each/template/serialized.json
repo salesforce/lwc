@@ -44,7 +44,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -97,7 +96,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -122,11 +120,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

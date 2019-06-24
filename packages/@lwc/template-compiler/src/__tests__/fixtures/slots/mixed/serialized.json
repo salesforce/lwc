@@ -23,11 +23,9 @@
                                         "type": "element",
                                         "tag": "div",
                                         "attrsList": [],
-                                        "children": [],
-                                        "key": 5
+                                        "children": []
                                     }
                                 ],
-                                "key": 4,
                                 "if": {
                                     "type": "Identifier",
                                     "start": 1,
@@ -62,7 +60,6 @@
                                                 "value": "x"
                                             }
                                         ],
-                                        "key": 7,
                                         "forEach": {
                                             "expression": {
                                                 "type": "Identifier",
@@ -88,7 +85,6 @@
                                         }
                                     }
                                 ],
-                                "key": 6,
                                 "if": {
                                     "type": "Identifier",
                                     "start": 1,
@@ -109,14 +105,11 @@
                                 "ifModifier": "true"
                             }
                         ],
-                        "key": 3,
                         "component": "x-b"
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

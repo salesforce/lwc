@@ -19,7 +19,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 3,
                         "attrs": {
                             "slot": {
                                 "name": "slot",
@@ -53,11 +52,9 @@
                         }
                     }
                 ],
-                "key": 2,
                 "component": "ns-cmp"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

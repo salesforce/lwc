@@ -8,15 +8,13 @@
                 "type": "element",
                 "tag": "unknonwtag",
                 "attrsList": [],
-                "children": [],
-                "key": 2
+                "children": []
             },
             {
                 "type": "element",
                 "tag": "x-custom-component",
                 "attrsList": [],
                 "children": [],
-                "key": 3,
                 "component": "x-custom-component",
                 "props": {
                     "someTruthyValue": {
@@ -43,8 +41,7 @@
                         "type": "text",
                         "value": "valid tags should not warn"
                     }
-                ],
-                "key": 4
+                ]
             },
             {
                 "type": "element",
@@ -55,11 +52,9 @@
                         "type": "text",
                         "value": "this tag has a typo"
                     }
-                ],
-                "key": 5
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

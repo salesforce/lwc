@@ -9,7 +9,6 @@
                 "tag": "input",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "props": {
                     "value": {
                         "name": "value",
@@ -26,8 +25,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

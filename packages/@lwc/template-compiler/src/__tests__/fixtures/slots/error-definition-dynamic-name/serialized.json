@@ -14,7 +14,6 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "attrs": {
                     "name": {
                         "name": "name",
@@ -47,8 +46,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

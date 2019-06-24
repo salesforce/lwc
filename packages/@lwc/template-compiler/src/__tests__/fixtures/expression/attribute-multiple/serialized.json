@@ -14,7 +14,6 @@
                         "tag": "p",
                         "attrsList": [],
                         "children": [],
-                        "key": 3,
                         "className": {
                             "type": "MemberExpression",
                             "start": 1,
@@ -67,7 +66,6 @@
                         }
                     }
                 ],
-                "key": 2,
                 "className": {
                     "type": "MemberExpression",
                     "start": 1,
@@ -119,8 +117,7 @@
                     "computed": false
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

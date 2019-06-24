@@ -73,7 +73,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "on": {
                                     "click": {
                                         "type": "MemberExpression",
@@ -148,7 +147,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "forKey": {
                             "type": "MemberExpression",
                             "start": 1,
@@ -201,7 +199,6 @@
                         }
                     }
                 ],
-                "key": 2,
                 "forEach": {
                     "expression": {
                         "type": "MemberExpression",
@@ -263,8 +260,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

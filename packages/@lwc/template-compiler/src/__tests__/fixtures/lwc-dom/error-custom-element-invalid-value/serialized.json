@@ -9,11 +9,9 @@
                 "tag": "x-foo",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "component": "x-foo"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

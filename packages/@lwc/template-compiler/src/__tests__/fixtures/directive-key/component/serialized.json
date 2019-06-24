@@ -73,7 +73,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "component": "ns-item",
                                 "forKey": {
                                     "type": "MemberExpression",
@@ -127,7 +126,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -152,11 +150,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

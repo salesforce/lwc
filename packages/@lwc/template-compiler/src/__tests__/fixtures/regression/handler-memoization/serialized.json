@@ -14,7 +14,6 @@
                         "value": "New"
                     }
                 ],
-                "key": 2,
                 "on": {
                     "click": {
                         "type": "Identifier",
@@ -113,7 +112,6 @@
                                                 "value": "[X]"
                                             }
                                         ],
-                                        "key": 6,
                                         "on": {
                                             "click": {
                                                 "type": "MemberExpression",
@@ -168,7 +166,6 @@
                                         }
                                     }
                                 ],
-                                "key": 5,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -221,7 +218,6 @@
                                 }
                             }
                         ],
-                        "key": 4,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -246,11 +242,9 @@
                             }
                         }
                     }
-                ],
-                "key": 3
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

@@ -9,13 +9,11 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "lwc": {
                     "dom": "manual"
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

@@ -14,7 +14,6 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "attrs": {
                     "title": {
                         "name": "title",
@@ -36,7 +35,6 @@
                 "tag": "foo-bar",
                 "attrsList": [],
                 "children": [],
-                "key": 3,
                 "component": "foo-bar",
                 "props": {
                     "content": {
@@ -67,8 +65,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

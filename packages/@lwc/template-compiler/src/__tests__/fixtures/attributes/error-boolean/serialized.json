@@ -13,8 +13,7 @@
                         "type": "text",
                         "value": "x"
                     }
-                ],
-                "key": 2
+                ]
             },
             {
                 "type": "element",
@@ -25,8 +24,7 @@
                         "type": "text",
                         "value": "y"
                     }
-                ],
-                "key": 3
+                ]
             },
             {
                 "type": "element",
@@ -37,8 +35,7 @@
                         "type": "text",
                         "value": "z"
                     }
-                ],
-                "key": 4
+                ]
             },
             {
                 "type": "element",
@@ -49,11 +46,9 @@
                         "type": "text",
                         "value": "z"
                     }
-                ],
-                "key": 5
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

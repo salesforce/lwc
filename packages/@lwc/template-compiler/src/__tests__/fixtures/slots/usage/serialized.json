@@ -29,7 +29,6 @@
                                         "value": "Header Slot Content"
                                     }
                                 ],
-                                "key": 4,
                                 "attrs": {
                                     "slot": {
                                         "name": "slot",
@@ -61,7 +60,6 @@
                                         "value": "Default Content"
                                     }
                                 ],
-                                "key": 5,
                                 "attrs": {
                                     "slot": {
                                         "name": "slot",
@@ -79,14 +77,11 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "component": "ns-cmp"
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

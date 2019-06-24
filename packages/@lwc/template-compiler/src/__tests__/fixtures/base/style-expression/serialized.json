@@ -9,7 +9,6 @@
                 "tag": "section",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "style": {
                     "type": "Identifier",
                     "start": 1,
@@ -28,8 +27,7 @@
                     "name": "customStyle"
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

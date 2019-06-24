@@ -8,11 +8,9 @@
                 "type": "element",
                 "tag": "root",
                 "attrsList": [],
-                "children": [],
-                "key": 2
+                "children": []
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

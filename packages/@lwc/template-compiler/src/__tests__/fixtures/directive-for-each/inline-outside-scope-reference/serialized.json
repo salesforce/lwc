@@ -39,8 +39,7 @@
                                             "name": "item"
                                         }
                                     }
-                                ],
-                                "key": 4
+                                ]
                             },
                             {
                                 "type": "element",
@@ -67,11 +66,9 @@
                                             "name": "item2"
                                         }
                                     }
-                                ],
-                                "key": 5
+                                ]
                             }
                         ],
-                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -149,11 +146,9 @@
                             "computed": false
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

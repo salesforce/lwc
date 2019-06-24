@@ -14,11 +14,9 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "component": "x-test"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

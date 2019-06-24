@@ -14,15 +14,12 @@
                         "tag": "slot",
                         "attrsList": [],
                         "children": [],
-                        "key": 3,
                         "slotName": ""
                     }
                 ],
-                "key": 2,
                 "component": "x-foo"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

@@ -14,7 +14,6 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "attrs": {
                     "for:index": {
                         "name": "for:index",
@@ -41,7 +40,6 @@
                     }
                 ],
                 "children": [],
-                "key": 3,
                 "attrs": {
                     "for:index": {
                         "name": "for:index",
@@ -62,11 +60,9 @@
                 "type": "element",
                 "tag": "div",
                 "attrsList": [],
-                "children": [],
-                "key": 4
+                "children": []
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

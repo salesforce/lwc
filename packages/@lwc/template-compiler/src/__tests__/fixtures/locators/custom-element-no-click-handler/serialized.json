@@ -9,7 +9,6 @@
                 "tag": "x-some-cmp",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "locator": {
                     "id": "some-locator",
                     "context": {
@@ -32,8 +31,7 @@
                 },
                 "component": "x-some-cmp"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

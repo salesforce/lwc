@@ -14,7 +14,6 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "attrs": {
                     "min": {
                         "name": "min",
@@ -31,8 +30,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

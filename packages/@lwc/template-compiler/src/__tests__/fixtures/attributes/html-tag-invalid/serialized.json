@@ -32,7 +32,6 @@
                                 "value": "x"
                             }
                         ],
-                        "key": 3,
                         "attrs": {
                             "minlength": {
                                 "name": "minlength",
@@ -75,11 +74,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

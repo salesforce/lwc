@@ -13,11 +13,9 @@
                         "type": "text",
                         "value": "Hello"
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

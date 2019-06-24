@@ -13,154 +13,131 @@
                         "type": "element",
                         "tag": "a",
                         "attrsList": [],
-                        "children": [],
-                        "key": 3
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "circle",
                         "attrsList": [],
-                        "children": [],
-                        "key": 4
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "defs",
                         "attrsList": [],
-                        "children": [],
-                        "key": 5
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "desc",
                         "attrsList": [],
-                        "children": [],
-                        "key": 6
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "ellipse",
                         "attrsList": [],
-                        "children": [],
-                        "key": 7
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "filter",
                         "attrsList": [],
-                        "children": [],
-                        "key": 8
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "g",
                         "attrsList": [],
-                        "children": [],
-                        "key": 9
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "line",
                         "attrsList": [],
-                        "children": [],
-                        "key": 10
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "marker",
                         "attrsList": [],
-                        "children": [],
-                        "key": 11
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "mask",
                         "attrsList": [],
-                        "children": [],
-                        "key": 12
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "path",
                         "attrsList": [],
-                        "children": [],
-                        "key": 13
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "pattern",
                         "attrsList": [],
-                        "children": [],
-                        "key": 14
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "polygon",
                         "attrsList": [],
-                        "children": [],
-                        "key": 15
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "polyline",
                         "attrsList": [],
-                        "children": [],
-                        "key": 16
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "rect",
                         "attrsList": [],
-                        "children": [],
-                        "key": 17
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "stop",
                         "attrsList": [],
-                        "children": [],
-                        "key": 18
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "symbol",
                         "attrsList": [],
-                        "children": [],
-                        "key": 19
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "text",
                         "attrsList": [],
-                        "children": [],
-                        "key": 20
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "title",
                         "attrsList": [],
-                        "children": [],
-                        "key": 21
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "tspan",
                         "attrsList": [],
-                        "children": [],
-                        "key": 22
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "use",
                         "attrsList": [],
-                        "children": [],
-                        "key": 23
+                        "children": []
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

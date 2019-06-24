@@ -13,28 +13,23 @@
                         "type": "element",
                         "tag": "use",
                         "attrsList": [],
-                        "children": [],
-                        "key": 3
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "polyline",
                         "attrsList": [],
-                        "children": [],
-                        "key": 4
+                        "children": []
                     },
                     {
                         "type": "element",
                         "tag": "animate",
                         "attrsList": [],
-                        "children": [],
-                        "key": 5
+                        "children": []
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

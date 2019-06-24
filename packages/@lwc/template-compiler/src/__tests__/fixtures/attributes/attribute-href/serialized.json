@@ -19,7 +19,6 @@
                         "value": "Yasaka Taxi"
                     }
                 ],
-                "key": 2,
                 "attrs": {
                     "href": {
                         "name": "href",
@@ -51,7 +50,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 4,
                         "attrs": {
                             "href": {
                                 "name": "href",
@@ -78,7 +76,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 5,
                         "attrs": {
                             "href": {
                                 "name": "href",
@@ -95,11 +92,9 @@
                             }
                         }
                     }
-                ],
-                "key": 3
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

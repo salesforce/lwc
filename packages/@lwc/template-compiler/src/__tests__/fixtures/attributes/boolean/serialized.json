@@ -14,7 +14,6 @@
                         "value": "x"
                     }
                 ],
-                "key": 2,
                 "props": {
                     "hidden": {
                         "name": "hidden",
@@ -41,7 +40,6 @@
                     }
                 ],
                 "children": [],
-                "key": 3,
                 "props": {
                     "readOnly": {
                         "name": "readonly",
@@ -102,8 +100,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

@@ -9,11 +9,9 @@
                 "tag": "x-cmp",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "component": "x-cmp"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

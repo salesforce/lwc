@@ -19,7 +19,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 3,
                         "attrs": {
                             "local": {
                                 "name": "local",
@@ -36,11 +35,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

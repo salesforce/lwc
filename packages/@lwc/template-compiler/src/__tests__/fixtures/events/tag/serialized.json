@@ -19,7 +19,6 @@
                                 "value": "x"
                             }
                         ],
-                        "key": 3,
                         "on": {
                             "click": {
                                 "type": "Identifier",
@@ -50,7 +49,6 @@
                                 "value": "x"
                             }
                         ],
-                        "key": 4,
                         "on": {
                             "press": {
                                 "type": "Identifier",
@@ -71,11 +69,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

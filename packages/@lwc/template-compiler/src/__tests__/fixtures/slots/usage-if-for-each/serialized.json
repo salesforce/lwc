@@ -29,7 +29,6 @@
                                                 "value": "X"
                                             }
                                         ],
-                                        "key": 5,
                                         "forKey": {
                                             "type": "MemberExpression",
                                             "start": 1,
@@ -82,7 +81,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "forEach": {
                                     "expression": {
                                         "type": "Identifier",
@@ -108,7 +106,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -129,14 +126,12 @@
                         "ifModifier": "true"
                     }
                 ],
-                "key": 2,
                 "classMap": {
                     "s2": true
                 },
                 "component": "a-b"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

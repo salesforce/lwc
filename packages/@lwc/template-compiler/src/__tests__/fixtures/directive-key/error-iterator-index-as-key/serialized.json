@@ -78,7 +78,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "attrs": {
                                     "key": {
                                         "name": "key",
@@ -145,7 +144,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "forOf": {
                             "expression": {
                                 "type": "Identifier",
@@ -170,11 +168,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

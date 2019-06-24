@@ -90,8 +90,7 @@
                                                     "computed": false
                                                 }
                                             }
-                                        ],
-                                        "key": 5
+                                        ]
                                     },
                                     {
                                         "type": "text",
@@ -151,7 +150,6 @@
                                         }
                                     }
                                 ],
-                                "key": 4,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -363,7 +361,6 @@
                                 }
                             }
                         ],
-                        "key": 3,
                         "forOf": {
                             "expression": {
                                 "type": "Identifier",
@@ -388,11 +385,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

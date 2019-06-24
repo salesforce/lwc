@@ -9,7 +9,6 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "forKey": {
                     "type": "Identifier",
                     "start": 1,
@@ -28,8 +27,7 @@
                     "name": "keyGetter"
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

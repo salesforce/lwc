@@ -9,7 +9,6 @@
                 "tag": "ns-foo",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "component": "ns-foo",
                 "props": {
                     "d": {
@@ -119,7 +118,6 @@
                     }
                 ],
                 "children": [],
-                "key": 3,
                 "classMap": {
                     "test": true
                 },
@@ -214,7 +212,6 @@
                     }
                 ],
                 "children": [],
-                "key": 4,
                 "classMap": {
                     "r": true
                 },
@@ -350,7 +347,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 6,
                         "attrs": {
                             "xlink:href": {
                                 "name": "xlink:href",
@@ -368,7 +364,6 @@
                         }
                     }
                 ],
-                "key": 5,
                 "classMap": {
                     "cubano": true
                 },
@@ -398,7 +393,6 @@
                     }
                 ],
                 "children": [],
-                "key": 7,
                 "attrs": {
                     "bgcolor": {
                         "name": "bgcolor",
@@ -425,7 +419,6 @@
                     }
                 ],
                 "children": [],
-                "key": 8,
                 "className": {
                     "type": "Identifier",
                     "start": 1,
@@ -459,8 +452,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

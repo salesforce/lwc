@@ -9,7 +9,6 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "classMap": {
                     "foo": true
                 }
@@ -19,7 +18,6 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 3,
                 "classMap": {
                     "foo": true,
                     "bar": true
@@ -30,7 +28,6 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 4,
                 "classMap": {
                     "foo": true,
                     "bar": true
@@ -41,14 +38,12 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
-                "key": 5,
                 "classMap": {
                     "foo": true,
                     "bar": true
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

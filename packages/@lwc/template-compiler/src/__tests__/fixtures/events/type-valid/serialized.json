@@ -14,7 +14,6 @@
                         "value": "Click"
                     }
                 ],
-                "key": 2,
                 "on": {
                     "a123": {
                         "type": "Identifier",
@@ -45,7 +44,6 @@
                         "value": "Click"
                     }
                 ],
-                "key": 3,
                 "on": {
                     "foo_bar": {
                         "type": "Identifier",
@@ -76,7 +74,6 @@
                         "value": "Click"
                     }
                 ],
-                "key": 4,
                 "on": {
                     "foo_": {
                         "type": "Identifier",
@@ -107,7 +104,6 @@
                         "value": "Click"
                     }
                 ],
-                "key": 5,
                 "on": {
                     "a123": {
                         "type": "Identifier",
@@ -128,8 +124,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

@@ -19,7 +19,6 @@
                         "value": "KIX"
                     }
                 ],
-                "key": 2,
                 "attrs": {
                     "href": {
                         "name": "href",
@@ -51,7 +50,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 4,
                         "attrs": {
                             "href": {
                                 "name": "href",
@@ -78,7 +76,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 5,
                         "attrs": {
                             "href": {
                                 "name": "href",
@@ -95,8 +92,7 @@
                             }
                         }
                     }
-                ],
-                "key": 3
+                ]
             },
             {
                 "type": "element",
@@ -113,7 +109,6 @@
                         "value": "Don't forget your passport!"
                     }
                 ],
-                "key": 6,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -130,8 +125,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

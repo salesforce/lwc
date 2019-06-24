@@ -9,7 +9,6 @@
                 "tag": "x-subject",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "component": "x-subject",
                 "props": {
                     "htmlFor": {
@@ -32,7 +31,6 @@
                 "tag": "x-description",
                 "attrsList": [],
                 "children": [],
-                "key": 3,
                 "component": "x-description",
                 "props": {
                     "id": {
@@ -55,7 +53,6 @@
                 "tag": "x-description",
                 "attrsList": [],
                 "children": [],
-                "key": 4,
                 "component": "x-description",
                 "props": {
                     "id": {
@@ -78,7 +75,6 @@
                 "tag": "x-textarea",
                 "attrsList": [],
                 "children": [],
-                "key": 5,
                 "component": "x-textarea",
                 "props": {
                     "id": {
@@ -124,7 +120,6 @@
                         "value": "label text"
                     }
                 ],
-                "key": 6,
                 "attrs": {
                     "for": {
                         "name": "for",
@@ -151,7 +146,6 @@
                     }
                 ],
                 "children": [],
-                "key": 7,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -188,7 +182,6 @@
                                 "value": "description text"
                             }
                         ],
-                        "key": 9,
                         "forKey": {
                             "type": "MemberExpression",
                             "start": 1,
@@ -314,7 +307,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 10,
                         "forKey": {
                             "type": "MemberExpression",
                             "start": 1,
@@ -431,7 +423,6 @@
                         }
                     }
                 ],
-                "key": 8,
                 "forEach": {
                     "expression": {
                         "type": "Identifier",
@@ -456,8 +447,7 @@
                     }
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

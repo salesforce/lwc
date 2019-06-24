@@ -8,8 +8,7 @@
                 "type": "text",
                 "value": "foo"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

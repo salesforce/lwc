@@ -14,7 +14,6 @@
                         "tag": "button",
                         "attrsList": [],
                         "children": [],
-                        "key": 3,
                         "on": {
                             "click": {
                                 "type": "Identifier",
@@ -56,11 +55,9 @@
                         }
                     }
                 ],
-                "key": 2,
                 "component": "x-some-cmp"
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

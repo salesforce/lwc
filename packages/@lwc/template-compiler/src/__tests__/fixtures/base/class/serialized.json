@@ -9,15 +9,13 @@
                 "tag": "section",
                 "attrsList": [],
                 "children": [],
-                "key": 2,
                 "classMap": {
                     "foo": true,
                     "bar": true,
                     "baz-fiz": true
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

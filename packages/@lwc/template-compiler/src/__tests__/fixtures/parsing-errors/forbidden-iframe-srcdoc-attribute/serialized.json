@@ -14,7 +14,6 @@
                     }
                 ],
                 "children": [],
-                "key": 2,
                 "attrs": {
                     "srcdoc": {
                         "name": "srcdoc",
@@ -46,7 +45,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 4,
                         "attrs": {
                             "srcdoc": {
                                 "name": "srcdoc",
@@ -63,8 +61,7 @@
                             }
                         }
                     }
-                ],
-                "key": 3
+                ]
             },
             {
                 "type": "element",
@@ -81,7 +78,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 6,
                         "attrs": {
                             "srcdoc": {
                                 "name": "srcdoc",
@@ -98,11 +94,9 @@
                             }
                         }
                     }
-                ],
-                "key": 5
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

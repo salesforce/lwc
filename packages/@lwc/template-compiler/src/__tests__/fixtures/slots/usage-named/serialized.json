@@ -28,11 +28,9 @@
                                         "type": "text",
                                         "value": "Test slot content"
                                     }
-                                ],
-                                "key": 4
+                                ]
                             }
                         ],
-                        "key": 3,
                         "slotName": "test",
                         "attrs": {
                             "name": {
@@ -50,11 +48,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

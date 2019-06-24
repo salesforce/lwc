@@ -14,7 +14,6 @@
                         "tag": "x-foo",
                         "attrsList": [],
                         "children": [],
-                        "key": 3,
                         "component": "x-foo",
                         "props": {
                             "is": {
@@ -32,11 +31,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

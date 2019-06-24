@@ -13,14 +13,11 @@
                         "type": "element",
                         "tag": "p",
                         "attrsList": [],
-                        "children": [],
-                        "key": 3
+                        "children": []
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": [
         {

@@ -23,7 +23,6 @@
                                 "value": "X"
                             }
                         ],
-                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -57,11 +56,9 @@
                                 "type": "text",
                                 "value": "Last child"
                             }
-                        ],
-                        "key": 4
+                        ]
                     }
                 ],
-                "key": 2,
                 "classMap": {
                     "s1": true
                 }
@@ -95,7 +92,6 @@
                                                 "value": "X1"
                                             }
                                         ],
-                                        "key": 8,
                                         "forKey": {
                                             "type": "MemberExpression",
                                             "start": 1,
@@ -157,7 +153,6 @@
                                                 "value": "X2"
                                             }
                                         ],
-                                        "key": 9,
                                         "forKey": {
                                             "type": "MemberExpression",
                                             "start": 1,
@@ -210,7 +205,6 @@
                                         }
                                     }
                                 ],
-                                "key": 7,
                                 "forEach": {
                                     "expression": {
                                         "type": "Identifier",
@@ -236,7 +230,6 @@
                                 }
                             }
                         ],
-                        "key": 6,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -257,7 +250,6 @@
                         "ifModifier": "true"
                     }
                 ],
-                "key": 5,
                 "classMap": {
                     "s2": true
                 }
@@ -276,15 +268,13 @@
                                 "type": "text",
                                 "value": "Last child"
                             }
-                        ],
-                        "key": 11
+                        ]
                     },
                     {
                         "type": "element",
                         "tag": "div",
                         "attrsList": [],
                         "children": [],
-                        "key": 12,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -360,7 +350,6 @@
                         }
                     }
                 ],
-                "key": 10,
                 "classMap": {
                     "s3": true
                 }
@@ -379,8 +368,7 @@
                                 "type": "text",
                                 "value": "Other child1"
                             }
-                        ],
-                        "key": 14
+                        ]
                     },
                     {
                         "type": "element",
@@ -391,17 +379,14 @@
                                 "type": "text",
                                 "value": "Other child2"
                             }
-                        ],
-                        "key": 15
+                        ]
                     }
                 ],
-                "key": 13,
                 "classMap": {
                     "s4": true
                 }
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }

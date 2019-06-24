@@ -23,7 +23,6 @@
                             }
                         ],
                         "children": [],
-                        "key": 3,
                         "attrs": {
                             "data-foo": {
                                 "name": "data-foo",
@@ -53,11 +52,9 @@
                             }
                         }
                     }
-                ],
-                "key": 2
+                ]
             }
-        ],
-        "key": 1
+        ]
     },
     "warnings": []
 }
