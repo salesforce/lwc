@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.0...v) (2019-06-19)
+# [](https://github.com/salesforce/lwc/compare/v1.0.1...v) (2019-06-24)
+
+
+### Bug Fixes
+
+* **engine:** avoid reusing vnode.elm unless it is style tag for native ([#1365](https://github.com/salesforce/lwc/issues/1365)) ([33f7e0c](https://github.com/salesforce/lwc/commit/33f7e0c))
+* **synthetic-shadow:** expose iframe contentWindow event methods ([#1368](https://github.com/salesforce/lwc/issues/1368)) ([#1375](https://github.com/salesforce/lwc/issues/1375)) ([eaf9749](https://github.com/salesforce/lwc/commit/eaf9749))
+
+
+
+## [1.0.1](https://github.com/salesforce/lwc/compare/v1.0.0...v1.0.1) (2019-06-19)
 
 
 ### Bug Fixes
