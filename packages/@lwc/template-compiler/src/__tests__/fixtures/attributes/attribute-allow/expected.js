@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           allow: "geolocation https://google-developers.appspot.com"
         },
-        key: 2
+        key: 1
       },
       []
     )

@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "p",
           {
             className: $cmp.bar,
-            key: 3
+            key: 1
           },
           []
         )

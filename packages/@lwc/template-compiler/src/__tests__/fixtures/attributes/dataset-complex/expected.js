@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               "data--bar-baz": "xyz"
             },
-            key: 3
+            key: 1
           },
           []
         )

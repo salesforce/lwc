@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               title: "x",
               "aria-hidden": "x"
             },
-            key: 3
+            key: 1
           },
           [api_text("x")]
         )

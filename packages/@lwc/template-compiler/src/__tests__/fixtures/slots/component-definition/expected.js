@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_slot(
           "",
           {
-            key: 3
+            key: 1
           },
           [],
           $slotset

@@ -20,9 +20,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "use",
           {
             attrs: {
-              "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", "/x")
+              "xlink:href": sanitizeAttribute(
+                "use",
+                "http://www.w3.org/2000/svg",
+                "xlink:href",
+                "/x"
+              )
             },
-            key: 3
+            key: 1
           },
           []
         )

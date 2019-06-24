@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           color: "red",
           margin: "10px 5px 10px"
         },
-        key: 2
+        key: 1
       },
       []
     )

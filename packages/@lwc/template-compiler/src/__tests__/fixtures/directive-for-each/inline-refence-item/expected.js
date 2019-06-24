@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "li",
           {
             className: item.x,
-            key: api_key(3, item.id)
+            key: api_key(1, item.id)
           },
           [api_dynamic(item)]
         );

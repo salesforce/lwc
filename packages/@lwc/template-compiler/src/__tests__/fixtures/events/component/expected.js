@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "ns-foo",
           _nsFoo,
           {
-            key: 3,
+            key: 1,
             on: {
               foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
             }

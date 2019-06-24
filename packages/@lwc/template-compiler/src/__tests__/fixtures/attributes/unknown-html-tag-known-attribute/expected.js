@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           min: "4"
         },
-        key: 2
+        key: 1
       },
       []
     )

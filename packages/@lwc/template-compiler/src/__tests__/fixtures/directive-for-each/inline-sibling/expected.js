@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "ul",
       {
-        key: 2
+        key: 3
       },
       api_flatten([
         api_iterator($cmp.items, function(item) {
@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "li",
             {
               className: item.x,
-              key: api_key(3, item.id)
+              key: api_key(1, item.id)
             },
             [api_dynamic(item)]
           );
@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "li",
           {
-            key: 4
+            key: 2
           },
           [api_text("Last")]
         )

@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           height: "100px",
           viewport: "0 0 100 100"
         },
-        key: 2
+        key: 6
       },
       [
         api_element(
@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   cy: "10",
                   fill: "black"
                 },
-                key: 4
+                key: 1
               },
               []
             ),
@@ -44,7 +44,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   cy: "14",
                   fill: "red"
                 },
-                key: 5
+                key: 2
               },
               []
             )
@@ -61,7 +61,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_scoped_frag_id($cmp.blackUrl)
               )
             },
-            key: 6
+            key: 4
           },
           []
         ),
@@ -76,7 +76,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_scoped_frag_id($cmp.redUrl)
               )
             },
-            key: 7
+            key: 5
           },
           []
         )

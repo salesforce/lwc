@@ -7,11 +7,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         classMap: {
-            "slds-icon": true
+          "slds-icon": true
         },
         attrs: {
-            "aria-hidden": "true",
-            title: "when needed"
+          "aria-hidden": "true",
+          title: "when needed"
         },
         key: 2
       },
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_scoped_frag_id($cmp.getXLink)
               )
             },
-            key: 3
+            key: 1
           },
           []
         )

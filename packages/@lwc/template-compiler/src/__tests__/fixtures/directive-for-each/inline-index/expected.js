@@ -18,7 +18,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         return api_element(
           "li",
           {
-            key: api_key(3, item.id)
+            key: api_key(1, item.id)
           },
           [api_dynamic(index), api_text(" - "), api_dynamic(item)]
         );

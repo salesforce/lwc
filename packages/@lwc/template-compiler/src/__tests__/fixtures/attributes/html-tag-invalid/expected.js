@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               maxlength: "5",
               "unknown-attr": "should-error"
             },
-            key: 3
+            key: 1
           },
           [api_text("x")]
         )
