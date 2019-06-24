@@ -8,7 +8,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-cmp",
       _xCmp,
       {
-        key: 1
+        key: 0
       },
       []
     )

@@ -6,13 +6,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 9
+        key: 8
       },
       [
         api_element(
           "p",
           {
-            key: 1
+            key: 0
           },
           [api_text("Before header")]
         ),
@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               name: "header"
             },
-            key: 2
+            key: 1
           },
           [api_text("Default header")],
           $slotset
@@ -30,27 +30,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            key: 3
+            key: 2
           },
           [api_text("In")]
         ),
         api_element(
           "p",
           {
-            key: 4
+            key: 3
           },
           [api_text("between")]
         ),
         api_slot(
           "",
           {
-            key: 6
+            key: 5
           },
           [
             api_element(
               "p",
               {
-                key: 5
+                key: 4
               },
               [api_text("Default body")]
             )
@@ -63,13 +63,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               name: "footer"
             },
-            key: 8
+            key: 7
           },
           [
             api_element(
               "p",
               {
-                key: 7
+                key: 6
               },
               [api_text("Default footer")]
             )

@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 4
+        key: 3
       },
       api_iterator($cmp.items, function(item) {
         return api_element(
@@ -15,20 +15,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: {
               "my-list": true
             },
-            key: api_key(3, item.id)
+            key: api_key(2, item.id)
           },
           [
             api_element(
               "p",
               {
-                key: 1
+                key: 0
               },
               [api_dynamic(item)]
             ),
             api_element(
               "p",
               {
-                key: 2
+                key: 1
               },
               [api_dynamic($cmp.item2)]
             )

@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 1,
+        key: 0,
         on: {
           a123: _m0 || ($ctx._m0 = api_bind($cmp.handleClick))
         }
@@ -17,7 +17,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 2,
+        key: 1,
         on: {
           foo_bar: _m1 || ($ctx._m1 = api_bind($cmp.handleClick))
         }
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 3,
+        key: 2,
         on: {
           foo_: _m2 || ($ctx._m2 = api_bind($cmp.handleClick))
         }
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "div",
       {
-        key: 4,
+        key: 3,
         on: {
           a123: _m3 || ($ctx._m3 = api_bind($cmp.handleClick))
         }

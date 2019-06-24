@@ -6,19 +6,19 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 3
+        key: 2
       },
       [
         api_slot(
           "",
           {
-            key: 2
+            key: 1
           },
           [
             api_element(
               "p",
               {
-                key: 1
+                key: 0
               },
               [api_text("Default slot content")]
             )

@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "x-some-cmp",
       _xSomeCmp,
       {
-        key: 2
+        key: 1
       },
       [
         api_element(
@@ -26,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 context: _m0 || ($ctx._m0 = function_bind($cmp.locatorProvider))
               }
             },
-            key: 1,
+            key: 0,
             on: {
               click:
                 _m1 ||

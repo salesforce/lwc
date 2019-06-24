@@ -9,6 +9,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         styleMap: {
           color: "blue"
         },
+        key: 0
+      },
+      []
+    ),
+    api_element(
+      "div",
+      {
+        styleMap: {
+          color: "blue"
+        },
         key: 1
       },
       []
@@ -27,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          color: "blue"
+          boxShadow: "10px 5px 5px black"
         },
         key: 3
       },
@@ -37,7 +47,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          boxShadow: "10px 5px 5px black"
+          fontSize: "12px",
+          background: "blue",
+          color: "red"
         },
         key: 4
       },
@@ -59,21 +71,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "div",
       {
         styleMap: {
-          fontSize: "12px",
-          background: "blue",
-          color: "red"
-        },
-        key: 6
-      },
-      []
-    ),
-    api_element(
-      "div",
-      {
-        styleMap: {
           backgroundColor: "rgba(255,0,0,0.3)"
         },
-        key: 7
+        key: 6
       },
       []
     )

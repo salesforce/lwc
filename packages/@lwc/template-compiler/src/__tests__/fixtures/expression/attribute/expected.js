@@ -6,14 +6,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 1
       },
       [
         api_element(
           "p",
           {
             className: $cmp.bar,
-            key: 1
+            key: 0
           },
           []
         )

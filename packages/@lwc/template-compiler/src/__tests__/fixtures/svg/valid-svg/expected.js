@@ -6,153 +6,153 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "svg",
       {
-        key: 22
+        key: 21
       },
       [
         api_element(
           "a",
           {
-            key: 1
+            key: 0
           },
           []
         ),
         api_element(
           "circle",
           {
-            key: 2
+            key: 1
           },
           []
         ),
         api_element(
           "defs",
           {
-            key: 3
+            key: 2
           },
           []
         ),
         api_element(
           "desc",
           {
-            key: 4
+            key: 3
           },
           []
         ),
         api_element(
           "ellipse",
           {
-            key: 5
+            key: 4
           },
           []
         ),
         api_element(
           "filter",
           {
-            key: 6
+            key: 5
           },
           []
         ),
         api_element(
           "g",
           {
-            key: 7
+            key: 6
           },
           []
         ),
         api_element(
           "line",
           {
-            key: 8
+            key: 7
           },
           []
         ),
         api_element(
           "marker",
           {
-            key: 9
+            key: 8
           },
           []
         ),
         api_element(
           "mask",
           {
-            key: 10
+            key: 9
           },
           []
         ),
         api_element(
           "path",
           {
-            key: 11
+            key: 10
           },
           []
         ),
         api_element(
           "pattern",
           {
-            key: 12
+            key: 11
           },
           []
         ),
         api_element(
           "polygon",
           {
-            key: 13
+            key: 12
           },
           []
         ),
         api_element(
           "polyline",
           {
-            key: 14
+            key: 13
           },
           []
         ),
         api_element(
           "rect",
           {
-            key: 15
+            key: 14
           },
           []
         ),
         api_element(
           "stop",
           {
-            key: 16
+            key: 15
           },
           []
         ),
         api_element(
           "symbol",
           {
-            key: 17
+            key: 16
           },
           []
         ),
         api_element(
           "text",
           {
-            key: 18
+            key: 17
           },
           []
         ),
         api_element(
           "title",
           {
-            key: 19
+            key: 18
           },
           []
         ),
         api_element(
           "tspan",
           {
-            key: 20
+            key: 19
           },
           []
         ),
         api_element(
           "use",
           {
-            key: 21
+            key: 20
           },
           []
         )

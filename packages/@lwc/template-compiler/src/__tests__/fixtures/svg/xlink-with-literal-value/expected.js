@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "aria-hidden": "true",
           title: "when needed"
         },
-        key: 2
+        key: 1
       },
       [
         api_element(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "/assets/icons/standard-sprite/svg/symbols.svg#case"
               )
             },
-            key: 1
+            key: 0
           },
           []
         )

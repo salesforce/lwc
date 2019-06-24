@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           hidden: true
         },
-        key: 1
+        key: 0
       },
       [api_text("x")]
     ),
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           readOnly: $cmp.getReadOnly,
           disabled: true
         },
-        key: 2
+        key: 1
       },
       []
     )

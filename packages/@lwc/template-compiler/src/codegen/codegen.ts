@@ -10,11 +10,6 @@ import * as esutils from 'esutils';
 import toCamelCase from 'camelcase';
 import { isUndefined } from 'util';
 
-function getKeyGenerator() {
-    let count = 1;
-    return () => count++;
-}
-
 type RenderPrimitive =
     | 'iterator'
     | 'flatten'
@@ -55,6 +50,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 
 export default class CodeGen {
     currentId = 0;
+    currentKey = 0;
 
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
@@ -63,11 +59,8 @@ export default class CodeGen {
     inlineStyleBody: t.Statement[] = [];
 
     generateKey() {
-        this._generateKey = this._generateKey || getKeyGenerator();
-        return this._generateKey();
+        return this.currentKey++;
     }
-
-    _generateKey;
 
     genInlineStyles(src: string | undefined): void {
         if (src) {

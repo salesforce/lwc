@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           height: "200",
           xmlns: "http://www.w3.org/2000/svg"
         },
-        key: 4
+        key: 3
       },
       [
         api_element(
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               height: "100%",
               fill: "red"
             },
-            key: 1
+            key: 0
           },
           []
         ),
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               r: "80",
               fill: "green"
             },
-            key: 2
+            key: 1
           },
           []
         ),
@@ -51,7 +51,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "text-anchor": "middle",
               fill: "white"
             },
-            key: 3
+            key: 2
           },
           [api_text("SVG")]
         )

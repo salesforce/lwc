@@ -7,7 +7,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "section",
       {
         style: $cmp.customStyle,
-        key: 1
+        key: 0
       },
       []
     )

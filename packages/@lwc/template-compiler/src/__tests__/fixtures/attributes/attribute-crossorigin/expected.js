@@ -10,7 +10,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           src: "http://www.example.com/image.png",
           crossorigin: "anonymous"
         },
-        key: 1
+        key: 0
       },
       []
     ),
@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           src: "http://www.example.com/video.mp4",
           crossorigin: "anonymous"
         },
-        key: 2
+        key: 1
       },
       []
     ),
@@ -32,7 +32,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           src: "http://www.example.com/video.mp3",
           crossorigin: "anonymous"
         },
-        key: 3
+        key: 2
       },
       []
     )

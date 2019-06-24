@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         props: {
           json: '[{"column":"ID","value":"5e","operator":"equals","f":true}]'
         },
-        key: 1
+        key: 0
       },
       []
     )

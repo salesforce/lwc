@@ -6,14 +6,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 4
+        key: 3
       },
       [
         $cmp.isTrue
           ? api_element(
               "p",
               {
-                key: 1
+                key: 0
               },
               [api_text("1")]
             )
@@ -22,7 +22,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ? api_element(
               "p",
               {
-                key: 2
+                key: 1
               },
               [api_text("2")]
             )
@@ -31,7 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           ? api_element(
               "p",
               {
-                key: 3
+                key: 2
               },
               [api_text("3")]
             )
