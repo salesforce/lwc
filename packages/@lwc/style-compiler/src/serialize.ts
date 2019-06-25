@@ -270,8 +270,17 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
             tokens = reduceTokens(tokens);
             // The children tokens are a combination of identifiers, text and other expressions
             // Since we are producing evaluatable javascript we need to do the right scaping:
-            const exprToken = tokens.reduce((buffer, n) => {
-                return buffer + (n.type === TokenType.text ? JSON.stringify(n.value) : n.value);
+            const exprToken = tokens.reduce((buffer, n, index) => {
+                const isTextToken = n.type === TokenType.text;
+                const normalizedToken = isTextToken ? JSON.stringify(n.value) : n.value;
+
+                // If we have a token sequence of text + expression, we need to add the concatenation operator
+                // Example: var(--x, 0 0 2px var(--y, #fff)
+                const nextToken = isTextToken && tokens[index + 1];
+                const concatOperator =
+                    nextToken && nextToken.type === TokenType.expression ? ' + ' : '';
+
+                return buffer + normalizedToken + concatOperator;
             }, '');
 
             // Generate the function call for runtime evaluation
@@ -302,6 +311,5 @@ function recursiveValueParse(node: any, inVarExpression = false): Token[] {
 function tokenizeCssDeclaration(node: postcss.Declaration): Token[] {
     const valueRoot = postcssValueParser(node.value);
     const parsed = recursiveValueParse(valueRoot);
-
     return [{ type: TokenType.text, value: `${node.prop.trim()}: ` }, ...parsed];
 }
