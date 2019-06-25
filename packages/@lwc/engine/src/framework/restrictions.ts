@@ -19,6 +19,7 @@ import {
     isFalse,
     setPrototypeOf,
     toString,
+    isUndefined,
 } from '../shared/language';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
@@ -210,13 +211,26 @@ function getShadowRootRestrictionsDescriptors(
             },
         }),
         addEventListener: generateDataDescriptor({
-            value(this: ShadowRoot, type: string) {
+            value(
+                this: ShadowRoot,
+                type: string,
+                listener: EventListener,
+                options?: boolean | AddEventListenerOptions
+            ) {
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
                         sr
                     )} by adding an event listener for "${type}".`
                 );
+                // TODO: #420 - this is triggered when the component author attempts to add a listener
+                // programmatically into its Component's shadow root
+                if (!isUndefined(options)) {
+                    assert.logError(
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        this.host
+                    );
+                }
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);
@@ -307,13 +321,26 @@ function getCustomElementRestrictionsDescriptors(
             },
         }),
         addEventListener: generateDataDescriptor({
-            value(this: HTMLElement, type: string) {
+            value(
+                this: HTMLElement,
+                type: string,
+                listener: EventListener,
+                options?: boolean | AddEventListenerOptions
+            ) {
                 assert.invariant(
                     !isRendering,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
-                        elm
+                        this
                     )} by adding an event listener for "${type}".`
                 );
+                // TODO: #420 - this is triggered when the component author attempts to add a listener
+                // programmatically into a lighting element node
+                if (!isUndefined(options)) {
+                    assert.logError(
+                        'The `addEventListener` method in `LightningElement` does not support any options.',
+                        this
+                    );
+                }
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-ignore type-mismatch
                 return originalAddEventListener.apply(this, arguments);

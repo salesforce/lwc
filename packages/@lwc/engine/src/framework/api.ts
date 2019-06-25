@@ -59,11 +59,9 @@ import {
     updateCustomElmHook,
     updateChildrenHook,
     allocateChildrenHook,
-    createTextHook,
-    createCommentHook,
     removeCustomElmHook,
+    markAsDynamicChildren,
 } from './hooks';
-import { markAsDynamicChildren } from './patch';
 import { Services, invokeServiceHook } from './services';
 import { markNodeFromVNode } from './restrictions';
 
@@ -108,7 +106,6 @@ const TextHook: Hooks = {
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
         }
-        createTextHook(vnode);
     },
     update: updateNodeHook,
     insert: insertNodeHook,
@@ -123,7 +120,6 @@ const CommentHook: Hooks = {
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
         }
-        createCommentHook(vnode);
     },
     update: updateNodeHook,
     insert: insertNodeHook,

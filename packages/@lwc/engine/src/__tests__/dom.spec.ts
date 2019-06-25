@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '@lwc/engine';
+import { createElement, LightningElement } from '../';
 
 describe('dom', () => {
     describe('composed polyfill', () => {
@@ -18,8 +18,8 @@ describe('dom', () => {
             });
             elm.click();
         });
-        // Flapper
-        it.skip('should get custom events as composed false', function() {
+
+        it('should get custom events as composed false', function() {
             expect.assertions(1);
             const elm = document.createElement('div');
             document.body.appendChild(elm);

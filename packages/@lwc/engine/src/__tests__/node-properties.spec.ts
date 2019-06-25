@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '@lwc/engine';
+import { createElement, LightningElement } from '../';
 
 describe('patched node properties', () => {
     describe('parentNode', () => {

@@ -7,12 +7,12 @@
 import { getOwnPropertyDescriptor } from '../shared/language';
 
 const ShadowRootHostGetter: (this: ShadowRoot) => Element | null = getOwnPropertyDescriptor(
-    (window as any).ShadowRoot.prototype,
+    ShadowRoot.prototype,
     'host'
 )!.get!;
 
 const ShadowRootInnerHTMLSetter: (this: ShadowRoot, s: string) => void = getOwnPropertyDescriptor(
-    (window as any).ShadowRoot.prototype,
+    ShadowRoot.prototype,
     'innerHTML'
 )!.set!;
 

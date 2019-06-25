@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const { CustomEvent: OriginalCustomEvent } = window as any;
+const OriginalCustomEvent = CustomEvent;
 
 function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
     const event = new OriginalCustomEvent(type, eventInitDict);
@@ -23,7 +23,5 @@ function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEven
     return event;
 }
 
-export default function apply() {
-    (window as any).CustomEvent = PatchedCustomEvent;
-    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
-}
+PatchedCustomEvent.prototype = OriginalCustomEvent.prototype;
+(window as any).CustomEvent = PatchedCustomEvent;

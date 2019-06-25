@@ -1386,7 +1386,7 @@ describe('html-element', () => {
             expect(() => {
                 createElement('prop-setter-title', { is: MyComponent });
             }).toLogError(
-                "`PatchedHTMLElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `PatchedHTMLElement` constructor to set a default value for the property."
+                "`HTMLBridgeElement` constructor can't read the value of property `title` because the owner component hasn't set the value yet. Instead, use the `HTMLBridgeElement` constructor to set a default value for the property."
             );
         });
 

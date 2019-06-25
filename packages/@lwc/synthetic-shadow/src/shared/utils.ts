@@ -7,6 +7,8 @@
 
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
+import { isUndefined, isTrue } from './language';
+import { getAttribute } from '../env/element';
 
 export function getOwnerDocument(node: Node): Document {
     const doc = ownerDocumentGetter.call(node);
@@ -23,4 +25,20 @@ export function getOwnerWindow(node: Node): Window {
         throw new TypeError();
     }
     return win;
+}
+
+let skipGlobalPatching: boolean;
+
+// TODO: issue #1222 - remove global bypass
+export function isGlobalPatchingSkipped(node: Node): boolean {
+    // we lazily compute this value instead of doing it during evaluation, this helps
+    // for apps that are setting this after the engine code is evaluated.
+    if (isUndefined(skipGlobalPatching)) {
+        const ownerDocument = getOwnerDocument(node);
+        skipGlobalPatching =
+            ownerDocument.body &&
+            getAttribute.call(ownerDocument.body, 'data-global-patching-bypass') ===
+                'temporary-bypass';
+    }
+    return isTrue(skipGlobalPatching);
 }

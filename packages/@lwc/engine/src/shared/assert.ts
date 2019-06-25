@@ -6,41 +6,34 @@
  */
 import { ArrayJoin, ArrayPush, isNull, StringToLowerCase } from './language';
 import { tagNameGetter } from '../env/element';
-import { parentNodeGetter } from '../env/node';
-import { ShadowRootHostGetter } from '../env/dom';
-
-function isLWC(element): element is HTMLElement {
-    return element instanceof Element && tagNameGetter.call(element).indexOf('-') !== -1;
-}
-
-function isShadowRoot(elmOrShadow: Node | ShadowRoot): elmOrShadow is ShadowRoot {
-    return !(elmOrShadow instanceof Element) && 'host' in elmOrShadow;
-}
 
 function getFormattedComponentStack(elm: Element): string {
     const componentStack: string[] = [];
     const indentationChar = '\t';
     let indentation = '';
 
-    let currentElement: Node | null = elm;
+    let currentNode: Node | null = elm;
 
+    // traversing up via getRootNode logic to find the component stack
     do {
-        if (isLWC(currentElement)) {
-            ArrayPush.call(
-                componentStack,
-                `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentElement))}>`
-            );
-
-            indentation = indentation + indentationChar;
-        }
-
-        if (isShadowRoot(currentElement)) {
-            // if at some point we find a ShadowRoot, it must be a native shadow root.
-            currentElement = ShadowRootHostGetter.call(currentElement);
+        ArrayPush.call(
+            componentStack,
+            `${indentation}<${StringToLowerCase.call(tagNameGetter.call(currentNode as Element))}>`
+        );
+        indentation = indentation + indentationChar;
+        const newRootNode = currentNode.getRootNode();
+        if (newRootNode === currentNode || newRootNode === document) {
+            currentNode = null; // quitting
+        } else if (newRootNode instanceof ShadowRoot) {
+            currentNode = newRootNode.host;
         } else {
-            currentElement = parentNodeGetter.call(currentElement);
+            // When the element is part of a tree that is not connected,
+            // the root node will be the top element of that tree, e.g.:
+            // `<div><p /></div>`, when calling p.getRootNode() it returns
+            // the div reference. This branch covers that case.
+            currentNode = newRootNode;
         }
-    } while (!isNull(currentElement));
+    } while (!isNull(currentNode));
 
     return ArrayJoin.call(componentStack, '\n');
 }

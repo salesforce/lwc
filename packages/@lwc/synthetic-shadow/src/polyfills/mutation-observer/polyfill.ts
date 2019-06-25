@@ -17,7 +17,7 @@ import {
 import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 
-const OriginalMutationObserver: typeof MutationObserver = (window as any).MutationObserver;
+const OriginalMutationObserver = MutationObserver;
 const {
     disconnect: originalDisconnect,
     observe: originalObserve,
@@ -236,10 +236,8 @@ PatchedMutationObserver.prototype.disconnect = patchedDisconnect;
 PatchedMutationObserver.prototype.observe = patchedObserve;
 PatchedMutationObserver.prototype.takeRecords = patchedTakeRecords;
 
-export default function apply() {
-    defineProperty(window, 'MutationObserver', {
-        value: PatchedMutationObserver,
-        configurable: true,
-        writable: true,
-    });
-}
+defineProperty(window, 'MutationObserver', {
+    value: PatchedMutationObserver,
+    configurable: true,
+    writable: true,
+});

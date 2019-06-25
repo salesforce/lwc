@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import {
     ArraySlice,
@@ -22,18 +21,12 @@ import {
     isNull,
     getPropertyDescriptor,
 } from '../shared/language';
-import { patchedGetRootNode } from './traverse';
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
-
-import '../polyfills/event-listener/main';
 import { getOwnerDocument } from '../shared/utils';
-
-// intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
-// due to the issues with JSDOM patching hazard.
-const { addEventListener, removeEventListener } = Node.prototype;
+import { addEventListener, removeEventListener } from '../env/element';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -54,7 +47,7 @@ function isChildNode(root: Element, node: Node): boolean {
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function getRootNodeHost(node: Node, options): Node {
-    let rootNode = patchedGetRootNode.call(node, options);
+    let rootNode = node.getRootNode(options);
 
     // is SyntheticShadowRootInterface
     if ('mode' in rootNode && 'delegatesFocus' in rootNode) {
@@ -91,7 +84,9 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
 
 function composedPathValue(this: ComposableEvent): EventTarget[] {
     const originalTarget: EventTarget = eventTargetGetter.call(this);
-    return pathComposer(originalTarget as Node, this.composed);
+    const originalCurrentTarget = eventCurrentTargetGetter.call(this);
+    // if the dispatch phase is done, the composedPath should be empty array
+    return isNull(originalCurrentTarget) ? [] : pathComposer(originalTarget as Node, this.composed);
 }
 
 export function patchEvent(event: Event) {
@@ -213,10 +208,7 @@ function getWrappedShadowRootListener(
 
 const customElementEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedCustomElementListener(
-    elm: HTMLElement,
-    listener: EventListener
-): WrappedListener {
+function getWrappedCustomElementListener(elm: Element, listener: EventListener): WrappedListener {
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
@@ -238,6 +230,7 @@ function getWrappedCustomElementListener(
 }
 
 function domListener(evt: Event) {
+    patchEvent(evt);
     let immediatePropagationStopped = false;
     let propagationStopped = false;
     const { type, stopImmediatePropagation, stopPropagation } = evt;
@@ -288,7 +281,7 @@ function domListener(evt: Event) {
     eventToContextMap.set(evt, 0);
 }
 
-function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: WrappedListener) {
+function attachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {
     const listenerMap = getEventMap(elm);
     let cmpEventHandlers = listenerMap[type];
     if (isUndefined(cmpEventHandlers)) {
@@ -296,12 +289,13 @@ function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: Wrap
     }
     // only add to DOM if there is no other listener on the same placement yet
     if (cmpEventHandlers.length === 0) {
+        // super.addEventListener() - this will not work on
         addEventListener.call(elm, type, domListener);
     }
     ArrayPush.call(cmpEventHandlers, wrappedListener);
 }
 
-function detachDOMListener(elm: HTMLElement, type: string, wrappedListener: WrappedListener) {
+function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedListener) {
     const listenerMap = getEventMap(elm);
     let p: number;
     let listeners: EventListener[] | undefined;
@@ -338,24 +332,17 @@ function isValidEventForCustomElement(event: Event): boolean {
 }
 
 export function addCustomElementEventListener(
-    elm: HTMLElement,
+    elm: Element,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isFunction(listener),
-            `Invalid second argument for this.addEventListener() in ${toString(
-                elm
-            )} for event "${type}". Expected an EventListener but received ${listener}.`
-        );
-        // TODO: #420 - this is triggered when the component author attempts to add a listener
-        // programmatically into a lighting element node
-        if (!isUndefined(options)) {
-            assert.logError(
-                'The `addEventListener` method in `LightningElement` does not support any options.',
-                elm
+        if (!isFunction(listener)) {
+            throw new TypeError(
+                `Invalid second argument for Element.addEventListener() in ${toString(
+                    elm
+                )} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
     }
@@ -364,7 +351,7 @@ export function addCustomElementEventListener(
 }
 
 export function removeCustomElementEventListener(
-    elm: HTMLElement,
+    elm: Element,
     type: string,
     listener: EventListener,
     _options?: boolean | AddEventListenerOptions
@@ -377,21 +364,14 @@ export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
     listener: EventListener,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isFunction(listener),
-            `Invalid second argument for this.template.addEventListener() in ${toString(
-                sr
-            )} for event "${type}". Expected an EventListener but received ${listener}.`
-        );
-        // TODO: #420 - this is triggered when the component author attempts to add a listener
-        // programmatically into its Component's shadow root
-        if (!isUndefined(options)) {
-            assert.logError(
-                'The `addEventListener` method in `LightningElement` does not support any options.',
-                getHost(sr)
+        if (!isFunction(listener)) {
+            throw new TypeError(
+                `Invalid second argument for ShadowRoot.addEventListener() in ${toString(
+                    sr
+                )} for event "${type}". Expected an EventListener but received ${listener}.`
             );
         }
     }

@@ -88,18 +88,10 @@ function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture)
     nativeRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
 
-// TODO: #1305 - these patches should be on EventTarget.prototype instead of win and node protos
-function windowPatchListeners() {
-    window.addEventListener = windowAddEventListener;
-    window.removeEventListener = windowRemoveEventListener;
-}
+// TODO: #1305 - these patches should be on EventTarget.prototype instead of win and node prototypes
+//       but IE doesn't support that.
+window.addEventListener = windowAddEventListener;
+window.removeEventListener = windowRemoveEventListener;
 
-function nodePatchListeners() {
-    Node.prototype.addEventListener = addEventListener;
-    Node.prototype.removeEventListener = removeEventListener;
-}
-
-export default function apply() {
-    windowPatchListeners();
-    nodePatchListeners();
-}
+Node.prototype.addEventListener = addEventListener;
+Node.prototype.removeEventListener = removeEventListener;

@@ -20,7 +20,6 @@ import {
     ArraySlice,
     defineProperty,
     isNull,
-    isTrue,
     isUndefined,
     getOwnPropertyDescriptor,
 } from '../../shared/language';
@@ -30,103 +29,168 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
-import { getOwnerDocument } from '../../shared/utils';
+import { isGlobalPatchingSkipped } from '../../shared/utils';
 
-let skipGlobalPatching: boolean;
-function isGlobalPatchingSkipped(node: Node) {
-    if (isUndefined(skipGlobalPatching)) {
-        const ownerDocument = getOwnerDocument(node);
-        skipGlobalPatching =
-            ownerDocument.body.getAttribute('data-global-patching-bypass') === 'temporary-bypass';
+function elemFromPoint(this: Document, left: number, top: number) {
+    const element = elementFromPoint.call(this, left, top);
+    if (isNull(element)) {
+        return element;
     }
-    return isTrue(skipGlobalPatching);
+
+    return retarget(this, pathComposer(element, true)) as Element | null;
 }
 
-export default function apply() {
-    function elemFromPoint(this: Document, left: number, top: number) {
-        const element = elementFromPoint.call(this, left, top);
-        if (isNull(element)) {
-            return element;
+// https://github.com/Microsoft/TypeScript/issues/14139
+Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
+
+// Go until we reach to top of the LWC tree
+defineProperty(Document.prototype, 'activeElement', {
+    get(this: Document): Element | null {
+        let node = DocumentPrototypeActiveElement.call(this);
+
+        if (isNull(node)) {
+            return node;
         }
 
-        return retarget(this, pathComposer(element, true)) as Element | null;
-    }
-
-    // https://github.com/Microsoft/TypeScript/issues/14139
-    Document.prototype.elementFromPoint = elemFromPoint as (left: number, top: number) => Element;
-
-    // Go until we reach to top of the LWC tree
-    defineProperty(Document.prototype, 'activeElement', {
-        get(this: Document): Element | null {
-            let node = DocumentPrototypeActiveElement.call(this);
-
+        while (!isUndefined(getNodeOwnerKey(node as Node))) {
+            node = parentElementGetter.call(node);
             if (isNull(node)) {
-                return node;
-            }
-
-            while (!isUndefined(getNodeOwnerKey(node as Node))) {
-                node = parentElementGetter.call(node);
-                if (isNull(node)) {
-                    return null;
-                }
-            }
-            if (node.tagName === 'HTML') {
-                // IE 11. Active element should never be html element
-                node = this.body;
-            }
-
-            return node;
-        },
-        enumerable: true,
-        configurable: true,
-    });
-
-    // The following patched methods hide shadowed elements from global
-    // traversing mechanisms. They are simplified for performance reasons to
-    // filter by ownership and do not account for slotted elements. This
-    // compromise is fine for our synthetic shadow dom because root elements
-    // cannot have slotted elements.
-    // Another compromise here is that all these traversing methods will return
-    // static HTMLCollection or static NodeList. We decided that this compromise
-    // is not a big problem considering the amount of code that is relying on
-    // the liveliness of these results are rare.
-
-    defineProperty(Document.prototype, 'getElementById', {
-        value(this: Document): Element | null {
-            const elm = documentGetElementById.apply(this, ArraySlice.call(arguments) as [string]);
-            if (isNull(elm)) {
                 return null;
             }
-            return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
+        }
+        if (node.tagName === 'HTML') {
+            // IE 11. Active element should never be html element
+            node = this.body;
+        }
 
-    defineProperty(Document.prototype, 'querySelector', {
-        value(this: Document): Element | null {
-            const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
-                string
-            ]);
-            const filtered = ArrayFind.call(
-                elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
-            );
-            return !isUndefined(filtered) ? filtered : null;
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
+        return node;
+    },
+    enumerable: true,
+    configurable: true,
+});
 
-    defineProperty(Document.prototype, 'querySelectorAll', {
+// The following patched methods hide shadowed elements from global
+// traversing mechanisms. They are simplified for performance reasons to
+// filter by ownership and do not account for slotted elements. This
+// compromise is fine for our synthetic shadow dom because root elements
+// cannot have slotted elements.
+// Another compromise here is that all these traversing methods will return
+// static HTMLCollection or static NodeList. We decided that this compromise
+// is not a big problem considering the amount of code that is relying on
+// the liveliness of these results are rare.
+
+defineProperty(Document.prototype, 'getElementById', {
+    value(this: Document): Element | null {
+        const elm = documentGetElementById.apply(this, ArraySlice.call(arguments) as [string]);
+        if (isNull(elm)) {
+            return null;
+        }
+        // TODO: issue #1222 - remove global bypass
+        return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Document.prototype, 'querySelector', {
+    value(this: Document): Element | null {
+        const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const filtered = ArrayFind.call(
+            elements,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+        );
+        return !isUndefined(filtered) ? filtered : null;
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Document.prototype, 'querySelectorAll', {
+    value(this: Document): NodeListOf<Element> {
+        const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const filtered = ArrayFilter.call(
+            elements,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+        );
+        return createStaticNodeList(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Document.prototype, 'getElementsByClassName', {
+    value(this: Document): HTMLCollectionOf<Element> {
+        const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const filtered = ArrayFilter.call(
+            elements,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Document.prototype, 'getElementsByTagName', {
+    value(this: Document): HTMLCollectionOf<Element> {
+        const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
+            string
+        ]);
+        const filtered = ArrayFilter.call(
+            elements,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(Document.prototype, 'getElementsByTagNameNS', {
+    value(this: Document): HTMLCollectionOf<Element> {
+        const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+            string,
+            string
+        ]);
+        const filtered = ArrayFilter.call(
+            elements,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+        );
+        return createStaticHTMLCollection(filtered);
+    },
+    writable: true,
+    enumerable: true,
+    configurable: true,
+});
+
+defineProperty(
+    // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
+    getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
+        ? HTMLDocument.prototype
+        : Document.prototype,
+    'getElementsByName',
+    {
         value(this: Document): NodeListOf<Element> {
-            const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
-                string
-            ]);
+            const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
             const filtered = ArrayFilter.call(
                 elements,
+                // TODO: issue #1222 - remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);
@@ -134,76 +198,5 @@ export default function apply() {
         writable: true,
         enumerable: true,
         configurable: true,
-    });
-
-    defineProperty(Document.prototype, 'getElementsByClassName', {
-        value(this: Document): HTMLCollectionOf<Element> {
-            const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(
-                arguments
-            ) as [string]);
-            const filtered = ArrayFilter.call(
-                elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-
-    defineProperty(Document.prototype, 'getElementsByTagName', {
-        value(this: Document): HTMLCollectionOf<Element> {
-            const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(
-                arguments
-            ) as [string]);
-            const filtered = ArrayFilter.call(
-                elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-
-    defineProperty(Document.prototype, 'getElementsByTagNameNS', {
-        value(this: Document): HTMLCollectionOf<Element> {
-            const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(
-                arguments
-            ) as [string, string]);
-            const filtered = ArrayFilter.call(
-                elements,
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-
-    defineProperty(
-        // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
-        getOwnPropertyDescriptor(HTMLDocument.prototype, 'getElementsByName')
-            ? HTMLDocument.prototype
-            : Document.prototype,
-        'getElementsByName',
-        {
-            value(this: Document): NodeListOf<Element> {
-                const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
-                    string
-                ]);
-                const filtered = ArrayFilter.call(
-                    elements,
-                    elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
-                );
-                return createStaticNodeList(filtered);
-            },
-            writable: true,
-            enumerable: true,
-            configurable: true,
-        }
-    );
-}
+    }
+);

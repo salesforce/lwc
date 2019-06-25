@@ -7,20 +7,21 @@
 import assert from '../shared/assert';
 import { getNodeKey, getNodeNearestOwnerKey } from './node';
 import {
-    childNodesGetter as nativeChildNodesGetter,
+    childNodesGetter,
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
 } from '../env/node';
-import { querySelectorAll, tagNameGetter } from '../env/element';
-import { ArrayReduce, ArrayPush, isUndefined } from '../shared/language';
+import { querySelectorAll } from '../env/element';
+import { ArrayReduce, ArrayPush, isUndefined, ArraySlice } from '../shared/language';
 import { isNull } from '../shared/language';
-import { getHost, SyntheticShadowRootInterface } from './shadow-root';
-import { getFilteredSlotAssignedNodes } from './slot';
-import '../polyfills/node-get-root-node/main';
-
-// Extract the patched getRootNode
-export const { getRootNode: patchedGetRootNode } = Node.prototype;
+import {
+    getHost,
+    SyntheticShadowRootInterface,
+    isHostElement,
+    getShadowRootResolver,
+    getShadowRoot,
+} from './shadow-root';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -42,11 +43,11 @@ export function getNodeOwner(node: Node): HTMLElement | null {
     return nodeOwner as HTMLElement;
 }
 
-export function isSlotElement(elm: Element): boolean {
-    return tagNameGetter.call(elm) === 'SLOT';
+export function isSlotElement(node: Node): node is HTMLSlotElement {
+    return node instanceof HTMLSlotElement;
 }
 
-export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
+export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             owner instanceof HTMLElement,
@@ -56,7 +57,7 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
             node instanceof Node,
             `isNodeOwnedBy() should be called with a node as the second argument instead of ${node}`
         );
-        assert.isTrue(
+        assert.invariant(
             compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS,
             `isNodeOwnedBy() should never be called with a node that is not a child node of ${owner}`
         );
@@ -67,13 +68,10 @@ export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
 
 export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
-    return getAllMatches(elm, nativeChildNodesGetter.call(elm));
+    return getAllMatches(elm, childNodesGetter.call(elm));
 }
 
-export function getAllMatches(
-    owner: HTMLElement,
-    nodeList: NodeList | Node[]
-): Array<Element & Node> {
+export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -87,7 +85,7 @@ export function getAllMatches(
     return filteredAndPatched;
 }
 
-export function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
+export function getFirstMatch(owner: Element, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
             return nodeList[i] as Element;
@@ -116,15 +114,22 @@ export function shadowRootQuerySelectorAll(
 
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
-    if (!isUndefined(getNodeKey(node))) {
-        // node itself is a custom element
-        // lwc element, in which case we need to get only the nodes
-        // that were slotted
+    if (!isHostElement(node) && !isSlotElement(node)) {
+        // regular element - fast path
+        children = childNodesGetter.call(node);
+        return ArraySlice.call(children);
+    }
+    if (isHostElement(node)) {
+        // we need to get only the nodes that were slotted
         const slots = querySelectorAll.call(node, 'slot');
-        children = ArrayReduce.call(
+        const resolver = getShadowRootResolver(getShadowRoot(node as Element));
+        // Typescript is inferring the wrong function type for this particular
+        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+        // @ts-ignore type-mismatch
+        return ArrayReduce.call(
             slots,
             (seed, slot) => {
-                if (isNodeOwnedBy(node as HTMLElement, slot)) {
+                if (resolver === getShadowRootResolver(slot)) {
                     ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
                 }
                 return seed;
@@ -132,21 +137,38 @@ export function getFilteredChildNodes(node: Node): Element[] {
             []
         );
     } else {
-        // regular element
-        children = nativeChildNodesGetter.call(node);
+        // slot element
+        children = childNodesGetter.call(node);
+        const resolver = getShadowRootResolver(node);
+        // Typescript is inferring the wrong function type for this particular
+        // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
+        // @ts-ignore type-mismatch
+        return ArrayReduce.call(
+            children,
+            (seed, child) => {
+                if (resolver === getShadowRootResolver(child)) {
+                    ArrayPush.call(seed, child);
+                }
+                return seed;
+            },
+            []
+        );
     }
-    const owner = getNodeOwner(node);
+}
+
+export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
     if (isNull(owner)) {
         return [];
     }
-
+    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
     return ArrayReduce.call(
-        children,
+        childNodes,
         (seed, child) => {
-            if (isNodeOwnedBy(owner, child)) {
+            if (!isNodeOwnedBy(owner, child)) {
                 ArrayPush.call(seed, child);
             }
             return seed;
