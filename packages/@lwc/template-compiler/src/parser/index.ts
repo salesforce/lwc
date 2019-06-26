@@ -94,7 +94,7 @@ import {
 
 function isStyleElement(irElement: IRElement) {
     const element = irElementMap.get(irElement) as parse5.AST.Default.Element;
-    return irElement.tag === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
+    return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
 }
 
 function attributeExpressionReferencesForOfIndex(
