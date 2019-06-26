@@ -1,0 +1,40 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "template",
+                "tagName": "template",
+                "attrs": [
+                    {
+                        "name": "for:each",
+                        "value": "{items}"
+                    },
+                    {
+                        "name": "for:item",
+                        "value": "item"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [],
+                "content": {
+                    "nodeName": "#document-fragment",
+                    "childNodes": [
+                        {
+                            "nodeName": "p",
+                            "tagName": "p",
+                            "attrs": [],
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "childNodes": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,97 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "input",
+                "tagName": "input",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "foo"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "input",
+                "tagName": "input",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "foo"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "input",
+                "tagName": "input",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "bar baz"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "input",
+                "tagName": "input",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": " boof"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "template",
+                "tagName": "template",
+                "attrs": [
+                    {
+                        "name": "for:each",
+                        "value": "{hogera}"
+                    },
+                    {
+                        "name": "for:item",
+                        "value": "hoge"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [],
+                "content": {
+                    "nodeName": "#document-fragment",
+                    "childNodes": [
+                        {
+                            "nodeName": "input",
+                            "tagName": "input",
+                            "attrs": [
+                                {
+                                    "name": "id",
+                                    "value": "piyo"
+                                },
+                                {
+                                    "name": "key",
+                                    "value": "{fuga}"
+                                }
+                            ],
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "childNodes": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

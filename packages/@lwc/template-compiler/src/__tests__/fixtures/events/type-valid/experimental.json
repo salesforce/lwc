@@ -1,0 +1,60 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "ona123",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "onfoo_bar",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "onfoo_",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "ona123",
+                        "value": "{handleClick}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            }
+        ]
+    }
+}

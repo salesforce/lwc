@@ -1,0 +1,88 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "section",
+                "tagName": "section",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "p",
+                        "tagName": "p",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "slot",
+                        "tagName": "slot",
+                        "attrs": [
+                            {
+                                "name": "name",
+                                "value": "header"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "p",
+                        "tagName": "p",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "p",
+                        "tagName": "p",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "slot",
+                        "tagName": "slot",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": [
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            }
+                        ]
+                    },
+                    {
+                        "nodeName": "slot",
+                        "tagName": "slot",
+                        "attrs": [
+                            {
+                                "name": "name",
+                                "value": "footer"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": [
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

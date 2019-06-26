@@ -1,0 +1,78 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "button",
+                "tagName": "button",
+                "attrs": [
+                    {
+                        "name": "onclick",
+                        "value": "{create}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "ul",
+                "tagName": "ul",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "template",
+                        "tagName": "template",
+                        "attrs": [
+                            {
+                                "name": "for:each",
+                                "value": "{list}"
+                            },
+                            {
+                                "name": "for:item",
+                                "value": "task"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": [],
+                        "content": {
+                            "nodeName": "#document-fragment",
+                            "childNodes": [
+                                {
+                                    "nodeName": "li",
+                                    "tagName": "li",
+                                    "attrs": [
+                                        {
+                                            "name": "key",
+                                            "value": "{task.id}"
+                                        }
+                                    ],
+                                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                    "childNodes": [
+                                        {
+                                            "nodeName": "button",
+                                            "tagName": "button",
+                                            "attrs": [
+                                                {
+                                                    "name": "onclick",
+                                                    "value": "{task.delete}"
+                                                }
+                                            ],
+                                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                            "childNodes": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

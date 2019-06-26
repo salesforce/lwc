@@ -1,0 +1,96 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "color: blue"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "color: blue;"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "color: blue ;"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "box-shadow: 10px 5px 5px black;"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "font-size: 12px; background: blue; color:red ;"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "font-size: 12px;background: blue; color:red ;"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "div",
+                "tagName": "div",
+                "attrs": [
+                    {
+                        "name": "style",
+                        "value": "background-color:rgba(255,0,0,0.3)"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            }
+        ]
+    }
+}

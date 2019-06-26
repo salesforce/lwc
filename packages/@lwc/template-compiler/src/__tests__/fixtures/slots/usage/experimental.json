@@ -1,0 +1,52 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "section",
+                "tagName": "section",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "ns-cmp",
+                        "tagName": "ns-cmp",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": [
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [
+                                    {
+                                        "name": "slot",
+                                        "value": "header"
+                                    }
+                                ],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            },
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [
+                                    {
+                                        "name": "slot",
+                                        "value": ""
+                                    }
+                                ],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

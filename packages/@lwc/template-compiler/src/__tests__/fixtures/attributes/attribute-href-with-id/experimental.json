@@ -1,0 +1,68 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "a",
+                "tagName": "a",
+                "attrs": [
+                    {
+                        "name": "href",
+                        "value": "#kansai-airport"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "map",
+                "tagName": "map",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "area",
+                        "tagName": "area",
+                        "attrs": [
+                            {
+                                "name": "href",
+                                "value": "#eneos-gas"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "area",
+                        "tagName": "area",
+                        "attrs": [
+                            {
+                                "name": "href",
+                                "value": "#kawaramachi"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    }
+                ]
+            },
+            {
+                "nodeName": "h1",
+                "tagName": "h1",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "kansai-airport"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            }
+        ]
+    }
+}

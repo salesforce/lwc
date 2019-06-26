@@ -1,0 +1,180 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": ""
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "1"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "true"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "2"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "{computed}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "0"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "p",
+                "tagName": "p",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "-1"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": ""
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "1"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "true"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "2"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "{computed}"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "0"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-foo",
+                "tagName": "x-foo",
+                "attrs": [
+                    {
+                        "name": "tabindex",
+                        "value": "-1"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            }
+        ]
+    }
+}

@@ -1,0 +1,115 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "svg",
+                "tagName": "svg",
+                "attrs": [
+                    {
+                        "name": "version",
+                        "value": "1.1"
+                    },
+                    {
+                        "name": "baseProfile",
+                        "value": "full"
+                    },
+                    {
+                        "name": "width",
+                        "value": "300"
+                    },
+                    {
+                        "name": "height",
+                        "value": "200"
+                    },
+                    {
+                        "name": "xmlns",
+                        "value": "http://www.w3.org/2000/svg",
+                        "prefix": "",
+                        "namespace": "http://www.w3.org/2000/xmlns/"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/2000/svg",
+                "childNodes": [
+                    {
+                        "nodeName": "rect",
+                        "tagName": "rect",
+                        "attrs": [
+                            {
+                                "name": "width",
+                                "value": "100%"
+                            },
+                            {
+                                "name": "height",
+                                "value": "100%"
+                            },
+                            {
+                                "name": "fill",
+                                "value": "red"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "circle",
+                        "tagName": "circle",
+                        "attrs": [
+                            {
+                                "name": "cx",
+                                "value": "150"
+                            },
+                            {
+                                "name": "cy",
+                                "value": "100"
+                            },
+                            {
+                                "name": "r",
+                                "value": "80"
+                            },
+                            {
+                                "name": "fill",
+                                "value": "green"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "text",
+                        "tagName": "text",
+                        "attrs": [
+                            {
+                                "name": "x",
+                                "value": "150"
+                            },
+                            {
+                                "name": "y",
+                                "value": "125"
+                            },
+                            {
+                                "name": "font-size",
+                                "value": "60"
+                            },
+                            {
+                                "name": "text-anchor",
+                                "value": "middle"
+                            },
+                            {
+                                "name": "fill",
+                                "value": "white"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    }
+                ]
+            }
+        ]
+    }
+}

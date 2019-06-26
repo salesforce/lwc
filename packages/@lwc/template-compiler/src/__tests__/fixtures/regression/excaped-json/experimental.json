@@ -1,0 +1,24 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "x-test",
+                "tagName": "x-test",
+                "attrs": [
+                    {
+                        "name": "json",
+                        "value": "[{\"column\":\"ID\",\"value\":\"5e\",\"operator\":\"equals\",\"f\":true}]"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            }
+        ]
+    }
+}

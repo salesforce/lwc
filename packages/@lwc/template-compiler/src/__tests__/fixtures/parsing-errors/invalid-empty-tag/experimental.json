@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1058,
+            "message": "LWC1058: Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 10
+            }
+        }
+    ]
+}

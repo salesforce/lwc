@@ -1,0 +1,59 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "section",
+                "tagName": "section",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "div",
+                        "tagName": "div",
+                        "attrs": [
+                            {
+                                "name": "key",
+                                "value": "{item.id}"
+                            },
+                            {
+                                "name": "class",
+                                "value": "my-list"
+                            },
+                            {
+                                "name": "for:each",
+                                "value": "{items}"
+                            },
+                            {
+                                "name": "for:item",
+                                "value": "item"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": [
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            },
+                            {
+                                "nodeName": "p",
+                                "tagName": "p",
+                                "attrs": [],
+                                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                "childNodes": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

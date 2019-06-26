@@ -1,0 +1,32 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "slot",
+                "tagName": "slot",
+                "attrs": [
+                    {
+                        "name": "name",
+                        "value": "secret-slot"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [
+                    {
+                        "nodeName": "p",
+                        "tagName": "p",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodes": []
+                    }
+                ]
+            }
+        ]
+    }
+}

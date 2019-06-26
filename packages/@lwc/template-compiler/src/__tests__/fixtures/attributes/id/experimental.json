@@ -1,0 +1,141 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "x-subject",
+                "tagName": "x-subject",
+                "attrs": [
+                    {
+                        "name": "for",
+                        "value": "foo"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-description",
+                "tagName": "x-description",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "bar"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-description",
+                "tagName": "x-description",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "baz"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "x-textarea",
+                "tagName": "x-textarea",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "foo"
+                    },
+                    {
+                        "name": "aria-describedby",
+                        "value": "bar baz"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "label",
+                "tagName": "label",
+                "attrs": [
+                    {
+                        "name": "for",
+                        "value": "boof"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "input",
+                "tagName": "input",
+                "attrs": [
+                    {
+                        "name": "id",
+                        "value": "boof"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": []
+            },
+            {
+                "nodeName": "template",
+                "tagName": "template",
+                "attrs": [
+                    {
+                        "name": "for:each",
+                        "value": "{things}"
+                    },
+                    {
+                        "name": "for:item",
+                        "value": "thing"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [],
+                "content": {
+                    "nodeName": "#document-fragment",
+                    "childNodes": [
+                        {
+                            "nodeName": "p",
+                            "tagName": "p",
+                            "attrs": [
+                                {
+                                    "name": "key",
+                                    "value": "{thing.key}"
+                                },
+                                {
+                                    "name": "id",
+                                    "value": "{thing.id}"
+                                }
+                            ],
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "childNodes": []
+                        },
+                        {
+                            "nodeName": "input",
+                            "tagName": "input",
+                            "attrs": [
+                                {
+                                    "name": "key",
+                                    "value": "{thing.key}"
+                                },
+                                {
+                                    "name": "aria-describedby",
+                                    "value": "{thing.id}"
+                                }
+                            ],
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "childNodes": []
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

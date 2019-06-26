@@ -1,0 +1,123 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "svg",
+                "tagName": "svg",
+                "attrs": [
+                    {
+                        "name": "width",
+                        "value": "100px"
+                    },
+                    {
+                        "name": "height",
+                        "value": "100px"
+                    },
+                    {
+                        "name": "viewport",
+                        "value": "0 0 100 100"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/2000/svg",
+                "childNodes": [
+                    {
+                        "nodeName": "defs",
+                        "tagName": "defs",
+                        "attrs": [],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": [
+                            {
+                                "nodeName": "circle",
+                                "tagName": "circle",
+                                "attrs": [
+                                    {
+                                        "name": "id",
+                                        "value": "black"
+                                    },
+                                    {
+                                        "name": "r",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cx",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cy",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "fill",
+                                        "value": "black"
+                                    }
+                                ],
+                                "namespaceURI": "http://www.w3.org/2000/svg",
+                                "childNodes": []
+                            },
+                            {
+                                "nodeName": "circle",
+                                "tagName": "circle",
+                                "attrs": [
+                                    {
+                                        "name": "id",
+                                        "value": "red"
+                                    },
+                                    {
+                                        "name": "r",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "name": "cx",
+                                        "value": "14"
+                                    },
+                                    {
+                                        "name": "cy",
+                                        "value": "14"
+                                    },
+                                    {
+                                        "name": "fill",
+                                        "value": "red"
+                                    }
+                                ],
+                                "namespaceURI": "http://www.w3.org/2000/svg",
+                                "childNodes": []
+                            }
+                        ]
+                    },
+                    {
+                        "nodeName": "use",
+                        "tagName": "use",
+                        "attrs": [
+                            {
+                                "name": "href",
+                                "value": "#black"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    },
+                    {
+                        "nodeName": "use",
+                        "tagName": "use",
+                        "attrs": [
+                            {
+                                "name": "href",
+                                "value": "#red",
+                                "prefix": "xlink",
+                                "namespace": "http://www.w3.org/1999/xlink"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    }
+                ]
+            }
+        ]
+    }
+}

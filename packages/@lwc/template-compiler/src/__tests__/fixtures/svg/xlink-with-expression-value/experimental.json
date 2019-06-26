@@ -1,0 +1,47 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "svg",
+                "tagName": "svg",
+                "attrs": [
+                    {
+                        "name": "aria-hidden",
+                        "value": "true"
+                    },
+                    {
+                        "name": "class",
+                        "value": "slds-icon"
+                    },
+                    {
+                        "name": "title",
+                        "value": "when needed"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/2000/svg",
+                "childNodes": [
+                    {
+                        "nodeName": "use",
+                        "tagName": "use",
+                        "attrs": [
+                            {
+                                "name": "href",
+                                "value": "{getXLink}",
+                                "prefix": "xlink",
+                                "namespace": "http://www.w3.org/1999/xlink"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": []
+                    }
+                ]
+            }
+        ]
+    }
+}

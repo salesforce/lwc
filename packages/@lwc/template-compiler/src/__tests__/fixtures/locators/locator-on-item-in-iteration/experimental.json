@@ -1,0 +1,70 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "template",
+                "tagName": "template",
+                "attrs": [
+                    {
+                        "name": "for:each",
+                        "value": "{state.todos}"
+                    },
+                    {
+                        "name": "for:item",
+                        "value": "todo"
+                    },
+                    {
+                        "name": "for:index",
+                        "value": "index"
+                    }
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodes": [],
+                "content": {
+                    "nodeName": "#document-fragment",
+                    "childNodes": [
+                        {
+                            "nodeName": "li",
+                            "tagName": "li",
+                            "attrs": [
+                                {
+                                    "name": "key",
+                                    "value": "{todo.id}"
+                                }
+                            ],
+                            "namespaceURI": "http://www.w3.org/1999/xhtml",
+                            "childNodes": [
+                                {
+                                    "nodeName": "button",
+                                    "tagName": "button",
+                                    "attrs": [
+                                        {
+                                            "name": "onclick",
+                                            "value": "{todo.clickHandler}"
+                                        },
+                                        {
+                                            "name": "locator:id",
+                                            "value": "todo-item"
+                                        },
+                                        {
+                                            "name": "locator:context",
+                                            "value": "{locatorProviderTodo}"
+                                        }
+                                    ],
+                                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                    "childNodes": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

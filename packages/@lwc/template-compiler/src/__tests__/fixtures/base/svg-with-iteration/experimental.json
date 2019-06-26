@@ -1,0 +1,65 @@
+{
+    "nodeName": "template",
+    "tagName": "template",
+    "attrs": [],
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "childNodes": [],
+    "content": {
+        "nodeName": "#document-fragment",
+        "childNodes": [
+            {
+                "nodeName": "svg",
+                "tagName": "svg",
+                "attrs": [],
+                "namespaceURI": "http://www.w3.org/2000/svg",
+                "childNodes": [
+                    {
+                        "nodeName": "template",
+                        "tagName": "template",
+                        "attrs": [
+                            {
+                                "name": "for:each",
+                                "value": "{lines}"
+                            },
+                            {
+                                "name": "for:item",
+                                "value": "line"
+                            }
+                        ],
+                        "namespaceURI": "http://www.w3.org/2000/svg",
+                        "childNodes": [
+                            {
+                                "nodeName": "line",
+                                "tagName": "line",
+                                "attrs": [
+                                    {
+                                        "name": "key",
+                                        "value": "{line.key}"
+                                    },
+                                    {
+                                        "name": "x1",
+                                        "value": "{line.x1}"
+                                    },
+                                    {
+                                        "name": "y1",
+                                        "value": "{line.y1}"
+                                    },
+                                    {
+                                        "name": "x2",
+                                        "value": "{line.x2}"
+                                    },
+                                    {
+                                        "name": "y2",
+                                        "value": "{line.y2}"
+                                    }
+                                ],
+                                "namespaceURI": "http://www.w3.org/2000/svg",
+                                "childNodes": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
