@@ -15,7 +15,7 @@ import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 
 import { bindExpression, rewriteIteratorToArguments } from '../shared/scope';
 
-import { irElementMap, isCustomElement, traverse } from '../shared/ir';
+import { traverse, isCustomElement } from '../shared/ir';
 
 import {
     IRNode,
@@ -370,7 +370,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         element: IRElement,
         templateContainsId: boolean
     ): t.Expression {
-        const { namespaceURI, tagName } = irElementMap.get(element) as parse5.AST.Default.Element;
+        const { namespaceURI, tagName } = element.__original as parse5.AST.Default.Element;
 
         switch (attr.type) {
             case IRAttributeType.Expression: {

@@ -66,6 +66,8 @@ export interface IRElement {
 
     children: IRNode[];
 
+    __original: HTMLElement;
+
     component?: string;
 
     className?: TemplateExpression;
@@ -96,6 +98,8 @@ export interface IRElement {
 export interface IRText {
     type: 'text';
     value: string | TemplateExpression;
+
+    __original: HTMLText;
 }
 
 export type IRNode = IRElement | IRText;

@@ -26,23 +26,22 @@ export interface Visitor {
 }
 
 export function createElement(tag: string, original: HTMLElement): IRElement {
-    const element: IRElement = {
+    return {
         type: 'element',
+        __original: original,
+
         tag,
         attrsList: [],
         children: [],
     };
-    irElementMap.set(element, original);
-    return element;
 }
 
 export function createText(original: HTMLText, value: string | TemplateExpression): IRText {
-    const text: IRText = {
+    return {
         type: 'text',
+        __original: original,
         value,
     };
-    irTextMap.set(text, original);
-    return text;
 }
 
 export function isElement(node: IRNode): node is IRElement {
@@ -111,5 +110,3 @@ export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode)
 }
 
 export const irParentMap: WeakMap<IRElement | IRText, IRElement> = new WeakMap();
-export const irElementMap: WeakMap<IRElement, HTMLElement> = new WeakMap();
-export const irTextMap: WeakMap<IRText, HTMLText> = new WeakMap();

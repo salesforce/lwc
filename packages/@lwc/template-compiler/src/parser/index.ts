@@ -41,13 +41,7 @@ import {
 
 import { parseStyleText, parseClassNames } from './style';
 
-import {
-    createElement,
-    createText,
-    irElementMap,
-    irParentMap,
-    isCustomElement,
-} from '../shared/ir';
+import { createElement, isCustomElement, createText, irParentMap } from '../shared/ir';
 
 import {
     IRNode,
@@ -93,7 +87,7 @@ import {
 } from '@lwc/errors';
 
 function isStyleElement(irElement: IRElement) {
-    const element = irElementMap.get(irElement) as parse5.AST.Default.Element;
+    const element = irElement.__original as parse5.AST.Default.Element;
     return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
 }
 
@@ -367,15 +361,16 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (isCustomElement(element)) {
             return warnOnElement(
                 ParserDiagnostics.LWC_DOM_INVALID_CUSTOM_ELEMENT,
-                irElementMap.get(element) as parse5.AST.Default.Element,
+                element.__original,
                 [`<${element.tag}>`]
             );
         }
 
         if (element.tag === 'slot') {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT, irElementMap.get(
-                element
-            ) as parse5.AST.Default.Element);
+            return warnOnElement(
+                ParserDiagnostics.LWC_DOM_INVALID_SLOT_ELEMENT,
+                element.__original
+            );
         }
 
         if (
@@ -385,17 +380,13 @@ export default function parse(source: string, state: State): TemplateParseResult
             const possibleValues = Object.keys(LWCDirectiveDomMode)
                 .map(value => `"${value}"`)
                 .join(', or ');
-            return warnOnElement(
-                ParserDiagnostics.LWC_DOM_INVALID_VALUE,
-                irElementMap.get(element) as parse5.AST.Default.Element,
-                [possibleValues]
-            );
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_VALUE, element.__original, [
+                possibleValues,
+            ]);
         }
 
         if (element.children.length > 0) {
-            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, irElementMap.get(
-                element
-            ) as parse5.AST.Default.Element);
+            return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
         }
 
         element.lwc = {
@@ -415,7 +406,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             removeAttribute(element, locatorContextAttribute.name);
             return warnOnElement(
                 ParserDiagnostics.LOCATOR_CONTEXT_MUST_BE_USED_WITH_LOCATOR_ID,
-                irElementMap.get(element) as parse5.AST.Default.Element
+                element.__original
             );
         }
 
@@ -465,9 +456,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     function validateInlineStyleElement(element: IRElement) {
         // disallow <style> element
         if (isStyleElement(element)) {
-            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, irElementMap.get(
-                element
-            ) as parse5.AST.Default.Element);
+            warnOnElement(ParserDiagnostics.STYLE_TAG_NOT_ALLOWED_IN_TEMPLATE, element.__original);
         }
     }
 
@@ -537,7 +526,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             // If only one directive is defined
             return warnOnElement(
                 ParserDiagnostics.FOR_EACH_AND_FOR_ITEM_DIRECTIVES_SHOULD_BE_TOGETHER,
-                irElementMap.get(element) as parse5.AST.Default.Element
+                element.__original
             );
         }
     }
@@ -658,7 +647,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         if (element.forEach || element.forOf || element.if) {
             return warnOnElement(
                 ParserDiagnostics.SLOT_TAG_CANNOT_HAVE_DIRECTIVES,
-                irElementMap.get(element) as parse5.AST.Default.Element
+                element.__original
             );
         }
 
@@ -733,7 +722,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
             if (isAttribute(element, name)) {
                 const attrs = element.attrs || (element.attrs = {});
-                const node = irElementMap.get(element) as parse5.AST.Default.Element;
+                const node = element.__original as parse5.AST.Default.Element;
 
                 // record secure import dependency if xlink attr is detected
                 if (isSvgUseHref(tag, name, node.namespaceURI)) {
@@ -754,7 +743,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateElement(element: IRElement) {
         const { tag } = element;
-        const node = irElementMap.get(element) as parse5.AST.Default.Element;
+        const node = element.__original as parse5.AST.Default.Element;
         const isRoot = !irParentMap.has(element);
 
         if (isRoot) {
@@ -818,7 +807,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateAttributes(element: IRElement) {
         const { tag, attrsList } = element;
-        const node = irElementMap.get(element) as parse5.AST.Default.Element;
+        const node = element.__original as parse5.AST.Default.Element;
 
         attrsList.forEach(attr => {
             const attrName = attr.name;
@@ -844,7 +833,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
     function validateProperties(element: IRElement) {
         const { tag, props } = element;
-        const node = irElementMap.get(element) as parse5.AST.Default.Element;
+        const node = element.__original as parse5.AST.Default.Element;
 
         if (props !== undefined) {
             for (const propName in props) {
@@ -897,7 +886,7 @@ export default function parse(source: string, state: State): TemplateParseResult
         el: IRElement,
         pattern: string | RegExp
     ): IRAttribute | undefined {
-        const node = irElementMap.get(el) as parse5.AST.Default.Element;
+        const node = el.__original as parse5.AST.Default.Element;
         const nodeLocation = node.__location!;
 
         const matching = getAttribute(el, pattern);
