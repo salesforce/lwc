@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             dom: "manual"
           }
         },
-        key: 2
+        key: 0
       },
       []
     )

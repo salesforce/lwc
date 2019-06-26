@@ -23,7 +23,7 @@
         h: api_element
       } = $api;
       return [api_element("div", {
-        key: 2
+        key: 0
       }, [api_dynamic($cmp.x)])];
     }
 
@@ -67,12 +67,12 @@
         classMap: {
           "container": true
         },
-        key: 2
+        key: 1
       }, [api_custom_element("x-foo", _xFoo, {
         props: {
           "x": "1"
         },
-        key: 3
+        key: 0
       }, [])])];
     }
 

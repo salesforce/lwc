@@ -49,7 +49,7 @@ describe('module resolver', () => {
                     } = $api;
 
                     return [api_element("p", {
-                        key: 2
+                        key: 0
                     }, [api_text("Manually Imported Template")])];
                 }
 
@@ -98,7 +98,7 @@ describe('module resolver', () => {
                     } = $api;
 
                     return [api_element("p", {
-                        key: 2
+                        key: 0
                     }, [api_text("Another Template")])];
                 }
 

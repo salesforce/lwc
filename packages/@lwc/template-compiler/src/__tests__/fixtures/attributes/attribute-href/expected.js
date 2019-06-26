@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           href: "#yasaka-taxi"
         },
-        key: 2
+        key: 0
       },
       [api_text("Yasaka Taxi")]
     ),
@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               href: "#eneos-gas"
             },
-            key: 4
+            key: 1
           },
           []
         ),
@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               href: "#kawaramachi"
             },
-            key: 5
+            key: 2
           },
           []
         )

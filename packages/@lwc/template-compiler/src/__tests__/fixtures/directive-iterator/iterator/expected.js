@@ -22,13 +22,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "data-islast": xLast,
               "data-isfirst": xFirst
             },
-            key: api_key(4, xValue.id)
+            key: api_key(1, xValue.id)
           },
           [
             api_element(
               "span",
               {
-                key: 5
+                key: 0
               },
               [api_text("Row: "), api_dynamic(xIndex)]
             ),

@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "div",
           {
-            key: 3,
+            key: 0,
             on: {
               click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick))
             }
@@ -23,7 +23,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "div",
           {
-            key: 4,
+            key: 1,
             on: {
               press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress))
             }

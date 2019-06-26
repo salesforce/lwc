@@ -10,9 +10,9 @@ h: api_element,
 c: api_custom_element
 } = $api;
 return [api_element("div", {
-key: 2
+key: 0
 }, []), api_custom_element("x-foo", _xFoo, {
-key: 3
+key: 1
 }, [])];
 }
 var _tmpl = registerTemplate(tmpl);

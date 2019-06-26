@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s1: true
         },
-        key: 2
+        key: 1
       },
       api_flatten([
         api_text("Other Child"),
@@ -25,7 +25,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "p",
           {
-            key: 4
+            key: 0
           },
           [api_text("Last child")]
         )
@@ -37,7 +37,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s2: true
         },
-        key: 5
+        key: 4
       },
       api_flatten([
         api_text("Other Child"),
@@ -47,14 +47,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                   "p",
                   {
-                    key: api_key(8, item.id)
+                    key: api_key(2, item.id)
                   },
                   [api_text("X1")]
                 ),
                 api_element(
                   "p",
                   {
-                    key: api_key(9, item.id)
+                    key: api_key(3, item.id)
                   },
                   [api_text("X2")]
                 )
@@ -69,13 +69,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s3: true
         },
-        key: 10
+        key: 7
       },
       api_flatten([
         api_element(
           "p",
           {
-            key: 11
+            key: 5
           },
           [api_text("Last child")]
         ),
@@ -83,7 +83,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           return api_element(
             "div",
             {
-              key: api_key(12, item.id)
+              key: api_key(6, item.id)
             },
             []
           );
@@ -96,20 +96,20 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           s4: true
         },
-        key: 13
+        key: 10
       },
       [
         api_element(
           "p",
           {
-            key: 14
+            key: 8
           },
           [api_text("Other child1")]
         ),
         api_element(
           "p",
           {
-            key: 15
+            key: 9
           },
           [api_text("Other child2")]
         )

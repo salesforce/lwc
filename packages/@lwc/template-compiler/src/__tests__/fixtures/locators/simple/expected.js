@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             context: _m0 || ($ctx._m0 = function_bind($cmp.contextFn))
           }
         },
-        key: 2,
+        key: 0,
         on: {
           click:
             _m1 ||

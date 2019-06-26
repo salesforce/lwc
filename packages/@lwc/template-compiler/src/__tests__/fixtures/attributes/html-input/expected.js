@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           readOnly: true,
           checked: true
         },
-        key: 2
+        key: 0
       },
       []
     )

@@ -13,16 +13,21 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           viewBox: "0 0 5 5",
           "aria-hidden": "true"
         },
-        key: 2
+        key: 1
       },
       [
         api_element(
           "use",
           {
             attrs: {
-              "xlink:href": sanitizeAttribute("use", "http://www.w3.org/2000/svg", "xlink:href", "/x")
+              "xlink:href": sanitizeAttribute(
+                "use",
+                "http://www.w3.org/2000/svg",
+                "xlink:href",
+                "/x"
+              )
             },
-            key: 3
+            key: 0
           },
           []
         )

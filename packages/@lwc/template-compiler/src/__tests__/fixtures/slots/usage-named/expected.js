@@ -15,13 +15,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               name: "test"
             },
-            key: 3
+            key: 1
           },
           [
             api_element(
               "p",
               {
-                key: 4
+                key: 0
               },
               [api_text("Test slot content")]
             )

@@ -13,7 +13,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           d: $cmp.p.foo,
           id: api_scoped_id("ns-foo")
         },
-        key: 2
+        key: 0
       },
       []
     ),
@@ -31,7 +31,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           title: "test",
           tabindex: "-1"
         },
-        key: 3
+        key: 1
       },
       []
     ),
@@ -54,7 +54,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           tabIndex: "0",
           bgColor: "blue"
         },
-        key: 4
+        key: 2
       },
       []
     ),
@@ -67,7 +67,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           focusable: "true"
         },
-        key: 5
+        key: 4
       },
       [
         api_element(
@@ -81,7 +81,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 "xx"
               )
             },
-            key: 6
+            key: 3
           },
           []
         )
@@ -93,7 +93,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           bgcolor: "x"
         },
-        key: 7
+        key: 5
       },
       []
     ),
@@ -104,7 +104,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           "aria-hidden": "hidden"
         },
-        key: 8
+        key: 6
       },
       []
     )

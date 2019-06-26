@@ -102,7 +102,7 @@
         api_element(
           "div",
           {
-            key: 2
+            key: 0
           },
           [api_dynamic($cmp._ES5ProxyType ? $cmp.get("x") : $cmp.x)]
         )
@@ -190,7 +190,7 @@
             classMap: {
               container: true
             },
-            key: 2
+            key: 1
           },
           [
             api_custom_element(
@@ -200,7 +200,7 @@
                 props: {
                   x: "1"
                 },
-                key: 3
+                key: 0
               },
               []
             )

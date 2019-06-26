@@ -50,12 +50,17 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
 
 export default class CodeGen {
     currentId = 0;
+    currentKey = 0;
 
     usedApis: { [name: string]: t.Identifier } = {};
     usedSlots: { [name: string]: t.Identifier } = {};
     memorizedIds: t.Identifier[] = [];
     inlineStyleImports: t.ImportDeclaration[] = [];
     inlineStyleBody: t.Statement[] = [];
+
+    generateKey() {
+        return this.currentKey++;
+    }
 
     genInlineStyles(src: string | undefined): void {
         if (src) {

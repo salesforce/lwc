@@ -8,14 +8,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 1
       },
       [
         api_custom_element(
           "ns-foo",
           _nsFoo,
           {
-            key: 3,
+            key: 0,
             on: {
               foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
             }

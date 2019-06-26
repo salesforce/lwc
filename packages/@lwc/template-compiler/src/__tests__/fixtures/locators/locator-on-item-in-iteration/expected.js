@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     return api_element(
       "li",
       {
-        key: api_key(3, todo.id)
+        key: api_key(1, todo.id)
       },
       [
         api_element(
@@ -27,7 +27,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                   _m0 || ($ctx._m0 = function_bind($cmp.locatorProviderTodo))
               }
             },
-            key: 4,
+            key: 0,
             on: {
               click: locator_listener(
                 todo.clickHandler,

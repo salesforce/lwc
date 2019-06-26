@@ -9,6 +9,28 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: {
           foo: true
         },
+        key: 0
+      },
+      []
+    ),
+    api_element(
+      "div",
+      {
+        classMap: {
+          foo: true,
+          bar: true
+        },
+        key: 1
+      },
+      []
+    ),
+    api_element(
+      "div",
+      {
+        classMap: {
+          foo: true,
+          bar: true
+        },
         key: 2
       },
       []
@@ -21,28 +43,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bar: true
         },
         key: 3
-      },
-      []
-    ),
-    api_element(
-      "div",
-      {
-        classMap: {
-          foo: true,
-          bar: true
-        },
-        key: 4
-      },
-      []
-    ),
-    api_element(
-      "div",
-      {
-        classMap: {
-          foo: true,
-          bar: true
-        },
-        key: 5
       },
       []
     )

@@ -7,27 +7,27 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       "svg",
       {
         classMap: {
-            "slds-icon": true
+          "slds-icon": true
         },
         attrs: {
-            "aria-hidden": "true",
-            title: "when needed"
+          "aria-hidden": "true",
+          title: "when needed"
         },
-        key: 2
+        key: 1
       },
       [
         api_element(
           "use",
           {
             attrs: {
-                "xlink:href": sanitizeAttribute(
-                    "use",
-                    "http://www.w3.org/2000/svg",
-                    "xlink:href",
-                    "/assets/icons/standard-sprite/svg/symbols.svg#case"
-                )
+              "xlink:href": sanitizeAttribute(
+                "use",
+                "http://www.w3.org/2000/svg",
+                "xlink:href",
+                "/assets/icons/standard-sprite/svg/symbols.svg#case"
+              )
             },
-            key: 3
+            key: 0
           },
           []
         )

@@ -11,7 +11,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           bar: true,
           "baz-fiz": true
         },
-        key: 2
+        key: 0
       },
       []
     )

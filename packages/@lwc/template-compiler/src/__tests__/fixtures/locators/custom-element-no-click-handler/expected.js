@@ -15,7 +15,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             context: _m0 || ($ctx._m0 = function_bind($cmp.someProvider))
           }
         },
-        key: 2
+        key: 0
       },
       []
     )

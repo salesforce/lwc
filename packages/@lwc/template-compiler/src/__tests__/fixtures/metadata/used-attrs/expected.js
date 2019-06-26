@@ -6,13 +6,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 1
       },
       [
         api_element(
           "p",
           {
-            key: 3
+            key: 0
           },
           [api_dynamic($cmp.obj.sub)]
         )

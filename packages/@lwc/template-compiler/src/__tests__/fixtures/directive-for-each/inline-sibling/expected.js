@@ -21,7 +21,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             "li",
             {
               className: item.x,
-              key: api_key(3, item.id)
+              key: api_key(0, item.id)
             },
             [api_dynamic(item)]
           );
@@ -29,7 +29,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
           "li",
           {
-            key: 4
+            key: 1
           },
           [api_text("Last")]
         )

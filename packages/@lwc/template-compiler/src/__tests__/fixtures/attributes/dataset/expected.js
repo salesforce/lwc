@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 1
       },
       [
         api_element(
@@ -16,7 +16,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
               "data-foo": "1",
               "data-bar-baz": "xyz"
             },
-            key: 3
+            key: 0
           },
           []
         )

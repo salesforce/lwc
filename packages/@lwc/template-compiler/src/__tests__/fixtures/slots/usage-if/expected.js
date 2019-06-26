@@ -7,14 +7,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     api_element(
       "section",
       {
-        key: 2
+        key: 3
       },
       [
         api_custom_element(
           "ns-cmp",
           _nsCmp,
           {
-            key: 3
+            key: 2
           },
           [
             $cmp.isTrue
@@ -24,7 +24,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                       slot: true
                     },
-                    key: 5
+                    key: 0
                   },
                   [api_text("S1")]
                 )
@@ -35,7 +35,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                   slot: true
                 },
-                key: 6
+                key: 1
               },
               [api_text("S2")]
             )

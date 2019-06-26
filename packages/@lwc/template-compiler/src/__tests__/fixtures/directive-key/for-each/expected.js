@@ -15,13 +15,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: {
               "my-list": true
             },
-            key: api_key(3, item.id)
+            key: api_key(1, item.id)
           },
           [
             api_element(
               "p",
               {
-                key: 4
+                key: 0
               },
               [api_dynamic(item)]
             )

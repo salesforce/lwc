@@ -14,7 +14,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           href: api_scoped_frag_id("#kansai-airport")
         },
-        key: 2
+        key: 0
       },
       [api_text("KIX")]
     ),
@@ -30,7 +30,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               href: api_scoped_frag_id("#eneos-gas")
             },
-            key: 4
+            key: 1
           },
           []
         ),
@@ -40,7 +40,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
               href: api_scoped_frag_id("#kawaramachi")
             },
-            key: 5
+            key: 2
           },
           []
         )
@@ -52,7 +52,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         attrs: {
           id: api_scoped_id("kansai-airport")
         },
-        key: 6
+        key: 4
       },
       [api_text("Don't forget your passport!")]
     )

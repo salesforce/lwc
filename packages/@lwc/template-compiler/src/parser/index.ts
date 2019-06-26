@@ -85,11 +85,6 @@ import {
     ParserDiagnostics,
 } from '@lwc/errors';
 
-function getKeyGenerator() {
-    let count = 1;
-    return () => count++;
-}
-
 function isStyleElement(irElement: IRElement) {
     const element = irElement.__original as parse5.AST.Default.Element;
     return element.tagName === 'style' && element.namespaceURI === HTML_NAMESPACE_URI;
@@ -134,8 +129,8 @@ function attributeExpressionReferencesForEachIndex(
 
 export default function parse(source: string, state: State): TemplateParseResult {
     const warnings: CompilerDiagnostic[] = [];
-    const generateKey = getKeyGenerator();
     const { fragment, errors: parsingErrors } = parseHTML(source);
+
     if (parsingErrors.length) {
         return { warnings: parsingErrors };
     }
@@ -156,7 +151,6 @@ export default function parse(source: string, state: State): TemplateParseResult
 
                 const element = createElement(elementNode.tagName, node);
                 element.attrsList = elementNode.attrs;
-                element.key = generateKey();
 
                 if (!root) {
                     root = element;
@@ -718,7 +712,6 @@ export default function parse(source: string, state: State): TemplateParseResult
                         );
                     }
                     state.idAttrData.push({
-                        key: element.key!,
                         location,
                         value: attr.value,
                     });

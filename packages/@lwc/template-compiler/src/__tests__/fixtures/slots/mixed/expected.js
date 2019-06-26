@@ -20,14 +20,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
           "x-b",
           _xB,
           {
-            key: 3
+            key: 1
           },
           api_flatten([
             $cmp.isLoading
               ? api_element(
                   "div",
                   {
-                    key: 5
+                    key: 0
                   },
                   []
                 )
