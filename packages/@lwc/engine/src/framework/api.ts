@@ -99,9 +99,18 @@ const CHAR_G = 103;
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
+function validateVNodeAfterElmCreation(vnode: VNode) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (isFunction(vnode.data.validateFn)) {
+            vnode.data.validateFn.call(vnode);
+        }
+    }
+}
+
 const TextHook: Hooks = {
     create: (vnode: VNode) => {
         vnode.elm = document.createTextNode(vnode.text as string);
+        validateVNodeAfterElmCreation(vnode);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
@@ -116,6 +125,7 @@ const TextHook: Hooks = {
 const CommentHook: Hooks = {
     create: (vnode: VComment) => {
         vnode.elm = document.createComment(vnode.text);
+        validateVNodeAfterElmCreation(vnode);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Node);
@@ -145,6 +155,7 @@ const ElementHook: Hooks = {
         } else {
             vnode.elm = clonedElement;
         }
+        validateVNodeAfterElmCreation(vnode);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Element);
@@ -173,9 +184,10 @@ const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
         const { sel } = vnode;
         vnode.elm = document.createElement(sel);
+        validateVNodeAfterElmCreation(vnode);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
-            markNodeFromVNode(vnode.elm as Element);
+            markNodeFromVNode(vnode.elm);
         }
         createViewModelHook(vnode);
         allocateChildrenHook(vnode);
@@ -347,9 +359,23 @@ export function c(
     Ctor: ComponentConstructor,
     data: CustomElementCompilerData,
     children?: VNodes
-): VCustomElement {
+): VCustomElement | VElement {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
+    }
+    if (isFunction(Ctor) && Ctor.prototype instanceof HTMLElement) {
+        // the resolved reference for this component is a Custom Element class
+        if (process.env.NODE_ENV !== 'production') {
+            data.validateFn = function validateCustomElement(this: VElement) {
+                const { sel, elm } = this;
+                if (!(elm instanceof Ctor)) {
+                    throw new Error(
+                        `Custom element ${Ctor} must be registered as "${sel}" via customElements.define().`
+                    );
+                }
+            };
+        }
+        return h(sel, data, children || EmptyArray);
     }
 
     if (process.env.NODE_ENV !== 'production') {
