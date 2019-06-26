@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5-with-errors';
-import { isUndefined } from 'util';
 
 import {
     treeAdapter,
@@ -41,7 +40,7 @@ import {
 
 import { parseStyleText, parseClassNames } from './style';
 
-import { createElement, isCustomElement, createText, irParentMap } from '../shared/ir';
+import { createElement, isCustomElement, createText } from '../shared/ir';
 
 import {
     IRNode,
@@ -156,7 +155,7 @@ export default function parse(source: string, state: State): TemplateParseResult
                 if (!root) {
                     root = element;
                 } else {
-                    irParentMap.set(element, parent);
+                    element.parent = parent;
                     parent.children.push(element);
                 }
 
@@ -232,7 +231,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
                     const textNode = createText(node, value);
 
-                    irParentMap.set(textNode, parent);
+                    textNode.parent = parent;
                     parent.children.push(textNode);
                 }
             },
@@ -680,9 +679,8 @@ export default function parse(source: string, state: State): TemplateParseResult
                 return true;
             }
         }
-        const parent = irParentMap.get(element);
-        if (!isUndefined(parent)) {
-            return isInIteration(parent);
+        if (element.parent) {
+            return isInIteration(element.parent);
         }
         return false;
     }
@@ -744,7 +742,7 @@ export default function parse(source: string, state: State): TemplateParseResult
     function validateElement(element: IRElement) {
         const { tag } = element;
         const node = element.__original as parse5.AST.Default.Element;
-        const isRoot = !irParentMap.has(element);
+        const isRoot = !element.parent;
 
         if (isRoot) {
             if (tag !== 'template') {

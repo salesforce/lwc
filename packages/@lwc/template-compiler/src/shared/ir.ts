@@ -89,7 +89,7 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
     }
 
     // Delegate to parent component if no binding is found at this point
-    return isComponentProp(identifier, irParentMap.get(node));
+    return isComponentProp(identifier, node.parent);
 }
 
 export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode): boolean {
@@ -106,7 +106,5 @@ export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode)
     }
 
     // Delegate to parent component if no binding is found at this point
-    return isBoundToIterator(identifier, irParentMap.get(node));
+    return isBoundToIterator(identifier, node.parent);
 }
-
-export const irParentMap: WeakMap<IRElement | IRText, IRElement> = new WeakMap();
