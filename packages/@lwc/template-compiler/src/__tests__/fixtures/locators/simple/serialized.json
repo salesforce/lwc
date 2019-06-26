@@ -9,6 +9,7 @@
                 "tag": "a",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "on": {
                     "click": {
                         "type": "Identifier",
@@ -49,7 +50,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

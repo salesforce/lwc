@@ -419,6 +419,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "forEach": {
                     "expression": {
                         "type": "Identifier",
@@ -447,7 +448,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -19,6 +19,7 @@
                                 "value": "1"
                             }
                         ],
+                        "key": 3,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -48,6 +49,7 @@
                                 "value": "2"
                             }
                         ],
+                        "key": 4,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -77,6 +79,7 @@
                                 "value": "3"
                             }
                         ],
+                        "key": 5,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -96,9 +99,11 @@
                         },
                         "ifModifier": "true"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -18,9 +18,11 @@
                                 "type": "text",
                                 "value": "1"
                             }
-                        ]
+                        ],
+                        "key": 3
                     }
                 ],
+                "key": 2,
                 "if": {
                     "type": "Identifier",
                     "start": 1,
@@ -54,9 +56,11 @@
                                 "type": "text",
                                 "value": "2"
                             }
-                        ]
+                        ],
+                        "key": 5
                     }
                 ],
+                "key": 4,
                 "if": {
                     "type": "Identifier",
                     "start": 1,
@@ -76,7 +80,8 @@
                 },
                 "ifModifier": "false"
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

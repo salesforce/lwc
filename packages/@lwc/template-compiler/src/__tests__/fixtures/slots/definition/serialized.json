@@ -23,14 +23,18 @@
                                         "type": "text",
                                         "value": "Default slot content"
                                     }
-                                ]
+                                ],
+                                "key": 4
                             }
                         ],
+                        "key": 3,
                         "slotName": ""
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

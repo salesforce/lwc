@@ -8,15 +8,18 @@
                 "type": "element",
                 "tag": "li",
                 "attrsList": [],
-                "children": []
+                "children": [],
+                "key": 2
             },
             {
                 "type": "element",
                 "tag": "li",
                 "attrsList": [],
-                "children": []
+                "children": [],
+                "key": 3
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

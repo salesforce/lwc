@@ -59,6 +59,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "if": {
                             "type": "Identifier",
                             "start": 1,
@@ -78,9 +79,11 @@
                         },
                         "ifModifier": "true"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

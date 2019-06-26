@@ -19,6 +19,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 3,
                         "attrs": {
                             "data--bar-baz": {
                                 "name": "data--bar-baz",
@@ -35,9 +36,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -9,6 +9,7 @@
                 "tag": "x-test",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "component": "x-test",
                 "props": {
                     "json": {
@@ -26,7 +27,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

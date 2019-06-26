@@ -19,6 +19,7 @@
                         "value": "valid"
                     }
                 ],
+                "key": 2,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -56,6 +57,7 @@
                 "tag": "x-foo",
                 "attrsList": [],
                 "children": [],
+                "key": 3,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -89,7 +91,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

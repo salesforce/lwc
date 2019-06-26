@@ -23,9 +23,11 @@
                                 "type": "text",
                                 "value": "Test slot content"
                             }
-                        ]
+                        ],
+                        "key": 3
                     }
                 ],
+                "key": 2,
                 "slotName": "secret-slot",
                 "attrs": {
                     "name": {
@@ -43,7 +45,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

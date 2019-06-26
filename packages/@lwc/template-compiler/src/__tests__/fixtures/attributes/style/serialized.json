@@ -9,6 +9,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "styleMap": {
                     "color": "blue"
                 }
@@ -18,6 +19,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 3,
                 "styleMap": {
                     "color": "blue"
                 }
@@ -27,6 +29,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 4,
                 "styleMap": {
                     "color": "blue"
                 }
@@ -36,6 +39,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 5,
                 "styleMap": {
                     "boxShadow": "10px 5px 5px black"
                 }
@@ -45,6 +49,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 6,
                 "styleMap": {
                     "fontSize": "12px",
                     "background": "blue",
@@ -56,6 +61,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 7,
                 "styleMap": {
                     "fontSize": "12px",
                     "background": "blue",
@@ -67,11 +73,13 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 8,
                 "styleMap": {
                     "backgroundColor": "rgba(255,0,0,0.3)"
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -14,6 +14,7 @@
                         "tag": "p",
                         "attrsList": [],
                         "children": [],
+                        "key": 3,
                         "className": {
                             "type": "Identifier",
                             "start": 1,
@@ -32,9 +33,11 @@
                             "name": "bar"
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

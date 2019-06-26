@@ -46,6 +46,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 3,
                         "attrs": {
                             "xlink:href": {
                                 "name": "xlink:href",
@@ -115,6 +116,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "attrs": {
                     "width": {
                         "name": "width",
@@ -144,7 +146,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

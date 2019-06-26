@@ -59,6 +59,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -137,9 +138,11 @@
                             "computed": false
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

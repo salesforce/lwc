@@ -9,6 +9,7 @@
                 "tag": "div",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "locator": {
                     "id": "button-in-slot",
                     "context": {
@@ -33,7 +34,8 @@
                     "dom": "manual"
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

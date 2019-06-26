@@ -22,6 +22,7 @@
                     }
                 ],
                 "children": [],
+                "key": 2,
                 "attrs": {
                     "type": {
                         "name": "type",
@@ -105,7 +106,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -8,7 +8,8 @@
                 "type": "text",
                 "value": "Misnamed root tag"
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

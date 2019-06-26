@@ -44,6 +44,7 @@
                                         }
                                     }
                                 ],
+                                "key": 4,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -158,6 +159,7 @@
                                         }
                                     }
                                 ],
+                                "key": 5,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -239,6 +241,7 @@
                                         }
                                     }
                                 ],
+                                "key": 6,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -353,6 +356,7 @@
                                         }
                                     }
                                 ],
+                                "key": 7,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -405,6 +409,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -429,9 +434,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

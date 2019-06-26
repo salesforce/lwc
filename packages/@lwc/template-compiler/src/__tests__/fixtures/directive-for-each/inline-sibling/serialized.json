@@ -35,6 +35,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -168,11 +169,14 @@
                                 "type": "text",
                                 "value": "Last"
                             }
-                        ]
+                        ],
+                        "key": 4
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

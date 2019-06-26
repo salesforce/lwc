@@ -18,7 +18,8 @@
                                 "type": "text",
                                 "value": "Before header"
                             }
-                        ]
+                        ],
+                        "key": 3
                     },
                     {
                         "type": "element",
@@ -35,6 +36,7 @@
                                 "value": "Default header"
                             }
                         ],
+                        "key": 4,
                         "slotName": "header",
                         "attrs": {
                             "name": {
@@ -61,7 +63,8 @@
                                 "type": "text",
                                 "value": "In"
                             }
-                        ]
+                        ],
+                        "key": 5
                     },
                     {
                         "type": "element",
@@ -72,7 +75,8 @@
                                 "type": "text",
                                 "value": "between"
                             }
-                        ]
+                        ],
+                        "key": 6
                     },
                     {
                         "type": "element",
@@ -88,9 +92,11 @@
                                         "type": "text",
                                         "value": "Default body"
                                     }
-                                ]
+                                ],
+                                "key": 8
                             }
                         ],
+                        "key": 7,
                         "slotName": ""
                     },
                     {
@@ -112,9 +118,11 @@
                                         "type": "text",
                                         "value": "Default footer"
                                     }
-                                ]
+                                ],
+                                "key": 10
                             }
                         ],
+                        "key": 9,
                         "slotName": "footer",
                         "attrs": {
                             "name": {
@@ -132,9 +140,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

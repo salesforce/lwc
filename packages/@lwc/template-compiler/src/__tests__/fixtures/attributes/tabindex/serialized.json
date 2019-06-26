@@ -19,6 +19,7 @@
                         "value": "empty"
                     }
                 ],
+                "key": 2,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -50,6 +51,7 @@
                         "value": "one"
                     }
                 ],
+                "key": 3,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -81,6 +83,7 @@
                         "value": "invalid"
                     }
                 ],
+                "key": 4,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -112,6 +115,7 @@
                         "value": "two"
                     }
                 ],
+                "key": 5,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -143,6 +147,7 @@
                         "value": "valid"
                     }
                 ],
+                "key": 6,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -190,6 +195,7 @@
                         "value": "zero"
                     }
                 ],
+                "key": 7,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -221,6 +227,7 @@
                         "value": "minus-one"
                     }
                 ],
+                "key": 8,
                 "attrs": {
                     "tabindex": {
                         "name": "tabindex",
@@ -247,6 +254,7 @@
                         "value": "empty"
                     }
                 ],
+                "key": 9,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -274,6 +282,7 @@
                         "value": "one"
                     }
                 ],
+                "key": 10,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -301,6 +310,7 @@
                         "value": "invalid"
                     }
                 ],
+                "key": 11,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -328,6 +338,7 @@
                         "value": "two"
                     }
                 ],
+                "key": 12,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -355,6 +366,7 @@
                         "value": "valid"
                     }
                 ],
+                "key": 13,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -398,6 +410,7 @@
                         "value": "zero"
                     }
                 ],
+                "key": 14,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -425,6 +438,7 @@
                         "value": "minus-one"
                     }
                 ],
+                "key": 15,
                 "component": "x-foo",
                 "props": {
                     "tabIndex": {
@@ -442,7 +456,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

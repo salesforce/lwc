@@ -14,6 +14,7 @@
                     }
                 ],
                 "children": [],
+                "key": 2,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -40,6 +41,7 @@
                     }
                 ],
                 "children": [],
+                "key": 3,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -66,6 +68,7 @@
                     }
                 ],
                 "children": [],
+                "key": 4,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -92,6 +95,7 @@
                     }
                 ],
                 "children": [],
+                "key": 5,
                 "attrs": {
                     "id": {
                         "name": "id",
@@ -123,6 +127,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 7,
                         "forKey": {
                             "type": "Identifier",
                             "start": 1,
@@ -157,6 +162,7 @@
                         }
                     }
                 ],
+                "key": 6,
                 "forEach": {
                     "expression": {
                         "type": "Identifier",
@@ -181,7 +187,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

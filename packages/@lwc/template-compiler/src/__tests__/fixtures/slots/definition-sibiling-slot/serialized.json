@@ -28,9 +28,11 @@
                                         "type": "text",
                                         "value": "Default slot other content"
                                     }
-                                ]
+                                ],
+                                "key": 4
                             }
                         ],
+                        "key": 3,
                         "slotName": "other",
                         "attrs": {
                             "name": {
@@ -62,14 +64,18 @@
                                         "type": "text",
                                         "value": "Default slot content"
                                     }
-                                ]
+                                ],
+                                "key": 6
                             }
                         ],
+                        "key": 5,
                         "slotName": ""
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

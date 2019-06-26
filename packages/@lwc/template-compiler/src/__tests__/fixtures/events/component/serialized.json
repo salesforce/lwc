@@ -14,6 +14,7 @@
                         "tag": "ns-foo",
                         "attrsList": [],
                         "children": [],
+                        "key": 3,
                         "on": {
                             "foo": {
                                 "type": "Identifier",
@@ -35,9 +36,11 @@
                         },
                         "component": "ns-foo"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

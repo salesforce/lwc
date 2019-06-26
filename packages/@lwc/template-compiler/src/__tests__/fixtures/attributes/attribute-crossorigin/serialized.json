@@ -18,6 +18,7 @@
                     }
                 ],
                 "children": [],
+                "key": 2,
                 "attrs": {
                     "src": {
                         "name": "src",
@@ -61,6 +62,7 @@
                     }
                 ],
                 "children": [],
+                "key": 3,
                 "attrs": {
                     "src": {
                         "name": "src",
@@ -104,6 +106,7 @@
                     }
                 ],
                 "children": [],
+                "key": 4,
                 "attrs": {
                     "src": {
                         "name": "src",
@@ -133,7 +136,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

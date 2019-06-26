@@ -28,6 +28,7 @@
                                 "value": "x"
                             }
                         ],
+                        "key": 3,
                         "attrs": {
                             "title": {
                                 "name": "title",
@@ -57,9 +58,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -34,6 +34,7 @@
                                                 "value": "S1"
                                             }
                                         ],
+                                        "key": 5,
                                         "attrs": {
                                             "slot": {
                                                 "name": "slot",
@@ -51,6 +52,7 @@
                                         }
                                     }
                                 ],
+                                "key": 4,
                                 "if": {
                                     "type": "Identifier",
                                     "start": 1,
@@ -85,6 +87,7 @@
                                         "value": "S2"
                                     }
                                 ],
+                                "key": 6,
                                 "attrs": {
                                     "slot": {
                                         "name": "slot",
@@ -102,11 +105,14 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "component": "ns-cmp"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

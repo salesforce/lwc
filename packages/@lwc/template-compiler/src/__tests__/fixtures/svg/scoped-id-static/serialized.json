@@ -53,6 +53,7 @@
                                     }
                                 ],
                                 "children": [],
+                                "key": 4,
                                 "attrs": {
                                     "id": {
                                         "name": "id",
@@ -147,6 +148,7 @@
                                     }
                                 ],
                                 "children": [],
+                                "key": 5,
                                 "attrs": {
                                     "id": {
                                         "name": "id",
@@ -215,7 +217,8 @@
                                     }
                                 }
                             }
-                        ]
+                        ],
+                        "key": 3
                     },
                     {
                         "type": "element",
@@ -227,6 +230,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 6,
                         "attrs": {
                             "href": {
                                 "name": "href",
@@ -255,6 +259,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 7,
                         "attrs": {
                             "xlink:href": {
                                 "name": "xlink:href",
@@ -272,6 +277,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "attrs": {
                     "width": {
                         "name": "width",
@@ -314,7 +320,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

@@ -3,7 +3,8 @@
         "type": "element",
         "tag": "template",
         "attrsList": [],
-        "children": []
+        "children": [],
+        "key": 1
     },
     "warnings": [
         {

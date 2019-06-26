@@ -30,6 +30,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 3,
                         "attrs": {
                             "xlink:href": {
                                 "name": "xlink:href",
@@ -47,6 +48,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "classMap": {
                     "slds-icon": true
                 },
@@ -79,7 +81,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

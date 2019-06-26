@@ -59,6 +59,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "if": {
                             "type": "MemberExpression",
                             "start": 1,
@@ -111,9 +112,11 @@
                         },
                         "ifModifier": "true"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

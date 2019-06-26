@@ -14,11 +14,14 @@
                         "tag": "x-test",
                         "attrsList": [],
                         "children": [],
+                        "key": 3,
                         "component": "x-test"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

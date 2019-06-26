@@ -13,11 +13,14 @@
                         "type": "element",
                         "tag": "div",
                         "attrsList": [],
-                        "children": []
+                        "children": [],
+                        "key": 3
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

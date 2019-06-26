@@ -9,13 +9,15 @@
                 "tag": "section",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "styleMap": {
                     "fontSize": "12px",
                     "color": "red",
                     "margin": "10px 5px 10px"
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

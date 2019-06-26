@@ -50,6 +50,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 3,
                         "attrs": {
                             "width": {
                                 "name": "width",
@@ -114,6 +115,7 @@
                             }
                         ],
                         "children": [],
+                        "key": 4,
                         "attrs": {
                             "cx": {
                                 "name": "cx",
@@ -200,6 +202,7 @@
                                 "value": "SVG"
                             }
                         ],
+                        "key": 5,
                         "attrs": {
                             "x": {
                                 "name": "x",
@@ -269,6 +272,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "attrs": {
                     "version": {
                         "name": "version",
@@ -337,7 +341,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

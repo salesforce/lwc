@@ -90,7 +90,8 @@
                                                     "computed": false
                                                 }
                                             }
-                                        ]
+                                        ],
+                                        "key": 5
                                     },
                                     {
                                         "type": "text",
@@ -150,6 +151,7 @@
                                         }
                                     }
                                 ],
+                                "key": 4,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -375,6 +377,7 @@
                                                 "value": "Text"
                                             }
                                         ],
+                                        "key": 7,
                                         "forKey": {
                                             "type": "MemberExpression",
                                             "start": 1,
@@ -460,6 +463,7 @@
                                         }
                                     }
                                 ],
+                                "key": 6,
                                 "if": {
                                     "type": "Identifier",
                                     "start": 1,
@@ -480,6 +484,7 @@
                                 "ifModifier": "true"
                             }
                         ],
+                        "key": 3,
                         "forOf": {
                             "expression": {
                                 "type": "Identifier",
@@ -504,9 +509,11 @@
                             }
                         }
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

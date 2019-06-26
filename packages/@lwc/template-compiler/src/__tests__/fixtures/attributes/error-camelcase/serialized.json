@@ -19,11 +19,14 @@
                             }
                         ],
                         "children": [],
+                        "key": 3,
                         "component": "x-foo"
                     }
-                ]
+                ],
+                "key": 2
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

@@ -9,6 +9,7 @@
                 "tag": "x-some-cmp",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "on": {
                     "click": {
                         "type": "Identifier",
@@ -50,7 +51,8 @@
                 },
                 "component": "x-some-cmp"
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

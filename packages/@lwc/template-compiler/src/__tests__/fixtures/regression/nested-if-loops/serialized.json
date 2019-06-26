@@ -28,6 +28,7 @@
                                         "value": "Inner"
                                     }
                                 ],
+                                "key": 4,
                                 "forKey": {
                                     "type": "MemberExpression",
                                     "start": 1,
@@ -80,6 +81,7 @@
                                 }
                             }
                         ],
+                        "key": 3,
                         "forEach": {
                             "expression": {
                                 "type": "Identifier",
@@ -105,6 +107,7 @@
                         }
                     }
                 ],
+                "key": 2,
                 "if": {
                     "type": "Identifier",
                     "start": 1,
@@ -124,7 +127,8 @@
                 },
                 "ifModifier": "true"
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }

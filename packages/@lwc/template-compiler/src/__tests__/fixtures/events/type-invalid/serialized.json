@@ -13,7 +13,8 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 2
             },
             {
                 "type": "element",
@@ -24,7 +25,8 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 3
             },
             {
                 "type": "element",
@@ -40,7 +42,8 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 4
             },
             {
                 "type": "element",
@@ -56,7 +59,8 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 5
             },
             {
                 "type": "element",
@@ -67,7 +71,8 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 6
             },
             {
                 "type": "element",
@@ -78,9 +83,11 @@
                         "type": "text",
                         "value": "Click"
                     }
-                ]
+                ],
+                "key": 7
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": [
         {

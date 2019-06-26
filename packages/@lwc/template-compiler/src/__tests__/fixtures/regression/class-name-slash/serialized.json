@@ -9,6 +9,7 @@
                 "tag": "x-cmp",
                 "attrsList": [],
                 "children": [],
+                "key": 2,
                 "classMap": {
                     "foo": true
                 },
@@ -29,7 +30,8 @@
                     }
                 }
             }
-        ]
+        ],
+        "key": 1
     },
     "warnings": []
 }
