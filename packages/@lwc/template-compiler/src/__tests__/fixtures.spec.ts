@@ -10,14 +10,13 @@ import * as path from 'path';
 import * as glob from 'glob';
 import * as prettier from 'prettier';
 
-import compiler, { experimentalParse } from '../index';
+import compiler from '../index';
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 const BASE_CONFIG = {};
 
 const EXPECTED_JS_FILENAME = 'expected.js';
 const EXPECTED_META_FILENAME = 'metadata.json';
-const EXPECTED_EXPERIMENTAL_AST_FILENAME = 'experimental.json';
 
 const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
@@ -61,9 +60,6 @@ describe('fixtures', () => {
             const configOverride = JSON.parse(readFixtureFile('config.json'));
             let expectedCode = readFixtureFile(EXPECTED_JS_FILENAME);
             let expectedMetaData = JSON.parse(readFixtureFile(EXPECTED_META_FILENAME));
-            let expectedExperimentalSerializedAst = readFixtureFile(
-                EXPECTED_EXPERIMENTAL_AST_FILENAME
-            );
 
             const actual = compiler(src, {
                 ...BASE_CONFIG,
@@ -90,24 +86,12 @@ describe('fixtures', () => {
                 writeFixtureFile(EXPECTED_META_FILENAME, JSON.stringify(expectedMetaData, null, 4));
             }
 
-            const parsed = experimentalParse(src);
-
-            if (expectedExperimentalSerializedAst === null) {
-                expectedExperimentalSerializedAst = JSON.stringify(parsed, null, 4);
-                writeFixtureFile(
-                    EXPECTED_EXPERIMENTAL_AST_FILENAME,
-                    expectedExperimentalSerializedAst
-                );
-            }
-
             // check warnings
             expect(actual.warnings).toEqual(expectedMetaData.warnings || []);
             // check compiled code
             expect(prettier.format(actual.code, { parser: 'babel' })).toEqual(
                 prettier.format(expectedCode, { parser: 'babel' })
             );
-            // check serialized ast
-            expect(JSON.stringify(parsed, null, 4)).toEqual(expectedExperimentalSerializedAst);
         });
     }
 });
