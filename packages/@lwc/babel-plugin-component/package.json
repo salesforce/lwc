@@ -1,7 +1,7 @@
 {
     "name": "@lwc/babel-plugin-component",
     "description": "Babel plugin to transform a LWC module",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "main": "src/index.js",
     "typings": "types/index.d.ts",
     "license": "MIT",
@@ -11,7 +11,7 @@
     "dependencies": {
         "@babel/helper-module-imports": "7.0.0",
         "@babel/plugin-proposal-class-properties": "7.1.0",
-        "@lwc/errors": "1.0.2",
+        "@lwc/errors": "1.0.3",
         "line-column": "^1.0.2"
     },
     "devDependencies": {
@@ -19,5 +19,6 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "gitHead": "761859741f99cf17e14731979822375914b5a8f7"
 }

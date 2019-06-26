@@ -1,6 +1,6 @@
 {
     "name": "@lwc/template-compiler",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Template compiler package",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
@@ -20,12 +20,13 @@
         "@babel/template": "~7.1.2",
         "@babel/traverse": "~7.1.5",
         "@babel/types": "~7.1.5",
-        "@lwc/errors": "1.0.2",
+        "@lwc/errors": "1.0.3",
         "camelcase": "~5.0.0",
         "he": "^1.1.1",
         "parse5-with-errors": "^4.0.1"
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "gitHead": "761859741f99cf17e14731979822375914b5a8f7"
 }

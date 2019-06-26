@@ -1,6 +1,6 @@
 {
     "name": "@lwc/synthetic-shadow",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Synthetic Shadow Root for LWC",
     "license": "MIT",
     "main": "dist/commonjs/es2017/shadow.js",
@@ -21,5 +21,6 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "gitHead": "761859741f99cf17e14731979822375914b5a8f7"
 }

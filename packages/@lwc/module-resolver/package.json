@@ -1,7 +1,7 @@
 {
     "name": "@lwc/module-resolver",
     "description": "Resolves paths for LWC components",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
     "scripts": {
@@ -13,5 +13,6 @@
     },
     "publishConfig": {
         "access": "public"
-    }
+    },
+    "gitHead": "761859741f99cf17e14731979822375914b5a8f7"
 }
