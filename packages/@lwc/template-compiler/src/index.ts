@@ -32,6 +32,8 @@ export function parse(source: string, config?: Config): TemplateParseResult {
     return parseTemplate(source, state);
 }
 
+export { experimentalParse } from './parser/experimental';
+
 export default function compile(source: string, config: Config): TemplateCompileResult {
     const options = mergeConfig(config);
     const state = new State(source, options);
