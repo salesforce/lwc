@@ -64,6 +64,7 @@ import {
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
 import { markNodeFromVNode } from './restrictions';
+import { isComponentConstructor } from './def';
 
 export interface ElementCompilerData extends VNodeData {
     key: Key;
@@ -333,10 +334,8 @@ export function s(
     }
     const vnode = h('slot', data, children);
     if (useSyntheticShadow) {
-        // the content of the slot has to be dynamic when in synthetic shadow mode because
-        // the `vnode.children` might be the slotted content vs default content, in which case
-        // the size and the keys are not matching.
-        markAsDynamicChildren(children);
+        // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+        sc(children);
     }
     return vnode;
 }
@@ -418,8 +417,8 @@ export function i(
     factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
     const list: VNodes = [];
-    // marking the list as generated from iteration so we can optimize the diffing
-    markAsDynamicChildren(list);
+    // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+    sc(list);
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError(
@@ -515,14 +514,8 @@ export function f(items: any[]): any[] {
     }
     const len = items.length;
     const flattened: VNodes = [];
-
-    // all flattened nodes should be marked as dynamic because
-    // flattened nodes are because of a conditional or iteration.
-    // We have to mark as dynamic because this could switch from an
-    // iterator to "static" text at any time.
-
-    // TODO: #1276 - compiler should give us some sort of indicator to describe whether a vnode is dynamic or not
-    markAsDynamicChildren(flattened);
+    // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
+    sc(flattened);
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
         if (isArray(item)) {
@@ -694,4 +687,72 @@ export function fid(url: string | undefined | null): string | null | undefined {
         return `${url}-${vmBeingRendered!.idx}`;
     }
     return url;
+}
+
+/**
+ * Map to store an index value assigned to any dynamic component reference ingested
+ * by dc() api. This allows us to generate a unique unique per template per dynamic
+ * component reference to avoid diffing algo mismatches.
+ */
+const DynamicImportedComponentMap: Map<ComponentConstructor, number> = new Map();
+let dynamicImportedComponentCounter = 0;
+
+/**
+ * create a dynamic component via `<x-foo lwc:dynamic={Ctor}>`
+ */
+export function dc(
+    sel: string,
+    Ctor: ComponentConstructor | null | undefined,
+    data: CustomElementCompilerData,
+    children?: VNodes
+): VCustomElement | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
+        assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
+        assert.isTrue(
+            arguments.length === 3 || isArray(children),
+            `dc() 4nd argument data must be an array.`
+        );
+    }
+    // null or undefined values should produce a null value in the VNodes
+    if (Ctor == null) {
+        return null;
+    }
+    if (!isComponentConstructor(Ctor)) {
+        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
+    }
+    let idx = DynamicImportedComponentMap.get(Ctor);
+    if (isUndefined(idx)) {
+        idx = dynamicImportedComponentCounter++;
+        DynamicImportedComponentMap.set(Ctor, idx);
+    }
+    // the new vnode key is a mix of idx and compiler key, this is required by the diffing algo
+    // to identify different constructors as vnodes with different keys to avoid reusing the
+    // element used for previous constructors.
+    data.key = `dc:${idx}:${data.key}`;
+    return c(sel, Ctor, data, children);
+}
+
+/**
+ * slow children collection marking mechanism. this API allows the compiler to signal
+ * to the engine that a particular collection of children must be diffed using the slow
+ * algo based on keys due to the nature of the list. E.g.:
+ *
+ *   - slot element's children: the content of the slot has to be dynamic when in synthetic
+ *                              shadow mode because the `vnode.children` might be the slotted
+ *                              content vs default content, in which case the size and the
+ *                              keys are not matching.
+ *   - children that contain dynamic components
+ *   - children that are produced by iteration
+ *
+ */
+export function sc(vnodes: VNodes): VNodes {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
+    }
+    // We have to mark the vnodes collection as dynamic so we can later on
+    // choose to use the snabbdom virtual dom diffing algo instead of our
+    // static dummy algo.
+    markAsDynamicChildren(vnodes);
+    return vnodes;
 }
