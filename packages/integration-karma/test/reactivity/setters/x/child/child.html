@@ -1,0 +1,10 @@
+<template>
+    <ul>
+        <template for:each={normalizedItems} for:item="item">
+            <li key={item.key}>{item.label}</li>
+        </template>
+    </ul>
+    <p>
+        City: {normalizedCity}
+    </p>
+</template>

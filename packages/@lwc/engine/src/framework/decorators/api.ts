@@ -7,7 +7,7 @@
 import assert from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
 import { isObject, toString, isFalse } from '../../shared/language';
-import { observeMutation, notifyMutation } from '../watcher';
+import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
 import { getComponentVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';
@@ -81,7 +81,7 @@ function createPublicPropertyDescriptor(
                 }
                 return;
             }
-            observeMutation(this, key);
+            valueObserved(this, key);
             return vm.cmpProps[key];
         },
         set(this: ComponentInterface, newValue: any) {
@@ -100,7 +100,7 @@ function createPublicPropertyDescriptor(
             // avoid notification of observability if the instance is already dirty
             if (isFalse(vm.isDirty)) {
                 // perf optimization to skip this step if the component is dirty already.
-                notifyMutation(this, key);
+                valueMutated(this, key);
             }
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,

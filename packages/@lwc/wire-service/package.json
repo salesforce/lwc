@@ -5,6 +5,7 @@
     "license": "MIT",
     "main": "dist/commonjs/es2017/wire.js",
     "module": "dist/modules/es2017/wire.js",
+    "typings": "lib/index.d.ts",
     "scripts": {
         "clean": "rm -rf dist/ lib/",
         "test": "jest",

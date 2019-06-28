@@ -10,7 +10,6 @@ import {
     createComponent,
     linkComponent,
     renderComponent,
-    clearReactiveListeners,
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
@@ -56,6 +55,7 @@ import { tagNameGetter } from '../env/element';
 import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
+import { ReactiveObserver } from '../libs/mutation-tracker';
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -86,11 +86,9 @@ export interface UninitializedVM {
     /** Adopted Children List */
     aChildren: VNodes;
     velements: VCustomElement[];
-    cmpTemplate?: Template;
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    component?: ComponentInterface;
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
@@ -102,14 +100,21 @@ export interface UninitializedVM {
     isDirty: boolean;
     isRoot: boolean;
     mode: 'open' | 'closed';
-    deps: VM[][];
     toString(): string;
+
+    // perf optimization to avoid reshaping the uninitialized when initialized
+    cmpTemplate?: Template;
+    component?: ComponentInterface;
+    cmpRoot?: ShadowRoot;
+    tro?: ReactiveObserver;
 }
 
 export interface VM extends UninitializedVM {
     cmpTemplate: Template;
     component: ComponentInterface;
     cmpRoot: ShadowRoot;
+    /** Template Reactive Observer to observe values used by the selected template */
+    tro: ReactiveObserver;
 }
 
 let idx: number = 0;
@@ -162,6 +167,9 @@ function resetComponentStateWhenRemoved(vm: VM) {
     }
     const { state } = vm;
     if (state !== VMState.disconnected) {
+        const { tro } = vm;
+        // Making sure that any observing record will not trigger the rehydrated on this vm
+        tro.reset();
         runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
         runShadowChildNodesDisconnectedCallback(vm);
@@ -218,19 +226,20 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         elm,
         data: EmptyObject,
         context: create(null),
-        cmpTemplate: undefined,
         cmpProps: create(null),
         cmpTrack: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
         getHook,
-        component: undefined,
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
-        // used to track down all object-key pairs that makes this vm reactive
-        deps: [],
+        // Perf optimization to preserve the shape of this obj
+        cmpTemplate: undefined,
+        component: undefined,
+        cmpRoot: undefined,
+        tro: undefined,
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -402,7 +411,6 @@ function runDisconnectedCallback(vm: VM) {
         // of disconnected components.
         markComponentAsDirty(vm);
     }
-    clearReactiveListeners(vm);
     vm.state = VMState.disconnected;
     // reporting disconnection
     const { disconnected } = Services;

@@ -123,8 +123,10 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         },
         () => {
             // job
-            const html = callHook(component, render);
-            result = evaluateTemplate(vm, html);
+            vm.tro.observe(() => {
+                const html = callHook(component, render);
+                result = evaluateTemplate(vm, html);
+            });
         },
         () => {
             establishContext(ctx);
