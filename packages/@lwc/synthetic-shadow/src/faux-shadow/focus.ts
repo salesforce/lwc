@@ -33,6 +33,7 @@ import {
     isNull,
     isUndefined,
     toString,
+    isTrue,
 } from '../shared/language';
 import {
     DocumentPrototypeActiveElement,
@@ -106,15 +107,27 @@ const focusableTagNames = {
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
-// Exported for jest purposes
-export function isFocusable(element: HTMLElement): boolean {
-    const tagName = tagNameGetter.call(element);
-    return (
+export function isFocusable(element: HTMLElement, hostElement: HTMLElement): boolean {
+    const focusable =
         isVisible(element) &&
         (hasFocusableTabIndex(element) ||
             hasAttribute.call(element, 'contenteditable') ||
-            hasOwnProperty.call(focusableTagNames, tagName))
-    );
+            hasOwnProperty.call(focusableTagNames, tagNameGetter.call(element)));
+
+    if (!hostElement) {
+        return focusable;
+    }
+
+    if (isTrue(focusable)) {
+        return true;
+    }
+
+    const nextElement =
+        element.parentNode === element.getRootNode()
+            ? (element.parentNode as ShadowRoot).host
+            : element.parentElement!;
+
+    return nextElement !== hostElement && isFocusable(nextElement as HTMLElement, hostElement);
 }
 
 interface QuerySegments {
@@ -328,10 +341,15 @@ function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): 
     return null;
 }
 
-function willTriggerFocusInEvent(target: HTMLElement): boolean {
-    const doc = getOwnerDocument(target);
+function willTriggerFocusInEvent(event: MouseEvent): boolean {
+    const target = eventTargetGetter.call(event);
+    const doc = getOwnerDocument(target as Node);
+    const activeElement = DocumentPrototypeActiveElement.call(doc);
+    const isTargetActiveElement = target === activeElement;
     return (
-        target !== DocumentPrototypeActiveElement.call(doc) && isFocusable(target) // if the element is currently active, it will not fire a focusin event
+        // if the element is currently active, it will not fire a focusin event
+        !isTargetActiveElement &&
+        isFocusable(target as HTMLElement, eventCurrentTargetGetter.call(event) as HTMLElement)
     );
 }
 
@@ -364,11 +382,10 @@ function exitMouseDownState(event) {
 }
 
 function handleFocusMouseDown(evt) {
-    const target = eventTargetGetter.call(evt) as HTMLElement;
     // If we are mouse down in an element that can be focused
     // and the currentTarget's activeElement is not element we are mouse-ing down in
     // We can bail out and let the browser do its thing.
-    if (willTriggerFocusInEvent(target)) {
+    if (willTriggerFocusInEvent(evt)) {
         const currentTarget = eventCurrentTargetGetter.call(evt);
         // Enter the temporary state where we disable the keyboard focusin handler when we click into the shadow.
         addEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
