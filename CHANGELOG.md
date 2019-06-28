@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.3...v) (2019-06-28)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.1...v) (2019-06-28)
+
+
+### Bug Fixes
+
+* **synthetic:** consider ancestors when determining click-focusability ([#1384](https://github.com/salesforce/lwc/issues/1384)) ([c6d0692](https://github.com/salesforce/lwc/commit/c6d0692)), closes [#1382](https://github.com/salesforce/lwc/issues/1382)
+
+
+
+## [1.0.2-222.1](https://github.com/salesforce/lwc/compare/v1.0.3...v1.0.2-222.1) (2019-06-28)
 
 
 
