@@ -107,12 +107,16 @@ const focusableTagNames = {
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
-function isFocusable(element: HTMLElement, hostElement: HTMLElement): boolean {
+export function isFocusable(element: HTMLElement, hostElement: HTMLElement): boolean {
     const focusable =
         isVisible(element) &&
         (hasFocusableTabIndex(element) ||
             hasAttribute.call(element, 'contenteditable') ||
             hasOwnProperty.call(focusableTagNames, tagNameGetter.call(element)));
+
+    if (!hostElement) {
+        return focusable;
+    }
 
     if (isTrue(focusable)) {
         return true;
