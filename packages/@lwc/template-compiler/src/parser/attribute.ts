@@ -291,8 +291,11 @@ function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
 export function attributeToPropertyName(element: IRElement, attrName: string): string {
     let propName = attrName;
     if (shouldCamelCaseAttribute(element, attrName)) {
-        propName = ATTRS_PROPS_TRANFORMS[propName] || propName;
+        const attrToSplit = ATTRS_PROPS_TRANFORMS[propName] || propName;
+        propName = attrToSplit
+            .split('_')
+            .map(part => camelcase(part))
+            .join('_');
     }
-
-    return camelcase(propName);
+    return propName;
 }

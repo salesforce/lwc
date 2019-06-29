@@ -572,6 +572,68 @@ describe('props and attributes', () => {
             'data-xx': { value: 'foo' },
         });
     });
+
+    describe('attributes with underscores', () => {
+        it('attribute name separated by underscore', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_score: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by underscore which contains hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score-hyphen="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_scoreHyphen: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by underscore and immediate hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_-hyphen="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_hyphen: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by two underscore and contains hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score-second_under-score="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_scoreSecond_underScore: { value: 'bar' },
+            });
+        });
+
+        it('attribute name with leading underscore and hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button _leading-underscore="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                _leadingUnderscore: { value: 'bar' },
+            });
+        });
+
+        it('attribute name with trailing underscore and hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button trailing-underscore_="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                trailingUnderscore_: { value: 'bar' },
+            });
+        });
+    });
 });
 
 describe('metadata', () => {
