@@ -359,23 +359,9 @@ export function c(
     Ctor: ComponentConstructor,
     data: CustomElementCompilerData,
     children?: VNodes
-): VCustomElement | VElement {
+): VCustomElement {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
-    }
-    if (isFunction(Ctor) && Ctor.prototype instanceof HTMLElement) {
-        // the resolved reference for this component is a Custom Element class
-        if (process.env.NODE_ENV !== 'production') {
-            data.validateFn = function validateCustomElement(this: VElement) {
-                const { sel, elm } = this;
-                if (!(elm instanceof Ctor)) {
-                    throw new Error(
-                        `Custom element ${Ctor} must be registered as "${sel}" via customElements.define().`
-                    );
-                }
-            };
-        }
-        return h(sel, data, children || EmptyArray);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -436,6 +422,57 @@ export function c(
     };
     addVNodeToChildLWC(vnode);
     return vnode;
+}
+
+/**
+ * web component compatible vnode: this method is equivalent to c()
+ * but it has an extra check to determine if the constructor is a
+ * web component or LWC, and depending on that check, we build a
+ * VElement or a VCustomElement virtual node.
+ *
+ * Note: The reason for this specialized method is perf. We don't want
+ *       to make the instanceof check for every VCustomElement that we
+ *       create, that's too costly, apparently.
+ *
+ * Additionally, if a regular VElement is created, it will add an extra
+ * check to validate that at the end of the diffing algo, the element
+ * is in fact driven by a registered custom element, otherwise throw.
+ *
+ **/
+export function wc(
+    sel: string,
+    Ctor: ComponentConstructor | typeof HTMLElement,
+    data: CustomElementCompilerData,
+    children: VNodes
+): VElement | VCustomElement {
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isString(sel), `wc() 1st argument sel must be a string.`);
+        assert.isTrue(isFunction(Ctor), `wc() 2nd argument Ctor must be a function.`);
+        assert.isTrue(isObject(data), `wc() 3nd argument data must be an object.`);
+        assert.isTrue(isArray(children), `wc() 4nd argument data must be an array.`);
+    }
+    if (
+        isFunction(Ctor) &&
+        Ctor.prototype.ELEMENT_NODE === 1 &&
+        Ctor.prototype instanceof HTMLElement
+    ) {
+        if (process.env.NODE_ENV !== 'production') {
+            data.validateFn = function validateCustomElement(this: VElement) {
+                const { sel, elm } = this;
+                if (!(elm instanceof Ctor)) {
+                    throw new Error(
+                        `Custom element ${Ctor} must be registered as "${sel}" via customElements.define().`
+                    );
+                }
+            };
+        }
+        return h(sel, data, children);
+    }
+    return c(sel, Ctor as ComponentConstructor, data, children);
 }
 
 // [i]terable node
