@@ -71,7 +71,7 @@ function getModulePath(
     }
 
     if (!fs.existsSync(distPath)) {
-        throw new Error(`Module path for module ${name} not found`);
+        throw new Error(`Module path "${distPath}" for module ${name} not found`);
     }
 
     return distPath;

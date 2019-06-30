@@ -1,5 +1,5 @@
 // TODO: #1284 - Import this from the lwc module once we move validation from compiler to linter
-const { registerTemplate } = Engine;
+const { registerTemplate } = LWC;
 
 import { createElement } from 'lwc';
 import { LightningElement } from 'lwc';

@@ -1,7 +1,7 @@
 {
     "globals": {
         "process": true,
-        "Engine": true,
+        "LWC": true,
         "spyOnAllFunctions": true
     },
 
