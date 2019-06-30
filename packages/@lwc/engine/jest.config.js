@@ -7,10 +7,8 @@
  */
 const path = require('path');
 const BASE_CONFIG = require('../../../scripts/jest/base.config');
-const LWC_PATH = path.join(
-    path.dirname(require.resolve('@lwc/engine')),
-    'dist/modules/es2017/engine.js'
-);
+const LWC_ROOT = path.dirname(require.resolve('@lwc/engine'));
+const LWC_PATH = path.join(LWC_ROOT, 'dist/engine.js');
 
 module.exports = {
     ...BASE_CONFIG,
