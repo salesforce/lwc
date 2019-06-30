@@ -43,6 +43,11 @@ install_and_build: &install_and_build
     name: Install depedencies and build
     command: yarn install --frozen-lockfile
 
+generate_artifacts: &generate_artifacts
+  run:
+    name: Generate artifacts
+    command: yarn build:artifacts
+
 run_sanity_checks: &run_sanity_checks
   run:
     name: Sanity checks
@@ -197,6 +202,7 @@ jobs:
       - checkout
       - *restore_yarn_cache
       - *install_and_build
+      - *generate_artifacts
       - *save_yarn_cache
 
       - *run_sanity_checks
