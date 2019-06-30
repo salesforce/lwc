@@ -4,4 +4,24 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-module.exports = [...require('./rollup.config.es')];
+const path = require('path');
+const typescript = require('rollup-plugin-typescript');
+
+const { version } = require('../../package.json');
+const entry = path.resolve(__dirname, '../../src/index.ts');
+const targetDirectory = path.resolve(__dirname, '../../dist');
+const targetName = 'wire-service.js';
+const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
+const footer = `/** version: ${version} */`;
+
+module.exports = {
+    input: entry,
+    output: {
+        file: path.join(targetDirectory, targetName),
+        name: 'WireService',
+        format: 'es',
+        banner,
+        footer,
+    },
+    plugins: [typescript({ target: 'es2017', typescript: require('typescript') })],
+};
