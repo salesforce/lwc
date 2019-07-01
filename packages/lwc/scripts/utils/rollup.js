@@ -19,7 +19,8 @@ function rollupConfig(config) {
         inputOptions: {
             input,
             plugins: [
-                prod && rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+                (prod || compatMode) &&
+                    rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
                 prod && rollupTerser(),
             ],
