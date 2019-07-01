@@ -27,5 +27,8 @@
         "camelcase": "~5.0.0",
         "he": "^1.1.1",
         "parse5-with-errors": "^4.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

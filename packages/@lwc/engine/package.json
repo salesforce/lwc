@@ -24,5 +24,8 @@
         "modules": {
             "lwc": "dist/engine.js"
         }
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

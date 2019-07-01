@@ -12,7 +12,6 @@
     "lint": "eslint packages/ scripts/ --ext=js,ts --rulesdir=./scripts/eslint/rules",
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
-    "build:artifacts": "lerna exec --scope lwc -- yarn build:artifacts ",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",

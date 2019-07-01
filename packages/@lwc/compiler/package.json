@@ -27,5 +27,8 @@
     },
     "devDependencies": {
         "source-map": "^0.7.3"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

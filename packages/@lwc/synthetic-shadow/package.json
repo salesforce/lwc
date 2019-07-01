@@ -19,5 +19,8 @@
         "modules": {
             "@lwc/synthetic-shadow": "dist/synthetic-shadow.js"
         }
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }

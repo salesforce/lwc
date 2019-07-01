@@ -15,5 +15,8 @@
     ],
     "keywords": [
         "lwc"
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }
