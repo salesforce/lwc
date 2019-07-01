@@ -31,6 +31,7 @@ const shadowModeFile = getModulePath(
     isCompat ? 'es5' : 'es2017',
     isProd ? 'prod' : 'dev'
 );
+
 const wireServicePath = getModulePath(
     'wire-service',
     'iife',
