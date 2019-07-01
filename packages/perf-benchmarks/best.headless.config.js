@@ -8,7 +8,13 @@ module.exports = {
     projectName: 'lwc-engine-benchmark',
     plugins: [
         '<rootDir>/best-plugins/synthetic-shadow.js',
-        ['@lwc/rollup-plugin', { rootDir: '<rootDir>/src/' }],
+        [
+            '@lwc/rollup-plugin',
+            {
+                rootDir: '<rootDir>/src/',
+                exclude: [/\/engine.js$/, /@best\/runtime/],
+            },
+        ],
         ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
     ],
     benchmarkOnClient: false,
