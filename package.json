@@ -22,8 +22,8 @@
     "release:ci:dist-tags": "./scripts/release_dist-tags.sh"
   },
   "devDependencies": {
-    "@babel/core": "~7.4.5",
-    "@babel/preset-typescript":"~7.3.3",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-typescript":"^7.3.3",
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
     "@types/acorn": "^4.0.5",
