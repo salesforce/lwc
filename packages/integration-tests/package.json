@@ -22,7 +22,7 @@
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "1.0.2",
-        "compat-polyfills": "^0.21.5",
+        "compat-polyfills": "^0.21.7",
         "deepmerge": "^1.5.2",
         "dotenv": "^4.0.0",
         "fs-extra": "^4.0.2",
