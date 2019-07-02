@@ -8,7 +8,7 @@ const babel = require('@babel/core');
 const { stripIndents } = require('common-tags');
 const prettier = require('prettier');
 
-const BASE_CONFIG = { babelrc: false, filename: 'test.js' };
+const BASE_CONFIG = { babelrc: false, configFile: false, filename: 'test.js' };
 
 function transform(plugin, pluginOpts = {}, opts = {}) {
     const testConfig = Object.assign(

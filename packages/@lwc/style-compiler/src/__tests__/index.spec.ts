@@ -71,7 +71,7 @@ function testFixture(fixtureDir: string) {
             expect(result).toBe(expectedSource);
 
             // Assert that the result is valid javascript
-            expect(() => parseSync(result)).not.toThrow();
+            expect(() => parseSync(result, { babelrc: false, configFile: false })).not.toThrow();
         } else if (expectedError) {
             expect(error).toMatchObject(expectedError);
         } else if (result) {

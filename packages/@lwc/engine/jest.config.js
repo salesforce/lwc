@@ -19,9 +19,6 @@ module.exports = {
 
     // Customize setup for the engine tests.
     setupFilesAfterEnv: [path.resolve(__dirname, 'scripts/jest/setup-test.js')],
-    transform: {
-        '^.+.js$': 'ts-jest',
-    },
     moduleNameMapper: {
         'test-utils': path.resolve(__dirname, 'scripts/jest/test-utils.js'),
         '@lwc/engine': LWC_PATH,

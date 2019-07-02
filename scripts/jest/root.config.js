@@ -6,9 +6,7 @@
  */
 module.exports = {
     rootDir: '../..',
-
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
-
     projects: [
         '<rootDir>/packages/@lwc/errors',
         '<rootDir>/packages/@lwc/babel-plugin-component',
