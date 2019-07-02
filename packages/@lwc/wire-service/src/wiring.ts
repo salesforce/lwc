@@ -14,7 +14,7 @@ import {
     DISCONNECT,
     CONFIG,
 } from './constants';
-import { LightningElement, ElementDef, WireDef, ComposableEvent } from './engine';
+import { ElementDef, WireDef } from './engine';
 import { installTrap, updated } from './property-trap';
 
 export type NoArgumentListener = () => void;
@@ -100,14 +100,14 @@ function buildReactiveParameter(reference: string): ReactiveParameter {
 }
 
 export class WireEventTarget {
-    _cmp: LightningElement;
+    _cmp: EventTarget;
     _def: ElementDef;
     _context: Context;
     _wireDef: WireDef;
     _wireTarget: string;
 
     constructor(
-        cmp: LightningElement,
+        cmp: EventTarget,
         def: ElementDef,
         context: Context,
         wireDef: WireDef,
@@ -233,7 +233,7 @@ export class WireEventTarget {
                 this._cmp[this._wireTarget] = value;
             }
             return false; // canceling signal since we don't want this to propagate
-        } else if ((evt as ComposableEvent).type === 'WireContextEvent') {
+        } else if ((evt as Event).type === 'WireContextEvent') {
             // NOTE: kill this hack
             // we should only allow ValueChangedEvent
             // however, doing so would require adapter to implement machinery

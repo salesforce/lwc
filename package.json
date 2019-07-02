@@ -13,6 +13,7 @@
     "format": "prettier --write '{packages,scripts}/**/*.{js,ts,json,md}'",
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
+    "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
     "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",

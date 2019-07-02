@@ -57,11 +57,7 @@ function getRootNodeHost(node: Node, options): Node {
     return rootNode;
 }
 
-type ComposableEvent = Event & {
-    composed: boolean;
-};
-
-function targetGetter(this: ComposableEvent): EventTarget | null {
+function targetGetter(this: Event): EventTarget | null {
     // currentTarget is always defined
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const originalTarget = eventTargetGetter.call(this);
@@ -82,7 +78,7 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
     return retarget(currentTarget, composedPath);
 }
 
-function composedPathValue(this: ComposableEvent): EventTarget[] {
+function composedPathValue(this: Event): EventTarget[] {
     const originalTarget: EventTarget = eventTargetGetter.call(this);
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     // if the dispatch phase is done, the composedPath should be empty array
@@ -122,10 +118,10 @@ export function patchEvent(event: Event) {
     const originalRelatedTargetDescriptor = getPropertyDescriptor(event, 'relatedTarget');
     if (!isUndefined(originalRelatedTargetDescriptor)) {
         const relatedTargetGetter: (
-            this: ComposableEvent
+            this: Event
         ) => EventTarget | null = originalRelatedTargetDescriptor.get!;
         defineProperty(event, 'relatedTarget', {
-            get(this: ComposableEvent): EventTarget | null | undefined {
+            get(this: Event): EventTarget | null | undefined {
                 const eventContext = eventToContextMap.get(this);
                 const originalCurrentTarget = eventCurrentTargetGetter.call(this);
                 const relatedTarget = relatedTargetGetter.call(this);
