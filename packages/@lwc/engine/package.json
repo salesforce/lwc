@@ -4,12 +4,12 @@
     "description": "LWC Engine",
     "main": "index.js",
     "module": "dist/engine.js",
-    "typings": "types/engine.d.ts",
+    "typings": "types/index.d.ts",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/ lib/",
+        "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "rollup -c scripts/rollup/rollup.config.js"
+        "build": "tsc --emitDeclarationOnly && rollup -c scripts/rollup/rollup.config.js"
     },
     "files": [
         "dist/"

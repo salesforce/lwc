@@ -132,21 +132,121 @@ function getLinkedElement(cmp: ComponentInterface): HTMLElement {
     return getComponentVM(cmp).elm;
 }
 
-interface ComposableEvent extends Event {
-    composed: boolean;
-}
-
 interface ComponentHooks {
     callHook: VM['callHook'];
     setHook: VM['setHook'];
     getHook: VM['getHook'];
 }
 
+export interface LightningElementConstructor {
+    new (): LightningElement;
+    readonly prototype: LightningElement;
+}
+
+export declare var LightningElement: LightningElementConstructor;
+
+export interface LightningElement {
+    // DOM - The good parts
+    dispatchEvent(event: Event): boolean;
+    addEventListener(
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions
+    ): void;
+    removeEventListener(
+        type: string,
+        listener: EventListener,
+        options?: boolean | AddEventListenerOptions
+    ): void;
+    setAttributeNS(ns: string | null, attrName: string, _value: string): void;
+    removeAttributeNS(ns: string | null, attrName: string): void;
+    removeAttribute(attrName: string): void;
+    setAttribute(attrName: string, _value: string): void;
+    getAttribute(attrName: string): string | null;
+    getAttributeNS(ns: string, attrName: string): string | null;
+    getBoundingClientRect(): ClientRect;
+    querySelector<E extends Element = Element>(selectors: string): E | null;
+    querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
+    getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element>;
+    getElementsByClassName(names: string): HTMLCollectionOf<Element>;
+    classList: DOMTokenList;
+    toString(): string;
+
+    // LWC specifics
+    template: ShadowRoot;
+    render(): Template;
+
+    // Callbacks
+    connectedCallback?(): void;
+    disconnectedCallback?(): void;
+    renderedCallback?(): void;
+    errorCallback?(error: any, stack: string): void;
+
+    // Default HTML Properties
+    dir: string;
+    id: string;
+    accessKey: string;
+    title: string;
+    lang: string;
+    hidden: boolean;
+    draggable: boolean;
+    tabIndex: number;
+
+    // Aria Properties
+    ariaAutoComplete: string | null;
+    ariaChecked: string | null;
+    ariaCurrent: string | null;
+    ariaDisabled: string | null;
+    ariaExpanded: string | null;
+    ariaHasPopup: string | null;
+    ariaHidden: string | null;
+    ariaInvalid: string | null;
+    ariaLabel: string | null;
+    ariaLevel: string | null;
+    ariaMultiLine: string | null;
+    ariaMultiSelectable: string | null;
+    ariaOrientation: string | null;
+    ariaPressed: string | null;
+    ariaReadOnly: string | null;
+    ariaRequired: string | null;
+    ariaSelected: string | null;
+    ariaSort: string | null;
+    ariaValueMax: string | null;
+    ariaValueMin: string | null;
+    ariaValueNow: string | null;
+    ariaValueText: string | null;
+    ariaLive: string | null;
+    ariaRelevant: string | null;
+    ariaAtomic: string | null;
+    ariaBusy: string | null;
+    ariaActiveDescendant: string | null;
+    ariaControls: string | null;
+    ariaDescribedBy: string | null;
+    ariaFlowTo: string | null;
+    ariaLabelledBy: string | null;
+    ariaOwns: string | null;
+    ariaPosInSet: string | null;
+    ariaSetSize: string | null;
+    ariaColCount: string | null;
+    ariaColIndex: string | null;
+    ariaDetails: string | null;
+    ariaErrorMessage: string | null;
+    ariaKeyShortcuts: string | null;
+    ariaModal: string | null;
+    ariaPlaceholder: string | null;
+    ariaRoleDescription: string | null;
+    ariaRowCount: string | null;
+    ariaRowIndex: string | null;
+    ariaRowSpan: string | null;
+    ariaColSpan: string | null;
+    role: string | null;
+}
+
 /**
  * This class is the base class for any LWC element.
  * Some elements directly extends this class, others implement it via inheritance.
  **/
-export function BaseLightningElement(this: ComponentInterface) {
+function BaseLightningElementConstructor(this: LightningElement) {
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError();
@@ -192,12 +292,13 @@ export function BaseLightningElement(this: ComponentInterface) {
         patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot, EmptyObject);
     }
+    return this as LightningElement;
 }
 
 // HTML Element - The Good Parts
-BaseLightningElement.prototype = {
-    constructor: BaseLightningElement,
-    dispatchEvent(event: ComposableEvent): boolean {
+BaseLightningElementConstructor.prototype = {
+    constructor: BaseLightningElementConstructor,
+    dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
         const vm = getComponentVM(this);
 
@@ -328,7 +429,7 @@ BaseLightningElement.prototype = {
         lockAttribute(elm, attrName);
         return value;
     },
-    getAttributeNS(ns: string, attrName: string) {
+    getAttributeNS(ns: string, attrName: string): string | null {
         const elm = getLinkedElement(this);
         unlockAttribute(elm, attrName);
         // Typescript does not like it when you treat the `arguments` object as an array
@@ -394,7 +495,7 @@ BaseLightningElement.prototype = {
      * Returns all element descendants of node that
      * match the provided tagName.
      */
-    getElementsByTagName(tagNameOrWildCard: string) {
+    getElementsByTagName(tagNameOrWildCard: string): HTMLCollectionOf<Element> {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
@@ -412,7 +513,7 @@ BaseLightningElement.prototype = {
      * Returns all element descendants of node that
      * match the provide classnames.
      */
-    getElementsByClassName(names: string) {
+    getElementsByClassName(names: string): HTMLCollectionOf<Element> {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(
@@ -478,11 +579,14 @@ const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
     create(null)
 );
 
-defineProperties(BaseLightningElement.prototype, baseDescriptors);
+defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
 
 if (process.env.NODE_ENV !== 'production') {
-    patchLightningElementPrototypeWithRestrictions(BaseLightningElement.prototype);
+    patchLightningElementPrototypeWithRestrictions(BaseLightningElementConstructor.prototype);
 }
 
-freeze(BaseLightningElement);
-seal(BaseLightningElement.prototype);
+freeze(BaseLightningElementConstructor);
+seal(BaseLightningElementConstructor.prototype);
+
+// @ts-ignore
+export const BaseLightningElement: LightningElementConstructor = BaseLightningElementConstructor as unknown;

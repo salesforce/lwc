@@ -12,7 +12,6 @@
  * once after all property changes occur in the event loop.
  */
 
-import { LightningElement } from './engine';
 import { ConfigListenerMetadata, ConfigContext, ReactiveParameter } from './wiring';
 
 /**
@@ -50,7 +49,7 @@ function invokeConfigListeners(
  * @param configContext The service context
  */
 export function updated(
-    cmp: LightningElement,
+    cmp: EventTarget,
     reactiveParameter: ReactiveParameter,
     configContext: ConfigContext
 ) {
@@ -62,7 +61,7 @@ export function updated(
     configContext.mutated.add(reactiveParameter);
 }
 
-function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
+function updatedFuture(cmp: EventTarget, configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
 
     // configContext.mutated must be set prior to invoking this function
@@ -91,7 +90,7 @@ function updatedFuture(cmp: LightningElement, configContext: ConfigContext) {
  * @param reactiveParameter The parameter to get
  */
 export function getReactiveParameterValue(
-    cmp: LightningElement,
+    cmp: EventTarget,
     reactiveParameter: ReactiveParameter
 ): any {
     let value: any = cmp[reactiveParameter.head];
@@ -117,7 +116,7 @@ export function getReactiveParameterValue(
  * @param configContext The service context
  */
 export function installTrap(
-    cmp: LightningElement,
+    cmp: EventTarget,
     reactiveParameter: ReactiveParameter,
     configContext: ConfigContext
 ) {

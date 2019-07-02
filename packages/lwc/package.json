@@ -4,14 +4,16 @@
     "description": "Lightning Web Components (LWC)",
     "main": "index.js",
     "module": "dist/modules/es2017/engine.js",
-    "typings": "types/engine.d.ts",
+    "typings": "types.d.ts",
     "license": "MIT",
     "scripts": {
         "clean": "rm -rf dist/",
         "build": "node scripts/build.js"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "index.js",
+        "types.d.ts"
     ],
     "dependencies": {
         "@lwc/engine": "1.0.2",

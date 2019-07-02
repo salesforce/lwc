@@ -8,12 +8,13 @@
  * Lightning Web Components core module
  */
 declare module 'lwc' {
+    // backwards compatible type used for the old days when TS didn't support `event.composed`
     interface ComposableEvent extends Event {
         composed: boolean;
     }
 
     class HTMLElementTheGoodPart {
-        dispatchEvent(evt: ComposableEvent): boolean;
+        dispatchEvent(evt: Event): boolean;
         addEventListener(
             type: string,
             listener: EventListenerOrEventListenerObject,
@@ -24,12 +25,12 @@ declare module 'lwc' {
             listener: EventListenerOrEventListenerObject,
             options?: boolean | EventListenerOptions
         ): void;
-        setAttributeNS(ns: string, attrName: string, value: any);
-        removeAttributeNS(ns: string, attrName: string);
-        removeAttribute(attrName: string);
-        setAttribute(attrName: string, value: any);
+        setAttributeNS(ns: string, attrName: string, value: any): void;
+        removeAttributeNS(ns: string, attrName: string): void;
+        removeAttribute(attrName: string): void;
+        setAttribute(attrName: string, value: any): void;
         getAttribute(attrName: string): string | null;
-        getAttributeNS(ns: string, attrName: string);
+        getAttributeNS(ns: string, attrName: string): string | null;
         getBoundingClientRect(): ClientRect;
         querySelector<E extends Element = Element>(selectors: string): E | null;
         querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
@@ -129,10 +130,6 @@ declare module 'lwc' {
      * Base class for the Lightning Web Component JavaScript class
      */
     export class LightningElement extends HTMLElementTheGoodPart {
-        /**
-         * Called when the component is created
-         */
-        constructor();
         /**
          * Called when the element is inserted in a document
          */

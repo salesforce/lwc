@@ -13,7 +13,7 @@
 
 import assert from './assert';
 import { CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED, CONTEXT_UPDATED } from './constants';
-import { LightningElement, ElementDef } from './engine';
+import { ElementDef } from './engine';
 import {
     NoArgumentListener,
     WireEventTargetListener,
@@ -51,7 +51,7 @@ function invokeListener(listeners: NoArgumentListener[]) {
  * callbacks to wire adapter lifecycle events.
  */
 const wireService = {
-    wiring: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
+    wiring: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
         const wireContext: WireContext = (context[CONTEXT_ID] = Object.create(null));
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
@@ -118,7 +118,7 @@ const wireService = {
         }
     },
 
-    connected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
+    connected: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(
@@ -132,7 +132,7 @@ const wireService = {
         invokeListener(listeners);
     },
 
-    disconnected: (cmp: LightningElement, data: object, def: ElementDef, context: Context) => {
+    disconnected: (cmp: EventTarget, data: object, def: ElementDef, context: Context) => {
         let listeners: NoArgumentListener[];
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(

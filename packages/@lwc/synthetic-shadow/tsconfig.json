@@ -3,7 +3,7 @@
 
     "compilerOptions": {
         "noImplicitAny": false,
-        "outDir": "lib",
+        "outDir": "types",
         "allowJs": true,
         "declaration": false
     },
