@@ -61,7 +61,7 @@ describe('rollup in compat mode', () => {
     });
 });
 
-const globalModules = { lwc: 'Engine', myCssResolver: 'resolveCss' };
+const globalModules = { lwc: 'LWC', myCssResolver: 'resolveCss' };
 
 async function doRollup(input, { compat } = {}, rollupCompileOptions) {
     const bundle = await rollup.rollup({
