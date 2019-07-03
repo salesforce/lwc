@@ -464,4 +464,18 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+    ATTRIBUTE_CANNOT_START_OR_END_WITH_UNDERSCORE: {
+        code: 1124,
+        message:
+            '{0} is not valid attribute for {1}. Attribute name cannot start or end with an underscore.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    ATTRIBUTE_NAME_CANNOT_CONTAIN_UNDERSCORE_WITH_HYPHEN: {
+        code: 1125,
+        message:
+            '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and hyphen characters.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

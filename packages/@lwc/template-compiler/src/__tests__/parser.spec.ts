@@ -574,6 +574,58 @@ describe('props and attributes', () => {
     });
 
     describe('attributes with underscores', () => {
+        it('should throw when detected an attribute name with underscore + hyphen "_-" combination', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button under_-hyphen="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1125: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and hyphen characters.',
+            });
+        });
+
+        it('should throw when detected an attribute name with hyphen + underscore "-_" combination', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button under-_hyphen="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1125: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and hyphen characters.',
+            });
+        });
+
+        it('should throw when detected an attribute name with a leading underscore', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button _leading="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name cannot start or end with an underscore.',
+            });
+        });
+
+        it('should throw when detected an attribute name with a trailing underscore', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button trailing_="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1124: trailing_ is not valid attribute for x-button. Attribute name cannot start or end with an underscore.',
+            });
+        });
+
         it('attribute name separated by underscore', () => {
             const { root } = parseTemplate(`<template>
                 <x-button under_score="bar"></x-button>
@@ -594,16 +646,6 @@ describe('props and attributes', () => {
             });
         });
 
-        it('attribute name separated by underscore and immediate hyphen', () => {
-            const { root } = parseTemplate(`<template>
-                <x-button under_-hyphen="bar"></x-button>
-            </template>`);
-
-            expect(root.children[0].props).toMatchObject({
-                under_hyphen: { value: 'bar' },
-            });
-        });
-
         it('attribute name separated by two underscore and contains hyphen', () => {
             const { root } = parseTemplate(`<template>
                 <x-button under_score-second_under-score="bar"></x-button>
@@ -611,26 +653,6 @@ describe('props and attributes', () => {
 
             expect(root.children[0].props).toMatchObject({
                 under_scoreSecond_underScore: { value: 'bar' },
-            });
-        });
-
-        it('attribute name with leading underscore and hyphen', () => {
-            const { root } = parseTemplate(`<template>
-                <x-button _leading-underscore="bar"></x-button>
-            </template>`);
-
-            expect(root.children[0].props).toMatchObject({
-                _leadingUnderscore: { value: 'bar' },
-            });
-        });
-
-        it('attribute name with trailing underscore and hyphen', () => {
-            const { root } = parseTemplate(`<template>
-                <x-button trailing-underscore_="bar"></x-button>
-            </template>`);
-
-            expect(root.children[0].props).toMatchObject({
-                trailingUnderscore_: { value: 'bar' },
             });
         });
     });

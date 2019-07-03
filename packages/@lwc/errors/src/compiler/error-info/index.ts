@@ -6,7 +6,7 @@
  */
 /**
  * TODO: W-5678919 - implement script to determine the next available error code
- * Next error code: 1122
+ * Next error code: 1125
  */
 
 export * from './compiler';

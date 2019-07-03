@@ -695,8 +695,29 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const { name, location } = attr;
+
             if (!isValidHTMLAttribute(element.tag, name)) {
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            }
+
+            // disallow attr name with leading and trailing underscores
+            if (name.startsWith('_') || name.endsWith('_')) {
+                const node = element.__original as parse5.AST.Default.Element;
+                warnAt(ParserDiagnostics.ATTRIBUTE_CANNOT_START_OR_END_WITH_UNDERSCORE, [
+                    name,
+                    treeAdapter.getTagName(node),
+                ]);
+                return;
+            }
+
+            // disallow attr name with an underscore combined with non alphabetic characters
+            if (name.match(/_[^a-zA-Z]|[^a-zA-Z]_/)) {
+                const node = element.__original as parse5.AST.Default.Element;
+                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_CONTAIN_UNDERSCORE_WITH_HYPHEN, [
+                    name,
+                    treeAdapter.getTagName(node),
+                ]);
+                return;
             }
 
             if (attr.type === IRAttributeType.String) {
