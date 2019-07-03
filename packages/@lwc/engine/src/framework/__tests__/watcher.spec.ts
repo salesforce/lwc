@@ -9,7 +9,7 @@ import { createElement, LightningElement } from '../main';
 
 describe('watcher', () => {
     describe('integration', () => {
-        it('should rerender the component if any reactive slot changes', () => {
+        it('should not rerender the component if new elements are slotted', () => {
             let counter = 0;
 
             const childTmpl = compileTemplate(`
@@ -57,8 +57,9 @@ describe('watcher', () => {
             document.body.appendChild(elm);
             elm.updateRound();
 
-            Promise.resolve().then(_ => {
-                expect(counter).toBe(2);
+            return Promise.resolve().then(_ => {
+                // parent slotted into child, not need to rerender child
+                expect(counter).toBe(1);
             });
         });
 
