@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.1...v) (2019-06-28)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.2...v) (2019-07-03)
+
+
+### Bug Fixes
+
+* nested style fix ([#1378](https://github.com/salesforce/lwc/issues/1378)) ([66bd3aa](https://github.com/salesforce/lwc/commit/66bd3aa))
+* **synthetic:** consider ancestors when determ focusability ([#1383](https://github.com/salesforce/lwc/issues/1383)) ([674f855](https://github.com/salesforce/lwc/commit/674f855))
+
+
+
+## [1.0.2-222.2](https://github.com/salesforce/lwc/compare/v1.0.2-222.1...v1.0.2-222.2) (2019-06-28)
 
 
 ### Bug Fixes
