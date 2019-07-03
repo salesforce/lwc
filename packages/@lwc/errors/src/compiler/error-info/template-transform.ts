@@ -471,7 +471,7 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-    ATTRIBUTE_NAME_CANNOT_CONTAIN_UNDERSCORE_WITH_HYPHEN: {
+    ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_NON_ALPHA_CHARS: {
         code: 1125,
         message:
             '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and hyphen characters.',

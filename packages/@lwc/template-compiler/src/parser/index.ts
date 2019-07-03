@@ -711,12 +711,12 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             // disallow attr name with an underscore combined with non alphabetic characters
-            if (name.match(/_[^a-zA-Z]|[^a-zA-Z]_/)) {
+            if (name.match(/_[^a-z]|[^a-z]_/)) {
                 const node = element.__original as parse5.AST.Default.Element;
-                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_CONTAIN_UNDERSCORE_WITH_HYPHEN, [
-                    name,
-                    treeAdapter.getTagName(node),
-                ]);
+                warnAt(
+                    ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_NON_ALPHA_CHARS,
+                    [name, treeAdapter.getTagName(node)]
+                );
                 return;
             }
 

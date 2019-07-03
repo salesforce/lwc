@@ -294,7 +294,7 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
         const attrToSplit = ATTRS_PROPS_TRANFORMS[propName] || propName;
         propName = attrToSplit
             .split('_')
-            .map(part => camelcase(part))
+            .map(camelcase)
             .join('_');
     }
     return propName;
