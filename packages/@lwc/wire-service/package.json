@@ -14,6 +14,10 @@
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
     },
+    "files": [
+        "dist/",
+        "types/"
+    ],
     "devDependencies": {
         "@lwc/compiler": "1.0.2",
         "@lwc/engine": "1.0.2",

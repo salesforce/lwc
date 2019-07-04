@@ -12,7 +12,8 @@
         "build": "tsc --emitDeclarationOnly && rollup -c scripts/rollup/rollup.config.js"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "types/"
     ],
     "dependencies": {
         "observable-membrane": "0.26.1"
