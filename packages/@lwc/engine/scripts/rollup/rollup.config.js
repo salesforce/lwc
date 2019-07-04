@@ -8,33 +8,45 @@ const path = require('path');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
-
-const { TS_WHITELIST, ignoreCircularDependencies } = require('./utils');
 const { version } = require('../../package.json');
-
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const targetDirectory = path.resolve(__dirname, '../../dist/');
-const targetName = 'engine.js';
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
 
-module.exports = {
-    input: entry,
-    onwarn: ignoreCircularDependencies,
-    output: {
-        name: 'LWC',
-        file: path.join(targetDirectory, targetName),
-        format: 'es',
-        banner: banner,
-        footer: footer,
-    },
-    plugins: [
-        nodeResolve(),
-        rollupTypescriptPlugin({
-            target: 'es2017',
-            typescript,
-            include: TS_WHITELIST,
-        }),
-    ],
-};
+function generateTargetName({ format }) {
+    return ['engine', format === 'cjs' ? '.cjs' : '', '.js'].join('');
+}
+
+function ignoreCircularDependencies({ code, message }) {
+    if (code !== 'CIRCULAR_DEPENDENCY') {
+        throw new Error(message);
+    }
+}
+
+const TS_WHITELIST = ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'];
+
+function rollupConfig({ format = 'es' } = {}) {
+    return {
+        input: entry,
+        onwarn: ignoreCircularDependencies,
+        output: {
+            name: 'LWC',
+            file: path.join(targetDirectory, generateTargetName({ format })),
+            format,
+            banner: banner,
+            footer: footer,
+        },
+        plugins: [
+            nodeResolve(),
+            rollupTypescriptPlugin({
+                target: 'es2017',
+                typescript,
+                include: TS_WHITELIST,
+            }),
+        ],
+    };
+}
+
+module.exports = [rollupConfig({ format: 'es' }), rollupConfig({ format: 'cjs' })];

@@ -2,7 +2,7 @@
     "name": "@lwc/engine",
     "version": "1.0.2",
     "description": "LWC Engine",
-    "main": "index.js",
+    "main": "dist/engine.cjs.js",
     "module": "dist/engine.js",
     "typings": "types/index.d.ts",
     "license": "MIT",

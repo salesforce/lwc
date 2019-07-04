@@ -10,18 +10,25 @@ const typescript = require('rollup-plugin-typescript');
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/index.ts');
 const targetDirectory = path.resolve(__dirname, '../../dist');
-const targetName = 'wire-service.js';
 const banner = `/**\n * Copyright (C) 2018 salesforce.com, inc.\n */`;
 const footer = `/** version: ${version} */`;
 
-module.exports = {
-    input: entry,
-    output: {
-        file: path.join(targetDirectory, targetName),
-        name: 'WireService',
-        format: 'es',
-        banner,
-        footer,
-    },
-    plugins: [typescript({ target: 'es2017', typescript: require('typescript') })],
-};
+function generateTargetName({ format }) {
+    return ['wire-service', format === 'cjs' ? '.cjs' : '', '.js'].join('');
+}
+
+function rollupConfig({ format }) {
+    return {
+        input: entry,
+        output: {
+            file: path.join(targetDirectory, generateTargetName({ format })),
+            name: 'WireService',
+            format,
+            banner,
+            footer,
+        },
+        plugins: [typescript({ target: 'es2017', typescript: require('typescript') })],
+    };
+}
+
+module.exports = [rollupConfig({ format: 'es' }), rollupConfig({ format: 'cjs' })];
