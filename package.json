@@ -14,7 +14,7 @@
     "build": "lerna run build --ignore perf-benchmarks --ignore integration-tests",
     "test": "jest --config ./scripts/jest/root.config.js",
     "test:debug": "node --inspect node_modules/.bin/jest --config ./scripts/jest/root.config.js --runInBand --watch",
-    "test:ci": "lerna run --concurrency=1 --stream test -- --no-cache --runInBand --coverage",
+    "test:ci": "yarn test --no-cache --coverage --runInBand",
     "test:integration": "lerna exec --scope integration-tests -- yarn sauce",
     "test:performance": "lerna exec --scope perf-benchmarks -- best --runner remote",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
