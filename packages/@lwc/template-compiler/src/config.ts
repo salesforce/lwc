@@ -16,11 +16,16 @@ export interface Config {
      *    </template>
      */
     experimentalComputedMemberExpression?: boolean;
+    /**
+     * Enable <x-foo lwc:directive={expr}>
+     */
+    experimentalDynamicDirective?: boolean;
     secure?: boolean;
 }
 
 export interface ResolvedConfig {
     experimentalComputedMemberExpression: boolean;
+    experimentalDynamicDirective: boolean;
     secure: boolean;
 
     /**
@@ -35,6 +40,7 @@ export interface ResolvedConfig {
 
 const DEFAULT_CONFIG: ResolvedConfig = {
     secure: false,
+    experimentalDynamicDirective: false,
     experimentalComputedMemberExpression: false,
     format: 'module',
 };
@@ -42,6 +48,7 @@ const DEFAULT_CONFIG: ResolvedConfig = {
 const AVAILABLE_OPTION_NAMES = new Set([
     'secure',
     'experimentalComputedMemberExpression',
+    'experimentalDynamicDirective',
     'stylesheetConfig',
 ]);
 

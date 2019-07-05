@@ -12,6 +12,13 @@ import { DiagnosticLevel } from '../../shared/types';
  */
 
 export const LWCClassErrors = {
+    INVALID_DYNAMIC_IMPORT_SOURCE_STRICT: {
+        code: 1121,
+        message:
+            'Invalid import. The argument "{0}" must be a stringLiteral for dynamic imports when strict mode is enabled.',
+        url: '',
+    },
+
     INVALID_IMPORT_MISSING_DEFAULT_EXPORT: {
         code: 1089,
         message: 'Invalid import. "{0}" doesn\'t have default export.',

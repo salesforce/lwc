@@ -67,15 +67,19 @@ const TEMPLATE_FUNCTION = template(
     { sourceType: 'module' }
 );
 
+const BLACKLIST_LWC_DIRECTIVES = new Set(['dynamic']);
+
 function generateContext(element: IRElement, data: t.ObjectProperty[], codeGen: CodeGen) {
     const { lwc, locator } = element;
     const contextExpressions: t.ObjectProperty[] = [];
 
     // LWC
     if (lwc) {
-        const lwcObject: t.ObjectProperty[] = Object.keys(lwc).map(key => {
-            return t.objectProperty(t.identifier(key), t.stringLiteral(lwc[key]));
-        });
+        const lwcObject: t.ObjectProperty[] = Object.keys(lwc)
+            .filter(key => !BLACKLIST_LWC_DIRECTIVES.has(key))
+            .map(key => {
+                return t.objectProperty(t.identifier(key), t.stringLiteral(lwc[key]));
+            });
 
         const lwcObj = t.objectProperty(t.identifier('lwc'), t.objectExpression(lwcObject));
         contextExpressions.push(lwcObj);
@@ -184,9 +188,14 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
         templateContainsId: boolean
     ) {
         const databag = elementDataBag(element, templateContainsId);
-
         let babelElement: t.Expression;
-        if (isCustomElement(element)) {
+
+        // Check wether it has the special directive lwc:dynamic
+        // TODO: We should inline a isDynamicElement, but ts doesn't like it
+        if (element.lwc && element.lwc.dynamic) {
+            const { expression } = bindExpression(element.lwc.dynamic, element);
+            babelElement = codeGen.genDynamicElement(element.tag, expression, databag, children);
+        } else if (isCustomElement(element)) {
             // Make sure to register the component
             const componentClassName = element.component!;
 

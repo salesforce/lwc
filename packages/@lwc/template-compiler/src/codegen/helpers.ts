@@ -61,7 +61,10 @@ export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
         child =>
             isElement(child) &&
-            (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child)))
+            ((child.lwc && child.lwc.dynamic) ||
+                !!child.forEach ||
+                !!child.forOf ||
+                (isTemplate(child) && shouldFlatten(child)))
     );
 }
 

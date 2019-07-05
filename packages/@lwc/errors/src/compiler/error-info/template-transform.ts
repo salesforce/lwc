@@ -484,6 +484,31 @@ export const ParserDiagnostics = {
         code: 1126,
         message:
             '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and special characters.',
+    },
+    UNKNOWN_LWC_DIRECTIVE: {
+        code: 1127,
+        message: 'Invalid directive "${0}" on element {1}.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_OPTS_LWC_DYNAMIC: {
+        code: 1128,
+        message:
+            'Invalid lwc:dynamic usage. The LWC dynamic Directive must be enabled in order to use this feature.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT: {
+        code: 1129,
+        message:
+            'Invalid lwc:dynamic usage on element "{0}". This directive can only be used in a custom element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    INVALID_LWC_DYNAMIC_LITERAL_PROP: {
+        code: 1130,
+        message:
+            'Invalid lwc:dynamic usage on element "{0}". The directive binding must be an expression, not a string literal',
         level: DiagnosticLevel.Error,
         url: '',
     },

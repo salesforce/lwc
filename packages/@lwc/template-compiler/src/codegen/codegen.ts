@@ -21,6 +21,7 @@ type RenderPrimitive =
     | 'locatorListenerBind'
     | 'text'
     | 'dynamic'
+    | 'dynamicCtor'
     | 'key'
     | 'tabindex'
     | 'scopedId'
@@ -37,6 +38,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     element: { name: 'h', alias: 'api_element' },
     slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
+    dynamicCtor: { name: 'dc', alias: 'api_dynamic_component' },
     bind: { name: 'b', alias: 'api_bind' },
     functionBind: { name: 'fb', alias: 'function_bind' },
     locatorListenerBind: { name: 'll', alias: 'locator_listener' },
@@ -111,6 +113,19 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.stringLiteral(tagName),
             componentClass,
+            data,
+            children,
+        ]);
+    }
+    genDynamicElement(
+        tagName: string,
+        ctor: t.Expression,
+        data: t.ObjectExpression,
+        children: t.Expression
+    ) {
+        return this._renderApiCall(RENDER_APIS.dynamicCtor, [
+            t.stringLiteral(tagName),
+            ctor,
             data,
             children,
         ]);

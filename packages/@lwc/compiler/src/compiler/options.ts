@@ -12,6 +12,11 @@ const DEFAULT_OPTIONS = {
     isExplicitImport: false,
 };
 
+const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
+    loader: '',
+    strict: true,
+};
+
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     customProperties: {
         allowDefinition: false,
@@ -52,6 +57,13 @@ export interface BundleFiles {
     [filename: string]: string;
 }
 
+export type DynamicComponentConfig = Partial<NormalizedDynamicComponentConfig>;
+
+export interface NormalizedDynamicComponentConfig {
+    loader: string;
+    strict: boolean;
+}
+
 export interface CompilerOptions {
     name: string;
     namespace: string;
@@ -62,6 +74,7 @@ export interface CompilerOptions {
      */
     baseDir?: string;
     stylesheetConfig?: StylesheetConfig;
+    experimentalDynamicComponent?: DynamicComponentConfig;
     outputConfig?: OutputConfig;
     isExplicitImport?: boolean;
 }
@@ -69,6 +82,7 @@ export interface CompilerOptions {
 export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
+    experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
 }
 
@@ -205,10 +219,16 @@ export function normalizeOptions(options: CompilerOptions): NormalizedCompilerOp
         },
     };
 
+    const experimentalDynamicComponent = {
+        ...DEFAULT_DYNAMIC_CMP_CONFIG,
+        ...options.experimentalDynamicComponent,
+    };
+
     return {
         ...DEFAULT_OPTIONS,
         ...options,
         stylesheetConfig,
         outputConfig,
+        experimentalDynamicComponent,
     };
 }
