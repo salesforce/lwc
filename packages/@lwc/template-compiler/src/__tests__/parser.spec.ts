@@ -583,7 +583,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1125: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and hyphen characters.',
+                    'LWC1126: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
             });
         });
 
@@ -596,7 +596,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1125: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and hyphen characters.',
+                    'LWC1126: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
             });
         });
 
@@ -609,7 +609,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: _leading is not valid attribute for x-button. Attribute name cannot start or end with an underscore.',
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name cannot start with non alphabetic character.',
             });
         });
 
@@ -622,17 +622,40 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: trailing_ is not valid attribute for x-button. Attribute name cannot start or end with an underscore.',
+                    'LWC1125: trailing_ is not valid attribute for x-button. Attribute name cannot start or end with non alpha-numeric character.',
             });
         });
 
-        it('attribute name separated by underscore', () => {
+        it('should throw when detected an attribute name separated by underscore that starts with a number', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button 2_under="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name cannot start with non alphabetic character.',
+            });
+        });
+
+        it('attribute name separated by underscore and starts with alphabetic character', () => {
             const { root } = parseTemplate(`<template>
                 <x-button under_score="bar"></x-button>
             </template>`);
 
             expect(root.children[0].props).toMatchObject({
                 under_score: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by underscore and starts with a number', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_1="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_1: { value: 'bar' },
             });
         });
 
