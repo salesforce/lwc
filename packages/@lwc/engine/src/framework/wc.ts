@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayMap, getOwnPropertyNames, isUndefined } from '@lwc/shared';
-
 import { ComponentConstructor } from './component';
 import { createVM, connectRootElement, disconnectedRootElement } from './vm';
 import { getComponentDef } from './def';
@@ -25,17 +24,9 @@ import { HTMLElementConstructor } from './base-bridge-element';
  * const elm = document.createElement('x-foo');
  * ```
  */
-export function buildCustomElementConstructor(
-    Ctor: ComponentConstructor,
-    options?: {
-        mode?: 'open' | 'closed';
-    }
-): HTMLElementConstructor {
+export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLElementConstructor {
     const { props, bridge: BaseElement } = getComponentDef(Ctor);
-    const mode =
-        isUndefined(options) || isUndefined(options.mode) || options.mode !== 'closed'
-            ? 'open'
-            : 'closed';
+    const mode = 'open';
 
     return class extends BaseElement {
         constructor() {

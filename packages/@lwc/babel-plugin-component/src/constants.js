@@ -35,7 +35,6 @@ const LWC_PACKAGE_EXPORTS = {
 };
 
 const LWC_SUPPORTED_APIS = new Set([
-    'buildCustomElementConstructor',
     'createElement',
     'getComponentDef',
     'getComponentConstructor',

@@ -25,6 +25,5 @@ export { default as track } from './decorators/track';
 export { default as readonly } from './decorators/readonly';
 export { default as wire } from './decorators/wire';
 export { default as decorate } from './decorators/decorate';
-export { buildCustomElementConstructor } from './wc';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';

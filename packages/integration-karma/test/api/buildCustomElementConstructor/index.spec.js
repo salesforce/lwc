@@ -1,6 +1,6 @@
-import { LightningElement, buildCustomElementConstructor } from 'lwc';
+import { LightningElement, getComponentDef } from 'lwc';
 
-import Reflect from 'x/reflect';
+import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
 
 // We can't register standard custom elements if we run compat because of the transformation applied to the component
@@ -9,7 +9,7 @@ const SUPPORTS_CUSTOM_ELEMENTS = !process.env.COMPAT && 'customElements' in wind
 
 function testInvalidOptions(type, obj) {
     it(`throws a ReferenceError if constructor is a ${type}`, () => {
-        expect(() => buildCustomElementConstructor(obj)).toThrowError(
+        expect(() => getComponentDef(obj)).toThrowError(
             TypeError,
             /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration\./
         );
@@ -25,7 +25,7 @@ testInvalidOptions('Object without the is property', {});
 
 it('should return a custom element', () => {
     class Test extends LightningElement {}
-    const TestCustomElement = buildCustomElementConstructor(Test);
+    const TestCustomElement = Test.CustomElement;
 
     expect(typeof TestCustomElement).toBe('function');
 });
@@ -34,7 +34,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
     it('should create a custom element with shadow mode set to "open" by default', () => {
         class Test extends LightningElement {}
 
-        const TestCustomElement = buildCustomElementConstructor(Test);
+        const TestCustomElement = Test.CustomElement;
         customElements.define('test-custom-element-default', TestCustomElement);
 
         const elm = document.createElement('test-custom-element-default');
@@ -44,29 +44,9 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
-    it('should create a custom element with shadow mode set to "closed" when set', () => {
-        let shadowRoot;
-
-        class Test extends LightningElement {
-            connectedCallback() {
-                shadowRoot = this.template;
-            }
-        }
-        const TestCustomElement = buildCustomElementConstructor(Test, {
-            mode: 'closed',
-        });
-        customElements.define('test-custom-element-closed', TestCustomElement);
-
-        const elm = document.createElement('test-custom-element-closed');
-        document.body.appendChild(elm);
-
-        expect(shadowRoot).not.toBe(undefined);
-        expect(shadowRoot.mode).toBe('closed');
-    });
-
     describe('lifecycle', () => {
         beforeAll(() => {
-            const LifecycleParentCustomElement = buildCustomElementConstructor(LifecycleParent);
+            const LifecycleParentCustomElement = LifecycleParent.CustomElement;
             customElements.define('test-lifecycle-parent', LifecycleParentCustomElement);
         });
 
@@ -97,7 +77,7 @@ if (SUPPORTS_CUSTOM_ELEMENTS) {
 
     describe('attribute reflection', () => {
         beforeAll(() => {
-            const ReflectCustomElement = buildCustomElementConstructor(Reflect);
+            const ReflectCustomElement = ReflectElement.CustomElement;
             customElements.define('test-reflect', ReflectCustomElement);
         });
 
