@@ -21,15 +21,12 @@
         "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "1.0.2",
-        "@lwc/engine": "1.0.2",
         "@lwc/rollup-plugin": "1.0.2",
-        "@lwc/synthetic-shadow": "1.0.2",
-        "@lwc/wire-service": "1.0.2",
-        "compat-polyfills": "^0.21.5",
+        "compat-polyfills": "^0.21.7",
         "deepmerge": "^1.5.2",
         "dotenv": "^4.0.0",
         "fs-extra": "^4.0.2",
+        "lwc": "1.0.2",
         "http-server": "^0.10.0",
         "minimist": "^1.2.0",
         "wdio-junit-reporter": "^0.4.3",

@@ -79,6 +79,9 @@ exports.html = function(cmpName, isCompat) {
                 <title>${cmpName}</title>
             </head>
             <body>
+                <script>
+                    window.process = { env: { NODE_ENV: "development" } };
+                </script>
                 ${isCompat ? COMPAT : ''}
                 ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>
@@ -95,6 +98,9 @@ exports.wireServiceHtml = function(cmpName, isCompat) {
                 <title>${cmpName}</title>
             </head>
             <body>
+                <script>
+                    window.process = { env: { NODE_ENV: "development" } };
+                </script>
                 ${isCompat ? COMPAT : ''}
                 ${SHADOW_POLYFILL}
                 <script src="../../shared/engine.js"></script>

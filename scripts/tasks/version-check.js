@@ -11,7 +11,7 @@ const glob = require('glob');
 const semver = require('semver');
 
 const PACKAGES_DIR = path.resolve(__dirname, '../../packages');
-const PACKAGES = glob.sync('*/**/package.json', {
+const PACKAGES = glob.sync('packages/**/package.json', {
     absolute: true,
     cwd: PACKAGES_DIR,
 });
@@ -19,7 +19,6 @@ const PACKAGES = glob.sync('*/**/package.json', {
 let areVersionsInSync = true;
 for (const location of PACKAGES) {
     const { name, peerDependencies = {}, devDependencies = {} } = require(location);
-
     for (const dep of Object.keys(peerDependencies)) {
         if (
             devDependencies.hasOwnProperty(dep) &&

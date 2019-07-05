@@ -322,4 +322,4 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
     };
-})(Engine, jasmine, beforeAll);
+})(LWC, jasmine, beforeAll);

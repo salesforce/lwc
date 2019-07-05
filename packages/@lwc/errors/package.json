@@ -10,6 +10,9 @@
         "build": "tsc",
         "test": "jest"
     },
+    "files": [
+        "dist/"
+    ],
     "keywords": [
         "lwc"
     ],

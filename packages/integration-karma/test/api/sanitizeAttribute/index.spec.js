@@ -2,10 +2,10 @@ import { createElement } from 'lwc';
 
 import Xlink from 'x/xlink';
 
-const originalSanitizeAttribute = Engine.sanitizeAttribute;
+const originalSanitizeAttribute = LWC.sanitizeAttribute;
 afterEach(() => {
     // Reset original sanitizer after each test.
-    Engine.sanitizeAttribute = originalSanitizeAttribute;
+    LWC.sanitizeAttribute = originalSanitizeAttribute;
 });
 
 it('uses the original passthrough sanitizer when not overridden', () => {
@@ -17,12 +17,12 @@ it('uses the original passthrough sanitizer when not overridden', () => {
 });
 
 it('receives the right parameters', () => {
-    spyOn(Engine, 'sanitizeAttribute');
+    spyOn(LWC, 'sanitizeAttribute');
 
     const elm = createElement('x-link', { is: Xlink });
     document.body.appendChild(elm);
 
-    expect(Engine.sanitizeAttribute).toHaveBeenCalledWith(
+    expect(LWC.sanitizeAttribute).toHaveBeenCalledWith(
         'use',
         'http://www.w3.org/2000/svg',
         'xlink:href',
@@ -31,7 +31,7 @@ it('receives the right parameters', () => {
 });
 
 it('replace the original attribute value with the returned value', () => {
-    Engine.sanitizeAttribute = () => '/bar';
+    LWC.sanitizeAttribute = () => '/bar';
 
     const elm = createElement('x-link', { is: Xlink });
     document.body.appendChild(elm);

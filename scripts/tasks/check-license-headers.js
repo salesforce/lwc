@@ -104,6 +104,7 @@ const GENERIC_IGNORED_PATTERNS = [
 
 const CUSTOM_IGNORED_PATTERNS = [
     // add anything repo specific here
+    'babel.config.js',
     '/fixtures/',
     '/integration-tests/src/(.(?!.*.spec.js$))*$',
     '/integration-karma/test/.*$',

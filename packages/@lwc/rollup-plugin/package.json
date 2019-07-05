@@ -7,6 +7,9 @@
     "scripts": {
         "test": "jest"
     },
+    "files": [
+        "src/*.js"
+    ],
     "devDependencies": {
         "@lwc/compiler": "1.0.2",
         "@lwc/engine": "1.0.2"
@@ -14,10 +17,6 @@
     "dependencies": {
         "@lwc/module-resolver": "1.0.2",
         "rollup-pluginutils": "^2.0.1"
-    },
-    "peerDependencies": {
-        "@lwc/compiler": "1.0.x",
-        "@lwc/engine": "1.0.x"
     },
     "publishConfig": {
         "access": "public"

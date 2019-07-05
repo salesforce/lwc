@@ -12,26 +12,31 @@ const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
 const rollupCompatPlugin = require('rollup-plugin-compat');
 const rollupReplacePlugin = require('rollup-plugin-replace');
 const compatPolyfills = require('compat-polyfills');
+const { getModulePath } = require('lwc');
 
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 const isProd = /prod/.test(mode);
 
-const engineModeFile = path.join(
-    require.resolve(
-        `@lwc/engine/dist/umd/${isCompat ? 'es5' : 'es2017'}/engine${isProd ? '.min' : ''}.js`
-    )
+const engineModeFile = getModulePath(
+    'engine',
+    'iife',
+    isCompat ? 'es5' : 'es2017',
+    isProd ? 'prod' : 'dev'
 );
-const shadowModeFile = path.join(
-    require.resolve(
-        `@lwc/synthetic-shadow/dist/umd/${isCompat ? 'es5' : 'es2017'}/shadow${
-            isProd ? '.min' : ''
-        }.js`
-    )
+const shadowModeFile = getModulePath(
+    'synthetic-shadow',
+    'iife',
+    isCompat ? 'es5' : 'es2017',
+    isProd ? 'prod' : 'dev'
 );
-const wireServicePath = path.join(
-    require.resolve(`@lwc/wire-service/dist/umd/${isCompat ? 'es5' : 'es2017'}/wire.js`)
+
+const wireServicePath = getModulePath(
+    'wire-service',
+    'iife',
+    isCompat ? 'es5' : 'es2017',
+    isProd ? 'prod' : 'dev'
 );
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
@@ -99,7 +104,7 @@ function entryPointResolverPlugin() {
 const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
-    lwc: 'Engine',
+    lwc: 'LWC',
     'wire-service': 'WireService',
     todo: 'Todo',
 };

@@ -3,19 +3,21 @@
     "version": "1.0.2",
     "description": "Synthetic Shadow Root for LWC",
     "license": "MIT",
-    "main": "dist/commonjs/es2017/shadow.js",
-    "module": "dist/modules/es2017/shadow.js",
+    "main": "index.js",
+    "module": "dist/synthetic-shadow.js",
     "scripts": {
-        "clean": "rm -rf dist/ lib/",
-        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
+        "clean": "rm -rf dist/",
+        "build": "rollup --config ./scripts/rollup/rollup.config.js",
         "start": "concurrently 'yarn build:playground --watch' 'yarn run serve:playground'",
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
     },
+    "files": [
+        "dist/"
+    ],
     "lwc": {
         "modules": {
-            "@lwc/synthetic-shadow": "dist/modules/es2017/shadow.js",
-            "@lwc/synthetic-shadow-runtime": "dist/modules/es2017/shadow.runtime.js"
+            "@lwc/synthetic-shadow": "dist/synthetic-shadow.js"
         }
     },
     "publishConfig": {

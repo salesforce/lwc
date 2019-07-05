@@ -1,0 +1,24 @@
+{
+    "name": "lwc",
+    "version": "1.0.2",
+    "description": "Lightning Web Components (LWC)",
+    "main": "index.js",
+    "module": "dist/modules/es2017/engine.js",
+    "typings": "types.d.ts",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "build": "node scripts/build.js"
+    },
+    "files": [
+        "dist/",
+        "index.js",
+        "types.d.ts"
+    ],
+    "dependencies": {
+        "@lwc/engine": "1.0.2",
+        "@lwc/compiler": "1.0.2",
+        "@lwc/wire-service": "1.0.2",
+        "@lwc/synthetic-shadow": "1.0.2"
+    }
+}

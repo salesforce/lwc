@@ -56,6 +56,21 @@ Additionally, the testing can be started in 'watch' mode which allows for automa
 yarn test --watch
 ```
 
+To execute a particular test, use the following command:
+
+```bash
+yarn test <path_to_test>
+```
+
+If you want to debug these tests, you can do as follow:
+
+1. First, insert a new line in your test where you think it might be failing and type `debugger`. This will serve as a break point for the debugger to stop at.
+2. Open up Chrome and type in the address bar: `chrome://inspect`
+3. Click on "Open dedicated DevTools for Node"
+4. In your terminal, type the following command: `yarn test:debug <path_to_test>`
+
+Your test should now be running in the Chrome debugger. And you get your handy console to poke around all sorts of stuff! Now simply hit Enter in the terminal running your Jest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
+
 ### Integration Testing LWC
 
 When developing LWC, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.

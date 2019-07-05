@@ -4,7 +4,7 @@
     "compilerOptions": {
         "noImplicitAny": false,
 
-        "outDir": "lib",
+        "outDir": "types",
 
         "baseUrl": ".",
         "paths": {

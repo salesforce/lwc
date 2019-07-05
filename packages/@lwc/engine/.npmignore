@@ -1,8 +1,0 @@
-coverage/
-scripts/
-test/
-src/
-tsconfig.json
-global.d.ts
-yarn.lock
-.*

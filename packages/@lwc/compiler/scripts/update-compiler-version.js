@@ -14,11 +14,7 @@ async function updateVersion(version) {
 
     const result = await rollup({
         input: sourcePath,
-        plugins: [
-            replace({
-                __VERSION__: version,
-            }),
-        ],
+        plugins: [replace({ __VERSION__: version })],
     });
 
     await result.write({

@@ -10,6 +10,9 @@
         "build": "tsc",
         "test": "jest"
     },
+    "files": [
+        "dist/"
+    ],
     "dependencies": {
         "cssnano": "~3.10.0",
         "postcss": "~7.0.5",

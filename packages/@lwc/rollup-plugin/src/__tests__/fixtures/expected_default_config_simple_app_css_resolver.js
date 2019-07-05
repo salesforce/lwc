@@ -101,4 +101,4 @@
     });
     container.appendChild(element);
 
- })(Engine, resolveCss);
+ })(LWC, resolveCss);

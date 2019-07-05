@@ -8,7 +8,7 @@
 'use strict';
 
 const path = require('path');
-
+const { getModulePath } = require('lwc');
 const karmaPluginLwc = require('../karma-plugins/lwc');
 const karmaPluginEnv = require('../karma-plugins/env');
 const babelIstanbulInstrumenter = require('../karma-plugins/babel-istanbul-instrumenter');
@@ -16,10 +16,11 @@ const babelIstanbulInstrumenter = require('../karma-plugins/babel-istanbul-instr
 const BASE_DIR = path.resolve(__dirname, '../../test');
 const COVERAGE_DIR = path.resolve(__dirname, '../../coverage');
 
-const SHADOW_POLYFILL = require.resolve('@lwc/synthetic-shadow/dist/umd/es2017/shadow.js');
-const SHADOW_POLYFILL_COMPAT = require.resolve('@lwc/synthetic-shadow/dist/umd/es5/shadow.js');
-const LWC_ENGINE = require.resolve('@lwc/engine/dist/umd/es2017/engine.js');
-const LWC_ENGINE_COMPAT = require.resolve('@lwc/engine/dist/umd/es5/engine.js');
+const SHADOW_POLYFILL = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev');
+const SHADOW_POLYFILL_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
+const LWC_ENGINE = getModulePath('engine', 'iife', 'es2017', 'dev');
+const LWC_ENGINE_COMPAT = getModulePath('engine', 'iife', 'es5', 'dev');
+
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../helpers/test-utils');
 

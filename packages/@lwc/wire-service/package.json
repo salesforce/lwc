@@ -3,17 +3,21 @@
     "version": "1.0.2",
     "description": "@wire service",
     "license": "MIT",
-    "main": "dist/commonjs/es2017/wire.js",
-    "module": "dist/modules/es2017/wire.js",
-    "typings": "lib/index.d.ts",
+    "main": "dist/wire-service.cjs.js",
+    "module": "dist/wire-service.js",
+    "typings": "types/index.d.ts",
     "scripts": {
-        "clean": "rm -rf dist/ lib/",
+        "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js",
+        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js",
         "start": "concurrently 'yarn build:playground --watch' 'yarn serve:playground'",
         "build:playground": "rollup -c playground/rollup.config.js",
         "serve:playground": "node playground/server.js"
     },
+    "files": [
+        "dist/",
+        "types/"
+    ],
     "devDependencies": {
         "@lwc/compiler": "1.0.2",
         "@lwc/engine": "1.0.2",
@@ -21,7 +25,7 @@
     },
     "lwc": {
         "modules": {
-            "wire-service": "dist/modules/es2017/wire.js"
+            "wire-service": "dist/wire-service.js"
         }
     },
     "publishConfig": {

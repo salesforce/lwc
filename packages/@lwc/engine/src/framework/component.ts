@@ -19,6 +19,7 @@ import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
 import { Template } from './template';
 import { ReactiveObserver } from '../libs/mutation-tracker';
+import { LightningElementConstructor } from './base-lightning-element';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -26,8 +27,7 @@ export interface ComponentInterface {
     setAttribute(attrName: string, value: any): void;
 }
 
-export interface ComponentConstructor {
-    new (): ComponentInterface;
+export interface ComponentConstructor extends LightningElementConstructor {
     readonly name: string;
     readonly labels?: string[];
     readonly delegatesFocus?: boolean;
@@ -46,7 +46,7 @@ const signedComponentToMetaMap: Map<ComponentConstructor, ComponentMeta> = new M
  */
 export function registerComponent(
     Ctor: ComponentConstructor,
-    { name, tmpl: template }
+    { name, tmpl: template }: { name: string; tmpl: Template }
 ): ComponentConstructor {
     signedComponentToMetaMap.set(Ctor, { name, template });
     // chaining this method as a way to wrap existing
