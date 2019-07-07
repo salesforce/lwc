@@ -4,3 +4,4 @@ lib/
 coverage/
 fixtures/
 public/
+__benchmarks_results__/
