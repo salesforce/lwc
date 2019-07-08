@@ -609,7 +609,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: _leading is not valid attribute for x-button. Attribute name cannot start with non alphabetic character.',
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character.',
             });
         });
 
@@ -622,7 +622,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1125: trailing_ is not valid attribute for x-button. Attribute name cannot start or end with non alpha-numeric character.',
+                    'LWC1125: trailing_ is not valid attribute for x-button. Attribute name must end with alpha-numeric character.',
             });
         });
 
@@ -635,7 +635,7 @@ describe('props and attributes', () => {
             expect(warnings[0]).toMatchObject({
                 level: DiagnosticLevel.Error,
                 message:
-                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name cannot start with non alphabetic character.',
+                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character.',
             });
         });
 

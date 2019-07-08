@@ -468,7 +468,7 @@ export const ParserDiagnostics = {
     ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_CHARACTER: {
         code: 1124,
         message:
-            '{0} is not valid attribute for {1}. Attribute name cannot start with non alphabetic character.',
+            '{0} is not valid attribute for {1}. Attribute name must start with alphabetic character.',
         level: DiagnosticLevel.Error,
         url: '',
     },
@@ -476,7 +476,7 @@ export const ParserDiagnostics = {
     ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER: {
         code: 1125,
         message:
-            '{0} is not valid attribute for {1}. Attribute name cannot start or end with non alpha-numeric character.',
+            '{0} is not valid attribute for {1}. Attribute name must end with alpha-numeric character.',
         level: DiagnosticLevel.Error,
         url: '',
     },
