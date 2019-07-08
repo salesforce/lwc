@@ -37,6 +37,7 @@ import {
     destructuringAssignmentFromObject,
     isSlot,
     memorizeHandler,
+    containsDynamicChildren,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -168,7 +169,7 @@ function transform(root: IRNode, codeGen: CodeGen): t.Expression {
                 // Apply children flattening
                 if (shouldFlatten(element) && t.isArrayExpression(children)) {
                     children =
-                        element.children.length === 1
+                        element.children.length === 1 && !containsDynamicChildren(element) // if it contains only one dynamic we need to flatten anyway
                             ? (children.elements[0] as t.Expression)
                             : codeGen.genFlatten([children]);
                 }
