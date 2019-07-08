@@ -16,6 +16,8 @@ import {
 } from './constants';
 import { ElementDef, WireDef } from './engine';
 import { installTrap, updated } from './property-trap';
+import { ValueChangedEvent } from './value-changed-event';
+import { LinkContextEvent } from './link-context-event';
 
 export type NoArgumentListener = () => void;
 export interface ConfigListenerArgument {
@@ -224,7 +226,7 @@ export class WireEventTarget {
         }
     }
 
-    dispatchEvent(evt: ValueChangedEvent): boolean {
+    dispatchEvent(evt: ValueChangedEvent | LinkContextEvent | Event): boolean {
         if (evt instanceof ValueChangedEvent) {
             const value = evt.value;
             if (this._wireDef.method) {
@@ -233,26 +235,29 @@ export class WireEventTarget {
                 this._cmp[this._wireTarget] = value;
             }
             return false; // canceling signal since we don't want this to propagate
-        } else if ((evt as Event).type === 'WireContextEvent') {
-            // NOTE: kill this hack
-            // we should only allow ValueChangedEvent
-            // however, doing so would require adapter to implement machinery
-            // that fire the intended event as DOM event and wrap inside ValueChangedEvent
+        } else if (evt instanceof LinkContextEvent) {
+            const { uid, callback } = evt;
+            // This event is responsible for connecting the host element with another
+            // element in the composed path that is providing contextual data. The provider
+            // must be listening for a special dom event with the name corresponding to `uid`,
+            // which must remain secret, to guarantee that the linkage is only possible via
+            // the corresponding wire adapter.
+            const internalDomEvent = new CustomEvent(uid, {
+                bubbles: true,
+                composed: true,
+                // avoid leaking the callback function directly to prevent a side channel
+                // during the linking phase to the context provider.
+                detail(...args: any[]) {
+                    callback(...args);
+                },
+            });
+            this._cmp.dispatchEvent(internalDomEvent);
+            return false; // canceling signal since we don't want this to propagate
+        } else if (evt.type === 'WireContextEvent') {
+            // TODO: issue #1357 - remove this branch
             return this._cmp.dispatchEvent(evt);
         } else {
             throw new Error(`Invalid event ${evt}.`);
         }
-    }
-}
-
-/**
- * Event fired by wire adapters to emit a new value.
- */
-export class ValueChangedEvent {
-    value: any;
-    type: string;
-    constructor(value) {
-        this.type = 'ValueChangedEvent';
-        this.value = value;
     }
 }
