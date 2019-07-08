@@ -464,4 +464,27 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
+    ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_CHARACTER: {
+        code: 1124,
+        message:
+            '{0} is not valid attribute for {1}. Attribute name must start with alphabetic character.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER: {
+        code: 1125,
+        message:
+            '{0} is not valid attribute for {1}. Attribute name must end with alpha-numeric character.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS: {
+        code: 1126,
+        message:
+            '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and special characters.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

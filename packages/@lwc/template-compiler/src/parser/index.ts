@@ -695,8 +695,40 @@ export default function parse(source: string, state: State): TemplateParseResult
             }
 
             const { name, location } = attr;
+
             if (!isValidHTMLAttribute(element.tag, name)) {
                 warnAt(ParserDiagnostics.INVALID_HTML_ATTRIBUTE, [name, tag], location);
+            }
+
+            // disallow attr name that ends with a special character.
+            if (name.match(/[^a-z0-9]$/)) {
+                const node = element.__original as parse5.AST.Default.Element;
+                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_END_WITH_ALPHA_NUMERIC_CHARACTER, [
+                    name,
+                    treeAdapter.getTagName(node),
+                ]);
+                return;
+            }
+
+            // disallow attr name that doesn't start with an alphabetic character.
+            if (name.match(/^[^a-z]/)) {
+                const node = element.__original as parse5.AST.Default.Element;
+                warnAt(ParserDiagnostics.ATTRIBUTE_NAME_MUST_START_WITH_ALPHABETIC_CHARACTER, [
+                    name,
+                    treeAdapter.getTagName(node),
+                ]);
+                return;
+            }
+
+            // disallow attr name which combines underscore character with special character.
+            // We normalize camel-cased names with underscores caMel -> ca-mel; thus sanitization.
+            if (name.match(/_[^a-z0-9]|[^a-z0-9]_/)) {
+                const node = element.__original as parse5.AST.Default.Element;
+                warnAt(
+                    ParserDiagnostics.ATTRIBUTE_NAME_CANNOT_COMBINE_UNDERSCORE_WITH_SPECIAL_CHARS,
+                    [name, treeAdapter.getTagName(node)]
+                );
+                return;
             }
 
             if (attr.type === IRAttributeType.String) {

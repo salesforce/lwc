@@ -572,6 +572,113 @@ describe('props and attributes', () => {
             'data-xx': { value: 'foo' },
         });
     });
+
+    describe('attributes with underscores', () => {
+        it('should throw when detected an attribute name with underscore + hyphen "_-" combination', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button under_-hyphen="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1126: under_-hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
+            });
+        });
+
+        it('should throw when detected an attribute name with hyphen + underscore "-_" combination', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button under-_hyphen="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1126: under-_hyphen is not valid attribute for x-button. Attribute name cannot contain combination of underscore and special characters.',
+            });
+        });
+
+        it('should throw when detected an attribute name with a leading underscore', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button _leading="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1124: _leading is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+            });
+        });
+
+        it('should throw when detected an attribute name with a trailing underscore', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button trailing_="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1125: trailing_ is not valid attribute for x-button. Attribute name must end with alpha-numeric character.',
+            });
+        });
+
+        it('should throw when detected an attribute name separated by underscore that starts with a number', () => {
+            const { warnings } = parseTemplate(`<template>
+                <x-button 2_under="bar"></x-button>
+            </template>`);
+
+            expect(warnings.length).toBe(1);
+            expect(warnings[0]).toMatchObject({
+                level: DiagnosticLevel.Error,
+                message:
+                    'LWC1124: 2_under is not valid attribute for x-button. Attribute name must start with alphabetic character.',
+            });
+        });
+
+        it('attribute name separated by underscore and starts with alphabetic character', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_score: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by underscore and starts with a number', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_1="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_1: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by underscore which contains hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score-hyphen="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_scoreHyphen: { value: 'bar' },
+            });
+        });
+
+        it('attribute name separated by two underscore and contains hyphen', () => {
+            const { root } = parseTemplate(`<template>
+                <x-button under_score-second_under-score="bar"></x-button>
+            </template>`);
+
+            expect(root.children[0].props).toMatchObject({
+                under_scoreSecond_underScore: { value: 'bar' },
+            });
+        });
+    });
 });
 
 describe('metadata', () => {

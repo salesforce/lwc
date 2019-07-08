@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import RadioButton from 'misc/radioButton';
 import InputValue from 'live/inputValue';
 import InputChecked from 'live/inputChecked';
+import SpecialCharacterPublicProp from 'attrs/specialCharacter';
 
 describe('live properties', () => {
     describe('input [checked] property', () => {
@@ -50,6 +51,21 @@ describe('live properties', () => {
             return Promise.resolve().then(() => {
                 expect(elm.shadowRoot.querySelector('input').value).toBe('foo bar');
             });
+        });
+    });
+});
+
+describe('custom properties', () => {
+    it('should allow attribute value with underscore', () => {
+        const elm = createElement('attrs-special-character', { is: SpecialCharacterPublicProp });
+        document.body.appendChild(elm);
+
+        expect(elm.public_prop).toBe('underscore property');
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('attrs-underscore-child').under_score).toEqual(
+                'underscore property'
+            );
         });
     });
 });
