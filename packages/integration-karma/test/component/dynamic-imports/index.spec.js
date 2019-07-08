@@ -8,12 +8,13 @@ beforeEach(() => {
     clearRegister();
 });
 
-function waitTwoMicroTasks(fn) {
-    return Promise.resolve().then(() => {
-        return Promise.resolve().then(() => {
-            return fn();
+function waitForMacroTask(fn) {
+    // waiting for the macro-task first, then micro-task
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
         });
-    });
+    }).then(() => fn());
 }
 
 it('should call the loader', () => {
@@ -30,7 +31,7 @@ it('should call the loader', () => {
         expect(child).toBeNull();
         // first rendered with ctor set to undefined (nothing)
         elm.enableCtor();
-        return waitTwoMicroTasks(() => {
+        return waitForMacroTask(() => {
             // second rendered with ctor set to x-ctor
             const ctorElm = elm.shadowRoot.querySelector('x-ctor');
             expect(ctorElm).not.toBeNull();
@@ -38,7 +39,7 @@ it('should call the loader', () => {
             expect(span).not.toBeNull();
             expect(span.textContent).toBe('ctor_html');
             elm.enableAlter();
-            return waitTwoMicroTasks(() => {
+            return waitForMacroTask(() => {
                 // third rendered with ctor set to x-alter
                 const alterElm = elm.shadowRoot.querySelector('x-ctor');
                 expect(alterElm).not.toBeNull();
@@ -46,7 +47,7 @@ it('should call the loader', () => {
                 expect(span).not.toBeNull();
                 expect(span.textContent).toBe('alter_html');
                 elm.disableAll();
-                return waitTwoMicroTasks(() => {
+                return waitForMacroTask(() => {
                     // third rendered with ctor set to null (nothing)
                     const child = elm.shadowRoot.querySelector('x-ctor');
                     expect(child).toBeNull();
@@ -64,11 +65,11 @@ it('should not reuse DOM elements', () => {
     elm.enableCtor();
     document.body.appendChild(elm);
 
-    return waitTwoMicroTasks(() => {
+    return waitForMacroTask(() => {
         const childElm = elm.shadowRoot.querySelector('x-ctor');
         expect(childElm).not.toBeNull();
         elm.enableAlter();
-        return waitTwoMicroTasks(() => {
+        return waitForMacroTask(() => {
             const alterElm = elm.shadowRoot.querySelector('x-ctor');
             expect(alterElm).not.toBe(childElm);
         });
@@ -84,13 +85,13 @@ it('should not cache DOM elements', () => {
     document.body.appendChild(elm);
 
     // from ctor to alter back to ctor, new elements should be created
-    return waitTwoMicroTasks(() => {
+    return waitForMacroTask(() => {
         const childElm = elm.shadowRoot.querySelector('x-ctor');
         expect(childElm).not.toBeNull();
         elm.enableAlter();
-        return waitTwoMicroTasks(() => {
+        return waitForMacroTask(() => {
             elm.enableCtor();
-            return waitTwoMicroTasks(() => {
+            return waitForMacroTask(() => {
                 const secondCtorElm = elm.shadowRoot.querySelector('x-ctor');
                 expect(secondCtorElm).not.toBe(childElm);
             });
