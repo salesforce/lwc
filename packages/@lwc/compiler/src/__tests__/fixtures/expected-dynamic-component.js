@@ -3,14 +3,15 @@ import { registerTemplate, registerComponent, LightningElement, registerDecorato
 
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
-        dc: api_dynamic_component
+        dc: api_dynamic_component,
+        f: api_flatten
     } = $api;
-    return api_dynamic_component("x-foo", $cmp.customCtor, {
-    context: {
-            lwc: {}
-        },
-        key: 0
-    }, []);
+    return api_flatten([api_dynamic_component("x-foo", $cmp.customCtor, {
+        context: {
+                lwc: {}
+            },
+            key: 0
+        }, [])]);
     }
 var _tmpl = registerTemplate(tmpl);
 tmpl.stylesheets = [];
