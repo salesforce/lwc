@@ -5,14 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+const ValueChangedEventType = 'ValueChangedEvent';
+
 /**
  * Event fired by wire adapters to emit a new value.
  */
 export class ValueChangedEvent {
     value: any;
     type: string;
-    constructor(value) {
-        this.type = 'ValueChangedEvent';
+    constructor(value: any) {
+        this.type = ValueChangedEventType;
         this.value = value;
     }
 }

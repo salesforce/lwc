@@ -237,16 +237,17 @@ export class WireEventTarget {
             return false; // canceling signal since we don't want this to propagate
         } else if (evt instanceof LinkContextEvent) {
             const { uid, callback } = evt;
-            // this must dispatch an underlying dom event on the element to connect to
-            // the provider, which uses an internal unique ID defined per adapter, and
-            // provides a callback used as a side channel communication between provider
-            // and consumer adapter.
+            // This event is responsible for connecting the host element with another
+            // element in the composed path that is providing contextual data. The provider
+            // must be listening for a special dom event with the name corresponding to `uid`,
+            // which must remain secret, to guarantee that the linkage is only possible via
+            // the corresponding wire adapter.
             const internalDomEvent = new CustomEvent(uid, {
                 bubbles: true,
                 composed: true,
                 // avoid leaking the callback function directly to prevent a side channel
                 // during the linking phase to the context provider.
-                detail(...args) {
+                detail(...args: any[]) {
                     callback(...args);
                 },
             });

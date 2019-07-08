@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+const LinkContextEventType = 'LinkContextEvent';
+
 /**
  * Event fired by wire adapters to link to a context provider
  */
@@ -12,8 +14,8 @@ export class LinkContextEvent {
     type: string;
     uid: string;
     callback: (...args: any[]) => void;
-    constructor(uid, callback) {
-        this.type = 'LinkContextEvent';
+    constructor(uid: string, callback: (...args: any[]) => void) {
+        this.type = LinkContextEventType;
         this.uid = uid;
         this.callback = callback;
     }
