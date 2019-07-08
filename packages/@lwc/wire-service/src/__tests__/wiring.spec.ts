@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as target from '../wiring';
+import { ValueChangedEvent } from '../value-changed-event';
+import { LinkContextEvent } from '../link-context-event';
 import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,
@@ -14,7 +16,7 @@ import {
     CONTEXT_UPDATED,
     CONFIG,
 } from '../constants';
-import { Element, ElementDef, WireDef } from '../engine';
+import { ElementDef, WireDef } from '../engine';
 import * as dependency from '../property-trap';
 
 describe('WireEventTarget', () => {
@@ -28,7 +30,7 @@ describe('WireEventTarget', () => {
                 mockContext[CONTEXT_ID] = Object.create(null);
                 mockContext[CONTEXT_ID][CONTEXT_CONNECTED] = [dupeListener];
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
@@ -47,7 +49,7 @@ describe('WireEventTarget', () => {
                 mockContext[CONTEXT_ID] = Object.create(null);
                 mockContext[CONTEXT_ID][CONTEXT_CONNECTED] = [];
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
@@ -69,7 +71,7 @@ describe('WireEventTarget', () => {
                 mockContext[CONTEXT_ID] = Object.create(null);
                 mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED] = [dupeListener];
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
@@ -90,7 +92,7 @@ describe('WireEventTarget', () => {
                 mockContext[CONTEXT_ID] = Object.create(null);
                 mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED] = [];
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     {} as WireDef,
@@ -110,7 +112,7 @@ describe('WireEventTarget', () => {
                     adapter: {},
                 };
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
@@ -129,7 +131,7 @@ describe('WireEventTarget', () => {
                     },
                 };
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
@@ -150,7 +152,7 @@ describe('WireEventTarget', () => {
                 (dependency as any).installTrap = jest.fn();
                 (dependency as any).updated = jest.fn();
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     {} as target.Context,
                     mockWireDef,
@@ -178,7 +180,7 @@ describe('WireEventTarget', () => {
                 const { updated } = dependency;
                 (dependency as any).updated = jest.fn();
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
@@ -204,7 +206,7 @@ describe('WireEventTarget', () => {
                 const { installTrap } = dependency;
                 (dependency as any).installTrap = jest.fn();
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
@@ -215,7 +217,7 @@ describe('WireEventTarget', () => {
                 });
                 expect(dependency.installTrap).toHaveBeenCalled();
                 const wireEventTarget1 = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
@@ -242,7 +244,7 @@ describe('WireEventTarget', () => {
                 const { installTrap } = dependency;
                 (dependency as any).installTrap = jest.fn();
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
@@ -253,7 +255,7 @@ describe('WireEventTarget', () => {
                 });
                 expect(dependency.installTrap).toHaveBeenCalledTimes(1);
                 const wireEventTarget1 = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext,
                     mockWireDef,
@@ -286,7 +288,7 @@ describe('WireEventTarget', () => {
                 const { installTrap } = dependency;
                 (dependency as any).installTrap = jest.fn();
                 const wireEventTarget = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext1,
                     mockWireDef,
@@ -297,7 +299,7 @@ describe('WireEventTarget', () => {
                 });
                 expect(dependency.installTrap).toHaveBeenCalled();
                 const wireEventTarget1 = new target.WireEventTarget(
-                    {} as Element,
+                    {} as EventTarget,
                     {} as ElementDef,
                     mockContext2,
                     mockWireDef,
@@ -313,7 +315,7 @@ describe('WireEventTarget', () => {
 
         it('throws when event type is not supported', () => {
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
@@ -336,7 +338,7 @@ describe('WireEventTarget', () => {
             mockContext[CONTEXT_ID] = Object.create(null);
             mockContext[CONTEXT_ID][CONTEXT_CONNECTED] = [listener];
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 mockContext,
                 {} as WireDef,
@@ -353,7 +355,7 @@ describe('WireEventTarget', () => {
             mockContext[CONTEXT_ID] = Object.create(null);
             mockContext[CONTEXT_ID][CONTEXT_DISCONNECTED] = [listener];
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 mockContext,
                 {} as WireDef,
@@ -379,7 +381,7 @@ describe('WireEventTarget', () => {
                 },
             };
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 mockContext,
                 mockWireDef,
@@ -405,7 +407,7 @@ describe('WireEventTarget', () => {
                 },
             };
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 mockContext,
                 mockWireDef,
@@ -416,7 +418,7 @@ describe('WireEventTarget', () => {
         });
         it('throws when event type is not supported', () => {
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
@@ -442,7 +444,7 @@ describe('WireEventTarget', () => {
                 {} as WireDef,
                 'test'
             );
-            wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
+            wireEventTarget.dispatchEvent(new ValueChangedEvent('value'));
             expect(mockCmp.test).toBe('value');
         });
         it('invokes wired method when ValueChangedEvent received', () => {
@@ -459,21 +461,44 @@ describe('WireEventTarget', () => {
                 { method: 1 } as WireDef,
                 'test'
             );
-            wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
+            wireEventTarget.dispatchEvent(new ValueChangedEvent('value'));
             expect(actual).toBe('value');
+        });
+        it('invokes dispatch method on element when LinkContextEvent received', () => {
+            expect.assertions(5);
+            function callback(data, disconnect) {
+                expect(data).toBe(1);
+                expect(disconnect).toBe(2);
+            }
+            const mockCmp = {
+                dispatchEvent(evt) {
+                    expect(evt.type).toBe('foo');
+                    expect(typeof evt.detail).toBe('function');
+                    expect(evt.detail).not.toBe(callback); // avoid side-channeling by not leaking the original callback
+                    evt.detail(1, 2);
+                },
+            };
+            const wireEventTarget = new target.WireEventTarget(
+                mockCmp as any,
+                {} as ElementDef,
+                {} as target.Context,
+                { method: 1 } as WireDef,
+                'test'
+            );
+            wireEventTarget.dispatchEvent(new LinkContextEvent('foo', callback));
         });
         it('throws on non-ValueChangedEvent', () => {
             const test = {};
             test.toString = () => 'test';
             const wireEventTarget = new target.WireEventTarget(
-                {} as Element,
+                {} as EventTarget,
                 {} as ElementDef,
                 {} as target.Context,
                 {} as WireDef,
                 'test'
             );
             expect(() => {
-                wireEventTarget.dispatchEvent(test as target.ValueChangedEvent);
+                wireEventTarget.dispatchEvent(test as ValueChangedEvent);
             }).toThrowError('Invalid event test.');
         });
     });
