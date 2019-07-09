@@ -45,7 +45,7 @@ import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
     name: string;
-    template?: Template;
+    template: Template;
     ctor: ComponentConstructor;
     bridge: HTMLElementConstructor;
     connectedCallback?: () => void;
@@ -99,7 +99,8 @@ function createComponentDef(
         );
     }
 
-    const { name, template } = meta;
+    const { name } = meta;
+    let { template } = meta;
 
     let decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
 
@@ -145,8 +146,14 @@ function createComponentDef(
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
+        template = template || superDef.template;
     }
     props = assign(create(null), HTML_PROPS, props);
+
+    if (isUndefined(template)) {
+        // default template
+        template = defaultEmptyTemplate;
+    }
 
     const def: ComponentDef = {
         ctor: Ctor,
@@ -279,6 +286,7 @@ import {
     DecoratorMeta,
     PropsDef,
 } from './decorators/register';
+import { defaultEmptyTemplate } from './secure-template';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
