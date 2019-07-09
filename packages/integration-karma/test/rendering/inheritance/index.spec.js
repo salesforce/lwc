@@ -7,18 +7,14 @@ describe('template inheritance', () => {
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const text = elm.shadowRoot.textContent;
-            expect(text).toBe('foo');
-        });
+        const text = elm.shadowRoot.textContent;
+        expect(text).toBe('foo');
     });
     it('should support implicit definition of no template', function() {
         const elm = createElement('x-bar', { is: Bar });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const text = elm.shadowRoot.textContent;
-            expect(text).toBe('base');
-        });
+        const text = elm.shadowRoot.textContent;
+        expect(text).toBe('base');
     });
 });
