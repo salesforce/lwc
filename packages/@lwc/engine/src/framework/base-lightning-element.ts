@@ -24,7 +24,6 @@ import {
     seal,
     ArrayReduce,
     isObject,
-    isUndefined,
     isFalse,
 } from '../shared/language';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -44,7 +43,6 @@ import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
 import { Template } from './template';
-import { defaultEmptyTemplate } from './secure-template';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -552,8 +550,7 @@ BaseLightningElementConstructor.prototype = {
     },
     render(): Template {
         const vm = getComponentVM(this);
-        const { template } = vm.def;
-        return isUndefined(template) ? defaultEmptyTemplate : template;
+        return vm.def.template;
     },
     toString(): string {
         const vm = getComponentVM(this);
