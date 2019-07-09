@@ -508,7 +508,7 @@ export const ParserDiagnostics = {
     INVALID_LWC_DYNAMIC_LITERAL_PROP: {
         code: 1130,
         message:
-            'Invalid lwc:dynamic usage on element "{0}". The directive binding must be an expression, not a string literal',
+            'Invalid lwc:dynamic usage on element "{0}". The directive binding must be an expression.',
         level: DiagnosticLevel.Error,
         url: '',
     },
