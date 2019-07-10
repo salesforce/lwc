@@ -213,13 +213,13 @@ export const DecoratorErrors = {
     },
     FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS: {
         code: 1131,
-        message: '@wire identifier cant contain computed properties',
+        message: '@wire identifier cannot contain computed properties',
         level: DiagnosticLevel.Error,
         url: '',
     },
     FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS: {
         code: 1132,
-        message: '@wire identifier cant contain nested member expressions',
+        message: '@wire identifier cannot contain nested member expressions',
         level: DiagnosticLevel.Error,
         url: '',
     },
