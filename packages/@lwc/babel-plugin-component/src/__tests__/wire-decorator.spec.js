@@ -267,7 +267,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'decorator accepts a default import function identifier as first parameter',
+        'decorator rejects nested member expression',
         `
         import { wire } from 'lwc';
         import getFoo from 'foo';
