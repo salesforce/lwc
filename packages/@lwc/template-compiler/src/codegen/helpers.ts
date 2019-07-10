@@ -52,6 +52,14 @@ export function isSlot(element: IRElement) {
     return element.tag === 'slot';
 }
 
+export function containsDynamicChildren(element: IRElement) {
+    return element.children.some(isDynamic);
+}
+
+export function isDynamic(element: IRElement): boolean {
+    return !!(element.lwc && element.lwc.dynamic);
+}
+
 /**
  * Returns true if the passed element should be flattened
  * TODO: #1303 - Move this logic into the optimizing compiler. This kind of
@@ -61,7 +69,10 @@ export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
         child =>
             isElement(child) &&
-            (!!child.forEach || !!child.forOf || (isTemplate(child) && shouldFlatten(child)))
+            (isDynamic(child) ||
+                !!child.forEach ||
+                !!child.forOf ||
+                (isTemplate(child) && shouldFlatten(child)))
     );
 }
 

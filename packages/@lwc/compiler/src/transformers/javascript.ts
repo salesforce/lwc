@@ -17,9 +17,12 @@ export default function scriptTransform(
     filename: string,
     options: NormalizedCompilerOptions
 ): FileTransformerResult {
-    const { isExplicitImport } = options;
+    const { isExplicitImport, experimentalDynamicComponent: dynamicImports } = options;
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
-        plugins: [[lwcClassTransformPlugin, { isExplicitImport }], ...BABEL_PLUGINS_BASE],
+        plugins: [
+            [lwcClassTransformPlugin, { isExplicitImport, dynamicImports }],
+            ...BABEL_PLUGINS_BASE,
+        ],
         filename,
         sourceMaps: options.outputConfig.sourcemap,
     });

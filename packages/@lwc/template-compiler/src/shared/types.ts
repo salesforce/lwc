@@ -52,8 +52,13 @@ export enum LWCDirectiveDomMode {
     manual = 'manual',
 }
 
-export interface LWCDirective {
-    dom: LWCDirectiveDomMode;
+export interface LWCDirectiveDynamic {
+    prop: string;
+}
+
+export interface LWCDirectives {
+    dom?: LWCDirectiveDomMode;
+    dynamic?: TemplateExpression;
 }
 
 export interface IRElement {
@@ -90,7 +95,7 @@ export interface IRElement {
     forKey?: TemplateExpression;
 
     locator?: Locator;
-    lwc?: LWCDirective;
+    lwc?: LWCDirectives;
 
     slotName?: string;
     slotSet?: SlotDefinition;

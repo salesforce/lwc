@@ -98,6 +98,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 moduleSpecifier: moduleRegistry.moduleSpecifier,
                 outputConfig: { sourcemap: mergedPluginOptions.sourcemap },
                 stylesheetConfig: mergedPluginOptions.stylesheetConfig,
+                experimentalDynamicComponent: mergedPluginOptions.experimentalDynamicComponent,
             });
 
             return { code, map };

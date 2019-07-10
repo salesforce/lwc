@@ -7,6 +7,7 @@
 const component = require('./component');
 const { decorators } = require('./decorators');
 const { exit } = require('./program');
+const dynamicImports = require('./dynamic-imports');
 /**
  * The transform is done in 2 passes:
  *    - First, apply in a single AST traversal the decorators and the component transformation.
@@ -21,6 +22,6 @@ module.exports = function LwcClassTransform(api) {
             parserOpts.plugins.push('classProperties');
             parserOpts.plugins.push('dynamicImport');
         },
-        visitor: mergeVisitors([decorators(api), component(api), exit(api)]),
+        visitor: mergeVisitors([decorators(api), component(api), dynamicImports(api), exit(api)]),
     };
 };
