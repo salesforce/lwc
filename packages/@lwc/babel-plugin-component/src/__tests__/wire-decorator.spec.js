@@ -185,42 +185,105 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        'decorator accepts a member epxression',
+        `
+      import { wire } from 'lwc';
+      import { Foo } from 'data-service';
+      export default class Test {
+          @wire(Foo.Bar, {}) wiredProp;
+      }
+  `,
+        {
+            output: {
+                code: `
+              import { registerDecorators as _registerDecorators } from "lwc";
+              import _tmpl from "./test.html";
+              import { registerComponent as _registerComponent } from "lwc";
+              import { Foo } from "data-service";
+
+              class Test {
+                constructor() {
+                  this.wiredProp = void 0;
+                }
+              }
+
+              _registerDecorators(Test, {
+                wire: {
+                  wiredProp: {
+                    adapter: Foo.Bar,
+                    params: {},
+                    static: {}
+                  }
+                }
+              });
+
+              export default _registerComponent(Test, {
+                tmpl: _tmpl
+              });
+              `,
+            },
+        }
+    );
+
+    pluginTest(
+        'decorator does not accept a nested member expression',
+        `
+    import { wire } from 'lwc';
+    import { Foo } from 'data-service';
+    export default class Test {
+        @wire(Foo.Bar, {}) wiredProp;
+    }
+`,
+        {
+            output: {
+                code: `
+            import { registerDecorators as _registerDecorators } from "lwc";
+            import _tmpl from "./test.html";
+            import { registerComponent as _registerComponent } from "lwc";
+            import { Foo } from "data-service";
+
+            class Test {
+              constructor() {
+                this.wiredProp = void 0;
+              }
+            }
+
+            _registerDecorators(Test, {
+              wire: {
+                wiredProp: {
+                  adapter: Foo.Bar,
+                  params: {},
+                  static: {}
+                }
+              }
+            });
+
+            export default _registerComponent(Test, {
+              tmpl: _tmpl
+            });
+            `,
+            },
+        }
+    );
+
+    pluginTest(
         'decorator accepts a default import function identifier as first parameter',
         `
         import { wire } from 'lwc';
         import getFoo from 'foo';
         export default class Test {
-            @wire(getFoo, {}) wiredProp;
+            @wire(Foo.Bar.Buzz, {}) wiredProp;
         }
     `,
         {
-            output: {
-                code: `
-                import { registerDecorators as _registerDecorators } from "lwc";
-                import _tmpl from "./test.html";
-                import { registerComponent as _registerComponent } from "lwc";
-                import getFoo from "foo";
-
-                class Test {
-                  constructor() {
-                    this.wiredProp = void 0;
-                  }
-                }
-
-                _registerDecorators(Test, {
-                  wire: {
-                    wiredProp: {
-                      adapter: getFoo,
-                      params: {},
-                      static: {}
-                    }
-                  }
-                });
-
-                export default _registerComponent(Test, {
-                  tmpl: _tmpl
-                });
-`,
+            error: {
+                message: '@wire identifier cant contain nested member expressions',
+                loc: {
+                    line: 4,
+                    column: 6,
+                    length: 12,
+                    start: 88,
+                },
             },
         }
     );
