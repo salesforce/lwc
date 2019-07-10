@@ -21,15 +21,29 @@ function validateWireParameters(path) {
     }
 
     const isIdentifier = id.isIdentifier();
+    const isMemberExpression = id.isMemberExpression();
 
-    if (!isIdentifier) {
+    if (!isIdentifier && !isMemberExpression) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
         });
     }
 
-    // ensure wire adapter is imported
-    if (isIdentifier && !path.scope.getBinding(id.node.name)) {
+    if (id.isMemberExpression({ computed: true })) {
+        throw generateError(id, {
+            errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
+        });
+    }
+
+    if (isMemberExpression && !id.get('object').isIdentifier()) {
+        throw generateError(id, {
+            errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
+        });
+    }
+
+    // Ensure wire adapter is imported (check for member expression or identifier)
+    const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
+    if (!path.scope.getBinding(wireBinding)) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
             messageArgs: [id.node.name],
@@ -38,9 +52,9 @@ function validateWireParameters(path) {
 
     // ensure wire adapter is a first parameter
     if (
-        isIdentifier &&
-        !path.scope.getBinding(id.node.name).path.isImportSpecifier() &&
-        !path.scope.getBinding(id.node.name).path.isImportDefaultSpecifier()
+        wireBinding &&
+        !path.scope.getBinding(wireBinding).path.isImportSpecifier() &&
+        !path.scope.getBinding(wireBinding).path.isImportDefaultSpecifier()
     ) {
         throw generateError(id, {
             errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
