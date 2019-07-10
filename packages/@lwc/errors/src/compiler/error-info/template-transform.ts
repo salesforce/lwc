@@ -484,6 +484,8 @@ export const ParserDiagnostics = {
         code: 1126,
         message:
             '{0} is not valid attribute for {1}. Attribute name cannot contain combination of underscore and special characters.',
+        level: DiagnosticLevel.Error,
+        url: '',
     },
     UNKNOWN_LWC_DIRECTIVE: {
         code: 1127,
