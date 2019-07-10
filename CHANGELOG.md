@@ -1,4 +1,18 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.6...v) (2019-07-08)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.7...v) (2019-07-10)
+
+
+### Bug Fixes
+
+* **engine:** template inheritance is broken ([#1400](https://github.com/salesforce/lwc/issues/1400)) ([#1403](https://github.com/salesforce/lwc/issues/1403)) ([fb05b1f](https://github.com/salesforce/lwc/commit/fb05b1f))
+
+
+### Features
+
+* allow MemberExpression on wire adapters ([#1402](https://github.com/salesforce/lwc/issues/1402)) ([#1404](https://github.com/salesforce/lwc/issues/1404)) ([3bbc1f1](https://github.com/salesforce/lwc/commit/3bbc1f1))
+
+
+
+## [1.0.2-222.7](https://github.com/salesforce/lwc/compare/v1.0.2-222.6...v1.0.2-222.7) (2019-07-08)
 
 
 
