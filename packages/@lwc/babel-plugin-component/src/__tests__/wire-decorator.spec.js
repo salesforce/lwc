@@ -226,7 +226,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'decorator does not accept a nested member expression',
+        'decorator allows wire provider member expression',
         `
     import { wire } from 'lwc';
     import { Foo } from 'data-service';
@@ -270,7 +270,7 @@ describe('Transform property', () => {
         'decorator rejects nested member expression',
         `
         import { wire } from 'lwc';
-        import getFoo from 'foo';
+        import Foo from 'foo';
         export default class Test {
             @wire(Foo.Bar.Buzz, {}) wiredProp;
         }
@@ -282,7 +282,7 @@ describe('Transform property', () => {
                     line: 4,
                     column: 6,
                     length: 12,
-                    start: 88,
+                    start: 85,
                 },
             },
         }
