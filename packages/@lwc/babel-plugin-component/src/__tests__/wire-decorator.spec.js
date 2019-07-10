@@ -277,7 +277,7 @@ describe('Transform property', () => {
     `,
         {
             error: {
-                message: '@wire identifier cant contain nested member expressions',
+                message: '@wire identifier cannot contain nested member expressions',
                 loc: {
                     line: 4,
                     column: 6,
