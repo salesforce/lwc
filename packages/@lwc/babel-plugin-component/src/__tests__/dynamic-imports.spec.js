@@ -5,11 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const pluginTestFactory = require('./utils/test-transform').pluginTest;
-const pluginNoop = pluginTestFactory(require('../index'));
-const pluginTestStrict = pluginTestFactory(require('../index'), {
+const testFunction = require('../index');
+const pluginNoop = pluginTestFactory(testFunction);
+const pluginTestStrict = pluginTestFactory(testFunction, {
     dynamicImports: { loader: null, strictSpecifier: true },
 });
-const pluginTestLoader = pluginTestFactory(require('../index'), {
+const pluginTestLoader = pluginTestFactory(testFunction, {
     dynamicImports: { loader: '@custom/loader', strictSpecifier: true },
 });
 

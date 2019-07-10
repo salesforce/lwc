@@ -25,13 +25,11 @@ function validateImport(sourcePath) {
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
 module.exports = function() {
-    let loaderRef;
-
-    function getLoaderRef(path, loaderName) {
-        if (!loaderRef) {
-            loaderRef = moduleImports.addNamed(path, 'load', loaderName);
+    function getLoaderRef(path, loaderName, state) {
+        if (!state.loaderRef) {
+            state.loaderRef = moduleImports.addNamed(path, 'load', loaderName);
         }
-        return loaderRef;
+        return state.loaderRef;
     }
 
     function addDynamicImportDependency(dependency, state) {
@@ -46,9 +44,11 @@ module.exports = function() {
 
     return {
         Import(path, state) {
-            const {
-                opts: { dynamicImports },
-            } = state;
+            const { dynamicImports } = state.opts;
+            if (!dynamicImports) {
+                return;
+            }
+
             const { loader, strictSpecifier } = dynamicImports;
             const sourcePath = getImportSource(path);
 
@@ -57,7 +57,7 @@ module.exports = function() {
             }
 
             if (loader) {
-                const loaderId = getLoaderRef(path, loader);
+                const loaderId = getLoaderRef(path, loader, state);
                 path.replaceWith(loaderId);
             }
 

@@ -1,5 +1,5 @@
-import { load } from '@custom/loader';
 import { registerTemplate, registerComponent, LightningElement, registerDecorators } from 'lwc';
+import { load } from '@custom/loader';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
