@@ -7,10 +7,10 @@
 const pluginTestFactory = require('./utils/test-transform').pluginTest;
 const pluginNoop = pluginTestFactory(require('../index'));
 const pluginTestStrict = pluginTestFactory(require('../index'), {
-    dynamicImports: { loader: null, strict: true },
+    dynamicImports: { loader: null, strictSpecifier: true },
 });
 const pluginTestLoader = pluginTestFactory(require('../index'), {
-    dynamicImports: { loader: '@custom/loader', strict: true },
+    dynamicImports: { loader: '@custom/loader', strictSpecifier: true },
 });
 
 describe('Dynamic imports', () => {

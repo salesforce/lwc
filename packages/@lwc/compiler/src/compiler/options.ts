@@ -14,7 +14,7 @@ const DEFAULT_OPTIONS = {
 
 const DEFAULT_DYNAMIC_CMP_CONFIG: NormalizedDynamicComponentConfig = {
     loader: '',
-    strict: true,
+    strictSpecifier: true,
 };
 
 const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
@@ -61,7 +61,7 @@ export type DynamicComponentConfig = Partial<NormalizedDynamicComponentConfig>;
 
 export interface NormalizedDynamicComponentConfig {
     loader: string;
-    strict: boolean;
+    strictSpecifier: boolean;
 }
 
 export interface CompilerOptions {

@@ -22,7 +22,7 @@ describe('dynamic imports', () => {
             },
             experimentalDynamicComponent: {
                 loader: '@custom/loader',
-                strict: false,
+                strictSpecifier: false,
             },
         });
         const { result } = compilerResult;

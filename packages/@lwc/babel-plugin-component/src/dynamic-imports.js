@@ -22,7 +22,7 @@ function validateImport(sourcePath) {
 }
 /*
  * Expected API for this plugin:
- * { dynamicImports: { loader: string, strict: boolean } }
+ * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
 module.exports = function() {
     let loaderRef;
@@ -49,10 +49,10 @@ module.exports = function() {
             const {
                 opts: { dynamicImports },
             } = state;
-            const { loader, strict } = dynamicImports;
+            const { loader, strictSpecifier } = dynamicImports;
             const sourcePath = getImportSource(path);
 
-            if (strict) {
+            if (strictSpecifier) {
                 validateImport(sourcePath);
             }
 
