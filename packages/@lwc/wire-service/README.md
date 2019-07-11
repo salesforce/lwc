@@ -125,7 +125,7 @@ register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
     });
 
     // Invoked when component connected.
-    eventTarget.addListener('connected', () => {
+    eventTarget.addListener('connect', () => {
         // Subscribe to stream.
         subscription = getObservable(config)
             .map(makeReadOnlyMembrane)
@@ -142,7 +142,7 @@ register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
     });
 
     // Invoked when component disconnected.
-    eventTarget.addListener('disconnected', () => {
+    eventTarget.addListener('disconnect', () => {
         // Release all resources.
         subscription.unsubscribe();
     });
