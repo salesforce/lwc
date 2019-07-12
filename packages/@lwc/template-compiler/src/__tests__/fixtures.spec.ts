@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as fs from 'fs';
-import * as path from 'path';
-
-import * as glob from 'glob';
-import * as prettier from 'prettier';
+import fs from 'fs';
+import path from 'path';
+import glob from 'glob';
+import prettier from 'prettier';
 
 import compiler from '../index';
 
@@ -49,9 +48,9 @@ describe('fixtures', () => {
 
         let testFn = it;
         if (fixtureFileExists(ONLY_FILENAME)) {
-            testFn = it.only;
+            testFn = (it as any).only;
         } else if (fixtureFileExists(SKIP_FILENAME)) {
-            testFn = it.skip;
+            testFn = (it as any).skip;
         }
 
         testFn(`${caseName}`, () => {

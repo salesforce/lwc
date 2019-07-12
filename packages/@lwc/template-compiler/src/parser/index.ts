@@ -54,6 +54,7 @@ import {
     TemplateExpression,
     TemplateParseResult,
     LWCDirectiveDomMode,
+    LWCDirectives,
 } from '../shared/types';
 
 import { bindExpression } from '../shared/scope';
@@ -63,6 +64,7 @@ import State from '../state';
 import {
     EXPRESSION_RE,
     IF_RE,
+    LWC_RE,
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
     EVENT_HANDLER_NAME_RE,
@@ -75,6 +77,8 @@ import {
     MATHML_TAG_BLACKLIST,
     MATHML_NAMESPACE_URI,
     KNOWN_HTML_ELEMENTS,
+    LWC_DIRECTIVES,
+    LWC_DIRECTIVE_SET,
 } from './constants';
 import { isMemberExpression, isIdentifier } from '@babel/types';
 import {
@@ -177,7 +181,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             exit() {
                 const element = stack.pop() as IRElement;
                 // Apply lwc directive on way out to ensure the element is empty
-                applyLwcDirective(element);
+                applyLwcDirectives(element);
                 applyAttributes(element);
                 validateElement(element);
                 validateAttributes(element);
@@ -348,14 +352,69 @@ export default function parse(source: string, state: State): TemplateParseResult
         }
     }
 
-    function applyLwcDirective(element: IRElement) {
-        const lwcDomAttribute = getTemplateAttribute(element, 'lwc:dom');
+    function applyLwcDirectives(element: IRElement) {
+        const lwcAttribute = getTemplateAttribute(element, LWC_RE);
+        if (!lwcAttribute) {
+            return;
+        }
+
+        if (!LWC_DIRECTIVE_SET.has(lwcAttribute.name)) {
+            // unknown lwc directive
+            return warnOnElement(ParserDiagnostics.UNKNOWN_LWC_DIRECTIVE, element.__original, [
+                lwcAttribute.name,
+                `<${element.tag}>`,
+            ]);
+        }
+
+        const lwcOpts = {};
+        applyLwcDynamicDirective(element, lwcOpts);
+        applyLwcDomDirective(element, lwcOpts);
+
+        element.lwc = lwcOpts;
+    }
+
+    function applyLwcDynamicDirective(element: IRElement, lwcOpts: LWCDirectives) {
+        const lwcDynamicAttribute = getTemplateAttribute(element, LWC_DIRECTIVES.DYNAMIC);
+
+        if (!lwcDynamicAttribute) {
+            return;
+        }
+
+        if (!state.config.experimentalDynamicDirective) {
+            return warnOnElement(ParserDiagnostics.INVALID_OPTS_LWC_DYNAMIC, element.__original, [
+                `<${element.tag}>`,
+            ]);
+        }
+
+        removeAttribute(element, LWC_DIRECTIVES.DYNAMIC);
+
+        if (!isCustomElement(element)) {
+            return warnOnElement(
+                ParserDiagnostics.INVALID_LWC_DYNAMIC_ON_NATIVE_ELEMENT,
+                element.__original,
+                [`<${element.tag}>`]
+            );
+        }
+
+        if (lwcDynamicAttribute.type !== IRAttributeType.Expression) {
+            return warnOnElement(
+                ParserDiagnostics.INVALID_LWC_DYNAMIC_LITERAL_PROP,
+                element.__original,
+                [`<${element.tag}>`]
+            );
+        }
+
+        lwcOpts.dynamic = lwcDynamicAttribute.value as TemplateExpression;
+    }
+
+    function applyLwcDomDirective(element: IRElement, lwcOpts: LWCDirectives) {
+        const lwcDomAttribute = getTemplateAttribute(element, LWC_DIRECTIVES.DOM);
 
         if (!lwcDomAttribute) {
             return;
         }
 
-        removeAttribute(element, lwcDomAttribute.name);
+        removeAttribute(element, LWC_DIRECTIVES.DOM);
 
         if (isCustomElement(element)) {
             return warnOnElement(
@@ -388,9 +447,7 @@ export default function parse(source: string, state: State): TemplateParseResult
             return warnOnElement(ParserDiagnostics.LWC_DOM_INVALID_CONTENTS, element.__original);
         }
 
-        element.lwc = {
-            dom: lwcDomAttribute.value as LWCDirectiveDomMode,
-        };
+        lwcOpts.dom = lwcDomAttribute.value as LWCDirectiveDomMode;
     }
 
     function applyLocator(element: IRElement) {
@@ -618,8 +675,11 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         element.component = tag;
 
+        // Do not add the dependency for lazy/dynamic components
+        const lwcDynamicAttribute = getTemplateAttribute(element, LWC_DIRECTIVES.DYNAMIC);
+
         // Add the component to the list of dependencies if not already present.
-        if (!state.dependencies.includes(tag)) {
+        if (!lwcDynamicAttribute && !state.dependencies.includes(tag)) {
             state.dependencies.push(tag);
         }
     }

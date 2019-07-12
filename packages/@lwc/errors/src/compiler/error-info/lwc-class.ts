@@ -12,6 +12,13 @@ import { DiagnosticLevel } from '../../shared/types';
  */
 
 export const LWCClassErrors = {
+    INVALID_DYNAMIC_IMPORT_SOURCE_STRICT: {
+        code: 1121,
+        message:
+            'Invalid import. The argument "{0}" must be a stringLiteral for dynamic imports when strict mode is enabled.',
+        url: '',
+    },
+
     INVALID_IMPORT_MISSING_DEFAULT_EXPORT: {
         code: 1089,
         message: 'Invalid import. "{0}" doesn\'t have default export.',
@@ -201,6 +208,18 @@ export const DecoratorErrors = {
     WIRE_ADAPTER_SHOULD_BE_IMPORTED: {
         code: 1119,
         message: 'Failed to resolve @wire adapter "{0}". Ensure it is imported.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS: {
+        code: 1131,
+        message: '@wire identifier cannot contain computed properties',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+    FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS: {
+        code: 1132,
+        message: '@wire identifier cannot contain nested member expressions',
         level: DiagnosticLevel.Error,
         url: '',
     },

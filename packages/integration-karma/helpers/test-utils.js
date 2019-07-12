@@ -318,7 +318,22 @@ window.TestUtils = (function(lwc, jasmine, beforeAll) {
         return nodes;
     }
 
+    var register = {};
+    function load(id) {
+        return Promise.resolve(register[id]);
+    }
+
+    function registerForLoad(name, Ctor) {
+        register[name] = Ctor;
+    }
+    function clearRegister() {
+        register = {};
+    }
+
     return {
+        registerForLoad: registerForLoad,
+        clearRegister: clearRegister,
+        load: load,
         extractDataIds: extractDataIds,
         extractShadowDataIds: extractShadowDataIds,
     };

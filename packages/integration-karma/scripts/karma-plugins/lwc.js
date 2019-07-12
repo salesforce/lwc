@@ -32,6 +32,10 @@ function createPreprocessor(config, emitter, logger) {
             // Disable package resolution to avoid lookup in the node_modules directory to boost the initial compilation
             // time.
             resolveFromPackages: false,
+            experimentalDynamicComponent: {
+                loader: 'test-utils',
+                strict: true,
+            },
         }),
     ];
 
@@ -63,7 +67,7 @@ function createPreprocessor(config, emitter, logger) {
 
                 // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
                 // globally in the page before running the tests.
-                external: ['lwc', 'wire-service', 'test-utils'],
+                external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
             });
 
             watcher.watchSuite(suiteDir, input);

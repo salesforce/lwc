@@ -35,7 +35,9 @@ export default function templateTransform(
     let result;
 
     try {
-        result = compile(src, {});
+        result = compile(src, {
+            experimentalDynamicDirective: !!options.experimentalDynamicComponent,
+        });
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }

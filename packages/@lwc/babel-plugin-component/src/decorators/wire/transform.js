@@ -43,7 +43,7 @@ function buildWireConfigValue(t, wiredValues) {
             const wireConfig = [];
             if (wiredValue.adapter) {
                 wireConfig.push(
-                    t.objectProperty(t.identifier('adapter'), t.identifier(wiredValue.adapter.name))
+                    t.objectProperty(t.identifier('adapter'), wiredValue.adapter.expression)
                 );
             }
 
@@ -127,12 +127,15 @@ module.exports = function transform(t, klass, decorators) {
         }
 
         const referenceLookup = scopedReferenceLookup(path.scope);
+        const isMemberExpression = id.isMemberExpression();
+        const isIdentifier = id.isIdentifier();
 
-        if (id.isIdentifier()) {
-            const adapterName = id.node.name;
-            const reference = referenceLookup(adapterName);
+        if (isIdentifier || isMemberExpression) {
+            const referenceName = isMemberExpression ? id.node.object.name : id.node.name;
+            const reference = referenceLookup(referenceName);
             wiredValue.adapter = {
-                name: adapterName,
+                name: referenceName,
+                expression: t.cloneDeep(id.node),
                 reference: reference.type === 'module' ? reference.value : undefined,
             };
         }
