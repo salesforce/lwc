@@ -88,12 +88,7 @@ export function resolveModulesInDir(absPath: string): { [name: string]: Registry
 }
 
 function hasModuleBeenVisited(module, visited) {
-    if (visited.has(module)) {
-        /* eslint-disable-next-line no-console */
-        console.log(`Package ${module} already resolved`);
-        return true;
-    }
-    return false;
+    return visited.has(module);
 }
 
 function expandModuleDirectories({
