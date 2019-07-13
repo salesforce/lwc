@@ -10,6 +10,8 @@
 // Per Context Component Instance, track the current context data
 import { register, ValueChangedEvent, LinkContextEvent } from 'wire-service';
 
+const addEventListener = document.prototype.addEventListener;
+
 const ContextValueMap = new WeakMap();
 const UniqueEventName = `simple_context_event_${guid()}`;
 const Provider = Symbol('SimpleContextProvider');
