@@ -9,7 +9,7 @@
 
 import { register, ValueChangedEvent, LinkContextEvent } from 'wire-service';
 
-const addEventListener = document.prototype.addEventListener;
+const { addEventListener } = Document.prototype;
 
 const IdentityMetaMap = new WeakMap();
 const UniqueEventName = `advanced_context_event_${guid()}`;
