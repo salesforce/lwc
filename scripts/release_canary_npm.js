@@ -34,6 +34,7 @@ const PACKAGE_DEPENDENCIES = new Set([
     '@lwc/template-compiler',
     '@lwc/test-utils',
     '@lwc/wire-service',
+    'lwc',
 ]);
 
 const CONFIG = {
@@ -92,23 +93,37 @@ function pushPackage({ sha, packageName, packageTar }) {
 }
 
 async function run() {
-    const [sha, customPath] = process.argv.slice(2);
+    const [sha, ...customPaths] = process.argv.slice(2);
     const cwd = process.cwd();
-    const absPath = path.resolve(cwd, customPath || 'packages');
 
     if (!sha) {
         throw new Error('Pushing packages require a git sha commit to pin the package');
     }
 
-    const pkgs = fs.readdirSync(absPath);
+    if (!customPaths || customPaths.length === 0) {
+        throw new Error('You must provide at least a path');
+    }
+
+    const absPaths = customPaths.map(p => path.resolve(cwd, p));
+    const pkgs = absPaths.reduce((l, p) => {
+        const dirs = fs.readdirSync(p);
+        const filtered = dirs.filter(d => !d.startsWith('.') && !d.startsWith('@'));
+        const map = filtered.map(f => ({ name: f, dir: path.dirname(path.join(p, f)) }));
+        return [...l, ...map];
+    }, []);
 
     if (pkgs.length) {
         console.log('Creating package artifacts for SHA:', sha);
 
-        for (const pkgName of pkgs) {
+        for (const { name: pkgName, dir: absPath } of pkgs) {
             // Find package.json
             const jsonPath = path.join(absPath, pkgName, 'package.json');
-            const pkgJson = require(jsonPath);
+            const pkgJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+
+            if (pkgJson.private) {
+                // ignore private pkgs
+                continue;
+            }
 
             // Override package.json
             const { name, version } = pkgJson;
