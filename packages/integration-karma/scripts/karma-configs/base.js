@@ -20,6 +20,8 @@ const SHADOW_POLYFILL = getModulePath('synthetic-shadow', 'iife', 'es2017', 'dev
 const SHADOW_POLYFILL_COMPAT = getModulePath('synthetic-shadow', 'iife', 'es5', 'dev');
 const LWC_ENGINE = getModulePath('engine', 'iife', 'es2017', 'dev');
 const LWC_ENGINE_COMPAT = getModulePath('engine', 'iife', 'es5', 'dev');
+const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
+const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
 
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../helpers/test-utils');
@@ -56,11 +58,13 @@ function getFiles(lwcConfig) {
         frameworkFiles.push(createPattern(POLYFILL_COMPAT));
         frameworkFiles.push(createPattern(SHADOW_POLYFILL_COMPAT));
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
+        frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
         if (!lwcConfig.nativeShadow) {
             frameworkFiles.push(createPattern(SHADOW_POLYFILL));
         }
         frameworkFiles.push(createPattern(LWC_ENGINE));
+        frameworkFiles.push(createPattern(WIRE_SERVICE));
     }
     return [
         ...frameworkFiles,
@@ -111,6 +115,8 @@ module.exports = config => {
     if (config.coverage) {
         // Indicate to Karma to instrument the engine to gather code coverage.
         config.preprocessors[lwcConfig.compat ? LWC_ENGINE_COMPAT : LWC_ENGINE] = ['coverage'];
+        // Indicate to Karma to instrument the wire service to gather code coverage.
+        config.preprocessors[lwcConfig.compat ? WIRE_SERVICE_COMPAT : WIRE_SERVICE] = ['coverage'];
 
         config.reporters.push('coverage');
         config.plugins.push('karma-coverage');
