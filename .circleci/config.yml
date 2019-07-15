@@ -185,7 +185,7 @@ store_best_artifacts: &store_best_artifacts
 publish_canary_artifacts: &publish_canary_artifacts
   run:
     name: Publish canary artifacts
-    command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc
+    command: node scripts/release_canary_npm.js ${CIRCLE_SHA1} packages/@lwc packages
 
 
 # Jobs definition
