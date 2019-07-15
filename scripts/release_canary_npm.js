@@ -108,14 +108,14 @@ async function run() {
     const pkgs = absPaths.reduce((l, p) => {
         const dirs = fs.readdirSync(p);
         const filtered = dirs.filter(d => !d.startsWith('.') && !d.startsWith('@'));
-        const map = filtered.map(f => ({ name: f, path: path.join(p, f) }));
+        const map = filtered.map(f => ({ name: f, dir: path.dirname(path.join(p, f)) }));
         return [...l, ...map];
     }, []);
 
     if (pkgs.length) {
         console.log('Creating package artifacts for SHA:', sha);
 
-        for (const { name: pkgName, path: absPath } of pkgs) {
+        for (const { name: pkgName, dir: absPath } of pkgs) {
             // Find package.json
             const jsonPath = path.join(absPath, pkgName, 'package.json');
             const pkgJson = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
