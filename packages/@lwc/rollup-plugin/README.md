@@ -8,8 +8,6 @@ Rollup plugin to compile LWC
 yarn add --dev @lwc/rollup-plugin
 ```
 
-Note that both `@lwc/engine` and `@lwc/compiler` are peer dependencies of this plugin that need to be installed separately.
-
 ## Usage
 
 ```js
@@ -26,5 +24,5 @@ export default {
 
 -   `rootDir` (string, optional, default: `input`) - set the LWC module directory
 -   `sourcemap` (boolean, optional, default: `false`) - make the LWC compiler produce source maps
--   `resolveFromPackages` (boolean, optional, default: `true`) - let the rollup plugin resolve modules from the `node_modules` directory
+-   `modules` Mapping of module specififers.
 -   `stylesheetConfig` (object, optional, default: `{}`) - the configuration to pass to the `@lwc/style-compiler`

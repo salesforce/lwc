@@ -6,154 +6,109 @@
  */
 /* eslint-env node */
 
-import glob from 'fast-glob';
 import path from 'path';
 import fs from 'fs';
-import nodeModulePaths from './node-modules-paths';
-
-const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
-const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json', 'package.json'];
-const MODULE_ENTRY_PATTERN = `**/*.([jt]s|html|css)`;
-const LWC_CONFIG_FILE = '.lwcrc';
+import {
+    getModuleEntry,
+    normalizeConfig,
+    loadConfig,
+    mergeModules,
+    LWC_CONFIG_FILE,
+} from './utils';
 
 export interface RegistryEntry {
     entry: string;
-    moduleSpecifier: string;
-    moduleName: string;
-    moduleNamespace: string;
+    specifier: string;
+}
+
+export interface ModuleRegistryMap {
+    [key: string]: RegistryEntry;
 }
 
 export interface ModuleResolverConfig {
-    moduleDirectories: string[];
     rootDir: string;
-    modulePaths: string[];
-    ignorePatterns?: string[];
+    modules: ModuleId[];
 }
 
-interface FlatEntry {
-    path: string;
+export type ModuleId = string | [string, string];
+export interface LwcConfig {
+    modules: ModuleId[];
 }
 
-function createRegistryEntry(entry, moduleSpecifier, moduleName, moduleNamespace): RegistryEntry {
-    return { entry, moduleSpecifier, moduleName, moduleNamespace };
+export function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
+    const namespaces = fs.readdirSync(modulesDir);
+    const resolvedModules: RegistryEntry[] = [];
+    namespaces.forEach(ns => {
+        // TODO: A better isDir() bellow
+        if (!path.extname(ns)) {
+            const namespacedModuleDir = path.join(modulesDir, ns);
+            const modules = fs.readdirSync(namespacedModuleDir);
+            modules.forEach(moduleName => {
+                const moduleDir = path.join(namespacedModuleDir, moduleName);
+                const entry = getModuleEntry(moduleDir, moduleName);
+                if (entry) {
+                    const specifier = `${ns}/${moduleName}`;
+                    resolvedModules.push({ entry, specifier });
+                }
+            });
+        }
+    });
+
+    return resolvedModules;
 }
 
-function loadLwcConfig(modulePath) {
-    const packageJsonPath = path.join(modulePath, 'package.json');
-    const lwcConfigPath = path.join(modulePath, LWC_CONFIG_FILE);
-    let config;
+export function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
+    let resolvedModules: RegistryEntry[] = [];
     try {
-        config = JSON.parse(fs.readFileSync(lwcConfigPath, 'utf8'));
-    } catch (ignore) {
-        // ignore
-    }
-    if (!config) {
-        try {
-            config = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).lwc;
-        } catch (ignore) {
-            // ignore
-        }
-    }
-    return config;
-}
+        const pkgJsonPath = require.resolve(`${packageName}/package.json`);
+        const packageDir = path.dirname(pkgJsonPath);
+        const lwcConfigFile = path.join(packageDir, LWC_CONFIG_FILE);
 
-export function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
-    return glob
-        .sync<FlatEntry>(MODULE_ENTRY_PATTERN, {
-            cwd: absPath,
-            transform: entry =>
-                typeof entry === 'string' ? { path: entry } : { path: entry.path },
-        })
-        .reduce((mappings, { path: file }) => {
-            const ext = path.extname(file);
-            const fileName = path.basename(file, ext);
-            const rootDir = path.dirname(file);
-            const rootParts = rootDir.split('/'); // the glob library normalizes paths to forward slashes only - https://github.com/isaacs/node-glob#windows
-            const entry = path.join(absPath, file);
-
-            const dirModuleName = rootParts.pop();
-            const dirModuleNamespace = rootParts.pop();
-            if (dirModuleNamespace && dirModuleName === fileName) {
-                const registryNode = createRegistryEntry(
-                    entry,
-                    `${dirModuleNamespace}/${fileName}`,
-                    fileName,
-                    dirModuleNamespace.toLowerCase()
-                );
-                mappings[registryNode.moduleSpecifier] = registryNode;
-            }
-
-            return mappings;
-        }, {});
-}
-
-function hasModuleBeenVisited(module, visited) {
-    return visited.has(module);
-}
-
-function expandModuleDirectories({
-    moduleDirectories,
-    rootDir,
-    modulePaths,
-}: Partial<ModuleResolverConfig> = {}) {
-    if (modulePaths) {
-        return modulePaths;
-    }
-    if (!moduleDirectories && !rootDir) {
-        // paths() is spec'd to return null only for built-in node
-        // modules like 'http'. To be safe, return empty array in
-        // instead of null in this case.
-        return require.resolve.paths('.') || [];
-    }
-
-    return nodeModulePaths(rootDir || __dirname, moduleDirectories);
-}
-
-function resolveModules(modules, opts) {
-    if (Array.isArray(modules)) {
-        modules.forEach(modulePath => resolveModules(modulePath, opts));
-    } else {
-        const { mappings, visited, moduleRoot } = opts;
-        if (typeof modules === 'string') {
-            const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules));
-            Object.keys(packageEntries).forEach(moduleName => {
-                if (!hasModuleBeenVisited(moduleName, visited)) {
-                    mappings[moduleName] = packageEntries[moduleName];
-                    visited.add(moduleName);
-                }
-            });
+        if (fs.existsSync(lwcConfigFile)) {
+            resolvedModules = resolveModules({ rootDir: lwcConfigFile });
         } else {
-            Object.keys(modules).forEach(moduleName => {
-                if (!hasModuleBeenVisited(moduleName, visited)) {
-                    const modulePath = path.join(moduleRoot, modules[moduleName]);
-                    mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
-                    visited.add(moduleName);
-                }
-            });
+            const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+            if (pkgJson.lwc) {
+                resolvedModules = resolveModulesFromList(pkgJson.lwc.modules, { root: packageDir });
+            }
         }
+    } catch (e) {
+        /*noop*/
     }
+
+    return resolvedModules;
 }
 
-export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}) {
-    const visited = new Set();
-    const modulePaths = expandModuleDirectories(options);
-    return modulePaths.reduce((m, nodeModulesDir) => {
-        return glob
-            .sync<FlatEntry>(PACKAGE_PATTERN, {
-                cwd: nodeModulesDir,
-                ignore: options.ignorePatterns || DEFAULT_IGNORE,
-                transform: entry =>
-                    typeof entry === 'string' ? { path: entry } : { path: entry.path },
-            })
-            .reduce((mappings, { path: file }) => {
-                const moduleRoot = path.dirname(path.join(nodeModulesDir, file));
-                const lwcConfig = loadLwcConfig(moduleRoot);
+export function resolveModulesFromList(
+    modules: ModuleId[],
+    { root }: { root: string }
+): RegistryEntry[] {
+    const resolvedModules: RegistryEntry[] = [];
+    modules.forEach(moduleId => {
+        if (Array.isArray(moduleId)) {
+            const [specifier, modulePath] = moduleId;
+            const entry = path.resolve(root, modulePath);
+            if (fs.existsSync(entry)) {
+                resolvedModules.push({ entry, specifier });
+            }
+        } else {
+            const absPath = path.resolve(root, moduleId);
+            if (fs.existsSync(absPath)) {
+                resolvedModules.push(...resolveModulesFromDir(absPath));
+            } else {
+                resolvedModules.push(...resolveModulesFromNpm(moduleId));
+            }
+        }
+    });
 
-                if (lwcConfig) {
-                    resolveModules(lwcConfig.modules, { mappings, visited, moduleRoot, lwcConfig });
-                }
+    return resolvedModules;
+}
 
-                return mappings;
-            }, m);
-    }, {});
+export function resolveModules(
+    resolverConfig: Partial<ModuleResolverConfig> = {}
+): RegistryEntry[] {
+    const normalizedConfig = normalizeConfig(resolverConfig);
+    const rootConfig = loadConfig(normalizedConfig.rootDir);
+    const modules = mergeModules(normalizedConfig.modules, rootConfig.modules);
+    return resolveModulesFromList(modules, { root: normalizedConfig.rootDir });
 }

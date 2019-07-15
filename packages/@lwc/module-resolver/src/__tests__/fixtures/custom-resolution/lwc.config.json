@@ -1,0 +1,5 @@
+{
+    "modules": [
+        ["custom-module", "custom/module.js"]
+    ]
+}

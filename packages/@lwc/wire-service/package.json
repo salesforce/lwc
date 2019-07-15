@@ -24,9 +24,12 @@
         "@lwc/rollup-plugin": "1.0.2"
     },
     "lwc": {
-        "modules": {
-            "wire-service": "dist/wire-service.js"
-        }
+        "modules": [
+            [
+                "wire-service",
+                "dist/wire-service.js"
+            ]
+        ]
     },
     "publishConfig": {
         "access": "public"

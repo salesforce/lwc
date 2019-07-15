@@ -8,9 +8,6 @@
         "build": "tsc"
     },
     "license": "MIT",
-    "dependencies": {
-        "fast-glob": "~2.2.6"
-    },
     "files": [
         "dist/"
     ],

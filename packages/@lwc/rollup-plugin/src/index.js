@@ -10,7 +10,7 @@ const compiler = require('@lwc/compiler');
 const pluginUtils = require('rollup-pluginutils');
 const lwcResolver = require('@lwc/module-resolver');
 const { getModuleQualifiedName } = require('./utils');
-const { DEFAULT_OPTIONS, DEFAULT_MODE } = require('./constants');
+const { DEFAULT_OPTIONS, DEFAULT_MODE, DEFAULT_MODULES } = require('./constants');
 
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
@@ -28,7 +28,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions);
-    const { resolveFromPackages, resolveFromSource } = mergedPluginOptions;
 
     // Closure to store the resolved modules
     let modulePaths = {};
@@ -36,17 +35,11 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     return {
         name: 'rollup-plugin-lwc-compiler',
 
-        options(rollupOptions) {
-            modulePaths = {};
-            const entry = rollupOptions.input || rollupOptions.entry;
-            const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
-            const externalPaths = resolveFromPackages
-                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
-                : {};
-            const sourcePaths = resolveFromSource
-                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
-                : {};
-            Object.assign(modulePaths, externalPaths, sourcePaths);
+        options({ modules: userModules, rootDir, input }) {
+            const defaultSrc = path.dirname(input);
+            const modules = DEFAULT_MODULES.concat(userModules ? userModules : [defaultSrc]);
+            const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
+            modulePaths = resolvedModules.reduce((map, m) => ((map[m.specifier] = m), map), {});
         },
 
         resolveId(importee, importer) {
