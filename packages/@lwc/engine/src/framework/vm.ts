@@ -177,7 +177,10 @@ function resetComponentStateWhenRemoved(vm: VM) {
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.state === VMState.connected, `${vm} must be inserted.`);
+        assert.isTrue(
+            vm.state === VMState.connected || vm.state === VMState.disconnected,
+            `${vm} must have been connected.`
+        );
     }
     resetComponentStateWhenRemoved(vm);
 }
