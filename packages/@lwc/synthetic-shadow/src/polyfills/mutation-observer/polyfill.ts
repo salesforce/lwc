@@ -8,6 +8,7 @@ import {
     ArrayIndexOf,
     ArrayReduce,
     ArrayPush,
+    ArraySplice,
     create,
     defineProperty,
     defineProperties,
@@ -27,6 +28,10 @@ const {
 // Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
 const observerLookupField = '$$lwcNodeObservers$$';
+
+interface PatchedMutationObserver extends MutationObserver {
+    observerLookups: MutationObserver[][] | undefined;
+}
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
@@ -197,8 +202,18 @@ function PatchedMutationObserver(
     return observer;
 }
 
-function patchedDisconnect(this: MutationObserver): void {
+function patchedDisconnect(this: PatchedMutationObserver): void {
     originalDisconnect.call(this);
+    // Remove all instances of this MutationObserver from the target Nodes
+    if (!isUndefined(this.observerLookups)) {
+        this.observerLookups.forEach(observerLookup => {
+            const index = ArrayIndexOf.call(observerLookup, this);
+            if (index !== -1) {
+                ArraySplice.call(observerLookup, index, 1);
+            }
+        });
+        this.observerLookups = undefined;
+    }
 }
 
 /**
@@ -208,7 +223,7 @@ function patchedDisconnect(this: MutationObserver): void {
  * @param {Object} options
  */
 function patchedObserve(
-    this: MutationObserver,
+    this: PatchedMutationObserver,
     target: Node,
     options?: MutationObserverInit
 ): void {
@@ -217,6 +232,10 @@ function patchedObserve(
         defineProperty(target, observerLookupField, { value: [] });
     }
     ArrayPush.call(target[observerLookupField], this);
+    if (isUndefined(this.observerLookups)) {
+        this.observerLookups = [];
+    }
+    this.observerLookups.push(target[observerLookupField]);
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
