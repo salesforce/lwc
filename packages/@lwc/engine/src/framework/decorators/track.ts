@@ -19,7 +19,7 @@ import { ComponentConstructor, ComponentInterface } from '../component';
  */
 export default function track(
     target: ComponentConstructor,
-    prop: PropertyKey,
+    prop: string,
     descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor;
 export default function track(target: any, prop?, descriptor?): any {
@@ -55,9 +55,9 @@ export default function track(target: any, prop?, descriptor?): any {
     );
 }
 
-export function createTrackedPropertyDescriptor(
-    Ctor: any,
-    key: PropertyKey,
+function createTrackedPropertyDescriptor(
+    Ctor: ComponentConstructor,
+    key: string,
     enumerable: boolean
 ): PropertyDescriptor {
     return {
@@ -67,7 +67,7 @@ export function createTrackedPropertyDescriptor(
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             }
             valueObserved(this, key);
-            return vm.cmpTrack[key];
+            return vm.cmpFields[key];
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
@@ -81,8 +81,8 @@ export function createTrackedPropertyDescriptor(
                 );
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
-            if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
-                vm.cmpTrack[key] = reactiveOrAnyValue;
+            if (reactiveOrAnyValue !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = reactiveOrAnyValue;
                 if (isFalse(vm.isDirty)) {
                     // perf optimization to skip this step if the track property is on a component that is already dirty
                     valueMutated(this, key);

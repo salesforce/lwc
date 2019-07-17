@@ -20,7 +20,7 @@ import { getDecoratorsRegisteredMeta } from './register';
  */
 export default function api(
     target: ComponentConstructor,
-    propName: PropertyKey,
+    propName: string,
     descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
@@ -60,7 +60,7 @@ export default function api(
 
 function createPublicPropertyDescriptor(
     proto: ComponentConstructor,
-    key: PropertyKey,
+    key: string,
     descriptor: PropertyDescriptor | undefined
 ): PropertyDescriptor {
     return {

@@ -86,9 +86,9 @@ export interface UninitializedVM {
     /** Adopted Children List */
     aChildren: VNodes;
     velements: VCustomElement[];
-    cmpProps: any;
+    cmpProps: Record<string, any>;
     cmpSlots: SlotSet;
-    cmpTrack: any;
+    cmpFields: Record<string, any>;
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
@@ -227,7 +227,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
-        cmpTrack: create(null),
+        cmpFields: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
