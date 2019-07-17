@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.7...v) (2019-07-10)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.8...v) (2019-07-17)
+
+
+### Bug Fixes
+
+* error from disconnecting an already disconnected vm ([#1413](https://github.com/salesforce/lwc/issues/1413)) ([#1415](https://github.com/salesforce/lwc/issues/1415)) ([0c89182](https://github.com/salesforce/lwc/commit/0c89182))
+
+
+
+## [1.0.2-222.8](https://github.com/salesforce/lwc/compare/v1.0.2-222.7...v1.0.2-222.8) (2019-07-10)
 
 
 ### Bug Fixes
