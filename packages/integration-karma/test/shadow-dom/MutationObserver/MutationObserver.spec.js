@@ -472,6 +472,5 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             observer.disconnect();
             expect(node.$$lwcNodeObservers$$.length).toBe(0);
         });
-
     });
 });
