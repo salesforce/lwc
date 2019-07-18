@@ -9,7 +9,7 @@ import {
     ArrayReduce,
     ArrayPush,
     ArraySplice,
-    ArrayForEach,
+    forEach,
     create,
     defineProperty,
     defineProperties,
@@ -207,7 +207,7 @@ function patchedDisconnect(this: PatchedMutationObserver): void {
     originalDisconnect.call(this);
     // Remove all instances of this MutationObserver from the target Nodes
     if (!isUndefined(this.observerLookups)) {
-        ArrayForEach.call(this.observerLookups, observerLookup => {
+        forEach.call(this.observerLookups, observerLookup => {
             const index = ArrayIndexOf.call(observerLookup, this);
             if (index !== -1) {
                 ArraySplice.call(observerLookup, index, 1);
