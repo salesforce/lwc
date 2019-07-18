@@ -9,6 +9,7 @@ import {
     ArrayReduce,
     ArrayPush,
     ArraySplice,
+    ArrayForEach,
     create,
     defineProperty,
     defineProperties,
@@ -206,7 +207,7 @@ function patchedDisconnect(this: PatchedMutationObserver): void {
     originalDisconnect.call(this);
     // Remove all instances of this MutationObserver from the target Nodes
     if (!isUndefined(this.observerLookups)) {
-        this.observerLookups.forEach(observerLookup => {
+        ArrayForEach.call(this.observerLookups, observerLookup => {
             const index = ArrayIndexOf.call(observerLookup, this);
             if (index !== -1) {
                 ArraySplice.call(observerLookup, index, 1);
@@ -235,7 +236,7 @@ function patchedObserve(
     if (isUndefined(this.observerLookups)) {
         this.observerLookups = [];
     }
-    this.observerLookups.push(target[observerLookupField]);
+    ArrayPush.call(this.observerLookups, target[observerLookupField]);
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
