@@ -30,9 +30,7 @@ const {
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
 const observerLookupField = '$$lwcNodeObservers$$';
 
-interface PatchedMutationObserver extends MutationObserver {
-    observerLookups: MutationObserver[][] | undefined;
-}
+const observersToTargets = new WeakMap<MutationObserver, Node[]>();
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
@@ -203,17 +201,17 @@ function PatchedMutationObserver(
     return observer;
 }
 
-function patchedDisconnect(this: PatchedMutationObserver): void {
+function patchedDisconnect(this: MutationObserver): void {
     originalDisconnect.call(this);
     // Remove all instances of this MutationObserver from the target Nodes
-    if (!isUndefined(this.observerLookups)) {
-        forEach.call(this.observerLookups, observerLookup => {
-            const index = ArrayIndexOf.call(observerLookup, this);
+    if (observersToTargets.has(this)) {
+        const targets = observersToTargets.get(this);
+        forEach.call(targets, target => {
+            const index = ArrayIndexOf.call(target[observerLookupField], this);
             if (index !== -1) {
-                ArraySplice.call(observerLookup, index, 1);
+                ArraySplice.call(target[observerLookupField], index, 1);
             }
         });
-        this.observerLookups = undefined;
     }
 }
 
@@ -224,7 +222,7 @@ function patchedDisconnect(this: PatchedMutationObserver): void {
  * @param {Object} options
  */
 function patchedObserve(
-    this: PatchedMutationObserver,
+    this: MutationObserver,
     target: Node,
     options?: MutationObserverInit
 ): void {
@@ -233,10 +231,10 @@ function patchedObserve(
         defineProperty(target, observerLookupField, { value: [] });
     }
     ArrayPush.call(target[observerLookupField], this);
-    if (isUndefined(this.observerLookups)) {
-        this.observerLookups = [];
+    if (!observersToTargets.has(this)) {
+        observersToTargets.set(this, []);
     }
-    ArrayPush.call(this.observerLookups, target[observerLookupField]);
+    ArrayPush.call(observersToTargets.get(this), target);
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
