@@ -26,13 +26,10 @@ const {
     takeRecords: originalTakeRecords,
 } = OriginalMutationObserver.prototype;
 
-/* Internal fields to maintain relationships */
-// Field to cache wrapper
+// Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
-// Field to store hard references to observers that are watching a node
 const observerLookupField = '$$lwcNodeObservers$$';
 
-// Map of observer to nodes watched by the observer
 const observerToNodesMap: WeakMap<MutationObserver, Array<Node>> = new WeakMap();
 
 /**
@@ -241,7 +238,7 @@ function patchedObserve(
     // Same observer trying to observe the same node
     if (ArrayIndexOf.call(target[observerLookupField], this) === -1) {
         ArrayPush.call(target[observerLookupField], this);
-    } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe # 7
+    } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
 
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
