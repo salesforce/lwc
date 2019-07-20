@@ -19,6 +19,7 @@
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
+        "@lwc/features": "1.0.2",
         "@lwc/template-compiler": "1.0.2"
     },
     "lwc": {
