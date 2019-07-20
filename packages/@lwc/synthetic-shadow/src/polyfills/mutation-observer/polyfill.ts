@@ -248,8 +248,8 @@ function patchedObserve(
     // maintain a list of all nodes observed by this observer
     if (observerToNodesMap.has(this)) {
         const observedNodes = observerToNodesMap.get(this)!;
-        if (observedNodes.indexOf(target) === -1) {
-            observedNodes.push(target);
+        if (ArrayIndexOf.call(observedNodes, target) === -1) {
+            ArrayPush.call(observedNodes, target);
         }
     } else {
         observerToNodesMap.set(this, [target]);
