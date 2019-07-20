@@ -423,4 +423,57 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
     });
+    if (!process.env.NATIVE_SHADOW) {
+        describe('Mutation observers are not leaked on special nodes', () => {
+            let container;
+            beforeEach(() => {
+                container = document.createElement('div');
+                document.body.appendChild(container);
+            });
+            it('should not leak after disconnect', () => {
+                const node = document.head;
+                const observer = new MutationObserver(() => {});
+                observer.observe(node, observerConfig);
+                expect(node.$$lwcNodeObservers$$.length).toBe(1);
+                observer.disconnect();
+                expect(node.$$lwcNodeObservers$$.length).toBe(0);
+            });
+
+            it('should not leak after disconnect - multiple nodes', () => {
+                const node1 = document.head;
+                const node2 = document.body;
+                const observer = new MutationObserver(() => {});
+                observer.observe(node1, observerConfig);
+                observer.observe(node2, observerConfig);
+                expect(node1.$$lwcNodeObservers$$.length).toBe(1);
+                expect(node2.$$lwcNodeObservers$$.length).toBe(1);
+                observer.disconnect();
+                expect(node1.$$lwcNodeObservers$$.length).toBe(0);
+                expect(node2.$$lwcNodeObservers$$.length).toBe(0);
+            });
+
+            it('should not leak after disconnect - multiple observers', () => {
+                const node = document.head;
+                const observer1 = new MutationObserver(() => {});
+                const observer2 = new MutationObserver(() => {});
+                observer1.observe(node, observerConfig);
+                expect(node.$$lwcNodeObservers$$.length).toBe(1);
+                observer2.observe(node, observerConfig);
+                expect(node.$$lwcNodeObservers$$.length).toBe(2);
+                observer1.disconnect();
+                expect(node.$$lwcNodeObservers$$.length).toBe(1);
+                observer2.disconnect();
+                expect(node.$$lwcNodeObservers$$.length).toBe(0);
+            });
+
+            it('should not leak after disconnect - duplicate observe()s', () => {
+                const node = document.head;
+                const observer = new MutationObserver(() => {});
+                observer.observe(node, observerConfig);
+                observer.observe(node, observerConfig);
+                observer.disconnect();
+                expect(node.$$lwcNodeObservers$$.length).toBe(0);
+            });
+        });
+    }
 });

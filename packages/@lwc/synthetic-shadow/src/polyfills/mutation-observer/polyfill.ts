@@ -13,6 +13,8 @@ import {
     defineProperties,
     isUndefined,
     isNull,
+    forEach,
+    ArraySplice,
 } from '../../shared/language';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
@@ -197,8 +199,20 @@ function PatchedMutationObserver(
     return observer;
 }
 
+const sharedNodes = [document, document.head, document.body];
 function patchedDisconnect(this: MutationObserver): void {
     originalDisconnect.call(this);
+    // Clean up any references to the observers on the global nodes and make them eligible for GC
+    // Optimization: We clean only the global nodes that tend to last longer than other nodes.
+    forEach.call(sharedNodes, node => {
+        const observerList = node[observerLookupField];
+        if (!isUndefined(observerList)) {
+            const index = ArrayIndexOf.call(observerList, this);
+            if (index !== -1) {
+                ArraySplice.call(observerList, index, 1);
+            }
+        }
+    });
 }
 
 /**
@@ -216,7 +230,11 @@ function patchedObserve(
     if (isUndefined(target[observerLookupField])) {
         defineProperty(target, observerLookupField, { value: [] });
     }
-    ArrayPush.call(target[observerLookupField], this);
+    // Same observer trying to observe the same node
+    if (ArrayIndexOf.call(target[observerLookupField], this) === -1) {
+        ArrayPush.call(target[observerLookupField], this);
+    } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
+
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
