@@ -1,6 +1,10 @@
 const template = require('@babel/template');
 
-const buildRequire = template.expression('global.LWC_config.features.FEATURE_FLAG');
+const buildRequire = template.expression(`
+    global.LWC_config &&
+    global.LWC_config.features &&
+    global.LWC_config.features.FEATURE_FLAG_NAME
+`);
 
 // This plugin relies on the feature flag import declaration appearing before
 // feature flag usage. Dynamic imports are not supported.
@@ -12,7 +16,7 @@ module.exports = function({ types: t }) {
             } = path;
             if (this.runtimeFeatureFlags.includes(name)) {
                 const expression = buildRequire({
-                    FEATURE_FLAG: t.identifier(name),
+                    FEATURE_FLAG_NAME: t.identifier(name),
                 });
                 path.replaceWith(expression);
                 // We replace this identifier with a MemberExpression that uses
