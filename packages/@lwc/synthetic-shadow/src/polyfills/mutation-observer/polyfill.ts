@@ -6,11 +6,13 @@
  */
 import {
     ArrayIndexOf,
-    ArrayReduce,
     ArrayPush,
+    ArrayReduce,
+    ArraySplice,
     create,
     defineProperty,
     defineProperties,
+    forEach,
     isUndefined,
     isNull,
 } from '../../shared/language';
@@ -27,6 +29,8 @@ const {
 // Internal fields to maintain relationships
 const wrapperLookupField = '$$lwcObserverCallbackWrapper$$';
 const observerLookupField = '$$lwcNodeObservers$$';
+
+const observerToNodesMap: WeakMap<MutationObserver, Array<Node>> = new WeakMap();
 
 /**
  * Retarget the mutation record's target value to its shadowRoot
@@ -199,6 +203,21 @@ function PatchedMutationObserver(
 
 function patchedDisconnect(this: MutationObserver): void {
     originalDisconnect.call(this);
+
+    // Clear the node to observer reference which is a strong references
+    const observedNodes = observerToNodesMap.get(this);
+    if (!isUndefined(observedNodes)) {
+        forEach.call(observedNodes, observedNode => {
+            const observers = observedNode[observerLookupField];
+            if (!isUndefined(observers)) {
+                const index = ArrayIndexOf.call(observers, this);
+                if (index !== -1) {
+                    ArraySplice.call(observers, index, 1);
+                }
+            }
+        });
+        observedNodes.length = 0;
+    }
 }
 
 /**
@@ -216,11 +235,26 @@ function patchedObserve(
     if (isUndefined(target[observerLookupField])) {
         defineProperty(target, observerLookupField, { value: [] });
     }
-    ArrayPush.call(target[observerLookupField], this);
+    // Same observer trying to observe the same node
+    if (ArrayIndexOf.call(target[observerLookupField], this) === -1) {
+        ArrayPush.call(target[observerLookupField], this);
+    } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
+
     // If the target is a SyntheticShadowRoot, observe the host since the shadowRoot is an empty documentFragment
     if (target instanceof SyntheticShadowRoot) {
         target = (target as ShadowRoot).host;
     }
+
+    // maintain a list of all nodes observed by this observer
+    if (observerToNodesMap.has(this)) {
+        const observedNodes = observerToNodesMap.get(this)!;
+        if (ArrayIndexOf.call(observedNodes, target) === -1) {
+            ArrayPush.call(observedNodes, target);
+        }
+    } else {
+        observerToNodesMap.set(this, [target]);
+    }
+
     return originalObserve.call(this, target, options);
 }
 
