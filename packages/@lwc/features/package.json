@@ -8,7 +8,8 @@
     "license": "MIT",
     "scripts": {
         "build": "tsc && tsc --project tsconfig.commonjs.json",
-        "clean": "rm -rf dist/"
+        "clean": "rm -rf dist/",
+        "test": "jest"
     },
     "files": [
         "dist/"

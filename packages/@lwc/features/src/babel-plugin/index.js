@@ -29,6 +29,7 @@ module.exports = function({ types: t }) {
         },
     };
     return {
+        name: 'babel-plugin-lwc-features',
         visitor: {
             ImportDeclaration(path, state) {
                 const { node } = path;
