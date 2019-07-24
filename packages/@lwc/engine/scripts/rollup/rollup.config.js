@@ -8,12 +8,11 @@ const path = require('path');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const rollupLwcFeatures = require('@lwc/features/src/rollup-plugin');
+
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
 const targetDirectory = path.resolve(__dirname, '../../dist/');
-
-const rollupLwcFeatures = require('@lwc/features/src/rollup-plugin');
-const featureFlags = require('@lwc/features');
 
 const banner = `/* proxy-compat-disable */`;
 const footer = `/** version: ${version} */`;
@@ -48,7 +47,7 @@ function rollupConfig({ format = 'es' } = {}) {
                 typescript,
                 include: TS_WHITELIST,
             }),
-            rollupLwcFeatures({ featureFlags }),
+            rollupLwcFeatures(),
         ],
     };
 }

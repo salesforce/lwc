@@ -1,5 +1,6 @@
 {
     "name": "@lwc/features",
+    "private": true,
     "version": "1.0.2",
     "description": "LWC Features",
     "main": "dist/commonjs/flags.js",

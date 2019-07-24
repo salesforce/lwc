@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const template = require('@babel/template');
+const defaultFeatureFlags = require('../../dist/commonjs/flags');
 
 const buildRequire = template.expression(`globalThis.LWC_config.features.FEATURE_FLAG_NAME`);
 
@@ -32,9 +33,10 @@ module.exports = function({ types: t }) {
             ImportDeclaration(path, state) {
                 const { node } = path;
                 if (node.source.value === '@lwc/features') {
+                    const featureFlags = state.opts.featureFlags || defaultFeatureFlags;
                     state.runtimeFeatureFlags = node.specifiers
                         .map(specifier => specifier.imported.name)
-                        .filter(name => state.opts.featureFlags[name] === null);
+                        .filter(name => featureFlags[name] === null);
                 }
             },
             IfStatement(path, state) {
