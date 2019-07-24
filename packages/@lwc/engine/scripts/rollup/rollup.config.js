@@ -8,7 +8,8 @@ const path = require('path');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const rollupLwcFeatures = require('@lwc/features/src/rollup-plugin');
+const babel = require('@babel/core');
+const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 
 const { version } = require('../../package.json');
 const entry = path.resolve(__dirname, '../../src/framework/main.ts');
@@ -25,6 +26,17 @@ function ignoreCircularDependencies({ code, message }) {
     if (code !== 'CIRCULAR_DEPENDENCY') {
         throw new Error(message);
     }
+}
+
+function rollupFeaturesPlugin() {
+    return {
+        name: 'rollup-plugin-lwc-features',
+        transform(source) {
+            return babel.transform(source, {
+                plugins: [babelFeaturesPlugin],
+            }).code;
+        },
+    };
 }
 
 const TS_WHITELIST = ['**/*.ts', '/**/node_modules/**/*.js', '*.ts', '/**/*.js'];
@@ -47,7 +59,7 @@ function rollupConfig({ format = 'es' } = {}) {
                 typescript,
                 include: TS_WHITELIST,
             }),
-            rollupLwcFeatures(),
+            rollupFeaturesPlugin(),
         ],
     };
 }
