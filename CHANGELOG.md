@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.8...v) (2019-07-17)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.9...v) (2019-07-25)
+
+
+### Bug Fixes
+
+* mutationobserver memory leak - use weakmap for bookkeeping ([#1423](https://github.com/salesforce/lwc/issues/1423)) ([#1426](https://github.com/salesforce/lwc/issues/1426)) ([a61761a](https://github.com/salesforce/lwc/commit/a61761a))
+
+
+
+## [1.0.2-222.9](https://github.com/salesforce/lwc/compare/v1.0.2-222.8...v1.0.2-222.9) (2019-07-17)
 
 
 ### Bug Fixes

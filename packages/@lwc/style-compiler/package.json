@@ -1,6 +1,6 @@
 {
     "name": "@lwc/style-compiler",
-    "version": "1.0.2-222.9",
+    "version": "1.0.2-222.10",
     "description": "Transform style sheet to be consumed by the LWC engine",
     "license": "MIT",
     "main": "dist/commonjs/index.js",
