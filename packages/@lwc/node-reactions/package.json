@@ -1,0 +1,14 @@
+{
+    "name": "@lwc/node-reactions",
+    "private": true,
+    "version": "1.0.2",
+    "description": "Node Reactions utility to detect synchronous mutations of the DOM",
+    "license": "MIT",
+    "main": "dist/commonjs/es2017/index.js",
+    "module": "dist/modules/es2017/index.js",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "test": "jest",
+        "build": "tsc && rollup --config ./scripts/rollup/rollup.config.js"
+    }
+}
