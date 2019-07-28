@@ -13,8 +13,6 @@ import {
     addEventListener,
     removeEventListener,
     tabIndexGetter,
-    tagNameGetter,
-    hasAttribute,
     getAttribute,
 } from '../env/element';
 import {
@@ -28,12 +26,9 @@ import {
     ArrayIndexOf,
     ArrayReverse,
     ArraySlice,
-    hasOwnProperty,
-    isFalse,
     isNull,
     isUndefined,
     toString,
-    isTrue,
 } from '../shared/language';
 import {
     DocumentPrototypeActiveElement,
@@ -65,23 +60,6 @@ function isVisible(element: HTMLElement): boolean {
     return noZeroSize && getComputedStyle(element).visibility !== 'hidden';
 }
 
-function hasFocusableTabIndex(element: HTMLElement) {
-    if (isFalse(hasAttribute.call(element, 'tabindex'))) {
-        return false;
-    }
-
-    const value = getAttribute.call(element, 'tabindex');
-
-    // Really, any numeric tabindex value is valid
-    // But LWC only allows 0 or -1, so we can just check against that.
-    // The main point here is to make sure the tabindex attribute is not an invalid
-    // value like tabindex="hello"
-    if (value === '' || (value !== '0' && value !== '-1')) {
-        return false;
-    }
-    return true;
-}
-
 // This function based on https://allyjs.io/data-tables/focusable.html
 // It won't catch everything, but should be good enough
 // There are a lot of edge cases here that we can't realistically handle
@@ -89,39 +67,6 @@ function hasFocusableTabIndex(element: HTMLElement) {
 
 function isTabbable(element: HTMLElement): boolean {
     return matches.call(element, TabbableElementsQuery) && isVisible(element);
-}
-
-const focusableTagNames = {
-    IFRAME: 1,
-    VIDEO: 1,
-    AUDIO: 1,
-    A: 1,
-    INPUT: 1,
-    SELECT: 1,
-    TEXTAREA: 1,
-    BUTTON: 1,
-};
-
-// This function based on https://allyjs.io/data-tables/focusable.html
-// It won't catch everything, but should be good enough
-// There are a lot of edge cases here that we can't realistically handle
-function isFocusable(element: HTMLElement, hostElement: HTMLElement): boolean {
-    const focusable =
-        isVisible(element) &&
-        (hasFocusableTabIndex(element) ||
-            hasAttribute.call(element, 'contenteditable') ||
-            hasOwnProperty.call(focusableTagNames, tagNameGetter.call(element)));
-
-    if (isTrue(focusable)) {
-        return true;
-    }
-
-    const nextElement =
-        element.parentNode === element.getRootNode()
-            ? (element.parentNode as ShadowRoot).host
-            : element.parentElement!;
-
-    return nextElement !== hostElement && isFocusable(nextElement as HTMLElement, hostElement);
 }
 
 interface QuerySegments {
@@ -335,59 +280,46 @@ function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): 
     return null;
 }
 
-function willTriggerFocusInEvent(event: MouseEvent): boolean {
-    const target = eventTargetGetter.call(event);
-    const doc = getOwnerDocument(target as Node);
-    const activeElement = DocumentPrototypeActiveElement.call(doc);
-    const isTargetActiveElement = target === activeElement;
-    return (
-        // if the element is currently active, it will not fire a focusin event
-        !isTargetActiveElement &&
-        isFocusable(target as HTMLElement, eventCurrentTargetGetter.call(event) as HTMLElement)
-    );
-}
-
-function enterMouseDownState(evt) {
+function handleMouseDown(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler as EventListener);
-    setTimeout(() => {
-        // only reinstate the focus if the tabindex is still -1
-        if (!isNull(currentTarget) && tabIndexGetter.call(currentTarget as HTMLElement) === -1) {
-            addEventListener.call(
-                currentTarget,
-                'focusin',
-                keyboardFocusInHandler as EventListener
-            );
-        }
-    }, 0);
-}
 
-function exitMouseDownState(event) {
-    const currentTarget = eventCurrentTargetGetter.call(event);
-    const relatedTarget = focusEventRelatedTargetGetter.call(event);
-    // If the focused element is null or the focused element is no longer internal
-    if (
-        isNull(relatedTarget) ||
-        relatedTargetPosition(currentTarget as HTMLElement, relatedTarget) !== 0
-    ) {
-        removeEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
-        removeEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
+    function handleMouseup() {
+        setTimeout(() => {
+            if (
+                !isNull(currentTarget) &&
+                tabIndexGetter.call(currentTarget as HTMLElement) === -1
+            ) {
+                addEventListener.call(
+                    currentTarget,
+                    'focusin',
+                    keyboardFocusInHandler as EventListener
+                );
+            }
+        }, 0);
+        removeEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener);
     }
+
+    // Reinstate the keyboardFocusInHandler in the tick after mouseup. We used to do this in the
+    // tick after mousedown but that failed to account for the case where the user clicked on a form
+    // element label (which is another way of placing focus on the form element).
+    //
+    // Click form element   | Click form element label
+    // ==================================================
+    // mousedown            | mousedown
+    // FOCUSIN              | mousedown-setTimeout
+    // mousedown-setTimeout | mouseup
+    // mouseup              | FOCUSIN
+    // mouseup-setTimeout   | mouseup-setTimeout
+    //
+    // If we 1) remove the focusin handler on mousedown and 2) schedule a task to add it back in the
+    // next tick on mousedown, the focusin handler ends up executing if the form element label is
+    // clicked (see table above). In order to ensure that the focusin handler does not execute for
+    // the duration of the click for both cases, we add it back in the tick after mouseup.
+    addEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener);
 }
 
-function handleFocusMouseDown(evt) {
-    // If we are mouse down in an element that can be focused
-    // and the currentTarget's activeElement is not element we are mouse-ing down in
-    // We can bail out and let the browser do its thing.
-    if (willTriggerFocusInEvent(evt)) {
-        const currentTarget = eventCurrentTargetGetter.call(evt);
-        // Enter the temporary state where we disable the keyboard focusin handler when we click into the shadow.
-        addEventListener.call(currentTarget, 'focusin', enterMouseDownState, true);
-        // Exit the temporary state When focus leaves the shadow.
-        addEventListener.call(currentTarget, 'focusout', exitMouseDownState, true);
-    }
-}
-
+// Skips the host element
 export function handleFocus(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -407,6 +339,7 @@ export function ignoreFocus(elm: HTMLElement) {
     removeEventListener.call(elm, 'focusin', keyboardFocusHandler as EventListener, true);
 }
 
+// Skips the shadow tree
 export function handleFocusIn(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -424,7 +357,7 @@ export function handleFocusIn(elm: HTMLElement) {
     // If the user is triggering a mousedown event on an element
     // That can trigger a focus event, then we need to opt out
     // of our tabindex -1 dance. The tabindex -1 only applies for keyboard navigation
-    addEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
+    addEventListener.call(elm, 'mousedown', handleMouseDown, true);
 
     // This focusin listener is to catch focusin events from keyboard interactions
     // A better solution would perhaps be to listen for keydown events, but
@@ -436,5 +369,5 @@ export function handleFocusIn(elm: HTMLElement) {
 
 export function ignoreFocusIn(elm: HTMLElement) {
     removeEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener);
-    removeEventListener.call(elm, 'mousedown', handleFocusMouseDown, true);
+    removeEventListener.call(elm, 'mousedown', handleMouseDown, true);
 }
