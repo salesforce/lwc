@@ -114,7 +114,7 @@ describe('array mutations', () => {
         });
     });
 
-    it('rerenders the component if an item is removed via Array.prototype.pop', () => {
+    it('rerenders the component if an item is removed via Array.prototype.unshift', () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
