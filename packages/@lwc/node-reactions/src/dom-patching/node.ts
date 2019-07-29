@@ -1,6 +1,6 @@
 import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
 import { defineProperties, ArrayPush } from '../shared/language';
-import { ReactionEventType } from '../types';
+import { ReactionEventType, ReactionEvent } from '../types';
 import queueReactionsForTree from '../traverse';
 import { flushQueue } from '../reaction-queue';
 
@@ -22,9 +22,10 @@ export default function() {
                 if (isConnected.call(aChild)) {
                     ArrayPush.call(reactions, ReactionEventType.connected);
                 }
-                queueReactionsForTree(aChild, reactions);
+                const reactionQueue: Array<ReactionEvent> = [];
+                queueReactionsForTree(aChild, reactions, reactionQueue);
                 // Flush the queue only after the appendChild was successful
-                flushQueue();
+                flushQueue(reactionQueue);
             },
         },
         insertBefore: {
@@ -43,8 +44,9 @@ export default function() {
                 if (isConnected.call(newNode)) {
                     ArrayPush.call(reactions, ReactionEventType.connected);
                 }
-                queueReactionsForTree(newNode, reactions);
-                flushQueue();
+                const reactionQueue: Array<ReactionEvent> = [];
+                queueReactionsForTree(newNode, reactions, reactionQueue);
+                flushQueue(reactionQueue);
             },
         },
         replaceChild: {
@@ -65,9 +67,10 @@ export default function() {
                 if (isConnected.call(newChild)) {
                     ArrayPush.call(postReactions, ReactionEventType.connected);
                 }
-                queueReactionsForTree(oldChild, preReactions);
-                queueReactionsForTree(newChild, postReactions);
-                flushQueue();
+                const reactionQueue: Array<ReactionEvent> = [];
+                queueReactionsForTree(oldChild, preReactions, reactionQueue);
+                queueReactionsForTree(newChild, postReactions, reactionQueue);
+                flushQueue(reactionQueue);
             },
         },
         removeChild: {
@@ -80,9 +83,10 @@ export default function() {
                     ArrayPush.call(reactions, ReactionEventType.disconnected);
                 }
                 removeChild.call(this, child);
-                queueReactionsForTree(child, reactions);
+                const reactionQueue: Array<ReactionEvent> = [];
+                queueReactionsForTree(child, reactions, reactionQueue);
                 // Flush the queue only after the appendChild was successful
-                flushQueue();
+                flushQueue(reactionQueue);
             },
         },
     });
