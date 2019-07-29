@@ -1,12 +1,6 @@
+import { ReactionEventType, ReactionCallback } from './types';
 import { isUndefined } from './shared/language';
 import assert from './shared/assert';
-
-export enum ReactionEventType {
-    connected,
-    disconnected,
-}
-
-export type ReactionCallback = (node: Node, reactionEventType: String, parentNode: Node) => void;
 
 const nodeToCallbackMap: WeakMap<Node, { [key: string]: Array<ReactionCallback> }> = new WeakMap();
 export function reactTo(
@@ -15,9 +9,9 @@ export function reactTo(
     callback: ReactionCallback
 ): void {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(node, 'Missing required node param');
-        assert.invariant(reactionEventType, 'Missing required event type param');
-        assert.invariant(callback, 'Missing callback');
+        assert.invariant(!isUndefined(node), 'Missing required node param');
+        assert.invariant(!isUndefined(reactionEventType), 'Missing required event type param');
+        assert.invariant(!isUndefined(callback), 'Missing callback');
     }
     let callbackListByType = nodeToCallbackMap.get(node);
     if (isUndefined(callbackListByType)) {
@@ -39,7 +33,7 @@ export function reactTo(
     callbackListByType[reactionEventType].push(callback);
 }
 
-export function getRegisteredCallbacks(
+export function getRegisteredCallbacksByReactionType(
     node: Node,
     reactionEventType: ReactionEventType
 ): Array<ReactionCallback> | undefined {
@@ -49,4 +43,10 @@ export function getRegisteredCallbacks(
     }
     const callbackList = callbackListByType[reactionEventType];
     return callbackList;
+}
+
+export function getRegisteredCallbacksForNode(
+    node: Node
+): { [key: string]: Array<ReactionCallback> } | undefined {
+    return nodeToCallbackMap.get(node);
 }
