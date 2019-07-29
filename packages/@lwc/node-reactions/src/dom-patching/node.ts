@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+
 import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
 import { defineProperties, ArrayPush } from '../shared/language';
 import { ReactionEventType, ReactionEvent } from '../types';
