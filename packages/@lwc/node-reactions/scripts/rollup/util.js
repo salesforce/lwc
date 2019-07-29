@@ -9,7 +9,7 @@ const DEBUG_SUFFIX = '_debug';
 const PROD_SUFFIX = '.min';
 
 function generateTargetName({ prod, proddebug }) {
-    return ['patches', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
+    return ['node-reactions', proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
 }
 
 module.exports = {
