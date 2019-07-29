@@ -4,6 +4,13 @@ import { isUndefined, forEach, isTrue } from './shared/language';
 import { queueCallback } from './reaction-queue';
 import { hasChildNodes, childNodesGetter } from './env/node';
 
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+
 /**
  * Traverse and queue reactions for nodes in a sub tree
  */
