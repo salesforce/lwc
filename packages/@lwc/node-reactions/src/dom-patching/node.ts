@@ -18,19 +18,19 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                const reactions: Array<ReactionEventType> = [];
+                const qualifiedReactionTypes: Array<ReactionEventType> = [];
                 // Pre action
                 if (isConnected.call(aChild)) {
-                    ArrayPush.call(reactions, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
                 }
                 // Action
                 appendChild.call(this, aChild);
                 // Post action
                 if (isConnected.call(aChild)) {
-                    ArrayPush.call(reactions, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
                 }
                 const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(aChild, reactions, reactionQueue);
+                queueReactionsForTree(aChild, qualifiedReactionTypes, reactionQueue);
                 // Flush the queue only after the appendChild was successful
                 flushQueue(reactionQueue);
             },
@@ -40,19 +40,19 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newNode: Node, referenceNode: Node) {
-                const reactions: Array<ReactionEventType> = [];
+                const qualifiedReactionTypes: Array<ReactionEventType> = [];
                 // Pre action
                 if (isConnected.call(newNode)) {
-                    ArrayPush.call(reactions, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
                 }
                 // Action
                 insertBefore.call(this, newNode, referenceNode);
                 // Post action
                 if (isConnected.call(newNode)) {
-                    ArrayPush.call(reactions, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
                 }
                 const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(newNode, reactions, reactionQueue);
+                queueReactionsForTree(newNode, qualifiedReactionTypes, reactionQueue);
                 flushQueue(reactionQueue);
             },
         },
@@ -61,22 +61,22 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newChild: Node, oldChild: Node) {
-                const preReactions: Array<ReactionEventType> = [];
+                const qualifiedPreReactionTypes: Array<ReactionEventType> = [];
                 // Pre action
                 if (isConnected.call(oldChild)) {
-                    ArrayPush.call(preReactions, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedPreReactionTypes, ReactionEventType.disconnected);
                 }
                 // Action
                 replaceChild.call(this, newChild, oldChild);
 
-                const postReactions: Array<ReactionEventType> = [];
+                const qualifiedPostReactionTypes: Array<ReactionEventType> = [];
                 // Post action
                 if (isConnected.call(newChild)) {
-                    ArrayPush.call(postReactions, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
                 }
                 const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(oldChild, preReactions, reactionQueue);
-                queueReactionsForTree(newChild, postReactions, reactionQueue);
+                queueReactionsForTree(oldChild, qualifiedPreReactionTypes, reactionQueue);
+                queueReactionsForTree(newChild, qualifiedPostReactionTypes, reactionQueue);
                 flushQueue(reactionQueue);
             },
         },
@@ -85,13 +85,13 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
-                const reactions: Array<ReactionEventType> = [];
+                const qualifiedReactionTypes: Array<ReactionEventType> = [];
                 if (isConnected.call(child)) {
-                    ArrayPush.call(reactions, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
                 }
                 removeChild.call(this, child);
                 const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(child, reactions, reactionQueue);
+                queueReactionsForTree(child, qualifiedReactionTypes, reactionQueue);
                 // Flush the queue only after the appendChild was successful
                 flushQueue(reactionQueue);
             },

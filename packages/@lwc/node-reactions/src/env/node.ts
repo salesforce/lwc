@@ -25,6 +25,9 @@ const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = hasOwnPrope
     ? getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get!
     : getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!; // IE11
 
+const nodeTypeGetter: (this: Node) => number = getOwnPropertyDescriptor(Node.prototype, 'nodeType')!
+    .get!;
+
 const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
     Node.prototype,
     'ownerDocument'
@@ -49,6 +52,7 @@ export {
     hasChildNodes,
     insertBefore,
     isConnected,
+    nodeTypeGetter,
     removeChild,
     replaceChild,
 };
