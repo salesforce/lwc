@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import reactTo, { ReactionEventType } from '@lwc/node-reactions';
 import { ComponentConstructor } from './component';
 import { isUndefined, isObject, isNull, getOwnPropertyNames, ArrayMap } from '../shared/language';
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
@@ -48,14 +49,14 @@ export function buildCustomElementConstructor(
             if (process.env.NODE_ENV !== 'production') {
                 patchCustomElementWithRestrictions(this, EmptyObject);
             }
-        }
-        connectedCallback() {
-            const vm = getCustomElementVM(this);
-            appendRootVM(vm);
-        }
-        disconnectedCallback() {
-            const vm = getCustomElementVM(this);
-            removeRootVM(vm);
+            reactTo(this, ReactionEventType.connected, function() {
+                const vm = getCustomElementVM(this as HTMLElement);
+                appendRootVM(vm);
+            });
+            reactTo(this, ReactionEventType.disconnected, function() {
+                const vm = getCustomElementVM(this as HTMLElement);
+                removeRootVM(vm);
+            });
         }
         attributeChangedCallback(attrName, oldValue, newValue) {
             if (oldValue === newValue) {

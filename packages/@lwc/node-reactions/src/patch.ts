@@ -7,13 +7,13 @@
 import reactTo from './index';
 import { DocumentPrototype } from './env/document';
 import { defineProperty, create, isUndefined } from './shared/language';
-import patchNodePrototye from './dom-patching/node';
+import patchNodePrototype from './dom-patching/node';
 
 /**
  * Path the DOM APIs and start monitoring dom mutations
  */
 function patchDom(): void {
-    patchNodePrototye();
+    patchNodePrototype();
 }
 
 const InitializationSlot = '$$node-reactions-initialized$$';

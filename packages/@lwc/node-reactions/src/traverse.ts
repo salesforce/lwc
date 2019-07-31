@@ -6,12 +6,11 @@
  */
 
 import { ReactionEventType, ReactionEvent } from './types';
-import { nodeTypeGetter } from './env/node';
 import { getRegisteredCallbacksForNode } from './registry';
-import { isUndefined, forEach, isTrue } from './shared/language';
+import { isUndefined, forEach } from './shared/language';
 import assert from './shared/assert';
 import { queueCallback } from './reaction-queue';
-import { hasChildNodes, childNodesGetter } from './env/node';
+import { childNodesGetter } from './env/node';
 
 /**
  * Traverse and queue reactions for nodes in a sub tree
@@ -22,7 +21,7 @@ export default function queueReactionsForTree(
     reactionQueue: Array<ReactionEvent>
 ): void {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(!isUndefined(root), `Expected a dom node but received ${root}`);
+        assert.invariant(!isUndefined(root), `Expected a dom node but received undefined`);
     }
     // Pre order traversal
     const callbackListByType = getRegisteredCallbacksForNode(root);
@@ -35,16 +34,16 @@ export default function queueReactionsForTree(
         });
     }
 
-    const nodeType = nodeTypeGetter.call(root);
     // Perf optimization: Only Element type can have shadowRoot
-    if (nodeType === 1 && (root as Element).shadowRoot) {
+    if ((root as Element).shadowRoot) {
         // intentionally co-oercing to a truthy value because shadowRoot property can be undefined or null(HTMLUnknownElement)
         queueReactionsForTree((root as Element).shadowRoot!, reactionTypes, reactionQueue);
     }
 
+    const childNodeList = childNodesGetter.call(root);
     // Perf optimization: Element and Document Fragment are the only types that need to be processed
-    if ((nodeType === 1 || nodeType === 11) && isTrue(hasChildNodes.call(root))) {
-        forEach.call(childNodesGetter.call(root), child => {
+    if (childNodeList.length > 0) {
+        forEach.call(childNodeList, child => {
             queueReactionsForTree(child, reactionTypes, reactionQueue);
         });
     }
