@@ -12,25 +12,30 @@ module.exports = {
             '@lwc/rollup-plugin',
             {
                 rootDir: '<rootDir>/src/',
-                exclude: [/\/engine.js$/, /@best\/runtime/],
+                exclude: ['/engine.js$/', '/@best/runtime/'],
             },
         ],
         ['rollup-plugin-replace', { 'process.env.NODE_ENV': JSON.stringify('production') }],
     ],
     benchmarkOnClient: false,
     benchmarkIterations: 60,
-    runnerConfig: [
+    runners: [
         {
+            alias: 'default',
             runner: '@best/runner-headless',
-            name: 'default',
         },
         {
-            runner: '@best/runner-remote',
-            name: 'remote',
+            alias: 'remote',
+            runner: '@best/runner-hub',
             config: {
-                host: 'http://best-agent-chrome-70-heroku02.lwcjs.org',
-                options: { path: '/best' },
-                remoteRunner: '@best/runner-headless',
+                host: process.env.BEST_HUB_HOSTNAME || 'https://bestv4-hub.herokuapp.com/',
+                options: {
+                    query: { token: process.env.BEST_HUB_CLIENT_TOKEN },
+                },
+                spec: {
+                    browser: 'chrome',
+                    version: '76',
+                },
             },
         },
     ],
