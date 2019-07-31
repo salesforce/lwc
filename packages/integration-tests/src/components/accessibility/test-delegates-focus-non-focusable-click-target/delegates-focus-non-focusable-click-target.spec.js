@@ -38,6 +38,7 @@ describe('focus delegation when clicking on form element label', () => {
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('.head');
         });
+        // Focus on input so that relatedTarget will be non-null
         headInput.click();
 
         const label = browser.execute(function() {

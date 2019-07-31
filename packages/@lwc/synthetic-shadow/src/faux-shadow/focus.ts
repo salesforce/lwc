@@ -282,27 +282,26 @@ function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): 
 
 function handleMouseDown(evt) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
-    removeEventListener.call(currentTarget, 'focusin', keyboardFocusInHandler as EventListener);
+    removeEventListener.call(
+        currentTarget,
+        'focusin',
+        keyboardFocusInHandler as EventListener,
+        true
+    );
 
-    function handleMouseup() {
-        setTimeout(() => {
-            if (
-                !isNull(currentTarget) &&
-                tabIndexGetter.call(currentTarget as HTMLElement) === -1
-            ) {
-                addEventListener.call(
-                    currentTarget,
-                    'focusin',
-                    keyboardFocusInHandler as EventListener
-                );
-            }
-        }, 0);
-        removeEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener);
+    function reinstateKeyboardFocusInHandler() {
+        if (!isNull(currentTarget) && getAttribute.call(currentTarget, 'tabindex') === '-1') {
+            addEventListener.call(
+                currentTarget,
+                'focusin',
+                keyboardFocusInHandler as EventListener,
+                true
+            );
+        }
     }
 
-    // Reinstate the keyboardFocusInHandler in the tick after mouseup. We used to do this in the
-    // tick after mousedown but that failed to account for the case where the user clicked on a form
-    // element label (which is another way of placing focus on the form element).
+    // When reinstating keyboardFocusInHandler after clicks on form element labels, we need to
+    // account for the difference in event ordering:
     //
     // Click form element   | Click form element label
     // ==================================================
@@ -312,11 +311,29 @@ function handleMouseDown(evt) {
     // mouseup              | FOCUSIN
     // mouseup-setTimeout   | mouseup-setTimeout
     //
-    // If we 1) remove the focusin handler on mousedown and 2) schedule a task to add it back in the
-    // next tick on mousedown, the focusin handler ends up executing if the form element label is
-    // clicked (see table above). In order to ensure that the focusin handler does not execute for
-    // the duration of the click for both cases, we add it back in the tick after mouseup.
-    addEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener);
+    // In the special case where the label is clicked, reinstating the handler in a mousedown
+    // setTimeout does not allow us to prevent the handler from executing (see table above). In
+    // order to account for this discrepancy, we reinstate the handler in a mouseup setTimeout. In
+    // doing so, we assume the calculated risk getting into a bad state where the focusin handler is
+    // never reinstated because the user might mousedown on the label, move the pointer away, and
+    // mouseup somewhere else. If we need to address this issue in the future, a potential fix could
+    // be to compare mousedown and mouseup targets at the root node to detect when this happens so
+    // that we can make the appropriate adjustments.
+    const target = eventTargetGetter.call(evt);
+    if ((target as Element).tagName === 'LABEL') {
+        const handleMouseup = () => {
+            setTimeout(reinstateKeyboardFocusInHandler);
+            removeEventListener.call(
+                currentTarget,
+                'mouseup',
+                handleMouseup as EventListener,
+                true
+            );
+        };
+        addEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener, true);
+    } else {
+        setTimeout(reinstateKeyboardFocusInHandler);
+    }
 }
 
 // Skips the host element
@@ -357,17 +374,17 @@ export function handleFocusIn(elm: HTMLElement) {
     // If the user is triggering a mousedown event on an element
     // That can trigger a focus event, then we need to opt out
     // of our tabindex -1 dance. The tabindex -1 only applies for keyboard navigation
-    addEventListener.call(elm, 'mousedown', handleMouseDown, true);
+    addEventListener.call(elm, 'mousedown', handleMouseDown as EventListener, true);
 
     // This focusin listener is to catch focusin events from keyboard interactions
     // A better solution would perhaps be to listen for keydown events, but
     // the keydown event happens on whatever element already has focus (or no element
     // at all in the case of the location bar. So, instead we have to assume that focusin
     // without a mousedown means keyboard navigation
-    addEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener);
+    addEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener, true);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener);
-    removeEventListener.call(elm, 'mousedown', handleMouseDown, true);
+    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener, true);
+    removeEventListener.call(elm, 'mousedown', handleMouseDown as EventListener, true);
 }
