@@ -80,8 +80,8 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    reactTo(element, ReactionEventType.connected, () => {
-        const vm = getCustomElementVM(element);
+    reactTo(element, ReactionEventType.connected, function() {
+        const vm = getCustomElementVM(this as HTMLElement);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         if (vm.state === VMState.connected) {
             // usually means moving the element from one place to another, which is observable via life-cycle hooks
@@ -90,23 +90,9 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         appendRootVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
-    /*setInternalField(element, ConnectingSlot, () => {
-        const vm = getCustomElementVM(element);
-        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        if (vm.state === VMState.connected) {
-            // usually means moving the element from one place to another, which is observable via life-cycle hooks
-            removeRootVM(vm);
-        }
-        appendRootVM(vm);
-        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-    });*/
-    reactTo(element, ReactionEventType.disconnected, () => {
-        const vm = getCustomElementVM(element);
+    reactTo(element, ReactionEventType.disconnected, function() {
+        const vm = getCustomElementVM(this as HTMLElement);
         removeRootVM(vm);
     });
-    /*setInternalField(element, DisconnectingSlot, () => {
-        const vm = getCustomElementVM(element);
-        removeRootVM(vm);
-    });*/
     return element;
 }

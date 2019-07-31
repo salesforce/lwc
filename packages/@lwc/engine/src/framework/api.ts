@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import reactTo, { ReactionEventType } from '@lwc/node-reactions';
+
 import assert from '../shared/assert';
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
 import {
@@ -30,7 +32,7 @@ import {
     EmptyObject,
     useSyntheticShadow,
 } from './utils';
-import { VM, SlotSet } from './vm';
+import { VM, SlotSet, getCustomElementVM, appendVM, removeVM } from './vm';
 import { ComponentConstructor } from './component';
 import {
     VNode,
@@ -45,7 +47,6 @@ import {
 } from '../3rdparty/snabbdom/types';
 import {
     createViewModelHook,
-    insertCustomElmHook,
     fallbackElmHook,
     rerenderCustomElmHook,
     removeElmHook,
@@ -59,7 +60,6 @@ import {
     updateCustomElmHook,
     updateChildrenHook,
     allocateChildrenHook,
-    removeCustomElmHook,
     markAsDynamicChildren,
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
@@ -174,6 +174,14 @@ const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
         const { sel } = vnode;
         vnode.elm = document.createElement(sel);
+        reactTo(vnode.elm, ReactionEventType.connected, function() {
+            const vm = getCustomElementVM(this as HTMLElement);
+            appendVM(vm);
+        });
+        reactTo(vnode.elm, ReactionEventType.disconnected, function() {
+            const vm = getCustomElementVM(this as HTMLElement);
+            removeVM(vm);
+        });
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Element);
@@ -196,14 +204,12 @@ const CustomElementHook: Hooks = {
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
-        insertCustomElmHook(vnode);
     },
     move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
     },
     remove: (vnode: VCustomElement, parentNode: Node) => {
         removeNodeHook(vnode, parentNode);
-        removeCustomElmHook(vnode);
     },
 };
 

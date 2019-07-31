@@ -8,8 +8,7 @@
 // Polyfills
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
-import { initialize_option1 as initializeNodeReactionsLib } from '@lwc/node-reactions';
-initializeNodeReactionsLib();
+import '@lwc/node-reactions';
 
 // TODO: #1296 - Revisit these exports and figure out a better separation
 export { createElement } from './upgrade';
