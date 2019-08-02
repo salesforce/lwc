@@ -25,6 +25,7 @@ import {
     cloneNode,
     hasChildNodes,
     contains,
+    isConnected,
     parentElementGetter,
     lastChildGetter,
     firstChildGetter,
@@ -427,6 +428,13 @@ defineProperties(Node.prototype, {
         enumerable: true,
         configurable: true,
         writable: true,
+    },
+    isConnected: {
+        enumerable: true,
+        configurable: true,
+        get(this: Node) {
+            return isConnected.call(this);
+        },
     },
 });
 

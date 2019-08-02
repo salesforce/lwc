@@ -83,6 +83,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     reactTo(element, ReactionEventType.connected, function() {
         const vm = getCustomElementVM(this as HTMLElement);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+        // TODO: This is not required anymore. node-reactions takes care of invoking disconnected if a connected node is moved. Caridy?
         if (vm.state === VMState.connected) {
             // usually means moving the element from one place to another, which is observable via life-cycle hooks
             removeRootVM(vm);
