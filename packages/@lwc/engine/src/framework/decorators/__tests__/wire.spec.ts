@@ -7,6 +7,7 @@
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../../main';
 import wire from '../wire';
+import { registerDecorators } from '../register';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -26,7 +27,9 @@ describe('wire.ts', () => {
                     expect(this.foo).not.toBe(o);
                 }
             }
-            MyComponent.wire = { foo: {} };
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -43,8 +46,10 @@ describe('wire.ts', () => {
                     expect(this.foo).not.toBe(o);
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -67,8 +72,10 @@ describe('wire.ts', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -95,8 +102,10 @@ describe('wire.ts', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFooDotX'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFooDotX'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -116,8 +125,10 @@ describe('wire.ts', () => {
                     expect(this.foo).toBe(1);
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -135,8 +146,10 @@ describe('wire.ts', () => {
                     expect(this.foo).not.toBe(a);
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -152,8 +165,10 @@ describe('wire.ts', () => {
                     expect(this.foo).toBe(d);
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -171,8 +186,10 @@ describe('wire.ts', () => {
                     expect(this.foo).toBe(o);
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -187,8 +204,10 @@ describe('wire.ts', () => {
                     this.foo = v;
                 }
             }
-            MyComponent.wire = { foo: {} };
-            MyComponent.publicMethods = ['injectFoo'];
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+                publicMethods: ['injectFoo'],
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(() => {
@@ -203,7 +222,9 @@ describe('wire.ts', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.wire = { foo: {} };
+            registerDecorators(MyComponent, {
+                wire: { foo: {} },
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => {
                 document.body.appendChild(elm);

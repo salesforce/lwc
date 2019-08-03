@@ -6,6 +6,7 @@
  */
 import { createElement, LightningElement } from '../';
 import { compileTemplate } from 'test-utils';
+import { registerDecorators } from '../framework/main';
 
 describe('events', () => {
     describe('bookkeeping', () => {
@@ -71,7 +72,9 @@ describe('events', () => {
                     return tpl;
                 }
             }
-            MyComponent.publicMethods = ['triggerInternalClick'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['triggerInternalClick'],
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             function a() {
@@ -225,10 +228,10 @@ describe('events', () => {
                     return rootHTML;
                 }
             }
-            Root.track = {
-                newTitle: 1,
-            };
-            Root.publicMethods = ['changeSomething'];
+            registerDecorators(Root, {
+                track: { newTitle: 1 },
+                publicMethods: ['changeSomething'],
+            });
             class Parent extends LightningElement {
                 render() {
                     return parentHTML;
@@ -597,7 +600,9 @@ describe('events', () => {
                     return tpl;
                 }
             }
-            MyComponent.publicMethods = ['triggerInternalClick'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['triggerInternalClick'],
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.triggerInternalClick();

@@ -6,6 +6,7 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
+import { registerDecorators } from '../decorators/register';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -37,8 +38,10 @@ function createBoundaryComponent({ name, ctor }) {
             return this.error ? recoveryTmpl : baseTmpl;
         }
     }
-    Boundary.track = { error: 1 };
-    Boundary.publicMethods = ['getError'];
+    registerDecorators(Boundary, {
+        track: { error: 1 },
+        publicMethods: ['getError'],
+    });
 
     return Boundary;
 }
@@ -334,8 +337,10 @@ describe('error boundary component', () => {
                                 return boundaryWithSlot;
                             }
                         }
-                        BoundaryWithSlot.publicMethods = ['getError'];
-                        BoundaryWithSlot.track = { error: 1 };
+                        registerDecorators(BoundaryWithSlot, {
+                            track: { error: 1 },
+                            publicMethods: ['getError'],
+                        });
 
                         const boundaryElm = createElement('x-boundary-with-slot', {
                             is: BoundaryWithSlot,
@@ -375,8 +380,10 @@ describe('error boundary component', () => {
                                 throw new Error('Boundary RenderedCallback Throw');
                             }
                         }
-                        Boundary.publicMethods = ['getError'];
-                        Boundary.track = { error: 1 };
+                        registerDecorators(Boundary, {
+                            track: { error: 1 },
+                            publicMethods: ['getError'],
+                        });
 
                         const boundaryElm = createElement('x-boundary', { is: Boundary });
 
@@ -412,8 +419,10 @@ describe('error boundary component', () => {
                                 return html;
                             }
                         }
-                        ChildErrorBoundary.publicMethods = ['getError'];
-                        ChildErrorBoundary.track = { error: 1 };
+                        registerDecorators(ChildErrorBoundary, {
+                            track: { error: 1 },
+                            publicMethods: ['getError'],
+                        });
 
                         const HostErrorBoundary = createBoundaryComponent({
                             name: 'child-error-boundary',
@@ -449,8 +458,10 @@ describe('error boundary component', () => {
                             throw new Error('Child Boundary RenderedCallback Throw');
                         }
                     }
-                    ChildErrorBoundary.publicMethods = ['getError'];
-                    ChildErrorBoundary.track = { error: 1 };
+                    registerDecorators(ChildErrorBoundary, {
+                        track: { error: 1 },
+                        publicMethods: ['getError'],
+                    });
 
                     const HostErrorBoundary = createBoundaryComponent({
                         name: 'child-error-boundary',
@@ -498,8 +509,10 @@ describe('error boundary component', () => {
                                 return html;
                             }
                         }
-                        ChildErrorBoundary.publicMethods = ['getError'];
-                        ChildErrorBoundary.track = { error: 1 };
+                        registerDecorators(ChildErrorBoundary, {
+                            track: { error: 1 },
+                            publicMethods: ['getError'],
+                        });
 
                         const HostErrorBoundary = createBoundaryComponent({
                             name: 'child-error-boundary',
@@ -627,8 +640,10 @@ describe('error boundary component', () => {
                                 throw new Error('Boundary ConnectedCallback Throw');
                             }
                         }
-                        Boundary.publicMethods = ['getError'];
-                        Boundary.track = { error: 1 };
+                        registerDecorators(Boundary, {
+                            track: { error: 1 },
+                            publicMethods: ['getError'],
+                        });
 
                         const boundaryElm = createElement('x-boundary', { is: Boundary });
 
@@ -795,7 +810,9 @@ describe('error boundary component', () => {
                             return this.error ? recoveryTmpl : baseTmpl;
                         }
                     }
-                    InnerErrorBoundary.track = { error: 1 };
+                    registerDecorators(InnerErrorBoundary, {
+                        track: { error: 1 },
+                    });
 
                     const elm = createElement('inner-error-boundary', { is: InnerErrorBoundary });
                     document.body.appendChild(elm);
@@ -962,11 +979,9 @@ describe('error boundary component', () => {
                             return null;
                         }
                     }
-                    PreErrorChildContent.publicProps = {
-                        foo: {
-                            config: 1,
-                        },
-                    };
+                    registerDecorators(PreErrorChildContent, {
+                        publicProps: { foo: { config: 1 } },
+                    });
                     const baseTmpl = compileTemplate(
                         `
                     <template>

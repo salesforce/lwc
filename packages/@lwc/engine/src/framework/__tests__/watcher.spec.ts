@@ -6,6 +6,7 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
+import { registerDecorators } from '../decorators/register';
 
 describe('watcher', () => {
     describe('integration', () => {
@@ -50,8 +51,10 @@ describe('watcher', () => {
                     return parentTmpl;
                 }
             }
-            Parent.track = { round: 1 };
-            Parent.publicMethods = ['updateRound'];
+            registerDecorators(Parent, {
+                track: { round: 1 },
+                publicMethods: ['updateRound'],
+            });
 
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
@@ -80,8 +83,10 @@ describe('watcher', () => {
                     return counter <= 1 ? dynamicTmpl : staticTmpl;
                 }
             }
-            MyComponent9.track = { x: 1 };
-            MyComponent9.publicMethods = ['updateTracked'];
+            registerDecorators(MyComponent9, {
+                track: { x: 1 },
+                publicMethods: ['updateTracked'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent9 });
             document.body.appendChild(elm);

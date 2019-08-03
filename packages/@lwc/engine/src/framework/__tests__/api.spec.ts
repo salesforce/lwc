@@ -8,6 +8,7 @@ import * as api from '../api';
 import { createElement, LightningElement } from '../main';
 import { registerTemplate } from '../template';
 import { compileTemplate } from 'test-utils';
+import { registerDecorators } from '../decorators/register';
 
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
@@ -22,7 +23,9 @@ describe('api', () => {
                         return 1;
                     }
                 }
-                Foo.publicMethods = ['xyz'];
+                registerDecorators(Foo, {
+                    publicMethods: ['xyz'],
+                });
                 return Foo;
             };
             factory.__circular__ = true;

@@ -6,6 +6,7 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../';
+import { registerDecorators } from '../framework/main';
 
 describe('dom', () => {
     describe('composed polyfill', () => {
@@ -51,7 +52,9 @@ describe('dom', () => {
                     this.dispatchEvent(event);
                 }
             }
-            MyComponent.publicMethods = ['trigger'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['trigger'],
+            });
 
             const parentTmpl = compileTemplate(
                 `

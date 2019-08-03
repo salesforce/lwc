@@ -32,11 +32,11 @@ export interface WireDef {
 export interface PropsDef {
     [key: string]: PropDef;
 }
-interface TrackDef {
+export interface TrackDef {
     [key: string]: 1;
 }
 type PublicMethod = (...args: any[]) => any;
-interface MethodDef {
+export interface MethodDef {
     [key: string]: PublicMethod;
 }
 export interface WireHash {

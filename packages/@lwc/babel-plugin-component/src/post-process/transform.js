@@ -6,9 +6,8 @@
  */
 /*
  * After all our decorator transforms have run,
- * we have created static properties attached to the class body
- * Foo.track = {...}
- *
+ * we call registerDecorators() to register the metadata
+ * of all transformed decorators.
  */
 
 const { basename, extname } = require('path');

@@ -6,6 +6,7 @@
  */
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement } from '../main';
+import { registerDecorators } from '../decorators/register';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -164,8 +165,10 @@ describe('patch', () => {
                     calls.push('root:renderedCallback');
                 }
             }
-            Root.publicMethods = ['show', 'hide'];
-            Root.track = { state: 1 };
+            registerDecorators(Root, {
+                track: { state: 1 },
+                publicMethods: ['show', 'hide'],
+            });
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -238,8 +241,10 @@ describe('patch', () => {
                     calls.push('root:renderedCallback');
                 }
             }
-            Root.publicMethods = ['show'];
-            Root.track = { state: 1 };
+            registerDecorators(Root, {
+                track: { state: 1 },
+                publicMethods: ['show'],
+            });
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
@@ -283,8 +288,10 @@ describe('patch', () => {
                     return html;
                 }
             }
-            MyComponent.track = { state: 1 };
-            MyComponent.publicMethods = ['triggerRender'];
+            registerDecorators(MyComponent, {
+                track: { state: 1 },
+                publicMethods: ['triggerRender'],
+            });
 
             const element = createElement('x-parent', { is: MyComponent });
             document.body.appendChild(element);
