@@ -18,6 +18,7 @@ describe('resolve-lwc-npm-modules', () => {
         const resolverOptions = {
             moduleDirectories: ['empty'],
             rootDir: path.join(__dirname, 'fixtures'),
+            ignorePatterns: [],
         };
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
@@ -28,6 +29,7 @@ describe('resolve-lwc-npm-modules', () => {
         const resolverOptions = {
             moduleDirectories: ['fake_node_modules'],
             rootDir: path.join(__dirname, 'fixtures'),
+            ignorePatterns: [],
         };
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
@@ -45,6 +47,7 @@ describe('resolve-lwc-npm-modules', () => {
     it('resolve from npm: modulePaths options', () => {
         const resolverOptions = {
             modulePaths: [path.join(__dirname, 'fixtures', 'fake_node_modules')],
+            ignorePatterns: [],
         };
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
@@ -59,7 +62,22 @@ describe('resolve-lwc-npm-modules', () => {
             ])
         );
     });
-    it('resolve from npm: ignorePattern', () => {
+    it('resolve from npm: modulePaths has direct package.json folder reference', () => {
+        const resolverOptions = {
+            modulePaths: [
+                path.join(__dirname, 'fixtures', 'fake_node_modules', 'fake-multi-component'),
+            ],
+            ignorePatterns: [],
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(3);
+        expect(lwcModuleNames).toEqual(
+            expect.arrayContaining(['fake/module1', 'fake/module2', 'other/resource'])
+        );
+    });
+    it('resolve from npm: ignorePatterns', () => {
         const resolverOptions = {
             modulePaths: [path.join(__dirname, 'fixtures', 'fake_node_modules')],
             ignorePatterns: ['**/fake-module-package/**'],
@@ -72,18 +90,58 @@ describe('resolve-lwc-npm-modules', () => {
             expect.arrayContaining(['fake/module1', 'fake/module2', 'other/resource'])
         );
     });
-    it('resolve from npm: modulePaths has direct package.json folder reference', () => {
+    it('resolve from npm: ignorePatterns applies to paths within directories', () => {
+        const root = path.join(__dirname, 'fixtures', 'fake_node_modules', 'fake-multi-component');
         const resolverOptions = {
-            modulePaths: [
-                path.join(__dirname, 'fixtures', 'fake_node_modules', 'fake-multi-component'),
-            ],
+            modulePaths: [root],
+            ignorePatterns: ['**/fake-multi-component/src/fake/module2/**'],
         };
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        //normalize paths
+        Object.values(lwcModules).forEach(entry => {
+            entry.entry = entry.entry.substring(root.length + 1);
+        });
+
         const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(3);
+
         expect(lwcModuleNames).toHaveLength(3);
         expect(lwcModuleNames).toEqual(
             expect.arrayContaining(['fake/module1', 'fake/module2', 'other/resource'])
+        );
+
+        const entryPaths = Object.values(lwcModules).map(e => e.entry);
+        expect(entryPaths).toEqual(
+            expect.arrayContaining([
+                'src/fake/module1/module1.js',
+                'src-dup/fake/module2/module2.js',
+                'other/resource.js',
+            ])
+        );
+    });
+    it('resolve from npm: ignorePatterns applies to explicit mappings', () => {
+        const root = path.join(__dirname, 'fixtures', 'fake_node_modules', 'fake-multi-component');
+        const resolverOptions = {
+            modulePaths: [root],
+            ignorePatterns: ['**/other/resource.js'],
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        //normalize paths
+        Object.values(lwcModules).forEach(entry => {
+            entry.entry = entry.entry.substring(root.length + 1);
+        });
+
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(2);
+
+        expect(lwcModuleNames).toHaveLength(2);
+        expect(lwcModuleNames).toEqual(expect.arrayContaining(['fake/module1', 'fake/module2']));
+
+        const entryPaths = Object.values(lwcModules).map(e => e.entry);
+        expect(entryPaths).toEqual(
+            expect.arrayContaining(['src/fake/module1/module1.js', 'src/fake/module2/module2.js'])
         );
     });
 });

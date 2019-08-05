@@ -7,6 +7,7 @@
 /* eslint-env node */
 
 import glob from 'fast-glob';
+import { convertPatternsToRe, matchAny } from 'fast-glob/out/utils/pattern';
 import path from 'path';
 import fs from 'fs';
 import { nodeModulePaths, defaultNodeModulePaths } from './node-modules-paths';
@@ -85,7 +86,7 @@ function loadLwcConfig(modulePath: string): LWCConfig | undefined {
     return config;
 }
 
-export function resolveModulesInDir(absPath: string): { [name: string]: RegistryEntry } {
+export function resolveModulesInDir(absPath: string): LWCModules {
     return glob
         .sync<FlatEntry>(MODULE_ENTRY_PATTERN, {
             cwd: absPath,
@@ -115,7 +116,7 @@ export function resolveModulesInDir(absPath: string): { [name: string]: Registry
         }, {});
 }
 
-function hasModuleBeenVisited(module, visited) {
+function hasModuleBeenVisited(module: string, visited: Set<string>) {
     return visited.has(module);
 }
 
@@ -136,7 +137,7 @@ function expandModuleDirectories({
 
 function resolveModules(
     modules: [LWCConfigModuleMapOrPath] | LWCConfigModuleMapOrPath,
-    opts: ResolverParams
+    opts: ResolverParams & { ignoreRegExp: RegExp[] }
 ) {
     if (Array.isArray(modules)) {
         modules.forEach(modulePath => resolveModules(modulePath, opts));
@@ -146,16 +147,25 @@ function resolveModules(
             const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules));
             Object.keys(packageEntries).forEach(moduleName => {
                 if (!hasModuleBeenVisited(moduleName, visited)) {
-                    mappings[moduleName] = packageEntries[moduleName];
-                    visited.add(moduleName);
+                    const registryEntry = packageEntries[moduleName];
+                    const path = registryEntry.entry;
+                    const ignored = matchAny(path, opts.ignoreRegExp);
+                    if (!ignored) {
+                        mappings[moduleName] = registryEntry;
+                        visited.add(moduleName);
+                    }
                 }
             });
         } else {
             Object.keys(modules).forEach(moduleName => {
                 if (!hasModuleBeenVisited(moduleName, visited)) {
                     const modulePath = path.join(moduleRoot, modules[moduleName]);
-                    mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
-                    visited.add(moduleName);
+
+                    const ignored = matchAny(modulePath, opts.ignoreRegExp);
+                    if (!ignored) {
+                        mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
+                        visited.add(moduleName);
+                    }
                 }
             });
         }
@@ -166,6 +176,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
     const visited = new Set<string>();
     const modulePaths = expandModuleDirectories(options);
     const ignore = options.ignorePatterns || DEFAULT_IGNORE;
+    const ignoreRegExp = convertPatternsToRe(ignore, {});
 
     return modulePaths.reduce((m, nodeModulesDir) => {
         return glob
@@ -186,6 +197,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
                         moduleRoot,
                         lwcConfig,
                         ignore,
+                        ignoreRegExp,
                     });
                 }
 
