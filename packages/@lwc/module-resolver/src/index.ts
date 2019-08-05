@@ -9,7 +9,7 @@
 import glob from 'fast-glob';
 import path from 'path';
 import fs from 'fs';
-import nodeModulePaths from './node-modules-paths';
+import { nodeModulePaths, defaultNodeModulePaths } from './node-modules-paths';
 
 const DEFAULT_IGNORE = ['**/node_modules/**', '**/__tests__/**'];
 const PACKAGE_PATTERN = ['*/*/package.json', '*/package.json', 'package.json'];
@@ -123,18 +123,15 @@ function expandModuleDirectories({
     moduleDirectories,
     rootDir,
     modulePaths,
-}: Partial<ModuleResolverConfig> = {}) {
+}: Partial<ModuleResolverConfig>) {
     if (modulePaths) {
         return modulePaths;
     }
-    if (!moduleDirectories && !rootDir) {
-        // paths() is spec'd to return null only for built-in node
-        // modules like 'http'. To be safe, return empty array in
-        // instead of null in this case.
-        return require.resolve.paths('.') || [];
+    if (!rootDir) {
+        return defaultNodeModulePaths();
     }
 
-    return nodeModulePaths(rootDir || __dirname, moduleDirectories);
+    return nodeModulePaths(rootDir, moduleDirectories);
 }
 
 function resolveModules(
@@ -169,6 +166,7 @@ export function resolveLwcNpmModules(options: Partial<ModuleResolverConfig> = {}
     const visited = new Set<string>();
     const modulePaths = expandModuleDirectories(options);
     const ignore = options.ignorePatterns || DEFAULT_IGNORE;
+
     return modulePaths.reduce((m, nodeModulesDir) => {
         return glob
             .sync<FlatEntry>(PACKAGE_PATTERN, {

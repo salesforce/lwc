@@ -6,8 +6,24 @@
  */
 const path = require('path');
 const lwcResolver = require('../index');
+const nodePaths = require('../node-modules-paths');
 
 describe('resolve-lwc-npm-modules', () => {
+    it('resolve from npm: defaults', () => {
+        const spy = jest.spyOn(nodePaths, 'defaultNodeModulePaths');
+        lwcResolver.resolveLwcNpmModules();
+        expect(spy).toHaveBeenCalledTimes(1);
+    });
+    it('resolve from npm: empty', () => {
+        const resolverOptions = {
+            moduleDirectories: ['empty'],
+            rootDir: path.join(__dirname, 'fixtures'),
+        };
+
+        const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
+        const lwcModuleNames = Object.keys(lwcModules);
+        expect(lwcModuleNames).toHaveLength(0);
+    });
     it('resolve from npm', () => {
         const resolverOptions = {
             moduleDirectories: ['fake_node_modules'],
@@ -22,7 +38,7 @@ describe('resolve-lwc-npm-modules', () => {
                 'alias-fake-package',
                 'fake/module1',
                 'fake/module2',
-                'other-resource',
+                'other/resource',
             ])
         );
     });
@@ -39,7 +55,7 @@ describe('resolve-lwc-npm-modules', () => {
                 'alias-fake-package',
                 'fake/module1',
                 'fake/module2',
-                'other-resource',
+                'other/resource',
             ])
         );
     });
@@ -53,7 +69,7 @@ describe('resolve-lwc-npm-modules', () => {
         const lwcModuleNames = Object.keys(lwcModules);
         expect(lwcModuleNames).toHaveLength(3);
         expect(lwcModuleNames).toEqual(
-            expect.arrayContaining(['fake/module1', 'fake/module2', 'other-resource'])
+            expect.arrayContaining(['fake/module1', 'fake/module2', 'other/resource'])
         );
     });
     it('resolve from npm: modulePaths has direct package.json folder reference', () => {
@@ -67,7 +83,7 @@ describe('resolve-lwc-npm-modules', () => {
         const lwcModuleNames = Object.keys(lwcModules);
         expect(lwcModuleNames).toHaveLength(3);
         expect(lwcModuleNames).toEqual(
-            expect.arrayContaining(['fake/module1', 'fake/module2', 'other-resource'])
+            expect.arrayContaining(['fake/module1', 'fake/module2', 'other/resource'])
         );
     });
 });

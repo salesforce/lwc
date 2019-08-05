@@ -11,7 +11,7 @@
 
 import path from 'path';
 
-export default function nodeModulesPaths(basedir: string, moduleDirectory: string[] | undefined) {
+export function nodeModulePaths(basedir: string, moduleDirectory: string[] | undefined) {
     const modules: string[] = moduleDirectory ? [...moduleDirectory] : ['node_modules'];
 
     // ensure that `basedir` is an absolute path at this point,
@@ -41,4 +41,11 @@ export default function nodeModulesPaths(basedir: string, moduleDirectory: strin
     }, []);
 
     return dirs;
+}
+
+export function defaultNodeModulePaths(): string[] {
+    // paths() is spec'd to return null only for built-in node
+    // modules like 'http'. To be safe, return empty array in
+    // instead of null in this case.
+    return require.resolve.paths('.') || [];
 }
