@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { createElement, LightningElement } from '../';
+import { createElement, LightningElement, registerDecorators } from '../';
 import { compileTemplate } from 'test-utils';
 
 describe('events', () => {
@@ -71,7 +71,9 @@ describe('events', () => {
                     return tpl;
                 }
             }
-            MyComponent.publicMethods = ['triggerInternalClick'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['triggerInternalClick'],
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             function a() {
@@ -225,10 +227,10 @@ describe('events', () => {
                     return rootHTML;
                 }
             }
-            Root.track = {
-                newTitle: 1,
-            };
-            Root.publicMethods = ['changeSomething'];
+            registerDecorators(Root, {
+                track: { newTitle: 1 },
+                publicMethods: ['changeSomething'],
+            });
             class Parent extends LightningElement {
                 render() {
                     return parentHTML;
@@ -597,7 +599,9 @@ describe('events', () => {
                     return tpl;
                 }
             }
-            MyComponent.publicMethods = ['triggerInternalClick'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['triggerInternalClick'],
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.triggerInternalClick();

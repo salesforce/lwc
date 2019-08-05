@@ -6,7 +6,7 @@
  */
 import { compileTemplate } from 'test-utils';
 
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 import assertLogger from '../../shared/assert';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
@@ -177,8 +177,10 @@ describe('html-element', () => {
                     });
                 }
             }
-            MyComponent.publicProps = { foo: true };
-            MyComponent.publicMethods = ['setFoo'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['setFoo'],
+                publicProps: { foo: {} },
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.foo = 1;
@@ -212,7 +214,9 @@ describe('html-element', () => {
                     return this.tabIndex;
                 }
             }
-            MyComponent.publicMethods = ['getTabIndex'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['getTabIndex'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
@@ -231,7 +235,9 @@ describe('html-element', () => {
                     return this.tabIndex;
                 }
             }
-            MyComponent.publicMethods = ['getTabIndex'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['getTabIndex'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
@@ -272,7 +278,9 @@ describe('html-element', () => {
                     return this.tabIndex;
                 }
             }
-            MyComponent.publicMethods = ['getTabIndex'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['getTabIndex'],
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
@@ -415,7 +423,9 @@ describe('html-element', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.publicProps = { x: 1 };
+            registerDecorators(MyComponent, {
+                publicProps: { x: 1 },
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = 2;
             return Promise.resolve().then(() => {
@@ -432,7 +442,9 @@ describe('html-element', () => {
                     return emptyTemplate;
                 }
             }
-            MyComponent.publicProps = { x: 1 };
+            registerDecorators(MyComponent, {
+                publicProps: { x: 1 },
+            });
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -481,12 +493,13 @@ describe('html-element', () => {
                     return this.state.foo;
                 }
             }
+            registerDecorators(MyComponent, {
+                publicProps: { foo: {} },
+            });
 
-            MyComponent.publicProps = {
-                foo: {},
-            };
-
-            MyComponent.track = { state: 1 };
+            registerDecorators(MyComponent, {
+                track: { state: 1 },
+            });
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.foo = new Map();
@@ -503,7 +516,9 @@ describe('html-element', () => {
                     this.state.foo;
                 }
             }
-            MyComponent.track = { state: 1 };
+            registerDecorators(MyComponent, {
+                track: { state: 1 },
+            });
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
 
             expect(() => document.body.appendChild(elm)).not.toLogError();
@@ -513,9 +528,9 @@ describe('html-element', () => {
             class MyComponent extends LightningElement {
                 foo = null;
             }
-            MyComponent.publicProps = {
-                foo: {},
-            };
+            registerDecorators(MyComponent, {
+                publicProps: { foo: {} },
+            });
             const elm = createElement('x-foo-init-api', { is: MyComponent });
 
             expect(() => document.body.appendChild(elm)).not.toLogError();
@@ -534,9 +549,9 @@ describe('html-element', () => {
                         called += 1;
                     }
                 }
-                MyComponent.publicProps = {
-                    role: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { role: {} },
+                });
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
                 element.role = 'tab';
@@ -572,9 +587,9 @@ describe('html-element', () => {
                         return 'lang';
                     }
                 }
-                MyComponent.publicProps = {
-                    lang: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { lang: {} },
+                });
 
                 const element = createElement('prop-setter-lang', { is: MyComponent });
                 element.lang = 'en';
@@ -618,9 +633,9 @@ describe('html-element', () => {
                         return 'en';
                     }
                 }
-                MyComponent.publicProps = {
-                    lang: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { lang: {} },
+                });
 
                 const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
 
@@ -692,9 +707,9 @@ describe('html-element', () => {
                         return 'hidden';
                     }
                 }
-                MyComponent.publicProps = {
-                    hidden: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { hidden: {} },
+                });
 
                 const element = createElement('prop-setter-hidden', { is: MyComponent });
                 element.hidden = true;
@@ -737,9 +752,9 @@ describe('html-element', () => {
                         return 'hidden';
                     }
                 }
-                MyComponent.publicProps = {
-                    hidden: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { hidden: {} },
+                });
 
                 const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
 
@@ -815,9 +830,9 @@ describe('html-element', () => {
                     }
                 }
 
-                MyComponent.publicProps = {
-                    dir: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { dir: {} },
+                });
 
                 const element = createElement('prop-setter-dir', { is: MyComponent });
                 element.dir = 'ltr';
@@ -861,9 +876,9 @@ describe('html-element', () => {
                         return 'ltr';
                     }
                 }
-                MyComponent.publicProps = {
-                    dir: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { dir: {} },
+                });
 
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
 
@@ -937,9 +952,9 @@ describe('html-element', () => {
                         return 'id';
                     }
                 }
-                MyComponent.publicProps = {
-                    id: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { id: {} },
+                });
 
                 const element = createElement('prop-setter-id', { is: MyComponent });
                 element.id = 'id';
@@ -983,9 +998,9 @@ describe('html-element', () => {
                         return 'id';
                     }
                 }
-                MyComponent.publicProps = {
-                    id: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { id: {} },
+                });
 
                 const element = createElement('prop-getter-id-imperative', { is: MyComponent });
 
@@ -1061,9 +1076,9 @@ describe('html-element', () => {
                         return 'accessKey';
                     }
                 }
-                MyComponent.publicProps = {
-                    accessKey: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { accessKey: {} },
+                });
 
                 const element = createElement('prop-setter-accessKey', { is: MyComponent });
                 element.accessKey = 'accessKey';
@@ -1108,9 +1123,9 @@ describe('html-element', () => {
                         return 'accessKey';
                     }
                 }
-                MyComponent.publicProps = {
-                    accessKey: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { accessKey: {} },
+                });
                 const element = createElement('prop-getter-accessKey-imperative', {
                     is: MyComponent,
                 });
@@ -1185,9 +1200,9 @@ describe('html-element', () => {
                         return 'title';
                     }
                 }
-                MyComponent.publicProps = {
-                    title: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { title: {} },
+                });
                 const element = createElement('prop-setter-title', { is: MyComponent });
                 (element.title = {}), expect(count).toBe(1);
             });
@@ -1228,9 +1243,9 @@ describe('html-element', () => {
                         return 'title';
                     }
                 }
-                MyComponent.publicProps = {
-                    title: {},
-                };
+                registerDecorators(MyComponent, {
+                    publicProps: { title: {} },
+                });
 
                 const element = createElement('prop-getter-title-imperative', { is: MyComponent });
 

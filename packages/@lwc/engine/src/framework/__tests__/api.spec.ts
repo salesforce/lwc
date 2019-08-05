@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as api from '../api';
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 import { registerTemplate } from '../template';
 import { compileTemplate } from 'test-utils';
 
@@ -22,7 +22,9 @@ describe('api', () => {
                         return 1;
                     }
                 }
-                Foo.publicMethods = ['xyz'];
+                registerDecorators(Foo, {
+                    publicMethods: ['xyz'],
+                });
                 return Foo;
             };
             factory.__circular__ = true;

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -16,7 +16,9 @@ describe('Composed events', () => {
                 this.dispatchEvent(new CustomEvent('foo'));
             }
         }
-        Child.publicMethods = ['triggerFoo'];
+        registerDecorators(Child, {
+            publicMethods: ['triggerFoo'],
+        });
 
         const html = compileTemplate(
             `
@@ -42,7 +44,9 @@ describe('Composed events', () => {
                 return html;
             }
         }
-        ComposedEvents.publicMethods = ['triggerChildFoo'];
+        registerDecorators(ComposedEvents, {
+            publicMethods: ['triggerChildFoo'],
+        });
 
         const elem = createElement('x-components-events-parent', { is: ComposedEvents });
         document.body.appendChild(elem);
@@ -340,7 +344,9 @@ describe('Events on Custom Elements', () => {
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
-        MyComponent.publicMethods = ['run'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['run'],
+        });
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
@@ -370,7 +376,9 @@ describe('Events on Custom Elements', () => {
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
-        MyComponent.publicMethods = ['run'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['run'],
+        });
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
@@ -400,7 +408,9 @@ describe('Events on Custom Elements', () => {
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
-        MyChild.publicMethods = ['run'];
+        registerDecorators(MyChild, {
+            publicMethods: ['run'],
+        });
 
         const parentTmpl = compileTemplate(
             `
@@ -421,7 +431,9 @@ describe('Events on Custom Elements', () => {
                 child.run();
             }
         }
-        MyComponent.publicMethods = ['run'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['run'],
+        });
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
@@ -452,7 +464,9 @@ describe('Events on Custom Elements', () => {
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
-        MyChild.publicMethods = ['run'];
+        registerDecorators(MyChild, {
+            publicMethods: ['run'],
+        });
 
         const parentTmpl = compileTemplate(
             `
@@ -473,7 +487,9 @@ describe('Events on Custom Elements', () => {
                 child.run();
             }
         }
-        MyComponent.publicMethods = ['run'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['run'],
+        });
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
@@ -508,7 +524,9 @@ describe('Events on Custom Elements', () => {
                 this.removeEventListener('click', clickSpy);
             }
         }
-        MyComponent.publicMethods = ['removeClickListener'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['removeClickListener'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -557,7 +575,9 @@ describe('Events on Custom Elements', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -589,7 +609,9 @@ describe('Events on Custom Elements', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -645,8 +667,9 @@ describe('Events on Custom Elements', () => {
                 return html;
             }
         }
-
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -724,7 +747,9 @@ describe('Slotted element events', () => {
                 return parentTmpl;
             }
         }
-        SlottedEventTarget.publicMethods = ['clickDiv'];
+        registerDecorators(SlottedEventTarget, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('slotted-event-target', { is: SlottedEventTarget });
         document.body.appendChild(elm);
@@ -809,7 +834,9 @@ describe('Shadow Root events', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -840,7 +867,9 @@ describe('Shadow Root events', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -869,7 +898,9 @@ describe('Shadow Root events', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -894,7 +925,9 @@ describe('Shadow Root events', () => {
                 return childTmpl;
             }
         }
-        MyChild.publicMethods = ['clickDiv'];
+        registerDecorators(MyChild, {
+            publicMethods: ['clickDiv'],
+        });
 
         const parentTmpl = compileTemplate(
             `
@@ -925,7 +958,9 @@ describe('Shadow Root events', () => {
                 return parentTmpl;
             }
         }
-        MyComponent.publicMethods = ['clickChildDiv'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickChildDiv'],
+        });
 
         const elm = createElement('correct-nested-root-event-target-parent', { is: MyComponent });
         document.body.appendChild(elm);
@@ -1045,7 +1080,9 @@ describe('Removing events from shadowroot', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv', 'removeHandler'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -1082,7 +1119,9 @@ describe('Removing events from shadowroot', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv', 'removeHandler'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -1120,7 +1159,9 @@ describe('Removing events from cmp', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv', 'removeHandler'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
@@ -1157,7 +1198,9 @@ describe('Removing events from cmp', () => {
                 return html;
             }
         }
-        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+        registerDecorators(MyComponent, {
+            publicMethods: ['clickDiv', 'removeHandler'],
+        });
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);

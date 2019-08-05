@@ -162,18 +162,18 @@ class Table extends LightningElement {
         return tableHTML;
     }
 }
-Table.publicProps = {
-    rows: {},
-};
+registerDecorators(Table, {
+    publicProps: { rows: {} },
+});
 
 class Row extends LightningElement {
     render() {
         return rowHTML;
     }
 }
-Row.publicProps = {
-    row: {},
-};
+registerDecorators(Row, {
+    publicProps: { row: {} },
+});
 
 const rowHTML = compileTemplate(
     `

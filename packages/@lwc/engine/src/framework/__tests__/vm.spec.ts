@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 import { ViewModelReflection } from '../utils';
 import { getComponentVM } from '../vm';
 
@@ -184,8 +184,10 @@ describe('vm', () => {
                     this.h1 = this.h2 = false;
                 }
             }
-            Parent.track = { h1: 1, h2: 1 };
-            Parent.publicMethods = ['enable', 'disable'];
+            registerDecorators(Parent, {
+                track: { h1: 1, h2: 1 },
+                publicMethods: ['enable', 'disable'],
+            });
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);

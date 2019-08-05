@@ -24,7 +24,6 @@ import {
     setPrototypeOf,
     ArrayReduce,
     isUndefined,
-    getOwnPropertyDescriptor,
     isFunction,
 } from '../shared/language';
 import { getInternalField } from '../shared/fields';
@@ -33,7 +32,6 @@ import {
     resolveCircularModuleDependency,
     isCircularModuleDependency,
     ViewModelReflection,
-    EmptyObject,
 } from './utils';
 import {
     ComponentConstructor,
@@ -101,21 +99,17 @@ function createComponentDef(
 
     const { name } = meta;
     let { template } = meta;
-
-    let decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
-
-    // TODO: #1295 - refactor tests that are using this declaration manually
-    if (isUndefined(decoratorsMeta)) {
-        registerDecorators(Ctor, {
-            publicMethods: getOwnValue(Ctor, 'publicMethods'),
-            publicProps: getOwnValue(Ctor, 'publicProps'),
-            track: getOwnValue(Ctor, 'track'),
-            wire: getOwnValue(Ctor, 'wire'),
-        });
-        decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
+    const decoratorsMeta = getDecoratorsRegisteredMeta(Ctor);
+    let props: PropsDef = {};
+    let methods: MethodDef = {};
+    let wire: WireHash | undefined;
+    let track: TrackDef = {};
+    if (!isUndefined(decoratorsMeta)) {
+        props = decoratorsMeta.props;
+        methods = decoratorsMeta.methods;
+        wire = decoratorsMeta.wire;
+        track = decoratorsMeta.track;
     }
-
-    let { props, methods, wire, track } = decoratorsMeta || EmptyObject;
     const proto = Ctor.prototype;
 
     let {
@@ -217,11 +211,6 @@ export function isComponentConstructor(ctor: any): ctor is ComponentConstructor 
     return false;
 }
 
-function getOwnValue(o: any, key: string): any | undefined {
-    const d = getOwnPropertyDescriptor(o, key);
-    return d && d.value;
-}
-
 /**
  * EXPERIMENTAL: This function allows for the collection of internal
  * component metadata. This API is subject to change or being removed.
@@ -282,9 +271,11 @@ import {
 } from './base-bridge-element';
 import {
     getDecoratorsRegisteredMeta,
-    registerDecorators,
     DecoratorMeta,
     PropsDef,
+    WireHash,
+    MethodDef,
+    TrackDef,
 } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
 

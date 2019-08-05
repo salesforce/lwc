@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../';
+import { createElement, LightningElement, registerDecorators } from '../';
 
 describe('dom', () => {
     describe('composed polyfill', () => {
@@ -51,7 +51,9 @@ describe('dom', () => {
                     this.dispatchEvent(event);
                 }
             }
-            MyComponent.publicMethods = ['trigger'];
+            registerDecorators(MyComponent, {
+                publicMethods: ['trigger'],
+            });
 
             const parentTmpl = compileTemplate(
                 `
