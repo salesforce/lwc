@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../';
-import { registerDecorators } from '../framework/main';
+import { createElement, LightningElement, registerDecorators } from '../';
 
 describe('dom', () => {
     describe('composed polyfill', () => {

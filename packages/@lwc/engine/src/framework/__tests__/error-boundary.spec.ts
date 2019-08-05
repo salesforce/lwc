@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { compileTemplate } from 'test-utils';
-import { createElement, LightningElement } from '../main';
-import { registerDecorators } from '../decorators/register';
+import { createElement, LightningElement, registerDecorators } from '../main';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 

@@ -5,10 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as api from '../api';
-import { createElement, LightningElement } from '../main';
+import { createElement, LightningElement, registerDecorators } from '../main';
 import { registerTemplate } from '../template';
 import { compileTemplate } from 'test-utils';
-import { registerDecorators } from '../decorators/register';
 
 describe('api', () => {
     afterAll(() => jest.clearAllMocks());
