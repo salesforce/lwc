@@ -12,6 +12,8 @@ const buildRequire = template.expression(`globalThis.LWC_config.features.FEATURE
 // This plugin relies on the feature flag import declaration appearing before
 // feature flag usage. Dynamic imports are not supported.
 module.exports = function({ types: t }) {
+    // If we want to make this a generic transform, we can probably evalutate
+    // this recursively given a string such as 'globalThis.LWC_config.features'.
     function isFeatureFlagMemberExpression(path, state) {
         const { globalFlags = {} } = state;
         const globalFlagNames = Object.keys(globalFlags);
@@ -99,6 +101,9 @@ module.exports = function({ types: t }) {
                         path.remove();
                     }
                 }
+
+                // Nested feature flags sounds like a very bad idea
+                path.skip();
             },
         },
     };
