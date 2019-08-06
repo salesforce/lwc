@@ -7,10 +7,18 @@
 type FeatureFlag = boolean | null;
 
 // Initialize the global configuration object if it isn't initialized already.
-//const _globalThis = globalThis as any;
-//_globalThis.LWC_config = _globalThis.LWC_config || {};
-//_globalThis.LWC_config.features = _globalThis.LWC_config.features || {};
+const LWC_config = (globalThis as any).LWC_config || {};
+
+export const runtimeFlags = Object.assign({}, LWC_config.features);
 
 export const ENABLE_FOO: FeatureFlag = true;
 export const ENABLE_BAR: FeatureFlag = false;
 export const ENABLE_BAZ: FeatureFlag = null;
+
+export function enableFeature(name: string) {
+    runtimeFlags[name] = true;
+}
+
+export function disableFeature(name: string) {
+    runtimeFlags[name] = false;
+}
