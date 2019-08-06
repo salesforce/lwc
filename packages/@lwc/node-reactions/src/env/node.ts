@@ -7,7 +7,12 @@
 
 import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
 
-const { DOCUMENT_POSITION_CONTAINED_BY } = Node;
+const {
+    DOCUMENT_POSITION_CONTAINED_BY,
+    ELEMENT_NODE,
+    DOCUMENT_NODE,
+    DOCUMENT_FRAGMENT_NODE,
+} = Node;
 
 const {
     appendChild,
@@ -47,6 +52,9 @@ const isConnected = hasOwnProperty.call(Node.prototype, 'isConnected')
       };
 
 export {
+    ELEMENT_NODE,
+    DOCUMENT_NODE,
+    DOCUMENT_FRAGMENT_NODE,
     appendChild,
     childNodesGetter,
     hasChildNodes,
