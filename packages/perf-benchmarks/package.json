@@ -7,11 +7,11 @@
         "remote": "best --projects best.headless.config.js --runner remote"
     },
     "devDependencies": {
-        "@best/runner-headless": "4.0.0-alpha5",
-        "@best/runner-hub": "4.0.0-alpha5",
-        "@best/store-aws": "4.0.0-alpha5",
+        "@best/runner-headless": "4.0.0-alpha6",
+        "@best/runner-hub": "4.0.0-alpha6",
+        "@best/store-aws": "4.0.0-alpha6",
         "@lwc/rollup-plugin": "1.0.2",
-        "@best/cli": "^4.0.0-alpha5"
+        "@best/cli": "^4.0.0-alpha6"
     },
     "dependencies": {
         "@lwc/engine": "1.0.2",
