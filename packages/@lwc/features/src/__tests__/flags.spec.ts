@@ -16,63 +16,96 @@ pluginTester({
             ENABLE_FEATURE_NULL: null,
         },
     },
+    title: 'non-prod environments',
     tests: {
-        'should not transform boolean feature flags (true)': {
+        'should transform boolean feature flags (true)': {
             code: `
                 import { ENABLE_FEATURE_TRUE } from '@lwc/features';
                 if (ENABLE_FEATURE_TRUE) {
-                    console.log('this plugin only handles runtime feature flags');
+                    console.log('ENABLE_FEATURE_TRUE');
                 }
             `,
             output: `
                 import { ENABLE_FEATURE_TRUE } from '@lwc/features';
 
-                if (ENABLE_FEATURE_TRUE) {
-                  console.log('this plugin only handles runtime feature flags');
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_TRUE) {
+                  console.log('ENABLE_FEATURE_TRUE');
                 }
             `,
         },
-        'should not transform boolean feature flags (false)': {
+        'should transform boolean feature flags (false)': {
             code: `
                 import { ENABLE_FEATURE_FALSE } from '@lwc/features';
                 if (ENABLE_FEATURE_FALSE) {
-                    console.log('this plugin only handles runtime feature flags');
+                    console.log('ENABLE_FEATURE_FALSE');
                 }
             `,
             output: `
                 import { ENABLE_FEATURE_FALSE } from '@lwc/features';
 
-                if (ENABLE_FEATURE_FALSE) {
-                  console.log('this plugin only handles runtime feature flags');
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
+                  console.log('ENABLE_FEATURE_FALSE');
                 }
             `,
         },
-        'should transform runtime feature flags only when they are used in an if-statement': {
+        'should not transform feature flags unless the if-test is an identifier': {
             code: `
-                import { ENABLE_FEATURE_NULL } from '@lwc/features';
-                if (ENABLE_FEATURE_NULL) {
-                    console.log('this is an experimental feature');
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL === null) {
+                    console.log('ENABLE_FEATURE_NULL === null');
                 }
-                if (isTrue(ENABLE_FEATURE_NULL)) {
-                    console.log('this is an experimental feature');
+                if (isTrue(ENABLE_FEATURE_TRUE)) {
+                    console.log('isTrue(ENABLE_FEATURE_TRUE)');
                 }
-                if (ENABLE_FEATURE_NULL === true) {
-                    console.log('this is an experimental feature');
+                if (!ENABLE_FEATURE_FALSE) {
+                    console.log('!ENABLE_FEATURE_FALSE');
                 }
             `,
             output: `
-                import { ENABLE_FEATURE_NULL } from '@lwc/features';
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
 
-                if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
-                  console.log('this is an experimental feature');
+                if (ENABLE_FEATURE_NULL === null) {
+                  console.log('ENABLE_FEATURE_NULL === null');
                 }
 
-                if (isTrue(globalThis.LWC_config.features.ENABLE_FEATURE_NULL)) {
-                  console.log('this is an experimental feature');
+                if (isTrue(ENABLE_FEATURE_TRUE)) {
+                  console.log('isTrue(ENABLE_FEATURE_TRUE)');
                 }
 
-                if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL === true) {
-                  console.log('this is an experimental feature');
+                if (!ENABLE_FEATURE_FALSE) {
+                  console.log('!ENABLE_FEATURE_FALSE');
+                }
+            `,
+        },
+        'should not transform identifiers that look like feature flags': {
+            code: `
+                import { ENABLE_FEATURE_FOO } from '@lwc/features';
+                const ENABLE_FEATURE_BAR = true;
+                if (ENABLE_FEATURE_BAR) {
+                    console.log('ENABLE_FEATURE_BAR');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_FOO } from '@lwc/features';
+                const ENABLE_FEATURE_BAR = true;
+
+                if (ENABLE_FEATURE_BAR) {
+                  console.log('ENABLE_FEATURE_BAR');
+                }
+            `,
+        },
+        'should not transform globalThis runtime feature flags': {
+            code: `
+                import { ENABLE_FEATURE_JAPAN } from '@lwc/features';
+                if (globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN) {
+                    console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_JAPAN } from '@lwc/features';
+
+                if (globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN) {
+                  console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN');
                 }
             `,
         },
@@ -99,7 +132,7 @@ pluginTester({
                 import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
 
                 if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
-                  if (ENABLE_FEATURE_TRUE) {
+                  if (globalThis.LWC_config.features.ENABLE_FEATURE_TRUE) {
                     console.log('wow are you sure you know what you are doing?');
                   }
                 }
