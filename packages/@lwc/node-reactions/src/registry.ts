@@ -9,6 +9,7 @@ import { isUndefined } from './shared/language';
 import assert from './shared/assert';
 
 const nodeToCallbackMap: WeakMap<Node, { [key: string]: Array<ReactionCallback> }> = new WeakMap();
+
 export function reactTo(
     node: Node,
     reactionEventType: ReactionEventType,
