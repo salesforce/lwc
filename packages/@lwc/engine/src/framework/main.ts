@@ -6,6 +6,7 @@
  */
 
 // Polyfills
+import '../polyfills/global-this/main';
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
 
