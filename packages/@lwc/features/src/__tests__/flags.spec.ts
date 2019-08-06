@@ -8,6 +8,161 @@ const pluginTester = require('babel-plugin-tester');
 const plugin = require('../babel-plugin');
 
 pluginTester({
+    title: 'prod environments',
+    plugin,
+    pluginOptions: {
+        featureFlags: {
+            ENABLE_FEATURE_TRUE: true,
+            ENABLE_FEATURE_FALSE: false,
+            ENABLE_FEATURE_NULL: null,
+        },
+        prod: true,
+    },
+    tests: {
+        'should transform boolean-true feature flags into compile-time flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE } from '@lwc/features';
+                if (ENABLE_FEATURE_TRUE) {
+                    console.log('ENABLE_FEATURE_TRUE');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE } from '@lwc/features';
+                {
+                  console.log('ENABLE_FEATURE_TRUE');
+                }
+            `,
+        },
+        'should transform boolean-false feature flags into compile-time flags': {
+            code: `
+                import { ENABLE_FEATURE_FALSE } from '@lwc/features';
+                if (ENABLE_FEATURE_FALSE) {
+                    console.log('ENABLE_FEATURE_FALSE');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_FALSE } from '@lwc/features';
+            `,
+        },
+        'should transform runtime flags configured with boolean values into compile-time flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_TRUE) {
+                    console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
+                }
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
+                    console.log('globalThis.LWC_config.features.ENABLE_FEATURE_FALSE');
+                }
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
+                    console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                {
+                  console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
+                }
+
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
+                  console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL');
+                }
+            `,
+        },
+        'should not transform complex if-test expressions': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL === null) {
+                    console.log('ENABLE_FEATURE_NULL === null');
+                }
+                if (isTrue(ENABLE_FEATURE_TRUE)) {
+                    console.log('isTrue(ENABLE_FEATURE_TRUE)');
+                }
+                if (!ENABLE_FEATURE_FALSE) {
+                    console.log('!ENABLE_FEATURE_FALSE');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+
+                if (ENABLE_FEATURE_NULL === null) {
+                  console.log('ENABLE_FEATURE_NULL === null');
+                }
+
+                if (isTrue(ENABLE_FEATURE_TRUE)) {
+                  console.log('isTrue(ENABLE_FEATURE_TRUE)');
+                }
+
+                if (!ENABLE_FEATURE_FALSE) {
+                  console.log('!ENABLE_FEATURE_FALSE');
+                }
+            `,
+        },
+        'should not transform identifiers that look like feature flags': {
+            code: `
+                import { ENABLE_FEATURE_FOO } from '@lwc/features';
+                const ENABLE_FEATURE_BAR = true;
+                if (ENABLE_FEATURE_BAR) {
+                    console.log('ENABLE_FEATURE_BAR');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_FOO } from '@lwc/features';
+                const ENABLE_FEATURE_BAR = true;
+
+                if (ENABLE_FEATURE_BAR) {
+                  console.log('ENABLE_FEATURE_BAR');
+                }
+            `,
+        },
+        'should not transform globalThis runtime feature flags': {
+            code: `
+                import { ENABLE_FEATURE_JAPAN } from '@lwc/features';
+                if (globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN) {
+                    console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_JAPAN } from '@lwc/features';
+
+                if (globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN) {
+                  console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_JAPAN');
+                }
+            `,
+        },
+        'should not transform runtime feature flags when used with a ternary operator': {
+            code: `
+                import { ENABLE_FEATURE_NULL } from '@lwc/features';
+                console.log(ENABLE_FEATURE_NULL ? 'is null' : 'is not null');
+            `,
+            output: `
+                import { ENABLE_FEATURE_NULL } from '@lwc/features';
+                console.log(ENABLE_FEATURE_NULL ? 'is null' : 'is not null');
+            `,
+        },
+        'should transform nested runtime feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL) {
+                    if (ENABLE_FEATURE_TRUE) {
+                        console.log('wow are you sure you know what you are doing?');
+                    }
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+
+                if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
+                  {
+                    console.log('wow are you sure you know what you are doing?');
+                  }
+                }
+            `,
+        },
+    },
+});
+
+pluginTester({
+    title: 'non-prod environments',
     plugin,
     pluginOptions: {
         featureFlags: {
@@ -16,7 +171,6 @@ pluginTester({
             ENABLE_FEATURE_NULL: null,
         },
     },
-    title: 'non-prod environments',
     tests: {
         'should transform boolean feature flags (true)': {
             code: `

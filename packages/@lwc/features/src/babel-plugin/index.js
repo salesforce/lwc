@@ -12,6 +12,31 @@ const buildRequire = template.expression(`globalThis.LWC_config.features.FEATURE
 // This plugin relies on the feature flag import declaration appearing before
 // feature flag usage. Dynamic imports are not supported.
 module.exports = function({ types: t }) {
+    function isFeatureFlagMemberExpression(path, state) {
+        const { globalFlags = {} } = state;
+        const globalFlagNames = Object.keys(globalFlags);
+        // globalThis.LWC_config.features.FEATURE_FLAG_NAME
+        if (path.isMemberExpression() && globalFlagNames.includes(path.node.property.name)) {
+            // globalThis.LWC_config.features
+            const featuresMemExp = path.get('object');
+            if (
+                featuresMemExp.isMemberExpression() &&
+                t.isIdentifier(featuresMemExp.node.property, { name: 'features' })
+            ) {
+                // globalThis.LWC_config
+                const lwcConfigMemExp = featuresMemExp.get('object');
+                if (
+                    lwcConfigMemExp.isMemberExpression() &&
+                    t.isIdentifier(lwcConfigMemExp.node.property, { name: 'LWC_config' })
+                ) {
+                    // globalThis
+                    return lwcConfigMemExp.get('object').isIdentifier({ name: 'globalThis' });
+                }
+            }
+        }
+        return false;
+    }
+
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
@@ -52,6 +77,19 @@ module.exports = function({ types: t }) {
                         // the same identifier and we don't want to process it again.
                         testPath.skip();
                     }
+                    if (flagValue === true) {
+                        // Transform the IfStatement into a BlockStatement
+                        path.replaceWith(path.node.consequent);
+                    }
+                    if (flagValue === false) {
+                        // Remove IfStatement
+                        path.remove();
+                    }
+                }
+
+                if (state.opts.prod && isFeatureFlagMemberExpression(testPath, state)) {
+                    const flagName = testPath.node.property.name;
+                    const flagValue = globalFlags[flagName];
                     if (flagValue === true) {
                         // Transform the IfStatement into a BlockStatement
                         path.replaceWith(path.node.consequent);
