@@ -170,7 +170,7 @@ run_best_chrome: &run_best_chrome
     command: yarn start --projects best.headless.config.js --externalStorage=@best/store-aws --runner remote --dbAdapter=sql/postgres --dbURI=${BEST_HUB_DATABASE_URL}
     no_output_timeout: 40m
 
-compat_best_results: &compat_best_results
+compare_best_results: &compare_best_results
   run:
     name: Comparing Benchmarks
     working_directory: packages/perf-benchmarks
@@ -262,7 +262,7 @@ jobs:
 
       - *setup_best_environment
       - *run_best_chrome
-      - *compat_best_results
+      - *compare_best_results
 
       - *store_best_artifacts
 
