@@ -7,8 +7,9 @@
 import { ReactionEventType, ReactionCallback } from './types';
 import { isUndefined } from './shared/language';
 import assert from './shared/assert';
+import { createFieldName, getInternalField, setInternalField } from './shared/fields';
 
-const nodeToCallbackMap: WeakMap<Node, { [key: string]: Array<ReactionCallback> }> = new WeakMap();
+const NodeToCallbackLookup = createFieldName('');
 
 export function reactTo(
     node: Node,
@@ -20,11 +21,11 @@ export function reactTo(
         assert.invariant(!isUndefined(reactionEventType), 'Missing required event type param');
         assert.invariant(!isUndefined(callback), 'Missing callback');
     }
-    let callbackListByType = nodeToCallbackMap.get(node);
+    let callbackListByType = getInternalField(node, NodeToCallbackLookup);
     if (isUndefined(callbackListByType)) {
         callbackListByType = {};
         callbackListByType[reactionEventType] = [callback];
-        nodeToCallbackMap.set(node, callbackListByType);
+        setInternalField(node, NodeToCallbackLookup, callbackListByType);
         return;
     }
     if (isUndefined(callbackListByType[reactionEventType])) {
@@ -40,20 +41,8 @@ export function reactTo(
     callbackListByType[reactionEventType].push(callback);
 }
 
-export function getRegisteredCallbacksByReactionType(
-    node: Node,
-    reactionEventType: ReactionEventType
-): Array<ReactionCallback> | undefined {
-    const callbackListByType = nodeToCallbackMap.get(node);
-    if (isUndefined(callbackListByType)) {
-        return;
-    }
-    const callbackList = callbackListByType[reactionEventType];
-    return callbackList;
-}
-
 export function getRegisteredCallbacksForNode(
     node: Node
 ): { [key: string]: Array<ReactionCallback> } | undefined {
-    return nodeToCallbackMap.get(node);
+    return getInternalField(node, NodeToCallbackLookup);
 }
