@@ -95,18 +95,6 @@
     "yarn": ">=1.10.1"
   },
   "resolutions": {
-    "@best/analyzer": "http://npm.lwcjs.org/@best/analyzer/-/@best/analyzer-0.6.4/50a8665f0a793ac3bb26b7203c6073dd80375524.tgz",
-    "@best/store-fs": "http://npm.lwcjs.org/@best/store-fs/-/@best/store-fs-0.6.4/3753eae1d2a41acb2ae312b75553818b87696286.tgz",
-    "@best/build": "http://npm.lwcjs.org/@best/build/-/@best/build-0.6.4/87209197048580de6c75981566f7ac7989daa983.tgz",
-    "@best/store": "http://npm.lwcjs.org/@best/store/-/@best/store-0.6.4/e9db2a38416cb9a3bd9bcdf8df88d86f16b163ff.tgz",
-    "@best/runner": "http://npm.lwcjs.org/@best/runner/-/@best/runner-0.6.4/90df754fc18261d1b3a3a2a06bf6f88040152c5e.tgz",
-    "@best/runtime": "http://npm.lwcjs.org/@best/runtime/-/@best/runtime-0.6.4/ca6db6026736cb3316ddea242559c46ed449dbce.tgz",
-    "@best/messager": "http://npm.lwcjs.org/@best/messager/-/@best/messager-0.6.4/cf489639e7e0583979572e496ef35725f28fbc8d.tgz",
-    "@best/utils": "http://npm.lwcjs.org/@best/utils/-/@best/utils-0.6.4/fd71038d57264c558d5994a731444c327af126e6.tgz",
-    "@best/github-integration": "http://npm.lwcjs.org/@best/github-integration/-/@best/github-integration-0.6.4/e44153436296157b28b58f933b32f01b3dde6396.tgz",
-    "@best/config": "http://npm.lwcjs.org/@best/config/-/@best/config-0.6.4/d79cfec64bacee387fcab7326385226db7a95488.tgz",
-    "@best/regex-util": "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.6.4/62266c441ed3a4dac8a70d24edb2dc3699eb227c.tgz",
-    "@best/compare": "http://npm.lwcjs.org/@best/compare/-/@best/compare-0.6.4/847b5292def6f7de36970159a71cbdbc297365db.tgz",
     "lodash": "^4.17.14"
   }
 }
