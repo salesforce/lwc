@@ -1,0 +1,67 @@
+# RFC: Track Reform
+
+## Status
+
+- Start Date: 2019-05-08
+- RFC PR: https://github.com/salesforce/lwc/pull/1216
+
+## Summary
+
+This RFC describes the reform for the tracking mechanism and the `@track` decorator.
+
+## Goal
+
+* Track all fields and private fields (once enabled) without requiring the `@track` decorator.
+
+## Motivation
+
+There is sometimes confusion about what to track and what not to track with the `@track` decorator. And even when you don't track a field, there is confusion about what happen with that field when it is mutated, and why sometimes the new value appears in the template. This confusion is unnecessary.
+
+Another confusion is when for `@wire` decorator reactivity works fine even when no `@track` is used, it just work, making `@track` very confusing.
+
+## Proposal
+
+### "Unlearn" the `@track` decorator
+
+We don't have the concept of deprecate, instead it is more accurate to call it "unlearn" because new users don't need to learn about it, and old users can just forget about it. Components that are using that decorator will just simply continue to function, and the compiler will completely ignore (remove) that decorator.
+
+Instead, the runtime/compiler will figure what is the list of fields that are defined by a class, and make them all trackable at runtime.
+
+### Compiler changes
+
+When the compiler compiles the class, it can extract any field that is not decorated with `@api`, and pass the metadata through the registerComponent call, this information will be used as the same list of things to be tracked today. Not need to change the logic in the engine, just the error messages if any.
+
+### Backwards Compatible
+
+The reason why this change is backward compatible, and safe to do it, is the fact that today, a field that is not decorated, but used from the template is not a static value as some may assume, the field value is still accessed every time the component is re-rendered, making the value to be some sort of passive tracking. The only difference will be that, in some cases, the component will be re-rendered where in the past it wasn't, becoming deterministic.
+
+The following is an example:
+
+```js
+export default class Foo extends LightningElement {
+    // assume that x and y are used in the template
+    @x = 1;
+    y = 2;
+    foo() {
+        // increment both
+        this.x++;
+        this.y++;
+    }
+    bar() {
+        // increment only x
+        this.x++;
+    }
+    baz() {
+        // increment only y
+        this.y++;
+    }
+}
+```
+
+In the example above, calling `foo()` and `bar()` will always render the latest on the next tick, while calling `bar()` might or might not update on the next tick, depending on others mutations in the current job. With this reform, they will always get the latest on the next tick, no matter what.
+
+### Benefits
+
+* No need to learn what the `@track` decorator is and when to use it.
+* No need to ask whether a field should be tracked or not (we get this question a lot).
+* Deterministic update of the UI after mutating a field.

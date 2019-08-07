@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const template = require('@babel/template');
-const defaultFeatureFlags = require('../../dist/commonjs/flags');
+const defaultFeatureFlags = require('../../');
 
 const buildRequire = template.expression(`globalThis.LWC_config.features.FEATURE_FLAG_NAME`);
 

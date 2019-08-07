@@ -1,9 +1,9 @@
 {
     "extends": "../../../tsconfig.json",
     "compilerOptions": {
-        "declarationDir": "dist/types/",
-        "module": "es6",
-        "outDir": "dist/esm/"
+        "baseUrl": ".",
+        "outDir": "types"
     },
-    "files": ["src/flags.ts"]
+
+    "include": ["src/"]
 }
