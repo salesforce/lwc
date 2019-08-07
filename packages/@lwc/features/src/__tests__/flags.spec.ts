@@ -16,9 +16,9 @@ const nonProdTests = {
             }
         `,
         output: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
+            import { ENABLE_FEATURE_TRUE, runtimeFlags } from '@lwc/features';
 
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_TRUE) {
+            if (runtimeFlags.ENABLE_FEATURE_TRUE) {
               console.log('ENABLE_FEATURE_TRUE');
             }
         `,
@@ -31,14 +31,14 @@ const nonProdTests = {
             }
         `,
         output: `
-            import { ENABLE_FEATURE_FALSE } from '@lwc/features';
+            import { ENABLE_FEATURE_FALSE, runtimeFlags } from '@lwc/features';
 
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
+            if (runtimeFlags.ENABLE_FEATURE_FALSE) {
               console.log('ENABLE_FEATURE_FALSE');
             }
         `,
     },
-    'should not tramsform feature flags unless the if-test is an indentifier': {
+    'should not tramsform feature flags unless the if-test is a plain indentifier': {
         code: `
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
             if (ENABLE_FEATURE_NULL === null) {
@@ -52,7 +52,7 @@ const nonProdTests = {
             }
         `,
         output: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
 
             if (ENABLE_FEATURE_NULL === null) {
               console.log('ENABLE_FEATURE_NULL === null');
@@ -67,36 +67,34 @@ const nonProdTests = {
             }
         `,
     },
-    'should not transform identifiers that look like existing feature flags but are not imported': {
+    'should not transform identifiers that look like feature flags but are not imported': {
         code: `
-            import { ENABLE_FEATURE_FOO } from '@lwc/features';
-            const ENABLE_FEATURE_BAR = true;
-            if (ENABLE_FEATURE_BAR) {
-                console.log('ENABLE_FEATURE_BAR');
+            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
+            const ENABLE_FEATURE_FALSE = true;
+            if (ENABLE_FEATURE_FALSE) {
+                console.log('ENABLE_FEATURE_FALSE');
+            }
+            function awesome() {
+                const ENABLE_FEATURE_TRUE = null;
+                if (ENABLE_FEATURE_TRUE) {
+                    console.log('ENABLE_FEATURE_TRUE');
+                }
             }
         `,
         output: `
-            import { ENABLE_FEATURE_FOO } from '@lwc/features';
-            const ENABLE_FEATURE_BAR = true;
+            import { ENABLE_FEATURE_TRUE, runtimeFlags } from '@lwc/features';
+            const ENABLE_FEATURE_FALSE = true;
 
-            if (ENABLE_FEATURE_BAR) {
-              console.log('ENABLE_FEATURE_BAR');
+            if (ENABLE_FEATURE_FALSE) {
+              console.log('ENABLE_FEATURE_FALSE');
             }
-        `,
-    },
-    // This should actually throw unless prod=true
-    'should not transform runtime feature flag lookups': {
-        code: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
-            if (globalThis.LWC_config.feature.ENABLE_FEATURE_TRUE) {
-                console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_TRUE');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
 
-            if (globalThis.LWC_config.feature.ENABLE_FEATURE_TRUE) {
-              console.log('globalThis.LWC_config.feature.ENABLE_FEATURE_TRUE');
+            function awesome() {
+              const ENABLE_FEATURE_TRUE = null;
+
+              if (ENABLE_FEATURE_TRUE) {
+                console.log('ENABLE_FEATURE_TRUE');
+              }
             }
         `,
     },
@@ -106,11 +104,11 @@ const nonProdTests = {
             console.log(ENABLE_FEATURE_NULL ? 'foo' : 'bar');
         `,
         output: `
-            import { ENABLE_FEATURE_NULL } from '@lwc/features';
+            import { ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
             console.log(ENABLE_FEATURE_NULL ? 'foo' : 'bar');
         `,
     },
-    'should not transform nested runtime feature flags': {
+    'should not transform nested feature flags': {
         code: `
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
             if (ENABLE_FEATURE_NULL) {
@@ -120,9 +118,9 @@ const nonProdTests = {
             }
         `,
         output: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
 
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
+            if (runtimeFlags.ENABLE_FEATURE_NULL) {
               if (ENABLE_FEATURE_TRUE) {
                 console.log('this looks like a bad idea');
               }
@@ -144,140 +142,6 @@ pluginTester({
     tests: nonProdTests,
 });
 
-const prodTests = Object.assign({}, nonProdTests, {
-    // Override of nonProdTest version
-    'should transform boolean-true feature flags': {
-        code: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
-            if (ENABLE_FEATURE_TRUE) {
-                console.log('ENABLE_FEATURE_TRUE');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
-            {
-              console.log('ENABLE_FEATURE_TRUE');
-            }
-        `,
-    },
-    // Override of nonProdTest version
-    'should transform boolean-false feature flags': {
-        code: `
-            import { ENABLE_FEATURE_FALSE } from '@lwc/features';
-            if (ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_FALSE } from '@lwc/features';
-        `,
-    },
-    'should transform runtime feature flag lookups into compile-time flags': {
-        code: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_TRUE) {
-                console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
-            }
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
-                console.log('globalThis.LWC_config.features.ENABLE_FEATURE_FALSE');
-            }
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
-                console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
-            {
-              console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
-            }
-
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
-              console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL');
-            }
-        `,
-    },
-    'should not tramsform runtime feature flag lookups unless the if-test is a member expression': {
-        code: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL === null) {
-                console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL === null');
-            }
-            if (isTrue(globalThis.LWC_config.features.ENABLE_FEATURE_TRUE)) {
-                console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
-            }
-            if (!globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
-                console.log('!globalThis.LWC_config.features.ENABLE_FEATURE_FALSE');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
-
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL === null) {
-              console.log('globalThis.LWC_config.features.ENABLE_FEATURE_NULL === null');
-            }
-
-            if (isTrue(globalThis.LWC_config.features.ENABLE_FEATURE_TRUE)) {
-              console.log('globalThis.LWC_config.features.ENABLE_FEATURE_TRUE');
-            }
-
-            if (!globalThis.LWC_config.features.ENABLE_FEATURE_FALSE) {
-              console.log('!globalThis.LWC_config.features.ENABLE_FEATURE_FALSE');
-            }
-        `,
-    },
-    'should not transform member expressions that are not runtime feature flag lookups': {
-        code: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
-            if (globalThis.LWC_config.ENABLE_FEATURE_TRUE) {
-                console.log('globalThis.LWC_config.ENABLE_FEATURE_TRUE');
-            }
-            if (globalThis.features.ENABLE_FEATURE_TRUE) {
-                console.log('globalThis.features.ENABLE_FEATURE_TRUE');
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE } from '@lwc/features';
-
-            if (globalThis.LWC_config.ENABLE_FEATURE_TRUE) {
-              console.log('globalThis.LWC_config.ENABLE_FEATURE_TRUE');
-            }
-
-            if (globalThis.features.ENABLE_FEATURE_TRUE) {
-              console.log('globalThis.features.ENABLE_FEATURE_TRUE');
-            }
-        `,
-    },
-    'should not transform runtime feature flags when used with a ternary operator': {
-        code: `
-            import { ENABLE_FEATURE_NULL } from '@lwc/features';
-            console.log(globalThis.LWC_config.features.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-        `,
-        output: `
-            import { ENABLE_FEATURE_NULL } from '@lwc/features';
-            console.log(globalThis.LWC_config.features.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-        `,
-    },
-    'should not transform nested runtime feature flag lookups': {
-        code: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
-            if (ENABLE_FEATURE_NULL) {
-                if (ENABLE_FEATURE_TRUE) {
-                    console.log('nested feature flags sounds like a vary bad idea');
-                }
-            }
-        `,
-        output: `
-            import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
-
-            if (globalThis.LWC_config.features.ENABLE_FEATURE_NULL) {
-              if (ENABLE_FEATURE_TRUE) {
-                console.log('nested feature flags sounds like a vary bad idea');
-              }
-            }
-        `,
-    },
-});
-
 pluginTester({
     title: 'prod environments',
     plugin,
@@ -289,5 +153,155 @@ pluginTester({
         },
         prod: true,
     },
-    tests: prodTests,
+    tests: Object.assign({}, nonProdTests, {
+        // Override of nonProdTest version
+        'should transform boolean-true feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE } from '@lwc/features';
+                if (ENABLE_FEATURE_TRUE) {
+                    console.log('ENABLE_FEATURE_TRUE');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, runtimeFlags } from '@lwc/features';
+                {
+                  console.log('ENABLE_FEATURE_TRUE');
+                }
+            `,
+        },
+        // Override of nonProdTest version
+        'should transform boolean-false feature flags': {
+            code: `
+                import { ENABLE_FEATURE_FALSE } from '@lwc/features';
+                if (ENABLE_FEATURE_FALSE) {
+                    console.log('ENABLE_FEATURE_FALSE');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_FALSE, runtimeFlags } from '@lwc/features';
+            `,
+        },
+        'should transform both boolean and null feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_TRUE) {
+                    console.log('ENABLE_FEATURE_TRUE');
+                }
+                if (ENABLE_FEATURE_FALSE) {
+                    console.log('ENABLE_FEATURE_FALSE');
+                }
+                if (ENABLE_FEATURE_NULL) {
+                    console.log('ENABLE_FEATURE_NULL');
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_FALSE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
+                {
+                  console.log('ENABLE_FEATURE_TRUE');
+                }
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                  console.log('ENABLE_FEATURE_NULL');
+                }
+            `,
+        },
+        'should transform runtime flag lookups into compile-time flags': {
+            code: `
+                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+                if (runtimeFlags.ENABLE_FEATURE_FALSE) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_FALSE');
+                }
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_NULL');
+                }
+            `,
+            output: `
+                {
+                  console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                  console.log('runtimeFlags.ENABLE_FEATURE_NULL');
+                }
+            `,
+        },
+        'should not transform runtime flag lookups unless the if-test is a member expression': {
+            code: `
+                if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
+                }
+                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
+                    console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
+                }
+            `,
+            output: `
+                if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
+                  console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
+                }
+
+                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
+                  console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+
+                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
+                  console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
+                }
+            `,
+        },
+        'should not transform member expressions that are not runtime flag lookups': {
+            code: `
+                if (churroteria.ENABLE_FEATURE_TRUE) {
+                    console.log('churroteria.ENABLE_FEATURE_TRUE');
+                }
+            `,
+            output: `
+                if (churroteria.ENABLE_FEATURE_TRUE) {
+                  console.log('churroteria.ENABLE_FEATURE_TRUE');
+                }
+            `,
+        },
+        'should not transform runtime flags when used with a ternary operator': {
+            code: `
+                console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
+            `,
+            output: `
+                console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
+            `,
+        },
+        'should not transform nested feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL) {
+                    if (ENABLE_FEATURE_TRUE) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+                if (ENABLE_FEATURE_TRUE) {
+                    if (ENABLE_FEATURE_NULL) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                  if (ENABLE_FEATURE_TRUE) {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
+
+                {
+                  if (ENABLE_FEATURE_NULL) {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
+            `,
+        },
+    }),
 });

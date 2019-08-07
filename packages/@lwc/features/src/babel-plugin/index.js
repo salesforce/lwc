@@ -6,91 +6,91 @@
  */
 const defaultFeatureFlags = require('../../');
 
-// This plugin relies on the feature flag import declaration appearing before
-// feature flag usage. Dynamic imports are not supported.
-module.exports = function({ types: t }) {
-    // If we want to make this a generic transform, we can probably evalutate
-    // this recursively given a string such as 'globalThis.LWC_config.features'.
-    function isFeatureFlagMemberExpression(path, state) {
-        const { globalFlags = {} } = state;
-        const globalFlagNames = Object.keys(globalFlags);
-        // globalThis.LWC_config.features.FEATURE_FLAG_NAME
-        if (path.isMemberExpression() && globalFlagNames.includes(path.node.property.name)) {
-            // globalThis.LWC_config.features
-            const featuresMemExp = path.get('object');
-            if (
-                featuresMemExp.isMemberExpression() &&
-                t.isIdentifier(featuresMemExp.node.property, { name: 'features' })
-            ) {
-                // globalThis.LWC_config
-                const lwcConfigMemExp = featuresMemExp.get('object');
-                if (
-                    lwcConfigMemExp.isMemberExpression() &&
-                    t.isIdentifier(lwcConfigMemExp.node.property, { name: 'LWC_config' })
-                ) {
-                    // globalThis
-                    return lwcConfigMemExp.get('object').isIdentifier({ name: 'globalThis' });
-                }
-            }
-        }
-        return false;
-    }
+const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
+function isRuntimeFlagLookup(path, state) {
+    return (
+        path.isMemberExpression() &&
+        state.featureFlags[path.node.property.name] !== undefined &&
+        path.get('object').isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER })
+    );
+}
+
+module.exports = function({ types: t }) {
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
             ImportDeclaration(path, state) {
-                const { node } = path;
-                if (node.source.value === '@lwc/features') {
-                    state.globalFlags = state.opts.featureFlags || defaultFeatureFlags;
-                    // Evalute all feature flags at runtime in non-prod environments
-                    if (state.opts.prod !== true) {
-                        Object.keys(state.globalFlags).forEach(key => {
-                            state.globalFlags[key] = null;
-                        });
+                if (path.node.source.value === '@lwc/features') {
+                    const specifiers = path.get('specifiers');
+
+                    state.importDeclarationScope = path.scope;
+
+                    // Keep track of imported bindings from @lwc/features so we
+                    // can safely transform flags into runtime lookups.
+                    state.importedFlags = specifiers.map(specifier => specifier.node.imported.name);
+
+                    const didImportRuntimeFlags = specifiers.some(specifier => {
+                        return specifier.node.imported.name === RUNTIME_FLAGS_IDENTIFIER;
+                    });
+                    if (!didImportRuntimeFlags) {
+                        // Blindly import a binding for `runtimeFlags`. It's much
+                        // simpler to let tree-shaking remove it when unnecessary,
+                        // rather than to try and import it only when needed.
+                        path.node.specifiers.push(
+                            t.importSpecifier(
+                                t.identifier(RUNTIME_FLAGS_IDENTIFIER),
+                                t.identifier(RUNTIME_FLAGS_IDENTIFIER)
+                            )
+                        );
                     }
-                    state.importedFlags = node.specifiers.map(specifier => specifier.imported.name);
                 }
             },
             IfStatement(path, state) {
                 const testPath = path.get('test');
-                const {
-                    node: { name },
-                } = testPath;
-                const { importedFlags = [], globalFlags = {} } = state;
 
-                // Identifiers can be tricky so we only transform them if we
-                // know they were imported from @lwc/features.
-                if (
-                    importedFlags.length &&
-                    testPath.isIdentifier() &&
-                    importedFlags.includes(name)
-                ) {
-                    const flagValue = globalFlags[name];
-                    if (flagValue === null) {
-                        testPath.replaceWithSourceString(`globalThis.LWC_config.features.${name}`);
-                        // We replace this Identifier with a MemberExpression that uses
-                        // the same identifier and we don't want to process it again.
-                        testPath.skip();
-                    }
-                    if (flagValue === true) {
-                        // Transform the IfStatement into a BlockStatement
-                        path.replaceWith(path.node.consequent);
-                    }
-                    if (flagValue === false) {
-                        // Remove IfStatement
-                        path.remove();
+                state.featureFlags =
+                    state.featureFlags || state.opts.featureFlags || defaultFeatureFlags;
+
+                // If we have imported any flags and the if-test is a plain identifier
+                if (state.importedFlags && testPath.isIdentifier()) {
+                    const name = testPath.node.name;
+                    const binding = state.importDeclarationScope.getBinding(name);
+                    // If the identifier is a reference to a binding from the import declaration scope
+                    if (
+                        binding &&
+                        binding.referencePaths.includes(testPath) &&
+                        state.importedFlags.includes(name)
+                    ) {
+                        const value = state.featureFlags[name];
+                        if (!state.opts.prod || value === null) {
+                            testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
+                            // We replaced this identifier with a member
+                            // expression that uses the same identifier and we
+                            // don't want to process it again
+                            testPath.skip();
+                        } else if (value === true) {
+                            // Transform the IfStatement into a BlockStatement
+                            path.replaceWith(path.node.consequent);
+                        } else if (value === false) {
+                            // Remove IfStatement
+                            path.remove();
+                        }
                     }
                 }
 
-                if (state.opts.prod && isFeatureFlagMemberExpression(testPath, state)) {
-                    const flagName = testPath.node.property.name;
-                    const flagValue = globalFlags[flagName];
-                    if (flagValue === true) {
+                // Transform runtime flags into compile-time flags where
+                // appropriate for production mode. This essentially undoes the
+                // non-production mode transform of forcing all flags to be
+                // runtime flags.
+                if (state.opts.prod && isRuntimeFlagLookup(testPath, state)) {
+                    const name = testPath.node.property.name;
+                    const value = state.featureFlags[name];
+                    if (value === true) {
                         // Transform the IfStatement into a BlockStatement
                         path.replaceWith(path.node.consequent);
                     }
-                    if (flagValue === false) {
+                    if (value === false) {
                         // Remove IfStatement
                         path.remove();
                     }

@@ -6,6 +6,14 @@
  */
 type FeatureFlag = boolean | null;
 
+/*** DEFINE FEATURE FLAGS BELOW ***/
+
+export const ENABLE_FOO: FeatureFlag = true;
+export const ENABLE_BAR: FeatureFlag = false;
+export const ENABLE_BAZ: FeatureFlag = null;
+
+/*** DEFINE FEATURE FLAGS ABOVE ***/
+
 function getGlobalThis() {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
@@ -37,9 +45,3 @@ export function enableFeature(name: string) {
 export function disableFeature(name: string) {
     runtimeFlags[name] = false;
 }
-
-/*** DEFINE FEATURE FLAGS BELOW ***/
-
-export const ENABLE_FOO: FeatureFlag = true;
-export const ENABLE_BAR: FeatureFlag = false;
-export const ENABLE_BAZ: FeatureFlag = null;
