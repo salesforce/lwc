@@ -4,10 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const template = require('@babel/template');
 const defaultFeatureFlags = require('../../');
-
-const buildRequire = template.expression(`globalThis.LWC_config.features.FEATURE_FLAG_NAME`);
 
 // This plugin relies on the feature flag import declaration appearing before
 // feature flag usage. Dynamic imports are not supported.
@@ -71,10 +68,7 @@ module.exports = function({ types: t }) {
                 ) {
                     const flagValue = globalFlags[name];
                     if (flagValue === null) {
-                        const expression = buildRequire({
-                            FEATURE_FLAG_NAME: t.identifier(name),
-                        });
-                        testPath.replaceWith(expression);
+                        testPath.replaceWithSourceString(`globalThis.LWC_config.features.${name}`);
                         // We replace this Identifier with a MemberExpression that uses
                         // the same identifier and we don't want to process it again.
                         testPath.skip();
