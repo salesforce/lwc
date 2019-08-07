@@ -88,7 +88,8 @@ describe('Transform property', () => {
                     outer: {
                       config: 0
                     }
-                  }
+                  },
+                  fields: ["a"]
                 });
 
                 export default _registerComponent(Outer, {
@@ -333,7 +334,8 @@ describe('Transform property', () => {
                     b: {
                       config: 3
                     }
-                  }
+                  },
+                  fields: ["_a", "_b"]
                 });
 
                 export default _registerComponent(Test, {
@@ -405,7 +407,8 @@ describe('Transform property', () => {
                       config: 3
                     }
                   },
-                  publicMethods: ["m1"]
+                  publicMethods: ["m1"],
+                  fields: ["privateProp", "ctor"]
                 });
 
                 export default _registerComponent(Text, {

@@ -48,6 +48,7 @@ export interface RegisterDecoratorMeta {
     readonly publicProps?: PropsDef;
     readonly track?: TrackDef;
     readonly wire?: WireHash;
+    readonly fields?: string[];
 }
 
 export interface DecoratorMeta {
@@ -55,6 +56,7 @@ export interface DecoratorMeta {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
+    fields: string[] | undefined;
 }
 
 const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
@@ -72,11 +74,13 @@ export function registerDecorators(
     const methods = getPublicMethodsHash(Ctor, meta.publicMethods);
     const wire = getWireHash(Ctor, meta.wire);
     const track = getTrackHash(Ctor, meta.track);
+    const fields = meta.fields;
     signedDecoratorToMetaMap.set(Ctor, {
         props,
         methods,
         wire,
         track,
+        fields,
     });
     for (const propName in props) {
         decoratorMap[propName] = apiDecorator;

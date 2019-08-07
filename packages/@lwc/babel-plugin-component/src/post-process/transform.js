@@ -33,6 +33,42 @@ module.exports = function postProcess({ types: t }) {
         return metaPropertyList;
     }
 
+    function collectObservedFields(body, decoratedProperties) {
+        const mappers = {
+            ObjectExpression: ({ properties }) => properties.map(({ key: { name } }) => name),
+            ArrayExpression: ({ elements }) => elements.map(({ value }) => value),
+        };
+
+        const decoratedIdentifiers = decoratedProperties
+            .map(({ value }) => mappers[value.type](value))
+            .reduce((acc, identifiers) => acc.concat(identifiers), []);
+
+        const nonDecoratedFields = body
+            .get('body')
+            .filter(
+                path =>
+                    t.isClassProperty(path.node) &&
+                    !isLWCNode(path.node) &&
+                    !(decoratedIdentifiers.indexOf(path.node.key.name) >= 0)
+            )
+            .map(path => path.node.key.name);
+
+        return nonDecoratedFields.length
+            ? t.objectProperty(t.identifier('fields'), t.valueToNode(nonDecoratedFields))
+            : null;
+    }
+
+    function collectMetaPropertyList(klassBody) {
+        const metaPropertyList = collectDecoratedProperties(klassBody);
+        const observableFields = collectObservedFields(klassBody, metaPropertyList);
+
+        if (observableFields) {
+            metaPropertyList.push(observableFields);
+        }
+
+        return metaPropertyList;
+    }
+
     function createRegisterDecoratorsCall(path, klass, props) {
         const id = moduleImports.addNamed(path, REGISTER_DECORATORS_ID, 'lwc');
 
@@ -100,8 +136,8 @@ module.exports = function postProcess({ types: t }) {
         ClassExpression(path) {
             const { node } = path;
             if (!node[LWC_POST_PROCCESED]) {
-                const body = path.get('body');
-                const metaPropertyList = collectDecoratedProperties(body);
+                const metaPropertyList = collectMetaPropertyList(path.get('body'));
+
                 if (metaPropertyList.length) {
                     path.replaceWith(createRegisterDecoratorsCall(path, node, metaPropertyList));
                 }
@@ -111,8 +147,7 @@ module.exports = function postProcess({ types: t }) {
         // Decorator collector for class declarations
         ClassDeclaration(path) {
             const { node } = path;
-            const body = path.get('body');
-            const metaPropertyList = collectDecoratedProperties(body);
+            const metaPropertyList = collectMetaPropertyList(path.get('body'));
 
             if (metaPropertyList.length) {
                 const statementPath = path.getStatementParent();
