@@ -12,7 +12,7 @@ const {
     defineProperties,
     hasOwnProperty,
 } = Object;
-const { push: ArrayPush, forEach } = Array.prototype;
+const { push: ArrayPush, slice: ArraySlice, forEach, indexOf: ArrayIndexOf } = Array.prototype;
 
 const { charCodeAt: StringCharCodeAt } = String.prototype;
 
@@ -24,7 +24,9 @@ export {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     ArrayPush,
+    ArraySlice,
     forEach,
+    ArrayIndexOf,
 };
 
 export function isUndefined(obj: any): obj is undefined {
@@ -33,4 +35,8 @@ export function isUndefined(obj: any): obj is undefined {
 
 export function isTrue(obj: any): obj is true {
     return obj === true;
+}
+
+export function isNull(obj: any): obj is null {
+    return obj === null;
 }

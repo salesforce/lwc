@@ -5,11 +5,22 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
+import {
+    appendChild,
+    insertBefore,
+    replaceChild,
+    removeChild,
+    isConnected,
+    nodeTypeGetter,
+    ELEMENT_NODE,
+    DOCUMENT_FRAGMENT_NODE,
+} from '../env/node';
 import { defineProperties, ArrayPush } from '../shared/language';
 import { ReactionEventType, ReactionEvent } from '../types';
-import queueReactionsForTree from '../traverse';
+import queueReactionsForSubtree, { queueReactionsForNodeList } from '../traverse';
 import { flushQueue } from '../reaction-queue';
+import { isQualifyingElement, marker } from '../registry';
+import { querySelectorAll as documentFragmentQuerySelectorAll } from '../env/document-fragment';
 
 export default function() {
     defineProperties(Node.prototype, {
@@ -18,21 +29,67 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                const qualifiedReactionTypes: Array<ReactionEventType> = [];
-                // Pre action
-                if (isConnected.call(aChild)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                // If subtree being appended does not have any qualifying nodes, exit fast
+                if (!isQualifyingElement(aChild)) {
+                    return appendChild.call(this, aChild);
                 }
-                // Action
-                appendChild.call(this, aChild);
-                // Post action
-                if (isConnected.call(aChild)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                const nodeType = nodeTypeGetter.call(aChild);
+                switch (nodeType) {
+                    case ELEMENT_NODE: {
+                        const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (isConnected.call(aChild)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                        }
+                        // Action
+                        const result = appendChild.call(this, aChild);
+                        // Post action
+                        if (isConnected.call(this)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                        }
+                        if (qualifiedReactionTypes.length > 0) {
+                            const reactionQueue: Array<ReactionEvent> = [];
+                            queueReactionsForSubtree(
+                                aChild as Element,
+                                qualifiedReactionTypes,
+                                reactionQueue
+                            );
+                            flushQueue(reactionQueue);
+                        }
+                        return result;
+                    }
+                    case DOCUMENT_FRAGMENT_NODE: {
+                        const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (isConnected.call(aChild)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                        }
+                        // Get the children before appending
+                        const qualifyingChildren = documentFragmentQuerySelectorAll.call(
+                            aChild,
+                            `[${marker}]`
+                        );
+                        // Action
+                        const result = appendChild.call(this, aChild);
+                        // Post action
+                        if (isConnected.call(this)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                        }
+                        if (qualifiedReactionTypes.length > 0) {
+                            const reactionQueue: Array<ReactionEvent> = [];
+                            queueReactionsForNodeList(
+                                qualifyingChildren,
+                                qualifiedReactionTypes,
+                                reactionQueue
+                            );
+                            // Flush the queue only after the appendChild was successful
+                            flushQueue(reactionQueue);
+                        }
+                        return result;
+                    }
+                    default:
+                        return appendChild.call(this, aChild);
                 }
-                const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(aChild, qualifiedReactionTypes, reactionQueue);
-                // Flush the queue only after the appendChild was successful
-                flushQueue(reactionQueue);
             },
         },
         insertBefore: {
@@ -40,20 +97,66 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newNode: Node, referenceNode: Node) {
-                const qualifiedReactionTypes: Array<ReactionEventType> = [];
-                // Pre action
-                if (isConnected.call(newNode)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                // If subtree being inserted does not have any qualifying nodes, exit fast
+                if (!isQualifyingElement(newNode)) {
+                    return insertBefore.call(this, newNode, referenceNode);
                 }
-                // Action
-                insertBefore.call(this, newNode, referenceNode);
-                // Post action
-                if (isConnected.call(newNode)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                const nodeType = nodeTypeGetter.call(newNode);
+                switch (nodeType) {
+                    case ELEMENT_NODE: {
+                        const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (isConnected.call(newNode)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                        }
+                        // Action
+                        const result = insertBefore.call(this, newNode, referenceNode);
+                        // Post action
+                        if (isConnected.call(this)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                        }
+                        if (qualifiedReactionTypes.length > 0) {
+                            const reactionQueue: Array<ReactionEvent> = [];
+                            queueReactionsForSubtree(
+                                newNode as Element,
+                                qualifiedReactionTypes,
+                                reactionQueue
+                            );
+                            flushQueue(reactionQueue);
+                        }
+                        return result;
+                    }
+                    case DOCUMENT_FRAGMENT_NODE: {
+                        const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (isConnected.call(newNode)) {
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                        }
+                        const qualifyingChildren = documentFragmentQuerySelectorAll.call(
+                            newNode,
+                            `[${marker}]`
+                        );
+                        // Action
+                        const result = insertBefore.call(this, newNode, referenceNode);
+                        // Post action
+                        if (isConnected.call(this)) {
+                            // Short circuit and check if parent is connected
+                            ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                        }
+                        if (qualifiedReactionTypes.length > 0) {
+                            const reactionQueue: Array<ReactionEvent> = [];
+                            queueReactionsForNodeList(
+                                qualifyingChildren,
+                                qualifiedReactionTypes,
+                                reactionQueue
+                            );
+                            flushQueue(reactionQueue);
+                        }
+                        return result;
+                    }
+                    default:
+                        return insertBefore.call(this, newNode, referenceNode);
                 }
-                const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(newNode, qualifiedReactionTypes, reactionQueue);
-                flushQueue(reactionQueue);
             },
         },
         replaceChild: {
@@ -61,23 +164,93 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newChild: Node, oldChild: Node) {
-                const qualifiedPreReactionTypes: Array<ReactionEventType> = [];
-                // Pre action
-                if (isConnected.call(oldChild)) {
-                    ArrayPush.call(qualifiedPreReactionTypes, ReactionEventType.disconnected);
+                const oldChildIsQualified = isQualifyingElement(oldChild);
+                const newChildIsQualified = isQualifyingElement(newChild);
+                // If old subtree being removed and new subtree being appended
+                // do not have any qualifying nodes, exit fast
+                if (!oldChildIsQualified && !newChildIsQualified) {
+                    return replaceChild.call(this, newChild, oldChild);
                 }
-                // Action
-                replaceChild.call(this, newChild, oldChild);
 
-                const qualifiedPostReactionTypes: Array<ReactionEventType> = [];
-                // Post action
-                if (isConnected.call(newChild)) {
-                    ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
+                const nodeType = nodeTypeGetter.call(newChild);
+                switch (nodeType) {
+                    case ELEMENT_NODE: {
+                        const qualifiedPreReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (oldChildIsQualified && isConnected.call(oldChild)) {
+                            ArrayPush.call(
+                                qualifiedPreReactionTypes,
+                                ReactionEventType.disconnected
+                            );
+                        }
+                        // Action
+                        const result = replaceChild.call(this, newChild, oldChild);
+
+                        const qualifiedPostReactionTypes: Array<ReactionEventType> = [];
+                        // Post action
+                        if (newChildIsQualified && isConnected.call(this)) {
+                            ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
+                        }
+                        const reactionQueue: Array<ReactionEvent> = [];
+                        if (oldChildIsQualified) {
+                            queueReactionsForSubtree(
+                                oldChild as Element,
+                                qualifiedPreReactionTypes,
+                                reactionQueue
+                            );
+                        }
+                        if (newChildIsQualified) {
+                            queueReactionsForSubtree(
+                                newChild as Element,
+                                qualifiedPostReactionTypes,
+                                reactionQueue
+                            );
+                        }
+                        flushQueue(reactionQueue);
+                        return result;
+                    }
+                    case DOCUMENT_FRAGMENT_NODE: {
+                        const qualifiedPreReactionTypes: Array<ReactionEventType> = [];
+                        // Pre action
+                        if (oldChildIsQualified && isConnected.call(oldChild)) {
+                            ArrayPush.call(
+                                qualifiedPreReactionTypes,
+                                ReactionEventType.disconnected
+                            );
+                        }
+                        const qualifyingChildren = documentFragmentQuerySelectorAll.call(
+                            newChild,
+                            `[${marker}]`
+                        );
+                        // Action
+                        const result = replaceChild.call(this, newChild, oldChild);
+
+                        const qualifiedPostReactionTypes: Array<ReactionEventType> = [];
+                        // Post action
+                        if (newChildIsQualified && isConnected.call(this)) {
+                            ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
+                        }
+                        const reactionQueue: Array<ReactionEvent> = [];
+                        if (oldChildIsQualified) {
+                            queueReactionsForSubtree(
+                                oldChild as Element,
+                                qualifiedPreReactionTypes,
+                                reactionQueue
+                            );
+                        }
+                        if (newChildIsQualified) {
+                            queueReactionsForNodeList(
+                                qualifyingChildren,
+                                qualifiedPostReactionTypes,
+                                reactionQueue
+                            );
+                        }
+                        flushQueue(reactionQueue);
+                        return result;
+                    }
+                    default:
+                        return replaceChild.call(this, newChild, oldChild);
                 }
-                const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(oldChild, qualifiedPreReactionTypes, reactionQueue);
-                queueReactionsForTree(newChild, qualifiedPostReactionTypes, reactionQueue);
-                flushQueue(reactionQueue);
             },
         },
         removeChild: {
@@ -85,15 +258,20 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
+                // If subtree being removed does not have any qualifying nodes, exit fast
+                if (!isQualifyingElement(child)) {
+                    return removeChild.call(this, child);
+                }
                 const qualifiedReactionTypes: Array<ReactionEventType> = [];
                 if (isConnected.call(child)) {
                     ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
                 }
-                removeChild.call(this, child);
+                const result = removeChild.call(this, child);
                 const reactionQueue: Array<ReactionEvent> = [];
-                queueReactionsForTree(child, qualifiedReactionTypes, reactionQueue);
+                queueReactionsForSubtree(child as Element, qualifiedReactionTypes, reactionQueue);
                 // Flush the queue only after the appendChild was successful
                 flushQueue(reactionQueue);
+                return result;
             },
         },
     });

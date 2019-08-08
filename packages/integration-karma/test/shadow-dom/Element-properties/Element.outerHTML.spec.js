@@ -2,13 +2,17 @@ import { createElement } from 'lwc';
 
 import Test from 'x/test';
 
+function stripDataMarker(str) {
+    // Strip the node-reactions marker
+    return str.replace(/ data-node-reactions(="")*/gm, '');
+}
 describe('Element.outerHTML - get', () => {
     it('should enforce the shadow DOM semantic - x-test', () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        expect(elm.outerHTML).toBe('<x-test></x-test>');
-        expect(elm.shadowRoot.querySelector('x-container').outerHTML).toBe(
+        expect(stripDataMarker(elm.outerHTML)).toBe('<x-test></x-test>');
+        expect(stripDataMarker(elm.shadowRoot.querySelector('x-container').outerHTML)).toBe(
             '<x-container><div>Slotted Text<input name="slotted"></div></x-container>'
         );
         expect(elm.shadowRoot.querySelector('div').outerHTML).toBe(

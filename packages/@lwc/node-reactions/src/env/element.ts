@@ -1,3 +1,5 @@
+import { getOwnPropertyDescriptor } from '../shared/language';
+
 /*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
@@ -5,6 +7,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const { querySelectorAll } = Element.prototype;
+const { querySelectorAll, getAttribute, setAttribute } = Element.prototype;
 
-export { querySelectorAll };
+const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
+    Element.prototype,
+    'childElementCount'
+)!.get!;
+
+export { querySelectorAll, getAttribute, setAttribute, childElementCountGetter };

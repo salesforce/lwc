@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import reactTo, { ReactionEventType } from '@lwc/node-reactions';
-
 import assert from '../shared/assert';
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
 import {
@@ -32,7 +30,7 @@ import {
     EmptyObject,
     useSyntheticShadow,
 } from './utils';
-import { VM, SlotSet, getCustomElementVM, appendVM, removeVM } from './vm';
+import { VM, SlotSet } from './vm';
 import { ComponentConstructor } from './component';
 import {
     VNode,
@@ -174,14 +172,6 @@ const CustomElementHook: Hooks = {
     create: (vnode: VCustomElement) => {
         const { sel } = vnode;
         vnode.elm = document.createElement(sel);
-        reactTo(vnode.elm, ReactionEventType.connected, function() {
-            const vm = getCustomElementVM(this as HTMLElement);
-            appendVM(vm);
-        });
-        reactTo(vnode.elm, ReactionEventType.disconnected, function() {
-            const vm = getCustomElementVM(this as HTMLElement);
-            removeVM(vm);
-        });
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Element);
