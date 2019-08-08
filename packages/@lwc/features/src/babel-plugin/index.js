@@ -26,10 +26,6 @@ module.exports = function({ types: t }) {
 
                     state.importDeclarationScope = path.scope;
 
-                    // Keep track of imported bindings from @lwc/features so we
-                    // can safely transform flags into runtime lookups.
-                    state.importedFlags = specifiers.map(specifier => specifier.node.imported.name);
-
                     const didImportRuntimeFlags = specifiers.some(specifier => {
                         return specifier.node.imported.name === RUNTIME_FLAGS_IDENTIFIER;
                     });
@@ -53,15 +49,11 @@ module.exports = function({ types: t }) {
                     state.featureFlags || state.opts.featureFlags || defaultFeatureFlags;
 
                 // If we have imported any flags and the if-test is a plain identifier
-                if (state.importedFlags && testPath.isIdentifier()) {
+                if (state.importDeclarationScope && testPath.isIdentifier()) {
                     const name = testPath.node.name;
                     const binding = state.importDeclarationScope.getBinding(name);
                     // If the identifier is a reference to a binding from the import declaration scope
-                    if (
-                        binding &&
-                        binding.referencePaths.includes(testPath) &&
-                        state.importedFlags.includes(name)
-                    ) {
+                    if (binding && binding.referencePaths.includes(testPath)) {
                         const value = state.featureFlags[name];
                         if (!state.opts.prod || value === null) {
                             testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
