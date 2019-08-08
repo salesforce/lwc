@@ -24,18 +24,22 @@ export interface RegistryEntry {
 export interface ModuleRegistryMap {
     [key: string]: RegistryEntry;
 }
+export interface ModuleRecordObject {
+    name: string;
+    path: string;
+}
 
 export interface ModuleResolverConfig {
     rootDir: string;
-    modules: ModuleId[];
+    modules: ModuleRecord[];
 }
 
-export type ModuleId = string | [string, string];
+export type ModuleRecord = string | ModuleRecordObject;
 export interface LwcConfig {
-    modules: ModuleId[];
+    modules: ModuleRecord[];
 }
 
-export function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
+function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
     const namespaces = fs.readdirSync(modulesDir);
     const resolvedModules: RegistryEntry[] = [];
     namespaces.forEach(ns => {
@@ -57,7 +61,7 @@ export function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
     return resolvedModules;
 }
 
-export function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
+function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
     let resolvedModules: RegistryEntry[] = [];
     try {
         const pkgJsonPath = require.resolve(`${packageName}/package.json`);
@@ -79,24 +83,28 @@ export function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
     return resolvedModules;
 }
 
-export function resolveModulesFromList(
-    modules: ModuleId[],
+function isString(str) {
+    return Object.prototype.toString.call(str) === '[object String]';
+}
+
+function resolveModulesFromList(
+    modules: ModuleRecord[],
     { root }: { root: string }
 ): RegistryEntry[] {
     const resolvedModules: RegistryEntry[] = [];
     modules.forEach(moduleId => {
-        if (Array.isArray(moduleId)) {
-            const [specifier, modulePath] = moduleId;
+        if (!isString(moduleId)) {
+            const { name: specifier, path: modulePath } = moduleId as ModuleRecordObject;
             const entry = path.resolve(root, modulePath);
             if (fs.existsSync(entry)) {
                 resolvedModules.push({ entry, specifier });
             }
         } else {
-            const absPath = path.resolve(root, moduleId);
+            const absPath = path.resolve(root, moduleId as string);
             if (fs.existsSync(absPath)) {
                 resolvedModules.push(...resolveModulesFromDir(absPath));
             } else {
-                resolvedModules.push(...resolveModulesFromNpm(moduleId));
+                resolvedModules.push(...resolveModulesFromNpm(moduleId as string));
             }
         }
     });

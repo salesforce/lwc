@@ -17,10 +17,10 @@
     ],
     "lwc": {
         "modules": [
-            [
-                "@lwc/synthetic-shadow",
-                "dist/synthetic-shadow.js"
-            ]
+            {
+                "name": "@lwc/synthetic-shadow",
+                "path": "dist/synthetic-shadow.js"
+            }
         ]
     },
     "publishConfig": {

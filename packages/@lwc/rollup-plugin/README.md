@@ -24,5 +24,5 @@ export default {
 
 -   `rootDir` (string, optional, default: `input`) - set the LWC module directory
 -   `sourcemap` (boolean, optional, default: `false`) - make the LWC compiler produce source maps
--   `modules` Mapping of module specififers.
+-   `modules` Mapping of module specifiers.
 -   `stylesheetConfig` (object, optional, default: `{}`) - the configuration to pass to the `@lwc/style-compiler`

@@ -24,10 +24,10 @@
     },
     "lwc": {
         "modules": [
-            [
-                "lwc",
-                "dist/engine.js"
-            ]
+            {
+                "name": "lwc",
+                "path": "dist/engine.js"
+            }
         ]
     },
     "publishConfig": {

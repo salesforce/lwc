@@ -25,10 +25,10 @@
     },
     "lwc": {
         "modules": [
-            [
-                "wire-service",
-                "dist/wire-service.js"
-            ]
+            {
+                "name": "wire-service",
+                "path": "dist/wire-service.js"
+            }
         ]
     },
     "publishConfig": {

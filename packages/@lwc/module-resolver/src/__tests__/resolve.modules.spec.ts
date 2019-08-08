@@ -6,14 +6,16 @@
  */
 
 import path from 'path';
-import { resolveModulesFromDir, resolveModules } from '../index';
+import { resolveModules } from '../index';
 
 const FIXTURE_MODULE_ENTRIES = ['ns/cssEntry', 'ns/htmlEntry', 'ns/jsEntry'];
 
 describe('resolve modules', () => {
     it('from directory', () => {
-        const moduleDir = path.join(__dirname, 'fixtures/module-entries');
-        const modules = resolveModulesFromDir(moduleDir);
+        const modules = resolveModules({
+            rootDir: __dirname,
+            modules: ['fixtures/module-entries'],
+        });
         const specifiers = modules.map(m => m.specifier);
         expect(specifiers).toStrictEqual(FIXTURE_MODULE_ENTRIES);
     });

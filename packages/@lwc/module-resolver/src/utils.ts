@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { LwcConfig, ModuleResolverConfig, ModuleId } from '.';
+import { LwcConfig, ModuleResolverConfig, ModuleRecord } from '.';
 
-const DEFAULT_CONFIG: LwcConfig = {
-    modules: [],
-};
+export const LWC_CONFIG_FILE = 'lwc.config.json';
+
+const DEFAULT_CONFIG: LwcConfig = { modules: [] };
 
 export function loadConfig(configPath: string): LwcConfig {
     const configFile = path.join(configPath, LWC_CONFIG_FILE);
@@ -46,8 +46,6 @@ export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleRe
     };
 }
 
-export function mergeModules(userModules: ModuleId[], configModules: ModuleId[]) {
+export function mergeModules(userModules: ModuleRecord[], configModules: ModuleRecord[]) {
     return Array.from(new Set(userModules.concat(configModules)));
 }
-
-export const LWC_CONFIG_FILE = 'lwc.config.json';

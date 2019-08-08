@@ -1,5 +1,8 @@
 {
     "modules": [
-        ["custom-module", "custom/module.js"]
+        {
+            "name": "custom-module",
+            "path": "custom/module.js"
+        }
     ]
 }
