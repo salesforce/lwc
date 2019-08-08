@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.13...v) (2019-08-06)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.15...v) (2019-08-08)
+
+
+### Bug Fixes
+
+* account for clicks on form element labels when delegating focus ([#1439](https://github.com/salesforce/lwc/issues/1439)) ([e19e08b](https://github.com/salesforce/lwc/commit/e19e08b))
+
+
+
+## [1.0.2-222.15](https://github.com/salesforce/lwc/compare/v1.0.2-222.13...v1.0.2-222.15) (2019-08-06)
 
 
 
