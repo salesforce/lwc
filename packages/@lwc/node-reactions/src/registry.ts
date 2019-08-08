@@ -5,14 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ReactionEventType, ReactionCallback } from './types';
-import { isUndefined } from './shared/language';
+import { ArrayPush, isUndefined, create, ArrayIndexOf } from './shared/language';
 import assert from './shared/assert';
 import { createFieldName, getInternalField, setInternalField } from './shared/fields';
+import { setAttribute } from './env/element';
 
-const NodeToCallbackLookup = createFieldName('');
+export const marker = 'data-node-reactions';
 
+const NodeToCallbackLookup = createFieldName('callback-lookup');
 export function reactTo(
-    node: Node,
+    node: Element,
     reactionEventType: ReactionEventType,
     callback: ReactionCallback
 ): void {
@@ -20,12 +22,15 @@ export function reactTo(
         assert.invariant(!isUndefined(node), 'Missing required node param');
         assert.invariant(!isUndefined(reactionEventType), 'Missing required event type param');
         assert.invariant(!isUndefined(callback), 'Missing callback');
+        assert.invariant(node instanceof Element, 'Expected to only register Elements');
     }
+
     let callbackListByType = getInternalField(node, NodeToCallbackLookup);
     if (isUndefined(callbackListByType)) {
-        callbackListByType = {};
+        callbackListByType = create(null);
         callbackListByType[reactionEventType] = [callback];
         setInternalField(node, NodeToCallbackLookup, callbackListByType);
+        setAttribute.call(node, marker, '');
         return;
     }
     if (isUndefined(callbackListByType[reactionEventType])) {
@@ -34,15 +39,34 @@ export function reactTo(
     if (process.env.NODE_ENV !== 'production') {
         // TODO: Handle duplicates https://github.com/salesforce/lwc-rfcs/pull/11/files#r305508013
         assert.invariant(
-            callbackListByType[reactionEventType].indexOf(callback) === -1,
+            ArrayIndexOf.call(callbackListByType[reactionEventType], callback) === -1,
             `Registering a duplicate callback for node ${node} and ${reactionEventType} reaction`
         );
     }
-    callbackListByType[reactionEventType].push(callback);
+    ArrayPush.call(callbackListByType[reactionEventType], callback); // TODO arrayPush from shared
 }
 
-export function getRegisteredCallbacksForNode(
-    node: Node
+export function getRegisteredCallbacksForElement(
+    elm: Element
 ): { [key: string]: Array<ReactionCallback> } | undefined {
-    return getInternalField(node, NodeToCallbackLookup);
+    return getInternalField(elm, NodeToCallbackLookup);
+}
+
+export function isRegisteredNode(node: Node): boolean {
+    return !isUndefined(getInternalField(node, NodeToCallbackLookup));
+}
+
+/**
+ * Whether a subtree, including the root node, has any inspectable nodes.
+ * Conditions to satisfy
+ * 1. The root, has to be an element
+ * 2. The root, has to have children or is a custom element
+ *  2a. Assumption here is that all custom elements are registered
+ */
+export function isQualifyingElement(rootNode: Node): boolean {
+    return (
+        'childElementCount' in rootNode && // duck-typing to detect if node is an element, instead of the expensive instanceOf
+        ((rootNode as Element | DocumentFragment).childElementCount > 0 ||
+            isRegisteredNode(rootNode))
+    );
 }

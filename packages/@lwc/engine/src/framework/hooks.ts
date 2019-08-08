@@ -33,6 +33,7 @@ import {
     lockDomMutation,
 } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
+import reactTo, { ReactionEventType } from '@lwc/node-reactions';
 
 const noop = () => void 0;
 
@@ -193,15 +194,22 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    const vm = getCustomElementVM(elm);
+    reactTo(elm, ReactionEventType.connected, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this);
+        appendVM(vm);
+    });
+    reactTo(elm, ReactionEventType.disconnected, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this as HTMLElement);
+        removeVM(vm);
+    });
     if (process.env.NODE_ENV !== 'production') {
+        const vm = getCustomElementVM(elm);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
         );
-    }
-    if (process.env.NODE_ENV !== 'production') {
+
         patchCustomElementWithRestrictions(elm, EmptyObject);
     }
 }

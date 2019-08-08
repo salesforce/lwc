@@ -6,34 +6,33 @@
  */
 
 import { ReactionEventType, ReactionEvent } from './types';
-import { getRegisteredCallbacksForNode } from './registry';
-import { isUndefined, forEach } from './shared/language';
+import { getRegisteredCallbacksForElement, marker } from './registry';
+import { isUndefined, forEach, isNull } from './shared/language';
 import assert from './shared/assert';
 import { queueCallback } from './reaction-queue';
-import { nodeTypeGetter, ELEMENT_NODE } from './env/node';
 import { querySelectorAll as elementQuerySelectorAll } from './env/element';
-import { querySelectorAll as docFragQuerySelectorAll } from './env/document-fragment';
 
 /**
  * Queue qualifying reaction callbacks for a single node.
  * If the node is a host element, this method will only queue callbacks for the host element.
  * It does not process the host's shadow tree.
  */
-function queueReactionsForSingleNode(
-    node: Node,
+function queueReactionsForSingleElement(
+    elm: Element,
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
-    const callbackListByType = getRegisteredCallbacksForNode(node);
+    const callbackListByType = getRegisteredCallbacksForElement(elm);
     if (!isUndefined(callbackListByType)) {
         forEach.call(reactionTypes, reactionType => {
             if (!isUndefined(callbackListByType[reactionType])) {
-                queueCallback(reactionType, node, callbackListByType[reactionType], reactionQueue);
+                queueCallback(reactionType, elm, callbackListByType[reactionType], reactionQueue);
             }
         });
     }
 }
 
+const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
 /**
  * Process nodes in a shadow tree
  */
@@ -42,23 +41,25 @@ function queueReactionsForShadowRoot(
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
-    queueReactionsForSingleNode(sr, reactionTypes, reactionQueue);
-    queueReactionsForNodeList(docFragQuerySelectorAll.call(sr, '*'), reactionTypes, reactionQueue);
+    queueReactionsForNodeList(
+        ShadowRootQuerySelectorAll.call(sr, `[${marker}]`),
+        reactionTypes,
+        reactionQueue
+    );
 }
 
 /**
  * Process nodes in a NodeList
  */
-function queueReactionsForNodeList(
+export function queueReactionsForNodeList(
     nodeList: NodeList,
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
     forEach.call(nodeList, node => {
-        queueReactionsForSingleNode(node, reactionTypes, reactionQueue);
-        const rootNodeType = nodeTypeGetter.call(node);
-        // If node is a custom element
-        if (rootNodeType === ELEMENT_NODE && (node as Element).shadowRoot) {
+        queueReactionsForSingleElement(node, reactionTypes, reactionQueue);
+        // If node has a shadow tree, process its shadow tree
+        if (!isNull((node as Element).shadowRoot)) {
             queueReactionsForShadowRoot(
                 (node as Element).shadowRoot!,
                 reactionTypes,
@@ -71,33 +72,27 @@ function queueReactionsForNodeList(
 /**
  * Traverse and queue reactions for a sub tree
  */
-export default function queueReactionsForTree(
-    root: Node,
+export default function queueReactionsForSubtree(
+    root: Element,
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(root), `Expected a dom node but received undefined`);
     }
-    // Process root node first
-    queueReactionsForSingleNode(root, reactionTypes, reactionQueue);
 
-    const rootNodeType = nodeTypeGetter.call(root);
-    if (rootNodeType === ELEMENT_NODE) {
-        // If root node is a custom element, process its shadow tree
-        // intentionally co-oercing to a truthy value because shadowRoot property can be undefined or null(HTMLUnknownElement)
-        if ((root as Element).shadowRoot) {
-            queueReactionsForShadowRoot(
-                (root as Element).shadowRoot!,
-                reactionTypes,
-                reactionQueue
-            );
-        }
-        // Process all nodes in subtree in preorder
-        queueReactionsForNodeList(
-            elementQuerySelectorAll.call(root, '*'),
-            reactionTypes,
-            reactionQueue
-        );
+    // Process root node first
+    queueReactionsForSingleElement(root, reactionTypes, reactionQueue);
+
+    // If root node has a shadow tree, process its shadow tree
+    // intentionally co-oercing to a truthy value because shadowRoot property can be undefined or null(HTMLUnknownElement)
+    if (!isNull(root.shadowRoot)) {
+        queueReactionsForShadowRoot(root.shadowRoot, reactionTypes, reactionQueue);
     }
+    // Process all registered nodes in subtree in preorder
+    queueReactionsForNodeList(
+        elementQuerySelectorAll.call(root, `[${marker}]`),
+        reactionTypes,
+        reactionQueue
+    );
 }

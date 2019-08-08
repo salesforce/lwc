@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ReactionEventType, ReactionCallback, ReactionEvent } from './types';
-import { forEach } from './shared/language';
+import { forEach, ArraySlice, ArrayPush } from './shared/language';
 
 export function queueCallback(
     type: ReactionEventType,
@@ -14,18 +14,17 @@ export function queueCallback(
     reactionQueue: Array<ReactionEvent>
 ): Array<ReactionEvent> {
     if (callbackList.length === 1) {
-        reactionQueue.push({ type, node, callback: callbackList[0] });
+        ArrayPush.call(reactionQueue, { type, node, callback: callbackList[0] });
         return reactionQueue; // Optimization to avoid the foreach
     }
     forEach.call(callbackList, callback => {
-        reactionQueue.push({ type, node, callback: callback });
+        ArrayPush.call(reactionQueue, { type, node, callback: callback });
     });
     return reactionQueue;
 }
 
 export function flushQueue(reactionQueue: Array<ReactionEvent>) {
     forEach.call(reactionQueue, (entry: ReactionEvent, index: number) => {
-        // TODO: Should this be fault tolerant? If one callback failed, should the processing end of continue?
         try {
             entry.callback.call(entry.node, entry.type);
         } catch (e) {
@@ -33,6 +32,6 @@ export function flushQueue(reactionQueue: Array<ReactionEvent>) {
             reactionQueue.length = 0;
             throw e;
         }
-        reactionQueue.slice(index, 1);
+        ArraySlice.call(reactionQueue, index, 1);
     });
 }
