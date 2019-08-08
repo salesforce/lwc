@@ -6,9 +6,11 @@
 
 ## Runtime flags
 
-Runtime flags are disabled by default and can be enabled or disabled via
-`globalThis.LWC_config.features`. Set the flag to `true` to enable and set the
-flag to `false` to compile out the feature.
+Runtime flags can be enabled or disabled by setting a boolean value for that
+flag in `globalThis.LWC_config.features`. If the flag is not explicitly
+configured, the feature is disabled by default. This configuration object
+must appear before `@lwc/engine` is initialized and should be defined at the
+application layer.
 
 ### Limitations
 
