@@ -33,6 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^1.10.2",
     "@typescript-eslint/parser": "^1.10.2",
     "aws-sdk": "^2.378.0",
+    "babel-plugin-tester": "^6.4.0",
     "commitizen": "^3.1.1",
     "concurrently": "^4.1.0",
     "conventional-changelog-cli": "^2.0.21",

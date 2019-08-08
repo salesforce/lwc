@@ -2816,6 +2816,17 @@ babel-plugin-jest-hoist@^24.6.0:
   dependencies:
     "@types/babel__traverse" "^7.0.6"
 
+babel-plugin-tester@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-tester/-/babel-plugin-tester-6.4.0.tgz#cdbc430794c375bf4c207a0287a00a68346529e9"
+  integrity sha512-Eyr6YmDuKRStZX6Jamv+C0IW40RxiJLJb6ogaf0jNcIwZ+/r9Nq2vaDUTZgWLps+bQBMTmn6rtHD3zJQecF3nA==
+  dependencies:
+    common-tags "^1.4.0"
+    invariant "^2.2.2"
+    lodash.mergewith "^4.6.0"
+    path-exists "^3.0.0"
+    strip-indent "^2.0.0"
+
 babel-plugin-transform-proxy-compat@0.21.7:
   version "0.21.7"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.21.7.tgz#86d2113b16a4b9347f75fd50907bbcc47d9f40a7"
@@ -3648,7 +3659,7 @@ commitizen@^3.1.1:
     strip-bom "3.0.0"
     strip-json-comments "2.0.1"
 
-common-tags@^1.8.0:
+common-tags@^1.4.0, common-tags@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.0.tgz#8e3153e542d4a39e9b10554434afaaf98956a937"
   integrity sha512-6P6g0uetGpW/sdyUy/iQQCbFF0kWVMSIVSyYz7Zgjcgh8mgw8PQzDNZeyZ5DQ2gM7LBoZPHmnjz8rUthkBG5tw==
@@ -6476,7 +6487,7 @@ interpret@^1.0.0:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.1.0.tgz#7ed1b1410c6a0e0f78cf95d3b8440c63f78b8614"
   integrity sha1-ftGxQQxqDg94z5XTuEQMY/eLhhQ=
 
-invariant@^2.2.4:
+invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -8072,6 +8083,11 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
+
+lodash.mergewith@^4.6.0:
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
+  integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
 
 lodash.once@^4.0.0:
   version "4.1.1"

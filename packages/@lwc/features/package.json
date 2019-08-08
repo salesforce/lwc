@@ -1,0 +1,18 @@
+{
+    "name": "@lwc/features",
+    "private": true,
+    "version": "1.0.2",
+    "description": "LWC Features Flags",
+    "main": "dist/flags.cjs.js",
+    "module": "dist/flags.js",
+    "typings": "types/flags.d.ts",
+    "license": "MIT",
+    "scripts": {
+        "clean": "rm -rf dist/ types/",
+        "test": "jest",
+        "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
+    },
+    "files": [
+        "dist/"
+    ]
+}
