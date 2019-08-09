@@ -10,7 +10,6 @@ import { getRegisteredCallbacksForElement, marker } from './registry';
 import { isUndefined, forEach, isNull } from './shared/language';
 import assert from './shared/assert';
 import { queueCallback } from './reaction-queue';
-import { querySelectorAll as elementQuerySelectorAll } from './env/element';
 
 /**
  * Queue qualifying reaction callbacks for a single node.
@@ -73,26 +72,22 @@ export function queueReactionsForNodeList(
  * Traverse and queue reactions for a sub tree
  */
 export default function queueReactionsForSubtree(
-    root: Element,
+    rootElm: Element | DocumentFragment,
+    nodeList: NodeList,
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(!isUndefined(root), `Expected a dom node but received undefined`);
+        assert.invariant(!isUndefined(rootElm), `Expected a dom node but received undefined`);
     }
 
     // Process root node first
-    queueReactionsForSingleElement(root, reactionTypes, reactionQueue);
+    queueReactionsForSingleElement(rootElm as any, reactionTypes, reactionQueue);
 
     // If root node has a shadow tree, process its shadow tree
-    // intentionally co-oercing to a truthy value because shadowRoot property can be undefined or null(HTMLUnknownElement)
-    if (!isNull(root.shadowRoot)) {
-        queueReactionsForShadowRoot(root.shadowRoot, reactionTypes, reactionQueue);
+    if ('shadowRoot' in rootElm && !isNull(rootElm.shadowRoot)) {
+        queueReactionsForShadowRoot(rootElm.shadowRoot, reactionTypes, reactionQueue);
     }
     // Process all registered nodes in subtree in preorder
-    queueReactionsForNodeList(
-        elementQuerySelectorAll.call(root, `[${marker}]`),
-        reactionTypes,
-        reactionQueue
-    );
+    queueReactionsForNodeList(nodeList, reactionTypes, reactionQueue);
 }
