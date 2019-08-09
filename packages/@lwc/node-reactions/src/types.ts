@@ -10,10 +10,10 @@ export enum ReactionEventType {
     disconnected = 'disconnected',
 }
 
-export type ReactionCallback = (this: Node, reactionEventType: ReactionEventType) => void;
+export type ReactionCallback = (this: Element, reactionEventType: ReactionEventType) => void;
 
 export interface ReactionEvent {
     type: ReactionEventType;
     callback: ReactionCallback;
-    node: Node;
+    node: Element;
 }

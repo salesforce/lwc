@@ -14,23 +14,23 @@ export const marker = 'data-node-reactions';
 
 const NodeToCallbackLookup = createFieldName('callback-lookup');
 export function reactTo(
-    node: Element,
+    elm: Element,
     reactionEventType: ReactionEventType,
     callback: ReactionCallback
 ): void {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(!isUndefined(node), 'Missing required node param');
+        assert.invariant(!isUndefined(elm), 'Missing required node param');
         assert.invariant(!isUndefined(reactionEventType), 'Missing required event type param');
         assert.invariant(!isUndefined(callback), 'Missing callback');
-        assert.invariant(node instanceof Element, 'Expected to only register Elements');
+        assert.invariant(elm instanceof Element, 'Expected to only register Elements');
     }
 
-    let callbackListByType = getInternalField(node, NodeToCallbackLookup);
+    let callbackListByType = getInternalField(elm, NodeToCallbackLookup);
     if (isUndefined(callbackListByType)) {
         callbackListByType = create(null);
         callbackListByType[reactionEventType] = [callback];
-        setInternalField(node, NodeToCallbackLookup, callbackListByType);
-        setAttribute.call(node, marker, '');
+        setInternalField(elm, NodeToCallbackLookup, callbackListByType);
+        setAttribute.call(elm, marker, '');
         return;
     }
     if (isUndefined(callbackListByType[reactionEventType])) {
@@ -40,7 +40,7 @@ export function reactTo(
         // TODO: Handle duplicates https://github.com/salesforce/lwc-rfcs/pull/11/files#r305508013
         assert.invariant(
             ArrayIndexOf.call(callbackListByType[reactionEventType], callback) === -1,
-            `Registering a duplicate callback for node ${node} and ${reactionEventType} reaction`
+            `Registering a duplicate callback for node ${elm} and ${reactionEventType} reaction`
         );
     }
     ArrayPush.call(callbackListByType[reactionEventType], callback); // TODO arrayPush from shared

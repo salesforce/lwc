@@ -9,16 +9,16 @@ import { forEach, ArraySlice, ArrayPush } from './shared/language';
 
 export function queueCallback(
     type: ReactionEventType,
-    node: Node,
+    elm: Element,
     callbackList: Array<ReactionCallback>,
     reactionQueue: Array<ReactionEvent>
 ): Array<ReactionEvent> {
     if (callbackList.length === 1) {
-        ArrayPush.call(reactionQueue, { type, node, callback: callbackList[0] });
+        ArrayPush.call(reactionQueue, { type, node: elm, callback: callbackList[0] });
         return reactionQueue; // Optimization to avoid the foreach
     }
     forEach.call(callbackList, callback => {
-        ArrayPush.call(reactionQueue, { type, node, callback: callback });
+        ArrayPush.call(reactionQueue, { type, node: elm, callback: callback });
     });
     return reactionQueue;
 }
