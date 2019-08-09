@@ -44,8 +44,7 @@ function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
     const namespaces = fs.readdirSync(modulesDir);
     const resolvedModules: RegistryEntry[] = [];
     namespaces.forEach(ns => {
-        // TODO: A better isDir() bellow
-        if (!path.extname(ns)) {
+        if (fs.lstatSync(path.join(modulesDir, ns)).isDirectory()) {
             const namespacedModuleDir = path.join(modulesDir, ns);
             const modules = fs.readdirSync(namespacedModuleDir);
             modules.forEach(moduleName => {
@@ -98,9 +97,11 @@ function resolveModulesFromList(
             }
         } else {
             const absPath = path.resolve(root, moduleId as string);
+            // If the moduleRecord is a string check first in the file directory
             if (fs.existsSync(absPath)) {
                 resolvedModules.push(...resolveModulesFromDir(absPath));
             } else {
+                // Otherwise, try to see if is an npm package
                 resolvedModules.push(...resolveModulesFromNpm(moduleId as string));
             }
         }
