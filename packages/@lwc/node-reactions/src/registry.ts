@@ -47,7 +47,7 @@ export function reactTo(
 }
 
 export function getRegisteredCallbacksForElement(
-    elm: Element
+    elm: Node
 ): { [key: string]: Array<ReactionCallback> } | undefined {
     return getInternalField(elm, NodeToCallbackLookup);
 }
@@ -65,6 +65,7 @@ export function isRegisteredNode(node: Node): boolean {
  */
 export function isQualifyingElement(rootNode: Node): boolean {
     return (
+        !isUndefined(rootNode) &&
         'childElementCount' in rootNode && // duck-typing to detect if node is an element, instead of the expensive instanceOf
         ((rootNode as Element | DocumentFragment).childElementCount > 0 ||
             isRegisteredNode(rootNode))
