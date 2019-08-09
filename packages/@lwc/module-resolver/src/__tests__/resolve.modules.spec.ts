@@ -40,4 +40,22 @@ describe('resolve modules', () => {
         const specifiers = modules.map(m => m.specifier);
         expect(specifiers).toStrictEqual(['custom-module']);
     });
+
+    it('with configuration overrides resolving to custom modules', () => {
+        const moduleDir = path.join(__dirname, 'fixtures/custom-resolution');
+        const modules = resolveModules({
+            rootDir: moduleDir,
+            modules: [{ name: 'custom-module', path: 'custom-override.js' }],
+        });
+        const specifiers = modules.map(m => m.specifier);
+        const entries = modules.map(m => m.entry);
+        expect(specifiers).toStrictEqual(['custom-module']);
+        expect(entries).toStrictEqual([path.join(moduleDir, 'custom-override.js')]);
+    });
+
+    it('from api configuration', () => {
+        const modules = resolveModules({ modules: ['@lwc/engine'] });
+        const specifiers = modules.map(m => m.specifier);
+        expect(specifiers).toStrictEqual(['lwc']);
+    });
 });

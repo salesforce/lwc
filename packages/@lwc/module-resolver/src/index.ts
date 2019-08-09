@@ -12,6 +12,7 @@ import {
     getModuleEntry,
     normalizeConfig,
     loadConfig,
+    isString,
     mergeModules,
     LWC_CONFIG_FILE,
 } from './utils';
@@ -81,10 +82,6 @@ function resolveModulesFromNpm(packageName: string): RegistryEntry[] {
     }
 
     return resolvedModules;
-}
-
-function isString(str) {
-    return Object.prototype.toString.call(str) === '[object String]';
 }
 
 function resolveModulesFromList(

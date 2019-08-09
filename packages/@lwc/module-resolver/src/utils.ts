@@ -1,10 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import { LwcConfig, ModuleResolverConfig, ModuleRecord } from '.';
+import { LwcConfig, ModuleResolverConfig, ModuleRecord, ModuleRecordObject } from '.';
 
 export const LWC_CONFIG_FILE = 'lwc.config.json';
 
 const DEFAULT_CONFIG: LwcConfig = { modules: [] };
+
+export function isString(str) {
+    return Object.prototype.toString.call(str) === '[object String]';
+}
 
 export function loadConfig(configPath: string): LwcConfig {
     const configFile = path.join(configPath, LWC_CONFIG_FILE);
@@ -46,6 +50,22 @@ export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleRe
     };
 }
 
+// userModules will always win other resolved modules
 export function mergeModules(userModules: ModuleRecord[], configModules: ModuleRecord[]) {
-    return Array.from(new Set(userModules.concat(configModules)));
+    const visited = new Set();
+    const modules = userModules;
+
+    // visit the user modules to created an index of module names
+    userModules.forEach(m => {
+        visited.add(isString(m) ? m : (m as ModuleRecordObject).name);
+    });
+
+    configModules.forEach(m => {
+        // Collect all of the modules that are not defined already by the user
+        if (isString(m) || !visited.has((m as ModuleRecordObject).name)) {
+            modules.push(m);
+        }
+    });
+
+    return modules;
 }
