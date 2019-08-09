@@ -199,7 +199,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         appendVM(vm);
     });
     reactTo(elm, ReactionEventType.disconnected, function(this: HTMLElement) {
-        const vm = getCustomElementVM(this as HTMLElement);
+        const vm = getCustomElementVM(this);
         removeVM(vm);
     });
     if (process.env.NODE_ENV !== 'production') {

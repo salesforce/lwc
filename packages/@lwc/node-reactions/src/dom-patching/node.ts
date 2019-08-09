@@ -192,14 +192,14 @@ export default function() {
                             ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
                         }
                         const reactionQueue: Array<ReactionEvent> = [];
-                        if (oldChildIsQualified) {
+                        if (qualifiedPreReactionTypes.length > 0) {
                             queueReactionsForSubtree(
                                 oldChild as Element,
                                 qualifiedPreReactionTypes,
                                 reactionQueue
                             );
                         }
-                        if (newChildIsQualified) {
+                        if (qualifiedPostReactionTypes.length > 0) {
                             queueReactionsForSubtree(
                                 newChild as Element,
                                 qualifiedPostReactionTypes,
@@ -231,14 +231,14 @@ export default function() {
                             ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
                         }
                         const reactionQueue: Array<ReactionEvent> = [];
-                        if (oldChildIsQualified) {
+                        if (qualifiedPreReactionTypes.length > 0) {
                             queueReactionsForSubtree(
                                 oldChild as Element,
                                 qualifiedPreReactionTypes,
                                 reactionQueue
                             );
                         }
-                        if (newChildIsQualified) {
+                        if (qualifiedPostReactionTypes.length > 0) {
                             queueReactionsForNodeList(
                                 qualifyingChildren,
                                 qualifiedPostReactionTypes,
@@ -258,14 +258,13 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
-                // If subtree being removed does not have any qualifying nodes, exit fast
-                if (!isQualifyingElement(child)) {
+                // If  child is not connected or subtree being removed does not have any qualifying nodes, exit fast
+                if (!isConnected.call(child) || !isQualifyingElement(child)) {
                     return removeChild.call(this, child);
                 }
-                const qualifiedReactionTypes: Array<ReactionEventType> = [];
-                if (isConnected.call(child)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
-                }
+                const qualifiedReactionTypes: Array<ReactionEventType> = [
+                    ReactionEventType.disconnected,
+                ];
                 const result = removeChild.call(this, child);
                 const reactionQueue: Array<ReactionEvent> = [];
                 queueReactionsForSubtree(child as Element, qualifiedReactionTypes, reactionQueue);

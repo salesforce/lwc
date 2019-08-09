@@ -80,8 +80,8 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    reactTo(element, ReactionEventType.connected, function() {
-        const vm = getCustomElementVM(this as HTMLElement);
+    reactTo(element, ReactionEventType.connected, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         // TODO: This is not required anymore. node-reactions takes care of invoking disconnected if a connected node is moved. Caridy?
         if (vm.state === VMState.connected) {
@@ -91,8 +91,8 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         appendRootVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
-    reactTo(element, ReactionEventType.disconnected, function() {
-        const vm = getCustomElementVM(this as HTMLElement);
+    reactTo(element, ReactionEventType.disconnected, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this);
         removeRootVM(vm);
     });
     return element;
