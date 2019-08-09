@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Simple from 'x/simple';
 import SideEffect from './x/fieldWithSideEffect/fieldWithSideEffect';
 
-describe('observable-fields', () => {
+describe('observed-fields', () => {
     it('should rerender component when field is mutated', () => {
         const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);

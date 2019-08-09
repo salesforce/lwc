@@ -11,11 +11,11 @@ import { valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { isRendering, vmBeingRendered } from './invoker';
 import { isFalse, ArrayReduce } from '../shared/language';
 
-export function createObservableFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
+export function createObservedFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
     return ArrayReduce.call(
         fields,
         (acc: PropertyDescriptorMap, field) => {
-            acc[field] = createObservableFieldPropertyDescriptor(field);
+            acc[field] = createObservedFieldPropertyDescriptor(field);
 
             return acc;
         },
@@ -23,7 +23,7 @@ export function createObservableFieldsDescriptorMap(fields: PropertyKey[]): Prop
     ) as PropertyDescriptorMap;
 }
 
-function createObservableFieldPropertyDescriptor(key: PropertyKey): PropertyDescriptor {
+function createObservedFieldPropertyDescriptor(key: PropertyKey): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);

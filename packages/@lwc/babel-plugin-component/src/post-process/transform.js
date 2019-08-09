@@ -60,10 +60,10 @@ module.exports = function postProcess({ types: t }) {
 
     function collectMetaPropertyList(klassBody) {
         const metaPropertyList = collectDecoratedProperties(klassBody);
-        const observableFields = collectObservedFields(klassBody, metaPropertyList);
+        const observedFields = collectObservedFields(klassBody, metaPropertyList);
 
-        if (observableFields) {
-            metaPropertyList.push(observableFields);
+        if (observedFields) {
+            metaPropertyList.push(observedFields);
         }
 
         return metaPropertyList;

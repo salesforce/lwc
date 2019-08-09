@@ -6,7 +6,7 @@
  */
 const pluginTest = require('./utils/test-transform').pluginTest(require('../index'));
 
-describe('observable fields', () => {
+describe('observed fields', () => {
     pluginTest(
         'should be added to the registerComponentCall when a field is not decorated with @api, @track or @wire',
         `

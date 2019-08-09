@@ -40,7 +40,7 @@ import {
     ComponentMeta,
     getComponentRegisteredMeta,
 } from './component';
-import { createObservableFieldsDescriptorMap } from './observable-fields';
+import { createObservedFieldsDescriptorMap } from './observed-fields';
 import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
@@ -149,7 +149,7 @@ function createComponentDef(
     props = assign(create(null), HTML_PROPS, props);
 
     if (!isUndefined(fields)) {
-        defineProperties(proto, createObservableFieldsDescriptorMap(fields));
+        defineProperties(proto, createObservedFieldsDescriptorMap(fields));
     }
 
     if (isUndefined(template)) {
