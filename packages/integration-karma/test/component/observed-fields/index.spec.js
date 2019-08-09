@@ -64,7 +64,7 @@ describe('observable-fields', () => {
             document.body.appendChild(elm);
         }).toThrowErrorDev(
             Error,
-            /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of \[.+\]\.counter/
+            /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of "counter" field/
         );
     });
 

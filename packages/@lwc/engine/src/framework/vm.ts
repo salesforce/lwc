@@ -89,7 +89,6 @@ export interface UninitializedVM {
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
-    cmpFields: any;
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
@@ -232,7 +231,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         context: create(null),
         cmpProps: create(null),
         cmpTrack: create(null),
-        cmpFields: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,

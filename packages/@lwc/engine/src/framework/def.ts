@@ -25,6 +25,7 @@ import {
     ArrayReduce,
     isUndefined,
     isFunction,
+    defineProperties,
 } from '../shared/language';
 import { getInternalField } from '../shared/fields';
 import { getAttrNameFromPropName } from './attributes';
@@ -39,7 +40,7 @@ import {
     ComponentMeta,
     getComponentRegisteredMeta,
 } from './component';
-import { observeFields } from './observable-fields';
+import { createObservableFieldsDescriptorMap } from './observable-fields';
 import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
@@ -146,7 +147,10 @@ function createComponentDef(
         template = template || superDef.template;
     }
     props = assign(create(null), HTML_PROPS, props);
-    observeFields(Ctor, fields);
+
+    if (!isUndefined(fields)) {
+        defineProperties(proto, createObservableFieldsDescriptorMap(fields));
+    }
 
     if (isUndefined(template)) {
         // default template
@@ -158,7 +162,6 @@ function createComponentDef(
         name,
         wire,
         track,
-        fields,
         props,
         methods,
         bridge,

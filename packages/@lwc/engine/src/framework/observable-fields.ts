@@ -4,25 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ComponentConstructor, ComponentInterface } from './component';
+import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
 import assert from '../shared/assert';
 import { valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { isRendering, vmBeingRendered } from './invoker';
-import { defineProperty, isFalse } from '../shared/language';
+import { isFalse } from '../shared/language';
 
-export function observeFields(Ctor: ComponentConstructor, fields: string[] | undefined) {
-    if (fields) {
-        const proto = Ctor.prototype;
+export function createObservableFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
+    return fields.reduce((acc, field) => {
+        acc[field] = createObservableFieldPropertyDescriptor(field);
 
-        for (let i = 0, len = fields.length; i < len; i += 1) {
-            const fieldDescriptor = createObservedPropertyDescriptor(fields[i]);
-            defineProperty(proto, fields[i], fieldDescriptor);
-        }
-    }
+        return acc;
+    }, {});
 }
 
-function createObservedPropertyDescriptor(key: PropertyKey): PropertyDescriptor {
+function createObservableFieldPropertyDescriptor(key: PropertyKey): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
@@ -30,7 +27,7 @@ function createObservedPropertyDescriptor(key: PropertyKey): PropertyDescriptor 
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
             }
             valueObserved(this, key);
-            return vm.cmpFields[key];
+            return vm.cmpTrack[key];
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
@@ -38,14 +35,14 @@ function createObservedPropertyDescriptor(key: PropertyKey): PropertyDescriptor 
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
                 assert.invariant(
                     !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(
+                    `${vmBeingRendered}.render() method has side effects on the state of "${String(
                         key
-                    )}`
+                    )}" field`
                 );
             }
 
-            if (newValue !== vm.cmpFields[key]) {
-                vm.cmpFields[key] = newValue;
+            if (newValue !== vm.cmpTrack[key]) {
+                vm.cmpTrack[key] = newValue;
                 if (isFalse(vm.isDirty)) {
                     valueMutated(this, key);
                 }
