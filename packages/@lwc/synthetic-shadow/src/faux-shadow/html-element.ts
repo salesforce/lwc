@@ -7,9 +7,17 @@
 import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { hasAttribute, tabIndexGetter, tabIndexSetter } from '../env/element';
 import { isNull, isFalse, defineProperties } from '../shared/language';
-import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
+import {
+    disableKeyboardFocusNavigationRoutines,
+    enableKeyboardFocusNavigationRoutines,
+    getActiveElement,
+    handleFocus,
+    handleFocusIn,
+    ignoreFocus,
+    ignoreFocusIn,
+} from './focus';
 
-const { blur } = HTMLElement.prototype;
+const { blur, focus } = HTMLElement.prototype;
 
 /**
  * This method only applies to elements with a shadow attached to them
@@ -105,6 +113,13 @@ function blurPatched(this: HTMLElement) {
     return blur.call(this);
 }
 
+function focusPatched(this: HTMLElement) {
+    disableKeyboardFocusNavigationRoutines();
+    // TODO: #1327 - Shadow DOM semantics for focus method
+    focus.call(this);
+    setTimeout(enableKeyboardFocusNavigationRoutines);
+}
+
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
 // do not five access to nodes beyond the immediate children.
 defineProperties(HTMLElement.prototype, {
@@ -130,6 +145,14 @@ defineProperties(HTMLElement.prototype, {
                 return blurPatched.call(this);
             }
             blur.call(this);
+        },
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+    focus: {
+        value(this: HTMLElement) {
+            focusPatched.call(this);
         },
         enumerable: true,
         writable: true,
