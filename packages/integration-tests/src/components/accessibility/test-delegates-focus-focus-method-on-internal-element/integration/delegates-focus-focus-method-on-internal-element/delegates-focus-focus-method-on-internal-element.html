@@ -1,0 +1,11 @@
+<template>
+    <input class="top">
+    <integration-foo tabindex="-1"></integration-foo>
+    <input class="middle">
+    <integration-foo tabindex="0"></integration-foo>
+    <input class="bottom">
+    <ul>
+        <li><button onclick={handleClickNegative}>focus tabindex=-1</button></li>
+        <li><button onclick={handleClickZero}>focus tabindex=0</button></li>
+    </ul>
+</template>
