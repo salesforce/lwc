@@ -25,7 +25,6 @@ import {
     keys,
     StringToLowerCase,
     isFalse,
-    isArray,
 } from '../shared/language';
 import { getInternalField, getHiddenField } from '../shared/fields';
 import {
@@ -39,7 +38,7 @@ import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
 import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
 
-import { VNodeData, VNodes, VCustomElement, VNode } from '../3rdparty/snabbdom/types';
+import { VNodeData, VNodes } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
 import { ComponentDef } from './def';
 import { ComponentInterface } from './component';
@@ -83,9 +82,6 @@ export interface UninitializedVM {
     data: VNodeData;
     /** Shadow Children List */
     children: VNodes;
-    /** Adopted Children List */
-    aChildren: VNodes;
-    velements: VCustomElement[];
     cmpProps: any;
     cmpSlots: SlotSet;
     cmpTrack: any;
@@ -142,18 +138,10 @@ export function rerenderVM(vm: VM) {
     rehydrate(vm);
 }
 
-export function appendRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    runConnectedCallback(vm);
-    rehydrate(vm);
-}
-
+// this method is triggered by the insertion of a element into the DOM.
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-        assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
     }
     runConnectedCallback(vm);
     rehydrate(vm);
@@ -161,7 +149,7 @@ export function appendVM(vm: VM) {
 
 // just in case the component comes back, with this we guarantee re-rendering it
 // while preventing any attempt to rehydration until after reinsertion.
-function resetComponentStateWhenRemoved(vm: VM) {
+function reset(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
@@ -170,15 +158,17 @@ function resetComponentStateWhenRemoved(vm: VM) {
         const { tro } = vm;
         // Making sure that any observing record will not trigger the rehydrated on this vm
         tro.reset();
-        runDisconnectedCallback(vm);
-        // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        runShadowChildNodesDisconnectedCallback(vm);
-        runLightChildNodesDisconnectedCallback(vm);
+    }
+    if (isFalse(vm.isDirty)) {
+        // this guarantees that if the component is reused/reinserted,
+        // it will be re-rendered because we are disconnecting the reactivity
+        // linking, so mutations are not automatically reflected on the state
+        // of disconnected components.
+        markComponentAsDirty(vm);
     }
 }
 
-// this method is triggered by the diffing algo only when a vnode from the
-// old vnode.children is removed from the DOM.
+// this method is triggered by the removal of a element from the DOM.
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -187,15 +177,8 @@ export function removeVM(vm: VM) {
             `${vm} must have been connected.`
         );
     }
-    resetComponentStateWhenRemoved(vm);
-}
-
-// this method is triggered by the removal of a root element from the DOM.
-export function removeRootVM(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    resetComponentStateWhenRemoved(vm);
+    reset(vm);
+    runDisconnectedCallback(vm);
 }
 
 export interface CreateVMInit {
@@ -236,8 +219,6 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         setHook,
         getHook,
         children: EmptyArray,
-        aChildren: EmptyArray,
-        velements: EmptyArray,
         // Perf optimization to preserve the shape of this obj
         cmpTemplate: undefined,
         component: undefined,
@@ -407,13 +388,6 @@ function runDisconnectedCallback(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
-    if (isFalse(vm.isDirty)) {
-        // this guarantees that if the component is reused/reinserted,
-        // it will be re-rendered because we are disconnecting the reactivity
-        // linking, so mutations are not automatically reflected on the state
-        // of disconnected components.
-        markComponentAsDirty(vm);
-    }
     vm.state = VMState.disconnected;
     // reporting disconnection
     const { disconnected } = Services;
@@ -434,58 +408,6 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-function runShadowChildNodesDisconnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { velements: vCustomElementCollection } = vm;
-    // reporting disconnection for every child in inverse order since they are inserted in reserved order
-    for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
-        const elm = vCustomElementCollection[i].elm;
-        // There are two cases where the element could be undefined:
-        // * when there is an error during the construction phase, and an
-        //   error boundary picks it, there is a possibility that the VCustomElement
-        //   is not properly initialized, and therefore is should be ignored.
-        // * when slotted custom element is not used by the element where it is slotted
-        //   into it, as a result, the custom element was never initialized.
-        if (!isUndefined(elm)) {
-            const childVM = getCustomElementVM(elm as HTMLElement);
-            resetComponentStateWhenRemoved(childVM);
-        }
-    }
-}
-
-function runLightChildNodesDisconnectedCallback(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    const { aChildren: adoptedChildren } = vm;
-    recursivelyDisconnectChildren(adoptedChildren);
-}
-
-/**
- * The recursion doesn't need to be a complete traversal of the vnode graph,
- * instead it can be partial, when a custom element vnode is found, we don't
- * need to continue into its children because by attempting to disconnect the
- * custom element itself will trigger the removal of anything slotted or anything
- * defined on its shadow.
- */
-function recursivelyDisconnectChildren(vnodes: VNodes) {
-    for (let i = 0, len = vnodes.length; i < len; i += 1) {
-        const vnode: VCustomElement | VNode | null = vnodes[i];
-        if (!isNull(vnode) && isArray(vnode.children) && !isUndefined(vnode.elm)) {
-            // vnode is a VElement with children
-            if (isUndefined((vnode as any).ctor)) {
-                // it is a VElement, just keep looking (recursively)
-                recursivelyDisconnectChildren(vnode.children);
-            } else {
-                // it is a VCustomElement, disconnect it and ignore its children
-                resetComponentStateWhenRemoved(getCustomElementVM(vnode.elm as HTMLElement));
-            }
-        }
-    }
-}
-
 // This is a super optimized mechanism to remove the content of the shadowRoot
 // without having to go into snabbdom. Especially useful when the reset is a consequence
 // of an error, in which case the children VNodes might not be representing the current
@@ -495,9 +417,9 @@ export function resetShadowRoot(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     vm.children = EmptyArray;
+    // TODO: we can do a while-loop here for the time being until we add the
+    // innerHTML patch mechanism
     ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
-    // disconnecting any known custom element inside the shadow of the this vm
-    runShadowChildNodesDisconnectedCallback(vm);
 }
 
 export function scheduleRehydration(vm: VM) {

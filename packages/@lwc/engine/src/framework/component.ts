@@ -113,7 +113,6 @@ function clearChildLWC(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    vm.velements = [];
 }
 
 export function renderComponent(vm: VM): VNodes {

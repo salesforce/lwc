@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import assert from '../shared/assert';
 import { ComponentConstructor } from './component';
 import { isUndefined, isObject, isNull, getOwnPropertyNames, ArrayMap } from '../shared/language';
-import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
+import { createVM, getCustomElementVM, CreateVMInit, removeVM, appendVM, VMState } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
@@ -51,11 +52,20 @@ export function buildCustomElementConstructor(
         }
         connectedCallback() {
             const vm = getCustomElementVM(this as HTMLElement);
-            appendRootVM(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(
+                    vm.state === VMState.created || vm.state === VMState.disconnected,
+                    `${vm} should be new or disconnected.`
+                );
+            }
+            appendVM(vm);
         }
         disconnectedCallback() {
             const vm = getCustomElementVM(this as HTMLElement);
-            removeRootVM(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+            }
+            removeVM(vm);
         }
         attributeChangedCallback(attrName, oldValue, newValue) {
             if (oldValue === newValue) {
