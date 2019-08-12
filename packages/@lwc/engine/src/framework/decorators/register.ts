@@ -56,7 +56,7 @@ export interface DecoratorMeta {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
-    fields?: string[];
+    fields: string[] | undefined;
 }
 
 const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
