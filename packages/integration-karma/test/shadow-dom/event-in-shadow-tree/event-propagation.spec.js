@@ -65,8 +65,7 @@ describe('event propagation in simple shadow tree', () => {
         ]);
     });
 
-    // TODO: #1132 - Event.prototype.composedPath() doesn't return the shadow root
-    xit('propagate event from a child element added via lwc:dom="manual"', () => {
+    it('propagate event from a child element added via lwc:dom="manual"', () => {
         const logs = dispatchEventWithLog(
             nodes['span-manual'],
             new CustomEvent('test', { composed: true, bubbles: true })
@@ -93,8 +92,7 @@ describe('event propagation in simple shadow tree', () => {
         ]);
     });
 
-    // TODO: #1132 - Event.prototype.composedPath() doesn't return the shadow root
-    xit('propagate event from a child element in a document fragment', () => {
+    it('propagate event from a child element in a document fragment', () => {
         const fragment = document.createDocumentFragment();
         const nodes = createShadowTree(fragment);
 
@@ -211,8 +209,7 @@ describe('event propagation in nested shadow tree', () => {
         ]);
     });
 
-    // TODO: #1132 - Event.prototype.composedPath() doesn't return the shadow root
-    xit('propagate event from a child element added via lwc:dom="manual"', () => {
+    it('propagate event from a child element added via lwc:dom="manual"', () => {
         const logs = dispatchEventWithLog(
             nodes['span-manual'],
             new CustomEvent('test', { composed: true, bubbles: true })
