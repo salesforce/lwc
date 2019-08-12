@@ -162,7 +162,6 @@ function createComponentDef(
         name,
         wire,
         track,
-        fields: undefined,
         props,
         methods,
         bridge,
