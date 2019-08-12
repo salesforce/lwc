@@ -109,13 +109,6 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
-function clearChildLWC(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    vm.velements = [];
-}
-
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -123,7 +116,6 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     vm.tro.reset();
-    clearChildLWC(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;
