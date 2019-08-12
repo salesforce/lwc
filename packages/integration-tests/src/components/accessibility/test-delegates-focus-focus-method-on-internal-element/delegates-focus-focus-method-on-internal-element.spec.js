@@ -13,31 +13,93 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
         browser.url(URL);
     });
 
-    it('should apply focus to the input', function() {
+    it('should apply focus (tabindex -1)', function() {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
         browser
             .execute(function() {
                 return document
                     .querySelector('integration-delegates-focus-focus-method-on-internal-element')
-                    .shadowRoot.querySelector('.top');
+                    .shadowRoot.querySelector('input.head');
             })
             .click();
 
         browser.execute(function() {
             document
                 .querySelector('integration-delegates-focus-focus-method-on-internal-element')
-                .shadowRoot.querySelector('integration-foo[tabindex="-1"]')
+                .shadowRoot.querySelector('integration-button.negative')
                 .focus();
         });
 
-        const className = browser.execute(function() {
-            var container = document.activeElement;
-            var foo = container.shadowRoot.activeElement;
-            var input = foo.shadowRoot.activeElement;
-            return input.className;
+        const tagName = browser.execute(function() {
+            var container = document.querySelector(
+                'integration-delegates-focus-focus-method-on-internal-element'
+            );
+            var button = container.shadowRoot.querySelector('integration-button.negative');
+            var activeElement = button.shadowRoot.activeElement;
+            return activeElement.tagName;
         }).value;
 
-        assert.equal(className, 'internal');
+        assert.equal(tagName, 'BUTTON');
+    });
+
+    it('should apply focus (tabindex 0)', function() {
+        // Click the top input to give the focus event's relatedTarget a
+        // non-null value so that we enter the code path that we want to test.
+        browser
+            .execute(function() {
+                return document
+                    .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                    .shadowRoot.querySelector('.head');
+            })
+            .click();
+
+        browser.execute(function() {
+            document
+                .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                .shadowRoot.querySelector('integration-button.zero')
+                .focus();
+        });
+
+        const tagName = browser.execute(function() {
+            var container = document.querySelector(
+                'integration-delegates-focus-focus-method-on-internal-element'
+            );
+            var button = container.shadowRoot.querySelector('integration-button.zero');
+            var activeElement = button.shadowRoot.activeElement;
+            return activeElement.tagName;
+        }).value;
+
+        assert.equal(tagName, 'BUTTON');
+    });
+
+    it('should apply focus (no tabindex)', function() {
+        // Click the top input to give the focus event's relatedTarget a
+        // non-null value so that we enter the code path that we want to test.
+        browser
+            .execute(function() {
+                return document
+                    .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                    .shadowRoot.querySelector('.head');
+            })
+            .click();
+
+        browser.execute(function() {
+            document
+                .querySelector('integration-delegates-focus-focus-method-on-internal-element')
+                .shadowRoot.querySelector('integration-button.none')
+                .focus();
+        });
+
+        const tagName = browser.execute(function() {
+            var container = document.querySelector(
+                'integration-delegates-focus-focus-method-on-internal-element'
+            );
+            var button = container.shadowRoot.querySelector('integration-button.none');
+            var activeElement = button.shadowRoot.activeElement;
+            return activeElement.tagName;
+        }).value;
+
+        assert.equal(tagName, 'BUTTON');
     });
 });
