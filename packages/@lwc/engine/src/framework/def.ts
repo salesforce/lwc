@@ -25,6 +25,7 @@ import {
     ArrayReduce,
     isUndefined,
     isFunction,
+    defineProperties,
 } from '../shared/language';
 import { getInternalField } from '../shared/fields';
 import { getAttrNameFromPropName } from './attributes';
@@ -39,6 +40,7 @@ import {
     ComponentMeta,
     getComponentRegisteredMeta,
 } from './component';
+import { createObservedFieldsDescriptorMap } from './observed-fields';
 import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
@@ -104,11 +106,13 @@ function createComponentDef(
     let methods: MethodDef = {};
     let wire: WireHash | undefined;
     let track: TrackDef = {};
+    let fields: string[] | undefined;
     if (!isUndefined(decoratorsMeta)) {
         props = decoratorsMeta.props;
         methods = decoratorsMeta.methods;
         wire = decoratorsMeta.wire;
         track = decoratorsMeta.track;
+        fields = decoratorsMeta.fields;
     }
     const proto = Ctor.prototype;
 
@@ -143,6 +147,10 @@ function createComponentDef(
         template = template || superDef.template;
     }
     props = assign(create(null), HTML_PROPS, props);
+
+    if (!isUndefined(fields)) {
+        defineProperties(proto, createObservedFieldsDescriptorMap(fields));
+    }
 
     if (isUndefined(template)) {
         // default template
