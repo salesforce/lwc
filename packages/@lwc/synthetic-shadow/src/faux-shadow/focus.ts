@@ -170,10 +170,10 @@ function focusOnNextOrBlur(
 }
 
 let letBrowserHandleFocus: boolean = false;
-export function disableKeyboardFocusNavigationRoutines() {
+export function disableKeyboardFocusNavigationRoutines(): void {
     letBrowserHandleFocus = true;
 }
-export function enableKeyboardFocusNavigationRoutines() {
+export function enableKeyboardFocusNavigationRoutines(): void {
     letBrowserHandleFocus = false;
 }
 
