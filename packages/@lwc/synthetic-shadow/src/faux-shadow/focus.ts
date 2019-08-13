@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
+import { createFieldName, getInternalField, setInternalField } from '../shared/fields';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     matches,
@@ -53,6 +54,8 @@ const TabbableElementsQuery = `
     textarea:not([tabindex="-1"]):not([disabled]),
     [tabindex="0"]
 `;
+
+const DidAddMouseDownListener = createFieldName('DidAddMouseDownListener');
 
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
@@ -166,7 +169,20 @@ function focusOnNextOrBlur(
     }
 }
 
-function keyboardFocusHandler(event: FocusEvent) {
+let letBrowserHandleFocus: boolean = false;
+export function disableKeyboardFocusNavigationRoutines(): void {
+    letBrowserHandleFocus = true;
+}
+export function enableKeyboardFocusNavigationRoutines(): void {
+    letBrowserHandleFocus = false;
+}
+
+function skipHostHandler(event: FocusEvent) {
+    if (letBrowserHandleFocus) {
+        enableKeyboardFocusNavigationRoutines();
+        return;
+    }
+
     const host = eventCurrentTargetGetter.call(event);
     const target = eventTargetGetter.call(event);
 
@@ -209,12 +225,12 @@ function keyboardFocusHandler(event: FocusEvent) {
     }
 }
 
-// focusin handler for custom elements
-// This handler should only be called when a user
-// focuses on either the custom element, or an internal element
-// via keyboard navigation (tab or shift+tab)
-// Focusing via mouse should be disqualified before this gets called
-function keyboardFocusInHandler(event: FocusEvent) {
+function skipShadowHandler(event: FocusEvent) {
+    if (letBrowserHandleFocus) {
+        enableKeyboardFocusNavigationRoutines();
+        return;
+    }
+
     const relatedTarget = focusEventRelatedTargetGetter.call(event);
     if (isNull(relatedTarget)) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
@@ -280,62 +296,6 @@ function getNextTabbable(tabbables: HTMLElement[], relatedTarget: EventTarget): 
     return null;
 }
 
-function handleMouseDown(evt) {
-    const currentTarget = eventCurrentTargetGetter.call(evt);
-    removeEventListener.call(
-        currentTarget,
-        'focusin',
-        keyboardFocusInHandler as EventListener,
-        true
-    );
-
-    function reinstateKeyboardFocusInHandler() {
-        if (!isNull(currentTarget) && getAttribute.call(currentTarget, 'tabindex') === '-1') {
-            addEventListener.call(
-                currentTarget,
-                'focusin',
-                keyboardFocusInHandler as EventListener,
-                true
-            );
-        }
-    }
-
-    // When reinstating keyboardFocusInHandler after clicks on form element labels, we need to
-    // account for the difference in event ordering:
-    //
-    // Click form element   | Click form element label
-    // ==================================================
-    // mousedown            | mousedown
-    // FOCUSIN              | mousedown-setTimeout
-    // mousedown-setTimeout | mouseup
-    // mouseup              | FOCUSIN
-    // mouseup-setTimeout   | mouseup-setTimeout
-    //
-    // In the special case where the label is clicked, reinstating the handler in a mousedown
-    // setTimeout does not allow us to prevent the handler from executing (see table above). In
-    // order to account for this discrepancy, we reinstate the handler in a mouseup setTimeout. In
-    // doing so, we assume the calculated risk getting into a bad state where the focusin handler is
-    // never reinstated because the user might mousedown on the label, move the pointer away, and
-    // mouseup somewhere else. If we need to address this issue in the future, a potential fix could
-    // be to compare mousedown and mouseup targets at the root node to detect when this happens so
-    // that we can make the appropriate adjustments.
-    const target = eventTargetGetter.call(evt);
-    if ((target as Element).tagName === 'LABEL') {
-        const handleMouseup = () => {
-            setTimeout(reinstateKeyboardFocusInHandler);
-            removeEventListener.call(
-                currentTarget,
-                'mouseup',
-                handleMouseup as EventListener,
-                true
-            );
-        };
-        addEventListener.call(currentTarget, 'mouseup', handleMouseup as EventListener, true);
-    } else {
-        setTimeout(reinstateKeyboardFocusInHandler);
-    }
-}
-
 // Skips the host element
 export function handleFocus(elm: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
@@ -347,13 +307,51 @@ export function handleFocus(elm: HTMLElement) {
         );
     }
 
+    bindDocumentMousedownMouseupHandlers(elm);
+
     // Unbind any focusin listeners we may have going on
     ignoreFocusIn(elm);
-    addEventListener.call(elm, 'focusin', keyboardFocusHandler as EventListener, true);
+    addEventListener.call(elm, 'focusin', skipHostHandler as EventListener, true);
 }
 
 export function ignoreFocus(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focusin', keyboardFocusHandler as EventListener, true);
+    removeEventListener.call(elm, 'focusin', skipHostHandler as EventListener, true);
+}
+
+function bindDocumentMousedownMouseupHandlers(elm: Node) {
+    const ownerDocument = getOwnerDocument(elm);
+    if (!getInternalField(ownerDocument, DidAddMouseDownListener)) {
+        setInternalField(ownerDocument, DidAddMouseDownListener, true);
+        addEventListener.call(
+            ownerDocument,
+            'mousedown',
+            disableKeyboardFocusNavigationRoutines,
+            true
+        );
+
+        // Although our sequential focus navigation routines also unset this
+        // flag, we need a backup plan in case they don't execute (e.g., the
+        // click doesn't result in focus entering the shadow).
+        addEventListener.call(
+            ownerDocument,
+            'mouseup',
+            () => {
+                // We schedule this as an async task in the mouseup handler (as
+                // opposed to the mousedown handler) because we want to guarantee
+                // that it will never run before the focusin handler:
+                //
+                // Click form element   | Click form element label
+                // ==================================================
+                // mousedown            | mousedown
+                // FOCUSIN              | mousedown-setTimeout
+                // mousedown-setTimeout | mouseup
+                // mouseup              | FOCUSIN
+                // mouseup-setTimeout   | mouseup-setTimeout
+                setTimeout(enableKeyboardFocusNavigationRoutines);
+            },
+            true
+        );
+    }
 }
 
 // Skips the shadow tree
@@ -367,24 +365,19 @@ export function handleFocusIn(elm: HTMLElement) {
         );
     }
 
+    bindDocumentMousedownMouseupHandlers(elm);
+
     // Unbind any focus listeners we may have going on
     ignoreFocus(elm);
-
-    // We want to listen for mousedown
-    // If the user is triggering a mousedown event on an element
-    // That can trigger a focus event, then we need to opt out
-    // of our tabindex -1 dance. The tabindex -1 only applies for keyboard navigation
-    addEventListener.call(elm, 'mousedown', handleMouseDown as EventListener, true);
 
     // This focusin listener is to catch focusin events from keyboard interactions
     // A better solution would perhaps be to listen for keydown events, but
     // the keydown event happens on whatever element already has focus (or no element
     // at all in the case of the location bar. So, instead we have to assume that focusin
     // without a mousedown means keyboard navigation
-    addEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener, true);
+    addEventListener.call(elm, 'focusin', skipShadowHandler as EventListener, true);
 }
 
 export function ignoreFocusIn(elm: HTMLElement) {
-    removeEventListener.call(elm, 'focusin', keyboardFocusInHandler as EventListener, true);
-    removeEventListener.call(elm, 'mousedown', handleMouseDown as EventListener, true);
+    removeEventListener.call(elm, 'focusin', skipShadowHandler as EventListener, true);
 }
