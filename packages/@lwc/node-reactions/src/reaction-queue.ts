@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ReactionEventType, ReactionCallback, ReactionEvent } from './types';
-import { forEach, ArraySlice, ArrayPush } from './shared/language';
+import { forEach, ArrayPush } from './shared/language';
 
 export function queueCallback(
     type: ReactionEventType,
@@ -24,7 +24,7 @@ export function queueCallback(
 }
 
 export function flushQueue(reactionQueue: Array<ReactionEvent>) {
-    forEach.call(reactionQueue, (entry: ReactionEvent, index: number) => {
+    forEach.call(reactionQueue, (entry: ReactionEvent) => {
         try {
             entry.callback.call(entry.node, entry.type);
         } catch (e) {
@@ -32,6 +32,5 @@ export function flushQueue(reactionQueue: Array<ReactionEvent>) {
             reactionQueue.length = 0;
             throw e;
         }
-        ArraySlice.call(reactionQueue, index, 1);
     });
 }
