@@ -1,10 +1,11 @@
-const { registerTemplate, registerDecorators } = LWC;
+const { registerTemplate } = LWC;
 
 import { createElement, LightningElement } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
+import DualTemplate from 'x/dualTemplate';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
@@ -162,7 +163,7 @@ it('should associate the component stack when the invocation throws', () => {
 
 describe('disconnectedCallback for components with a custom render()', () => {
     it('should invoke disconnectedCallback for children when parent is removed', () => {
-        let disconnectedCallbackInvoked = false;
+        let disconnectedCallbackInvoked;
         function disconnectedCallback() {
             disconnectedCallbackInvoked = true;
         }
@@ -202,49 +203,15 @@ describe('disconnectedCallback for components with a custom render()', () => {
     });
 
     xit('should invoke disconnectedCallback for children when parent switches template', () => {
-        let parentInstance;
-        let disconnectedCallbackInvoked = false;
+        let disconnectedCallbackInvoked;
         function disconnectedCallback() {
             disconnectedCallbackInvoked = true;
         }
-        function tmpl($api, $cmp) {
-            const { c: api_custom_element, t: api_text, d: api_dynamic } = $api;
-            return [
-                api_text('Parent'),
-                api_custom_element(
-                    'x-test',
-                    Test,
-                    {
-                        props: {
-                            disconnect: $cmp.callback,
-                        },
-                        key: 2,
-                    },
-                    []
-                ),
-                api_dynamic($cmp.hideChild),
-            ];
-        }
-        registerTemplate(tmpl);
-        class Parent extends LightningElement {
-            constructor() {
-                super();
-                this.callback = disconnectedCallback;
-                this.hideChild = false;
-                parentInstance = this;
-            }
-            render() {
-                return !this.hideChild ? tmpl : () => [];
-            }
-        }
-        registerDecorators(Parent, {
-            track: {
-                hideChild: 1,
-            },
-        });
-        const parent = createElement('x-parent', { is: Parent });
+        const parent = createElement('x-parent', { is: DualTemplate });
         document.body.appendChild(parent);
-        parentInstance.hideChild = true;
+        const child = parent.shadowRoot.querySelector('x-test');
+        child.disconnect = disconnectedCallback;
+        parent.hideChild = true;
         return Promise.resolve().then(() => {
             expect(disconnectedCallbackInvoked).toBe(true);
         });
