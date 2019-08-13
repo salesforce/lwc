@@ -12,7 +12,13 @@ const {
     defineProperties,
     hasOwnProperty,
 } = Object;
-const { push: ArrayPush, slice: ArraySlice, forEach, indexOf: ArrayIndexOf } = Array.prototype;
+const {
+    push: ArrayPush,
+    slice: ArraySlice,
+    forEach,
+    indexOf: ArrayIndexOf,
+    splice: ArraySplice,
+} = Array.prototype;
 
 const { charCodeAt: StringCharCodeAt } = String.prototype;
 
@@ -25,6 +31,7 @@ export {
     hasOwnProperty,
     ArrayPush,
     ArraySlice,
+    ArraySplice,
     forEach,
     ArrayIndexOf,
 };
