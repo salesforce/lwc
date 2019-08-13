@@ -130,3 +130,21 @@ it('should call children component lifecycle hooks when a public property change
         elm.childVisible = false;
     });
 });
+
+xit('should call parent and children lifecycle hooks in correct order when parent reconnected', () => {
+    const elm = createElement('x-parent', { is: Parent });
+
+    document.body.appendChild(elm);
+    document.body.removeChild(elm);
+
+    resetTimingBuffer();
+    document.body.appendChild(elm);
+    expect(window.timingBuffer).toEqual([
+        'parent:connectedCallback',
+        'child:connectedCallback',
+        'child:renderedCallback',
+        'child:connectedCallback',
+        'child:renderedCallback',
+        'parent:renderedCallback',
+    ]);
+});
