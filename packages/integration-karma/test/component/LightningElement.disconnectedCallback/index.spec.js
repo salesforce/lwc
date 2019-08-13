@@ -202,7 +202,7 @@ describe('disconnectedCallback for components with a custom render()', () => {
         expect(disconnectedCallbackInvoked).toBe(true);
     });
 
-    xit('should invoke disconnectedCallback for children when parent switches template', () => {
+    it('should invoke disconnectedCallback for children when parent switches template', () => {
         let disconnectedCallbackInvoked;
         function disconnectedCallback() {
             disconnectedCallbackInvoked = true;

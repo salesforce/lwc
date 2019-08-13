@@ -412,7 +412,7 @@ function runDisconnectedCallback(vm: VM) {
         // it will be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
         // of disconnected components.
-        markComponentAsDirty(vm);
+        vm.isDirty = true;
     }
     vm.state = VMState.disconnected;
     // reporting disconnection
