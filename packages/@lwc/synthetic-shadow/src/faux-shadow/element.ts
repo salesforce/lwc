@@ -31,7 +31,15 @@ import {
     ArrayUnshift,
     ArrayPush,
 } from '../shared/language';
-import { getActiveElement, handleFocusIn, handleFocus, ignoreFocusIn, ignoreFocus } from './focus';
+import {
+    disableKeyboardFocusNavigationRoutines,
+    enableKeyboardFocusNavigationRoutines,
+    getActiveElement,
+    handleFocus,
+    handleFocusIn,
+    ignoreFocus,
+    ignoreFocusIn,
+} from './focus';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { hasNativeSymbolsSupport, isExternalChildNodeAccessorFlagOn } from './node';
@@ -192,6 +200,7 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
         addEventListener: superAddEventListener,
         removeEventListener: superRemoveEventListener,
         blur: superBlur,
+        focus: superFocus,
     } = elm;
 
     // Note: Element.getElementsByTagName and Element.getElementsByClassName are purposefully
@@ -367,6 +376,12 @@ export function PatchedElement(elm: HTMLElement): HTMLElementConstructor {
             // has a known bug while transpiling down to ES5
             // https://github.com/Microsoft/TypeScript/issues/338
             return superBlur.call(this);
+        }
+        focus(this: HTMLElement) {
+            disableKeyboardFocusNavigationRoutines();
+            // TODO: #1327 - Shadow DOM semantics for focus method
+            superFocus.call(this);
+            enableKeyboardFocusNavigationRoutines();
         }
         get childNodes(this: HTMLElement): NodeListOf<Node & Element> {
             if (hasSyntheticShadow(this)) {
