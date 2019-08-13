@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.15...v) (2019-08-08)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.16...v) (2019-08-13)
+
+
+### Bug Fixes
+
+* focus method invocation inside shadow should not skip shadow ([#1449](https://github.com/salesforce/lwc/issues/1449)) ([4c7ec51](https://github.com/salesforce/lwc/commit/4c7ec51)), closes [#1442](https://github.com/salesforce/lwc/issues/1442)
+
+
+
+## [1.0.2-222.16](https://github.com/salesforce/lwc/compare/v1.0.2-222.15...v1.0.2-222.16) (2019-08-08)
 
 
 ### Bug Fixes
