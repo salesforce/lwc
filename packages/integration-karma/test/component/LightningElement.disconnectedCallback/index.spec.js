@@ -1,4 +1,6 @@
-import { createElement } from 'lwc';
+const { registerTemplate, registerDecorators } = LWC;
+
+import { createElement, LightningElement } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
@@ -156,4 +158,95 @@ it('should associate the component stack when the invocation throws', () => {
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in disconnected');
     expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
+});
+
+describe('disconnectedCallback for components with a custom render()', () => {
+    it('should invoke disconnectedCallback for children when parent is removed', () => {
+        let disconnectedCallbackInvoked = false;
+        function disconnectedCallback() {
+            disconnectedCallbackInvoked = true;
+        }
+        function tmpl($api, $cmp) {
+            const { c: api_custom_element, t: api_text } = $api;
+            return [
+                api_text('Parent'),
+                api_custom_element(
+                    'x-test',
+                    Test,
+                    {
+                        props: {
+                            disconnect: $cmp.callback,
+                        },
+                        key: 2,
+                    },
+                    []
+                ),
+            ];
+        }
+        registerTemplate(tmpl);
+        class Parent extends LightningElement {
+            constructor() {
+                super();
+                this.callback = disconnectedCallback;
+            }
+            render() {
+                return tmpl;
+            }
+        }
+
+        const parent = createElement('x-parent', { is: Parent });
+        document.body.appendChild(parent);
+
+        document.body.removeChild(parent);
+        expect(disconnectedCallbackInvoked).toBe(true);
+    });
+
+    xit('should invoke disconnectedCallback for children when parent switches template', () => {
+        let parentInstance;
+        let disconnectedCallbackInvoked = false;
+        function disconnectedCallback() {
+            disconnectedCallbackInvoked = true;
+        }
+        function tmpl($api, $cmp) {
+            const { c: api_custom_element, t: api_text, d: api_dynamic } = $api;
+            return [
+                api_text('Parent'),
+                api_custom_element(
+                    'x-test',
+                    Test,
+                    {
+                        props: {
+                            disconnect: $cmp.callback,
+                        },
+                        key: 2,
+                    },
+                    []
+                ),
+                api_dynamic($cmp.hideChild),
+            ];
+        }
+        registerTemplate(tmpl);
+        class Parent extends LightningElement {
+            constructor() {
+                super();
+                this.callback = disconnectedCallback;
+                this.hideChild = false;
+                parentInstance = this;
+            }
+            render() {
+                return !this.hideChild ? tmpl : () => [];
+            }
+        }
+        registerDecorators(Parent, {
+            track: {
+                hideChild: 1,
+            },
+        });
+        const parent = createElement('x-parent', { is: Parent });
+        document.body.appendChild(parent);
+        parentInstance.hideChild = true;
+        return Promise.resolve().then(() => {
+            expect(disconnectedCallbackInvoked).toBe(true);
+        });
+    });
 });
