@@ -117,7 +117,7 @@ function focusPatched(this: HTMLElement) {
     disableKeyboardFocusNavigationRoutines();
     // TODO: #1327 - Shadow DOM semantics for focus method
     focus.call(this);
-    setTimeout(enableKeyboardFocusNavigationRoutines);
+    enableKeyboardFocusNavigationRoutines();
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
