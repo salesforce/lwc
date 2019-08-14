@@ -1,6 +1,6 @@
 import { api, LightningElement } from 'lwc';
 
-export default class Foo extends LightningElement {
+export default class Button extends LightningElement {
     static delegatesFocus = true;
 
     @api

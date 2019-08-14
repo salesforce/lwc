@@ -20,7 +20,7 @@ describe('Invoking the focus method on an element inside a shadow tree', () => {
             .execute(function() {
                 return document
                     .querySelector('integration-delegates-focus-focus-method-on-internal-element')
-                    .shadowRoot.querySelector('input.head');
+                    .shadowRoot.querySelector('.head');
             })
             .click();
 
