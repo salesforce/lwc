@@ -44,7 +44,7 @@ function resolveModulesFromDir(modulesDir: string): RegistryEntry[] {
     const namespaces = fs.readdirSync(modulesDir);
     const resolvedModules: RegistryEntry[] = [];
     namespaces.forEach(ns => {
-        if (fs.lstatSync(path.join(modulesDir, ns)).isDirectory()) {
+        if (ns[0] !== '.' && fs.lstatSync(path.join(modulesDir, ns)).isDirectory()) {
             const namespacedModuleDir = path.join(modulesDir, ns);
             const modules = fs.readdirSync(namespacedModuleDir);
             modules.forEach(moduleName => {

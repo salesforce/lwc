@@ -35,9 +35,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     return {
         name: 'rollup-plugin-lwc-compiler',
 
-        options({ modules: userModules, rootDir, input }) {
+        options({ input }) {
+            const { modules: userModules = [], rootDir } = mergedPluginOptions;
             const defaultSrc = path.dirname(input);
-            const modules = DEFAULT_MODULES.concat(userModules ? userModules : [defaultSrc]);
+            const modules = [...userModules, ...DEFAULT_MODULES, rootDir || defaultSrc];
             const resolvedModules = lwcResolver.resolveModules({ rootDir, modules });
             modulePaths = resolvedModules.reduce((map, m) => ((map[m.specifier] = m), map), {});
         },

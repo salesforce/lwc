@@ -49,25 +49,28 @@ export function getModuleEntry(moduleDir, moduleName) {
 
 export function normalizeConfig(config: Partial<ModuleResolverConfig>): ModuleResolverConfig {
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
+    const modules = config.modules || [];
     return {
         ...DEFAULT_CONFIG,
-        modules: config.modules || [],
+        modules,
         rootDir,
     };
 }
 
-// userModules will always win other resolved modules
+// The modules can be either string or ModuleRecordObject { name, path }
+//
+// user define modules will have precedence over the ones defined elsewhere (ex. npm)
 export function mergeModules(userModules: ModuleRecord[], configModules: ModuleRecord[]) {
     const visited = new Set();
     const modules = userModules;
 
-    // visit the user modules to created an index of module names
+    // Visit the user modules to created an index with the name as keys
     userModules.forEach(m => {
         visited.add(isString(m) ? m : (m as ModuleRecordObject).name);
     });
 
     configModules.forEach(m => {
-        // Collect all of the modules that are not defined already by the user
+        // Collect all of the modules unless they been already defined in userland
         if (isString(m) || !visited.has((m as ModuleRecordObject).name)) {
             modules.push(m);
         }
