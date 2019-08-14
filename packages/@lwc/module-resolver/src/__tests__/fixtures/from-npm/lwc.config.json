@@ -1,0 +1,7 @@
+{
+    "modules": [
+        "@lwc/engine",
+        "@lwc/wire-service",
+        "@lwc/synthetic-shadow"
+    ]
+}
