@@ -34,7 +34,8 @@ export function reactTo(
         return;
     }
     if (isUndefined(callbackListByType[reactionEventType])) {
-        callbackListByType[reactionEventType] = [];
+        callbackListByType[reactionEventType] = [callback];
+        return;
     }
     if (process.env.NODE_ENV !== 'production') {
         // TODO: Handle duplicates https://github.com/salesforce/lwc-rfcs/pull/11/files#r305508013
