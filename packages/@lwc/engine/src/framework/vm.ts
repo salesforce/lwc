@@ -36,7 +36,7 @@ import {
 } from './utils';
 import { invokeServiceHook, Services } from './services';
 import { invokeComponentCallback } from './invoker';
-import { ShadowRootInnerHTMLSetter, ShadowRootHostGetter } from '../env/dom';
+import { ShadowRootHostGetter } from '../env/dom';
 
 import { VNodeData, VNodes } from '../3rdparty/snabbdom/types';
 import { Template } from './template';
@@ -408,18 +408,32 @@ function runDisconnectedCallback(vm: VM) {
     }
 }
 
-// This is a super optimized mechanism to remove the content of the shadowRoot
-// without having to go into snabbdom. Especially useful when the reset is a consequence
-// of an error, in which case the children VNodes might not be representing the current
-// state of the DOM
-export function resetShadowRoot(vm: VM) {
+// For error boundary recovery, some vnodes might not
+// have the `elm` defined, and there is no guarantee
+// that it was inserted. This routine just attempt to
+// remove all possible nodes by ignoring errors.
+function resetShadowRootAfterError(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
+    const { children, cmpRoot } = vm;
     vm.children = EmptyArray;
-    // TODO: we can do a while-loop here for the time being until we add the
-    // innerHTML patch mechanism
-    ShadowRootInnerHTMLSetter.call(vm.cmpRoot, '');
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (!isNull(vnode)) {
+            const { elm } = vnode;
+            if (!isUndefined(elm)) {
+                // the concern here is that this routine might
+                // throw and we have one flow that does not
+                // have protection (recovering from error boundary)
+                try {
+                    cmpRoot.removeChild(elm);
+                } catch (e) {
+                    // ignore any error to complete the clean up
+                }
+            }
+        }
+    }
 }
 
 export function scheduleRehydration(vm: VM) {
@@ -636,7 +650,7 @@ export function runWithBoundaryProtection(
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
-            resetShadowRoot(vm); // remove offenders
+            resetShadowRootAfterError(vm); // remove offenders
 
             if (process.env.NODE_ENV !== 'production') {
                 startMeasure('errorCallback', errorBoundaryVm);
