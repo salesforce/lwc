@@ -417,7 +417,6 @@ function resetShadowRootAfterError(vm: VM) {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
     const { children, cmpRoot } = vm;
-    vm.children = EmptyArray;
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (!isNull(vnode)) {
@@ -434,6 +433,7 @@ function resetShadowRootAfterError(vm: VM) {
             }
         }
     }
+    vm.children = EmptyArray;
 }
 
 export function scheduleRehydration(vm: VM) {

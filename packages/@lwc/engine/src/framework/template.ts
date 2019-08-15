@@ -95,7 +95,7 @@ function validateFields(vm: VM, html: Template) {
 // without having to go into snabbdom. This assumes that nodes are present and
 // connected, otherwise it throws, and will be captured by outer control, the
 // main goal is to do this clean up as fast as possible.
-function resetShadowRoot(vm: VM) {
+function resetTemplate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
@@ -131,7 +131,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         if (!isUndefined(cmpTemplate)) {
             // It is important to reset the content to avoid reusing similar elements generated from a different
             // template, because they could have similar IDs, and snabbdom just rely on the IDs.
-            resetShadowRoot(vm);
+            resetTemplate(vm);
             resetStyle(vm);
         }
 
@@ -150,8 +150,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         context.tplCache = create(null);
 
         const { stylesheets, stylesheetTokens } = html;
-        if (!isUndefined(stylesheetTokens)) {
-            applyStyle(vm, stylesheets as StylesheetFactory[], stylesheetTokens);
+        if (!isUndefined(stylesheetTokens) && !isUndefined(stylesheets)) {
+            applyStyle(vm, stylesheets, stylesheetTokens);
         }
 
         if (process.env.NODE_ENV !== 'production') {

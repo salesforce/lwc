@@ -127,7 +127,7 @@ function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative,
     });
 }
 
-export function evaluateCSS(
+function evaluateCSS(
     vm: VM,
     stylesheets: StylesheetFactory[],
     hostAttribute: string,
