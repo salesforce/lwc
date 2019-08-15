@@ -121,13 +121,6 @@ export function clearReactiveListeners(vm: VM) {
     }
 }
 
-function clearChildLWC(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    vm.velements = [];
-}
-
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -135,7 +128,7 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     clearReactiveListeners(vm);
-    clearChildLWC(vm);
+
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;
