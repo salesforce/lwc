@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import assert from '../shared/assert';
 import reactTo, { ReactionEventType } from '@lwc/node-reactions';
-
 import { isUndefined, isNull, isObject, isFunction, toString } from '../shared/language';
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
+import { createVM, getCustomElementVM, removeVM, appendVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
     EmptyObject,
@@ -83,17 +83,21 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     reactTo(element, ReactionEventType.connected, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        // TODO: This is not required anymore. node-reactions takes care of invoking disconnected if a connected node is moved. Caridy?
-        if (vm.state === VMState.connected) {
-            // usually means moving the element from one place to another, which is observable via life-cycle hooks
-            removeRootVM(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(
+                vm.state === VMState.created || vm.state === VMState.disconnected,
+                `${vm} should be new or disconnected.`
+            );
         }
-        appendRootVM(vm);
+        appendVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
     reactTo(element, ReactionEventType.disconnected, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
-        removeRootVM(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+        }
+        removeVM(vm);
     });
     return element;
 }
