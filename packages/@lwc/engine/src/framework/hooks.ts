@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import reactTo, { ReactionEventType } from '@lwc/node-reactions';
+
 import assert from '../shared/assert';
 import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from '../shared/language';
 import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
@@ -33,7 +35,6 @@ import {
     lockDomMutation,
 } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
-import reactTo, { ReactionEventType } from '@lwc/node-reactions';
 
 const noop = () => void 0;
 
