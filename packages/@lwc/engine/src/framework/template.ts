@@ -15,21 +15,15 @@ import {
     ArrayIndexOf,
     toString,
     forEach,
-    ArrayUnshift,
 } from '../shared/language';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
 import { Context } from './context';
-import { SlotSet, VM, resetShadowRoot } from './vm';
+import { SlotSet, VM } from './vm';
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
-import {
-    evaluateCSS,
-    StylesheetFactory,
-    applyStyleAttributes,
-    resetStyleAttributes,
-} from './stylesheet';
+import { StylesheetFactory, applyStyle, resetStyle, StylesheetTokens } from './stylesheet';
 
 export { registerTemplate };
 export interface Template {
@@ -46,19 +40,7 @@ export interface Template {
      */
     ids?: string[];
 
-    stylesheetTokens?: {
-        /**
-         * HTML attribute that need to be applied to the host element. This attribute is used for the
-         * `:host` pseudo class CSS selector.
-         */
-        hostAttribute: string;
-
-        /**
-         * HTML attribute that need to the applied to all the element that the template produces.
-         * This attribute is used for style encapsulation when the engine runs with synthetic shadow.
-         */
-        shadowAttribute: string;
-    };
+    stylesheetTokens?: StylesheetTokens;
 }
 const EmptySlots: SlotSet = create(null);
 
@@ -109,6 +91,28 @@ function validateFields(vm: VM, html: Template) {
     });
 }
 
+// This is a super optimized mechanism to remove the content of the shadowRoot
+// without having to go into snabbdom. This assumes that nodes are present and
+// connected, otherwise it throws, and will be captured by outer control, the
+// main goal is to do this clean up as fast as possible.
+function resetTemplate(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+    }
+    // removing all tracked childNodes
+    const { children, cmpRoot } = vm;
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (!isNull(vnode)) {
+            const { elm } = vnode;
+            // the vnode must have elm defined, and must be connected
+            cmpRoot.removeChild(elm as Node);
+        }
+    }
+    vm.children = EmptyArray;
+    // intentionally leaving out any manually inserted node in the shadowRoot
+}
+
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -127,7 +131,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         if (!isUndefined(cmpTemplate)) {
             // It is important to reset the content to avoid reusing similar elements generated from a different
             // template, because they could have similar IDs, and snabbdom just rely on the IDs.
-            resetShadowRoot(vm);
+            resetTemplate(vm);
+            resetStyle(vm);
         }
 
         // Check that the template was built by the compiler
@@ -144,16 +149,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         // Populate context with template information
         context.tplCache = create(null);
 
-        resetStyleAttributes(vm);
-
         const { stylesheets, stylesheetTokens } = html;
-        if (isUndefined(stylesheets) || stylesheets.length === 0) {
-            context.styleVNode = null;
-        } else if (!isUndefined(stylesheetTokens)) {
-            const { hostAttribute, shadowAttribute } = stylesheetTokens;
-            applyStyleAttributes(vm, hostAttribute, shadowAttribute);
-            // Caching style vnode so it can be reused on every render
-            context.styleVNode = evaluateCSS(vm, stylesheets, hostAttribute, shadowAttribute);
+        if (!isUndefined(stylesheetTokens) && !isUndefined(stylesheets) && stylesheets.length > 0) {
+            applyStyle(vm, stylesheets, stylesheetTokens);
         }
 
         if (process.env.NODE_ENV !== 'production') {
@@ -177,11 +175,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     vm.velements = [];
     // invoke the selected template.
     const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
-
-    const { styleVNode } = context;
-    if (!isNull(styleVNode)) {
-        ArrayUnshift.call(vnodes, styleVNode);
-    }
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(

@@ -21,7 +21,6 @@ const {
 const { isArray } = Array;
 const {
     slice: ArraySlice,
-    splice: ArraySplice,
     unshift: ArrayUnshift,
     indexOf: ArrayIndexOf,
     push: ArrayPush,
@@ -57,7 +56,6 @@ export {
     hasOwnProperty,
     ArrayReduce,
     ArraySlice,
-    ArraySplice,
     ArrayUnshift,
     ArrayMap,
     ArrayJoin,

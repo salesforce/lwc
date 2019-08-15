@@ -7,7 +7,7 @@
 import reactTo, { ReactionEventType } from '@lwc/node-reactions';
 
 import assert from '../shared/assert';
-import { isArray, isUndefined, isTrue, hasOwnProperty, isNull } from '../shared/language';
+import { isArray, isUndefined, isTrue, hasOwnProperty } from '../shared/language';
 import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
@@ -17,6 +17,7 @@ import {
     allocateInSlot,
     appendVM,
     runWithBoundaryProtection,
+    VMState,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -142,11 +143,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getCustomElementVM(vnode.elm as HTMLElement);
-    appendVM(vm);
-}
-
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children, owner } = vnode;
     const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
@@ -165,7 +161,6 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
     const vm = getCustomElementVM(elm);
     const { children } = vnode;
-    vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
@@ -197,10 +192,16 @@ export function createViewModelHook(vnode: VCustomElement) {
     });
     reactTo(elm, ReactionEventType.connected, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+        }
         appendVM(vm);
     });
     reactTo(elm, ReactionEventType.disconnected, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+        }
         removeVM(vm);
     });
     if (process.env.NODE_ENV !== 'production') {
@@ -260,25 +261,6 @@ export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElem
     modProps.update(oldVnode, vnode);
     modComputedClassName.update(oldVnode, vnode);
     modComputedStyle.update(oldVnode, vnode);
-}
-
-export function removeElmHook(vnode: VElement) {
-    // this method only needs to search on child vnodes from template
-    // to trigger the remove hook just in case some of those children
-    // are custom elements.
-    const { children, elm } = vnode;
-    for (let j = 0, len = children.length; j < len; ++j) {
-        const ch = children[j];
-        if (!isNull(ch)) {
-            ch.hook.remove(ch, elm as HTMLElement);
-        }
-    }
-}
-
-export function removeCustomElmHook(vnode: VCustomElement) {
-    // for custom elements we don't have to go recursively because the removeVM routine
-    // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getCustomElementVM(vnode.elm as HTMLElement));
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
