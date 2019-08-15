@@ -1,0 +1,8 @@
+{
+    "modules": [
+        {
+            "name": "custom-module",
+            "path": "custom/module.js"
+        }
+    ]
+}

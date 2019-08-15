@@ -28,7 +28,7 @@ module.exports = {
             alias: 'remote',
             runner: '@best/runner-hub',
             config: {
-                host: process.env.BEST_HUB_HOSTNAME || 'https://bestv4-hub.herokuapp.com/',
+                host: process.env.BEST_HUB_HOSTNAME,
                 options: {
                     query: { token: process.env.BEST_HUB_CLIENT_TOKEN },
                 },

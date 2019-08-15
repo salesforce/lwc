@@ -24,9 +24,12 @@
         "@lwc/template-compiler": "1.0.2"
     },
     "lwc": {
-        "modules": {
-            "lwc": "dist/engine.js"
-        }
+        "modules": [
+            {
+                "name": "lwc",
+                "path": "dist/engine.js"
+            }
+        ]
     },
     "publishConfig": {
         "access": "public"

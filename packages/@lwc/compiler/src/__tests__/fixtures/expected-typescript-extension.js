@@ -1,4 +1,4 @@
-import { registerTemplate, registerComponent, LightningElement } from 'lwc';
+import { registerTemplate, registerComponent, LightningElement, registerDecorators } from 'lwc';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
@@ -21,6 +21,9 @@ class ClassAndTemplate extends LightningElement {
         this.counter = 0;
     }
 }
+registerDecorators(ClassAndTemplate, {
+    fields: ["t"]
+});
 var typescript = registerComponent(ClassAndTemplate, {
     tmpl: _tmpl
 });

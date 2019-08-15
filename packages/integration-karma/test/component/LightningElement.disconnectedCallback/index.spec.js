@@ -3,6 +3,8 @@ import { createElement } from 'lwc';
 import Slotted from 'x/slotted';
 import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
+import DualTemplate from 'x/dualTemplate';
+import ExplicitRender from 'x/explicitRender';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
@@ -156,4 +158,34 @@ it('should associate the component stack when the invocation throws', () => {
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in disconnected');
     expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
+});
+
+describe('disconnectedCallback for components with a explicit render()', () => {
+    let disconnectedCallbackInvoked;
+    function disconnectedCallback() {
+        disconnectedCallbackInvoked = true;
+    }
+    beforeEach(() => {
+        disconnectedCallbackInvoked = false;
+    });
+    it('should invoke disconnectedCallback for children when parent is removed', () => {
+        const parent = createElement('x-explicitrender', { is: ExplicitRender });
+        document.body.appendChild(parent);
+        const child = parent.shadowRoot.querySelector('x-test');
+        child.disconnect = disconnectedCallback;
+
+        document.body.removeChild(parent);
+        expect(disconnectedCallbackInvoked).toBe(true);
+    });
+
+    it('should invoke disconnectedCallback for children when parent switches template', () => {
+        const parent = createElement('x-parent', { is: DualTemplate });
+        document.body.appendChild(parent);
+        const child = parent.shadowRoot.querySelector('x-test');
+        child.disconnect = disconnectedCallback;
+        parent.hideChild = true;
+        return Promise.resolve().then(() => {
+            expect(disconnectedCallbackInvoked).toBe(true);
+        });
+    });
 });
