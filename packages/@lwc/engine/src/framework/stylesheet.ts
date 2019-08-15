@@ -83,7 +83,7 @@ export function resetStyle(vm: VM): void {
     context.hostAttribute = context.shadowAttribute = undefined;
 
     // removing style tag if present
-    if (!isNull(context.styleVNode)) {
+    if (!isNull(context.styleVNode) && !isUndefined(context.styleVNode)) {
         cmpRoot.removeChild(context.styleVNode);
         context.styleVNode = null;
     }
