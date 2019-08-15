@@ -1,11 +1,10 @@
-const { registerTemplate } = LWC;
-
-import { createElement, LightningElement } from 'lwc';
+import { createElement } from 'lwc';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
+import ExplicitRender from 'x/explicitRender';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, done => {
@@ -161,52 +160,25 @@ it('should associate the component stack when the invocation throws', () => {
     expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
 });
 
-describe('disconnectedCallback for components with a custom render()', () => {
+describe('disconnectedCallback for components with a explicit render()', () => {
+    let disconnectedCallbackInvoked;
+    function disconnectedCallback() {
+        disconnectedCallbackInvoked = true;
+    }
+    beforeEach(() => {
+        disconnectedCallbackInvoked = false;
+    });
     it('should invoke disconnectedCallback for children when parent is removed', () => {
-        let disconnectedCallbackInvoked;
-        function disconnectedCallback() {
-            disconnectedCallbackInvoked = true;
-        }
-        function tmpl($api, $cmp) {
-            const { c: api_custom_element, t: api_text } = $api;
-            return [
-                api_text('Parent'),
-                api_custom_element(
-                    'x-test',
-                    Test,
-                    {
-                        props: {
-                            disconnect: $cmp.callback,
-                        },
-                        key: 2,
-                    },
-                    []
-                ),
-            ];
-        }
-        registerTemplate(tmpl);
-        class Parent extends LightningElement {
-            constructor() {
-                super();
-                this.callback = disconnectedCallback;
-            }
-            render() {
-                return tmpl;
-            }
-        }
-
-        const parent = createElement('x-parent', { is: Parent });
+        const parent = createElement('x-explicitrender', { is: ExplicitRender });
         document.body.appendChild(parent);
+        const child = parent.shadowRoot.querySelector('x-test');
+        child.disconnect = disconnectedCallback;
 
         document.body.removeChild(parent);
         expect(disconnectedCallbackInvoked).toBe(true);
     });
 
     it('should invoke disconnectedCallback for children when parent switches template', () => {
-        let disconnectedCallbackInvoked;
-        function disconnectedCallback() {
-            disconnectedCallbackInvoked = true;
-        }
         const parent = createElement('x-parent', { is: DualTemplate });
         document.body.appendChild(parent);
         const child = parent.shadowRoot.querySelector('x-test');
