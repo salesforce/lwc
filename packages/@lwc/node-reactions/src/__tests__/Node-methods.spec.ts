@@ -5,12 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import reactTo, { initialize_option1, ReactionEventType } from '../index';
+import reactTo, { ReactionEventType } from '../index';
 
 describe('patches', () => {
-    beforeAll(() => {
-        initialize_option1();
-    });
     describe('appendChild()', () => {
         it('should be detected as connection', () => {
             const elm = document.createElement('div');
