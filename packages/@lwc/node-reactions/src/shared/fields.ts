@@ -12,7 +12,8 @@ import { defineProperty } from './language';
  * creation of symbols, so we can fallback to string when native symbols
  * are not supported. Note that we can't use typeof since it will fail when transpiling.
  */
-const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
+// TODO: remove this dirty hack
+const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(xy)';
 
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
