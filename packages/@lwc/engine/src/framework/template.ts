@@ -170,9 +170,6 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         // validating slots in every rendering since the allocated content might change over time
         validateSlots(vm, html);
     }
-    // right before producing the vnodes, we clear up all internal references
-    // to custom elements from the template.
-    vm.velements = [];
     // invoke the selected template.
     const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
 
