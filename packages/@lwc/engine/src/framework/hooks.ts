@@ -193,7 +193,11 @@ export function createViewModelHook(vnode: VCustomElement) {
     reactTo(elm, ReactionEventType.connected, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
+            // Either the vm was just created or the node is being moved to another subtree
+            assert.isTrue(
+                vm.state === VMState.created || vm.state === VMState.disconnected,
+                `${vm} cannot be connected.`
+            );
         }
         appendVM(vm);
     });
