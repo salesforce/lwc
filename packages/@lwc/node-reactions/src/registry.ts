@@ -7,12 +7,14 @@
 import { ReactionEventType, ReactionCallback } from './types';
 import { ArrayPush, isUndefined, create, ArrayIndexOf } from './shared/language';
 import assert from './shared/assert';
-import { createFieldName, getInternalField, setInternalField } from './shared/fields';
+import { getInternalField, setInternalField } from './shared/fields';
 import { setAttribute } from './env/element';
 
 export const marker = 'data-node-reactions';
 
-const NodeToCallbackLookup = createFieldName('callback-lookup');
+// Cannot be a symbol because of JEST: since prototypes are shared, patched Node.prototype will
+// end up using stale symbol
+const NodeToCallbackLookup = '$$node-reactions-callback-lookup$$';
 export function reactTo(
     elm: Element,
     reactionEventType: ReactionEventType,
