@@ -12,22 +12,21 @@ import { defineProperty } from './language';
  * creation of symbols, so we can fallback to string when native symbols
  * are not supported. Note that we can't use typeof since it will fail when transpiling.
  */
-// TODO: remove this dirty hack
-const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(xy)';
+const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
     return hasNativeSymbolsSupport ? Symbol(key) : `$$node-reactions-${key}$$`;
 }
 
-export function setInternalField(o: object, fieldName: symbol, value: any) {
+export function setInternalField(o: object, fieldName: symbol | string, value: any) {
     // TODO: #1299 - improve this to use a WeakMap
     defineProperty(o, fieldName, {
         value,
     });
 }
 
-export function getInternalField(o: object, fieldName: symbol): any {
+export function getInternalField(o: object, fieldName: symbol | string): any {
     // @ts-ignore: using a string as a symbol for perf reasons
     return o[fieldName];
 }
