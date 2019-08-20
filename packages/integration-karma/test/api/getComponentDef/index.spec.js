@@ -238,8 +238,7 @@ describe('@wire', () => {
                 },
                 config: function(host) {
                     let v1 = host.foo;
-                    v1 = v1 != null ? v1 : undefined;
-                    return { b: true, c: v1 };
+                    return { b: true, c: v1 != null ? v1 : undefined };
                 },
             },
         });
@@ -277,8 +276,7 @@ describe('@wire', () => {
                 method: 1,
                 config: function(host) {
                     let v1 = host.foo;
-                    v1 = v1 != null ? v1 : undefined;
-                    return { b: true, c: v1 };
+                    return { b: true, c: v1 != null ? v1 : undefined };
                 },
             },
         });

@@ -65,15 +65,16 @@ function getGeneratedConfig(t, wiredValue) {
             );
         }
 
-        const assigmentExpression = t.assignmentExpression(
-            '=',
+        const conditionalExpression = t.conditionalExpression(
+            conditionTest,
             t.identifier(varName),
-            t.conditionalExpression(conditionTest, t.identifier(varName), t.identifier('undefined'))
+            t.identifier('undefined')
         );
 
         return {
+            varName,
             varDeclaration,
-            assigmentExpression,
+            conditionalExpression,
         };
     };
 
@@ -86,15 +87,9 @@ function getGeneratedConfig(t, wiredValue) {
             const memberExprPaths = param.value.value.split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
-            configProps.push(
-                t.objectProperty(
-                    param.key,
-                    t.cloneDeep(paramConfigValue.varDeclaration.declarations[0].id)
-                )
-            );
+            configProps.push(t.objectProperty(param.key, paramConfigValue.conditionalExpression));
 
             configBlockBody.push(paramConfigValue.varDeclaration);
-            configBlockBody.push(t.expressionStatement(paramConfigValue.assigmentExpression));
         });
     }
 
