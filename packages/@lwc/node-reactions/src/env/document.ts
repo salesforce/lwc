@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const { prototype: DocumentPrototype } = Document;
+const {
+    prototype: { constructor: DocumentConstructor },
+} = Document;
 
-export { DocumentPrototype };
+export { DocumentConstructor };

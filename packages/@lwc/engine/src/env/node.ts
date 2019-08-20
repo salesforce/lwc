@@ -6,8 +6,6 @@
  */
 import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
 
-const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
-
 const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     Node.prototype,
     'parentNode'
@@ -22,10 +20,6 @@ const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(
 
 export {
     // Node.prototype
-    appendChild,
-    insertBefore,
     parentElementGetter,
     parentNodeGetter,
-    removeChild,
-    replaceChild,
 };
