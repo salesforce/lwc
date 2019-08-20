@@ -40,6 +40,73 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["fixed", "array"]
+                      },
+                      config: function(host) {
+                        return {
+                          key2: ["fixed", "array"],
+                          key1: host.prop1 != null ? host.prop1 : undefined
+                        };
+                      }
+                    }
+                  }
+                });
+
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms parameters with multiple levels deep',
+        `
+        import { wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.prop2.prop3.prop4", key2: ["fixed", 'array']})
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1.prop2.prop3.prop4"
+                      },
+                      static: {
+                        key2: ["fixed", "array"]
+                      },
+                      config: function(host) {
+                        return {
+                          key2: ["fixed", "array"],
+                          key1:
+                            host.prop1 != null
+                              ? host.prop1.prop2 != null
+                                ? host.prop1.prop2.prop3 != null
+                                  ? host.prop1.prop2.prop3.prop4 != null
+                                    ? host.prop1.prop2.prop3.prop4
+                                    : undefined
+                                  : undefined
+                                : undefined
+                              : undefined
+                        };
                       }
                     }
                   }
@@ -88,6 +155,14 @@ describe('Transform property', () => {
                       static: {
                         key3: "fixed",
                         key4: ["fixed", "array"]
+                      },
+                      config: function(host) {
+                        return {
+                          key3: "fixed",
+                          key4: ["fixed", "array"],
+                          key1: host.prop != null ? host.prop : undefined,
+                          key2: host.prop != null ? host.prop : undefined
+                        };
                       }
                     }
                   }
@@ -171,7 +246,10 @@ describe('Transform property', () => {
                     wiredProp: {
                       adapter: getFoo,
                       params: {},
-                      static: {}
+                      static: {},
+                      config: function(host) {
+                        return {};
+                      }
                     }
                   }
                 });
@@ -185,7 +263,7 @@ describe('Transform property', () => {
     );
 
     pluginTest(
-        'decorator accepts a member epxression',
+        'decorator accepts a member expression',
         `
       import { wire } from 'lwc';
       import { Foo } from 'data-service';
@@ -212,7 +290,10 @@ describe('Transform property', () => {
                   wiredProp: {
                     adapter: Foo.Bar,
                     params: {},
-                    static: {}
+                    static: {},
+                    config: function(host) {
+                      return {};
+                    }
                   }
                 }
               });
@@ -253,7 +334,10 @@ describe('Transform property', () => {
                 wiredProp: {
                   adapter: Foo.Bar,
                   params: {},
-                  static: {}
+                  static: {},
+                  config: function(host) {
+                    return {};
+                  }
                 }
               }
             });
@@ -314,7 +398,10 @@ describe('Transform property', () => {
                     _registerDecorators(Test, {
                       wire: {
                         wiredProp: {
-                          adapter: getFoo
+                          adapter: getFoo,
+                          config: function(host) {
+                            return {};
+                          }
                         }
                       }
                     });
@@ -479,6 +566,12 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["fixed"]
+                      },
+                      config: function(host) {
+                        return {
+                          key2: ["fixed"],
+                          key1: host.prop1 != null ? host.prop1 : undefined
+                        };
                       }
                     },
                     wired2: {
@@ -488,6 +581,12 @@ describe('Transform property', () => {
                       },
                       static: {
                         key2: ["array"]
+                      },
+                      config: function(host) {
+                        return {
+                          key2: ["array"],
+                          key1: host.prop1 != null ? host.prop1 : undefined
+                        };
                       }
                     }
                   }
@@ -535,7 +634,13 @@ describe('Transform method', () => {
                       static: {
                         key2: ["fixed"]
                       },
-                      method: 1
+                      method: 1,
+                      config: function(host) {
+                        return {
+                          key2: ["fixed"],
+                          key1: host.prop1 != null ? host.prop1 : undefined
+                        };
+                      }
                     }
                   }
                 });

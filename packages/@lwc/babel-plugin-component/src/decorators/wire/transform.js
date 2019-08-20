@@ -37,6 +37,64 @@ function getWiredParams(t, wireConfig) {
         });
 }
 
+function getGeneratedConfig(t, wiredValue) {
+    const configProps = [];
+    const generateHostMemberExpression = (path, n) => {
+        if (n === 0) {
+            return t.memberExpression(t.identifier('host'), t.identifier(path[0]));
+        } else {
+            return t.memberExpression(
+                generateHostMemberExpression(path, n - 1),
+                t.identifier(path[n])
+            );
+        }
+    };
+
+    const generateDynamicConfigVal = propValue => {
+        let current = propValue;
+        let result = t.cloneDeep(propValue);
+
+        do {
+            result = t.conditionalExpression(
+                t.binaryExpression('!=', t.cloneDeep(current), t.nullLiteral()),
+                result,
+                t.identifier('undefined')
+            );
+
+            current = current.object;
+        } while (!t.isIdentifier(current));
+
+        return result;
+    };
+
+    if (wiredValue.static) {
+        Array.prototype.push.apply(configProps, wiredValue.static);
+    }
+
+    if (wiredValue.params) {
+        wiredValue.params.forEach(param => {
+            const memberExprPaths = param.value.value.split('.');
+
+            configProps.push(
+                t.objectProperty(
+                    param.key,
+                    generateDynamicConfigVal(
+                        generateHostMemberExpression(memberExprPaths, memberExprPaths.length - 1)
+                    )
+                )
+            );
+        });
+    }
+
+    const fnExpression = t.functionExpression(
+        null,
+        [t.identifier('host')],
+        t.blockStatement([t.returnStatement(t.objectExpression(configProps))])
+    );
+
+    return t.objectProperty(t.identifier('config'), fnExpression);
+}
+
 function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(
         wiredValues.map(wiredValue => {
@@ -62,6 +120,8 @@ function buildWireConfigValue(t, wiredValues) {
             if (wiredValue.isClassMethod) {
                 wireConfig.push(t.objectProperty(t.identifier('method'), t.numericLiteral(1)));
             }
+
+            wireConfig.push(getGeneratedConfig(t, wiredValue));
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),
