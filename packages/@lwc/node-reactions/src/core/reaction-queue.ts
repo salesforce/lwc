@@ -4,23 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ReactionEventType, ReactionCallback, ReactionEvent } from '../types';
+import { ReactionEvent } from '../types';
 import { forEach, ArrayPush } from '../shared/language';
 
 export function queueCallback(
-    type: ReactionEventType,
-    elm: Element,
-    callbackList: Array<ReactionCallback>,
+    reactionList: Array<ReactionEvent>,
     reactionQueue: Array<ReactionEvent>
-): Array<ReactionEvent> {
-    if (callbackList.length === 1) {
-        ArrayPush.call(reactionQueue, { type, node: elm, callback: callbackList[0] });
-        return reactionQueue; // Optimization to avoid the foreach
-    }
-    forEach.call(callbackList, callback => {
-        ArrayPush.call(reactionQueue, { type, node: elm, callback: callback });
-    });
-    return reactionQueue;
+): void {
+    ArrayPush.call(reactionQueue, ...reactionList);
 }
 
 export function flushQueue(reactionQueue: Array<ReactionEvent>) {

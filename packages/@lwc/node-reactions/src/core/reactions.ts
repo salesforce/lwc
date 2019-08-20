@@ -4,65 +4,64 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ReactionEventType, ReactionCallback } from '../types';
-import { ArrayPush, isUndefined, create, ArrayIndexOf } from '../shared/language';
-import assert from '../shared/assert';
+import { ReactionEventType, ReactionCallback, ReactionEvent } from '../types';
+import { ArrayPush, isUndefined, create } from '../shared/language';
 import { getInternalField, setInternalField } from '../shared/fields';
 import { setAttribute, hasAttribute } from '../env/element';
-import { NodeToCallbackLookup } from '../global/init';
+import { NodeToReactionsLookup } from '../global/init';
 
 export const marker = 'data-node-reactions';
 
+const connectedEvent = create(null, { type: { value: ReactionEventType.connected } });
+const disconnectedEvent = create(null, { type: { value: ReactionEventType.disconnected } });
+
 export function reactWhenConnected(elm: Element, callback: ReactionCallback): void {
-    let callbackListByType = getInternalField(elm, NodeToCallbackLookup);
-    if (isUndefined(callbackListByType)) {
-        callbackListByType = create(null);
-        callbackListByType[ReactionEventType.connected] = [callback];
-        setInternalField(elm, NodeToCallbackLookup, callbackListByType);
+    const reaction: ReactionEvent = create(connectedEvent, {
+        node: { value: elm },
+        callback: { value: callback },
+    });
+
+    let reactionListByType = getInternalField(elm, NodeToReactionsLookup);
+    if (isUndefined(reactionListByType)) {
+        reactionListByType = create(null);
+        reactionListByType[ReactionEventType.connected] = [reaction];
+        setInternalField(elm, NodeToReactionsLookup, reactionListByType);
         setAttribute.call(elm, marker, '');
         return;
     }
-    if (isUndefined(callbackListByType[ReactionEventType.connected])) {
-        callbackListByType[ReactionEventType.connected] = [callback];
+    const connectedReactionList = reactionListByType[ReactionEventType.connected];
+    if (isUndefined(connectedReactionList)) {
+        reactionListByType[ReactionEventType.connected] = [reaction];
         return;
     }
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: Handle duplicates https://github.com/salesforce/lwc-rfcs/pull/11/files#r305508013
-        assert.invariant(
-            ArrayIndexOf.call(callbackListByType[ReactionEventType.connected], callback) === -1,
-            `Registering a duplicate connected callback for node ${elm}`
-        );
-    }
-    ArrayPush.call(callbackListByType[ReactionEventType.connected], callback);
+    ArrayPush.call(connectedReactionList, reaction);
 }
 
 export function reactWhenDisconnected(elm: Element, callback: ReactionCallback): void {
-    let callbackListByType = getInternalField(elm, NodeToCallbackLookup);
-    if (isUndefined(callbackListByType)) {
-        callbackListByType = create(null);
-        callbackListByType[ReactionEventType.disconnected] = [callback];
-        setInternalField(elm, NodeToCallbackLookup, callbackListByType);
+    const reaction: ReactionEvent = create(disconnectedEvent, {
+        node: { value: elm },
+        callback: { value: callback },
+    });
+    let reactionListByType = getInternalField(elm, NodeToReactionsLookup);
+    if (isUndefined(reactionListByType)) {
+        reactionListByType = create(null);
+        reactionListByType[ReactionEventType.disconnected] = [reaction];
+        setInternalField(elm, NodeToReactionsLookup, reactionListByType);
         setAttribute.call(elm, marker, '');
         return;
     }
-    if (isUndefined(callbackListByType[ReactionEventType.disconnected])) {
-        callbackListByType[ReactionEventType.disconnected] = [callback];
+    const disconnectedReactionList = reactionListByType[ReactionEventType.disconnected];
+    if (isUndefined(disconnectedReactionList)) {
+        reactionListByType[ReactionEventType.disconnected] = [reaction];
         return;
     }
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: Handle duplicates https://github.com/salesforce/lwc-rfcs/pull/11/files#r305508013
-        assert.invariant(
-            ArrayIndexOf.call(callbackListByType[ReactionEventType.disconnected], callback) === -1,
-            `Registering a duplicate connected callback for node ${elm}`
-        );
-    }
-    ArrayPush.call(callbackListByType[ReactionEventType.disconnected], callback);
+    ArrayPush.call(disconnectedReactionList, reaction);
 }
 
-export function getRegisteredCallbacksForElement(
+export function getRegisteredReactionsForElement(
     elm: Node
-): { [key: string]: Array<ReactionCallback> } | undefined {
-    return getInternalField(elm, NodeToCallbackLookup);
+): { [key: string]: Array<ReactionEvent> } | undefined {
+    return getInternalField(elm, NodeToReactionsLookup);
 }
 
 export function isRegisteredNode(node: Node): boolean {

@@ -6,7 +6,7 @@
  */
 
 import { ReactionEventType, ReactionEvent } from '../types';
-import { getRegisteredCallbacksForElement, marker } from './reactions';
+import { getRegisteredReactionsForElement, marker } from './reactions';
 import { isUndefined, forEach, isNull } from '../shared/language';
 import assert from '../shared/assert';
 import { queueCallback } from './reaction-queue';
@@ -21,11 +21,11 @@ function queueReactionsForSingleElement(
     reactionTypes: Array<ReactionEventType>,
     reactionQueue: Array<ReactionEvent>
 ): void {
-    const callbackListByType = getRegisteredCallbacksForElement(elm);
-    if (!isUndefined(callbackListByType)) {
+    const reactionListByType = getRegisteredReactionsForElement(elm);
+    if (!isUndefined(reactionListByType)) {
         forEach.call(reactionTypes, reactionType => {
-            if (!isUndefined(callbackListByType[reactionType])) {
-                queueCallback(reactionType, elm, callbackListByType[reactionType], reactionQueue);
+            if (!isUndefined(reactionListByType[reactionType])) {
+                queueCallback(reactionListByType[reactionType], reactionQueue);
             }
         });
     }

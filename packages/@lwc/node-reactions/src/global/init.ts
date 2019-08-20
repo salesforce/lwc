@@ -19,9 +19,9 @@ function patchDomApi(): void {
 }
 
 const InitializationSlot = '$$node-reactions-initialized$$';
-let NodeToCallbackLookup: symbol;
-let reactToConnectionCached: (elm: Element, callback: ReactionCallback) => void;
-let reactToDisconnectionCached: (elm: Element, callback: ReactionCallback) => void;
+let NodeToReactionsLookup: symbol;
+let reactWhenConnectedCached: (elm: Element, callback: ReactionCallback) => void;
+let reactWhenDisconnectedCached: (elm: Element, callback: ReactionCallback) => void;
 
 /**
  * Set an internal field to detect initialization
@@ -29,23 +29,23 @@ let reactToDisconnectionCached: (elm: Element, callback: ReactionCallback) => vo
 export function initialize(): void {
     if (!isUndefined((DocumentConstructor as any)[InitializationSlot])) {
         const cached = (DocumentConstructor as any)[InitializationSlot]();
-        reactToConnectionCached = cached[ReactionEventType.connected];
-        reactToDisconnectionCached = cached[ReactionEventType.disconnected];
-        NodeToCallbackLookup = cached['NodeToCallbackLookup'];
+        reactWhenConnectedCached = cached[ReactionEventType.connected];
+        reactWhenDisconnectedCached = cached[ReactionEventType.disconnected];
+        NodeToReactionsLookup = cached['NodeToReactionsLookup'];
         return;
     }
     patchDomApi();
     const init = create(null);
-    reactToConnectionCached = init[ReactionEventType.connected] = reactWhenConnected;
-    reactToDisconnectionCached = init[ReactionEventType.disconnected] = reactWhenDisconnected;
-    NodeToCallbackLookup = init['NodeToCallbackLookup'] = createFieldName('callback-lookup');
+    reactWhenConnectedCached = init[ReactionEventType.connected] = reactWhenConnected;
+    reactWhenDisconnectedCached = init[ReactionEventType.disconnected] = reactWhenDisconnected;
+    NodeToReactionsLookup = init['NodeToReactionsLookup'] = createFieldName('callback-lookup');
     // Defined as an arrow function to avoid anybody walking the prototype chain from
     // accidentally discovering the cached apis
     defineProperty(DocumentConstructor, InitializationSlot, { value: () => init });
 }
 
 export {
-    NodeToCallbackLookup,
-    reactToConnectionCached as reactWhenConnected,
-    reactToDisconnectionCached as reactWhenDisconnected,
+    NodeToReactionsLookup,
+    reactWhenConnectedCached as reactWhenConnected,
+    reactWhenDisconnectedCached as reactWhenDisconnected,
 };
