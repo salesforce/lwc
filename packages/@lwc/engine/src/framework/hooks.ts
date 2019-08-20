@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { reactToConnection, reactToDisconnection } from '@lwc/node-reactions';
+import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 
 import assert from '../shared/assert';
 import { isArray, isUndefined, isTrue, hasOwnProperty } from '../shared/language';
@@ -190,7 +190,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    reactToConnection(elm, function(this: HTMLElement) {
+    reactWhenConnected(elm, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             // Either the vm was just created or the node is being moved to another subtree
@@ -201,7 +201,7 @@ export function createViewModelHook(vnode: VCustomElement) {
         }
         appendVM(vm);
     });
-    reactToDisconnection(elm, function(this: HTMLElement) {
+    reactWhenDisconnected(elm, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);

@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { reactToConnection, reactToDisconnection } from '../index';
+import { reactWhenConnected, reactWhenDisconnected } from '../index';
 
 describe('patches', () => {
     describe('appendChild()', () => {
         it('should be detected as connection', () => {
             const elm = document.createElement('div');
             let connected = false;
-            reactToConnection(elm, function() {
+            reactWhenConnected(elm, function() {
                 connected = true;
             });
             document.body.appendChild(elm);
@@ -24,7 +24,7 @@ describe('patches', () => {
         it('should be detected as connection', () => {
             const elm = document.createElement('div');
             let connected = false;
-            reactToConnection(elm, function() {
+            reactWhenConnected(elm, function() {
                 connected = true;
             });
             document.body.insertBefore(elm, null);
@@ -37,7 +37,7 @@ describe('patches', () => {
             const anchor = document.createElement('a');
             const elm = document.createElement('div');
             let connected = false;
-            reactToConnection(elm, function() {
+            reactWhenConnected(elm, function() {
                 connected = true;
             });
             document.body.appendChild(anchor);
@@ -50,7 +50,7 @@ describe('patches', () => {
         it('should be detected as disconnection', () => {
             const elm = document.createElement('div');
             let disconnected = false;
-            reactToDisconnection(elm, function() {
+            reactWhenDisconnected(elm, function() {
                 disconnected = true;
             });
             document.body.appendChild(elm);

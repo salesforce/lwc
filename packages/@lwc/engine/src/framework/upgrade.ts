@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import { reactToConnection, reactToDisconnection } from '@lwc/node-reactions';
+import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 import { isUndefined, isNull, isObject, isFunction, toString } from '../shared/language';
 import { createVM, getCustomElementVM, removeVM, appendVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
@@ -80,7 +80,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    reactToConnection(element, function(this: HTMLElement) {
+    reactWhenConnected(element, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         if (process.env.NODE_ENV !== 'production') {
@@ -92,7 +92,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         appendVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
-    reactToDisconnection(element, function(this: HTMLElement) {
+    reactWhenDisconnected(element, function(this: HTMLElement) {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);

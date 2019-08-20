@@ -7,24 +7,34 @@
 import { ReactionCallback } from './types';
 import { isUndefined } from './shared/language';
 import assert from './shared/assert';
-import { reactToConnectionCached, reactToDisconnectionCached } from './global/init';
+import { reactWhenConnected, reactWhenDisconnected } from './global/init';
 
-export function reactToConnection(elm: Element, callback: ReactionCallback): void {
+/**
+ * Redirecting after dev mode assertion.
+ * In prod mode, the browser should be able to optimize this
+ */
+
+function reactWhenConnectedRedirect(elm: Element, callback: ReactionCallback): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(elm), 'Missing required node param');
         assert.invariant(!isUndefined(callback), 'Missing callback');
         assert.invariant(elm instanceof Element, 'Expected to only register Elements');
     }
 
-    reactToConnectionCached(elm, callback);
+    reactWhenConnected(elm, callback);
 }
 
-export function reactToDisconnection(elm: Element, callback: ReactionCallback): void {
+function reactWhenDisconnectedRedirect(elm: Element, callback: ReactionCallback): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(elm), 'Missing required node param');
         assert.invariant(!isUndefined(callback), 'Missing callback');
         assert.invariant(elm instanceof Element, 'Expected to only register Elements');
     }
 
-    reactToDisconnectionCached(elm, callback);
+    reactWhenDisconnected(elm, callback);
 }
+
+export {
+    reactWhenConnectedRedirect as reactWhenConnected,
+    reactWhenDisconnectedRedirect as reactWhenDisconnected,
+};

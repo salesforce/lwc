@@ -1,3 +1,3 @@
 Usage:
-reactToConnection(element, callback);
-reactToDisconnection(element, callback);
+reactWhenConnected(element, callback);
+reactWhenDisconnected(element, callback);

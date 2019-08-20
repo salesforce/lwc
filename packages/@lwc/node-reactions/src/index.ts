@@ -8,4 +8,4 @@ import { initialize } from './global/init';
 
 initialize();
 
-export { reactToConnection, reactToDisconnection } from './api';
+export { reactWhenConnected, reactWhenDisconnected } from './api';

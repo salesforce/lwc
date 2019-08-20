@@ -13,7 +13,7 @@ import { NodeToCallbackLookup } from '../global/init';
 
 export const marker = 'data-node-reactions';
 
-export function reactToConnection(elm: Element, callback: ReactionCallback): void {
+export function reactWhenConnected(elm: Element, callback: ReactionCallback): void {
     let callbackListByType = getInternalField(elm, NodeToCallbackLookup);
     if (isUndefined(callbackListByType)) {
         callbackListByType = create(null);
@@ -36,7 +36,7 @@ export function reactToConnection(elm: Element, callback: ReactionCallback): voi
     ArrayPush.call(callbackListByType[ReactionEventType.connected], callback);
 }
 
-export function reactToDisconnection(elm: Element, callback: ReactionCallback): void {
+export function reactWhenDisconnected(elm: Element, callback: ReactionCallback): void {
     let callbackListByType = getInternalField(elm, NodeToCallbackLookup);
     if (isUndefined(callbackListByType)) {
         callbackListByType = create(null);
