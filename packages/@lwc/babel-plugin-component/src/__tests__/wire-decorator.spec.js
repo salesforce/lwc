@@ -97,14 +97,11 @@ describe('Transform property', () => {
                         return {
                           key2: ["fixed", "array"],
                           key1:
-                            host.prop1 != null
-                              ? host.prop1.prop2 != null
-                                ? host.prop1.prop2.prop3 != null
-                                  ? host.prop1.prop2.prop3.prop4 != null
-                                    ? host.prop1.prop2.prop3.prop4
-                                    : undefined
-                                  : undefined
-                                : undefined
+                            host.prop1 != null &&
+                            host.prop1.prop2 != null &&
+                            host.prop1.prop2.prop3 != null &&
+                            host.prop1.prop2.prop3.prop4 != null
+                              ? host.prop1.prop2.prop3.prop4
                               : undefined
                         };
                       }

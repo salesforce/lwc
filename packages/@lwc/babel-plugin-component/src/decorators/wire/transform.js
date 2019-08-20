@@ -51,20 +51,23 @@ function getGeneratedConfig(t, wiredValue) {
     };
 
     const generateDynamicConfigVal = propValue => {
-        let current = propValue;
-        let result = t.cloneDeep(propValue);
+        let current = propValue.object;
+        let result = t.binaryExpression('!=', t.cloneDeep(propValue), t.nullLiteral());
 
-        do {
-            result = t.conditionalExpression(
+        while (!t.isIdentifier(current)) {
+            result = t.logicalExpression(
+                '&&',
                 t.binaryExpression('!=', t.cloneDeep(current), t.nullLiteral()),
-                result,
-                t.identifier('undefined')
+                result
             );
-
             current = current.object;
-        } while (!t.isIdentifier(current));
+        }
 
-        return result;
+        return t.conditionalExpression(
+            result,
+            propValue,
+            t.identifier('undefined')
+        );
     };
 
     if (wiredValue.static) {
