@@ -42,9 +42,11 @@ describe('Transform property', () => {
                         key2: ["fixed", "array"]
                       },
                       config: function(host) {
+                        let v1 = host.prop1;
+                        v1 = v1 != null ? v1 : undefined;
                         return {
                           key2: ["fixed", "array"],
-                          key1: host.prop1 != null ? host.prop1 : undefined
+                          key1: v1
                         };
                       }
                     }
@@ -94,15 +96,17 @@ describe('Transform property', () => {
                         key2: ["fixed", "array"]
                       },
                       config: function(host) {
+                        let v1 = host.prop1;
+                        v1 =
+                          v1 != null &&
+                          (v1 = v1.prop2) != null &&
+                          (v1 = v1.prop3) != null &&
+                          (v1 = v1.prop4) != null
+                            ? v1
+                            : undefined;
                         return {
                           key2: ["fixed", "array"],
-                          key1:
-                            host.prop1 != null &&
-                            host.prop1.prop2 != null &&
-                            host.prop1.prop2.prop3 != null &&
-                            host.prop1.prop2.prop3.prop4 != null
-                              ? host.prop1.prop2.prop3.prop4
-                              : undefined
+                          key1: v1
                         };
                       }
                     }
@@ -154,11 +158,15 @@ describe('Transform property', () => {
                         key4: ["fixed", "array"]
                       },
                       config: function(host) {
+                        let v1 = host.prop;
+                        v1 = v1 != null ? v1 : undefined;
+                        let v2 = host.prop;
+                        v2 = v2 != null ? v2 : undefined;
                         return {
                           key3: "fixed",
                           key4: ["fixed", "array"],
-                          key1: host.prop != null ? host.prop : undefined,
-                          key2: host.prop != null ? host.prop : undefined
+                          key1: v1,
+                          key2: v2
                         };
                       }
                     }
@@ -565,9 +573,11 @@ describe('Transform property', () => {
                         key2: ["fixed"]
                       },
                       config: function(host) {
+                        let v1 = host.prop1;
+                        v1 = v1 != null ? v1 : undefined;
                         return {
                           key2: ["fixed"],
-                          key1: host.prop1 != null ? host.prop1 : undefined
+                          key1: v1
                         };
                       }
                     },
@@ -580,9 +590,11 @@ describe('Transform property', () => {
                         key2: ["array"]
                       },
                       config: function(host) {
+                        let v1 = host.prop1;
+                        v1 = v1 != null ? v1 : undefined;
                         return {
                           key2: ["array"],
-                          key1: host.prop1 != null ? host.prop1 : undefined
+                          key1: v1
                         };
                       }
                     }
@@ -633,9 +645,11 @@ describe('Transform method', () => {
                       },
                       method: 1,
                       config: function(host) {
+                        let v1 = host.prop1;
+                        v1 = v1 != null ? v1 : undefined;
                         return {
                           key2: ["fixed"],
-                          key1: host.prop1 != null ? host.prop1 : undefined
+                          key1: v1
                         };
                       }
                     }

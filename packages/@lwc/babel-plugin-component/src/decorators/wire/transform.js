@@ -38,36 +38,46 @@ function getWiredParams(t, wireConfig) {
 }
 
 function getGeneratedConfig(t, wiredValue) {
+    let counter = 0;
+    const configBlockBody = [];
     const configProps = [];
-    const generateHostMemberExpression = (path, n) => {
-        if (n === 0) {
-            return t.memberExpression(t.identifier('host'), t.identifier(path[0]));
-        } else {
-            return t.memberExpression(
-                generateHostMemberExpression(path, n - 1),
-                t.identifier(path[n])
-            );
-        }
-    };
-
-    const generateDynamicConfigVal = propValue => {
-        let current = propValue.object;
-        let result = t.binaryExpression('!=', t.cloneDeep(propValue), t.nullLiteral());
-
-        while (!t.isIdentifier(current)) {
-            result = t.logicalExpression(
-                '&&',
-                t.binaryExpression('!=', t.cloneDeep(current), t.nullLiteral()),
-                result
-            );
-            current = current.object;
-        }
-
-        return t.conditionalExpression(
-            result,
-            propValue,
-            t.identifier('undefined')
+    const generateParameterConfigValue = (memberExprPaths) => {
+        const varName = "v"+(++counter);
+        const varDeclaration = t.variableDeclaration(
+            'let',
+            [
+                t.variableDeclarator(
+                    t.identifier(varName),
+                    t.memberExpression(t.identifier('host'), t.identifier(memberExprPaths[0]))
+                )
+            ]
         );
+
+        let conditionTest = t.binaryExpression('!=', t.identifier(varName), t.nullLiteral());
+        for (let i = 1, n = memberExprPaths.length; i < n; i++) {
+            const nextPropValue = t.assignmentExpression(
+                '=',
+                t.identifier(varName),
+                t.memberExpression(t.identifier(varName), t.identifier(memberExprPaths[i]))
+            );
+
+            conditionTest = t.logicalExpression(
+                '&&',
+                conditionTest,
+                t.binaryExpression('!=', nextPropValue, t.nullLiteral())
+            )
+        }
+
+        const assigmentExpression = t.assignmentExpression(
+            '=',
+            t.identifier(varName),
+            t.conditionalExpression(conditionTest, t.identifier(varName), t.identifier('undefined'))
+        );
+
+        return {
+            varDeclaration,
+            assigmentExpression,
+        };
     };
 
     if (wiredValue.static) {
@@ -77,22 +87,26 @@ function getGeneratedConfig(t, wiredValue) {
     if (wiredValue.params) {
         wiredValue.params.forEach(param => {
             const memberExprPaths = param.value.value.split('.');
+            const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
             configProps.push(
                 t.objectProperty(
                     param.key,
-                    generateDynamicConfigVal(
-                        generateHostMemberExpression(memberExprPaths, memberExprPaths.length - 1)
-                    )
+                    t.cloneDeep(paramConfigValue.varDeclaration.declarations[0].id)
                 )
             );
+
+            configBlockBody.push(paramConfigValue.varDeclaration);
+            configBlockBody.push(t.expressionStatement(paramConfigValue.assigmentExpression));
         });
     }
+
+    configBlockBody.push(t.returnStatement(t.objectExpression(configProps)));
 
     const fnExpression = t.functionExpression(
         null,
         [t.identifier('host')],
-        t.blockStatement([t.returnStatement(t.objectExpression(configProps))])
+        t.blockStatement(configBlockBody)
     );
 
     return t.objectProperty(t.identifier('config'), fnExpression);

@@ -233,7 +233,11 @@ describe('@wire', () => {
                 params: {
                     c: 'foo',
                 },
-                config: function(host){return{b:true,c:host.foo!=null?host.foo:undefined};},
+                config: function(host){
+                    let v1=host.foo;
+                    v1=v1!=null?v1:undefined;
+                    return{b:true,c:v1};
+                },
             },
         });
     });
@@ -266,8 +270,10 @@ describe('@wire', () => {
                     c: 'foo',
                 },
                 method: 1,
-                config: function(host) {
-                    return { b: true, c: host.foo != null ? host.foo : undefined };
+                config: function(host){
+                    let v1=host.foo;
+                    v1=v1!=null?v1:undefined;
+                    return {b:true,c:v1};
                 },
             },
         });
