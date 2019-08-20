@@ -7,11 +7,11 @@ import { getOwnPropertyDescriptor } from '../shared/language';
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const { querySelectorAll, getAttribute, setAttribute } = Element.prototype;
+const { querySelectorAll, hasAttribute, setAttribute } = Element.prototype;
 
 const childElementCountGetter: (this: ParentNode) => number = getOwnPropertyDescriptor(
     Element.prototype,
     'childElementCount'
 )!.get!;
 
-export { querySelectorAll, getAttribute, setAttribute, childElementCountGetter };
+export { querySelectorAll, hasAttribute, setAttribute, childElementCountGetter };
