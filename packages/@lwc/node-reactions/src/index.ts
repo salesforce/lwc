@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { initialize_option1 } from './patch';
+import { initialize } from './global/init';
 
-initialize_option1();
+initialize();
 
-export { reactTo as default } from './registry';
-export { ReactionEventType } from './types';
+export { reactToConnection, reactToDisconnection } from './api';

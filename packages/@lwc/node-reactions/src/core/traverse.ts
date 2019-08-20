@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ReactionEventType, ReactionEvent } from './types';
-import { getRegisteredCallbacksForElement, marker } from './registry';
-import { isUndefined, forEach, isNull } from './shared/language';
-import assert from './shared/assert';
+import { ReactionEventType, ReactionEvent } from '../types';
+import { getRegisteredCallbacksForElement, marker } from './reactions';
+import { isUndefined, forEach, isNull } from '../shared/language';
+import assert from '../shared/assert';
 import { queueCallback } from './reaction-queue';
 
 /**
