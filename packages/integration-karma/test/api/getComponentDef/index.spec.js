@@ -23,28 +23,27 @@ function testInvalidComponentConstructor(name, ctor) {
 }
 
 beforeEach(function() {
-    const getNormalizedFunctionAsString = (fn) => {
-        return fn.toString().replace(/\s/g, '').replace(/\n/g, '');
+    const getNormalizedFunctionAsString = fn => {
+        return fn
+            .toString()
+            .replace(/\s/g, '')
+            .replace(/\n/g, '');
     };
 
     jasmine.addMatchers({
         toEqualWireSettings: function() {
             return {
                 compare: function(actual, expected) {
-                    Object.keys(actual).forEach((currentKey) => {
-                        const normalizedActual = Object.assign(
-                            {},
-                            actual[currentKey],
-                            {
-                                config: getNormalizedFunctionAsString(actual[currentKey].config)
-                            });
+                    Object.keys(actual).forEach(currentKey => {
+                        const normalizedActual = Object.assign({}, actual[currentKey], {
+                            config: getNormalizedFunctionAsString(actual[currentKey].config),
+                        });
 
-                        const normalizedExpected = Object.assign(
-                            {},
-                            expected[currentKey],
-                            {
-                                config: getNormalizedFunctionAsString(expected[currentKey].config || (function(){}))
-                            });
+                        const normalizedExpected = Object.assign({}, expected[currentKey], {
+                            config: getNormalizedFunctionAsString(
+                                expected[currentKey].config || function() {}
+                            ),
+                        });
 
                         expect(normalizedActual).toEqual(normalizedExpected);
                     });
@@ -215,7 +214,9 @@ describe('@wire', () => {
         expect(wire).toEqualWireSettings({
             foo: {
                 adapter: wireAdapter,
-                config: function (host) { return {}; },
+                config: function(host) {
+                    return {};
+                },
             },
             bar: {
                 adapter: wireAdapter,
@@ -223,7 +224,9 @@ describe('@wire', () => {
                     a: true,
                 },
                 params: {},
-                config: function(host){return{a:true};},
+                config: function(host) {
+                    return { a: true };
+                },
             },
             baz: {
                 adapter: wireAdapter,
@@ -233,10 +236,10 @@ describe('@wire', () => {
                 params: {
                     c: 'foo',
                 },
-                config: function(host){
-                    let v1=host.foo;
-                    v1=v1!=null?v1:undefined;
-                    return{b:true,c:v1};
+                config: function(host) {
+                    let v1 = host.foo;
+                    v1 = v1 != null ? v1 : undefined;
+                    return { b: true, c: v1 };
                 },
             },
         });
@@ -248,7 +251,9 @@ describe('@wire', () => {
             foo: {
                 adapter: wireAdapter,
                 method: 1,
-                config: function(host){return{};},
+                config: function(host) {
+                    return {};
+                },
             },
             bar: {
                 adapter: wireAdapter,
@@ -270,10 +275,10 @@ describe('@wire', () => {
                     c: 'foo',
                 },
                 method: 1,
-                config: function(host){
-                    let v1=host.foo;
-                    v1=v1!=null?v1:undefined;
-                    return {b:true,c:v1};
+                config: function(host) {
+                    let v1 = host.foo;
+                    v1 = v1 != null ? v1 : undefined;
+                    return { b: true, c: v1 };
                 },
             },
         });
@@ -325,9 +330,9 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function (host) {
+                config: function(host) {
                     return {
-                        parent: true
+                        parent: true,
                     };
                 },
             },
@@ -338,9 +343,9 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function (host) {
+                config: function(host) {
                     return {
-                        child: true
+                        child: true,
                     };
                 },
             },
@@ -351,9 +356,9 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function (host) {
+                config: function(host) {
                     return {
-                        child: true
+                        child: true,
                     };
                 },
             },

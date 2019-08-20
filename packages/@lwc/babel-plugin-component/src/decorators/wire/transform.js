@@ -41,17 +41,14 @@ function getGeneratedConfig(t, wiredValue) {
     let counter = 0;
     const configBlockBody = [];
     const configProps = [];
-    const generateParameterConfigValue = (memberExprPaths) => {
-        const varName = "v"+(++counter);
-        const varDeclaration = t.variableDeclaration(
-            'let',
-            [
-                t.variableDeclarator(
-                    t.identifier(varName),
-                    t.memberExpression(t.identifier('host'), t.identifier(memberExprPaths[0]))
-                )
-            ]
-        );
+    const generateParameterConfigValue = memberExprPaths => {
+        const varName = 'v' + ++counter;
+        const varDeclaration = t.variableDeclaration('let', [
+            t.variableDeclarator(
+                t.identifier(varName),
+                t.memberExpression(t.identifier('host'), t.identifier(memberExprPaths[0]))
+            ),
+        ]);
 
         let conditionTest = t.binaryExpression('!=', t.identifier(varName), t.nullLiteral());
         for (let i = 1, n = memberExprPaths.length; i < n; i++) {
@@ -65,7 +62,7 @@ function getGeneratedConfig(t, wiredValue) {
                 '&&',
                 conditionTest,
                 t.binaryExpression('!=', nextPropValue, t.nullLiteral())
-            )
+            );
         }
 
         const assigmentExpression = t.assignmentExpression(
