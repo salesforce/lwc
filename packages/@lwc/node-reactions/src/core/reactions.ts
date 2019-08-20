@@ -8,7 +8,7 @@ import { ReactionEventType, ReactionCallback } from '../types';
 import { ArrayPush, isUndefined, create, ArrayIndexOf } from '../shared/language';
 import assert from '../shared/assert';
 import { getInternalField, setInternalField } from '../shared/fields';
-import { setAttribute } from '../env/element';
+import { setAttribute, hasAttribute } from '../env/element';
 import { NodeToCallbackLookup } from '../global/init';
 
 export const marker = 'data-node-reactions';
@@ -66,7 +66,7 @@ export function getRegisteredCallbacksForElement(
 }
 
 export function isRegisteredNode(node: Node): boolean {
-    return !isUndefined(getInternalField(node, NodeToCallbackLookup));
+    return hasAttribute.call(node, marker);
 }
 
 /**
