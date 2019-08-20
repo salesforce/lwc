@@ -8,6 +8,8 @@
 // Polyfills
 import '../polyfills/proxy-concat/main';
 import '../polyfills/aria-properties/main';
+
+// External libraries which require initalization
 import '@lwc/node-reactions';
 
 // TODO: #1296 - Revisit these exports and figure out a better separation

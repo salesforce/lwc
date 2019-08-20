@@ -19,14 +19,14 @@ export function createFieldName(key: string): symbol {
     return hasNativeSymbolsSupport ? Symbol(key) : `$$node-reactions-${key}$$`;
 }
 
-export function setInternalField(o: object, fieldName: symbol | string, value: any) {
+export function setInternalField(o: object, fieldName: symbol, value: any) {
     // TODO: #1299 - improve this to use a WeakMap
     defineProperty(o, fieldName, {
         value,
     });
 }
 
-export function getInternalField(o: object, fieldName: symbol | string): any {
+export function getInternalField(o: object, fieldName: symbol): any {
     // @ts-ignore: using a string as a symbol for perf reasons
     return o[fieldName];
 }

@@ -8,9 +8,9 @@
 import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
 import { defineProperties, ArrayPush } from '../shared/language';
 import { ReactionEventType, ReactionEvent } from '../types';
-import queueReactionsForSubtree from '../traverse';
-import { flushQueue } from '../reaction-queue';
-import { isQualifyingElement, marker } from '../registry';
+import queueReactionsForSubtree from '../core/traverse';
+import { flushQueue } from '../core/reaction-queue';
+import { isQualifyingElement, marker } from '../core/reactions';
 
 export default function() {
     defineProperties(Node.prototype, {
