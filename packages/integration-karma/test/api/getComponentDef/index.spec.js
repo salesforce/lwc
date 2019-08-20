@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars,prefer-const */
 import { LightningElement, api, getComponentDef } from 'lwc';
 
 import PublicProperties from 'x/publicProperties';
