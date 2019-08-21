@@ -9,6 +9,10 @@ module.exports = {
     testEnvironment: 'jest-environment-jsdom-fifteen',
     testMatch: ['<rootDir>/**/__tests__/*.spec.(js|ts)'],
 
+    transform: {
+        '^.+\\.ts$': ['babel-jest', { rootMode: 'upward' }], // use the repo root babel.config.js
+    },
+
     // Global mono-repo code coverage threshold.
     coverageThreshold: {
         global: {
