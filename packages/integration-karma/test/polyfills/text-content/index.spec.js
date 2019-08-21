@@ -4,26 +4,29 @@ import XTest from 'x/test';
 describe('Node.textContent', () => {
     it('should not return comment text when Node.nodeType is ELEMENT_NODE', () => {
         const elm = document.createElement('div');
-        elm.appendChild(document.createComment('Some comment'));
-        elm.appendChild(document.createTextNode('text content'));
-        elm.appendChild(document.createComment('Some other comment'));
+        elm.innerHTML =
+            '<div>' +
+            '<!-- Some comment -->' +
+            'text content' +
+            '<!-- Some other comment -->' +
+            '</div>';
 
         expect(elm.textContent).toBe('text content');
     });
 
     it('should not return comment text from 2nd level ELEMENT_NODE', () => {
         const elm = document.createElement('div');
-        const secondLevelElement = document.createElement('div');
 
-        secondLevelElement.appendChild(document.createComment('2nd level comment'));
-        secondLevelElement.appendChild(document.createTextNode('2nd level text'));
-
-        elm.appendChild(document.createComment('Some comment'));
-        elm.appendChild(document.createTextNode('text content'));
-
-        elm.appendChild(secondLevelElement);
-
-        elm.appendChild(document.createComment('Some other comment'));
+        elm.innerHTML =
+            '<div>' +
+            '<!-- Some comment -->' +
+            'text content' +
+            '<div>' +
+            '<!-- 2nd level comment -->' +
+            '2nd level text' +
+            '</div>' +
+            '<!-- Some other comment -->' +
+            '</div>';
 
         expect(elm.textContent).toBe('text content2nd level text');
     });
