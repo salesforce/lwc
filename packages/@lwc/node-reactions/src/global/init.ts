@@ -5,10 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ReactionCallback } from '../types';
-import { DocumentConstructor } from '../env/document';
 import { defineProperty, isUndefined } from '../shared/language';
 import patchNodePrototype from '../dom-patching/node';
 import { reactWhenConnected, reactWhenDisconnected } from '../core/reactions';
+
+const {
+    prototype: { constructor: DocumentConstructor },
+} = Document;
 
 /**
  * Path the DOM APIs and start monitoring dom mutations
