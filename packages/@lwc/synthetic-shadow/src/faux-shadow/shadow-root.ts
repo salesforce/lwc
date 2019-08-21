@@ -37,6 +37,7 @@ import {
     insertBefore,
     replaceChild,
     appendChild,
+    COMMENT_NODE,
 } from '../env/node';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
@@ -476,7 +477,11 @@ const NodePatchDescriptors = {
             const childNodes = getInternalChildNodes(this);
             let textContent = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                textContent += getTextContent(childNodes[i]);
+                const currentNode = childNodes[i];
+
+                if (currentNode.nodeType !== COMMENT_NODE) {
+                    textContent += getTextContent(currentNode);
+                }
             }
             return textContent;
         },
