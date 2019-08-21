@@ -22,13 +22,8 @@ function testInvalidComponentConstructor(name, ctor) {
     });
 }
 
-beforeEach(function() {
-    const getNormalizedFunctionAsString = fn => {
-        return fn
-            .toString()
-            .replace(/\s/g, '')
-            .replace(/\n/g, '');
-    };
+beforeAll(function() {
+    const getNormalizedFunctionAsString = fn => fn.toString().replace(/(\s|\n)/g, '');
 
     jasmine.addMatchers({
         toEqualWireSettings: function() {
@@ -214,7 +209,7 @@ describe('@wire', () => {
         expect(wire).toEqualWireSettings({
             foo: {
                 adapter: wireAdapter,
-                config: function(host) {
+                config: function($cmp) {
                     return {};
                 },
             },
@@ -224,7 +219,7 @@ describe('@wire', () => {
                     a: true,
                 },
                 params: {},
-                config: function(host) {
+                config: function($cmp) {
                     return { a: true };
                 },
             },
@@ -236,8 +231,8 @@ describe('@wire', () => {
                 params: {
                     c: 'foo',
                 },
-                config: function(host) {
-                    return { b: true, c: host.foo };
+                config: function($cmp) {
+                    return { b: true, c: $cmp.foo };
                 },
             },
         });
@@ -249,7 +244,7 @@ describe('@wire', () => {
             foo: {
                 adapter: wireAdapter,
                 method: 1,
-                config: function(host) {
+                config: function($cmp) {
                     return {};
                 },
             },
@@ -260,7 +255,7 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function(host) {
+                config: function($cmp) {
                     return { a: true };
                 },
             },
@@ -273,8 +268,8 @@ describe('@wire', () => {
                     c: 'foo',
                 },
                 method: 1,
-                config: function(host) {
-                    return { b: true, c: host.foo };
+                config: function($cmp) {
+                    return { b: true, c: $cmp.foo };
                 },
             },
         });
@@ -289,7 +284,7 @@ describe('@wire', () => {
                     parent: true,
                 },
                 params: {},
-                config: function(host) {
+                config: function($cmp) {
                     return { parent: true };
                 },
             },
@@ -299,7 +294,7 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
-                config: function(host) {
+                config: function($cmp) {
                     return { child: true };
                 },
             },
@@ -309,7 +304,7 @@ describe('@wire', () => {
                     child: true,
                 },
                 params: {},
-                config: function(host) {
+                config: function($cmp) {
                     return { child: true };
                 },
             },
@@ -326,7 +321,7 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function(host) {
+                config: function($cmp) {
                     return {
                         parent: true,
                     };
@@ -339,7 +334,7 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function(host) {
+                config: function($cmp) {
                     return {
                         child: true,
                     };
@@ -352,7 +347,7 @@ describe('@wire', () => {
                 },
                 params: {},
                 method: 1,
-                config: function(host) {
+                config: function($cmp) {
                     return {
                         child: true,
                     };

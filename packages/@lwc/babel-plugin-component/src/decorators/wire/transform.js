@@ -9,7 +9,7 @@ const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
-const WIRE_CONFIG_ARG_NAME = 'host';
+const WIRE_CONFIG_ARG_NAME = '$cmp';
 
 function isObservedProperty(configProperty) {
     const propertyValue = configProperty.get('value');

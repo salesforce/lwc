@@ -61,7 +61,7 @@ describe('observed fields', () => {
                   wire: {
                     wiredProp: {
                       adapter: createElement,
-                      config: function(host) {
+                      config: function($cmp) {
                         return {};
                       }
                     }
@@ -175,7 +175,7 @@ describe('observed fields', () => {
                     wire: {
                       wiredProp: {
                         adapter: createElement,
-                        config: function(host) {
+                        config: function($cmp) {
                           return {};
                         }
                       }

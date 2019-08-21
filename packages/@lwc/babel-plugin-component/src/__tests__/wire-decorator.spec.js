@@ -41,10 +41,10 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      config: function(host) {
+                      config: function($cmp) {
                         return {
                           key2: ["fixed", "array"],
-                          key1: host.prop1
+                          key1: $cmp.prop1
                         };
                       }
                     }
@@ -94,9 +94,9 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      config: function(host) {
-                        let v1 = host.prop1;
-                        let v2 = host.p1;
+                      config: function($cmp) {
+                        let v1 = $cmp.prop1;
+                        let v2 = $cmp.p1;
                         return {
                           key2: ["fixed", "array"],
                           key1: v1 != null ? v1.prop2 : undefined,
@@ -149,8 +149,8 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed", "array"]
                       },
-                      config: function(host) {
-                        let v1 = host.prop1;
+                      config: function($cmp) {
+                        let v1 = $cmp.prop1;
                         return {
                           key2: ["fixed", "array"],
                           key1: 
@@ -209,12 +209,12 @@ describe('Transform property', () => {
                         key3: "fixed",
                         key4: ["fixed", "array"]
                       },
-                      config: function(host) {
+                      config: function($cmp) {
                         return {
                           key3: "fixed",
                           key4: ["fixed", "array"],
-                          key1: host.prop,
-                          key2: host.prop
+                          key1: $cmp.prop,
+                          key2: $cmp.prop
                         };
                       }
                     }
@@ -300,7 +300,7 @@ describe('Transform property', () => {
                       adapter: getFoo,
                       params: {},
                       static: {},
-                      config: function(host) {
+                      config: function($cmp) {
                         return {};
                       }
                     }
@@ -344,7 +344,7 @@ describe('Transform property', () => {
                     adapter: Foo.Bar,
                     params: {},
                     static: {},
-                    config: function(host) {
+                    config: function($cmp) {
                       return {};
                     }
                   }
@@ -388,7 +388,7 @@ describe('Transform property', () => {
                   adapter: Foo.Bar,
                   params: {},
                   static: {},
-                  config: function(host) {
+                  config: function($cmp) {
                     return {};
                   }
                 }
@@ -452,7 +452,7 @@ describe('Transform property', () => {
                       wire: {
                         wiredProp: {
                           adapter: getFoo,
-                          config: function(host) {
+                          config: function($cmp) {
                             return {};
                           }
                         }
@@ -620,10 +620,10 @@ describe('Transform property', () => {
                       static: {
                         key2: ["fixed"]
                       },
-                      config: function(host) {
+                      config: function($cmp) {
                         return {
                           key2: ["fixed"],
-                          key1: host.prop1
+                          key1: $cmp.prop1
                         };
                       }
                     },
@@ -635,10 +635,10 @@ describe('Transform property', () => {
                       static: {
                         key2: ["array"]
                       },
-                      config: function(host) {
+                      config: function($cmp) {
                         return {
                           key2: ["array"],
-                          key1: host.prop1
+                          key1: $cmp.prop1
                         };
                       }
                     }
@@ -688,10 +688,10 @@ describe('Transform method', () => {
                         key2: ["fixed"]
                       },
                       method: 1,
-                      config: function(host) {
+                      config: function($cmp) {
                         return {
                           key2: ["fixed"],
-                          key1: host.prop1
+                          key1: $cmp.prop1
                         };
                       }
                     }
