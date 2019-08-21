@@ -5,15 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export enum ReactionEventType {
-    connected = 'connected',
-    disconnected = 'disconnected',
-}
+export type ReactionType = 'connected' | 'disconnected';
 
-export type ReactionCallback = (this: Element, reactionEventType: ReactionEventType) => void;
+export type ReactionCallback = (this: Element, reactionType: ReactionType) => void;
 
-export interface ReactionEvent {
-    type: ReactionEventType;
+export interface ReactionRecord {
+    type: ReactionType;
     callback: ReactionCallback;
-    node: Element;
+    element: Element;
 }
