@@ -7,17 +7,38 @@
 import { ReactionCallback } from '../types';
 import { defineProperty, isUndefined } from '../shared/language';
 import patchNodePrototype from '../dom-patching/node';
-import { reactWhenConnected, reactWhenDisconnected } from '../core/reactions';
+import patchNodePrototypeForEvents from '../dom-patching/node2';
+import {
+    reactWhenConnected as reactWhenConnected1,
+    reactWhenDisconnected as reactWhenDisconnected1,
+} from '../core/reactions';
+import {
+    reactWhenConnected as reactWhenConnected2,
+    reactWhenDisconnected as reactWhenDisconnected2,
+} from '../core/reactions2';
 
 const {
-    prototype: { constructor: DocumentConstructor },
+    prototype: { constructor: DocumentConstructor, createElement },
 } = Document;
+
+const elm = createElement.call(document, 'p');
+let isDOMNodeEventSupported = false;
+// if DOMNodeInserted is triggered, we can assume all DOMNodeEvents are supported
+elm.addEventListener('DOMNodeInserted', () => (isDOMNodeEventSupported = true));
+createElement
+    .call(document, 'div')
+    .attachShadow({ mode: 'open' })
+    .appendChild(elm);
 
 /**
  * Path the DOM APIs and start monitoring dom mutations
  */
 function patchDomApi(): void {
-    patchNodePrototype();
+    if (isDOMNodeEventSupported) {
+        patchNodePrototypeForEvents();
+    } else {
+        patchNodePrototype();
+    }
 }
 
 const InitializationSlot = '$$node-reactions-initialized$$';
@@ -33,10 +54,15 @@ export function initialize(): void {
     if (isUndefined(init)) {
         patchDomApi();
         init = () => {
-            return {
-                connected: reactWhenConnected,
-                disconnected: reactWhenDisconnected,
-            };
+            return isDOMNodeEventSupported
+                ? {
+                      connected: reactWhenConnected2,
+                      disconnected: reactWhenDisconnected2,
+                  }
+                : {
+                      connected: reactWhenConnected1,
+                      disconnected: reactWhenDisconnected1,
+                  };
         };
         // Defined as an arrow function to avoid anybody walking the prototype chain from
         // accidentally discovering the cached apis
