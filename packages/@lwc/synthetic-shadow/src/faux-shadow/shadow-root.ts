@@ -477,8 +477,10 @@ const NodePatchDescriptors = {
             const childNodes = getInternalChildNodes(this);
             let textContent = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                if (childNodes[i].nodeType !== COMMENT_NODE) {
-                    textContent += getTextContent(childNodes[i]);
+                const currentNode = childNodes[i];
+
+                if (currentNode.nodeType !== COMMENT_NODE) {
+                    textContent += getTextContent(currentNode);
                 }
             }
             return textContent;
