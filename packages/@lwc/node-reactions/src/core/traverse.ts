@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ReactionEventType, ReactionEvent } from '../types';
-import { getRegisteredReactionsForElement, marker } from './reactions';
+import { ReactionType, ReactionRecord } from '../types';
+import { getRecordsForElement, marker } from './reactions';
 import { isUndefined, forEach, isNull } from '../shared/language';
 import assert from '../shared/assert';
-import { queueCallback } from './reaction-queue';
+import { queueReactionRecord } from './reaction-queue';
 
 /**
  * Queue qualifying reaction callbacks for a single node.
@@ -18,17 +18,15 @@ import { queueCallback } from './reaction-queue';
  */
 function queueReactionsForSingleElement(
     elm: Element,
-    reactionTypes: Array<ReactionEventType>,
-    reactionQueue: Array<ReactionEvent>
+    reactionTypes: Array<ReactionType>,
+    reactionQueue: Array<ReactionRecord>
 ): void {
-    const reactionListByType = getRegisteredReactionsForElement(elm);
-    if (!isUndefined(reactionListByType)) {
-        forEach.call(reactionTypes, reactionType => {
-            if (!isUndefined(reactionListByType[reactionType])) {
-                queueCallback(reactionListByType[reactionType], reactionQueue);
-            }
-        });
-    }
+    forEach.call(reactionTypes, reactionType => {
+        const reactionRecords = getRecordsForElement(elm, reactionType);
+        if (!isUndefined(reactionRecords)) {
+            queueReactionRecord(reactionQueue, reactionRecords);
+        }
+    });
 }
 
 const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
@@ -37,8 +35,8 @@ const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
  */
 function queueReactionsForShadowRoot(
     sr: ShadowRoot,
-    reactionTypes: Array<ReactionEventType>,
-    reactionQueue: Array<ReactionEvent>
+    reactionTypes: Array<ReactionType>,
+    reactionQueue: Array<ReactionRecord>
 ): void {
     queueReactionsForNodeList(
         ShadowRootQuerySelectorAll.call(sr, `[${marker}]`),
@@ -52,8 +50,8 @@ function queueReactionsForShadowRoot(
  */
 export function queueReactionsForNodeList(
     nodeList: NodeList,
-    reactionTypes: Array<ReactionEventType>,
-    reactionQueue: Array<ReactionEvent>
+    reactionTypes: Array<ReactionType>,
+    reactionQueue: Array<ReactionRecord>
 ): void {
     forEach.call(nodeList, node => {
         queueReactionsForSingleElement(node, reactionTypes, reactionQueue);
@@ -74,8 +72,8 @@ export function queueReactionsForNodeList(
 export default function queueReactionsForSubtree(
     rootElm: Element | DocumentFragment,
     nodeList: NodeList,
-    reactionTypes: Array<ReactionEventType>,
-    reactionQueue: Array<ReactionEvent>
+    reactionTypes: Array<ReactionType>,
+    reactionQueue: Array<ReactionRecord>
 ): void {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(rootElm), `Expected a dom node but received undefined`);

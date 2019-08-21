@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty } from './language';
+import { defineProperty, hasOwnProperty } from './language';
 
 /**
  * In IE11, symbols are expensive.
@@ -28,5 +28,5 @@ export function setInternalField(o: object, fieldName: symbol, value: any) {
 
 export function getInternalField(o: object, fieldName: symbol): any {
     // @ts-ignore: using a string as a symbol for perf reasons
-    return o[fieldName];
+    return hasOwnProperty.call(o, fieldName) ? o[fieldName] : undefined;
 }

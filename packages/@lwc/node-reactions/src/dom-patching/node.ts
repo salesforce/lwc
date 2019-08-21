@@ -7,7 +7,7 @@
 
 import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
 import { defineProperties, ArrayPush } from '../shared/language';
-import { ReactionEventType, ReactionEvent } from '../types';
+import { ReactionType, ReactionRecord } from '../types';
 import queueReactionsForSubtree from '../core/traverse';
 import { flushQueue } from '../core/reaction-queue';
 import { isQualifyingElement, marker } from '../core/reactions';
@@ -24,9 +24,9 @@ export default function() {
                     return appendChild.call(this, aChild);
                 }
 
-                const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                const qualifiedReactionTypes: Array<ReactionType> = [];
                 if (isConnected.call(aChild)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedReactionTypes, 'disconnected');
                 }
                 // Get the children before appending
                 const qualifyingChildren = (aChild as Element | DocumentFragment).querySelectorAll(
@@ -37,10 +37,10 @@ export default function() {
                 const result = appendChild.call(this, aChild);
 
                 if (isConnected.call(this)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedReactionTypes, 'connected');
                 }
                 if (qualifiedReactionTypes.length > 0) {
-                    const reactionQueue: Array<ReactionEvent> = [];
+                    const reactionQueue: Array<ReactionRecord> = [];
                     queueReactionsForSubtree(
                         aChild as Element | DocumentFragment,
                         qualifyingChildren,
@@ -62,9 +62,9 @@ export default function() {
                     return insertBefore.call(this, newNode, referenceNode);
                 }
 
-                const qualifiedReactionTypes: Array<ReactionEventType> = [];
+                const qualifiedReactionTypes: Array<ReactionType> = [];
                 if (isConnected.call(newNode)) {
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedReactionTypes, 'disconnected');
                 }
                 const qualifyingChildren = (newNode as Element | DocumentFragment).querySelectorAll(
                     `[${marker}]`
@@ -75,10 +75,10 @@ export default function() {
 
                 if (isConnected.call(this)) {
                     // Short circuit and check if parent is connected
-                    ArrayPush.call(qualifiedReactionTypes, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedReactionTypes, 'connected');
                 }
                 if (qualifiedReactionTypes.length > 0) {
-                    const reactionQueue: Array<ReactionEvent> = [];
+                    const reactionQueue: Array<ReactionRecord> = [];
                     queueReactionsForSubtree(
                         newNode as Element | DocumentFragment,
                         qualifyingChildren,
@@ -102,29 +102,29 @@ export default function() {
                     return replaceChild.call(this, newChild, oldChild);
                 }
 
-                const qualifiedPreReactionTypes: Array<ReactionEventType> = [];
+                const qualifiedPreReactionTypes: Array<ReactionType> = [];
                 // Pre action
                 let qualifyingOldChildren: undefined | NodeList;
                 let qualifyingNewChildren: undefined | NodeList;
                 if (oldChildIsQualified && isConnected.call(oldChild)) {
-                    ArrayPush.call(qualifiedPreReactionTypes, ReactionEventType.disconnected);
+                    ArrayPush.call(qualifiedPreReactionTypes, 'disconnected');
                     qualifyingOldChildren = (oldChild as
                         | Element
                         | DocumentFragment).querySelectorAll(`[${marker}]`);
                 }
-                const qualifiedPostReactionTypes: Array<ReactionEventType> = [];
+                const qualifiedPostReactionTypes: Array<ReactionType> = [];
                 // pre fetch the new child's subtree(works for both Element and DocFrag)
                 if (newChildIsQualified && isConnected.call(this)) {
                     qualifyingNewChildren = (newChild as
                         | Element
                         | DocumentFragment).querySelectorAll(`[${marker}]`);
-                    ArrayPush.call(qualifiedPostReactionTypes, ReactionEventType.connected);
+                    ArrayPush.call(qualifiedPostReactionTypes, 'connected');
                 }
 
                 // DOM Operation
                 const result = replaceChild.call(this, newChild, oldChild);
 
-                const reactionQueue: Array<ReactionEvent> = [];
+                const reactionQueue: Array<ReactionRecord> = [];
                 if (qualifiedPreReactionTypes.length > 0) {
                     queueReactionsForSubtree(
                         oldChild as Element,
@@ -160,11 +160,9 @@ export default function() {
                     `[${marker}]`
                 );
 
-                const qualifiedReactionTypes: Array<ReactionEventType> = [
-                    ReactionEventType.disconnected,
-                ];
+                const qualifiedReactionTypes: Array<ReactionType> = ['disconnected'];
                 const result = removeChild.call(this, child);
-                const reactionQueue: Array<ReactionEvent> = [];
+                const reactionQueue: Array<ReactionRecord> = [];
                 queueReactionsForSubtree(
                     child as Element | DocumentFragment,
                     qualifyingChildren,
