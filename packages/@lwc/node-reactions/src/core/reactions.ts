@@ -7,12 +7,12 @@
 import { ReactionCallback, ReactionRecord, ReactionType } from '../types';
 import { ArrayPush, isTrue, isUndefined } from '../shared/language';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
-import { setAttribute } from '../env/element';
 
 export const marker = 'data-node-reactions';
 const ConnectedRecordsLookup: symbol = createFieldName('connected-records-lookup');
 const DisconnectedRecordsLookup: symbol = createFieldName('disconnected-records-lookup');
 export const RegisteredFlag: symbol = createFieldName('registered-node');
+const { setAttribute } = Element.prototype;
 
 export function reactWhenConnected(element: Element, callback: ReactionCallback): void {
     const reactionRecord: ReactionRecord = { element, callback, type: 'connected' };

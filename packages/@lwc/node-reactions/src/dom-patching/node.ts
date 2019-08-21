@@ -5,14 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { appendChild, insertBefore, replaceChild, removeChild, isConnected } from '../env/node';
-import { defineProperties, ArrayPush } from '../shared/language';
+import { getOwnPropertyDescriptor, defineProperties, ArrayPush } from '../shared/language';
 import { ReactionType, ReactionRecord } from '../types';
 import queueReactionsForSubtree from '../core/traverse';
 import { flushQueue } from '../core/reaction-queue';
 import { isQualifyingElement, marker } from '../core/reactions';
 
 export default function() {
+    // caching few DOM APIs
+    const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
+
+    const isConnectedGetter = getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!;
+
     defineProperties(Node.prototype, {
         appendChild: {
             writable: true,
@@ -25,7 +29,7 @@ export default function() {
                 }
 
                 const qualifiedReactionTypes: Array<ReactionType> = [];
-                if (isConnected.call(aChild)) {
+                if (isConnectedGetter.call(aChild)) {
                     ArrayPush.call(qualifiedReactionTypes, 'disconnected');
                 }
                 // Get the children before appending
@@ -36,7 +40,7 @@ export default function() {
                 // DOM Operation
                 const result = appendChild.call(this, aChild);
 
-                if (isConnected.call(this)) {
+                if (isConnectedGetter.call(this)) {
                     ArrayPush.call(qualifiedReactionTypes, 'connected');
                 }
                 if (qualifiedReactionTypes.length > 0) {
@@ -63,7 +67,7 @@ export default function() {
                 }
 
                 const qualifiedReactionTypes: Array<ReactionType> = [];
-                if (isConnected.call(newNode)) {
+                if (isConnectedGetter.call(newNode)) {
                     ArrayPush.call(qualifiedReactionTypes, 'disconnected');
                 }
                 const qualifyingChildren = (newNode as Element | DocumentFragment).querySelectorAll(
@@ -73,7 +77,7 @@ export default function() {
                 // DOM Operation
                 const result = insertBefore.call(this, newNode, referenceNode);
 
-                if (isConnected.call(this)) {
+                if (isConnectedGetter.call(this)) {
                     // Short circuit and check if parent is connected
                     ArrayPush.call(qualifiedReactionTypes, 'connected');
                 }
@@ -106,7 +110,7 @@ export default function() {
                 // Pre action
                 let qualifyingOldChildren: undefined | NodeList;
                 let qualifyingNewChildren: undefined | NodeList;
-                if (oldChildIsQualified && isConnected.call(oldChild)) {
+                if (oldChildIsQualified && isConnectedGetter.call(oldChild)) {
                     ArrayPush.call(qualifiedPreReactionTypes, 'disconnected');
                     qualifyingOldChildren = (oldChild as
                         | Element
@@ -114,7 +118,7 @@ export default function() {
                 }
                 const qualifiedPostReactionTypes: Array<ReactionType> = [];
                 // pre fetch the new child's subtree(works for both Element and DocFrag)
-                if (newChildIsQualified && isConnected.call(this)) {
+                if (newChildIsQualified && isConnectedGetter.call(this)) {
                     qualifyingNewChildren = (newChild as
                         | Element
                         | DocumentFragment).querySelectorAll(`[${marker}]`);
@@ -151,7 +155,7 @@ export default function() {
             configurable: true,
             value: function(this: Node, child: Node) {
                 // If  child is not connected or subtree being removed does not have any qualifying nodes, exit fast
-                if (!isConnected.call(child) || !isQualifyingElement(child)) {
+                if (!isConnectedGetter.call(child) || !isQualifyingElement(child)) {
                     return removeChild.call(this, child);
                 }
 
