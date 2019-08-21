@@ -9,6 +9,7 @@ const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
+const WIRE_CONFIG_ARG_NAME = 'host';
 
 function isObservedProperty(configProperty) {
     const propertyValue = configProperty.get('value');
@@ -45,7 +46,7 @@ function getGeneratedConfig(t, wiredValue) {
         if (memberExprPaths.length === 1) {
             return {
                 configValueExpression: t.memberExpression(
-                    t.identifier('host'),
+                    t.identifier(WIRE_CONFIG_ARG_NAME),
                     t.identifier(memberExprPaths[0])
                 ),
             };
@@ -55,7 +56,10 @@ function getGeneratedConfig(t, wiredValue) {
         const varDeclaration = t.variableDeclaration('let', [
             t.variableDeclarator(
                 t.identifier(varName),
-                t.memberExpression(t.identifier('host'), t.identifier(memberExprPaths[0]))
+                t.memberExpression(
+                    t.identifier(WIRE_CONFIG_ARG_NAME),
+                    t.identifier(memberExprPaths[0])
+                )
             ),
         ]);
 
@@ -77,7 +81,7 @@ function getGeneratedConfig(t, wiredValue) {
         }
 
         // conditionTest ? v.n : undefined
-        const conditionalExpression = t.conditionalExpression(
+        const configValueExpression = t.conditionalExpression(
             conditionTest,
             t.memberExpression(
                 t.identifier(varName),
@@ -88,7 +92,7 @@ function getGeneratedConfig(t, wiredValue) {
 
         return {
             varDeclaration,
-            configValueExpression: conditionalExpression,
+            configValueExpression,
         };
     };
 
@@ -113,7 +117,7 @@ function getGeneratedConfig(t, wiredValue) {
 
     const fnExpression = t.functionExpression(
         null,
-        [t.identifier('host')],
+        [t.identifier(WIRE_CONFIG_ARG_NAME)],
         t.blockStatement(configBlockBody)
     );
 
