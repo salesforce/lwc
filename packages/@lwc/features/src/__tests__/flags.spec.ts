@@ -127,17 +127,35 @@ const nonProdTests = {
             }
         `,
     },
+    'should ignore invalid feature flags': {
+        code: `
+            import { invalidFeatureFlag } from '@lwc/features';
+            if (invalidFeatureFlag) {
+                console.log('invalidFeatureFlag');
+            }
+        `,
+        output: `
+            import { invalidFeatureFlag, runtimeFlags } from '@lwc/features';
+
+            if (invalidFeatureFlag) {
+              console.log('invalidFeatureFlag');
+            }
+        `,
+    },
+};
+
+const featureFlags = {
+    ENABLE_FEATURE_TRUE: true,
+    ENABLE_FEATURE_FALSE: false,
+    ENABLE_FEATURE_NULL: null,
+    invalidFeatureFlag: true, // invalid because it's not all uppercase
 };
 
 pluginTester({
     title: 'non-prod environments',
     plugin,
     pluginOptions: {
-        featureFlags: {
-            ENABLE_FEATURE_TRUE: true,
-            ENABLE_FEATURE_FALSE: false,
-            ENABLE_FEATURE_NULL: null,
-        },
+        featureFlags,
     },
     tests: nonProdTests,
 });
@@ -146,11 +164,7 @@ pluginTester({
     title: 'prod environments',
     plugin,
     pluginOptions: {
-        featureFlags: {
-            ENABLE_FEATURE_TRUE: true,
-            ENABLE_FEATURE_FALSE: false,
-            ENABLE_FEATURE_NULL: null,
-        },
+        featureFlags,
         prod: true,
     },
     tests: Object.assign({}, nonProdTests, {
