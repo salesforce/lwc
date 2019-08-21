@@ -42,10 +42,65 @@ describe('Transform property', () => {
                         key2: ["fixed", "array"]
                       },
                       config: function(host) {
-                        let v1 = host.prop1;
                         return {
                           key2: ["fixed", "array"],
-                          key1: v1 != null ? v1 : undefined
+                          key1: host.prop1
+                        };
+                      }
+                    }
+                  }
+                });
+
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'transforms parameters with 2 levels deep (foo.bar)',
+        `
+        import { wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.prop2", key2: ["fixed", 'array'], key3: "$p1.p2" })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import { getFoo } from "data-service";
+
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {
+                        key1: "prop1.prop2",
+                        key3: "p1.p2"
+                      },
+                      static: {
+                        key2: ["fixed", "array"]
+                      },
+                      config: function(host) {
+                        let v1 = host.prop1;
+                        let v2 = host.p1;
+                        return {
+                          key2: ["fixed", "array"],
+                          key1: v1 != null ? v1.prop2 : undefined,
+                          key3: v2 != null ? v2.p2 : undefined
                         };
                       }
                     }
@@ -101,9 +156,8 @@ describe('Transform property', () => {
                           key1: 
                             v1 != null &&
                             (v1 = v1.prop2) != null &&
-                            (v1 = v1.prop3) != null &&
-                            (v1 = v1.prop4) != null
-                              ? v1
+                            (v1 = v1.prop3) != null
+                              ? v1.prop4
                               : undefined
                         };
                       }
@@ -156,13 +210,11 @@ describe('Transform property', () => {
                         key4: ["fixed", "array"]
                       },
                       config: function(host) {
-                        let v1 = host.prop;
-                        let v2 = host.prop;
                         return {
                           key3: "fixed",
                           key4: ["fixed", "array"],
-                          key1: v1 != null ? v1 : undefined,
-                          key2: v2 != null ? v2 : undefined
+                          key1: host.prop,
+                          key2: host.prop
                         };
                       }
                     }
@@ -569,10 +621,9 @@ describe('Transform property', () => {
                         key2: ["fixed"]
                       },
                       config: function(host) {
-                        let v1 = host.prop1;
                         return {
                           key2: ["fixed"],
-                          key1: v1 != null ? v1 : undefined
+                          key1: host.prop1
                         };
                       }
                     },
@@ -585,10 +636,9 @@ describe('Transform property', () => {
                         key2: ["array"]
                       },
                       config: function(host) {
-                        let v1 = host.prop1;
                         return {
                           key2: ["array"],
-                          key1: v1 != null ? v1 : undefined
+                          key1: host.prop1
                         };
                       }
                     }
@@ -639,10 +689,9 @@ describe('Transform method', () => {
                       },
                       method: 1,
                       config: function(host) {
-                        let v1 = host.prop1;
                         return {
                           key2: ["fixed"],
-                          key1: v1 != null ? v1 : undefined
+                          key1: host.prop1
                         };
                       }
                     }

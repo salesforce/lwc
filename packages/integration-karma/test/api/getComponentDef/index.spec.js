@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars,prefer-const */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { LightningElement, api, getComponentDef } from 'lwc';
 
 import PublicProperties from 'x/publicProperties';
@@ -237,8 +237,7 @@ describe('@wire', () => {
                     c: 'foo',
                 },
                 config: function(host) {
-                    let v1 = host.foo;
-                    return { b: true, c: v1 != null ? v1 : undefined };
+                    return { b: true, c: host.foo };
                 },
             },
         });
@@ -275,8 +274,7 @@ describe('@wire', () => {
                 },
                 method: 1,
                 config: function(host) {
-                    let v1 = host.foo;
-                    return { b: true, c: v1 != null ? v1 : undefined };
+                    return { b: true, c: host.foo };
                 },
             },
         });

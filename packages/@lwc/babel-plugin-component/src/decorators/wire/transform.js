@@ -42,6 +42,15 @@ function getGeneratedConfig(t, wiredValue) {
     const configBlockBody = [];
     const configProps = [];
     const generateParameterConfigValue = memberExprPaths => {
+        if (memberExprPaths.length === 1) {
+            return {
+                configValueExpression: t.memberExpression(
+                    t.identifier('host'),
+                    t.identifier(memberExprPaths[0])
+                ),
+            };
+        }
+
         const varName = 'v' + ++counter;
         const varDeclaration = t.variableDeclaration('let', [
             t.variableDeclarator(
@@ -50,8 +59,10 @@ function getGeneratedConfig(t, wiredValue) {
             ),
         ]);
 
+        // Results in: v != null && ... (v = v.i) != null && ... (v = v.(n-1)) != null
         let conditionTest = t.binaryExpression('!=', t.identifier(varName), t.nullLiteral());
-        for (let i = 1, n = memberExprPaths.length; i < n; i++) {
+
+        for (let i = 1, n = memberExprPaths.length; i < n - 1; i++) {
             const nextPropValue = t.assignmentExpression(
                 '=',
                 t.identifier(varName),
@@ -65,16 +76,19 @@ function getGeneratedConfig(t, wiredValue) {
             );
         }
 
+        // conditionTest ? v.n : undefined
         const conditionalExpression = t.conditionalExpression(
             conditionTest,
-            t.identifier(varName),
+            t.memberExpression(
+                t.identifier(varName),
+                t.identifier(memberExprPaths[memberExprPaths.length - 1])
+            ),
             t.identifier('undefined')
         );
 
         return {
-            varName,
             varDeclaration,
-            conditionalExpression,
+            configValueExpression: conditionalExpression,
         };
     };
 
@@ -87,9 +101,11 @@ function getGeneratedConfig(t, wiredValue) {
             const memberExprPaths = param.value.value.split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
-            configProps.push(t.objectProperty(param.key, paramConfigValue.conditionalExpression));
+            configProps.push(t.objectProperty(param.key, paramConfigValue.configValueExpression));
 
-            configBlockBody.push(paramConfigValue.varDeclaration);
+            if (paramConfigValue.varDeclaration) {
+                configBlockBody.push(paramConfigValue.varDeclaration);
+            }
         });
     }
 
