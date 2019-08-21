@@ -30,14 +30,27 @@ createElement
     .attachShadow({ mode: 'open' })
     .appendChild(elm);
 
+let cachedAPI: {
+    connected: (element: Element, callback: ReactionCallback) => void;
+    disconnected: (element: Element, callback: ReactionCallback) => void;
+};
+
 /**
  * Path the DOM APIs and start monitoring dom mutations
  */
 function patchDomApi(): void {
     if (isDOMNodeEventSupported) {
         patchNodePrototypeForEvents();
+        cachedAPI = {
+            connected: reactWhenConnected2,
+            disconnected: reactWhenDisconnected2,
+        };
     } else {
         patchNodePrototype();
+        cachedAPI = {
+            connected: reactWhenConnected1,
+            disconnected: reactWhenDisconnected1,
+        };
     }
 }
 
@@ -54,15 +67,7 @@ export function initialize(): void {
     if (isUndefined(init)) {
         patchDomApi();
         init = () => {
-            return isDOMNodeEventSupported
-                ? {
-                      connected: reactWhenConnected2,
-                      disconnected: reactWhenDisconnected2,
-                  }
-                : {
-                      connected: reactWhenConnected1,
-                      disconnected: reactWhenDisconnected1,
-                  };
+            return cachedAPI;
         };
         // Defined as an arrow function to avoid anybody walking the prototype chain from
         // accidentally discovering the cached apis
