@@ -25,6 +25,9 @@ module.exports = function({ types: t }) {
                     const specifiers = path.get('specifiers');
 
                     state.importDeclarationScope = path.scope;
+                    state.importedFeatureFlags = specifiers
+                        .map(specifier => specifier.node.imported.name)
+                        .filter(name => name === name.toUpperCase());
 
                     const didImportRuntimeFlags = specifiers.some(specifier => {
                         return specifier.node.imported.name === RUNTIME_FLAGS_IDENTIFIER;
@@ -52,8 +55,15 @@ module.exports = function({ types: t }) {
                 if (state.importDeclarationScope && testPath.isIdentifier()) {
                     const name = testPath.node.name;
                     const binding = state.importDeclarationScope.getBinding(name);
-                    // If the identifier is a reference to a binding from the import declaration scope
-                    if (binding && binding.referencePaths.includes(testPath)) {
+
+                    // The identifier is a feature flag if it matches the name
+                    // of an imported feature flag binding and it's a reference
+                    // from the import declaration scope.
+                    const isFeatureFlag =
+                        state.importedFeatureFlags.includes(name) &&
+                        binding &&
+                        binding.referencePaths.includes(testPath);
+                    if (isFeatureFlag) {
                         const value = state.featureFlags[name];
                         if (!state.opts.prod || value === null) {
                             testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
