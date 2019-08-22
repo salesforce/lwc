@@ -9,7 +9,7 @@ import { getOwnPropertyDescriptor, defineProperties, ArrayPush } from '../shared
 import { ReactionType, ReactionRecord } from '../types';
 import queueReactionsForSubtree from '../core/traverse';
 import { flushQueue } from '../core/reaction-queue';
-import { isQualifyingElement, marker } from '../core/reactions';
+import { isQualifyingElement, isQualifyingHost, marker } from '../core/reactions';
 
 export default function() {
     // caching few DOM APIs
@@ -23,8 +23,10 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                // perform operation and exit early
-                if (!isQualifyingElement(aChild)) {
+                // Performance optimization: Only check if the node being added is a registered node.
+                // We made this decision because appendChild is on the critical path and cannot
+                // subject every node to the expensive check that isQualifyingElement() performs
+                if (!isQualifyingHost(aChild)) {
                     return appendChild.call(this, aChild);
                 }
 
@@ -61,8 +63,10 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newNode: Node, referenceNode: Node) {
-                // perform operation, exit early
-                if (!isQualifyingElement(newNode)) {
+                // Performance optimization: Only check if the node being added is a registered node.
+                // We made this decision because appendChild is on the critical path and cannot
+                // subject every node to the expensive check that isQualifyingElement() performs
+                if (!isQualifyingHost(newNode)) {
                     return insertBefore.call(this, newNode, referenceNode);
                 }
 

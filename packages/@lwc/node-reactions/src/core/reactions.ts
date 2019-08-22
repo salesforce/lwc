@@ -50,11 +50,10 @@ export function getRecordsForElement(
 }
 
 /**
- * This method expects an Element type but can sometimes be called with a DocumentFragment
  * For perf reasons, instead of running an instanceof to disambiguate the type, we just look up the field.
  */
-export function isRegisteredNode(element: Element): boolean {
-    return isTrue(getInternalField(element, RegisteredFlag));
+export function isRegisteredNode(node: Node): boolean {
+    return isTrue(getInternalField(node, RegisteredFlag));
 }
 
 /**
@@ -74,3 +73,5 @@ export function isQualifyingElement(elmOrDocFrag: Node): boolean {
             isRegisteredNode(elmOrDocFrag))
     );
 }
+
+export { isRegisteredNode as isQualifyingHost };
