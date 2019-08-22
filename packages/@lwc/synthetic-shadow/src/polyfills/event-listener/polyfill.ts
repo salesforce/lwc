@@ -21,7 +21,18 @@ function doesEventNeedsPatch(e: Event): boolean {
     return originalTarget instanceof Node && isNodeShadowed(originalTarget);
 }
 
-function getEventListenerWrapper(fnOrObj): EventListener | null {
+const ByPassForSystemEvents = {
+    DOMNodeInsertedIntoDocument: 0,
+    DOMNodeRemovedFromDocument: 0,
+};
+
+function getEventListenerWrapper(
+    type: string,
+    fnOrObj: EventListenerOrEventListenerObject
+): EventListenerOrEventListenerObject | null {
+    if (ByPassForSystemEvents.hasOwnProperty(type)) {
+        return fnOrObj;
+    }
     let wrapperFn: EventListener | null = null;
     try {
         wrapperFn = fnOrObj.$$lwcEventWrapper$$;
@@ -57,12 +68,12 @@ function windowAddEventListener(this: EventTarget, type, fnOrObj, optionsOrCaptu
     ) {
         return;
     }
-    const wrapperFn = getEventListenerWrapper(fnOrObj);
+    const wrapperFn = getEventListenerWrapper(type, fnOrObj);
     nativeWindowAddEventListener.call(this, type, wrapperFn as EventListener, optionsOrCapture);
 }
 
 function windowRemoveEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
-    const wrapperFn = getEventListenerWrapper(fnOrObj);
+    const wrapperFn = getEventListenerWrapper(type, fnOrObj);
     nativeWindowRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
 
@@ -79,12 +90,12 @@ function addEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
     ) {
         return;
     }
-    const wrapperFn = getEventListenerWrapper(fnOrObj);
+    const wrapperFn = getEventListenerWrapper(type, fnOrObj);
     nativeAddEventListener.call(this, type, wrapperFn as EventListener, optionsOrCapture);
 }
 
 function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture) {
-    const wrapperFn = getEventListenerWrapper(fnOrObj);
+    const wrapperFn = getEventListenerWrapper(type, fnOrObj);
     nativeRemoveEventListener.call(this, type, wrapperFn || fnOrObj, optionsOrCapture);
 }
 
