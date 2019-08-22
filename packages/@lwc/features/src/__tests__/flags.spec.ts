@@ -157,6 +157,9 @@ pluginTester({
     pluginOptions: {
         featureFlags,
     },
+    babelOptions: {
+        filename: __filename,
+    },
     tests: nonProdTests,
 });
 
@@ -166,6 +169,9 @@ pluginTester({
     pluginOptions: {
         featureFlags,
         prod: true,
+    },
+    babelOptions: {
+        filename: __filename,
     },
     tests: Object.assign({}, nonProdTests, {
         // Override of nonProdTest version
