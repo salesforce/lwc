@@ -60,6 +60,57 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        'transforms named imports from static imports',
+        `
+        import { wire } from 'lwc';
+        import importedValue from "ns/module";
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: importedValue })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                import { registerDecorators as _registerDecorators } from "lwc";
+                import _tmpl from "./test.html";
+                import { registerComponent as _registerComponent } from "lwc";
+                import importedValue from "ns/module";
+                import { getFoo } from "data-service";
+                
+                class Test {
+                  constructor() {
+                    this.wiredProp = void 0;
+                  }
+                }
+                
+                _registerDecorators(Test, {
+                  wire: {
+                    wiredProp: {
+                      adapter: getFoo,
+                      params: {},
+                      static: {
+                        key1: importedValue
+                      },
+                      config: function($cmp) {
+                        return {
+                          key1: importedValue
+                        };
+                      }
+                    }
+                  }
+                });
+                
+                export default _registerComponent(Test, {
+                  tmpl: _tmpl
+                });
+`,
+            },
+        }
+    );
+
+    pluginTest(
         'transforms parameters with 2 levels deep (foo.bar)',
         `
         import { wire } from 'lwc';
