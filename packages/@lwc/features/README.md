@@ -14,6 +14,20 @@ application layer.
 
 ### Limitations
 
+#### Must be all uppercase
+
+```
+// Does not work
+if (enableFoo) {
+    ...
+}
+
+// Does work
+if (ENABLE_FOO) {
+    ...
+}
+```
+
 #### Only works with if-statements
 
 ```
