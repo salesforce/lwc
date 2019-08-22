@@ -5,39 +5,48 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getOwnPropertyDescriptor, defineProperties, ArrayIndexOf } from '../shared/language';
-import { setQueue, getQueue, Callback } from '../core/reactions2';
+import { defineProperties } from '../shared/language';
+import { setQueue, Callback } from '../core/reactions2';
+
+function domMethodWrapper(fn: (...args: any[]) => any, context: any, args: any[]): any {
+    const newQueue: Callback[] = [];
+    setQueue(newQueue);
+    const result = fn.apply(context, args);
+    setQueue(null);
+    for (let i = 0, len = newQueue.length; i < len; i += 1) {
+        const callback = newQueue[i];
+        callback();
+    }
+    return result;
+}
 
 export default function() {
     // caching few DOM APIs
-    const { removeChild, replaceChild, insertBefore } = Node.prototype;
-
-    const isConnectedGetter = getOwnPropertyDescriptor(Node.prototype, 'isConnected')!.get!;
+    const { removeChild, replaceChild, insertBefore, appendChild } = Node.prototype;
 
     defineProperties(Node.prototype, {
+        appendChild: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value: function(this: Node, newChild: Node) {
+                return domMethodWrapper(appendChild, this, [newChild]);
+            },
+        },
+        insertBefore: {
+            writable: true,
+            enumerable: true,
+            configurable: true,
+            value: function(this: Node, newNode: Node, referenceNode: Node) {
+                return domMethodWrapper(insertBefore, this, [newNode, referenceNode]);
+            },
+        },
         replaceChild: {
             writable: true,
             enumerable: true,
             configurable: true,
             value: function(this: Node, newChild: Node, oldChild: Node) {
-                if (isConnectedGetter.call(oldChild)) {
-                    const { childNodes } = this;
-                    const indx = ArrayIndexOf.call(childNodes, oldChild);
-                    const refChild = childNodes[indx + 1] || null;
-                    const oldQueue = getQueue();
-                    const newQueue: Callback[] = [];
-                    setQueue(newQueue);
-                    removeChild.call(this, oldChild);
-                    setQueue(oldQueue);
-                    for (let i = 0, len = newQueue.length; i < len; i += 1) {
-                        const callback = newQueue[i];
-                        callback();
-                    }
-                    insertBefore.call(this, newChild, refChild);
-                    return oldChild;
-                } else {
-                    return replaceChild.call(this, newChild, oldChild);
-                }
+                return domMethodWrapper(replaceChild, this, [newChild, oldChild]);
             },
         },
         removeChild: {
@@ -45,16 +54,7 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
-                const oldQueue = getQueue();
-                const newQueue: Callback[] = [];
-                setQueue(newQueue);
-                const result = removeChild.call(this, child);
-                setQueue(oldQueue);
-                for (let i = 0, len = newQueue.length; i < len; i += 1) {
-                    const callback = newQueue[i];
-                    callback();
-                }
-                return result;
+                return domMethodWrapper(removeChild, this, [child]);
             },
         },
     });
