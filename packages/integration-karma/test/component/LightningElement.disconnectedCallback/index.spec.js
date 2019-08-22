@@ -87,6 +87,7 @@ describe('disconnectedCallback for host with slots', () => {
     let parentDisconnectSpy;
     let slotIgnoringChildSpy;
     let slotAcceptingChildSpy;
+    let acceptedSlotContentSpy;
     let parent;
 
     beforeAll(() => {
@@ -101,11 +102,13 @@ describe('disconnectedCallback for host with slots', () => {
         parentDisconnectSpy = jasmine.createSpy();
         slotIgnoringChildSpy = jasmine.createSpy();
         slotAcceptingChildSpy = jasmine.createSpy();
+        acceptedSlotContentSpy = jasmine.createSpy();
         parent = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(parent);
         parent.disconnect = parentDisconnectSpy;
         parent.shadowRoot.querySelector('x-accepting-slots').disconnect = slotAcceptingChildSpy;
         parent.shadowRoot.querySelector('x-ignoring-slots').disconnect = slotIgnoringChildSpy;
+        parent.shadowRoot.querySelector('x-test.slotted').disconnect = acceptedSlotContentSpy;
     });
 
     it('should invoke disconnectedCallback on host and all children components', () => {
@@ -113,6 +116,7 @@ describe('disconnectedCallback for host with slots', () => {
         expect(parentDisconnectSpy).toHaveBeenCalledTimes(1);
         expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
         expect(slotIgnoringChildSpy).toHaveBeenCalledTimes(1);
+        expect(acceptedSlotContentSpy).toHaveBeenCalledTimes(1);
     });
 
     /**
@@ -131,14 +135,11 @@ describe('disconnectedCallback for host with slots', () => {
     });
 
     it('should invoke disconnectedCallback on child that has rendered slot content', () => {
-        const slotContent = parent.shadowRoot.querySelector('x-test.slotted');
-        const slotContentDisconnectSpy = jasmine.createSpy();
-        slotContent.disconnect = slotContentDisconnectSpy;
         parent.hideChildAcceptsSlots = true;
         return Promise.resolve(() => {
             expect(parentDisconnectSpy).not.toHaveBeenCalled();
             expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
-            expect(slotContentDisconnectSpy).toHaveBeenCalledTimes(1);
+            expect(acceptedSlotContentSpy).toHaveBeenCalledTimes(1);
             expect(slotIgnoringChildSpy).not.toHaveBeenCalled();
         });
     });
