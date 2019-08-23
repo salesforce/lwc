@@ -20,6 +20,14 @@ module.exports = function({ types: t }) {
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
+            // `pre()` doesn't have access to the `this.opts` plugin options so
+            // we initialize in the Program visitor instead.
+            Program() {
+                this.featureFlagIfStatements = [];
+                this.featureFlags = this.opts.featureFlags || defaultFeatureFlags;
+                this.importDeclarationScope = [];
+                this.importedFeatureFlags = [];
+            },
             ImportDeclaration(path) {
                 if (path.node.source.value === '@lwc/features') {
                     const specifiers = path.get('specifiers');
@@ -47,9 +55,6 @@ module.exports = function({ types: t }) {
             },
             IfStatement(path) {
                 const testPath = path.get('test');
-
-                this.featureFlags =
-                    this.featureFlags || this.opts.featureFlags || defaultFeatureFlags;
 
                 // If we have imported any flags and the if-test is a plain identifier
                 if (this.importDeclarationScope && testPath.isIdentifier()) {
