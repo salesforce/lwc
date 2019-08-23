@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ReactionCallback, ReactionRecord, ReactionType } from '../types';
+import { ReactionCallback, ReactionRecord } from '../types';
 import { ArrayPush, isTrue, isUndefined } from '../shared/language';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
 
@@ -39,14 +39,12 @@ export function reactWhenDisconnected(element: Element, callback: ReactionCallba
     ArrayPush.call(reactionRecords, reactionRecord);
 }
 
-export function getRecordsForElement(
-    elm: Element,
-    type: ReactionType
-): Array<ReactionRecord> | undefined {
-    return getInternalField(
-        elm,
-        type === 'connected' ? ConnectedRecordsLookup : DisconnectedRecordsLookup
-    );
+export function getDisconnectedRecordsForElement(elm: Element): Array<ReactionRecord> | undefined {
+    return getInternalField(elm, DisconnectedRecordsLookup);
+}
+
+export function getConnectedRecordsForElement(elm: Element): Array<ReactionRecord> | undefined {
+    return getInternalField(elm, ConnectedRecordsLookup);
 }
 
 /**
@@ -74,4 +72,6 @@ export function isQualifyingElement(elmOrDocFrag: Node): boolean {
     );
 }
 
-export { isRegisteredNode as isQualifyingHost };
+export function isQualifyingHost(node: Node): boolean {
+    return node && isRegisteredNode(node);
+}

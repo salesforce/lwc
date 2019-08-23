@@ -5,8 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ReactionType, ReactionRecord } from '../types';
-import { getRecordsForElement, marker } from './reactions';
+import { ReactionRecord, QualfyingReactionTypes } from '../types';
+import {
+    getConnectedRecordsForElement,
+    getDisconnectedRecordsForElement,
+    marker,
+} from './reactions';
 import { isUndefined, forEach, isNull } from '../shared/language';
 import assert from '../shared/assert';
 import { queueReactionRecord } from './reaction-queue';
@@ -18,15 +22,22 @@ import { queueReactionRecord } from './reaction-queue';
  */
 function queueReactionsForSingleElement(
     elm: Element,
-    reactionTypes: Array<ReactionType>,
+    reactionTypes: QualfyingReactionTypes,
     reactionQueue: Array<ReactionRecord>
 ): void {
-    forEach.call(reactionTypes, reactionType => {
-        const reactionRecords = getRecordsForElement(elm, reactionType);
+    // Disconnected callback has to be processed before connected callback
+    if (reactionTypes.disconnected) {
+        const reactionRecords = getDisconnectedRecordsForElement(elm);
         if (!isUndefined(reactionRecords)) {
             queueReactionRecord(reactionQueue, reactionRecords);
         }
-    });
+    }
+    if (reactionTypes.connected) {
+        const reactionRecords = getConnectedRecordsForElement(elm);
+        if (!isUndefined(reactionRecords)) {
+            queueReactionRecord(reactionQueue, reactionRecords);
+        }
+    }
 }
 
 const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
@@ -35,7 +46,7 @@ const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
  */
 function queueReactionsForShadowRoot(
     sr: ShadowRoot,
-    reactionTypes: Array<ReactionType>,
+    reactionTypes: QualfyingReactionTypes,
     reactionQueue: Array<ReactionRecord>
 ): void {
     queueReactionsForNodeList(
@@ -50,7 +61,7 @@ function queueReactionsForShadowRoot(
  */
 export function queueReactionsForNodeList(
     nodeList: NodeList,
-    reactionTypes: Array<ReactionType>,
+    reactionTypes: QualfyingReactionTypes,
     reactionQueue: Array<ReactionRecord>
 ): void {
     forEach.call(nodeList, node => {
@@ -72,7 +83,7 @@ export function queueReactionsForNodeList(
 export default function queueReactionsForSubtree(
     rootElm: Element | DocumentFragment,
     nodeList: NodeList,
-    reactionTypes: Array<ReactionType>,
+    reactionTypes: QualfyingReactionTypes,
     reactionQueue: Array<ReactionRecord>
 ): void {
     if (process.env.NODE_ENV !== 'production') {

@@ -11,6 +11,7 @@ const {
     getOwnPropertyDescriptor,
     defineProperties,
     hasOwnProperty,
+    keys: ObjectKeys,
 } = Object;
 const {
     push: ArrayPush,
@@ -34,6 +35,7 @@ export {
     ArraySplice,
     forEach,
     ArrayIndexOf,
+    ObjectKeys,
 };
 
 export function isUndefined(obj: any): obj is undefined {

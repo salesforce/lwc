@@ -14,3 +14,8 @@ export interface ReactionRecord {
     callback: ReactionCallback;
     element: Element;
 }
+
+export interface QualfyingReactionTypes {
+    connected?: boolean;
+    disconnected?: boolean;
+}
