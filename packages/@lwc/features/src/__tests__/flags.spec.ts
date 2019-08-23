@@ -151,12 +151,18 @@ const featureFlags = {
     invalidFeatureFlag: true, // invalid because it's not all uppercase
 };
 
+const babelOptions = {
+    babelrc: false,
+    configFile: false,
+};
+
 pluginTester({
     title: 'non-prod environments',
     plugin,
     pluginOptions: {
         featureFlags,
     },
+    babelOptions,
     tests: nonProdTests,
 });
 
@@ -167,6 +173,7 @@ pluginTester({
         featureFlags,
         prod: true,
     },
+    babelOptions,
     tests: Object.assign({}, nonProdTests, {
         // Override of nonProdTest version
         'should transform boolean-true feature flags': {

@@ -66,6 +66,8 @@ function getModulePath(
         distPath = require.resolve(`@lwc/${name}/dist/${name}.js`);
 
         // Otherwise is on dist of this package
+    } else if (mode === 'prod') {
+        distPath = path.join(__dirname, 'dist', name, format, target, `${name}.min.js`);
     } else {
         distPath = path.join(__dirname, 'dist', name, format, target, `${name}.js`);
     }

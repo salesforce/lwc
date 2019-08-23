@@ -51,6 +51,21 @@ describe('default configuration', () => {
     });
 });
 
+describe('rollup with custom options', () => {
+    it(`should normalize rootDir when present and is a relative path`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+
+        const rollupOptions = {
+            rootDir: path.relative(process.cwd(), path.dirname(entry)),
+        };
+
+        return doRollup(entry, { compat: false }, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_default_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        });
+    });
+});
+
 describe('rollup in compat mode', () => {
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
