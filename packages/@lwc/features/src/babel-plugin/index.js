@@ -103,9 +103,6 @@ module.exports = function({ types: t }) {
                         path.remove();
                     }
                 }
-
-                // Nested feature flags sounds like a very bad idea
-                path.skip();
             },
         },
     };
