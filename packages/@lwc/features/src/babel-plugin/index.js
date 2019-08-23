@@ -57,7 +57,7 @@ module.exports = function({ types: t }) {
                 const testPath = path.get('test');
 
                 // If we have imported any flags and the if-test is a plain identifier
-                if (this.importDeclarationScope && testPath.isIdentifier()) {
+                if (this.importedFeatureFlags.length && testPath.isIdentifier()) {
                     const name = testPath.node.name;
                     const binding = this.importDeclarationScope.getBinding(name);
 
