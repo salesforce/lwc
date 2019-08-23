@@ -11,7 +11,7 @@ import {
     getDisconnectedRecordsForElement,
     marker,
 } from './reactions';
-import { isUndefined, forEach, isNull } from '../shared/language';
+import { isUndefined, forEach } from '../shared/language';
 import assert from '../shared/assert';
 import { queueReactionRecord } from './reaction-queue';
 
@@ -57,9 +57,9 @@ function queueReactionsForShadowRoot(
 }
 
 /**
- * Process nodes in a NodeList
+ * Process nodes in a NodeList of marked elements
  */
-export function queueReactionsForNodeList(
+function queueReactionsForNodeList(
     nodeList: NodeList,
     reactionTypes: QualifyingReactionTypes,
     reactionQueue: ReactionRecord[]
@@ -67,13 +67,7 @@ export function queueReactionsForNodeList(
     forEach.call(nodeList, node => {
         queueReactionsForSingleElement(node, reactionTypes, reactionQueue);
         // If node has a shadow tree, process its shadow tree
-        if (!isNull((node as Element).shadowRoot)) {
-            queueReactionsForShadowRoot(
-                (node as Element).shadowRoot!,
-                reactionTypes,
-                reactionQueue
-            );
-        }
+        queueReactionsForShadowRoot((node as Element).shadowRoot!, reactionTypes, reactionQueue);
     });
 }
 
@@ -94,8 +88,10 @@ export default function queueReactionsForSubtree(
     queueReactionsForSingleElement(rootElm as any, reactionTypes, reactionQueue);
 
     // If root node has a shadow tree, process its shadow tree
-    if ('shadowRoot' in rootElm && !isNull(rootElm.shadowRoot)) {
-        queueReactionsForShadowRoot(rootElm.shadowRoot, reactionTypes, reactionQueue);
+    const sr = (rootElm as any).shadowRoot;
+    if (sr != null) {
+        // coerce to null, shadowRoot of docFrag will be undefined
+        queueReactionsForShadowRoot(sr, reactionTypes, reactionQueue);
     }
     // Process all registered nodes in subtree in pre-order
     queueReactionsForNodeList(nodeList, reactionTypes, reactionQueue);
