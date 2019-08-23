@@ -105,47 +105,60 @@ export default function() {
             value: function(this: Node, newChild: Node, oldChild: Node) {
                 const oldChildIsQualified = isQualifyingElement(oldChild);
                 const newChildIsQualified = isQualifyingElement(newChild);
-                // If oldChild and newChild are not an Element(/DocumentFragment) or do not have children, exit early
+                // If both oldChild and newChild are non qualifying elements, exit early
                 if (!oldChildIsQualified && !newChildIsQualified) {
                     return replaceChild.call(this, newChild, oldChild);
                 }
 
-                let qualifiedPreReactionTypes: QualifyingReactionTypes = 0;
-                // Pre action
+                // Process oldChild
+                let qualifiedReactionTypesForOldChild: QualifyingReactionTypes = 0;
                 let qualifyingOldChildren: undefined | NodeList;
-                let qualifyingNewChildren: undefined | NodeList;
-                if (oldChildIsQualified && isConnectedGetter.call(oldChild)) {
-                    qualifiedPreReactionTypes = qualifiedPreReactionTypes | 2;
+                // Is the parent node whose subtree is being modified, a connected node?
+                const parentIsConnected = isConnectedGetter.call(this);
+                if (oldChildIsQualified && parentIsConnected) {
+                    qualifiedReactionTypesForOldChild = qualifiedReactionTypesForOldChild | 2;
                     qualifyingOldChildren = (oldChild as
                         | Element
                         | DocumentFragment).querySelectorAll(`[${marker}]`);
                 }
-                let qualifiedPostReactionTypes: QualifyingReactionTypes = 0;
+
+                // Process newChild
+                let qualifiedReactionTypesForNewChild: QualifyingReactionTypes = 0;
                 // pre fetch the new child's subtree(works for both Element and DocFrag)
-                if (newChildIsQualified && isConnectedGetter.call(this)) {
-                    qualifyingNewChildren = (newChild as
-                        | Element
-                        | DocumentFragment).querySelectorAll(`[${marker}]`);
-                    qualifiedPostReactionTypes = qualifiedPostReactionTypes | 1;
+                let qualifyingNewChildren: undefined | NodeList;
+                if (newChildIsQualified) {
+                    // If newChild was connected, call disconnectedCallback
+                    if (isConnectedGetter.call(newChild)) {
+                        qualifiedReactionTypesForNewChild = qualifiedReactionTypesForNewChild | 2;
+                    }
+                    // If newChild will be connected, call connectedCallback
+                    if (parentIsConnected) {
+                        qualifiedReactionTypesForNewChild = qualifiedReactionTypesForNewChild | 1;
+                    }
+                    if (qualifiedReactionTypesForNewChild > 0) {
+                        qualifyingNewChildren = (newChild as
+                            | Element
+                            | DocumentFragment).querySelectorAll(`[${marker}]`);
+                    }
                 }
 
                 // DOM Operation
                 const result = replaceChild.call(this, newChild, oldChild);
 
                 const reactionQueue: ReactionRecord[] = [];
-                if (qualifiedPreReactionTypes & 2) {
+                if (qualifiedReactionTypesForOldChild & 2) {
                     queueReactionsForSubtree(
                         oldChild as Element,
                         qualifyingOldChildren!,
-                        qualifiedPreReactionTypes,
+                        qualifiedReactionTypesForOldChild,
                         reactionQueue
                     );
                 }
-                if (qualifiedPostReactionTypes & 1) {
+                if (qualifiedReactionTypesForNewChild > 0) {
                     queueReactionsForSubtree(
                         newChild as Element | DocumentFragment,
                         qualifyingNewChildren!,
-                        qualifiedPostReactionTypes,
+                        qualifiedReactionTypesForNewChild,
                         reactionQueue
                     );
                 }
@@ -158,27 +171,26 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
-                // If  child is not connected or subtree being removed does not have any qualifying nodes, exit fast
-                if (!isConnectedGetter.call(child) || !isQualifyingElement(child)) {
-                    return removeChild.call(this, child);
+                // If child is connected and it is a qualifying element, process reaction records
+                if (isConnectedGetter.call(this) && isQualifyingElement(child)) {
+                    const qualifyingChildren = (child as
+                        | Element
+                        | DocumentFragment).querySelectorAll(`[${marker}]`);
+                    const qualifiedReactionTypes: QualifyingReactionTypes = 2;
+
+                    // DOM operation
+                    const result = removeChild.call(this, child);
+                    const reactionQueue: ReactionRecord[] = [];
+                    queueReactionsForSubtree(
+                        child as Element | DocumentFragment,
+                        qualifyingChildren,
+                        qualifiedReactionTypes,
+                        reactionQueue
+                    );
+                    flushQueue(reactionQueue);
+                    return result;
                 }
-
-                // DOM operation
-                const qualifyingChildren = (child as Element | DocumentFragment).querySelectorAll(
-                    `[${marker}]`
-                );
-
-                const qualifiedReactionTypes: QualifyingReactionTypes = 2;
-                const result = removeChild.call(this, child);
-                const reactionQueue: ReactionRecord[] = [];
-                queueReactionsForSubtree(
-                    child as Element | DocumentFragment,
-                    qualifyingChildren,
-                    qualifiedReactionTypes,
-                    reactionQueue
-                );
-                flushQueue(reactionQueue);
-                return result;
+                return removeChild.call(this, child);
             },
         },
     });
