@@ -8,10 +8,10 @@ const defaultFeatureFlags = require('../../');
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
-function isRuntimeFlagLookup(path, state) {
+function isRuntimeFlag(path, featureFlags) {
     return (
         path.isMemberExpression() &&
-        state.featureFlags[path.node.property.name] !== undefined &&
+        featureFlags[path.node.property.name] !== undefined &&
         path.get('object').isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER })
     );
 }
@@ -20,12 +20,20 @@ module.exports = function({ types: t }) {
     return {
         name: 'babel-plugin-lwc-features',
         visitor: {
-            ImportDeclaration(path, state) {
+            // `pre()` doesn't have access to the `this.opts` plugin options so
+            // we initialize in the Program visitor instead.
+            Program() {
+                this.featureFlagIfStatements = [];
+                this.featureFlags = this.opts.featureFlags || defaultFeatureFlags;
+                this.importDeclarationScope = [];
+                this.importedFeatureFlags = [];
+            },
+            ImportDeclaration(path) {
                 if (path.node.source.value === '@lwc/features') {
                     const specifiers = path.get('specifiers');
 
-                    state.importDeclarationScope = path.scope;
-                    state.importedFeatureFlags = specifiers
+                    this.importDeclarationScope = path.scope;
+                    this.importedFeatureFlags = specifiers
                         .map(specifier => specifier.node.imported.name)
                         .filter(name => name === name.toUpperCase());
 
@@ -45,27 +53,25 @@ module.exports = function({ types: t }) {
                     }
                 }
             },
-            IfStatement(path, state) {
+            IfStatement(path) {
                 const testPath = path.get('test');
 
-                state.featureFlags =
-                    state.featureFlags || state.opts.featureFlags || defaultFeatureFlags;
-
                 // If we have imported any flags and the if-test is a plain identifier
-                if (state.importDeclarationScope && testPath.isIdentifier()) {
+                if (this.importedFeatureFlags.length && testPath.isIdentifier()) {
                     const name = testPath.node.name;
-                    const binding = state.importDeclarationScope.getBinding(name);
+                    const binding = this.importDeclarationScope.getBinding(name);
 
                     // The identifier is a feature flag if it matches the name
                     // of an imported feature flag binding and it's a reference
                     // from the import declaration scope.
                     const isFeatureFlag =
-                        state.importedFeatureFlags.includes(name) &&
+                        this.importedFeatureFlags.includes(name) &&
                         binding &&
                         binding.referencePaths.includes(testPath);
+
                     if (isFeatureFlag) {
-                        const value = state.featureFlags[name];
-                        if (!state.opts.prod || value === null) {
+                        const value = this.featureFlags[name];
+                        if (!this.opts.prod || value === null) {
                             testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
                             // We replaced this identifier with a member
                             // expression that uses the same identifier and we
@@ -85,9 +91,9 @@ module.exports = function({ types: t }) {
                 // appropriate for production mode. This essentially undoes the
                 // non-production mode transform of forcing all flags to be
                 // runtime flags.
-                if (state.opts.prod && isRuntimeFlagLookup(testPath, state)) {
+                if (this.opts.prod && isRuntimeFlag(testPath, this.featureFlags)) {
                     const name = testPath.node.property.name;
-                    const value = state.featureFlags[name];
+                    const value = this.featureFlags[name];
                     if (value === true) {
                         // Transform the IfStatement into a BlockStatement
                         path.replaceWith(path.node.consequent);
@@ -97,9 +103,6 @@ module.exports = function({ types: t }) {
                         path.remove();
                     }
                 }
-
-                // Nested feature flags sounds like a very bad idea
-                path.skip();
             },
         },
     };
