@@ -5,38 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const {
-    create,
-    defineProperty,
-    getOwnPropertyDescriptor,
-    defineProperties,
-    hasOwnProperty,
-    keys: ObjectKeys,
-} = Object;
-const {
-    push: ArrayPush,
-    slice: ArraySlice,
-    forEach,
-    indexOf: ArrayIndexOf,
-    splice: ArraySplice,
-} = Array.prototype;
+const { defineProperty, getOwnPropertyDescriptor, defineProperties } = Object;
+const { push: ArrayPush, forEach } = Array.prototype;
 
-const { charCodeAt: StringCharCodeAt } = String.prototype;
-
-export {
-    create,
-    StringCharCodeAt,
-    defineProperty,
-    defineProperties,
-    getOwnPropertyDescriptor,
-    hasOwnProperty,
-    ArrayPush,
-    ArraySlice,
-    ArraySplice,
-    forEach,
-    ArrayIndexOf,
-    ObjectKeys,
-};
+export { defineProperty, defineProperties, getOwnPropertyDescriptor, ArrayPush, forEach };
 
 export function isUndefined(obj: any): obj is undefined {
     return obj === undefined;

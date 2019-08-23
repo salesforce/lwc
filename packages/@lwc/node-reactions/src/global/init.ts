@@ -16,7 +16,7 @@ const {
 /**
  * Path the DOM APIs and start monitoring dom mutations
  */
-function patchDomApi(): void {
+function patchDomApi() {
     patchNodePrototype();
 }
 
@@ -28,7 +28,7 @@ initialize();
 /**
  * Set an internal field to detect initialization
  */
-export function initialize(): void {
+export function initialize() {
     let init = (DocumentConstructor as any)[InitializationSlot];
     if (isUndefined(init)) {
         patchDomApi();

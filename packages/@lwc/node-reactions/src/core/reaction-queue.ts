@@ -8,20 +8,14 @@ import { ReactionRecord } from '../types';
 import { forEach, ArrayPush } from '../shared/language';
 
 export function queueReactionRecord(
-    reactionQueue: Array<ReactionRecord>,
-    reactionList: Array<ReactionRecord>
-): void {
-    ArrayPush.call(reactionQueue, ...reactionList);
+    reactionQueue: ReactionRecord[],
+    reactionList: ReactionRecord[]
+) {
+    ArrayPush.apply(reactionQueue, reactionList);
 }
 
-export function flushQueue(reactionQueue: Array<ReactionRecord>) {
-    forEach.call(reactionQueue, (entry: ReactionRecord) => {
-        try {
-            entry.callback.call(entry.element, entry.type);
-        } catch (e) {
-            // Dequeue the callbacks and rethrow
-            reactionQueue.length = 0;
-            throw e;
-        }
-    });
+export function flushQueue(reactionQueue: ReactionRecord[]) {
+    forEach.call(reactionQueue, (entry: ReactionRecord) =>
+        entry.callback.call(entry.element, entry.type)
+    );
 }

@@ -9,15 +9,15 @@ import { ArrayPush, isTrue, isUndefined } from '../shared/language';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
 
 export const marker = 'data-node-reactions';
-const ConnectedRecordsLookup: symbol = createFieldName('connected-records-lookup');
-const DisconnectedRecordsLookup: symbol = createFieldName('disconnected-records-lookup');
-export const RegisteredFlag: symbol = createFieldName('registered-node');
+const ConnectedRecordsLookup = createFieldName('connected-records-lookup');
+const DisconnectedRecordsLookup = createFieldName('disconnected-records-lookup');
+export const RegisteredFlag = createFieldName('registered-node');
 const { setAttribute } = Element.prototype;
 
-export function reactWhenConnected(element: Element, callback: ReactionCallback): void {
-    const reactionRecord: ReactionRecord = { element, callback, type: 'connected' };
+export function reactWhenConnected(element: Element, callback: ReactionCallback) {
+    const reactionRecord: ReactionRecord = { element, callback, type: 1 };
 
-    const reactionRecords = getInternalField(element, ConnectedRecordsLookup);
+    const reactionRecords: ReactionRecord[] = getInternalField(element, ConnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
         setInternalField(element, ConnectedRecordsLookup, [reactionRecord]);
         setInternalField(element, RegisteredFlag, true);
@@ -27,9 +27,9 @@ export function reactWhenConnected(element: Element, callback: ReactionCallback)
     ArrayPush.call(reactionRecords, reactionRecord);
 }
 
-export function reactWhenDisconnected(element: Element, callback: ReactionCallback): void {
-    const reactionRecord: ReactionRecord = { element, callback, type: 'disconnected' };
-    const reactionRecords = getInternalField(element, DisconnectedRecordsLookup);
+export function reactWhenDisconnected(element: Element, callback: ReactionCallback) {
+    const reactionRecord: ReactionRecord = { element, callback, type: 2 };
+    const reactionRecords: ReactionRecord[] = getInternalField(element, DisconnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
         setInternalField(element, DisconnectedRecordsLookup, [reactionRecord]);
         setInternalField(element, RegisteredFlag, true);
@@ -39,11 +39,11 @@ export function reactWhenDisconnected(element: Element, callback: ReactionCallba
     ArrayPush.call(reactionRecords, reactionRecord);
 }
 
-export function getDisconnectedRecordsForElement(elm: Element): Array<ReactionRecord> | undefined {
+export function getDisconnectedRecordsForElement(elm: Element): ReactionRecord[] | undefined {
     return getInternalField(elm, DisconnectedRecordsLookup);
 }
 
-export function getConnectedRecordsForElement(elm: Element): Array<ReactionRecord> | undefined {
+export function getConnectedRecordsForElement(elm: Element): ReactionRecord[] | undefined {
     return getInternalField(elm, ConnectedRecordsLookup);
 }
 
@@ -73,5 +73,5 @@ export function isQualifyingElement(elmOrDocFrag: Node): boolean {
 }
 
 export function isQualifyingHost(node: Node): boolean {
-    return node && isRegisteredNode(node);
+    return node != null && isRegisteredNode(node);
 }

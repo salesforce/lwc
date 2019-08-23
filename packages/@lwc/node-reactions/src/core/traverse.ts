@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ReactionRecord, QualfyingReactionTypes } from '../types';
+import { ReactionRecord, QualifyingReactionTypes } from '../types';
 import {
     getConnectedRecordsForElement,
     getDisconnectedRecordsForElement,
@@ -22,17 +22,17 @@ import { queueReactionRecord } from './reaction-queue';
  */
 function queueReactionsForSingleElement(
     elm: Element,
-    reactionTypes: QualfyingReactionTypes,
-    reactionQueue: Array<ReactionRecord>
-): void {
+    reactionTypes: QualifyingReactionTypes,
+    reactionQueue: ReactionRecord[]
+) {
     // Disconnected callback has to be processed before connected callback
-    if (reactionTypes.disconnected) {
+    if (reactionTypes & 2) {
         const reactionRecords = getDisconnectedRecordsForElement(elm);
         if (!isUndefined(reactionRecords)) {
             queueReactionRecord(reactionQueue, reactionRecords);
         }
     }
-    if (reactionTypes.connected) {
+    if (reactionTypes & 1) {
         const reactionRecords = getConnectedRecordsForElement(elm);
         if (!isUndefined(reactionRecords)) {
             queueReactionRecord(reactionQueue, reactionRecords);
@@ -46,9 +46,9 @@ const ShadowRootQuerySelectorAll = ShadowRoot.prototype.querySelectorAll;
  */
 function queueReactionsForShadowRoot(
     sr: ShadowRoot,
-    reactionTypes: QualfyingReactionTypes,
-    reactionQueue: Array<ReactionRecord>
-): void {
+    reactionTypes: QualifyingReactionTypes,
+    reactionQueue: ReactionRecord[]
+) {
     queueReactionsForNodeList(
         ShadowRootQuerySelectorAll.call(sr, `[${marker}]`),
         reactionTypes,
@@ -61,9 +61,9 @@ function queueReactionsForShadowRoot(
  */
 export function queueReactionsForNodeList(
     nodeList: NodeList,
-    reactionTypes: QualfyingReactionTypes,
-    reactionQueue: Array<ReactionRecord>
-): void {
+    reactionTypes: QualifyingReactionTypes,
+    reactionQueue: ReactionRecord[]
+) {
     forEach.call(nodeList, node => {
         queueReactionsForSingleElement(node, reactionTypes, reactionQueue);
         // If node has a shadow tree, process its shadow tree
@@ -83,9 +83,9 @@ export function queueReactionsForNodeList(
 export default function queueReactionsForSubtree(
     rootElm: Element | DocumentFragment,
     nodeList: NodeList,
-    reactionTypes: QualfyingReactionTypes,
-    reactionQueue: Array<ReactionRecord>
-): void {
+    reactionTypes: QualifyingReactionTypes,
+    reactionQueue: ReactionRecord[]
+) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(rootElm), `Expected a dom node but received undefined`);
     }
@@ -97,6 +97,6 @@ export default function queueReactionsForSubtree(
     if ('shadowRoot' in rootElm && !isNull(rootElm.shadowRoot)) {
         queueReactionsForShadowRoot(rootElm.shadowRoot, reactionTypes, reactionQueue);
     }
-    // Process all registered nodes in subtree in preorder
+    // Process all registered nodes in subtree in pre-order
     queueReactionsForNodeList(nodeList, reactionTypes, reactionQueue);
 }
