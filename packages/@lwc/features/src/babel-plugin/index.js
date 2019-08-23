@@ -8,7 +8,7 @@ const defaultFeatureFlags = require('../../');
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
-function isRuntimeFlagLookup(path, featureFlags) {
+function isRuntimeFlag(path, featureFlags) {
     return (
         path.isMemberExpression() &&
         featureFlags[path.node.property.name] !== undefined &&
@@ -70,7 +70,6 @@ module.exports = function({ types: t }) {
                         binding.referencePaths.includes(testPath);
 
                     if (isFeatureFlag) {
-                        this.featureFlagIfStatements.push(path);
                         const value = this.featureFlags[name];
                         if (!this.opts.prod || value === null) {
                             testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
@@ -92,7 +91,7 @@ module.exports = function({ types: t }) {
                 // appropriate for production mode. This essentially undoes the
                 // non-production mode transform of forcing all flags to be
                 // runtime flags.
-                if (this.opts.prod && isRuntimeFlagLookup(testPath, this.featureFlags)) {
+                if (this.opts.prod && isRuntimeFlag(testPath, this.featureFlags)) {
                     const name = testPath.node.property.name;
                     const value = this.featureFlags[name];
                     if (value === true) {
