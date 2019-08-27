@@ -81,9 +81,10 @@ function createPreprocessor(config, emitter, logger) {
                 // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
                 // referenced from the window object.
                 globals: {
+                    features: 'Features',
                     lwc: 'LWC',
-                    'wire-service': 'WireService',
                     'test-utils': 'TestUtils',
+                    'wire-service': 'WireService',
                 },
 
                 intro,

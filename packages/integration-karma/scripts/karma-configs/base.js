@@ -22,6 +22,8 @@ const LWC_ENGINE = getModulePath('engine', 'iife', 'es2017', 'dev');
 const LWC_ENGINE_COMPAT = getModulePath('engine', 'iife', 'es5', 'dev');
 const WIRE_SERVICE = getModulePath('wire-service', 'iife', 'es2017', 'dev');
 const WIRE_SERVICE_COMPAT = getModulePath('wire-service', 'iife', 'es5', 'dev');
+const FEATURES = getModulePath('features', 'iife', 'es2017', 'dev');
+const FEATURES_COMPAT = getModulePath('features', 'iife', 'es5', 'dev');
 
 const POLYFILL_COMPAT = require.resolve('es5-proxy-compat/polyfills.js');
 const TEST_UTILS = require.resolve('../../helpers/test-utils');
@@ -56,10 +58,12 @@ function getFiles(lwcConfig) {
     const frameworkFiles = [];
     if (lwcConfig.compat) {
         frameworkFiles.push(createPattern(POLYFILL_COMPAT));
+        frameworkFiles.push(createPattern(FEATURES_COMPAT));
         frameworkFiles.push(createPattern(SHADOW_POLYFILL_COMPAT));
         frameworkFiles.push(createPattern(LWC_ENGINE_COMPAT));
         frameworkFiles.push(createPattern(WIRE_SERVICE_COMPAT));
     } else {
+        frameworkFiles.push(createPattern(FEATURES));
         if (!lwcConfig.nativeShadow) {
             frameworkFiles.push(createPattern(SHADOW_POLYFILL));
         }

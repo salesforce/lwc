@@ -14,7 +14,7 @@ function getVersion() {
     return pkg.version;
 }
 
-const MODULES = new Set(['engine', 'synthetic-shadow', 'wire-service']);
+const MODULES = new Set(['engine', 'features', 'synthetic-shadow', 'wire-service']);
 const FORMATS = new Set(['iife', 'umd', 'esm']);
 const TARGETS = new Set(['es5', 'es2017']);
 const MODES = new Set(['dev', 'prod', 'prod_debug']);
