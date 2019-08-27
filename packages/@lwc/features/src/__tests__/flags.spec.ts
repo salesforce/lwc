@@ -108,7 +108,7 @@ const nonProdTests = {
             console.log(ENABLE_FEATURE_NULL ? 'foo' : 'bar');
         `,
     },
-    'should not transform nested feature flags': {
+    'should transform nested feature flags': {
         code: `
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
             if (ENABLE_FEATURE_NULL) {
@@ -121,7 +121,7 @@ const nonProdTests = {
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_NULL) {
-              if (ENABLE_FEATURE_TRUE) {
+              if (runtimeFlags.ENABLE_FEATURE_TRUE) {
                 console.log('this looks like a bad idea');
               }
             }
@@ -200,6 +200,37 @@ pluginTester({
             `,
             output: `
                 import { ENABLE_FEATURE_FALSE, runtimeFlags } from '@lwc/features';
+            `,
+        },
+        // Override of nonProdTest version
+        'should transform nested feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL) {
+                    if (ENABLE_FEATURE_TRUE) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+                if (ENABLE_FEATURE_TRUE) {
+                    if (ENABLE_FEATURE_NULL) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                  {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
+
+                {
+                  if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
             `,
         },
         'should transform both boolean and null feature flags': {
@@ -292,36 +323,6 @@ pluginTester({
             `,
             output: `
                 console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-            `,
-        },
-        'should not transform nested feature flags': {
-            code: `
-                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
-                if (ENABLE_FEATURE_NULL) {
-                    if (ENABLE_FEATURE_TRUE) {
-                        console.log('nested feature flags sounds like a vary bad idea');
-                    }
-                }
-                if (ENABLE_FEATURE_TRUE) {
-                    if (ENABLE_FEATURE_NULL) {
-                        console.log('nested feature flags sounds like a vary bad idea');
-                    }
-                }
-            `,
-            output: `
-                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                  if (ENABLE_FEATURE_TRUE) {
-                    console.log('nested feature flags sounds like a vary bad idea');
-                  }
-                }
-
-                {
-                  if (ENABLE_FEATURE_NULL) {
-                    console.log('nested feature flags sounds like a vary bad idea');
-                  }
-                }
             `,
         },
     }),
