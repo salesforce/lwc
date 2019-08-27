@@ -8,6 +8,7 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
 import { ViewModelReflection } from '../utils';
 import { getComponentVM } from '../vm';
+import { getHiddenField } from '../../shared/fields';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
@@ -16,24 +17,26 @@ describe('vm', () => {
         it('should have idx>0 (creation index) during construction', () => {
             class MyComponent1 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent1 });
-            expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
+            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            expect(hiddenFields.idx).toBeGreaterThan(0);
         });
 
         it('should have idx>0 after insertion', () => {
             class MyComponent2 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent2 });
             document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
+            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            expect(hiddenFields.idx).toBeGreaterThan(0);
         });
 
         it('should preserve insertion index after removal of root', () => {
             class MyComponent3 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
-            const idx = elm[ViewModelReflection].idx;
-            expect(idx).toBeGreaterThan(0);
+            const hiddenFields = getHiddenField(elm, ViewModelReflection);
+            expect(hiddenFields.idx).toBeGreaterThan(0);
             document.body.removeChild(elm);
-            expect(elm[ViewModelReflection].idx).toBe(idx);
+            expect(hiddenFields.idx).toBeGreaterThan(0);
         });
 
         it('should assign bigger idx to children', () => {
