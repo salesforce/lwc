@@ -45,5 +45,7 @@ export function setHiddenField(o: any, fieldName: symbol, value: any) {
 
 export function getHiddenField(o: any, fieldName: symbol) {
     const valuesByField = hiddenFieldsMap.get(o);
-    return !isUndefined(valuesByField) && valuesByField[fieldName];
+    if (!isUndefined(valuesByField)) {
+        return valuesByField[fieldName];
+    }
 }
