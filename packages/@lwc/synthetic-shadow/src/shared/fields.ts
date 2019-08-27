@@ -16,7 +16,7 @@ const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
-    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${key}$$`;
+    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-synthetic-shadow-${key}$$`;
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {
