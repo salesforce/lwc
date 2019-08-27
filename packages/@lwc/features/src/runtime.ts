@@ -30,8 +30,17 @@ const LWC_config = getGlobalThis().LWC_config || {};
 export const runtimeFlags = Object.assign({}, LWC_config.features);
 
 export function enableFeature(name: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this function should never leak to prod
+        throw new ReferenceError();
+    }
     runtimeFlags[name] = true;
 }
+
 export function disableFeature(name: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this function should never leak to prod
+        throw new ReferenceError();
+    }
     runtimeFlags[name] = false;
 }
