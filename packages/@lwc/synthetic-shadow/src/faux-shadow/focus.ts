@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../shared/assert';
-import { createFieldName, getInternalField, setInternalField } from '../shared/fields';
+import { createFieldName, getHiddenField, setHiddenField } from '../shared/fields';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     matches,
@@ -320,8 +320,8 @@ export function ignoreFocus(elm: HTMLElement) {
 
 function bindDocumentMousedownMouseupHandlers(elm: Node) {
     const ownerDocument = getOwnerDocument(elm);
-    if (!getInternalField(ownerDocument, DidAddMouseDownListener)) {
-        setInternalField(ownerDocument, DidAddMouseDownListener, true);
+    if (!getHiddenField(ownerDocument, DidAddMouseDownListener)) {
+        setHiddenField(ownerDocument, DidAddMouseDownListener, true);
         addEventListener.call(
             ownerDocument,
             'mousedown',

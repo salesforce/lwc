@@ -19,19 +19,6 @@ export function createFieldName(key: string): symbol {
     return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-engine-${key}$$`;
 }
 
-/**
- * Store fields that should be hidden from outside world
- * hiddenFieldsMap is a WeakMap.
- * It stores a hash of any given objects associative relationships.
- * The hash uses the fieldName as the key, the value represents the other end of the association.
- *
- * For example, if the association is
- *              ViewModel
- * Component-A --------------> VM-1
- * then,
- * hiddenFieldsMap : (Component-A, { Symbol(ViewModel) : VM-1 })
- *
- */
 const hiddenFieldsMap: WeakMap<any, Record<symbol, any>> = new WeakMap();
 
 export function setHiddenField(o: any, fieldName: symbol, value: any) {
