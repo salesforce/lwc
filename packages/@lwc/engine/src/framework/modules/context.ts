@@ -7,7 +7,7 @@
 import { isUndefined, assign } from '../../shared/language';
 import { VNode } from '../../3rdparty/snabbdom/types';
 import { ViewModelReflection } from '../utils';
-import { getInternalField } from '../../shared/fields';
+import { getHiddenField } from '../../shared/fields';
 import { VM } from '../vm';
 
 function createContext(vnode: VNode) {
@@ -20,7 +20,7 @@ function createContext(vnode: VNode) {
     }
 
     const elm = vnode.elm as Element;
-    const vm: VM = getInternalField(elm, ViewModelReflection);
+    const vm: VM = getHiddenField(elm, ViewModelReflection);
 
     if (!isUndefined(vm)) {
         assign(vm.context, context);

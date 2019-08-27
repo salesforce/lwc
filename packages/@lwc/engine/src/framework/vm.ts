@@ -27,7 +27,7 @@ import {
     isFalse,
     isArray,
 } from '../shared/language';
-import { getInternalField, getHiddenField } from '../shared/fields';
+import { getHiddenField } from '../shared/fields';
 import {
     ViewModelReflection,
     addCallbackToNextTick,
@@ -526,7 +526,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = getInternalField(elm, ViewModelReflection);
+        vm = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -545,7 +545,7 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
     do {
-        const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
+        const currentVm: VM | undefined = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
@@ -611,10 +611,10 @@ export function isNodeFromTemplate(node: Node): boolean {
 
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getInternalField(elm, ViewModelReflection);
+        const vm = getHiddenField(elm, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    return getInternalField(elm, ViewModelReflection) as VM;
+    return getHiddenField(elm, ViewModelReflection) as VM;
 }
 
 export function getComponentVM(component: ComponentInterface): VM {
@@ -628,10 +628,10 @@ export function getComponentVM(component: ComponentInterface): VM {
 export function getShadowRootVM(root: ShadowRoot): VM {
     // TODO: #1299 - use a weak map instead of an internal field
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getInternalField(root, ViewModelReflection);
+        const vm = getHiddenField(root, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    return getInternalField(root, ViewModelReflection) as VM;
+    return getHiddenField(root, ViewModelReflection) as VM;
 }
 
 // slow path routine

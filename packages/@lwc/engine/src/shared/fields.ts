@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, create, isUndefined } from './language';
+import { create, isUndefined } from './language';
 
 /**
  * In IE11, symbols are expensive.
@@ -17,17 +17,6 @@ const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 export function createFieldName(key: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
     return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-engine-${key}$$`;
-}
-
-export function setInternalField(o: object, fieldName: symbol, value: any) {
-    // TODO: #1299 - use a weak map instead
-    defineProperty(o, fieldName, {
-        value,
-    });
-}
-
-export function getInternalField(o: object, fieldName: symbol): any {
-    return o[fieldName];
 }
 
 /**
@@ -44,20 +33,17 @@ export function getInternalField(o: object, fieldName: symbol): any {
  *
  */
 const hiddenFieldsMap: WeakMap<any, Record<symbol, any>> = new WeakMap();
-export const setHiddenField = hasNativeSymbolsSupport
-    ? (o: any, fieldName: symbol, value: any): void => {
-          let valuesByField = hiddenFieldsMap.get(o);
-          if (isUndefined(valuesByField)) {
-              valuesByField = create(null) as (Record<symbol, any>);
-              hiddenFieldsMap.set(o, valuesByField);
-          }
-          valuesByField[fieldName] = value;
-      }
-    : setInternalField; // Fall back to symbol based approach in compat mode
 
-export const getHiddenField = hasNativeSymbolsSupport
-    ? (o: any, fieldName: symbol): any => {
-          const valuesByField = hiddenFieldsMap.get(o);
-          return !isUndefined(valuesByField) && valuesByField[fieldName];
-      }
-    : getInternalField; // Fall back to symbol based approach in compat mode
+export function setHiddenField(o: any, fieldName: symbol, value: any) {
+    let valuesByField = hiddenFieldsMap.get(o);
+    if (isUndefined(valuesByField)) {
+        valuesByField = create(null) as (Record<symbol, any>);
+        hiddenFieldsMap.set(o, valuesByField);
+    }
+    valuesByField[fieldName] = value;
+}
+
+export function getHiddenField(o: any, fieldName: symbol) {
+    const valuesByField = hiddenFieldsMap.get(o);
+    return !isUndefined(valuesByField) && valuesByField[fieldName];
+}
