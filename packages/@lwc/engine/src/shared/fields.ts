@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isUndefined } from './language';
+import { create, isUndefined } from './language';
 
 /**
  * In IE11, symbols are expensive.
@@ -35,13 +35,4 @@ export function getHiddenField(o: any, fieldName: symbol) {
     if (!isUndefined(valuesByField)) {
         return valuesByField[fieldName];
     }
-}
-
-export function setInternalField(o: object, fieldName: symbol, value: any) {
-    defineProperty(o, fieldName, {
-        value,
-    });
-}
-export function getInternalField(o: object, fieldName: symbol): any {
-    return o[fieldName];
 }

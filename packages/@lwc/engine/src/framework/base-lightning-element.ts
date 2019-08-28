@@ -34,7 +34,7 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { setHiddenField, setInternalField } from '../shared/fields';
+import { setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
@@ -284,7 +284,6 @@ function BaseLightningElementConstructor(this: LightningElement) {
     setHiddenField(component, ViewModelReflection, vm);
     setHiddenField(cmpRoot, ViewModelReflection, vm);
     setHiddenField(elm, ViewModelReflection, vm);
-    setInternalField(elm, ViewModelReflection, vm);
     // VM is now initialized
     (vm as VM).cmpRoot = cmpRoot;
     if (process.env.NODE_ENV !== 'production') {
