@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.16...v) (2019-08-13)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.17...v) (2019-08-29)
+
+
+### Bug Fixes
+
+* **engine:** issue 1435 disconnect bug when switching templates ([#1443](https://github.com/salesforce/lwc/issues/1443)) ([#1481](https://github.com/salesforce/lwc/issues/1481)) ([cb369ac](https://github.com/salesforce/lwc/commit/cb369ac)), closes [#1435](https://github.com/salesforce/lwc/issues/1435) [#1448](https://github.com/salesforce/lwc/issues/1448) [#1435](https://github.com/salesforce/lwc/issues/1435)
+
+
+
+## [1.0.2-222.17](https://github.com/salesforce/lwc/compare/v1.0.2-222.16...v1.0.2-222.17) (2019-08-13)
 
 
 ### Bug Fixes
