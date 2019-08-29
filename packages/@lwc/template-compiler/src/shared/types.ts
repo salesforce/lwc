@@ -94,7 +94,6 @@ export interface IRElement {
     forOf?: ForIterator;
     forKey?: TemplateExpression;
 
-    locator?: Locator;
     lwc?: LWCDirectives;
 
     slotName?: string;

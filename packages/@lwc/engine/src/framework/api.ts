@@ -57,7 +57,6 @@ import {
     removeCustomElmHook,
     markAsDynamicChildren,
 } from './hooks';
-import { Services, invokeServiceHook } from './services';
 import { isComponentConstructor } from './def';
 
 export interface ElementCompilerData extends VNodeData {
@@ -83,7 +82,6 @@ export interface RenderAPI {
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
     fb(fn: (...args: any[]) => any): (...args: any[]) => any;
-    ll(originalHandler: EventListener, id: string, provider?: () => any): EventListener;
     k(compilerKey: number, iteratorValue: any): string | void;
 }
 
@@ -541,46 +539,6 @@ export function fb(fn: (...args: any[]) => any): () => any {
     const vm: VM = vmBeingRendered;
     return function() {
         return invokeComponentCallback(vm, fn, ArraySlice.call(arguments));
-    };
-}
-
-// [l]ocator_[l]istener function
-export function ll(
-    originalHandler: EventListener,
-    id: string,
-    context?: (...args: any[]) => any
-): EventListener {
-    const vm = getVMBeingRendered();
-    if (isNull(vm)) {
-        throw new Error();
-    }
-    // bind the original handler with b() so we can call it
-    // after resolving the locator
-    const eventListener = b(originalHandler);
-    // create a wrapping handler to resolve locator, and
-    // then invoke the original handler.
-    return function(event: Event) {
-        // located service for the locator metadata
-        const {
-            context: { locator },
-        } = vm;
-        if (!isUndefined(locator)) {
-            const { locator: locatorService } = Services;
-            if (locatorService) {
-                locator.resolved = {
-                    target: id,
-                    host: locator.id,
-                    targetContext: isFunction(context) && context(),
-                    hostContext: isFunction(locator.context) && locator.context(),
-                };
-                // a registered `locator` service will be invoked with
-                // access to the context.locator.resolved, which will contain:
-                // outer id, outer context, inner id, and inner context
-                invokeServiceHook(vm, locatorService);
-            }
-        }
-        // invoke original event listener via b()
-        eventListener(event);
     };
 }
 
