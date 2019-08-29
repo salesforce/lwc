@@ -55,6 +55,35 @@ describe('Node.cloneNode', () => {
         });
     });
 
+    describe('deep=undefined', () => {
+        it('should not clone shadow tree', () => {
+            const elm = createElement('x-slotted', { is: Slotted });
+            document.body.appendChild(elm);
+
+            const clone = elm.cloneNode();
+            expect(clone.childNodes.length).toBe(0);
+            expect(clone.outerHTML).toBe('<x-slotted></x-slotted>');
+        });
+
+        it('should not clone slotted content', () => {
+            const elm = createElement('x-slotted', { is: Slotted });
+            document.body.appendChild(elm);
+
+            const clone = elm.shadowRoot.querySelector('x-container').cloneNode();
+            expect(clone.childNodes.length).toBe(0);
+            expect(clone.outerHTML).toBe('<x-container></x-container>');
+        });
+
+        it('should not clone children of parent node with vanilla html', () => {
+            const table = document.createElement('table');
+            table.innerHTML = '<tr><th>Cat</th></tr><tr><th>Dog</th></tr>';
+            document.body.appendChild(table);
+            const clone = table.cloneNode();
+            expect(clone.childNodes.length).toBe(0);
+            expect(clone.outerHTML).toBe('<table></table>');
+        });
+    });
+
     describe('deep=true', () => {
         it('should not clone shadow tree', () => {
             const elm = createElement('x-slotted', { is: Slotted });
@@ -94,6 +123,17 @@ describe('Node.cloneNode', () => {
             const clone = elm.cloneNode(true);
             expect(clone.childNodes.length).toBe(0);
             expect(clone.outerHTML).toBe('<x-container></x-container>');
+        });
+
+        it('should clone children of parent node with vanilla html', () => {
+            const table = document.createElement('table');
+            table.innerHTML = '<tbody><tr><th>Cat</th></tr><tr><th>Dog</th></tr></tbody>';
+            document.body.appendChild(table);
+            const clone = table.cloneNode(true);
+            expect(clone.childNodes.length).toBe(1);
+            expect(clone.outerHTML).toBe(
+                '<table><tbody><tr><th>Cat</th></tr><tr><th>Dog</th></tr></tbody></table>'
+            );
         });
     });
 });

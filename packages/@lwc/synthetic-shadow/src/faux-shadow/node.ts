@@ -408,7 +408,6 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
-            deep = isUndefined(deep) || deep;
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return cloneNodePatched.call(this, deep);
             }
