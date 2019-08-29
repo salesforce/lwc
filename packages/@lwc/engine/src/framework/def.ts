@@ -27,7 +27,7 @@ import {
     isFunction,
     defineProperties,
 } from '../shared/language';
-import { getHiddenField } from '../shared/fields';
+import { getInternalField } from '../shared/fields';
 import { getAttrNameFromPropName } from './attributes';
 import {
     resolveCircularModuleDependency,
@@ -256,7 +256,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;
     if (elm instanceof HTMLElement) {
-        const vm = getHiddenField(elm, ViewModelReflection);
+        const vm = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;
         }
