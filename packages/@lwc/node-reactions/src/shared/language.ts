@@ -6,9 +6,16 @@
  */
 
 const { defineProperty, getOwnPropertyDescriptor, defineProperties } = Object;
-const { push: ArrayPush, forEach } = Array.prototype;
+const { push: ArrayPush, forEach, slice: ArraySlice } = Array.prototype;
 
-export { defineProperty, defineProperties, getOwnPropertyDescriptor, ArrayPush, forEach };
+export {
+    defineProperty,
+    defineProperties,
+    getOwnPropertyDescriptor,
+    ArrayPush,
+    ArraySlice,
+    forEach,
+};
 
 export function isUndefined(obj: any): obj is undefined {
     return obj === undefined;
