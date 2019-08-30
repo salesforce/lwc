@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isUndefined } from './shared/language';
+import { FeatureFlag } from './flags';
+
 function getGlobalThis() {
     if (typeof globalThis !== 'undefined') {
         return globalThis;
@@ -24,12 +27,25 @@ function getGlobalThis() {
     return g;
 }
 
-// Initialize the global configuration object if it isn't initialized already.
-const LWC_config = getGlobalThis().LWC_config || {};
+const _globalThis = getGlobalThis();
 
-export const runtimeFlags = Object.assign({}, LWC_config.features);
+// Initialize the configuration object if it isn't initialized already.
+const LWC_config = _globalThis.LWC_config || {};
 
-export function enableFeature(name: string) {
+let runtimeFlags: { [name: string]: FeatureFlag };
+if (process.env.NODE_ENV === 'production') {
+    runtimeFlags = Object.assign({}, LWC_config.features);
+} else {
+    // For testing purposes, we want to share the same runtime flags across
+    // bundles (e.g., engine, synthetic-shadow, etc).
+    runtimeFlags = _globalThis.__lwcRuntimeFlags__;
+    if (isUndefined(runtimeFlags)) {
+        runtimeFlags = Object.assign({}, LWC_config.features);
+        _globalThis.__lwcRuntimeFlags__ = runtimeFlags;
+    }
+}
+
+function enableFeature(name: string) {
     if (process.env.NODE_ENV === 'production') {
         // this function should never leak to prod
         throw new ReferenceError();
@@ -37,10 +53,12 @@ export function enableFeature(name: string) {
     runtimeFlags[name] = true;
 }
 
-export function disableFeature(name: string) {
+function disableFeature(name: string) {
     if (process.env.NODE_ENV === 'production') {
         // this function should never leak to prod
         throw new ReferenceError();
     }
     runtimeFlags[name] = false;
 }
+
+export { enableFeature, disableFeature, runtimeFlags };
