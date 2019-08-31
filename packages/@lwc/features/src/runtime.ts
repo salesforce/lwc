@@ -17,4 +17,12 @@ function setFeatureFlag(name: string, value: FeatureFlag) {
     runtimeFlags[name] = value;
 }
 
-export { runtimeFlags, setFeatureFlag };
+function setFeatureFlagForTest(name: string, value: FeatureFlag) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method must not leak to production
+        throw new ReferenceError();
+    }
+    return setFeatureFlag(name, value);
+}
+
+export { runtimeFlags, setFeatureFlag, setFeatureFlagForTest };
