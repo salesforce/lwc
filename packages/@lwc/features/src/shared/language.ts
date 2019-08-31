@@ -7,3 +7,11 @@
 const { create } = Object;
 
 export { create };
+
+export function isTrue(value: any): value is true {
+    return value === true;
+}
+
+export function isFalse(value: any): value is false {
+    return value === false;
+}
