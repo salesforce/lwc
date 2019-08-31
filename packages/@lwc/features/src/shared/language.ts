@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const { create } = Object;
 
-export function isUndefined(obj: any): obj is undefined {
-    return obj === undefined;
-}
+export { create };

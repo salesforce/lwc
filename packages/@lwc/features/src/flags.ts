@@ -10,4 +10,4 @@ export const ENABLE_FOO: FeatureFlag = true;
 export const ENABLE_BAR: FeatureFlag = false;
 export const ENABLE_BAZ: FeatureFlag = null;
 
-export { enableFeature, disableFeature, runtimeFlags } from './runtime';
+export { runtimeFlags, setFeatureFlag } from './runtime';
