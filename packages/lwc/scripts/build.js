@@ -40,16 +40,6 @@ function buildEngineTargets(targets) {
     return targets.map(bundleConfig => buildBundleConfig(engineConfig, bundleConfig));
 }
 
-function buildFeaturesTargets(targets) {
-    const name = 'Features';
-    const targetName = 'features';
-    const input = getEs6ModuleEntry('@lwc/features');
-    const dir = path.join(distDirectory, 'features');
-    const engineConfig = { input, name, targetName, dir };
-
-    return targets.map(bundleConfig => buildBundleConfig(engineConfig, bundleConfig));
-}
-
 function buildSyntheticShadow(targets) {
     const name = 'SyntheticShadow';
     const targetName = 'synthetic-shadow';
@@ -76,7 +66,6 @@ function buildWireService(targets) {
     createDir(distDirectory);
     const allTargets = [
         ...buildEngineTargets(targets),
-        ...buildFeaturesTargets(targets),
         ...buildSyntheticShadow(targets),
         ...buildWireService(targets),
     ];
