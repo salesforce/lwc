@@ -34,7 +34,7 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { setInternalField, setHiddenField } from '../shared/fields';
+import { setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
@@ -282,8 +282,8 @@ function BaseLightningElementConstructor(this: LightningElement) {
     const cmpRoot = elm.attachShadow(shadowRootOptions);
     // linking elm, shadow root and component with the VM
     setHiddenField(component, ViewModelReflection, vm);
-    setInternalField(elm, ViewModelReflection, vm);
-    setInternalField(cmpRoot, ViewModelReflection, vm);
+    setHiddenField(cmpRoot, ViewModelReflection, vm);
+    setHiddenField(elm, ViewModelReflection, vm);
     // VM is now initialized
     (vm as VM).cmpRoot = cmpRoot;
     if (process.env.NODE_ENV !== 'production') {

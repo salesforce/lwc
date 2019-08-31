@@ -23,7 +23,7 @@ import {
     isNodeOwnedBy,
     isSlotElement,
 } from './traverse';
-import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
+import { getHiddenField, setHiddenField, createFieldName } from '../shared/fields';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from '../env/document';
@@ -59,7 +59,7 @@ interface ShadowRootRecord {
 }
 
 function getInternalSlot(root: SyntheticShadowRootInterface | Element): ShadowRootRecord {
-    const record: ShadowRootRecord | undefined = getInternalField(root, InternalSlot);
+    const record: ShadowRootRecord | undefined = getHiddenField(root, InternalSlot);
     if (isUndefined(record)) {
         throw new TypeError();
     }
@@ -109,13 +109,13 @@ export function getShadowRoot(elm: Element): SyntheticShadowRootInterface {
 // since this check is harmless for nodes as well, and it speeds up things
 // to avoid casting before calling this method in few places.
 export function isHostElement(elm: Element | Node): boolean {
-    return !isUndefined(getInternalField(elm, InternalSlot));
+    return !isUndefined(getHiddenField(elm, InternalSlot));
 }
 
 let uid = 0;
 
 export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticShadowRootInterface {
-    if (!isUndefined(getInternalField(elm, InternalSlot))) {
+    if (!isUndefined(getHiddenField(elm, InternalSlot))) {
         throw new Error(
             `Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`
         );
@@ -131,8 +131,8 @@ export function attachShadow(elm: Element, options: ShadowRootInit): SyntheticSh
         host: elm,
         shadowRoot: sr,
     };
-    setInternalField(sr, InternalSlot, record);
-    setInternalField(elm, InternalSlot, record);
+    setHiddenField(sr, InternalSlot, record);
+    setHiddenField(elm, InternalSlot, record);
     const shadowResolver = () => sr;
     const x = (shadowResolver.nodeKey = uid++);
     setNodeKey(elm, x);

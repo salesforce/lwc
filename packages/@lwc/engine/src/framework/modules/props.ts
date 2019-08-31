@@ -6,7 +6,7 @@
  */
 import assert from '../../shared/assert';
 import { isUndefined, keys } from '../../shared/language';
-import { getInternalField } from '../../shared/fields';
+import { getHiddenField } from '../../shared/fields';
 import { ViewModelReflection } from '../utils';
 import { prepareForPropUpdate } from '../base-bridge-element';
 import { VNode } from '../../3rdparty/snabbdom/types';
@@ -36,7 +36,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     }
 
     const elm = vnode.elm as Element;
-    const vm = getInternalField(elm, ViewModelReflection);
+    const vm = getHiddenField(elm, ViewModelReflection);
     const isFirstPatch = isUndefined(oldProps);
     const isCustomElement = !isUndefined(vm);
     const { sel } = vnode;

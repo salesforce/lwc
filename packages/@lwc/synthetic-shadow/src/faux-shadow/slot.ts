@@ -6,7 +6,7 @@
  */
 import assert from '../shared/assert';
 import { getAttribute, childrenGetter, setAttribute } from '../env/element';
-import { createFieldName, getInternalField, setInternalField } from '../shared/fields';
+import { createFieldName, getHiddenField, setHiddenField } from '../shared/fields';
 import { dispatchEvent } from '../env/dom';
 import {
     ArrayIndexOf,
@@ -113,9 +113,9 @@ defineProperties(HTMLSlotElement.prototype, {
             if (
                 isNodeShadowed(this) &&
                 type === 'slotchange' &&
-                !getInternalField(this, SlotChangeKey)
+                !getHiddenField(this, SlotChangeKey)
             ) {
-                setInternalField(this, SlotChangeKey, true);
+                setHiddenField(this, SlotChangeKey, true);
                 if (!observer) {
                     observer = initSlotObserver();
                 }
