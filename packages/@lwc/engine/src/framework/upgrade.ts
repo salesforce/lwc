@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ENABLE_FOO } from '@lwc/features';
 import assert from '../shared/assert';
 import { isUndefined, assign, isNull, isObject, isFunction, toString } from '../shared/language';
 import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
@@ -79,9 +78,6 @@ interface CreateElementOptions {
  * then it throws a TypeError.
  */
 export function createElement(sel: string, options: CreateElementOptions): HTMLElement {
-    if (ENABLE_FOO) {
-        throw new Error('this feature throws an error');
-    }
     if (!isObject(options) || isNull(options)) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(

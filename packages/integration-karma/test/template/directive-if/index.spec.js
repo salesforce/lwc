@@ -1,11 +1,9 @@
-import { createElement, setFeatureFlag } from 'lwc';
+import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XSlotted from 'x/slotted';
 import NestedRenderConditional from 'x/nestedRenderConditional';
 
 describe('if:true directive', () => {
-    setFeatureFlag('ENABLE_FOO', false);
-
     it('should render if the value is truthy', () => {
         const elm = createElement('x-test', { is: XTest });
         elm.isVisible = true;
