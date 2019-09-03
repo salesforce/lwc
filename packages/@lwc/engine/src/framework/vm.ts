@@ -10,6 +10,7 @@ import {
     ArrayUnshift,
     assert,
     create,
+    getHiddenField,
     isArray,
     isFalse,
     isNull,
@@ -27,7 +28,6 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import { getHiddenField } from '../shared/fields';
 import {
     ViewModelReflection,
     addCallbackToNextTick,

@@ -24,6 +24,7 @@ import {
     isNull,
     isObject,
     seal,
+    setHiddenField,
 } from '@lwc/shared';
 import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -34,7 +35,6 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';

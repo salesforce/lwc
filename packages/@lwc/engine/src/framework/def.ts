@@ -20,6 +20,7 @@ import {
     create,
     defineProperties,
     freeze,
+    getHiddenField,
     getOwnPropertyNames,
     getPrototypeOf,
     isFunction,
@@ -285,7 +286,6 @@ import {
     TrackDef,
 } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { getHiddenField } from '../shared/fields';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972

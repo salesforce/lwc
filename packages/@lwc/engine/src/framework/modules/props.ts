@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, keys } from '@lwc/shared';
-import { getHiddenField } from '../../shared/fields';
+import { assert, getHiddenField, isUndefined, keys } from '@lwc/shared';
 import { ViewModelReflection } from '../utils';
 import { prepareForPropUpdate } from '../base-bridge-element';
 import { VNode } from '../../3rdparty/snabbdom/types';

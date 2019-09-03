@@ -8,7 +8,7 @@ import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
 import { ViewModelReflection } from '../utils';
 import { getComponentVM } from '../vm';
-import { getHiddenField } from '../../shared/fields';
+import { getHiddenField } from '@lwc/shared';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 

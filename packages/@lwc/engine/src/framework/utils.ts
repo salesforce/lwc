@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, create, hasOwnProperty, isFunction, seal } from '@lwc/shared';
-import { createFieldName } from '../shared/fields';
+import { ArrayPush, create, createFieldName, hasOwnProperty, isFunction, seal } from '@lwc/shared';
 
 type Callback = () => void;
 
@@ -14,7 +13,7 @@ export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
-export const ViewModelReflection = createFieldName('ViewModel');
+export const ViewModelReflection = createFieldName('ViewModel', 'engine');
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
