@@ -14,12 +14,12 @@ import { create, isUndefined } from './language';
  */
 const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
 
-export function createFieldName(key: string): symbol {
+export function createFieldName(key: string, namespace: string): symbol {
     // @ts-ignore: using a string as a symbol for perf reasons
-    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-synthetic-shadow-${key}$$`;
+    return hasNativeSymbolsSupport ? Symbol(key) : `$$lwc-${namespace}-${key}$$`;
 }
 
-const hiddenFieldsMap: WeakMap<any, Record<symbol, any>> = new WeakMap();
+const hiddenFieldsMap: WeakMap<any, Record<symbol | string, any>> = new WeakMap();
 
 export function setHiddenField(o: any, fieldName: symbol, value: any) {
     let valuesByField = hiddenFieldsMap.get(o);
@@ -27,12 +27,14 @@ export function setHiddenField(o: any, fieldName: symbol, value: any) {
         valuesByField = create(null) as (Record<symbol, any>);
         hiddenFieldsMap.set(o, valuesByField);
     }
+    // @ts-ignore https://github.com/microsoft/TypeScript/issues/1863
     valuesByField[fieldName] = value;
 }
 
 export function getHiddenField(o: any, fieldName: symbol) {
     const valuesByField = hiddenFieldsMap.get(o);
     if (!isUndefined(valuesByField)) {
+        // @ts-ignore https://github.com/microsoft/TypeScript/issues/1863
         return valuesByField[fieldName];
     }
 }

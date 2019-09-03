@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { ArrayReduce, ArrayPush, ArraySlice, assert, isNull, isUndefined } from '@lwc/shared';
 import { getNodeKey, getNodeNearestOwnerKey } from './node';
 import {
     childNodesGetter,
@@ -13,8 +13,6 @@ import {
     DOCUMENT_POSITION_CONTAINS,
 } from '../env/node';
 import { querySelectorAll } from '../env/element';
-import { ArrayReduce, ArrayPush, isUndefined, ArraySlice } from '../shared/language';
-import { isNull } from '../shared/language';
 import {
     getHost,
     SyntheticShadowRootInterface,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined, forEach, getPropertyDescriptor } from '../shared/language';
+import { create, forEach, getPropertyDescriptor, isUndefined } from '@lwc/shared';
 import { defaultDefHTMLPropertyNames } from './attributes';
 import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/main';
 

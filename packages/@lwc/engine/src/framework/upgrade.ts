@@ -4,8 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { isUndefined, assign, isNull, isObject, isFunction, toString } from '../shared/language';
+import {
+    assert,
+    assign,
+    fields,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    toString,
+} from '@lwc/shared';
 import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -14,14 +22,14 @@ import {
     resolveCircularModuleDependency,
     ViewModelReflection,
 } from './utils';
-import { setHiddenField, getHiddenField, createFieldName } from '../shared/fields';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
-const ConnectingSlot = createFieldName('connecting');
-const DisconnectingSlot = createFieldName('disconnecting');
+const { createFieldName, getHiddenField, setHiddenField } = fields;
+const ConnectingSlot = createFieldName('connecting', 'engine');
+const DisconnectingSlot = createFieldName('disconnecting', 'engine');
 
 function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {

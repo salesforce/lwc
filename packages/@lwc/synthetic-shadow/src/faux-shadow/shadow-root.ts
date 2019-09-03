@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFilter,
     assign,
     create,
-    isNull,
-    setPrototypeOf,
-    ArrayFilter,
     defineProperties,
-    isUndefined,
     defineProperty,
+    fields,
+    isNull,
     isTrue,
-} from '../shared/language';
+    isUndefined,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
     shadowRootQuerySelector,
@@ -23,7 +24,6 @@ import {
     isNodeOwnedBy,
     isSlotElement,
 } from './traverse';
-import { getHiddenField, setHiddenField, createFieldName } from '../shared/fields';
 import { getTextContent } from '../3rdparty/polymer/text-content';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { DocumentPrototypeActiveElement, elementFromPoint, createComment } from '../env/document';
@@ -47,8 +47,9 @@ import { getInternalChildNodes, setNodeKey, setNodeOwnerKey } from './node';
 import { innerHTMLSetter } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
 
+const { getHiddenField, setHiddenField, createFieldName } = fields;
 const ShadowRootResolverKey = '$shadowResolver$';
-const InternalSlot = createFieldName('shadowRecord');
+const InternalSlot = createFieldName('shadowRecord', 'synthetic-shadow');
 const { createDocumentFragment } = document;
 
 interface ShadowRootRecord {

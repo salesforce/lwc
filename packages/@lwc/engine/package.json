@@ -9,17 +9,18 @@
     "scripts": {
         "clean": "rm -rf dist/ types/",
         "test": "jest",
-        "build": "tsc --emitDeclarationOnly && rollup -c scripts/rollup/rollup.config.js"
+        "build": "tsc --emitDeclarationOnly && rollup --config scripts/rollup/rollup.config.js"
     },
     "files": [
         "dist/",
         "types/"
     ],
     "dependencies": {
+        "@lwc/features": "1.0.2",
+        "@lwc/shared": "1.0.2",
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
-        "@lwc/features": "1.0.2",
         "@lwc/template-compiler": "1.0.2"
     },
     "lwc": {

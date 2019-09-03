@@ -12,20 +12,21 @@
  * This structure can be used to synthetically create proxies, and understand the
  * shape of a component. It is also used internally to apply extra optimizations.
  */
-
-import assert from '../shared/assert';
 import {
-    freeze,
+    ArrayReduce,
+    assert,
     create,
+    defineProperties,
+    fields,
+    freeze,
     getOwnPropertyNames,
+    isFalse,
     isFunction,
     isNull,
-    defineProperties,
-    seal,
-    ArrayReduce,
     isObject,
-    isFalse,
-} from '../shared/language';
+    seal,
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
 import {
@@ -34,7 +35,6 @@ import {
     getComponentAsString,
     getTemplateReactiveObserver,
 } from './component';
-import { setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
@@ -45,6 +45,8 @@ import { unlockAttribute, lockAttribute } from './attributes';
 import { Template } from './template';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
+
+const { setHiddenField } = fields;
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -84,7 +86,7 @@ function createBridgeToElementDescriptor(
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
-                    assert.logError(
+                    logError(
                         `\`${name}\` constructor can't read the value of property \`${propName}\` because the owner component hasn't set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
                         vm.elm
                     );
@@ -325,7 +327,7 @@ BaseLightningElementConstructor.prototype = {
             );
 
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
-                assert.logError(
+                logError(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
                     )}. Event name must ${[

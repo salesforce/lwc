@@ -4,7 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import {
+    ArrayPush,
+    ArraySlice,
+    ArrayUnshift,
+    assert,
+    create,
+    fields,
+    isArray,
+    isFalse,
+    isNull,
+    isObject,
+    isTrue,
+    isUndefined,
+    keys,
+    StringToLowerCase,
+} from '@lwc/shared';
 import { getComponentDef } from './def';
 import {
     createComponent,
@@ -13,21 +28,6 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import {
-    ArrayPush,
-    isUndefined,
-    isNull,
-    ArrayUnshift,
-    ArraySlice,
-    create,
-    isTrue,
-    isObject,
-    keys,
-    StringToLowerCase,
-    isFalse,
-    isArray,
-} from '../shared/language';
-import { getHiddenField } from '../shared/fields';
 import {
     ViewModelReflection,
     addCallbackToNextTick,
@@ -521,6 +521,7 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
+const { getHiddenField } = fields;
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
     let vm: VM | undefined;

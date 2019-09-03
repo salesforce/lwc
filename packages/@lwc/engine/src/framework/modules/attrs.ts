@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../../shared/assert';
+import { assert, isNull, isUndefined, keys, StringCharCodeAt } from '@lwc/shared';
 import { unlockAttribute, lockAttribute } from '../attributes';
-import { isUndefined, keys, StringCharCodeAt, isNull } from '../../shared/language';
 import { EmptyObject } from '../utils';
 import { VNode } from '../../3rdparty/snabbdom/types';
 

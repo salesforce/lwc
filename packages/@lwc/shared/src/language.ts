@@ -5,66 +5,74 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const {
-    freeze,
-    seal,
-    keys,
-    create,
     assign,
+    create,
+    defineProperties,
     defineProperty,
-    getPrototypeOf,
-    setPrototypeOf,
+    freeze,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
-    defineProperties,
+    getPrototypeOf,
     hasOwnProperty,
+    keys,
+    seal,
+    setPrototypeOf,
 } = Object;
+
 const { isArray } = Array;
+
 const {
+    filter: ArrayFilter,
+    find: ArrayFind,
+    forEach,
+    indexOf: ArrayIndexOf,
+    join: ArrayJoin,
+    map: ArrayMap,
+    push: ArrayPush,
+    reduce: ArrayReduce,
+    reverse: ArrayReverse,
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
-    indexOf: ArrayIndexOf,
-    push: ArrayPush,
-    map: ArrayMap,
-    join: ArrayJoin,
-    forEach,
-    reduce: ArrayReduce,
 } = Array.prototype;
 
 const {
-    replace: StringReplace,
-    toLowerCase: StringToLowerCase,
     charCodeAt: StringCharCodeAt,
+    replace: StringReplace,
     slice: StringSlice,
+    toLowerCase: StringToLowerCase,
 } = String.prototype;
 
 export {
-    StringToLowerCase,
-    StringReplace,
-    StringCharCodeAt,
-    StringSlice,
-    freeze,
-    seal,
-    keys,
-    create,
-    assign,
-    defineProperty,
-    defineProperties,
-    getPrototypeOf,
-    setPrototypeOf,
-    getOwnPropertyDescriptor,
-    getOwnPropertyNames,
-    hasOwnProperty,
+    ArrayFilter,
+    ArrayFind,
+    ArrayIndexOf,
+    ArrayJoin,
+    ArrayMap,
+    ArrayPush,
     ArrayReduce,
+    ArrayReverse,
     ArraySlice,
     ArraySplice,
     ArrayUnshift,
-    ArrayMap,
-    ArrayJoin,
-    isArray,
-    ArrayIndexOf,
-    ArrayPush,
+    assign,
+    create,
+    defineProperties,
+    defineProperty,
     forEach,
+    freeze,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getPrototypeOf,
+    hasOwnProperty,
+    isArray,
+    keys,
+    seal,
+    setPrototypeOf,
+    StringCharCodeAt,
+    StringReplace,
+    StringSlice,
+    StringToLowerCase,
 };
 
 export function isUndefined(obj: any): obj is undefined {
@@ -101,13 +109,12 @@ export function isNumber(obj: any): obj is number {
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && obj.toString) {
-        // Arrays might hold objects with "null" prototype
-        // So using Array.prototype.toString directly will cause an error
-        // Iterate through all the items and handle individually.
+        // Arrays might hold objects with "null" prototype So using
+        // Array.prototype.toString directly will cause an error Iterate through
+        // all the items and handle individually.
         if (isArray(obj)) {
             return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
         }
-
         return obj.toString();
     } else if (typeof obj === 'object') {
         return OtS.call(obj);

@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { FeatureFlag } from './flags';
-import assert from './shared/assert';
-import { create, isFalse, isTrue } from './shared/language';
+import { assert, create, isFalse, isTrue } from '@lwc/shared';
 
 interface FeatureFlagConfig {
     [name: string]: FeatureFlag;

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { isArray, isUndefined, isTrue, isNull } from '../shared/language';
+import { assert, fields, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
@@ -33,9 +32,9 @@ import {
     lockDomMutation,
 } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
-import { getHiddenField } from '../shared/fields';
 
 const noop = () => void 0;
+const { getHiddenField } = fields;
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;

@@ -7,7 +7,7 @@
 import { compileTemplate } from 'test-utils';
 
 import { createElement, LightningElement, registerDecorators } from '../main';
-import assertLogger from '../../shared/assert';
+import * as assertLogger from '../../shared/assert';
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 

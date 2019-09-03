@@ -13,20 +13,21 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from '../shared/assert';
 import {
+    ArrayReduce,
+    assert,
     assign,
-    freeze,
     create,
+    defineProperties,
+    fields,
+    freeze,
     getOwnPropertyNames,
     getPrototypeOf,
-    isNull,
-    setPrototypeOf,
-    ArrayReduce,
-    isUndefined,
     isFunction,
-    defineProperties,
-} from '../shared/language';
+    isNull,
+    isUndefined,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import {
     resolveCircularModuleDependency,
@@ -55,6 +56,7 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
+const { getHiddenField } = fields;
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
@@ -285,7 +287,6 @@ import {
     TrackDef,
 } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
-import { getHiddenField } from '../shared/fields';
 
 // Typescript is inferring the wrong function type for this particular
 // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972

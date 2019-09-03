@@ -18,6 +18,9 @@
         "dist/",
         "types/"
     ],
+    "dependencies": {
+        "@lwc/shared": "1.0.2"
+    },
     "devDependencies": {
         "@lwc/compiler": "1.0.2",
         "@lwc/engine": "1.0.2",

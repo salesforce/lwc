@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create } from '../../shared/language';
+import { assign, create } from '@lwc/shared';
 
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937

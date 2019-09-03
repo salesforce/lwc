@@ -7,7 +7,7 @@
 
 /* eslint-disable no-unsafe-finally */
 
-const { default: assert } = require('../../../src/shared/assert');
+const assert = require('../../../src/shared/assert');
 
 function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {

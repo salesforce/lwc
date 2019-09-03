@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { fields } from '@lwc/shared';
 import { compileTemplate } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
 import { ViewModelReflection } from '../utils';
 import { getComponentVM } from '../vm';
-import { getHiddenField } from '../../shared/fields';
+
+const { getHiddenField } = fields;
 
 const emptyTemplate = compileTemplate(`<template></template>`);
 
