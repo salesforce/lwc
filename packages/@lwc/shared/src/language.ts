@@ -22,12 +22,15 @@ const {
 const { isArray } = Array;
 
 const {
+    filter: ArrayFilter,
+    find: ArrayFind,
     forEach,
     indexOf: ArrayIndexOf,
     join: ArrayJoin,
     map: ArrayMap,
     push: ArrayPush,
     reduce: ArrayReduce,
+    reverse: ArrayReverse,
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
@@ -41,11 +44,14 @@ const {
 } = String.prototype;
 
 export {
+    ArrayFilter,
+    ArrayFind,
     ArrayIndexOf,
     ArrayJoin,
     ArrayMap,
     ArrayPush,
     ArrayReduce,
+    ArrayReverse,
     ArraySlice,
     ArraySplice,
     ArrayUnshift,

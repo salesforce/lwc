@@ -5,16 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
-    isNull,
-    isFalse,
-    defineProperty,
-    defineProperties,
     ArrayUnshift,
-    isTrue,
-    hasOwnProperty,
+    defineProperties,
+    defineProperty,
     getOwnPropertyDescriptor,
-} from '../shared/language';
+    hasOwnProperty,
+    isFalse,
+    isNull,
+    isTrue,
+    isUndefined,
+} from '@lwc/shared';
 import {
     parentNodeGetter,
     textContextSetter,

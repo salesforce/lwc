@@ -4,13 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { getAttribute, childrenGetter, setAttribute } from '../env/element';
-import { createFieldName, getHiddenField, setHiddenField } from '../shared/fields';
-import { dispatchEvent } from '../env/dom';
 import {
+    assert,
     ArrayIndexOf,
     ArrayPush,
+    fields,
     forEach,
     isUndefined,
     isTrue,
@@ -19,7 +17,9 @@ import {
     isNull,
     ArrayReduce,
     defineProperties,
-} from '../shared/language';
+} from '@lwc/shared';
+import { getAttribute, childrenGetter, setAttribute } from '../env/element';
+import { dispatchEvent } from '../env/dom';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
     isSlotElement,
@@ -39,8 +39,9 @@ import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
 // https://dom.spec.whatwg.org/#garbage-collection
 let observer;
 
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 const observerConfig: MutationObserverInit = { childList: true };
-const SlotChangeKey = createFieldName('slotchange');
+const SlotChangeKey = createFieldName('slotchange', 'synthetic-shadow');
 
 function initSlotObserver() {
     return new MutationObserver(mutations => {

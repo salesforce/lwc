@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ArraySlice, StringCharCodeAt, setPrototypeOf } from '../../shared/language';
+import { ArraySlice, setPrototypeOf, StringCharCodeAt } from '@lwc/shared';
 
 const { createElement } = document;
 

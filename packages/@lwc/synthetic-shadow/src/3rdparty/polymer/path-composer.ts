@@ -15,8 +15,8 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
+import { isNull } from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
-import { isNull } from '../../shared/language';
 
 export function pathComposer(startNode: EventTarget, composed: boolean): EventTarget[] {
     const composedPath: (Element | Document | Window)[] = [];

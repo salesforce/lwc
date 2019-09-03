@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import {
+    ArrayIndexOf,
+    ArrayPush,
     ArraySlice,
     ArraySplice,
-    ArrayIndexOf,
     create,
-    ArrayPush,
-    isUndefined,
-    isFunction,
     defineProperties,
-    toString,
-    forEach,
     defineProperty,
-    isFalse,
-    isNull,
+    forEach,
     getPropertyDescriptor,
-} from '../shared/language';
+    isFalse,
+    isFunction,
+    isNull,
+    isUndefined,
+    toString,
+} from '@lwc/shared';
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from '../env/node';
 import { getHost, SyntheticShadowRootInterface, getShadowRoot } from './shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
 import { pathComposer } from './../3rdparty/polymer/path-composer';

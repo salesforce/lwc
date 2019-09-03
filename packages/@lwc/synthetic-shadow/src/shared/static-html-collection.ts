@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from './language';
-import { createFieldName, getHiddenField, setHiddenField } from './fields';
+import { ArrayMap, create, defineProperty, fields, forEach, setPrototypeOf } from '@lwc/shared';
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 const Items = createFieldName('items');
 

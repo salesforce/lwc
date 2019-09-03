@@ -6,7 +6,7 @@
  */
 import { isDelegatingFocus, isHostElement } from './shadow-root';
 import { hasAttribute, tabIndexGetter, tabIndexSetter } from '../env/element';
-import { isNull, isFalse, defineProperties } from '../shared/language';
+import { isNull, isFalse, defineProperties } from '@lwc/shared';
 import {
     disableKeyboardFocusNavigationRoutines,
     enableKeyboardFocusNavigationRoutines,

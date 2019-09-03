@@ -4,8 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { createFieldName, getHiddenField, setHiddenField } from '../shared/fields';
+import {
+    ArrayFind,
+    ArrayIndexOf,
+    ArrayReverse,
+    ArraySlice,
+    assert,
+    fields,
+    isNull,
+    isUndefined,
+    toString,
+} from '@lwc/shared';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
 import {
     matches,
@@ -23,15 +32,6 @@ import {
     DOCUMENT_POSITION_FOLLOWING,
 } from '../env/node';
 import {
-    ArrayFind,
-    ArrayIndexOf,
-    ArrayReverse,
-    ArraySlice,
-    isNull,
-    isUndefined,
-    toString,
-} from '../shared/language';
-import {
     DocumentPrototypeActiveElement,
     querySelectorAll as documentQuerySelectorAll,
 } from '../env/document';
@@ -42,6 +42,8 @@ import {
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
 import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
+
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 const TabbableElementsQuery = `
     button:not([tabindex="-1"]):not([disabled]),
@@ -55,7 +57,7 @@ const TabbableElementsQuery = `
     [tabindex="0"]
 `;
 
-const DidAddMouseDownListener = createFieldName('DidAddMouseDownListener');
+const DidAddMouseDownListener = createFieldName('DidAddMouseDownListener', 'synthetic-shadow');
 
 function isVisible(element: HTMLElement): boolean {
     const { width, height } = getBoundingClientRect.call(element);
