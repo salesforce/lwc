@@ -38,44 +38,22 @@ function getFormattedComponentStack(elm: Element): string {
     return ArrayJoin.call(componentStack, '\n');
 }
 
-const assert = {
-    invariant(value: any, msg: string) {
-        if (!value) {
-            throw new Error(`Invariant Violation: ${msg}`);
-        }
-    },
-    isTrue(value: any, msg: string) {
-        if (!value) {
-            throw new Error(`Assert Violation: ${msg}`);
-        }
-    },
-    isFalse(value: any, msg: string) {
-        if (value) {
-            throw new Error(`Assert Violation: ${msg}`);
-        }
-    },
-    fail(msg: string) {
+export function logError(message: string, elm?: Element) {
+    let msg = `[LWC error]: ${message}`;
+
+    if (elm) {
+        msg = `${msg}\n${getFormattedComponentStack(elm)}`;
+    }
+
+    if (process.env.NODE_ENV === 'test') {
+        /* eslint-disable-next-line no-console */
+        console.error(msg);
+        return;
+    }
+    try {
         throw new Error(msg);
-    },
-    logError(message: string, elm?: Element) {
-        let msg = `[LWC error]: ${message}`;
-
-        if (elm) {
-            msg = `${msg}\n${getFormattedComponentStack(elm)}`;
-        }
-
-        if (process.env.NODE_ENV === 'test') {
-            /* eslint-disable-next-line no-console */
-            console.error(msg);
-            return;
-        }
-        try {
-            throw new Error(msg);
-        } catch (e) {
-            /* eslint-disable-next-line no-console */
-            console.error(e);
-        }
-    },
-};
-
-export default assert;
+    } catch (e) {
+        /* eslint-disable-next-line no-console */
+        console.error(e);
+    }
+}
