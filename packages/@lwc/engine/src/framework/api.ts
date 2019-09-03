@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { assert } from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
 import {
     isArray,
@@ -251,7 +252,7 @@ export function h(sel: string, data: ElementCompilerData, children: VNodes): VEl
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logError(
+            logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
@@ -302,7 +303,7 @@ export function ti(value: any): number {
     const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
         if (shouldNormalize) {
-            assert.logError(
+            logError(
                 `Invalid tabindex value \`${toString(
                     value
                 )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
@@ -369,7 +370,7 @@ export function c(
             `vnode.data.styleMap and vnode.data.style ambiguous declaration.`
         );
         if (data.style && !isString(data.style)) {
-            assert.logError(
+            logError(
                 `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
                 vmBeingRendered!.elm
             );
@@ -421,7 +422,7 @@ export function i(
     sc(list);
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(
+            logError(
                 `Invalid template iteration for value "${toString(
                     iterable
                 )}" in ${vmBeingRendered}. It must be an Array or an iterable Object.`,
@@ -499,7 +500,7 @@ export function i(
     }
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(iterationError)) {
-            assert.logError(iterationError, vmBeingRendered!.elm);
+            logError(iterationError, vmBeingRendered!.elm);
         }
     }
     return list;
@@ -651,7 +652,7 @@ export function k(compilerKey: number, obj: any): string | void {
 export function gid(id: string | undefined | null): string | null | undefined {
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
-            assert.logError(
+            logError(
                 `Invalid id value "${id}". The id attribute must contain a non-empty string.`,
                 vmBeingRendered!.elm
             );
@@ -670,7 +671,7 @@ export function fid(url: string | undefined | null): string | null | undefined {
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
             if (isUndefined(url)) {
-                assert.logError(
+                logError(
                     `Undefined url value for "href" or "xlink:href" attribute. Expected a non-empty string.`,
                     vmBeingRendered!.elm
                 );

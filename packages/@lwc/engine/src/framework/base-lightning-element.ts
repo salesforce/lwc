@@ -13,7 +13,8 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from '../shared/assert';
+import { assert } from '@lwc/shared';
+import { logError } from '../shared/assert';
 import {
     freeze,
     create,
@@ -84,7 +85,7 @@ function createBridgeToElementDescriptor(
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
-                    assert.logError(
+                    logError(
                         `\`${name}\` constructor can't read the value of property \`${propName}\` because the owner component hasn't set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,
                         vm.elm
                     );
@@ -325,7 +326,7 @@ BaseLightningElementConstructor.prototype = {
             );
 
             if (!/^[a-z][a-z0-9_]*$/.test(evtName)) {
-                assert.logError(
+                logError(
                     `Invalid event type "${evtName}" dispatched in element ${getComponentAsString(
                         this
                     )}. Event name must ${[

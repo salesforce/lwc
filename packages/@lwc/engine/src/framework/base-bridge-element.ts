@@ -8,7 +8,7 @@
  * This module is responsible for creating the base bridge class BaseBridgeElement
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
-import assert from '../shared/assert';
+import { assert } from '@lwc/shared';
 import {
     freeze,
     create,

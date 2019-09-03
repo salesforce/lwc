@@ -13,7 +13,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from '../shared/assert';
+import { assert } from '@lwc/shared';
 import {
     assign,
     freeze,

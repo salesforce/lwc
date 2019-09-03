@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { assert } from '@lwc/shared';
+import { logError } from '../shared/assert';
 import {
     isArray,
     isFunction,
@@ -81,7 +82,7 @@ function validateSlots(vm: VM, html: any) {
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: #1297 - this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
-            assert.logError(
+            logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm.elm
             );
@@ -101,7 +102,7 @@ function validateFields(vm: VM, html: Template) {
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
             // eslint-disable-next-line no-production-assert
-            assert.logError(
+            logError(
                 `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
                 vm.elm
             );
