@@ -20,6 +20,7 @@
     },
     "devDependencies": {
         "@lwc/features": "1.0.2",
+        "@lwc/shared": "1.0.2",
         "@lwc/template-compiler": "1.0.2"
     },
     "lwc": {
