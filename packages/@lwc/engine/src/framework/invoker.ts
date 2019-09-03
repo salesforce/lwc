@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import { assert, isFunction, isUndefined } from '@lwc/shared';
 import { currentContext, establishContext } from './context';
 
 import { evaluateTemplate } from './template';
-import { isFunction, isUndefined } from '../shared/language';
 import { getErrorComponentStack, VM, UninitializedVM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';

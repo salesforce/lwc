@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
-import { isArray, isUndefined, isTrue, isNull } from '../shared/language';
+import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,

@@ -5,14 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import {
-    isUndefined,
-    create,
-    StringSlice,
-    freeze,
-    StringCharCodeAt,
-    isString,
-} from '../../shared/language';
+import { create, freeze, isString, isUndefined, StringCharCodeAt, StringSlice } from '@lwc/shared';
 import { VNode } from '../../3rdparty/snabbdom/types';
 
 const classNameToClassMap = create(null);

@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
-import {
-    getOwnPropertyNames,
-    isFunction,
-    isUndefined,
-    create,
-    assign,
-} from '../../shared/language';
+import { assert, assign, create, getOwnPropertyNames, isFunction, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from '../component';
 import wireDecorator from './wire';
 import trackDecorator from './track';

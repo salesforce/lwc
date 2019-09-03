@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import { assert, ArrayReduce, isFalse } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
 import { valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { isRendering, vmBeingRendered } from './invoker';
-import { isFalse, ArrayReduce } from '../shared/language';
 
 export function createObservedFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
     return ArrayReduce.call(

@@ -12,21 +12,20 @@
  * This structure can be used to synthetically create proxies, and understand the
  * shape of a component. It is also used internally to apply extra optimizations.
  */
-
-import { assert } from '@lwc/shared';
-import { logError } from '../shared/assert';
 import {
-    freeze,
+    ArrayReduce,
+    assert,
     create,
+    defineProperties,
+    freeze,
     getOwnPropertyNames,
+    isFalse,
     isFunction,
     isNull,
-    defineProperties,
-    seal,
-    ArrayReduce,
     isObject,
-    isFalse,
-} from '../shared/language';
+    seal,
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
 import {

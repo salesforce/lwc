@@ -13,20 +13,20 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import { assert } from '@lwc/shared';
 import {
+    ArrayReduce,
+    assert,
     assign,
-    freeze,
     create,
+    defineProperties,
+    freeze,
     getOwnPropertyNames,
     getPrototypeOf,
-    isNull,
-    setPrototypeOf,
-    ArrayReduce,
-    isUndefined,
     isFunction,
-    defineProperties,
-} from '../shared/language';
+    isNull,
+    isUndefined,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import {
     resolveCircularModuleDependency,

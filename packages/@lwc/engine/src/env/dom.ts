@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor } from '../shared/language';
+import { getOwnPropertyDescriptor } from '@lwc/shared';
 
 const ShadowRootHostGetter: (this: ShadowRoot) => Element | null = getOwnPropertyDescriptor(
     ShadowRoot.prototype,

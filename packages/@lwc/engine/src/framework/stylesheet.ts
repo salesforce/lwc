@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
-import { isUndefined, create, emptyString, isArray, forEach } from '../shared/language';
+import { assert, create, emptyString, forEach, isArray, isUndefined } from '@lwc/shared';
 import { VNode } from '../3rdparty/snabbdom/types';
 
 import * as api from './api';

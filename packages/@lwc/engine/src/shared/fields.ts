@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined } from './language';
+import { create, isUndefined } from '@lwc/shared';
 
 /**
  * In IE11, symbols are expensive.

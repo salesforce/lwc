@@ -10,17 +10,17 @@
  */
 import { assert } from '@lwc/shared';
 import {
-    freeze,
+    ArraySlice,
     create,
+    defineProperties,
+    defineProperty,
+    freeze,
     getOwnPropertyNames,
+    isFunction,
     isUndefined,
     seal,
-    ArraySlice,
     setPrototypeOf,
-    defineProperty,
-    isFunction,
-    defineProperties,
-} from '../shared/language';
+} from '@lwc/shared';
 import { getCustomElementVM, VM } from './vm';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { reactiveMembrane } from './membrane';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayPush, isNull, StringToLowerCase } from './language';
+import { ArrayJoin, ArrayPush, isNull, StringToLowerCase } from '@lwc/shared';
 import { tagNameGetter } from '../env/element';
 
 function getFormattedComponentStack(elm: Element): string {

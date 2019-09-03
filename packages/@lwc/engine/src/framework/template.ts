@@ -4,20 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
-import { logError } from '../shared/assert';
 import {
+    ArrayIndexOf,
+    ArrayUnshift,
+    assert,
+    create,
+    forEach,
     isArray,
     isFunction,
     isNull,
     isObject,
     isUndefined,
-    create,
-    ArrayIndexOf,
     toString,
-    forEach,
-    ArrayUnshift,
-} from '../shared/language';
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, seal, ArrayPush, isFunction, hasOwnProperty } from '../shared/language';
+import { ArrayPush, create, hasOwnProperty, isFunction, seal } from '@lwc/shared';
 import { createFieldName } from '../shared/fields';
 
 type Callback = () => void;

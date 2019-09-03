@@ -4,26 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
-import { logError } from '../shared/assert';
-import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
 import {
-    isArray,
-    isUndefined,
-    isNull,
-    isFunction,
-    isObject,
-    isString,
     ArrayPush,
+    ArraySlice,
+    assert,
     create as ObjectCreate,
     forEach,
-    StringCharCodeAt,
-    isNumber,
-    isTrue,
+    isArray,
     isFalse,
+    isFunction,
+    isNull,
+    isNumber,
+    isObject,
+    isString,
+    isTrue,
+    isUndefined,
+    StringCharCodeAt,
     toString,
-    ArraySlice,
-} from '../shared/language';
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
+import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
 import {
     EmptyArray,
     resolveCircularModuleDependency,

@@ -6,10 +6,8 @@
  */
 
 /* eslint no-production-assert: "off" */
-
-import { assert } from '@lwc/shared';
-import { logError } from '../shared/assert';
 import {
+    assert,
     assign,
     create,
     defineProperties,
@@ -18,10 +16,11 @@ import {
     getPropertyDescriptor,
     getPrototypeOf,
     isFalse,
+    isUndefined,
     setPrototypeOf,
     toString,
-    isUndefined,
-} from '../shared/language';
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
