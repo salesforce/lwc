@@ -10,7 +10,7 @@ import {
     ArrayUnshift,
     assert,
     create,
-    getHiddenField,
+    fields,
     isArray,
     isFalse,
     isNull,
@@ -521,6 +521,7 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
+const { getHiddenField } = fields;
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
     let vm: VM | undefined;

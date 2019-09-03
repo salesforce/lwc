@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, getHiddenField, isUndefined, keys } from '@lwc/shared';
+import { assert, fields, isUndefined, keys } from '@lwc/shared';
 import { ViewModelReflection } from '../utils';
 import { prepareForPropUpdate } from '../base-bridge-element';
 import { VNode } from '../../3rdparty/snabbdom/types';
 import { getAttrNameFromPropName } from '../attributes';
+
+const { getHiddenField } = fields;
 
 function isLiveBindingProp(sel: string, key: string): boolean {
     // For special whitelisted properties, we check against the actual property value on the DOM element instead of

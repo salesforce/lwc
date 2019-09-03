@@ -17,6 +17,7 @@ import {
     assert,
     create,
     defineProperties,
+    fields,
     freeze,
     getOwnPropertyNames,
     isFalse,
@@ -24,7 +25,6 @@ import {
     isNull,
     isObject,
     seal,
-    setHiddenField,
 } from '@lwc/shared';
 import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -45,6 +45,8 @@ import { unlockAttribute, lockAttribute } from './attributes';
 import { Template } from './template';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
+
+const { setHiddenField } = fields;
 
 /**
  * This operation is called with a descriptor of an standard html property

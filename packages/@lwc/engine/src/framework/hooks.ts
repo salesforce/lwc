@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, getHiddenField, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { assert, fields, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
 import { EmptyArray, ViewModelReflection, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
@@ -34,6 +34,7 @@ import {
 import { getComponentDef, setElementProto } from './def';
 
 const noop = () => void 0;
+const { getHiddenField } = fields;
 
 function observeElementChildNodes(elm: Element) {
     (elm as any).$domManual$ = true;

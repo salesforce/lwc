@@ -7,13 +7,11 @@
 import {
     assert,
     assign,
-    createFieldName,
-    getHiddenField,
+    fields,
     isFunction,
     isNull,
     isObject,
     isUndefined,
-    setHiddenField,
     toString,
 } from '@lwc/shared';
 import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
@@ -29,6 +27,7 @@ import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 const ConnectingSlot = createFieldName('connecting', 'engine');
 const DisconnectingSlot = createFieldName('disconnecting', 'engine');
 

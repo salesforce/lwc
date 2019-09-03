@@ -19,8 +19,8 @@ import {
     assign,
     create,
     defineProperties,
+    fields,
     freeze,
-    getHiddenField,
     getOwnPropertyNames,
     getPrototypeOf,
     isFunction,
@@ -56,6 +56,7 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
+const { getHiddenField } = fields;
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
