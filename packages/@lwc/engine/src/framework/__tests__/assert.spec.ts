@@ -16,16 +16,4 @@ describe('assert', () => {
             expect(() => assert.isTrue(true, 'foo bar')).not.toThrow();
         });
     });
-
-    describe('#vnode()', () => {
-        it('should throw Error for undefined', () => {
-            expect(() => assert.vnode(undefined as any)).toThrow();
-        });
-    });
-
-    describe('#vm()', () => {
-        it('should throw Error for undefined', () => {
-            expect(() => assert.vm(undefined as any)).toThrow();
-        });
-    });
 });
