@@ -37,7 +37,7 @@ function rollupConfig({ wrap } = {}) {
         },
         plugins: [
             wrap && wrapModule(),
-            rollupNodeResolve(),
+            rollupNodeResolve({ only: [/^@lwc\//] }),
             rollupTypescript({ target: 'es2017', typescript }),
             rollupCleanup({ comments: 'none', extensions: ['js', 'ts'], sourcemap: false }),
         ].filter(Boolean),
