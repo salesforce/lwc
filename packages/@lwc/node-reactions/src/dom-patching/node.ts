@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getOwnPropertyDescriptor, defineProperties, ArraySlice } from '../shared/language';
+import { getOwnPropertyDescriptor, defineProperties, ArraySlice } from '@lwc/shared';
 import { ReactionRecord, QualifyingReactionTypes } from '../types';
 import queueReactionsForSubtree from '../core/traverse';
 import { flushQueue } from '../core/reaction-queue';

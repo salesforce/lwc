@@ -16,5 +16,8 @@
     ],
     "publishConfig": {
         "access": "public"
+    },
+    "dependencies": {
+        "@lwc/shared": "1.0.2"
     }
 }

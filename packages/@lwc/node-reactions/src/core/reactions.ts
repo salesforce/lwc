@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { ArrayPush, isTrue, isUndefined } from '@lwc/shared';
 import { ReactionCallback, ReactionRecord } from '../types';
-import { ArrayPush, isTrue, isUndefined } from '../shared/language';
 import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
 
 export const marker = 'data-node-reactions';

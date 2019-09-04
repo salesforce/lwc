@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isUndefined, assert } from '@lwc/shared';
 import { ReactionCallback } from './types';
-import { isUndefined } from './shared/language';
-import assert from './shared/assert';
 import { reactWhenConnected, reactWhenDisconnected } from './global/init';
 
 /**

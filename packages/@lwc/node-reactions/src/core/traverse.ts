@@ -4,15 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import { assert, forEach, isUndefined } from '@lwc/shared';
 import { ReactionRecord, QualifyingReactionTypes } from '../types';
 import {
     getConnectedRecordsForElement,
     getDisconnectedRecordsForElement,
     marker,
 } from './reactions';
-import { isUndefined, forEach } from '../shared/language';
-import assert from '../shared/assert';
 import { queueReactionRecord } from './reaction-queue';
 
 /**

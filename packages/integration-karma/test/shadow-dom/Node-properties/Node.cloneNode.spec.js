@@ -67,7 +67,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.cloneNode();
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-slotted></x-slotted>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-slotted></x-slotted>');
         });
 
         it('should not clone slotted content', () => {
@@ -76,7 +76,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode();
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-container></x-container>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-container></x-container>');
         });
 
         it('should not clone children of parent node with vanilla html', () => {
