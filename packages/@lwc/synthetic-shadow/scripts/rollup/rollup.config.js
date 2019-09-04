@@ -8,7 +8,6 @@ const typescript = require('typescript');
 const path = require('path');
 const rollupTypescript = require('rollup-plugin-typescript');
 const rollupCleanup = require('rollup-plugin-cleanup');
-const rollupNodeResolve = require('rollup-plugin-node-resolve');
 const { version } = require('../../package.json');
 
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -37,7 +36,16 @@ function rollupConfig({ wrap } = {}) {
         },
         plugins: [
             wrap && wrapModule(),
-            rollupNodeResolve(),
+            {
+                resolveId(source) {
+                    if (/^@lwc\//.test(source)) {
+                        const repoRoot = path.resolve(__dirname, '../../');
+                        const packageRoot = path.join(repoRoot, `../../../node_modules/${source}/`);
+                        const packageJson = path.join(packageRoot, 'package.json');
+                        return path.join(packageRoot, require(packageJson).module);
+                    }
+                },
+            },
             rollupTypescript({ target: 'es2017', typescript }),
             rollupCleanup({ comments: 'none', extensions: ['js', 'ts'], sourcemap: false }),
         ].filter(Boolean),
