@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { isUndefined, create, emptyString, isArray, forEach, isNull } from '../shared/language';
+import { assert, create, emptyString, forEach, isArray, isNull, isUndefined } from '@lwc/shared';
 import { useSyntheticShadow } from './utils';
 import { VM } from './vm';
 import { removeAttribute, setAttribute } from '../env/element';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, hasOwnProperty } from '../shared/language';
+import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 
 const parentNodeGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
     Node.prototype,

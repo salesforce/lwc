@@ -4,7 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import {
+    ArrayFilter,
+    ArrayFind,
+    ArrayPush,
+    ArraySlice,
+    assert,
+    defineProperties,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    hasOwnProperty,
+    isNull,
+    isUndefined,
+} from '@lwc/shared';
 import {
     attachShadow,
     getShadowRoot,
@@ -28,18 +40,6 @@ import {
     innerHTMLGetter,
     outerHTMLGetter,
 } from '../env/element';
-import {
-    isNull,
-    ArrayFilter,
-    ArrayPush,
-    defineProperties,
-    defineProperty,
-    getOwnPropertyDescriptor,
-    hasOwnProperty,
-    ArrayFind,
-    ArraySlice,
-    isUndefined,
-} from '../shared/language';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import {

@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../../shared/assert';
+import { assert, isFalse, isFunction, isObject, isUndefined, toString } from '@lwc/shared';
+import { logError } from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
-import { isObject, toString, isFalse } from '../../shared/language';
 import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
 import { getComponentVM } from '../vm';
-import { isUndefined, isFunction } from '../../shared/language';
 import { getDecoratorsRegisteredMeta } from './register';
 
 /**
@@ -72,7 +71,7 @@ function createPublicPropertyDescriptor(
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
                     const name = vm.elm.constructor.name;
-                    assert.logError(
+                    logError(
                         `\`${name}\` constructor can’t read the value of property \`${toString(
                             key
                         )}\` because the owner component hasn’t set the value yet. Instead, use the \`${name}\` constructor to set a default value for the property.`,

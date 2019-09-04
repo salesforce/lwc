@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { ArrayMap, assert, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
-import { isUndefined, isObject, isNull, getOwnPropertyNames, ArrayMap } from '../shared/language';
 import { createVM, getCustomElementVM, CreateVMInit, removeVM, appendVM, VMState } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';

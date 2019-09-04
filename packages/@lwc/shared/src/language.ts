@@ -5,52 +5,74 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const {
-    create,
     assign,
-    defineProperty,
-    getPrototypeOf,
-    setPrototypeOf,
-    getOwnPropertyDescriptor,
+    create,
     defineProperties,
+    defineProperty,
+    freeze,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getPrototypeOf,
     hasOwnProperty,
+    keys,
+    seal,
+    setPrototypeOf,
 } = Object;
+
+const { isArray } = Array;
+
 const {
     filter: ArrayFilter,
     find: ArrayFind,
+    forEach,
+    indexOf: ArrayIndexOf,
+    join: ArrayJoin,
+    map: ArrayMap,
+    push: ArrayPush,
+    reduce: ArrayReduce,
+    reverse: ArrayReverse,
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
-    indexOf: ArrayIndexOf,
-    push: ArrayPush,
-    map: ArrayMap,
-    forEach,
-    reduce: ArrayReduce,
-    reverse: ArrayReverse,
 } = Array.prototype;
 
-const { charCodeAt: StringCharCodeAt } = String.prototype;
+const {
+    charCodeAt: StringCharCodeAt,
+    replace: StringReplace,
+    slice: StringSlice,
+    toLowerCase: StringToLowerCase,
+} = String.prototype;
 
 export {
-    StringCharCodeAt,
-    create,
-    assign,
-    defineProperty,
-    defineProperties,
-    getPrototypeOf,
-    setPrototypeOf,
-    getOwnPropertyDescriptor,
-    hasOwnProperty,
+    ArrayFilter,
     ArrayFind,
+    ArrayIndexOf,
+    ArrayJoin,
+    ArrayMap,
+    ArrayPush,
     ArrayReduce,
+    ArrayReverse,
     ArraySlice,
     ArraySplice,
     ArrayUnshift,
-    ArrayFilter,
-    ArrayMap,
-    ArrayIndexOf,
-    ArrayPush,
-    ArrayReverse,
+    assign,
+    create,
+    defineProperties,
+    defineProperty,
     forEach,
+    freeze,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getPrototypeOf,
+    hasOwnProperty,
+    isArray,
+    keys,
+    seal,
+    setPrototypeOf,
+    StringCharCodeAt,
+    StringReplace,
+    StringSlice,
+    StringToLowerCase,
 };
 
 export function isUndefined(obj: any): obj is undefined {
@@ -87,11 +109,17 @@ export function isNumber(obj: any): obj is number {
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && obj.toString) {
+        // Arrays might hold objects with "null" prototype So using
+        // Array.prototype.toString directly will cause an error Iterate through
+        // all the items and handle individually.
+        if (isArray(obj)) {
+            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
+        }
         return obj.toString();
     } else if (typeof obj === 'object') {
         return OtS.call(obj);
     } else {
-        return obj + '';
+        return obj + emptyString;
     }
 }
 
@@ -104,3 +132,5 @@ export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescripto
         o = getPrototypeOf(o);
     } while (o !== null);
 }
+
+export const emptyString = '';

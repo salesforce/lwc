@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { assert, isArray, isFalse, isFunction, isUndefined, StringToLowerCase } from '@lwc/shared';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -12,7 +12,6 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from './invoker';
-import { isArray, isFunction, isUndefined, StringToLowerCase, isFalse } from '../shared/language';
 import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';

@@ -14,5 +14,8 @@
     },
     "files": [
         "dist/"
-    ]
+    ],
+    "dependencies": {
+        "@lwc/shared": "1.0.2"
+    }
 }

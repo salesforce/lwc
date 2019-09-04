@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { assert, isObject, isUndefined } from '@lwc/shared';
 import { createTrackedPropertyDescriptor } from './track';
-import assert from '../../shared/assert';
-import { isObject, isUndefined } from '../../shared/language';
 import { DecoratorFunction } from './decorate';
 import { ComponentConstructor } from '../component';
 

@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { assert, fields, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
-import { isUndefined, isNull, isObject, isFunction, toString } from '../shared/language';
 import { createVM, getCustomElementVM, removeVM, appendVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -15,11 +14,11 @@ import {
     resolveCircularModuleDependency,
     ViewModelReflection,
 } from './utils';
-import { getInternalField } from '../shared/fields';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 
+const { getHiddenField } = fields;
 type ShadowDomMode = 'open' | 'closed';
 
 interface CreateElementOptions {
@@ -60,7 +59,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getInternalField(element, ViewModelReflection))) {
+    if (!isUndefined(getHiddenField(element, ViewModelReflection))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.

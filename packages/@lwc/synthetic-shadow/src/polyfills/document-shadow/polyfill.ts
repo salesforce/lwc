@@ -5,6 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFilter,
+    ArrayFind,
+    ArraySlice,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+} from '@lwc/shared';
+import {
     elementFromPoint,
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,
@@ -14,15 +23,6 @@ import {
     getElementsByTagNameNS as documentGetElementsByTagNameNS,
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
-import {
-    ArrayFilter,
-    ArrayFind,
-    ArraySlice,
-    defineProperty,
-    isNull,
-    isUndefined,
-    getOwnPropertyDescriptor,
-} from '../../shared/language';
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { parentElementGetter } from '../../env/node';
 import { retarget } from '../../3rdparty/polymer/retarget';

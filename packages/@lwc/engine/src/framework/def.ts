@@ -13,21 +13,21 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from '../shared/assert';
 import {
+    ArrayReduce,
+    assert,
     assign,
-    freeze,
     create,
+    defineProperties,
+    fields,
+    freeze,
     getOwnPropertyNames,
     getPrototypeOf,
-    isNull,
-    setPrototypeOf,
-    ArrayReduce,
-    isUndefined,
     isFunction,
-    defineProperties,
-} from '../shared/language';
-import { getInternalField } from '../shared/fields';
+    isNull,
+    isUndefined,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import {
     resolveCircularModuleDependency,
@@ -56,6 +56,7 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
+const { getHiddenField } = fields;
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
@@ -256,7 +257,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;
     if (elm instanceof HTMLElement) {
-        const vm = getInternalField(elm, ViewModelReflection);
+        const vm = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;
         }

@@ -92,11 +92,11 @@
     "packages/perf-benchmarks"
   ],
   "engines": {
-    "node": ">=10.13.0 <11.0.0",
-    "yarn": ">=1.10.1"
+    "node": ">=10.16.3 <10.17.0",
+    "yarn": ">=1.17.3 <1.18.0"
   },
   "volta": {
-    "node": "10.16.2",
+    "node": "10.16.3",
     "yarn": "1.17.3"
   },
   "resolutions": {

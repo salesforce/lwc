@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, defineProperty } from '../shared/language';
+import { isUndefined, defineProperty } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
 
 const ShadowTokenPrivateKey = '$$ShadowTokenKey$$';

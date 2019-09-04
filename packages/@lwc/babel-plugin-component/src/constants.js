@@ -42,6 +42,7 @@ const LWC_API_WHITELIST = new Set([
     'isComponentConstructor',
     'readonly',
     'register',
+    'setFeatureFlagForTest',
     'unwrap',
     ...Object.values(LWC_PACKAGE_EXPORTS),
 ]);

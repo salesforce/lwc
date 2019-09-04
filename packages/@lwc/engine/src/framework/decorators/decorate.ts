@@ -5,12 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    getOwnPropertyNames,
-    getOwnPropertyDescriptor,
     defineProperty,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
     isFunction,
     isUndefined,
-} from '../../shared/language';
+} from '@lwc/shared';
 
 export type DecoratorFunction = (
     Ctor: any,
