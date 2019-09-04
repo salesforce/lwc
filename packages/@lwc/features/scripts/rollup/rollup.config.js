@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const path = require('path');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const typescript = require('rollup-plugin-typescript');
 
 const { version } = require('../../package.json');
@@ -27,16 +28,7 @@ function rollupConfig({ format }) {
             footer,
         },
         plugins: [
-            {
-                resolveId(source) {
-                    if (/^@lwc\//.test(source)) {
-                        const repoRoot = path.resolve(__dirname, '../../');
-                        const packageRoot = path.join(repoRoot, `../../../node_modules/${source}/`);
-                        const packageJson = path.join(packageRoot, 'package.json');
-                        return path.join(packageRoot, require(packageJson).module);
-                    }
-                },
-            },
+            nodeResolve(),
             typescript({ target: 'es2017', typescript: require('typescript') }),
         ],
     };

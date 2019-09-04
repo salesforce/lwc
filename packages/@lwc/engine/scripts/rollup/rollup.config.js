@@ -7,6 +7,7 @@
 const path = require('path');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const babel = require('@babel/core');
 const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 
@@ -52,16 +53,7 @@ function rollupConfig({ format = 'es' } = {}) {
             footer: footer,
         },
         plugins: [
-            {
-                resolveId(source) {
-                    if (/^@lwc\//.test(source) || source === 'observable-membrane') {
-                        const repoRoot = path.resolve(__dirname, '../../');
-                        const packageRoot = path.join(repoRoot, `../../../node_modules/${source}/`);
-                        const packageJson = path.join(packageRoot, 'package.json');
-                        return path.join(packageRoot, require(packageJson).module);
-                    }
-                },
-            },
+            nodeResolve(),
             rollupTypescriptPlugin({
                 target: 'es2017',
                 typescript,
