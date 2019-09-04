@@ -28,7 +28,7 @@ function rollupConfig({ format }) {
             footer,
         },
         plugins: [
-            nodeResolve(),
+            nodeResolve({ only: [/^@lwc\//] }),
             typescript({ target: 'es2017', typescript: require('typescript') }),
         ],
     };
