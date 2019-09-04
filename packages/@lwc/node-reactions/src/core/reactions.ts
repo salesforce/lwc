@@ -4,23 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, isTrue, isUndefined } from '@lwc/shared';
+import { ArrayPush, fields, isTrue, isUndefined } from '@lwc/shared';
 import { ReactionCallback, ReactionRecord } from '../types';
-import { getInternalField, setInternalField, createFieldName } from '../shared/fields';
+const { getHiddenField, setHiddenField, createFieldName } = fields;
 
 export const marker = 'data-node-reactions';
-const ConnectedRecordsLookup = createFieldName('connected-records-lookup');
-const DisconnectedRecordsLookup = createFieldName('disconnected-records-lookup');
-export const RegisteredFlag = createFieldName('registered-node');
+const ConnectedRecordsLookup = createFieldName('connected-records-lookup', 'node-reactions');
+const DisconnectedRecordsLookup = createFieldName('disconnected-records-lookup', 'node-reactions');
+export const RegisteredFlag = createFieldName('registered-node', 'node-reactions');
 const { setAttribute } = Element.prototype;
 
 export function reactWhenConnected(element: Element, callback: ReactionCallback) {
     const reactionRecord: ReactionRecord = { element, callback, type: 1 };
 
-    const reactionRecords: ReactionRecord[] = getInternalField(element, ConnectedRecordsLookup);
+    const reactionRecords: ReactionRecord[] = getHiddenField(element, ConnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
-        setInternalField(element, ConnectedRecordsLookup, [reactionRecord]);
-        setInternalField(element, RegisteredFlag, true);
+        setHiddenField(element, ConnectedRecordsLookup, [reactionRecord]);
+        setHiddenField(element, RegisteredFlag, true);
         setAttribute.call(element, marker, '');
         return;
     }
@@ -29,10 +29,10 @@ export function reactWhenConnected(element: Element, callback: ReactionCallback)
 
 export function reactWhenDisconnected(element: Element, callback: ReactionCallback) {
     const reactionRecord: ReactionRecord = { element, callback, type: 2 };
-    const reactionRecords: ReactionRecord[] = getInternalField(element, DisconnectedRecordsLookup);
+    const reactionRecords: ReactionRecord[] = getHiddenField(element, DisconnectedRecordsLookup);
     if (isUndefined(reactionRecords)) {
-        setInternalField(element, DisconnectedRecordsLookup, [reactionRecord]);
-        setInternalField(element, RegisteredFlag, true);
+        setHiddenField(element, DisconnectedRecordsLookup, [reactionRecord]);
+        setHiddenField(element, RegisteredFlag, true);
         setAttribute.call(element, marker, '');
         return;
     }
@@ -40,18 +40,18 @@ export function reactWhenDisconnected(element: Element, callback: ReactionCallba
 }
 
 export function getDisconnectedRecordsForElement(elm: Element): ReactionRecord[] | undefined {
-    return getInternalField(elm, DisconnectedRecordsLookup);
+    return getHiddenField(elm, DisconnectedRecordsLookup);
 }
 
 export function getConnectedRecordsForElement(elm: Element): ReactionRecord[] | undefined {
-    return getInternalField(elm, ConnectedRecordsLookup);
+    return getHiddenField(elm, ConnectedRecordsLookup);
 }
 
 /**
  * For perf reasons, instead of running an instanceof to disambiguate the type, we just look up the field.
  */
 export function isRegisteredNode(node: Node): boolean {
-    return isTrue(getInternalField(node, RegisteredFlag));
+    return isTrue(getHiddenField(node, RegisteredFlag));
 }
 
 /**
