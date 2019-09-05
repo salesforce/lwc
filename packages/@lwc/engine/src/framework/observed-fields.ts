@@ -33,6 +33,9 @@ function createObservedFieldPropertyDescriptor(key: PropertyKey): PropertyDescri
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
+            }
 
             if (newValue !== vm.cmpTrack[key]) {
                 vm.cmpTrack[key] = newValue;
