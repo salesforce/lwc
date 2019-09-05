@@ -190,7 +190,7 @@ function compareDocumentPositionPatched(this: Node, otherNode: Node) {
 }
 
 function containsPatched(this: Node, otherNode: Node) {
-    if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+    if (otherNode == null || getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
         // it is from another shadow
         return false;
     }
