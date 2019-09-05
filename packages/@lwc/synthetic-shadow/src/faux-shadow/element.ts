@@ -359,7 +359,8 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         return isUndefined(elm) ? null : elm;
     } else if (this instanceof HTMLBodyElement) {
-        // document.body is already patched, this should be the patch logic for elements outside lwc.
+        // This is the patching logic.
+        // We only restrict it to the document.body because it was already patched previous this logic.
         const elm = ArrayFind.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
@@ -367,6 +368,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         );
         return isUndefined(elm) ? null : elm;
     } else {
+        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow (or a root host).
         return nodeList[0];
     }
 }
@@ -391,14 +393,15 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
         const ownerKey = getNodeOwnerKey(this);
         filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
     } else if (this instanceof HTMLBodyElement) {
-        // document.body is already patched
+        // This is the patching logic.
+        // We only restrict it to the document.body because it was already patched previous this logic.
         filtered = ArrayFilter.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
     } else {
-        // temporally disable dom patching from an element outside lwc.
+        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow (or a root host).
         filtered = ArraySlice.call(nodeList);
     }
     return createStaticNodeList(filtered);
