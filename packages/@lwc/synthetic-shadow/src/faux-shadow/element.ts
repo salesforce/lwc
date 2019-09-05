@@ -358,14 +358,16 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const ownerKey = getNodeOwnerKey(this);
         const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         return isUndefined(elm) ? null : elm;
-    } else {
-        // element belonging to the document
+    } else if (this instanceof HTMLBodyElement) {
+        // document.body is already patched, this should be the patch logic for elements outside lwc.
         const elm = ArrayFind.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
+    } else {
+        return nodeList[0];
     }
 }
 
@@ -388,13 +390,16 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
         filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
-    } else {
-        // element belonging to the document
+    } else if (this instanceof HTMLBodyElement) {
+        // document.body is already patched
         filtered = ArrayFilter.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
+    } else {
+        // temporally disable dom patching from an element outside lwc.
+        filtered = ArraySlice.call(nodeList);
     }
     return createStaticNodeList(filtered);
 }
