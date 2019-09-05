@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 
 import Simple from 'x/simple';
 import SideEffect from './x/fieldWithSideEffect/fieldWithSideEffect';
+import FieldForCache from './x/fieldForCache/fieldForCache';
 
 describe('observed-fields', () => {
     it('should rerender component when field is mutated', () => {
@@ -57,15 +58,52 @@ describe('observed-fields', () => {
         });
     });
 
-    it('should throw when updating field during render', () => {
+    it('should have same behavior as an expando field when has side effects during render', () => {
         const elm = createElement('x-side-effect', { is: SideEffect });
+        const elmUsingExpando = createElement('x-side-effect', { is: SideEffect });
+        elmUsingExpando.useExpando = true;
 
-        expect(() => {
-            document.body.appendChild(elm);
-        }).toThrowErrorDev(
-            Error,
-            /Invariant Violation: \[.+\]\.render\(\) method has side effects on the state of "counter" field/
-        );
+        elm.label = 'label txt';
+        elmUsingExpando.label = 'label txt';
+
+        document.body.appendChild(elm);
+        document.body.appendChild(elmUsingExpando);
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label txt');
+            expect(elm.shadowRoot.querySelector('.rendered-times').textContent).toBe('1');
+            expect(elmUsingExpando.shadowRoot.querySelector('.expando').textContent).toBe('1');
+
+            elm.label = 'label modified';
+            elmUsingExpando.label = 'label modified';
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label modified');
+                expect(elm.shadowRoot.querySelector('.rendered-times').textContent).toBe('2');
+                expect(elmUsingExpando.shadowRoot.querySelector('.expando').textContent).toBe('2');
+            });
+        });
+    });
+
+    it('should not throw when has side effects in a getter during render', () => {
+        const elm = createElement('x-field-for-cache', { is: FieldForCache });
+        elm.label = 'label txt';
+
+        document.body.appendChild(elm);
+
+        return Promise.resolve().then(() => {
+            expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label txt');
+            expect(elm.shadowRoot.querySelector('.computedLabel').textContent).toBe(
+                'label txt computed'
+            );
+
+            elm.label = 'label modified';
+            return Promise.resolve().then(() => {
+                expect(elm.shadowRoot.querySelector('.label').textContent).toBe('label modified');
+                expect(elm.shadowRoot.querySelector('.computedLabel').textContent).toBe(
+                    'label txt computed'
+                );
+            });
+        });
     });
 
     it('should rerender component when inherited field is mutated', () => {

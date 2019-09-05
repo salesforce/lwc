@@ -8,7 +8,6 @@ import { assert, ArrayReduce, isFalse } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
 import { valueMutated, valueObserved } from '../libs/mutation-tracker';
-import { isRendering, vmBeingRendered } from './invoker';
 
 export function createObservedFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
     return ArrayReduce.call(
@@ -34,15 +33,6 @@ function createObservedFieldPropertyDescriptor(key: PropertyKey): PropertyDescri
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
-                assert.invariant(
-                    !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of "${String(
-                        key
-                    )}" field`
-                );
-            }
 
             if (newValue !== vm.cmpTrack[key]) {
                 vm.cmpTrack[key] = newValue;
