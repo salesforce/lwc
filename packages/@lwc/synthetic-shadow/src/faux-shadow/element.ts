@@ -360,7 +360,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         return isUndefined(elm) ? null : elm;
     } else if (this instanceof HTMLBodyElement) {
         // This is the patching logic.
-        // We only restrict it to the document.body because it was already patched previous this logic.
+        // We only restrict it to the document.body because it was already patched earlier.
         const elm = ArrayFind.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
@@ -368,7 +368,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         );
         return isUndefined(elm) ? null : elm;
     } else {
-        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow (or a root host).
+        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow.
         return nodeList[0];
     }
 }
@@ -394,14 +394,14 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
         filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
     } else if (this instanceof HTMLBodyElement) {
         // This is the patching logic.
-        // We only restrict it to the document.body because it was already patched previous this logic.
+        // We only restrict it to the document.body because it was already patched earlier.
         filtered = ArrayFilter.call(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
     } else {
-        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow (or a root host).
+        // The `this` is part of the document, patching is not applied: we are not filtering out elements inside a shadow.
         filtered = ArraySlice.call(nodeList);
     }
     return createStaticNodeList(filtered);
