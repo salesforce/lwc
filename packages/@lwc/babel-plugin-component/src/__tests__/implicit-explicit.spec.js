@@ -129,11 +129,6 @@ describe('Implicit mode', () => {
                       params: {},
                       static: {
                         id: 1
-                      },
-                      config: function($cmp) {
-                        return {
-                          id: 1
-                        };
                       }
                     }
                   }
