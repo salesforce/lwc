@@ -8,7 +8,6 @@ import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
 import assert from '../shared/assert';
 import { valueMutated, valueObserved } from '../libs/mutation-tracker';
-import { isRendering, vmBeingRendered } from './invoker';
 import { isFalse, ArrayReduce } from '../shared/language';
 
 export function createObservedFieldsDescriptorMap(fields: PropertyKey[]): PropertyDescriptorMap {
@@ -37,12 +36,6 @@ function createObservedFieldPropertyDescriptor(key: PropertyKey): PropertyDescri
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
-                assert.invariant(
-                    !isRendering,
-                    `${vmBeingRendered}.render() method has side effects on the state of "${String(
-                        key
-                    )}" field`
-                );
             }
 
             if (newValue !== vm.cmpTrack[key]) {
