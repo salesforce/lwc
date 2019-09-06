@@ -32,6 +32,20 @@ function createShadowTree(parentNode) {
     return extractDataIds(elm);
 }
 
+/**
+ * Check to detect if, in a disconnected tree, events bubble to the documentFragment
+ */
+function doEventsBubbleToDocFrag() {
+    const frag = document.createDocumentFragment();
+    const div = document.createElement('div');
+    frag.appendChild(div);
+    let ret = false;
+    frag.addEventListener('test', () => {
+        ret = true;
+    });
+    div.dispatchEvent(new CustomEvent('test', { composed: true, bubbles: true }));
+    return ret;
+}
 describe('event propagation in simple shadow tree', () => {
     let nodes;
     beforeEach(() => {
@@ -92,30 +106,56 @@ describe('event propagation in simple shadow tree', () => {
         ]);
     });
 
-    it('propagate event from a child element in a document fragment', () => {
-        const fragment = document.createDocumentFragment();
-        const nodes = createShadowTree(fragment);
+    if (doEventsBubbleToDocFrag()) {
+        it('propagate event from a child element in a document fragment', () => {
+            const fragment = document.createDocumentFragment();
+            const nodes = createShadowTree(fragment);
 
-        const logs = dispatchEventWithLog(
-            nodes.span,
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
+            const logs = dispatchEventWithLog(
+                nodes.span,
+                new CustomEvent('test', { composed: true, bubbles: true })
+            );
 
-        const composedPath = [
-            nodes.span,
-            nodes.div,
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            fragment,
-        ];
-        expect(logs).toEqual([
-            [nodes.span, nodes.span, composedPath],
-            [nodes.div, nodes.span, composedPath],
-            [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
-            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            [fragment, nodes['x-shadow-tree'], composedPath],
-        ]);
-    });
+            const composedPath = [
+                nodes.span,
+                nodes.div,
+                nodes['x-shadow-tree'].shadowRoot,
+                nodes['x-shadow-tree'],
+                fragment,
+            ];
+            expect(logs).toEqual([
+                [nodes.span, nodes.span, composedPath],
+                [nodes.div, nodes.span, composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
+                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+                [fragment, nodes['x-shadow-tree'], composedPath],
+            ]);
+        });
+    } else {
+        it('IE11 - propagate event from a child element in a document fragment', () => {
+            const fragment = document.createDocumentFragment();
+            const nodes = createShadowTree(fragment);
+
+            const logs = dispatchEventWithLog(
+                nodes.span,
+                new CustomEvent('test', { composed: true, bubbles: true })
+            );
+
+            const composedPath = [
+                nodes.span,
+                nodes.div,
+                nodes['x-shadow-tree'].shadowRoot,
+                nodes['x-shadow-tree'],
+                fragment,
+            ];
+            expect(logs).toEqual([
+                [nodes.span, nodes.span, composedPath],
+                [nodes.div, nodes.span, composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes.span, composedPath],
+                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+            ]);
+        });
+    }
 
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
     xit('propagate event from a host element', () => {
