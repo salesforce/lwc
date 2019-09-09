@@ -46,6 +46,8 @@ interface BindingASTNode {
         expression: BindingASTTemplateExpression;
         iterator: BindingASTIdentifier;
     };
+    if?: BindingASTTemplateExpression;
+    ifModifier?: boolean;
     tag: string;
     type: 'BindingASTNode';
 }
@@ -158,7 +160,7 @@ function buildBindingAst(node: IRElement | undefined): BindingASTNode | undefine
             subtreeSet.has.bind(subtreeSet)
         ) as IRElement[];
         bindingAstNode.children = filteredNodes.map(filteredNode => {
-            const { component, forEach, forOf, tag } = filteredNode;
+            const { component, forEach, forOf, ifModifier, tag } = filteredNode;
             const node: BindingASTNode = {
                 type: 'BindingASTNode',
                 tag,
@@ -191,6 +193,20 @@ function buildBindingAst(node: IRElement | undefined): BindingASTNode | undefine
                         name: forOf.iterator.name,
                     },
                 };
+            }
+            if (filteredNode.if) {
+                const parsedIf = filteredNode.if as BabelTemplateExpression;
+                node.if = {
+                    type: 'BindingASTTemplateExpression',
+                    value:
+                        parsedIf.type === 'Identifier'
+                            ? {
+                                  type: 'BindingASTIdentifier',
+                                  name: parsedIf.name,
+                              }
+                            : pruneMemberExpression(parsedIf),
+                };
+                node.ifModifier = Boolean(ifModifier);
             }
             if (component) {
                 node.attributes = getExpressionAttributes(filteredNode);
