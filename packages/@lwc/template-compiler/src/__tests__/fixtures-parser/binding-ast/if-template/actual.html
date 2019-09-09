@@ -1,0 +1,8 @@
+<template>
+    <template if:true={option.hasFavorites}>
+        <foo-favorites-view favorite-artists={favoriteArtists}></foo-favorites-view>
+    </template>
+    <template if:false={option.hasFavorites}>
+        <foo-no-favorites-view recommended-artist={recommendedArtist}></foo-no-favorites-view>
+    </template>
+</template>

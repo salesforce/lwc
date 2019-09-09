@@ -1,0 +1,94 @@
+{
+    "type": "BindingASTNode",
+    "tag": "template",
+    "component": false,
+    "attributes": [],
+    "children": [
+        {
+            "type": "BindingASTNode",
+            "tag": "foo-list",
+            "component": true,
+            "attributes": [],
+            "children": [
+                {
+                    "type": "BindingASTNode",
+                    "tag": "template",
+                    "component": false,
+                    "attributes": [],
+                    "children": [
+                        {
+                            "type": "BindingASTNode",
+                            "tag": "foo-list-item",
+                            "component": true,
+                            "attributes": [
+                                {
+                                    "type": "BindingASTAttribute",
+                                    "name": "name",
+                                    "expression": {
+                                        "type": "BindingASTTemplateExpression",
+                                        "value": {
+                                            "type": "BindingASTMemberExpression",
+                                            "object": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "liked"
+                                            },
+                                            "property": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "name"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "BindingASTAttribute",
+                                    "name": "description",
+                                    "expression": {
+                                        "type": "BindingASTTemplateExpression",
+                                        "value": {
+                                            "type": "BindingASTMemberExpression",
+                                            "object": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "liked"
+                                            },
+                                            "property": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "description"
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "children": [],
+                            "forOf": {
+                                "expression": {
+                                    "type": "BindingASTTemplateExpression",
+                                    "value": {
+                                        "type": "BindingASTIdentifier",
+                                        "name": "likedSongs"
+                                    }
+                                },
+                                "iterator": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "linked"
+                                }
+                            }
+                        }
+                    ],
+                    "forOf": {
+                        "expression": {
+                            "type": "BindingASTTemplateExpression",
+                            "value": {
+                                "type": "BindingASTIdentifier",
+                                "name": "likedSongs"
+                            }
+                        },
+                        "iterator": {
+                            "type": "BindingASTIdentifier",
+                            "name": "liked"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

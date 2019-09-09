@@ -1,0 +1,75 @@
+{
+    "type": "BindingASTNode",
+    "tag": "template",
+    "component": false,
+    "attributes": [],
+    "children": [
+        {
+            "type": "BindingASTNode",
+            "tag": "div",
+            "component": false,
+            "attributes": [],
+            "children": [
+                {
+                    "type": "BindingASTNode",
+                    "tag": "foo-list",
+                    "component": true,
+                    "attributes": [],
+                    "children": [
+                        {
+                            "type": "BindingASTNode",
+                            "tag": "template",
+                            "component": false,
+                            "attributes": [],
+                            "children": [
+                                {
+                                    "type": "BindingASTNode",
+                                    "tag": "foo-list-item",
+                                    "component": true,
+                                    "attributes": [
+                                        {
+                                            "type": "BindingASTAttribute",
+                                            "name": "data",
+                                            "expression": {
+                                                "type": "BindingASTTemplateExpression",
+                                                "value": {
+                                                    "type": "BindingASTMemberExpression",
+                                                    "object": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "item"
+                                                    },
+                                                    "property": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "data"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "children": []
+                                }
+                            ],
+                            "forEach": {
+                                "expression": {
+                                    "type": "BindingASTTemplateExpression",
+                                    "value": {
+                                        "type": "BindingASTIdentifier",
+                                        "name": "items"
+                                    }
+                                },
+                                "item": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "item"
+                                },
+                                "index": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "index"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

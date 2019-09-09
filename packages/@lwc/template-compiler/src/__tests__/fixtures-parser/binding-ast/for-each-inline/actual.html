@@ -1,0 +1,7 @@
+<template>
+    <div class="bar-list-container" tabindex={tabIndex}>
+        <bar-list>
+            <bar-list-item for:each={items.bar} for:item="barItem" data={barItem} key={barKey}></bar-list-item>
+        </bar-list>
+    </div>
+</template>

@@ -1,0 +1,62 @@
+{
+    "type": "BindingASTNode",
+    "tag": "template",
+    "component": false,
+    "attributes": [],
+    "children": [
+        {
+            "type": "BindingASTNode",
+            "tag": "foo-favorites-view",
+            "component": true,
+            "attributes": [
+                {
+                    "type": "BindingASTAttribute",
+                    "name": "favorite-artists",
+                    "expression": {
+                        "type": "BindingASTTemplateExpression",
+                        "value": {
+                            "type": "BindingASTIdentifier",
+                            "name": "favoriteArtists"
+                        }
+                    }
+                }
+            ],
+            "children": [],
+            "if": {
+                "type": "BindingASTTemplateExpression",
+                "value": {
+                    "type": "BindingASTIdentifier",
+                    "name": "hasFavorites"
+                }
+            },
+            "ifModifier": true
+        },
+        {
+            "type": "BindingASTNode",
+            "tag": "foo-no-favorites-view",
+            "component": true,
+            "attributes": [
+                {
+                    "type": "BindingASTAttribute",
+                    "name": "recommended-artist",
+                    "expression": {
+                        "type": "BindingASTTemplateExpression",
+                        "value": {
+                            "type": "BindingASTIdentifier",
+                            "name": "recommendedArtist"
+                        }
+                    }
+                }
+            ],
+            "children": [],
+            "if": {
+                "type": "BindingASTTemplateExpression",
+                "value": {
+                    "type": "BindingASTIdentifier",
+                    "name": "hasFavorites"
+                }
+            },
+            "ifModifier": true
+        }
+    ]
+}
