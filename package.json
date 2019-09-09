@@ -60,7 +60,7 @@
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript": "^1.0.0",
     "semver": "^6.1.1",
-    "tslib": "^1.9.3",
+    "tslib": "^1.10.0",
     "typescript": "~3.6.2",
     "worker-farm": "~1.7.0"
   },
