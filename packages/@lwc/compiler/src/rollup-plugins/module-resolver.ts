@@ -7,6 +7,7 @@
 import path from 'path';
 import { Plugin } from 'rollup';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
+import { hasOwnProperty } from '@lwc/shared';
 
 import { NormalizedCompilerOptions, BundleFiles } from '../compiler/options';
 
@@ -45,14 +46,14 @@ function isFirstCharacterUppercased(importee: string) {
 
 function inferExtension(fileName: string, files: BundleFiles) {
     if (!path.extname(fileName)) {
-        const ext = VALID_EXTENSIONS.find(ext => files.hasOwnProperty(fileName + ext)) || '';
+        const ext = VALID_EXTENSIONS.find(ext => hasOwnProperty.call(files, fileName + ext)) || '';
         return fileName + ext;
     }
     return fileName;
 }
 
 function fileExists(fileName: string, { files }: NormalizedCompilerOptions): boolean {
-    return files.hasOwnProperty(fileName);
+    return hasOwnProperty.call(files, fileName);
 }
 
 function readFile(filename: string, options: NormalizedCompilerOptions): string {

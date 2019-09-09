@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const { hasOwnProperty } = require('@lwc/shared');
 const path = require('path');
 const glob = require('glob');
 const semver = require('semver');
@@ -21,7 +22,7 @@ for (const location of PACKAGES) {
     const { name, peerDependencies = {}, devDependencies = {} } = require(location);
     for (const dep of Object.keys(peerDependencies)) {
         if (
-            devDependencies.hasOwnProperty(dep) &&
+            hasOwnProperty.call(devDependencies, dep) &&
             !semver.satisfies(devDependencies[dep], peerDependencies[dep], {
                 includePrerelease: true,
             })
