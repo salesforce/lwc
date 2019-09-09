@@ -127,12 +127,17 @@ function getExpressionAttributes(node: IRElement): BindingASTAttribute[] {
 function collectBindingAstNodes(node: IRElement): WeakSet<IRElement> {
     const set: WeakSet<IRElement> = new WeakSet();
     function collect(node: IRElement) {
-        if (node.component && node.props && hasExpressionAttribute(node.props)) {
-            let bindingAstNode = node;
-            set.add(bindingAstNode);
-            while (bindingAstNode.parent && !set.has(bindingAstNode.parent)) {
-                bindingAstNode = bindingAstNode.parent;
+        if (node.component) {
+            const hasExpAttr = node.props && hasExpressionAttribute(node.props);
+            const hasForEach = Boolean(node.forEach);
+            const hasForOf = Boolean(node.forOf);
+            if (hasExpAttr || hasForEach || hasForOf) {
+                let bindingAstNode = node;
                 set.add(bindingAstNode);
+                while (bindingAstNode.parent && !set.has(bindingAstNode.parent)) {
+                    bindingAstNode = bindingAstNode.parent;
+                    set.add(bindingAstNode);
+                }
             }
         }
         if (node.children) {
