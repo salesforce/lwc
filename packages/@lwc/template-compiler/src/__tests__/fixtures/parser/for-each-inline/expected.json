@@ -27,8 +27,15 @@
                                     "expression": {
                                         "type": "BindingASTTemplateExpression",
                                         "value": {
-                                            "type": "BindingASTIdentifier",
-                                            "name": "barItem"
+                                            "type": "BindingASTMemberExpression",
+                                            "object": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "barItem"
+                                            },
+                                            "property": {
+                                                "type": "BindingASTIdentifier",
+                                                "name": "data"
+                                            }
                                         }
                                     }
                                 }

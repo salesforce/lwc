@@ -33,8 +33,15 @@
                                             "expression": {
                                                 "type": "BindingASTTemplateExpression",
                                                 "value": {
-                                                    "type": "BindingASTIdentifier",
-                                                    "name": "awesomeSongTitle"
+                                                    "type": "BindingASTMemberExpression",
+                                                    "object": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "song"
+                                                    },
+                                                    "property": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "title"
+                                                    }
                                                 }
                                             }
                                         },
@@ -44,8 +51,15 @@
                                             "expression": {
                                                 "type": "BindingASTTemplateExpression",
                                                 "value": {
-                                                    "type": "BindingASTIdentifier",
-                                                    "name": "awesomeSongArtist"
+                                                    "type": "BindingASTMemberExpression",
+                                                    "object": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "song"
+                                                    },
+                                                    "property": {
+                                                        "type": "BindingASTIdentifier",
+                                                        "name": "artist"
+                                                    }
                                                 }
                                             }
                                         }

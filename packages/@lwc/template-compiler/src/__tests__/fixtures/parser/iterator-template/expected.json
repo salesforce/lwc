@@ -69,7 +69,7 @@
                                 },
                                 "iterator": {
                                     "type": "BindingASTIdentifier",
-                                    "name": "linked"
+                                    "name": "liked"
                                 }
                             }
                         }
