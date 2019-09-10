@@ -21,6 +21,7 @@ benchmark(`benchmark-table-component/clear/1k`, () => {
 
         store = new Store();
         store.run();
+        // eslint-disable-next-line require-atomic-updates
         tableElement.rows = store.data;
     });
 

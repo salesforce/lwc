@@ -25,6 +25,7 @@ benchmark(`benchmark-table-wc/append/1k`, () => {
 
         store = new Store();
         store.run();
+        // eslint-disable-next-line require-atomic-updates
         tableElement.rows = store.data;
     });
 
