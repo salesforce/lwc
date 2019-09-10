@@ -193,14 +193,6 @@ function shadowRootGetterPatched(this: Element): SyntheticShadowRootInterface | 
 }
 
 function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
-    // We cannot patch `children` in test mode
-    // because JSDOM uses children for its "native"
-    // querySelector implementation. If we patch this,
-    // HTMLElement.prototype.querySelector.call(element) will not
-    // return any elements from shadow, which is not what we want
-    if (process.env.NODE_ENV === 'test') {
-        return childrenGetter.call(this);
-    }
     const owner = getNodeOwner(this);
     const childNodes = isNull(owner) ? [] : getAllMatches(owner, getFilteredChildNodes(this));
     return createStaticHTMLCollection(

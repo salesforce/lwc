@@ -30,7 +30,6 @@ import {
 } from '../faux-shadow/traverse';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
-import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
 
 // We can use a single observer without having to worry about leaking because
@@ -175,20 +174,6 @@ defineProperties(HTMLSlotElement.prototype, {
     },
     children: {
         get(this: HTMLSlotElement): HTMLCollectionOf<Element> {
-            // We cannot patch `children` in test mode
-            // because JSDOM uses children for its "native"
-            // querySelector implementation. If we patch this,
-            // elm.querySelector() might not find any element.
-            if (isNodeShadowed(this) && process.env.NODE_ENV === 'test') {
-                // slot element inside a shadow
-                const owner = getNodeOwner(this);
-                const childNodes = isNull(owner)
-                    ? []
-                    : getAllMatches(owner, getFilteredChildNodes(this));
-                return createStaticHTMLCollection(
-                    ArrayFilter.call(childNodes, (node: Node | Element) => node instanceof Element)
-                );
-            }
             return childrenGetter.call(this);
         },
         enumerable: true,
