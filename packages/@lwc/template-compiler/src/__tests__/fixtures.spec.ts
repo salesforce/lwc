@@ -12,6 +12,7 @@ import prettier from 'prettier';
 import compiler from '../index';
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
+const COMPILER_FIXTURE_DIR = path.join(FIXTURE_DIR, 'compiler');
 const BASE_CONFIG = {};
 
 const EXPECTED_JS_FILENAME = 'expected.js';
@@ -21,11 +22,11 @@ const ONLY_FILENAME = '.only';
 const SKIP_FILENAME = '.skip';
 
 describe('fixtures', () => {
-    const fixtures = glob.sync(path.resolve(FIXTURE_DIR, '**/*.html'));
+    const fixtures = glob.sync(path.resolve(COMPILER_FIXTURE_DIR, '**/*.html'));
 
     for (const caseEntry of fixtures) {
         const caseFolder = path.dirname(caseEntry);
-        const caseName = path.relative(FIXTURE_DIR, caseFolder);
+        const caseName = path.relative(COMPILER_FIXTURE_DIR, caseFolder);
 
         const fixtureFilePath = (fileName): string => {
             return path.join(caseFolder, fileName);
