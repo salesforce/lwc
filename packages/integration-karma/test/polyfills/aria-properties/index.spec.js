@@ -1,7 +1,7 @@
 function testAriaProperty(property, attribute) {
     describe(property, () => {
         it(`should assign property ${property} to Element prototype`, () => {
-            expect(Element.prototype.hasOwnProperty(property)).toBe(true);
+            expect(Object.prototype.hasOwnProperty.call(Element.prototype, property)).toBe(true);
         });
 
         it(`should return null if the value is not set`, () => {

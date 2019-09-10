@@ -29,6 +29,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import { hasOwnProperty } from '@lwc/shared';
 
 const HTML_ELEMENT_ATTRIBUTE_MAP = {
     '*': [
@@ -426,7 +427,7 @@ export const HTML_ATTRIBUTE_ELEMENT_MAP: { [attr: string]: string[] } = Object.e
 
     if (element !== '*') {
         attributes.forEach(attribute => {
-            if (!accumulator.hasOwnProperty(attribute)) {
+            if (!hasOwnProperty.call(accumulator, attribute)) {
                 accumulator[attribute] = [];
             }
 
