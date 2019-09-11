@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { compileTemplate } from 'test-utils';
+import { compileTemplate, stripNodeReactionsMarker } from 'test-utils';
 import { createElement, LightningElement, registerDecorators } from '../main';
 import { getAssociatedVM } from '../vm';
 
@@ -197,9 +197,9 @@ describe('vm', () => {
                 // at this point, if we are reusing the h1 and h2 from the default content
                 // of the slots in c-child, they will have an extraneous attribute on them,
                 // which will be a problem.
-                expect(parentTemplate.querySelector('c-child').outerHTML).toBe(
-                    `<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`
-                );
+                expect(
+                    stripNodeReactionsMarker(parentTemplate.querySelector('c-child').outerHTML)
+                ).toBe(`<c-child><h1 slot="">slotted</h1><h2 slot="foo"></h2></c-child>`);
             });
         });
     });

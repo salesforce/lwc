@@ -1,9 +1,9 @@
 import { LightningElement, api } from 'lwc';
 
-export default class Test extends LightningElement {
+export default class SlottedParent extends LightningElement {
     @api connect;
 
     connectedCallback() {
-        this.connect && this.connect(this);
+        this.connect();
     }
 }

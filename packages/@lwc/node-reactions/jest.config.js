@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const BASE_CONFIG = require('../../../scripts/jest/base.config');
 
-const dispatchEvent =
-    'EventTarget' in window ? EventTarget.prototype.dispatchEvent : Node.prototype.dispatchEvent; // IE11
+module.exports = {
+    ...BASE_CONFIG,
 
-export { dispatchEvent };
+    displayName: 'lwc-node-reactions',
+
+    roots: ['<rootDir>/src'],
+};

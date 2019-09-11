@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isArray, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { assert, isArray, isTrue, isUndefined } from '@lwc/shared';
+import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import {
     rerenderVM,
@@ -15,6 +16,7 @@ import {
     appendVM,
     runWithBoundaryProtection,
     getAssociatedVMIfPresent,
+    VMState,
 } from './vm';
 import { VNode, VCustomElement, VElement, VNodes } from '../3rdparty/snabbdom/types';
 import modEvents from './modules/events';
@@ -140,11 +142,6 @@ export function updateElmHook(oldVnode: VElement, vnode: VElement) {
     modComputedStyle.update(oldVnode, vnode);
 }
 
-export function insertCustomElmHook(vnode: VCustomElement) {
-    const vm = getAssociatedVM(vnode.elm!);
-    appendVM(vm);
-}
-
 export function updateChildrenHook(oldVnode: VElement, vnode: VElement) {
     const { children, owner } = vnode;
     const fn = hasDynamicChildren(children) ? updateDynamicChildren : updateStaticChildren;
@@ -173,7 +170,6 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     // In case #2, we will always get a fresh VCustomElement.
     const children = vnode.aChildren || vnode.children;
 
-    vm.aChildren = children;
     if (isTrue(useSyntheticShadow)) {
         // slow path
         allocateInSlot(vm, children);
@@ -182,6 +178,26 @@ export function allocateChildrenHook(vnode: VCustomElement) {
         // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
         vnode.children = EmptyArray;
     }
+}
+
+function customElementConnectedHook(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    if (process.env.NODE_ENV !== 'production') {
+        // Either the vm was just created or the node is being moved to another subtree
+        assert.isTrue(
+            vm.state === VMState.created || vm.state === VMState.disconnected,
+            `${vm} cannot be connected.`
+        );
+    }
+    appendVM(vm);
+}
+
+function customElementDisconnectedHook(elm: HTMLElement) {
+    const vm = getAssociatedVM(elm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+    }
+    removeVM(vm);
 }
 
 export function createViewModelHook(vnode: VCustomElement) {
@@ -205,13 +221,16 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
+    reactWhenConnected(elm, customElementConnectedHook);
+    reactWhenDisconnected(elm, customElementDisconnectedHook);
     if (process.env.NODE_ENV !== 'production') {
+        const vm = getAssociatedVM(elm);
+        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
         assert.isTrue(
             isArray(vnode.children),
             `Invalid vnode for a custom element, it must have children defined.`
         );
-    }
-    if (process.env.NODE_ENV !== 'production') {
+
         patchCustomElementWithRestrictions(elm, EmptyObject);
     }
 }
@@ -260,25 +279,6 @@ export function updateCustomElmHook(oldVnode: VCustomElement, vnode: VCustomElem
     modProps.update(oldVnode, vnode);
     modComputedClassName.update(oldVnode, vnode);
     modComputedStyle.update(oldVnode, vnode);
-}
-
-export function removeElmHook(vnode: VElement) {
-    // this method only needs to search on child vnodes from template
-    // to trigger the remove hook just in case some of those children
-    // are custom elements.
-    const { children, elm } = vnode;
-    for (let j = 0, len = children.length; j < len; ++j) {
-        const ch = children[j];
-        if (!isNull(ch)) {
-            ch.hook.remove(ch, elm!);
-        }
-    }
-}
-
-export function removeCustomElmHook(vnode: VCustomElement) {
-    // for custom elements we don't have to go recursively because the removeVM routine
-    // will take care of disconnecting any child VM attached to its shadow as well.
-    removeVM(getAssociatedVM(vnode.elm!));
 }
 
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(

@@ -26,12 +26,12 @@ import {
     cloneNode,
     hasChildNodes,
     contains,
+    isConnected,
     parentElementGetter,
     lastChildGetter,
     firstChildGetter,
     textContentGetter,
     childNodesGetter,
-    isConnected,
 } from '../env/node';
 import {
     getNodeOwner,

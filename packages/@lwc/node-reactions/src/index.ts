@@ -4,13 +4,5 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-const { appendChild, insertBefore, removeChild, replaceChild } = Node.prototype;
-
-export {
-    // Node.prototype
-    appendChild,
-    insertBefore,
-    removeChild,
-    replaceChild,
-};
+import './global/init';
+export { reactWhenConnected, reactWhenDisconnected } from './api';

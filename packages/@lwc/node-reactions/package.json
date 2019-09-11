@@ -1,0 +1,23 @@
+{
+    "name": "@lwc/node-reactions",
+    "version": "1.3.5",
+    "description": "Node Reactions utility to detect synchronous mutations of the DOM",
+    "license": "MIT",
+    "main": "dist/node-reactions.cjs.js",
+    "module": "dist/node-reactions.js",
+    "typings": "dist/types/index.d.ts",
+    "scripts": {
+        "clean": "rm -rf dist/",
+        "test": "jest",
+        "build": "tsc  --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
+    },
+    "files": [
+        "dist/"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@lwc/shared": "1.3.5"
+    }
+}

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
+import { ArrayMap, assert, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
 import { ComponentConstructor } from './component';
-import { createVM, appendRootVM, removeRootVM, getAssociatedVM, CreateVMInit } from './vm';
+import { createVM, getAssociatedVM, CreateVMInit, removeVM, appendVM, VMState } from './vm';
 import { EmptyObject } from './utils';
 import { getComponentDef } from './def';
 import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
@@ -51,11 +51,20 @@ export function buildCustomElementConstructor(
         }
         connectedCallback() {
             const vm = getAssociatedVM(this);
-            appendRootVM(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(
+                    vm.state === VMState.created || vm.state === VMState.disconnected,
+                    `${vm} should be new or disconnected.`
+                );
+            }
+            appendVM(vm);
         }
         disconnectedCallback() {
             const vm = getAssociatedVM(this);
-            removeRootVM(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+            }
+            removeVM(vm);
         }
         attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
             if (oldValue === newValue) {
