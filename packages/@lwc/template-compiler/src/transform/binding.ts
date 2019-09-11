@@ -236,31 +236,37 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
         return undefined;
     }
 
-    const astNodeMap = new WeakMap<IRElement, BindingASTComponentNode | BindingASTDirectiveNode>();
-    const ast: BindingASTNode = {
+    const astNodeMap = new WeakMap<
+        IRElement,
+        BindingASTNode | BindingASTComponentNode | BindingASTDirectiveNode
+    >();
+    astNodeMap.set(rootIRElement, {
         type: 'BindingASTNode',
         children: [],
-    };
+    });
 
     const components = collectBindingASTComponents(rootIRElement);
     components.forEach(component => {
         // Top-down path
         const prunedPath = getPrunedPath(component, components);
-        const [, ...ancestors] = prunedPath;
-        // Only the root node and directive nodes can have children in this AST.
-        let parentASTNode: BindingASTNode | BindingASTComponentNode | BindingASTDirectiveNode = ast;
-        ancestors.forEach(currentElement => {
+        prunedPath.forEach((currentElement, index) => {
             // If the current element does not have a node representation in the AST.
             if (!astNodeMap.has(currentElement)) {
+                if (index === 0) {
+                    // We've already handled the root template node case
+                    return;
+                }
+                const parentElement = prunedPath[index - 1];
+                const parentASTNode = astNodeMap.get(parentElement)!;
                 if (currentElement.component) {
                     const componentNode = transformToASTComponentNode(currentElement);
-                    // If the component has an inline directive, then lift the directive up into a
-                    // "virtual" directive node and add the component node as a child.
                     if (hasDirective(currentElement)) {
+                        // If the component has an inline directive, then create
+                        // a "virtual" directive node and insert the directive
+                        // node between the parent and component node.
                         const directiveNode = transformToASTDirectiveNode(currentElement);
                         parentASTNode.children.push(directiveNode);
                         directiveNode.children.push(componentNode);
-                        parentASTNode = directiveNode;
                     } else {
                         parentASTNode.children.push(componentNode);
                     }
@@ -269,12 +275,11 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
                     const directiveNode = transformToASTDirectiveNode(currentElement);
                     parentASTNode.children.push(directiveNode);
                     astNodeMap.set(currentElement, directiveNode);
-                    parentASTNode = directiveNode;
                 }
             }
         });
     });
-    return ast;
+    return astNodeMap.get(rootIRElement) as BindingASTNode;
 }
 
 export default function transform(parsedTemplate: TemplateParseResult): BindingParseResult {
