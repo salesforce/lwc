@@ -18,7 +18,7 @@ import {
     ArrayReduce,
     defineProperties,
 } from '@lwc/shared';
-import { getAttribute, childrenGetter, setAttribute } from '../env/element';
+import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
 import { MutationObserverObserve, MutationObserver } from '../env/mutation-observer';
 import {
@@ -168,13 +168,6 @@ defineProperties(HTMLSlotElement.prototype, {
                 return createStaticNodeList(childNodes);
             }
             return childNodesGetter.call(this);
-        },
-        enumerable: true,
-        configurable: true,
-    },
-    children: {
-        get(this: HTMLSlotElement): HTMLCollectionOf<Element> {
-            return childrenGetter.call(this);
         },
         enumerable: true,
         configurable: true,
