@@ -4,11 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, create, emptyString, forEach, isArray, isUndefined } from '@lwc/shared';
-import { VNode } from '../3rdparty/snabbdom/types';
-
-import * as api from './api';
-import { EmptyArray, useSyntheticShadow } from './utils';
+import { assert, create, emptyString, forEach, isArray, isNull, isUndefined } from '@lwc/shared';
+import { useSyntheticShadow } from './utils';
 import { VM } from './vm';
 import { removeAttribute, setAttribute } from '../env/element';
 /**
@@ -20,6 +17,20 @@ export type StylesheetFactory = (
     shadowSelector: string,
     nativeShadow: boolean
 ) => string;
+
+export interface StylesheetTokens {
+    /**
+     * HTML attribute that need to be applied to the host element. This attribute is used for the
+     * `:host` pseudo class CSS selector.
+     */
+    hostAttribute: string;
+
+    /**
+     * HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs with synthetic shadow.
+     */
+    shadowAttribute: string;
+}
 
 const CachedStyleFragments: Record<string, DocumentFragment> = create(null);
 
@@ -55,25 +66,11 @@ function insertGlobalStyle(styleContent: string) {
     }
 }
 
-function createStyleVNode(elm: HTMLStyleElement) {
-    const vnode = api.h(
-        'style',
-        {
-            key: 'style', // special key
-        },
-        EmptyArray
-    );
-    // TODO [#1364]: supporting the ability to inject a cloned StyleElement
-    // forcing the diffing algo to use the cloned style for native shadow
-    vnode.clonedElement = elm;
-    return vnode;
-}
-
 /**
  * Reset the styling token applied to the host element.
  */
-export function resetStyleAttributes(vm: VM): void {
-    const { context, elm } = vm;
+export function resetStyle(vm: VM): void {
+    const { context, elm, cmpRoot } = vm;
 
     // Remove the style attribute currently applied to the host element.
     const oldHostAttribute = context.hostAttribute;
@@ -83,18 +80,40 @@ export function resetStyleAttributes(vm: VM): void {
 
     // Reset the scoping attributes associated to the context.
     context.hostAttribute = context.shadowAttribute = undefined;
+
+    // removing style tag if present
+    if (!isNull(context.styleVNode) && !isUndefined(context.styleVNode)) {
+        cmpRoot.removeChild(context.styleVNode);
+        context.styleVNode = null;
+    }
 }
 
 /**
  * Apply/Update the styling token applied to the host element.
  */
-export function applyStyleAttributes(vm: VM, hostAttribute: string, shadowAttribute: string): void {
-    const { context, elm } = vm;
+export function applyStyle(
+    vm: VM,
+    stylesheets: StylesheetFactory[],
+    stylesheetTokens: StylesheetTokens
+): void {
+    const { context, elm, cmpRoot } = vm;
+    const { hostAttribute, shadowAttribute } = stylesheetTokens;
     // Remove the style attribute currently applied to the host element.
     setAttribute.call(elm, hostAttribute, '');
 
     context.hostAttribute = hostAttribute;
     context.shadowAttribute = shadowAttribute;
+
+    // Caching style vnode so it can be removed when needed
+    const styleElm = (context.styleVNode = evaluateCSS(
+        vm,
+        stylesheets,
+        hostAttribute,
+        shadowAttribute
+    ));
+    if (!isNull(styleElm)) {
+        cmpRoot.appendChild(styleElm);
+    }
 }
 
 function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative, aggregatorFn) {
@@ -107,11 +126,12 @@ function collectStylesheets(stylesheets, hostSelector, shadowSelector, isNative,
     });
 }
 
-export function evaluateCSS(
+function evaluateCSS(
+    vm: VM,
     stylesheets: StylesheetFactory[],
     hostAttribute: string,
     shadowAttribute: string
-): VNode | null {
+): HTMLStyleElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(stylesheets), `Invalid stylesheets.`);
     }
@@ -134,6 +154,6 @@ export function evaluateCSS(
             buffer += textContent;
         });
 
-        return createStyleVNode(getCachedStyleElement(buffer));
+        return getCachedStyleElement(buffer);
     }
 }

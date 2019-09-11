@@ -26,6 +26,7 @@ import {
     cloneNode,
     hasChildNodes,
     contains,
+    isConnected,
     parentElementGetter,
     lastChildGetter,
     firstChildGetter,
