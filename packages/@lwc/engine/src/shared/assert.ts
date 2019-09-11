@@ -44,6 +44,7 @@ export function logError(message: string, elm?: Element) {
     if (elm) {
         msg = `${msg}\n${getFormattedComponentStack(elm)}`;
     }
+
     if (process.env.NODE_ENV === 'test') {
         /* eslint-disable-next-line no-console */
         console.error(msg);
