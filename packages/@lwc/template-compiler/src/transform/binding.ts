@@ -58,6 +58,10 @@ interface BindingASTDirectiveNode {
         expression: BindingASTIdentifier | BindingASTMemberExpression;
         iterator: BindingASTIdentifier;
     };
+    if?: {
+        expression: BindingASTIdentifier | BindingASTMemberExpression;
+        modifier: boolean;
+    };
     type: 'BindingASTDirectiveNode';
 }
 
@@ -150,7 +154,7 @@ function collectBindingASTComponents(rootElement: IRElement): IRElement[] {
 }
 
 function hasDirective(element: IRElement): boolean {
-    return Boolean(element.forEach || element.forOf);
+    return Boolean(element.forEach || element.forOf || element.if);
 }
 
 // Returns a list of elements to be added to the AST in top-down order
@@ -170,7 +174,7 @@ function getPrunedPath(component: IRElement, components: IRElement[]): IRElement
 }
 
 function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNode {
-    const { forEach, forOf } = element;
+    const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
         const expression = forEach.expression as BabelTemplateExpression;
         return {
@@ -199,7 +203,18 @@ function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNod
             children: [],
         };
     }
-    throw new Error('Element must have either a for:each or iterator:* directive.');
+    if (ifDirective) {
+        const directive = element.if as BabelTemplateExpression;
+        return {
+            type: 'BindingASTDirectiveNode',
+            if: {
+                expression: pruneExpression(directive),
+                modifier: ifModifier === 'true',
+            },
+            children: [],
+        };
+    }
+    throw new Error('Element must have either a `for:each`, `iterator:*`, or `if` directive.');
 }
 
 function transformToASTComponentNode(element: IRElement): BindingASTComponentNode {

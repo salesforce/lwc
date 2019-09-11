@@ -1,0 +1,61 @@
+{
+    "type": "BindingASTNode",
+    "children": [
+        {
+            "type": "BindingASTDirectiveNode",
+            "if": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "hasFavorites"
+                },
+                "modifier": true
+            },
+            "children": [
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-favorites-view",
+                    "component": true,
+                    "attributes": [
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "favorite-artists",
+                            "expression": {
+                                "type": "BindingASTIdentifier",
+                                "name": "favoriteArtists"
+                            }
+                        }
+                    ],
+                    "children": []
+                }
+            ]
+        },
+        {
+            "type": "BindingASTDirectiveNode",
+            "if": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "hasFavorites"
+                },
+                "modifier": false
+            },
+            "children": [
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-no-favorites-view",
+                    "component": true,
+                    "attributes": [
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "recommended-artist",
+                            "expression": {
+                                "type": "BindingASTIdentifier",
+                                "name": "recommendedArtist"
+                            }
+                        }
+                    ],
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
