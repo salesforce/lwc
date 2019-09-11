@@ -1,73 +1,41 @@
 {
     "type": "BindingASTNode",
-    "tag": "template",
-    "component": false,
-    "attributes": [],
     "children": [
         {
-            "type": "BindingASTNode",
-            "tag": "div",
-            "component": false,
-            "attributes": [],
+            "type": "BindingASTDirectiveNode",
+            "forEach": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "items"
+                },
+                "item": {
+                    "type": "BindingASTIdentifier",
+                    "name": "item"
+                }
+            },
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "tag": "foo-list",
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-list-item",
                     "component": true,
-                    "attributes": [],
-                    "children": [
+                    "attributes": [
                         {
-                            "type": "BindingASTNode",
-                            "tag": "template",
-                            "component": false,
-                            "attributes": [],
-                            "children": [
-                                {
-                                    "type": "BindingASTNode",
-                                    "tag": "foo-list-item",
-                                    "component": true,
-                                    "attributes": [
-                                        {
-                                            "type": "BindingASTAttribute",
-                                            "name": "data",
-                                            "expression": {
-                                                "type": "BindingASTTemplateExpression",
-                                                "value": {
-                                                    "type": "BindingASTMemberExpression",
-                                                    "object": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "item"
-                                                    },
-                                                    "property": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "data"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ],
-                                    "children": []
-                                }
-                            ],
-                            "forEach": {
-                                "expression": {
-                                    "type": "BindingASTTemplateExpression",
-                                    "value": {
-                                        "type": "BindingASTIdentifier",
-                                        "name": "items"
-                                    }
-                                },
-                                "item": {
+                            "type": "BindingASTAttribute",
+                            "name": "data",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
                                     "type": "BindingASTIdentifier",
                                     "name": "item"
                                 },
-                                "index": {
+                                "property": {
                                     "type": "BindingASTIdentifier",
-                                    "name": "index"
+                                    "name": "data"
                                 }
                             }
                         }
-                    ]
+                    ],
+                    "children": []
                 }
             ]
         }

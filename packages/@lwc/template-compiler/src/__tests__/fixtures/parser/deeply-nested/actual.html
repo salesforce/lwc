@@ -1,0 +1,13 @@
+<template>
+    <foo-carousel flavor={flavor}>
+        <template for:each={items} for:item="item">
+            <template if:true={item.image}>
+                <foo-carousel-image src={item.src} key={item.id}>
+                    <foo-header slot="header" text={item.description}>
+                        <foo-icon icon-name={item.iconName}></foo-icon>
+                    </foo-header>
+                </foo-carousel-image>
+            </template>
+        </template>
+    </foo-carousel>
+</template>

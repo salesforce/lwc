@@ -1,68 +1,48 @@
 {
     "type": "BindingASTNode",
-    "tag": "template",
-    "component": false,
-    "attributes": [],
     "children": [
         {
-            "type": "BindingASTNode",
-            "tag": "div",
-            "component": false,
-            "attributes": [],
+            "type": "BindingASTDirectiveNode",
+            "forEach": {
+                "expression": {
+                    "type": "BindingASTMemberExpression",
+                    "object": {
+                        "type": "BindingASTIdentifier",
+                        "name": "items"
+                    },
+                    "property": {
+                        "type": "BindingASTIdentifier",
+                        "name": "bar"
+                    }
+                },
+                "item": {
+                    "type": "BindingASTIdentifier",
+                    "name": "barItem"
+                }
+            },
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "tag": "bar-list",
+                    "type": "BindingASTComponentNode",
+                    "tag": "bar-list-item",
                     "component": true,
-                    "attributes": [],
-                    "children": [
+                    "attributes": [
                         {
-                            "type": "BindingASTNode",
-                            "tag": "bar-list-item",
-                            "component": true,
-                            "attributes": [
-                                {
-                                    "type": "BindingASTAttribute",
-                                    "name": "data",
-                                    "expression": {
-                                        "type": "BindingASTTemplateExpression",
-                                        "value": {
-                                            "type": "BindingASTMemberExpression",
-                                            "object": {
-                                                "type": "BindingASTIdentifier",
-                                                "name": "barItem"
-                                            },
-                                            "property": {
-                                                "type": "BindingASTIdentifier",
-                                                "name": "data"
-                                            }
-                                        }
-                                    }
-                                }
-                            ],
-                            "children": [],
-                            "forEach": {
-                                "expression": {
-                                    "type": "BindingASTTemplateExpression",
-                                    "value": {
-                                        "type": "BindingASTMemberExpression",
-                                        "object": {
-                                            "type": "BindingASTIdentifier",
-                                            "name": "items"
-                                        },
-                                        "property": {
-                                            "type": "BindingASTIdentifier",
-                                            "name": "bar"
-                                        }
-                                    }
-                                },
-                                "item": {
+                            "type": "BindingASTAttribute",
+                            "name": "data",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
                                     "type": "BindingASTIdentifier",
                                     "name": "barItem"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "data"
                                 }
                             }
                         }
-                    ]
+                    ],
+                    "children": []
                 }
             ]
         }

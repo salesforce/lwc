@@ -28,34 +28,37 @@ interface BindingASTMemberExpression {
     type: 'BindingASTMemberExpression';
 }
 
-interface BindingASTTemplateExpression {
-    type: 'BindingASTTemplateExpression';
-    value: BindingASTIdentifier | BindingASTMemberExpression;
-}
-
 interface BindingASTAttribute {
-    expression: BindingASTTemplateExpression;
+    expression: BindingASTIdentifier | BindingASTMemberExpression;
     name: string;
     type: 'BindingASTAttribute';
 }
 
 interface BindingASTNode {
+    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
+    type: 'BindingASTNode';
+}
+
+interface BindingASTComponentNode {
     attributes: BindingASTAttribute[];
-    children: BindingASTNode[];
-    component: boolean;
+    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
+    component: true;
+    tag: string;
+    type: 'BindingASTComponentNode';
+}
+
+interface BindingASTDirectiveNode {
+    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
     forEach?: {
-        expression: BindingASTTemplateExpression;
+        expression: BindingASTIdentifier | BindingASTMemberExpression;
         index?: BindingASTIdentifier | undefined;
         item: BindingASTIdentifier;
     };
     forOf?: {
-        expression: BindingASTTemplateExpression;
+        expression: BindingASTIdentifier | BindingASTMemberExpression;
         iterator: BindingASTIdentifier;
     };
-    if?: BindingASTTemplateExpression;
-    ifModifier?: boolean;
-    tag: string;
-    type: 'BindingASTNode';
+    type: 'BindingASTDirectiveNode';
 }
 
 export interface BindingParseResult {
@@ -63,7 +66,8 @@ export interface BindingParseResult {
     warnings: CompilerDiagnostic[];
 }
 
-function hasExpressionAttribute(props) {
+function hasExpressionAttribute(node: IRElement) {
+    const { props = {} } = node;
     return Object.values(props).some(isExpressionAttribute);
 }
 
@@ -71,16 +75,16 @@ function isExpressionAttribute(attr) {
     return attr.type === IRAttributeType.Expression;
 }
 
-function pruneExpression(attr: BabelTemplateExpression): BindingASTTemplateExpression {
-    return {
-        type: 'BindingASTTemplateExpression',
-        value: babelTypes.isIdentifier(attr)
-            ? {
-                  type: 'BindingASTIdentifier',
-                  name: attr.name,
-              }
-            : pruneMemberExpression(attr),
-    };
+function pruneExpression(
+    attr: BabelTemplateExpression
+): BindingASTIdentifier | BindingASTMemberExpression {
+    if (babelTypes.isIdentifier(attr)) {
+        return {
+            type: 'BindingASTIdentifier',
+            name: attr.name,
+        };
+    }
+    return pruneMemberExpression(attr);
 }
 
 function pruneMemberExpression(
@@ -129,115 +133,139 @@ function getExpressionAttributes(node: IRElement): BindingASTAttribute[] {
     }, attrs);
 }
 
-// Returns a WeakSet containing component elements with one or more attribute
-// expressions, along with their ancestor elements. The binding AST will be a
-// pruned AST composed of elements in this set.
-function collectBindingAstNodes(node: IRElement): WeakSet<IRElement> {
-    const set: WeakSet<IRElement> = new WeakSet();
-    function collect(node: IRElement) {
-        if (node.component) {
-            const hasExpAttr = node.props && hasExpressionAttribute(node.props);
-            const hasForEach = Boolean(node.forEach);
-            const hasForOf = Boolean(node.forOf);
-            if (hasExpAttr || hasForEach || hasForOf) {
-                let bindingAstNode = node;
-                set.add(bindingAstNode);
-                while (bindingAstNode.parent && !set.has(bindingAstNode.parent)) {
-                    bindingAstNode = bindingAstNode.parent;
-                    set.add(bindingAstNode);
-                }
-            }
+// Returns a list of component elements with one or more attribute expressions.
+// Components without attribute expressions will not be in the AST.
+function collectBindingASTComponents(rootElement: IRElement): IRElement[] {
+    const components: IRElement[] = [];
+    function depthFirstCollect(element: IRElement) {
+        if (element.children) {
+            element.children.forEach(depthFirstCollect);
         }
-        if (node.children) {
-            node.children.forEach(collect);
+        if (element.component && hasExpressionAttribute(element)) {
+            components.push(element);
         }
     }
-    collect(node);
-    return set;
+    depthFirstCollect(rootElement);
+    return components;
 }
 
-function buildBindingAst(node: IRElement | undefined): BindingASTNode | undefined {
-    if (isUndefined(node)) {
+function hasDirective(element: IRElement): boolean {
+    return Boolean(element.forEach || element.forOf);
+}
+
+// Returns a list of elements to be added to the AST in top-down order
+function getPrunedPath(component: IRElement, components: IRElement[]): IRElement[] {
+    function prune(elm: IRElement, path: IRElement[]) {
+        if (isUndefined(elm.parent)) {
+            // Base case: root element
+            return [elm, ...path];
+        }
+        if (hasDirective(elm) || components.includes(elm)) {
+            path = [elm, ...path];
+        }
+        return prune(elm.parent, path);
+    }
+    // `component.parent!` because components from a parsed template always have a parent
+    return prune(component.parent!, [component]);
+}
+
+function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNode {
+    const { forEach, forOf } = element;
+    if (forEach) {
+        const expression = forEach.expression as BabelTemplateExpression;
+        return {
+            type: 'BindingASTDirectiveNode',
+            forEach: {
+                expression: pruneExpression(expression),
+                item: {
+                    type: 'BindingASTIdentifier',
+                    name: forEach.item.name,
+                },
+            },
+            children: [],
+        };
+    }
+    if (forOf) {
+        const expression = forOf.expression as BabelTemplateExpression;
+        return {
+            type: 'BindingASTDirectiveNode',
+            forOf: {
+                expression: pruneExpression(expression),
+                iterator: {
+                    type: 'BindingASTIdentifier',
+                    name: forOf.iterator.name,
+                },
+            },
+            children: [],
+        };
+    }
+    throw new Error('Element must have either a for:each or iterator:* directive.');
+}
+
+function transformToASTComponentNode(element: IRElement): BindingASTComponentNode {
+    const { component, tag } = element;
+    if (component) {
+        return {
+            type: 'BindingASTComponentNode',
+            tag,
+            component: true,
+            attributes: getExpressionAttributes(element),
+            children: [],
+        };
+    }
+    throw new Error('Element must be associated with a component.');
+}
+
+function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefined {
+    if (isUndefined(rootIRElement)) {
         return undefined;
     }
-    const subtreeSet = collectBindingAstNodes(node);
-    function build(astNode: IRElement, bindingAstNode: BindingASTNode) {
-        const filteredNodes = astNode.children.filter(
-            subtreeSet.has.bind(subtreeSet)
-        ) as IRElement[];
-        bindingAstNode.children = filteredNodes.map(filteredNode => {
-            const { component, forEach, forOf, ifModifier, tag } = filteredNode;
-            const node: BindingASTNode = {
-                type: 'BindingASTNode',
-                tag,
-                component: Boolean(component),
-                attributes: [],
-                children: [],
-            };
-            if (forEach) {
-                const expression = forEach.expression as BabelTemplateExpression;
-                node.forEach = {
-                    expression: pruneExpression(expression),
-                    item: {
-                        type: 'BindingASTIdentifier',
-                        name: forEach.item.name,
-                    },
-                };
-                if (forEach.index) {
-                    node.forEach.index = {
-                        type: 'BindingASTIdentifier',
-                        name: forEach.index.name,
-                    };
-                }
-            }
-            if (forOf) {
-                const expression = forOf.expression as BabelTemplateExpression;
-                node.forOf = {
-                    expression: pruneExpression(expression),
-                    iterator: {
-                        type: 'BindingASTIdentifier',
-                        name: forOf.iterator.name,
-                    },
-                };
-            }
-            if (filteredNode.if) {
-                const parsedIf = filteredNode.if as BabelTemplateExpression;
-                node.if = {
-                    type: 'BindingASTTemplateExpression',
-                    value:
-                        parsedIf.type === 'Identifier'
-                            ? {
-                                  type: 'BindingASTIdentifier',
-                                  name: parsedIf.name,
-                              }
-                            : pruneMemberExpression(parsedIf),
-                };
-                node.ifModifier = Boolean(ifModifier);
-            }
-            if (component) {
-                node.attributes = getExpressionAttributes(filteredNode);
-            }
-            return node;
-        });
-        filteredNodes.forEach((node, index) => {
-            build(node, bindingAstNode.children[index]);
-        });
-    }
-    const root: BindingASTNode = {
+
+    const astNodeMap = new WeakMap<IRElement, BindingASTComponentNode | BindingASTDirectiveNode>();
+    const ast: BindingASTNode = {
         type: 'BindingASTNode',
-        tag: node.tag,
-        component: false,
-        attributes: [],
         children: [],
     };
-    build(node, root);
-    return root;
+
+    const components = collectBindingASTComponents(rootIRElement);
+    components.forEach(component => {
+        // Top-down path
+        const prunedPath = getPrunedPath(component, components);
+        const [, ...ancestors] = prunedPath;
+        // Only the root node and directive nodes can have children in this AST.
+        let parentASTNode: BindingASTNode | BindingASTComponentNode | BindingASTDirectiveNode = ast;
+        ancestors.forEach(currentElement => {
+            // If the current element does not have a node representation in the AST.
+            if (!astNodeMap.has(currentElement)) {
+                if (currentElement.component) {
+                    const componentNode = transformToASTComponentNode(currentElement);
+                    // If the component has an inline directive, then lift the directive up into a
+                    // "virtual" directive node and add the component node as a child.
+                    if (hasDirective(currentElement)) {
+                        const directiveNode = transformToASTDirectiveNode(currentElement);
+                        parentASTNode.children.push(directiveNode);
+                        directiveNode.children.push(componentNode);
+                        parentASTNode = directiveNode;
+                    } else {
+                        parentASTNode.children.push(componentNode);
+                    }
+                    astNodeMap.set(currentElement, componentNode);
+                } else {
+                    const directiveNode = transformToASTDirectiveNode(currentElement);
+                    parentASTNode.children.push(directiveNode);
+                    astNodeMap.set(currentElement, directiveNode);
+                    parentASTNode = directiveNode;
+                }
+            }
+        });
+    });
+    return ast;
 }
 
 export default function transform(parsedTemplate: TemplateParseResult): BindingParseResult {
     const { root, warnings } = parsedTemplate;
     return {
-        root: buildBindingAst(root),
+        root: buildAST(root),
         warnings,
     };
 }

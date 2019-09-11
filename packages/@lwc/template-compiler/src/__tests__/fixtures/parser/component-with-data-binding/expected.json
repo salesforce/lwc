@@ -1,87 +1,56 @@
 {
     "type": "BindingASTNode",
-    "tag": "template",
-    "component": false,
-    "attributes": [],
     "children": [
         {
-            "type": "BindingASTNode",
-            "tag": "ul",
-            "component": false,
-            "attributes": [],
+            "type": "BindingASTDirectiveNode",
+            "forEach": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "likedSongs"
+                },
+                "item": {
+                    "type": "BindingASTIdentifier",
+                    "name": "song"
+                }
+            },
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "tag": "template",
-                    "component": false,
-                    "attributes": [],
-                    "children": [
+                    "type": "BindingASTComponentNode",
+                    "tag": "liked-song",
+                    "component": true,
+                    "attributes": [
                         {
-                            "type": "BindingASTNode",
-                            "tag": "li",
-                            "component": false,
-                            "attributes": [],
-                            "children": [
-                                {
-                                    "type": "BindingASTNode",
-                                    "tag": "liked-song",
-                                    "component": true,
-                                    "attributes": [
-                                        {
-                                            "type": "BindingASTAttribute",
-                                            "name": "title",
-                                            "expression": {
-                                                "type": "BindingASTTemplateExpression",
-                                                "value": {
-                                                    "type": "BindingASTMemberExpression",
-                                                    "object": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "song"
-                                                    },
-                                                    "property": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "title"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        {
-                                            "type": "BindingASTAttribute",
-                                            "name": "artist",
-                                            "expression": {
-                                                "type": "BindingASTTemplateExpression",
-                                                "value": {
-                                                    "type": "BindingASTMemberExpression",
-                                                    "object": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "song"
-                                                    },
-                                                    "property": {
-                                                        "type": "BindingASTIdentifier",
-                                                        "name": "artist"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ],
-                                    "children": []
+                            "type": "BindingASTAttribute",
+                            "name": "title",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "song"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "title"
                                 }
-                            ]
-                        }
-                    ],
-                    "forEach": {
-                        "expression": {
-                            "type": "BindingASTTemplateExpression",
-                            "value": {
-                                "type": "BindingASTIdentifier",
-                                "name": "likedSongs"
                             }
                         },
-                        "item": {
-                            "type": "BindingASTIdentifier",
-                            "name": "song"
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "artist",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "song"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "artist"
+                                }
+                            }
                         }
-                    }
+                    ],
+                    "children": []
                 }
             ]
         }

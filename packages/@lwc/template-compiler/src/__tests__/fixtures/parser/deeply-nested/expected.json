@@ -1,0 +1,105 @@
+{
+    "type": "BindingASTNode",
+    "children": [
+        {
+            "type": "BindingASTComponentNode",
+            "tag": "foo-carousel",
+            "component": true,
+            "attributes": [
+                {
+                    "type": "BindingASTAttribute",
+                    "name": "flavor",
+                    "expression": {
+                        "type": "BindingASTIdentifier",
+                        "name": "flavor"
+                    }
+                }
+            ],
+            "children": []
+        },
+        {
+            "type": "BindingASTDirectiveNode",
+            "forEach": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "items"
+                },
+                "item": {
+                    "type": "BindingASTIdentifier",
+                    "name": "item"
+                }
+            },
+            "children": [
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-carousel-image",
+                    "component": true,
+                    "attributes": [
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "src",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "item"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "src"
+                                }
+                            }
+                        }
+                    ],
+                    "children": []
+                },
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-header",
+                    "component": true,
+                    "attributes": [
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "text",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "item"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "description"
+                                }
+                            }
+                        }
+                    ],
+                    "children": []
+                },
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "foo-icon",
+                    "component": true,
+                    "attributes": [
+                        {
+                            "type": "BindingASTAttribute",
+                            "name": "icon-name",
+                            "expression": {
+                                "type": "BindingASTMemberExpression",
+                                "object": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "item"
+                                },
+                                "property": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "iconName"
+                                }
+                            }
+                        }
+                    ],
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
