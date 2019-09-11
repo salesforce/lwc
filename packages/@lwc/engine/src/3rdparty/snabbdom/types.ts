@@ -46,15 +46,11 @@ export interface VElement extends VNode {
     elm: Element | undefined;
     text: undefined;
     key: Key;
-    // TODO: issue #1364 - support the ability to provision a cloned StyleElement
-    // for native shadow as a perf optimization
-    clonedElement?: HTMLStyleElement;
 }
 
 export interface VCustomElement extends VElement {
     mode: 'closed' | 'open';
     ctor: any;
-    clonedElement?: undefined;
 }
 
 export interface VComment extends VNode {

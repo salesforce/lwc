@@ -4,6 +4,7 @@ import Single from 'x/single';
 import Parent from 'x/parent';
 import ParentIf from 'x/parentIf';
 import ParentProp from 'x/parentProp';
+import SlottedParent from 'x/slottedParent';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -41,7 +42,7 @@ it('should the disconnectedCallback synchronously when removing the element from
     expect(window.timingBuffer).toEqual(['single:disconnectedCallback']);
 });
 
-it('should invoke the component lifecycle hooks in the right order when appending in the parent in the DOM', () => {
+it('should invoke the component lifecycle hooks in the right order when appending the parent in the DOM', () => {
     const elm = createElement('x-parent', { is: Parent });
 
     resetTimingBuffer();
@@ -128,5 +129,56 @@ it('should call children component lifecycle hooks when a public property change
 
         resetTimingBuffer();
         elm.childVisible = false;
+    });
+});
+
+xit('should call parent and children lifecycle hooks in correct order when parent reconnected', () => {
+    const elm = createElement('x-parent', { is: Parent });
+
+    document.body.appendChild(elm);
+    document.body.removeChild(elm);
+
+    resetTimingBuffer();
+    document.body.appendChild(elm);
+    expect(window.timingBuffer).toEqual([
+        'parent:connectedCallback',
+        'child:connectedCallback',
+        'child:renderedCallback',
+        'child:connectedCallback',
+        'child:renderedCallback',
+        'parent:renderedCallback',
+    ]);
+});
+
+describe('should invoke the component lifecycle hooks in the right order for a slotted parent', () => {
+    it('removing parent from the DOM', () => {
+        const elm = createElement('x-slotted-parent', { is: SlottedParent });
+        document.body.appendChild(elm);
+
+        resetTimingBuffer();
+        document.body.removeChild(elm);
+
+        expect(window.timingBuffer).toEqual([
+            'slotted-parent:disconnectedCallback',
+            'accepting-slot:disconnectedCallback',
+            'child:disconnectedCallback',
+        ]);
+    });
+    // TODO: In native shadow mode, accepting-slot:renderedCallback is invoked before child:constructor
+    xit('appending parent to the DOM', () => {
+        const elm = createElement('x-slotted-parent', { is: SlottedParent });
+        resetTimingBuffer();
+        document.body.appendChild(elm);
+
+        expect(window.timingBuffer).toEqual([
+            'slotted-parent:connectedCallback',
+            'accepting-slot:constructor',
+            'accepting-slot:connectedCallback',
+            'child:constructor',
+            'child:connectedCallback',
+            'child:renderedCallback',
+            'accepting-slot:renderedCallback',
+            'slotted-parent:renderedCallback',
+        ]);
     });
 });

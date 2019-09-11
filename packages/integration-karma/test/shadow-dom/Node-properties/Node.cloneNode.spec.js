@@ -4,6 +4,11 @@ import Slotted from 'x/slotted';
 import Container from 'x/container';
 import ComplexCloneNode from 'x/complexCloneNode';
 
+function stripDataMarker(str) {
+    // Strip the node-reactions marker
+    return str.replace(/ data-node-reactions(="")*/gm, '');
+}
+
 function testCloneNodeShadowRoot(deep) {
     it(`should not clone the associated shadowRoot when cloning an element with deep=${deep}`, () => {
         const elm = createElement('x-slotted', { is: Slotted });
@@ -42,7 +47,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.cloneNode(false);
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-slotted></x-slotted>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-slotted></x-slotted>');
         });
 
         it('should not clone slotted content', () => {
@@ -51,7 +56,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode(false);
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-container></x-container>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-container></x-container>');
         });
     });
 
@@ -62,7 +67,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.cloneNode();
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-slotted></x-slotted>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-slotted></x-slotted>');
         });
 
         it('should not clone slotted content', () => {
@@ -71,7 +76,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode();
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-container></x-container>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-container></x-container>');
         });
 
         it('should not clone children of parent node with vanilla html', () => {
@@ -91,7 +96,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.cloneNode(true);
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-slotted></x-slotted>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-slotted></x-slotted>');
         });
 
         it('should clone slotted content', () => {
@@ -100,7 +105,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('x-container').cloneNode(true);
             expect(clone.childNodes.length).toBe(1);
-            expect(clone.outerHTML).toBe(
+            expect(stripDataMarker(clone.outerHTML)).toBe(
                 '<x-container><div class="slotted">Slotted Text</div></x-container>'
             );
         });
@@ -111,7 +116,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.shadowRoot.querySelector('div').cloneNode(true);
             expect(clone.childNodes.length).toBe(2);
-            expect(clone.outerHTML).toBe(
+            expect(stripDataMarker(clone.outerHTML)).toBe(
                 '<div>A<x-container><x-container>B</x-container><div><x-container>C</x-container></div></x-container></div>'
             );
         });
@@ -122,7 +127,7 @@ describe('Node.cloneNode', () => {
 
             const clone = elm.cloneNode(true);
             expect(clone.childNodes.length).toBe(0);
-            expect(clone.outerHTML).toBe('<x-container></x-container>');
+            expect(stripDataMarker(clone.outerHTML)).toBe('<x-container></x-container>');
         });
 
         it('should clone children of parent node with vanilla html', () => {

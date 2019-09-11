@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
 import XSlottedParent from 'x/slottedParent';
+import XParent from 'x/parent';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {
@@ -63,5 +64,43 @@ describe('addEventListner in `connectedCallback`', () => {
             expect(elm.eventHandled).toBe(true);
             expect(elm.shadowRoot.querySelector('p').textContent).toBe('Was clicked: true');
         });
+    });
+});
+
+describe('connectedCallback for host with slots', () => {
+    let parentConnectSpy;
+    let slotAcceptingChildSpy;
+    let acceptedSlotContentSpy;
+    let parent;
+    let container;
+
+    beforeEach(() => {
+        parentConnectSpy = jasmine.createSpy();
+        slotAcceptingChildSpy = jasmine.createSpy();
+        acceptedSlotContentSpy = jasmine.createSpy();
+        parent = createElement('x-parent', { is: XParent });
+        parent.connect = parentConnectSpy;
+
+        document.body.appendChild(parent);
+        parentConnectSpy.calls.reset();
+
+        parent.shadowRoot.querySelector('x-accepting-slots').connect = slotAcceptingChildSpy;
+        parent.shadowRoot.querySelector('x-test').connect = acceptedSlotContentSpy;
+        container = document.createElement('div');
+        document.body.appendChild(container);
+    });
+
+    it('should invoke connectedCallback on appendChild', () => {
+        container.appendChild(parent);
+        expect(parentConnectSpy).toHaveBeenCalledTimes(1);
+        expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
+        expect(acceptedSlotContentSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should invoke connectedCallback on insertBefore', () => {
+        container.insertBefore(parent, null);
+        expect(parentConnectSpy).toHaveBeenCalledTimes(1);
+        expect(slotAcceptingChildSpy).toHaveBeenCalledTimes(1);
+        expect(acceptedSlotContentSpy).toHaveBeenCalledTimes(1);
     });
 });

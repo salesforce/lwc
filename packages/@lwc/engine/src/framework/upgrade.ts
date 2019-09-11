@@ -4,17 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    assign,
-    fields,
-    isFunction,
-    isNull,
-    isObject,
-    isUndefined,
-    toString,
-} from '@lwc/shared';
-import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
+import { assert, fields, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
+import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
+import { createVM, getCustomElementVM, removeVM, appendVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
     EmptyObject,
@@ -25,46 +17,8 @@ import {
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
-import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
-const { createFieldName, getHiddenField, setHiddenField } = fields;
-const ConnectingSlot = createFieldName('connecting', 'engine');
-const DisconnectingSlot = createFieldName('disconnecting', 'engine');
-
-function callNodeSlot(node: Node, slot: symbol): Node {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
-    }
-    const fn = getHiddenField(node, slot);
-    if (!isUndefined(fn)) {
-        fn();
-    }
-    return node; // for convenience
-}
-
-// monkey patching Node methods to be able to detect the insertions and removal of
-// root elements created via createElement.
-assign(Node.prototype, {
-    appendChild(newChild: Node): Node {
-        const appendedNode = appendChild.call(this, newChild);
-        return callNodeSlot(appendedNode, ConnectingSlot);
-    },
-    insertBefore(newChild: Node, referenceNode: Node): Node {
-        const insertedNode = insertBefore.call(this, newChild, referenceNode);
-        return callNodeSlot(insertedNode, ConnectingSlot);
-    },
-    removeChild(oldChild: Node): Node {
-        const removedNode = removeChild.call(this, oldChild);
-        return callNodeSlot(removedNode, DisconnectingSlot);
-    },
-    replaceChild(newChild: Node, oldChild: Node): Node {
-        const replacedNode = replaceChild.call(this, newChild, oldChild);
-        callNodeSlot(replacedNode, DisconnectingSlot);
-        callNodeSlot(newChild, ConnectingSlot);
-        return replacedNode;
-    },
-});
-
+const { getHiddenField } = fields;
 type ShadowDomMode = 'open' | 'closed';
 
 interface CreateElementOptions {
@@ -125,19 +79,24 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    setHiddenField(element, ConnectingSlot, () => {
-        const vm = getCustomElementVM(element);
+    reactWhenConnected(element, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        if (vm.state === VMState.connected) {
-            // usually means moving the element from one place to another, which is observable via life-cycle hooks
-            removeRootVM(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(
+                vm.state === VMState.created || vm.state === VMState.disconnected,
+                `${vm} should be new or disconnected.`
+            );
         }
-        appendRootVM(vm);
+        appendVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
-    setHiddenField(element, DisconnectingSlot, () => {
-        const vm = getCustomElementVM(element);
-        removeRootVM(vm);
+    reactWhenDisconnected(element, function(this: HTMLElement) {
+        const vm = getCustomElementVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+        }
+        removeVM(vm);
     });
     return element;
 }

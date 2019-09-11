@@ -46,10 +46,8 @@ import {
 } from '../3rdparty/snabbdom/types';
 import {
     createViewModelHook,
-    insertCustomElmHook,
     fallbackElmHook,
     rerenderCustomElmHook,
-    removeElmHook,
     createChildrenHook,
     updateNodeHook,
     insertNodeHook,
@@ -60,7 +58,6 @@ import {
     updateCustomElmHook,
     updateChildrenHook,
     allocateChildrenHook,
-    removeCustomElmHook,
     markAsDynamicChildren,
 } from './hooks';
 import { Services, invokeServiceHook } from './services';
@@ -136,17 +133,11 @@ const CommentHook: Hooks = {
 // Custom Element that is inserted via a template.
 const ElementHook: Hooks = {
     create: (vnode: VElement) => {
-        const { data, sel, clonedElement } = vnode;
+        const { data, sel } = vnode;
         const { ns } = data;
-        // TODO: issue #1364 - supporting the ability to inject a cloned StyleElement
-        // via a vnode this is used for style tags for native shadow
-        if (isUndefined(clonedElement)) {
-            vnode.elm = isUndefined(ns)
-                ? document.createElement(sel)
-                : document.createElementNS(ns, sel);
-        } else {
-            vnode.elm = clonedElement;
-        }
+        vnode.elm = isUndefined(ns)
+            ? document.createElement(sel)
+            : document.createElementNS(ns, sel);
         linkNodeToShadow(vnode);
         if (process.env.NODE_ENV !== 'production') {
             markNodeFromVNode(vnode.elm as Element);
@@ -162,13 +153,8 @@ const ElementHook: Hooks = {
         insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
     },
-    move: (vnode: VElement, parentNode: Node, referenceNode: Node | null) => {
-        insertNodeHook(vnode, parentNode, referenceNode);
-    },
-    remove: (vnode: VElement, parentNode: Node) => {
-        removeNodeHook(vnode, parentNode);
-        removeElmHook(vnode);
-    },
+    move: insertNodeHook,
+    remove: removeNodeHook,
 };
 
 const CustomElementHook: Hooks = {
@@ -197,15 +183,9 @@ const CustomElementHook: Hooks = {
     insert: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
         insertNodeHook(vnode, parentNode, referenceNode);
         createChildrenHook(vnode);
-        insertCustomElmHook(vnode);
     },
-    move: (vnode: VCustomElement, parentNode: Node, referenceNode: Node | null) => {
-        insertNodeHook(vnode, parentNode, referenceNode);
-    },
-    remove: (vnode: VCustomElement, parentNode: Node) => {
-        removeNodeHook(vnode, parentNode);
-        removeCustomElmHook(vnode);
-    },
+    move: insertNodeHook,
+    remove: removeNodeHook,
 };
 
 function linkNodeToShadow(vnode: VNode) {
@@ -226,10 +206,6 @@ function addNS(vnode: VElement) {
             }
         }
     }
-}
-
-function addVNodeToChildLWC(vnode: VCustomElement) {
-    ArrayPush.call((vmBeingRendered as VM).velements, vnode);
 }
 
 // [h]tml node
@@ -408,7 +384,6 @@ export function c(
         owner: vmBeingRendered as VM,
         mode: 'open', // TODO: #1294 - this should be defined in Ctor
     };
-    addVNodeToChildLWC(vnode);
     return vnode;
 }
 

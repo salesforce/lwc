@@ -33,10 +33,6 @@ import {
     parentElementGetter,
     textContextSetter,
     isConnected,
-    removeChild,
-    insertBefore,
-    replaceChild,
-    appendChild,
     COMMENT_NODE,
 } from '../env/node';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
@@ -269,7 +265,7 @@ const NodePatchDescriptors = {
             newChild: T,
             refChild: Node | null
         ): T {
-            insertBefore.call(getHost(this), newChild, refChild);
+            Node.prototype.insertBefore.call(getHost(this), newChild, refChild);
             return newChild;
         },
     },
@@ -278,7 +274,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, oldChild: T): T {
-            removeChild.call(getHost(this), oldChild);
+            Node.prototype.removeChild.call(getHost(this), oldChild);
             return oldChild;
         },
     },
@@ -287,7 +283,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, newChild: T): T {
-            appendChild.call(getHost(this), newChild);
+            Node.prototype.appendChild.call(getHost(this), newChild);
             return newChild;
         },
     },
@@ -296,7 +292,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value<T extends Node>(this: SyntheticShadowRootInterface, newChild: Node, oldChild: T): T {
-            replaceChild.call(getHost(this), newChild, oldChild);
+            Node.prototype.replaceChild.call(getHost(this), newChild, oldChild);
             return oldChild;
         },
     },
