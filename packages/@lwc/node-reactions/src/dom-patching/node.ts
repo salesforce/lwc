@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getOwnPropertyDescriptor, defineProperties, ArraySlice } from '@lwc/shared';
+import { getOwnPropertyDescriptor, defineProperties } from '@lwc/shared';
 import { ReactionRecord, QualifyingReactionTypes } from '../types';
 import queueReactionsForSubtree from '../core/traverse';
 import { flushQueue } from '../core/reaction-queue';
@@ -23,13 +23,12 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                const args: any = ArraySlice.call(arguments);
                 // Performance optimization: Only check if the node being added is a registered node.
                 // We made this decision because appendChild is on the critical path and cannot
                 // subject every node to the expensive check that isQualifyingElement() performs
                 if (!isQualifyingHost(aChild)) {
                     // invoke with apply to preserve native behavior of missing arguments, invalid types etc
-                    return appendChild.apply(this, args);
+                    return appendChild.call(this, aChild);
                 }
 
                 let qualifiedReactionTypes: QualifyingReactionTypes = 0;
@@ -42,7 +41,7 @@ export default function() {
                 );
 
                 // DOM Operation
-                const result = appendChild.apply(this, args);
+                const result = appendChild.call(this, aChild);
 
                 if (isConnectedGetter.call(this)) {
                     qualifiedReactionTypes = qualifiedReactionTypes | 1;
@@ -64,13 +63,12 @@ export default function() {
             writable: true,
             enumerable: true,
             configurable: true,
-            value: function(this: Node, newNode: Node, _referenceNode: Node) {
-                const args: any = ArraySlice.call(arguments);
+            value: function(this: Node, newNode: Node, referenceNode: Node) {
                 // Performance optimization: Only check if the node being added is a registered node.
                 // We made this decision because insertBefore is on the critical path and cannot
                 // subject every node to the expensive check that isQualifyingElement() performs
                 if (!isQualifyingHost(newNode)) {
-                    return insertBefore.apply(this, args);
+                    return insertBefore.call(this, newNode, referenceNode);
                 }
 
                 let qualifiedReactionTypes: QualifyingReactionTypes = 0;
@@ -82,7 +80,7 @@ export default function() {
                 );
 
                 // DOM Operation
-                const result = insertBefore.apply(this, args);
+                const result = insertBefore.call(this, newNode, referenceNode);
 
                 if (isConnectedGetter.call(this)) {
                     // Short circuit and check if parent is connected
@@ -106,12 +104,11 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, newChild: Node, oldChild: Node) {
-                const args: any = ArraySlice.call(arguments);
                 const oldChildIsQualified = isQualifyingElement(oldChild);
                 const newChildIsQualified = isQualifyingElement(newChild);
                 // If both oldChild and newChild are non qualifying elements, exit early
                 if (!oldChildIsQualified && !newChildIsQualified) {
-                    return replaceChild.apply(this, args);
+                    return replaceChild.call(this, newChild, oldChild);
                 }
 
                 // Process oldChild
@@ -147,7 +144,7 @@ export default function() {
                 }
 
                 // DOM Operation
-                const result = replaceChild.apply(this, args);
+                const result = replaceChild.call(this, newChild, oldChild);
 
                 const reactionQueue: ReactionRecord[] = [];
                 if (qualifiedReactionTypesForOldChild & 2) {
@@ -175,7 +172,6 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, child: Node) {
-                const args: any = ArraySlice.call(arguments);
                 // If child is connected and it is a qualifying element, process reaction records
                 if (isConnectedGetter.call(this) && isQualifyingElement(child)) {
                     const qualifyingChildren = (child as
@@ -184,7 +180,7 @@ export default function() {
                     const qualifiedReactionTypes: QualifyingReactionTypes = 2;
 
                     // DOM operation
-                    const result = removeChild.apply(this, args);
+                    const result = removeChild.call(this, child);
                     const reactionQueue: ReactionRecord[] = [];
                     queueReactionsForSubtree(
                         child as Element | DocumentFragment,
@@ -195,7 +191,7 @@ export default function() {
                     flushQueue(reactionQueue);
                     return result;
                 }
-                return removeChild.apply(this, args);
+                return removeChild.call(this, child);
             },
         },
     });
