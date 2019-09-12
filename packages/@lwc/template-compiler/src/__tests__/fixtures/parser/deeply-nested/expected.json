@@ -17,7 +17,7 @@
             ],
             "children": [
                 {
-                    "type": "BindingASTDirectiveNode",
+                    "type": "BindingASTNode",
                     "forEach": {
                         "expression": {
                             "type": "BindingASTIdentifier",
@@ -30,7 +30,7 @@
                     },
                     "children": [
                         {
-                            "type": "BindingASTDirectiveNode",
+                            "type": "BindingASTNode",
                             "if": {
                                 "expression": {
                                     "type": "BindingASTMemberExpression",
@@ -43,7 +43,7 @@
                                         "name": "image"
                                     }
                                 },
-                                "modifier": true
+                                "modifier": "true"
                             },
                             "children": [
                                 {

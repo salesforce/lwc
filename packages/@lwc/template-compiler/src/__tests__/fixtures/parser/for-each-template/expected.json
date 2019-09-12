@@ -2,7 +2,7 @@
     "type": "BindingASTNode",
     "children": [
         {
-            "type": "BindingASTDirectiveNode",
+            "type": "BindingASTNode",
             "forEach": {
                 "expression": {
                     "type": "BindingASTIdentifier",

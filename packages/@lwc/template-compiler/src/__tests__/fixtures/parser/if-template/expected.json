@@ -2,7 +2,7 @@
     "type": "BindingASTNode",
     "children": [
         {
-            "type": "BindingASTDirectiveNode",
+            "type": "BindingASTNode",
             "if": {
                 "expression": {
                     "type": "BindingASTMemberExpression",
@@ -15,7 +15,7 @@
                         "name": "hasFavorites"
                     }
                 },
-                "modifier": true
+                "modifier": "true"
             },
             "children": [
                 {
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "type": "BindingASTDirectiveNode",
+            "type": "BindingASTNode",
             "if": {
                 "expression": {
                     "type": "BindingASTMemberExpression",
@@ -50,7 +50,7 @@
                         "name": "hasFavorites"
                     }
                 },
-                "modifier": false
+                "modifier": "false"
             },
             "children": [
                 {

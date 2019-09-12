@@ -35,20 +35,7 @@ interface BindingASTAttribute {
 }
 
 interface BindingASTNode {
-    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
-    type: 'BindingASTNode';
-}
-
-interface BindingASTComponentNode {
-    attributes: BindingASTAttribute[];
-    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
-    component: true;
-    tag: string;
-    type: 'BindingASTComponentNode';
-}
-
-interface BindingASTDirectiveNode {
-    children: Array<BindingASTComponentNode | BindingASTDirectiveNode>;
+    children: Array<BindingASTNode | BindingASTComponentNode>;
     forEach?: {
         expression: BindingASTIdentifier | BindingASTMemberExpression;
         index?: BindingASTIdentifier | undefined;
@@ -60,9 +47,17 @@ interface BindingASTDirectiveNode {
     };
     if?: {
         expression: BindingASTIdentifier | BindingASTMemberExpression;
-        modifier: boolean;
+        modifier: string;
     };
-    type: 'BindingASTDirectiveNode';
+    type: 'BindingASTNode';
+}
+
+interface BindingASTComponentNode {
+    attributes: BindingASTAttribute[];
+    children: Array<BindingASTNode | BindingASTComponentNode>;
+    component: true;
+    tag: string;
+    type: 'BindingASTComponentNode';
 }
 
 export interface BindingParseResult {
@@ -173,12 +168,12 @@ function getPrunedPath(component: IRElement, components: IRElement[]): IRElement
     return prune(component.parent!, [component]);
 }
 
-function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNode {
+function transformToASTNode(element: IRElement): BindingASTNode {
     const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
         const expression = forEach.expression as BabelTemplateExpression;
         return {
-            type: 'BindingASTDirectiveNode',
+            type: 'BindingASTNode',
             forEach: {
                 expression: pruneExpression(expression),
                 item: {
@@ -192,7 +187,7 @@ function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNod
     if (forOf) {
         const expression = forOf.expression as BabelTemplateExpression;
         return {
-            type: 'BindingASTDirectiveNode',
+            type: 'BindingASTNode',
             forOf: {
                 expression: pruneExpression(expression),
                 iterator: {
@@ -203,13 +198,13 @@ function transformToASTDirectiveNode(element: IRElement): BindingASTDirectiveNod
             children: [],
         };
     }
-    if (ifDirective) {
+    if (ifDirective && ifModifier) {
         const directive = element.if as BabelTemplateExpression;
         return {
-            type: 'BindingASTDirectiveNode',
+            type: 'BindingASTNode',
             if: {
                 expression: pruneExpression(directive),
-                modifier: ifModifier === 'true',
+                modifier: ifModifier,
             },
             children: [],
         };
@@ -236,10 +231,7 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
         return undefined;
     }
 
-    const astNodeMap = new WeakMap<
-        IRElement,
-        BindingASTNode | BindingASTComponentNode | BindingASTDirectiveNode
-    >();
+    const astNodeMap = new WeakMap<IRElement, BindingASTNode | BindingASTComponentNode>();
     astNodeMap.set(rootIRElement, {
         type: 'BindingASTNode',
         children: [],
@@ -252,10 +244,6 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
         prunedPath.forEach((currentElement, index) => {
             // If the current element does not have a node representation in the AST.
             if (!astNodeMap.has(currentElement)) {
-                if (index === 0) {
-                    // We've already handled the root template node case
-                    return;
-                }
                 const parentElement = prunedPath[index - 1];
                 const parentASTNode = astNodeMap.get(parentElement)!;
                 if (currentElement.component) {
@@ -264,7 +252,7 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
                         // If the component has an inline directive, then create
                         // a "virtual" directive node and insert the directive
                         // node between the parent and component node.
-                        const directiveNode = transformToASTDirectiveNode(currentElement);
+                        const directiveNode = transformToASTNode(currentElement);
                         parentASTNode.children.push(directiveNode);
                         directiveNode.children.push(componentNode);
                     } else {
@@ -272,7 +260,7 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
                     }
                     astNodeMap.set(currentElement, componentNode);
                 } else {
-                    const directiveNode = transformToASTDirectiveNode(currentElement);
+                    const directiveNode = transformToASTNode(currentElement);
                     parentASTNode.children.push(directiveNode);
                     astNodeMap.set(currentElement, directiveNode);
                 }
