@@ -565,6 +565,29 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        'throws an error if public property name starts with an upper case letter',
+        `
+        import { api } from 'lwc';
+        export default class Test {
+            @api
+            Upper = 'foo';
+        }
+    `,
+        {
+            error: {
+                message:
+                    'Invalid property name "Upper". Property name must start with a lowercase character.',
+                loc: {
+                    line: 3,
+                    column: 0,
+                    length: 19,
+                    start: 55,
+                },
+            },
+        }
+    );
+
+    pluginTest(
         'throws correct error if property name is maxlength',
         `
         import { api } from 'lwc';

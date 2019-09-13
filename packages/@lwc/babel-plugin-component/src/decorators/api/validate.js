@@ -15,6 +15,8 @@ const {
 
 const { generateError } = require('../../utils');
 
+const LEADING_UPPER_CASE_REGEX = new RegExp('^[A-Z.]');
+
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(
         decorator =>
@@ -76,6 +78,11 @@ function validatePropertyName(property) {
         throw generateError(property, {
             errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
             messageArgs: [propertyName, camelCased],
+        });
+    } else if (LEADING_UPPER_CASE_REGEX.test(propertyName)) {
+        throw generateError(property, {
+            errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_UPPERCASE_CHARACTER,
+            messageArgs: [propertyName],
         });
     }
 }

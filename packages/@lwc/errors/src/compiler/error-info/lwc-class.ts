@@ -190,6 +190,14 @@ export const DecoratorErrors = {
         url: '',
     },
 
+    PROPERTY_NAME_CANNOT_START_WITH_UPPERCASE_CHARACTER: {
+        code: 1133,
+        message:
+            'Invalid property name "{0}". Property name must start with a lowercase character.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
     SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR: {
         code: 1112,
         message:
