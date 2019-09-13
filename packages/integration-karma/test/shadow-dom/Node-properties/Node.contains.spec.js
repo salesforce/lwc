@@ -67,4 +67,12 @@ describe('Node.contains', () => {
                 .contains(shadowRoot.querySelector('.slotted'))
         ).toBe(false);
     });
+
+    it('should return false when argument is null or undefined', () => {
+        const div = document.createElement('div');
+        document.body.appendChild(div);
+
+        expect(div.contains(undefined)).toBe(false);
+        expect(div.contains(null)).toBe(false);
+    });
 });

@@ -4,7 +4,22 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import {
+    ArrayPush,
+    ArraySlice,
+    ArrayUnshift,
+    assert,
+    create,
+    fields,
+    isArray,
+    isFalse,
+    isNull,
+    isObject,
+    isTrue,
+    isUndefined,
+    keys,
+    StringToLowerCase,
+} from '@lwc/shared';
 import { getComponentDef } from './def';
 import {
     createComponent,
@@ -13,21 +28,6 @@ import {
     ComponentConstructor,
     markComponentAsDirty,
 } from './component';
-import {
-    ArrayPush,
-    isUndefined,
-    isNull,
-    ArrayUnshift,
-    ArraySlice,
-    create,
-    isTrue,
-    isObject,
-    keys,
-    StringToLowerCase,
-    isFalse,
-    isArray,
-} from '../shared/language';
-import { getInternalField, getHiddenField } from '../shared/fields';
 import {
     ViewModelReflection,
     addCallbackToNextTick,
@@ -420,7 +420,7 @@ function runDisconnectedCallback(vm: VM) {
         // it will be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
         // of disconnected components.
-        markComponentAsDirty(vm);
+        vm.isDirty = true;
     }
     vm.state = VMState.disconnected;
     // reporting disconnection
@@ -529,12 +529,13 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     return getErrorBoundaryVM(elm);
 }
 
+const { getHiddenField } = fields;
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
     let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = getInternalField(elm, ViewModelReflection);
+        vm = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -553,7 +554,7 @@ export function getErrorComponentStack(startingElement: Element): string {
     const wcStack: string[] = [];
     let elm: Element | null = startingElement;
     do {
-        const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
+        const currentVm: VM | undefined = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             const tagName = tagNameGetter.call(elm);
             const is = elm.getAttribute('is');
@@ -619,10 +620,10 @@ export function isNodeFromTemplate(node: Node): boolean {
 
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getInternalField(elm, ViewModelReflection);
+        const vm = getHiddenField(elm, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    return getInternalField(elm, ViewModelReflection) as VM;
+    return getHiddenField(elm, ViewModelReflection) as VM;
 }
 
 export function getComponentVM(component: ComponentInterface): VM {
@@ -636,10 +637,10 @@ export function getComponentVM(component: ComponentInterface): VM {
 export function getShadowRootVM(root: ShadowRoot): VM {
     // TODO: #1299 - use a weak map instead of an internal field
     if (process.env.NODE_ENV !== 'production') {
-        const vm = getInternalField(root, ViewModelReflection);
+        const vm = getHiddenField(root, ViewModelReflection);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
     }
-    return getInternalField(root, ViewModelReflection) as VM;
+    return getHiddenField(root, ViewModelReflection) as VM;
 }
 
 // slow path routine

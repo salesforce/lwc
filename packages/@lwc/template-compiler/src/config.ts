@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
+import { hasOwnProperty } from '@lwc/shared';
 
 export type Format = 'module' | 'function';
 
@@ -59,7 +60,7 @@ export function mergeConfig(config: Config): ResolvedConfig {
     );
 
     for (const property in config) {
-        if (!AVAILABLE_OPTION_NAMES.has(property) && config.hasOwnProperty(property)) {
+        if (!AVAILABLE_OPTION_NAMES.has(property) && hasOwnProperty.call(config, property)) {
             throw generateCompilerError(TemplateErrors.UNKNOWN_OPTION_PROPERTY, {
                 messageArgs: [property],
             });

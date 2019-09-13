@@ -10,12 +10,12 @@ import {
     ArrayReduce,
     ArraySplice,
     create,
-    defineProperty,
     defineProperties,
+    defineProperty,
     forEach,
-    isUndefined,
     isNull,
-} from '../../shared/language';
+    isUndefined,
+} from '@lwc/shared';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../faux-shadow/node';
 import { SyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 

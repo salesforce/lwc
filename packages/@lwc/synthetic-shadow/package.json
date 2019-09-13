@@ -16,11 +16,17 @@
         "dist/"
     ],
     "lwc": {
-        "modules": {
-            "@lwc/synthetic-shadow": "dist/synthetic-shadow.js"
-        }
+        "modules": [
+            {
+                "name": "@lwc/synthetic-shadow",
+                "path": "dist/synthetic-shadow.js"
+            }
+        ]
     },
     "publishConfig": {
         "access": "public"
+    },
+    "dependencies": {
+        "@lwc/shared": "1.0.2"
     }
 }

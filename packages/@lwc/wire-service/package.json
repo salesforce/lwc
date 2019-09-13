@@ -18,15 +18,21 @@
         "dist/",
         "types/"
     ],
+    "dependencies": {
+        "@lwc/shared": "1.0.2"
+    },
     "devDependencies": {
         "@lwc/compiler": "1.0.2",
         "@lwc/engine": "1.0.2",
         "@lwc/rollup-plugin": "1.0.2"
     },
     "lwc": {
-        "modules": {
-            "wire-service": "dist/wire-service.js"
-        }
+        "modules": [
+            {
+                "name": "wire-service",
+                "path": "dist/wire-service.js"
+            }
+        ]
     },
     "publishConfig": {
         "access": "public"

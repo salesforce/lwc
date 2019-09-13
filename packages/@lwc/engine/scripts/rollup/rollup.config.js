@@ -53,7 +53,7 @@ function rollupConfig({ format = 'es' } = {}) {
             footer: footer,
         },
         plugins: [
-            nodeResolve(),
+            nodeResolve({ only: [/^@lwc\//, 'observable-membrane'] }),
             rollupTypescriptPlugin({
                 target: 'es2017',
                 typescript,

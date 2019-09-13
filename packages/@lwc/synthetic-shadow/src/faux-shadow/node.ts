@@ -5,16 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
-    isNull,
-    isFalse,
-    defineProperty,
-    defineProperties,
     ArrayUnshift,
-    isTrue,
-    hasOwnProperty,
+    defineProperties,
+    defineProperty,
     getOwnPropertyDescriptor,
-} from '../shared/language';
+    hasOwnProperty,
+    isFalse,
+    isNull,
+    isTrue,
+    isUndefined,
+} from '@lwc/shared';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -190,7 +190,7 @@ function compareDocumentPositionPatched(this: Node, otherNode: Node) {
 }
 
 function containsPatched(this: Node, otherNode: Node) {
-    if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+    if (otherNode == null || getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
         // it is from another shadow
         return false;
     }
@@ -408,7 +408,6 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
-            deep = isUndefined(deep) || deep;
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return cloneNodePatched.call(this, deep);
             }

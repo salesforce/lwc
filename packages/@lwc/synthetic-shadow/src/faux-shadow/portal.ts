@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, forEach, defineProperty, isTrue } from '../shared/language';
+import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { getInternalChildNodes } from './node';
 import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';

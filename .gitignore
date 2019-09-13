@@ -9,7 +9,6 @@ coverage/
 .project/
 
 lib/
-playground/
 packages/**/dist/
 benchmarking/dist/
 __benchmarks_results__/

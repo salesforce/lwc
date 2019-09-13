@@ -108,7 +108,7 @@ const nonProdTests = {
             console.log(ENABLE_FEATURE_NULL ? 'foo' : 'bar');
         `,
     },
-    'should not transform nested feature flags': {
+    'should transform nested feature flags': {
         code: `
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
             if (ENABLE_FEATURE_NULL) {
@@ -121,24 +121,48 @@ const nonProdTests = {
             import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_NULL) {
-              if (ENABLE_FEATURE_TRUE) {
+              if (runtimeFlags.ENABLE_FEATURE_TRUE) {
                 console.log('this looks like a bad idea');
               }
             }
         `,
     },
+    'should ignore invalid feature flags': {
+        code: `
+            import { invalidFeatureFlag } from '@lwc/features';
+            if (invalidFeatureFlag) {
+                console.log('invalidFeatureFlag');
+            }
+        `,
+        output: `
+            import { invalidFeatureFlag, runtimeFlags } from '@lwc/features';
+
+            if (invalidFeatureFlag) {
+              console.log('invalidFeatureFlag');
+            }
+        `,
+    },
+};
+
+const featureFlags = {
+    ENABLE_FEATURE_TRUE: true,
+    ENABLE_FEATURE_FALSE: false,
+    ENABLE_FEATURE_NULL: null,
+    invalidFeatureFlag: true, // invalid because it's not all uppercase
+};
+
+const babelOptions = {
+    babelrc: false,
+    configFile: false,
 };
 
 pluginTester({
     title: 'non-prod environments',
     plugin,
     pluginOptions: {
-        featureFlags: {
-            ENABLE_FEATURE_TRUE: true,
-            ENABLE_FEATURE_FALSE: false,
-            ENABLE_FEATURE_NULL: null,
-        },
+        featureFlags,
     },
+    babelOptions,
     tests: nonProdTests,
 });
 
@@ -146,13 +170,10 @@ pluginTester({
     title: 'prod environments',
     plugin,
     pluginOptions: {
-        featureFlags: {
-            ENABLE_FEATURE_TRUE: true,
-            ENABLE_FEATURE_FALSE: false,
-            ENABLE_FEATURE_NULL: null,
-        },
+        featureFlags,
         prod: true,
     },
+    babelOptions,
     tests: Object.assign({}, nonProdTests, {
         // Override of nonProdTest version
         'should transform boolean-true feature flags': {
@@ -179,6 +200,37 @@ pluginTester({
             `,
             output: `
                 import { ENABLE_FEATURE_FALSE, runtimeFlags } from '@lwc/features';
+            `,
+        },
+        // Override of nonProdTest version
+        'should transform nested feature flags': {
+            code: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
+                if (ENABLE_FEATURE_NULL) {
+                    if (ENABLE_FEATURE_TRUE) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+                if (ENABLE_FEATURE_TRUE) {
+                    if (ENABLE_FEATURE_NULL) {
+                        console.log('nested feature flags sounds like a vary bad idea');
+                    }
+                }
+            `,
+            output: `
+                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                  {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
+
+                {
+                  if (runtimeFlags.ENABLE_FEATURE_NULL) {
+                    console.log('nested feature flags sounds like a vary bad idea');
+                  }
+                }
             `,
         },
         'should transform both boolean and null feature flags': {
@@ -271,36 +323,6 @@ pluginTester({
             `,
             output: `
                 console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-            `,
-        },
-        'should not transform nested feature flags': {
-            code: `
-                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL } from '@lwc/features';
-                if (ENABLE_FEATURE_NULL) {
-                    if (ENABLE_FEATURE_TRUE) {
-                        console.log('nested feature flags sounds like a vary bad idea');
-                    }
-                }
-                if (ENABLE_FEATURE_TRUE) {
-                    if (ENABLE_FEATURE_NULL) {
-                        console.log('nested feature flags sounds like a vary bad idea');
-                    }
-                }
-            `,
-            output: `
-                import { ENABLE_FEATURE_TRUE, ENABLE_FEATURE_NULL, runtimeFlags } from '@lwc/features';
-
-                if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                  if (ENABLE_FEATURE_TRUE) {
-                    console.log('nested feature flags sounds like a vary bad idea');
-                  }
-                }
-
-                {
-                  if (ENABLE_FEATURE_NULL) {
-                    console.log('nested feature flags sounds like a vary bad idea');
-                  }
-                }
             `,
         },
     }),

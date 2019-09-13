@@ -1,5 +1,4 @@
 import { LightningElement, api } from 'lwc';
-import tmpl from './reactivity.html';
 
 export default class Reactivity extends LightningElement {
     @api nonReactive;
@@ -12,8 +11,7 @@ export default class Reactivity extends LightningElement {
         return this.renderCount;
     }
 
-    render() {
+    renderedCallback() {
         this.renderCount++;
-        return tmpl;
     }
 }

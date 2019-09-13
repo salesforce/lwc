@@ -11,7 +11,7 @@
  * Register wire adapters with `register(adapterId: any, adapterFactory: WireAdapterFactory)`.
  */
 
-import assert from './assert';
+import { assert } from '@lwc/shared';
 import { CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED, CONTEXT_UPDATED } from './constants';
 import { ElementDef } from './engine';
 import {

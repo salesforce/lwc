@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from './language';
-import { createFieldName, getInternalField, setInternalField } from './fields';
+import { ArrayMap, create, defineProperty, fields, forEach, setPrototypeOf } from '@lwc/shared';
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
-const Items = createFieldName('items');
+const Items = createFieldName('items', 'synthetic-shadow');
 
 function StaticNodeList() {
     throw new TypeError('Illegal constructor');
@@ -31,7 +31,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getInternalField(this, Items).length;
+            return getHiddenField(this, Items).length;
         },
     },
 
@@ -42,7 +42,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value(cb, thisArg) {
-            forEach.call(getInternalField(this, Items), cb, thisArg);
+            forEach.call(getHiddenField(this, Items), cb, thisArg);
         },
     },
     entries: {
@@ -50,7 +50,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => [i, v]);
+            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => [i, v]);
         },
     },
     keys: {
@@ -58,7 +58,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => i);
+            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => i);
         },
     },
     values: {
@@ -66,7 +66,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return getInternalField(this, Items);
+            return getHiddenField(this, Items);
         },
     },
     [Symbol.iterator]: {
@@ -76,7 +76,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
             let nextIndex = 0;
             return {
                 next: () => {
-                    const items = getInternalField(this, Items);
+                    const items = getHiddenField(this, Items);
                     return nextIndex < items.length
                         ? {
                               value: items[nextIndex++],
@@ -110,7 +110,7 @@ setPrototypeOf(StaticNodeList, NodeList);
 
 export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> {
     const nodeList: NodeListOf<T> = create(StaticNodeList.prototype);
-    setInternalField(nodeList, Items, items);
+    setHiddenField(nodeList, Items, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(nodeList, index, {

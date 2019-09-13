@@ -18,6 +18,7 @@ import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 import _possibleConstructorReturn from '@babel/runtime/helpers/possibleConstructorReturn';
 import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
 import _inherits from '@babel/runtime/helpers/inherits';
+import { registerDecorators } from 'lwc';
 function _templateObject3() {
 var data = _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
 _templateObject3 = function _templateObject3() {
@@ -212,4 +213,7 @@ var Bar = function Bar() {
 _classCallCheck(this, Bar);
 __setKey(this, "bar", "foo");
 };
+registerDecorators(Bar, {
+  fields: ["bar"]
+});
 export { Bar, Test, literal, obj1, obj2, t, test };

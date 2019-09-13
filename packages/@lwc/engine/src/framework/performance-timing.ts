@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isUndefined, StringToLowerCase } from '@lwc/shared';
 import { UninitializedVM } from './vm';
-
 import { tagNameGetter } from '../env/element';
-import { StringToLowerCase, isUndefined } from '../shared/language';
 
 type MeasurementPhase =
     | 'constructor'

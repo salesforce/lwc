@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperties } from '../shared/language';
+import { defineProperties } from '@lwc/shared';
 import { assignedSlotGetterPatched } from './slot';
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that

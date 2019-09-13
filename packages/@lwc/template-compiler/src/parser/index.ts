@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5-with-errors';
+import { hasOwnProperty } from '@lwc/shared';
 
 import {
     treeAdapter,
@@ -433,7 +434,7 @@ export default function parse(source: string, state: State): TemplateParseResult
 
         if (
             lwcDomAttribute.type !== IRAttributeType.String ||
-            LWCDirectiveDomMode.hasOwnProperty(lwcDomAttribute.value) === false
+            hasOwnProperty.call(LWCDirectiveDomMode, lwcDomAttribute.value) === false
         ) {
             const possibleValues = Object.keys(LWCDirectiveDomMode)
                 .map(value => `"${value}"`)

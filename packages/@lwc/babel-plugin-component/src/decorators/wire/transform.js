@@ -9,6 +9,7 @@ const { staticClassProperty, markAsLWCNode } = require('../../utils');
 const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
+const WIRE_CONFIG_ARG_NAME = '$cmp';
 
 function isObservedProperty(configProperty) {
     const propertyValue = configProperty.get('value');
@@ -37,6 +38,92 @@ function getWiredParams(t, wireConfig) {
         });
 }
 
+function getGeneratedConfig(t, wiredValue) {
+    let counter = 0;
+    const configBlockBody = [];
+    const configProps = [];
+    const generateParameterConfigValue = memberExprPaths => {
+        if (memberExprPaths.length === 1) {
+            return {
+                configValueExpression: t.memberExpression(
+                    t.identifier(WIRE_CONFIG_ARG_NAME),
+                    t.identifier(memberExprPaths[0])
+                ),
+            };
+        }
+
+        const varName = 'v' + ++counter;
+        const varDeclaration = t.variableDeclaration('let', [
+            t.variableDeclarator(
+                t.identifier(varName),
+                t.memberExpression(
+                    t.identifier(WIRE_CONFIG_ARG_NAME),
+                    t.identifier(memberExprPaths[0])
+                )
+            ),
+        ]);
+
+        // Results in: v != null && ... (v = v.i) != null && ... (v = v.(n-1)) != null
+        let conditionTest = t.binaryExpression('!=', t.identifier(varName), t.nullLiteral());
+
+        for (let i = 1, n = memberExprPaths.length; i < n - 1; i++) {
+            const nextPropValue = t.assignmentExpression(
+                '=',
+                t.identifier(varName),
+                t.memberExpression(t.identifier(varName), t.identifier(memberExprPaths[i]))
+            );
+
+            conditionTest = t.logicalExpression(
+                '&&',
+                conditionTest,
+                t.binaryExpression('!=', nextPropValue, t.nullLiteral())
+            );
+        }
+
+        // conditionTest ? v.n : undefined
+        const configValueExpression = t.conditionalExpression(
+            conditionTest,
+            t.memberExpression(
+                t.identifier(varName),
+                t.identifier(memberExprPaths[memberExprPaths.length - 1])
+            ),
+            t.identifier('undefined')
+        );
+
+        return {
+            varDeclaration,
+            configValueExpression,
+        };
+    };
+
+    if (wiredValue.static) {
+        Array.prototype.push.apply(configProps, wiredValue.static);
+    }
+
+    if (wiredValue.params) {
+        wiredValue.params.forEach(param => {
+            const memberExprPaths = param.value.value.split('.');
+            const paramConfigValue = generateParameterConfigValue(memberExprPaths);
+
+            configProps.push(t.objectProperty(param.key, paramConfigValue.configValueExpression));
+
+            if (paramConfigValue.varDeclaration) {
+                configBlockBody.push(paramConfigValue.varDeclaration);
+            }
+        });
+    }
+
+    configBlockBody.push(t.returnStatement(t.objectExpression(configProps)));
+
+    const fnExpression = t.functionExpression(
+        null,
+        [t.identifier(WIRE_CONFIG_ARG_NAME)],
+        t.blockStatement(configBlockBody)
+    );
+
+    return t.objectProperty(t.identifier('config'), fnExpression);
+}
+
 function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(
         wiredValues.map(wiredValue => {
@@ -62,6 +149,8 @@ function buildWireConfigValue(t, wiredValues) {
             if (wiredValue.isClassMethod) {
                 wireConfig.push(t.objectProperty(t.identifier('method'), t.numericLiteral(1)));
             }
+
+            wireConfig.push(getGeneratedConfig(t, wiredValue));
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),

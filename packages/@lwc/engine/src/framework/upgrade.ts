@@ -4,8 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
-import { isUndefined, assign, isNull, isObject, isFunction, toString } from '../shared/language';
+import {
+    assert,
+    assign,
+    fields,
+    isFunction,
+    isNull,
+    isObject,
+    isUndefined,
+    toString,
+} from '@lwc/shared';
 import { createVM, removeRootVM, appendRootVM, getCustomElementVM, VMState } from './vm';
 import { ComponentConstructor } from './component';
 import {
@@ -14,20 +22,20 @@ import {
     resolveCircularModuleDependency,
     ViewModelReflection,
 } from './utils';
-import { setInternalField, getInternalField, createFieldName } from '../shared/fields';
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
 
-const ConnectingSlot = createFieldName('connecting');
-const DisconnectingSlot = createFieldName('disconnecting');
+const { createFieldName, getHiddenField, setHiddenField } = fields;
+const ConnectingSlot = createFieldName('connecting', 'engine');
+const DisconnectingSlot = createFieldName('disconnecting', 'engine');
 
 function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
-    const fn = getInternalField(node, slot);
+    const fn = getHiddenField(node, slot);
     if (!isUndefined(fn)) {
         fn();
     }
@@ -97,7 +105,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
 
     // Create element with correct tagName
     const element = document.createElement(sel);
-    if (!isUndefined(getInternalField(element, ViewModelReflection))) {
+    if (!isUndefined(getHiddenField(element, ViewModelReflection))) {
         // There is a possibility that a custom element is registered under tagName,
         // in which case, the initialization is already carry on, and there is nothing else
         // to do here.
@@ -117,7 +125,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    setInternalField(element, ConnectingSlot, () => {
+    setHiddenField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
         startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
         if (vm.state === VMState.connected) {
@@ -127,7 +135,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         appendRootVM(vm);
         endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
     });
-    setInternalField(element, DisconnectingSlot, () => {
+    setHiddenField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);
         removeRootVM(vm);
     });

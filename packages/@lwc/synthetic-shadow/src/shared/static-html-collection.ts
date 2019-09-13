@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, forEach, ArrayMap, create, setPrototypeOf } from './language';
-import { createFieldName, getInternalField, setInternalField } from './fields';
+import { ArrayMap, create, defineProperty, fields, forEach, setPrototypeOf } from '@lwc/shared';
+const { createFieldName, getHiddenField, setHiddenField } = fields;
 
 const Items = createFieldName('items');
 
@@ -38,7 +38,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         get() {
-            return getInternalField(this, Items).length;
+            return getHiddenField(this, Items).length;
         },
     },
     // https://dom.spec.whatwg.org/#dom-htmlcollection-nameditem-key
@@ -50,7 +50,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             if (isValidHTMLCollectionName(name) && this[name]) {
                 return this[name];
             }
-            const items = getInternalField(this, Items);
+            const items = getHiddenField(this, Items);
             // Note: loop in reverse so that the first named item matches the named property
             for (let len = items.length - 1; len >= 0; len -= 1) {
                 const item = items[len];
@@ -70,7 +70,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value(cb, thisArg) {
-            forEach.call(getInternalField(this, Items), cb, thisArg);
+            forEach.call(getHiddenField(this, Items), cb, thisArg);
         },
     },
     entries: {
@@ -78,7 +78,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => [i, v]);
+            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => [i, v]);
         },
     },
     keys: {
@@ -86,7 +86,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(getInternalField(this, Items), (v: any, i: number) => i);
+            return ArrayMap.call(getHiddenField(this, Items), (v: any, i: number) => i);
         },
     },
     values: {
@@ -94,7 +94,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return getInternalField(this, Items);
+            return getHiddenField(this, Items);
         },
     },
     [Symbol.iterator]: {
@@ -104,7 +104,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
             let nextIndex = 0;
             return {
                 next: () => {
-                    const items = getInternalField(this, Items);
+                    const items = getHiddenField(this, Items);
                     return nextIndex < items.length
                         ? {
                               value: items[nextIndex++],
@@ -138,7 +138,7 @@ setPrototypeOf(StaticHTMLCollection, HTMLCollection);
 
 export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLCollectionOf<T> {
     const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype);
-    setInternalField(collection, Items, items);
+    setHiddenField(collection, Items, items);
     // setting static indexes
     forEach.call(items, (item: T, index: number) => {
         defineProperty(collection, index, {

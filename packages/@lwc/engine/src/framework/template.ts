@@ -4,19 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
 import {
+    ArrayIndexOf,
+    ArrayUnshift,
+    assert,
+    create,
+    forEach,
     isArray,
     isFunction,
     isNull,
     isObject,
     isUndefined,
-    create,
-    ArrayIndexOf,
     toString,
-    forEach,
-    ArrayUnshift,
-} from '../shared/language';
+} from '@lwc/shared';
+import { logError } from '../shared/assert';
 import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
@@ -81,7 +82,7 @@ function validateSlots(vm: VM, html: any) {
         if (slotName !== '' && ArrayIndexOf.call(slots, slotName) === -1) {
             // TODO: #1297 - this should never really happen because the compiler should always validate
             // eslint-disable-next-line no-production-assert
-            assert.logError(
+            logError(
                 `Ignoring unknown provided slot name "${slotName}" in ${vm}. Check for a typo on the slot attribute.`,
                 vm.elm
             );
@@ -101,7 +102,7 @@ function validateFields(vm: VM, html: Template) {
     forEach.call(ids, (propName: string) => {
         if (!(propName in component)) {
             // eslint-disable-next-line no-production-assert
-            assert.logError(
+            logError(
                 `The template rendered by ${vm} references \`this.${propName}\`, which is not declared. Check for a typo in the template.`,
                 vm.elm
             );
@@ -172,6 +173,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         // validating slots in every rendering since the allocated content might change over time
         validateSlots(vm, html);
     }
+    // right before producing the vnodes, we clear up all internal references
+    // to custom elements from the template.
+    vm.velements = [];
+    // invoke the selected template.
     const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
 
     const { styleVNode } = context;

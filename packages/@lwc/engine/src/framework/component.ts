@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from '../shared/assert';
+import { assert, isArray, isFalse, isFunction, isUndefined, StringToLowerCase } from '@lwc/shared';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -12,7 +12,6 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from './invoker';
-import { isArray, isFunction, isUndefined, StringToLowerCase, isFalse } from '../shared/language';
 import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
@@ -109,13 +108,6 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     });
 }
 
-function clearChildLWC(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
-    }
-    vm.velements = [];
-}
-
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
@@ -123,7 +115,6 @@ export function renderComponent(vm: VM): VNodes {
     }
 
     vm.tro.reset();
-    clearChildLWC(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.isScheduled = false;

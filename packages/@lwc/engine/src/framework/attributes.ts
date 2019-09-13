@@ -12,7 +12,7 @@ import {
     isUndefined,
     StringReplace,
     StringToLowerCase,
-} from '../shared/language';
+} from '@lwc/shared';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = [

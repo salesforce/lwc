@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import assert from './assert';
+import { assert } from '@lwc/shared';
 import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,

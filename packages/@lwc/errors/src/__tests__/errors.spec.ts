@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { hasOwnProperty } from '@lwc/shared';
 import * as CompilerErrors from '../compiler/error-info';
 import { LWCErrorInfo } from '../shared/types';
 
@@ -44,7 +45,7 @@ expect.extend({
 function traverseErrorInfo(object, fn: (errorInfo: LWCErrorInfo, path: string) => void, path) {
     Object.keys(object).forEach(key => {
         const property = object[key];
-        if (property && property.hasOwnProperty('code')) {
+        if (property && hasOwnProperty.call(property, 'code')) {
             fn(property as LWCErrorInfo, `${path}.${key}`);
         } else if (property) {
             traverseErrorInfo(property, fn, `${path}.${key}`);

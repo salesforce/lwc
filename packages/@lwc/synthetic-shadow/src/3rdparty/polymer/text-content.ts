@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // This code is inspired by Polymer ShadyDOM Polyfill
 
 import { getFilteredChildNodes } from '../../faux-shadow/traverse';
-import { ELEMENT_NODE } from '../../env/node';
+import { ELEMENT_NODE, COMMENT_NODE } from '../../env/node';
 
 export function getTextContent(node: Node): string {
     switch (node.nodeType) {
@@ -25,7 +25,11 @@ export function getTextContent(node: Node): string {
             const childNodes = getFilteredChildNodes(node);
             let content = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                content += getTextContent(childNodes[i]);
+                const currentNode = childNodes[i];
+
+                if (currentNode.nodeType !== COMMENT_NODE) {
+                    content += getTextContent(currentNode);
+                }
             }
             return content;
         }

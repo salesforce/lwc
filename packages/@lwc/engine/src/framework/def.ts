@@ -13,20 +13,21 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from '../shared/assert';
 import {
+    ArrayReduce,
+    assert,
     assign,
-    freeze,
     create,
+    defineProperties,
+    fields,
+    freeze,
     getOwnPropertyNames,
     getPrototypeOf,
-    isNull,
-    setPrototypeOf,
-    ArrayReduce,
-    isUndefined,
     isFunction,
-} from '../shared/language';
-import { getInternalField } from '../shared/fields';
+    isNull,
+    isUndefined,
+    setPrototypeOf,
+} from '@lwc/shared';
 import { getAttrNameFromPropName } from './attributes';
 import {
     resolveCircularModuleDependency,
@@ -39,6 +40,7 @@ import {
     ComponentMeta,
     getComponentRegisteredMeta,
 } from './component';
+import { createObservedFieldsDescriptorMap } from './observed-fields';
 import { Template } from './template';
 
 export interface ComponentDef extends DecoratorMeta {
@@ -54,6 +56,7 @@ export interface ComponentDef extends DecoratorMeta {
 }
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
+const { getHiddenField } = fields;
 
 function getCtorProto(Ctor: any, subclassComponentName: string): ComponentConstructor {
     let proto: ComponentConstructor | null = getPrototypeOf(Ctor);
@@ -104,11 +107,13 @@ function createComponentDef(
     let methods: MethodDef = {};
     let wire: WireHash | undefined;
     let track: TrackDef = {};
+    let fields: string[] | undefined;
     if (!isUndefined(decoratorsMeta)) {
         props = decoratorsMeta.props;
         methods = decoratorsMeta.methods;
         wire = decoratorsMeta.wire;
         track = decoratorsMeta.track;
+        fields = decoratorsMeta.fields;
     }
     const proto = Ctor.prototype;
 
@@ -143,6 +148,10 @@ function createComponentDef(
         template = template || superDef.template;
     }
     props = assign(create(null), HTML_PROPS, props);
+
+    if (!isUndefined(fields)) {
+        defineProperties(proto, createObservedFieldsDescriptorMap(fields));
+    }
 
     if (isUndefined(template)) {
         // default template
@@ -248,7 +257,7 @@ export function getComponentDef(Ctor: any, subclassComponentName?: string): Comp
 export function getComponentConstructor(elm: HTMLElement): ComponentConstructor | null {
     let ctor: ComponentConstructor | null = null;
     if (elm instanceof HTMLElement) {
-        const vm = getInternalField(elm, ViewModelReflection);
+        const vm = getHiddenField(elm, ViewModelReflection);
         if (!isUndefined(vm)) {
             ctor = vm.def.ctor;
         }
