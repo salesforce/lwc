@@ -43,11 +43,22 @@ function getGeneratedConfig(t, wiredValue) {
     const configBlockBody = [];
     const configProps = [];
     const generateParameterConfigValue = memberExprPaths => {
+        // Note: When memberExprPaths ($foo.bar) has an invalid identifier (eg: foo..bar, foo.bar[3])
+        //       it should (ideally) resolve in a compilation error during validation phase.
+        //       This is not possible due that platform components may have a param definition which is invalid
+        //       but passes compilation, and throwing at compile time would break such components.
+        //       In such cases where the param does not have proper notation, the config generated will use the bracket
+        //       notation to match the current behavior (that most likely end up resolving that param as undefined).
+        const isInvalidMemberExpr = memberExprPaths.some(
+            maybeIdentifier => !t.isValidES3Identifier(maybeIdentifier)
+        );
+        const memberExprPropertyGen = !isInvalidMemberExpr ? t.identifier : t.StringLiteral;
+
         if (memberExprPaths.length === 1) {
             return {
                 configValueExpression: t.memberExpression(
                     t.identifier(WIRE_CONFIG_ARG_NAME),
-                    t.identifier(memberExprPaths[0])
+                    memberExprPropertyGen(memberExprPaths[0])
                 ),
             };
         }
@@ -58,7 +69,8 @@ function getGeneratedConfig(t, wiredValue) {
                 t.identifier(varName),
                 t.memberExpression(
                     t.identifier(WIRE_CONFIG_ARG_NAME),
-                    t.identifier(memberExprPaths[0])
+                    memberExprPropertyGen(memberExprPaths[0]),
+                    isInvalidMemberExpr
                 )
             ),
         ]);
@@ -70,7 +82,11 @@ function getGeneratedConfig(t, wiredValue) {
             const nextPropValue = t.assignmentExpression(
                 '=',
                 t.identifier(varName),
-                t.memberExpression(t.identifier(varName), t.identifier(memberExprPaths[i]))
+                t.memberExpression(
+                    t.identifier(varName),
+                    memberExprPropertyGen(memberExprPaths[i]),
+                    isInvalidMemberExpr
+                )
             );
 
             conditionTest = t.logicalExpression(
@@ -85,7 +101,8 @@ function getGeneratedConfig(t, wiredValue) {
             conditionTest,
             t.memberExpression(
                 t.identifier(varName),
-                t.identifier(memberExprPaths[memberExprPaths.length - 1])
+                memberExprPropertyGen(memberExprPaths[memberExprPaths.length - 1]),
+                isInvalidMemberExpr
             ),
             t.identifier('undefined')
         );
