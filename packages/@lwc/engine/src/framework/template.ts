@@ -188,21 +188,21 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
         () => {
             // invoke the selected template.
             vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
-            const { styleVNode } = context;
-            if (!isNull(styleVNode)) {
-                ArrayUnshift.call(vnodes, styleVNode);
-            }
-
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(
-                    isArray(vnodes),
-                    `Compiler should produce html functions that always return an array.`
-                );
-            }
         },
         () => {
             isEvaluatingTemplate = isEvaluatingTemplateInception;
         }
     );
+    const { styleVNode } = context;
+    if (!isNull(styleVNode)) {
+        ArrayUnshift.call(vnodes, styleVNode);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(
+            isArray(vnodes),
+            `Compiler should produce html functions that always return an array.`
+        );
+    }
     return vnodes;
 }
