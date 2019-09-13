@@ -25,7 +25,7 @@ const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap()
 export function notifyMutation(target: object, key: PropertyKey) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
-            !isRendering,
+            !isRendering && !isEvaluatingTemplate,
             `Mutating property ${toString(key)} of ${toString(
                 target
             )} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
@@ -78,3 +78,4 @@ export function observeMutation(target: object, key: PropertyKey) {
 import { scheduleRehydration } from './vm';
 import { markComponentAsDirty } from './component';
 import { vmBeingRendered, isRendering } from './invoker';
+import { isEvaluatingTemplate } from './template';

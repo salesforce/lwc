@@ -12,6 +12,7 @@ import { ComponentInterface, ComponentConstructor } from '../component';
 import { getComponentVM } from '../vm';
 import { isUndefined, isFunction } from '../../shared/language';
 import { getDecoratorsRegisteredMeta } from './register';
+import { isEvaluatingTemplate } from '../template';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -89,7 +90,7 @@ function createPublicPropertyDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
-                    !isRendering,
+                    !isRendering && !isEvaluatingTemplate,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
                         key
                     )}`
@@ -138,7 +139,7 @@ function createPublicAccessorDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
-                    !isRendering,
+                    !isRendering && !isEvaluatingTemplate,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
                         key
                     )}`

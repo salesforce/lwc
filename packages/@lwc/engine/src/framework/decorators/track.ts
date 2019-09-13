@@ -11,6 +11,7 @@ import { observeMutation, notifyMutation } from '../watcher';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';
+import { isEvaluatingTemplate } from '../template';
 
 /**
  * @track decorator to mark fields as reactive in
@@ -74,7 +75,7 @@ export function createTrackedPropertyDescriptor(
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
-                    !isRendering,
+                    !isRendering && !isEvaluatingTemplate,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(
                         key
                     )}`

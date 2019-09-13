@@ -124,6 +124,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         () => {
             // job
             const html = callHook(component, render);
+            isRendering = false;
             result = evaluateTemplate(vm, html);
         },
         () => {

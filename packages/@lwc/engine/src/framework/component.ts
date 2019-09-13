@@ -24,7 +24,7 @@ import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
-import { Template } from './template';
+import { Template, isEvaluatingTemplate } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -149,8 +149,8 @@ export function markComponentAsDirty(vm: VM) {
             vm.isDirty,
             `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`
         );
-        assert.isFalse(
-            isRendering,
+        assert.isTrue(
+            !isRendering && !isEvaluatingTemplate,
             `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
         );
     }

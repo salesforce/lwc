@@ -24,6 +24,7 @@ import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
 import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getShadowRootVM, getComponentVM } from './vm';
+import { isEvaluatingTemplate } from './template';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -212,7 +213,7 @@ function getShadowRootRestrictionsDescriptors(
         addEventListener: generateDataDescriptor({
             value(this: ShadowRoot, type: string) {
                 assert.invariant(
-                    !isRendering,
+                    !isRendering && !isEvaluatingTemplate,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
                         sr
                     )} by adding an event listener for "${type}".`
@@ -309,7 +310,7 @@ function getCustomElementRestrictionsDescriptors(
         addEventListener: generateDataDescriptor({
             value(this: HTMLElement, type: string) {
                 assert.invariant(
-                    !isRendering,
+                    !isRendering && !isEvaluatingTemplate,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
                         elm
                     )} by adding an event listener for "${type}".`

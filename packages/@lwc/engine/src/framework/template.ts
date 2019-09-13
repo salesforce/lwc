@@ -21,7 +21,7 @@ import { VNode, VNodes } from '../3rdparty/snabbdom/types';
 import * as api from './api';
 import { RenderAPI } from './api';
 import { Context } from './context';
-import { SlotSet, VM, resetShadowRoot } from './vm';
+import { SlotSet, VM, resetShadowRoot, runWithBoundaryProtection } from './vm';
 import { EmptyArray } from './utils';
 import { isTemplateRegistered, registerTemplate } from './secure-template';
 import {
@@ -31,6 +31,7 @@ import {
     resetStyleAttributes,
 } from './stylesheet';
 
+export let isEvaluatingTemplate: boolean = false;
 export { registerTemplate };
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): VNodes;
@@ -175,19 +176,33 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode | null> {
     // right before producing the vnodes, we clear up all internal references
     // to custom elements from the template.
     vm.velements = [];
-    // invoke the selected template.
-    const vnodes: VNodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
 
-    const { styleVNode } = context;
-    if (!isNull(styleVNode)) {
-        ArrayUnshift.call(vnodes, styleVNode);
-    }
+    const isEvaluatingTemplateInception = isEvaluatingTemplate;
+    let vnodes: VNodes = [];
+    runWithBoundaryProtection(
+        vm,
+        vm.owner,
+        () => {
+            isEvaluatingTemplate = true;
+        },
+        () => {
+            // invoke the selected template.
+            vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache!);
+            const { styleVNode } = context;
+            if (!isNull(styleVNode)) {
+                ArrayUnshift.call(vnodes, styleVNode);
+            }
 
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            isArray(vnodes),
-            `Compiler should produce html functions that always return an array.`
-        );
-    }
+            if (process.env.NODE_ENV !== 'production') {
+                assert.invariant(
+                    isArray(vnodes),
+                    `Compiler should produce html functions that always return an array.`
+                );
+            }
+        },
+        () => {
+            isEvaluatingTemplate = isEvaluatingTemplateInception;
+        }
+    );
     return vnodes;
 }
