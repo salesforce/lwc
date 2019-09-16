@@ -8,8 +8,7 @@ import assert from '../shared/assert';
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
-    isRendering,
-    vmBeingRendered,
+    isInvokingRender,
     invokeEventListener,
 } from './invoker';
 import {
@@ -24,7 +23,7 @@ import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
-import { Template, isEvaluatingTemplate } from './template';
+import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -145,13 +144,18 @@ export function renderComponent(vm: VM): VNodes {
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        const vmBeingRendered = getVMBeingRendered();
         assert.isFalse(
             vm.isDirty,
             `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`
         );
-        assert.isTrue(
-            !isRendering && !isEvaluatingTemplate,
+        assert.isFalse(
+            isInvokingRender,
             `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
+        );
+        assert.isFalse(
+            isUpdatingTemplate,
+            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`
         );
     }
     vm.isDirty = true;

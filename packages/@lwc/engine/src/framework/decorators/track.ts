@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import assert from '../../shared/assert';
-import { isUndefined, isFalse } from '../../shared/language';
-import { isRendering, vmBeingRendered } from '../invoker';
+import { isUndefined, isFalse, toString } from '../../shared/language';
+import { isInvokingRender } from '../invoker';
 import { observeMutation, notifyMutation } from '../watcher';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, ComponentInterface } from '../component';
-import { isEvaluatingTemplate } from '../template';
+import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
  * @track decorator to mark fields as reactive in
@@ -73,13 +73,21 @@ export function createTrackedPropertyDescriptor(
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
+                const vmBeingRendered = getVMBeingRendered();
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
-                    !isRendering && !isEvaluatingTemplate,
-                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${String(
+                    !isInvokingRender,
+                    `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
+                        key
+                    )}`
+                );
+                // when updating the template of this ${currentOwnerVM}, one of the accessors used by the template has side effects on the state of the vm
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
