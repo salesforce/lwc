@@ -27,6 +27,7 @@ import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 import { getOwnerDocument } from '../shared/utils';
 import { addEventListener, removeEventListener } from '../env/element';
+import { getNodeOwnerKey } from './node';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -66,6 +67,11 @@ function targetGetter(this: Event): EventTarget | null {
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
+        // TODO: issue #1511 - Special escape hatch to support legacy behavior. Should be fixed.
+        // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
+        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+            return originalTarget;
+        }
         const doc = getOwnerDocument(originalTarget as Node);
         return retarget(doc, composedPath);
     }
