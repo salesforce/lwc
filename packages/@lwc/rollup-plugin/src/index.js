@@ -51,14 +51,15 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
+                const ext = path.extname(importee) || path.extname(importer);
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
-                const absPath = pluginUtils.addExtension(normalizedPath);
+                const absPath = pluginUtils.addExtension(normalizedPath, ext);
 
                 if (isImplicitHTMLImport(normalizedPath, importer) && !fs.existsSync(absPath)) {
                     return IMPLICIT_DEFAULT_HTML_PATH;
                 }
 
-                return pluginUtils.addExtension(normalizedPath);
+                return pluginUtils.addExtension(normalizedPath, ext);
             }
         },
 

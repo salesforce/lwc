@@ -23,6 +23,7 @@ function fsExpected(fileName) {
 
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
+const tsAppDir = path.join(fixturesDir, 'ts_simple_app/src');
 
 describe('default configuration', () => {
     it(`simple app`, () => {
@@ -71,6 +72,16 @@ describe('rollup in compat mode', () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, { compat: true }).then(({ code: actual }) => {
             const expected = fsExpected('expected_compat_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        });
+    });
+});
+
+describe('typescript relative import', () => {
+    it(`should resolve to .ts file`, () => {
+        const entry = path.join(tsAppDir, 'main.ts');
+        return doRollup(entry, { compat: false }).then(({ code: actual }) => {
+            const expected = fsExpected('expected_default_config_ts_simple_app');
             expect(pretty(actual)).toBe(pretty(expected));
         });
     });
