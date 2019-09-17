@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.18...v) (2019-09-17)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.19...v) (2019-09-17)
+
+
+### Bug Fixes
+
+* wrap iframe contentWindow only for iframe elements that are keyed ([#1515](https://github.com/salesforce/lwc/issues/1515)) ([72a4c05](https://github.com/salesforce/lwc/commit/72a4c05))
+
+
+
+## [1.0.2-222.19](https://github.com/salesforce/lwc/compare/v1.0.2-222.18...v1.0.2-222.19) (2019-09-17)
 
 
 ### Bug Fixes
