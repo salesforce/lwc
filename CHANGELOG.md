@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.17...v) (2019-08-29)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.18...v) (2019-09-17)
+
+
+### Bug Fixes
+
+* escape hatch for async event target accessor ([#1512](https://github.com/salesforce/lwc/issues/1512)) ([5c3339b](https://github.com/salesforce/lwc/commit/5c3339b))
+
+
+
+## [1.0.2-222.18](https://github.com/salesforce/lwc/compare/v1.0.2-222.17...v1.0.2-222.18) (2019-08-29)
 
 
 ### Bug Fixes
