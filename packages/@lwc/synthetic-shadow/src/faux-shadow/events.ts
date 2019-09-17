@@ -30,6 +30,7 @@ import { retarget } from './../3rdparty/polymer/retarget';
 
 import '../polyfills/event-listener/main';
 import { getOwnerDocument } from '../shared/utils';
+import { getNodeOwnerKey } from './node';
 
 // intentionally extracting the patched addEventListener and removeEventListener from Node.prototype
 // due to the issues with JSDOM patching hazard.
@@ -77,6 +78,11 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
+        // TODO: issue #1511 - Special escape hatch to support legacy behavior. Should be fixed.
+        // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
+        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+            return originalTarget;
+        }
         const doc = getOwnerDocument(originalTarget as Node);
         return retarget(doc, composedPath);
     }
