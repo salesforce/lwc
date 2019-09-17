@@ -4,8 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, defineProperty, isNull } from '../../shared/language';
-import { isNodeShadowed } from '../../faux-shadow/node';
+import {
+    getOwnPropertyDescriptor,
+    defineProperty,
+    isNull,
+    isUndefined,
+} from '../../shared/language';
+import { getNodeOwnerKey } from '../../faux-shadow/node';
 
 export default function apply() {
     // the iframe property descriptor for `contentWindow` should always be available, otherwise this method should never be called
@@ -16,7 +21,8 @@ export default function apply() {
     const { get: originalGetter } = desc;
     desc.get = function(this: HTMLIFrameElement): WindowProxy | null {
         const original = (originalGetter as any).call(this);
-        if (isNull(original) || !isNodeShadowed(this)) {
+        // If the original iframe element is not a keyed node, then do not wrap it
+        if (isNull(original) || isUndefined(getNodeOwnerKey(this))) {
             return original;
         }
         // only if the element is an iframe inside a shadowRoot, we care about this problem
