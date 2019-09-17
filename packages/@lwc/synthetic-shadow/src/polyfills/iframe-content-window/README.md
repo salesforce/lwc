@@ -24,6 +24,13 @@ class foo extends LightningElement {
 
 In code compiled with compat-mode, the code will attempt to detect if `i.contentWindow` is a proxy, before trying to access `postMessage`, but at that point, the transformed code will try to check if that object contains a particular property (the proxy identification token), in which case, a cross-origin iframe will throw an error. This patch prevents that error from happening.
 
+## Bugs
+
+The wrapped iframe contentWindow has an identity discontinuity issue.
+
+1. The wrapped contentWindow is not cached. So each time the contentWindow accessor is invoked, a new wrapped object is returned.
+2. Browser APIs that provide access to iframe contentWindow have not been patched to return a wrapped contentWindow. For example, MessageEvent.source
+
 ## TODO
 
--   [ ] Only apply this patch if compat-mode is detected.
+-   [issue #1513 ] Only apply this patch if compat-mode is detected.
