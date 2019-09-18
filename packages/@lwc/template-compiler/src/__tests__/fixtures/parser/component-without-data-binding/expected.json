@@ -1,4 +1,27 @@
 {
     "type": "BindingASTNode",
-    "children": []
+    "children": [
+        {
+            "type": "BindingASTNode",
+            "forEach": {
+                "expression": {
+                    "type": "BindingASTIdentifier",
+                    "name": "likedSongs"
+                },
+                "item": {
+                    "type": "BindingASTIdentifier",
+                    "name": "song"
+                }
+            },
+            "children": [
+                {
+                    "type": "BindingASTComponentNode",
+                    "tag": "liked-song",
+                    "component": true,
+                    "attributes": [],
+                    "children": []
+                }
+            ]
+        }
+    ]
 }

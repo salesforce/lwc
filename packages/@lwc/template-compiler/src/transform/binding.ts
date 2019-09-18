@@ -65,11 +65,6 @@ export interface BindingParseResult {
     warnings: CompilerDiagnostic[];
 }
 
-function hasExpressionAttribute(node: IRElement) {
-    const { props = {} } = node;
-    return Object.values(props).some(isExpressionAttribute);
-}
-
 function isExpressionAttribute(attr) {
     return attr.type === IRAttributeType.Expression;
 }
@@ -132,15 +127,13 @@ function getExpressionAttributes(node: IRElement): BindingASTAttribute[] {
     }, attrs);
 }
 
-// Returns a list of component elements with one or more attribute expressions.
-// Components without attribute expressions will not be in the AST.
-function collectBindingASTComponents(rootElement: IRElement): IRElement[] {
+function collectComponents(rootElement: IRElement): IRElement[] {
     const components: IRElement[] = [];
     function depthFirstCollect(element: IRElement) {
         if (element.children) {
             element.children.forEach(depthFirstCollect);
         }
-        if (element.component && hasExpressionAttribute(element)) {
+        if (element.component) {
             components.push(element);
         }
     }
@@ -153,13 +146,13 @@ function hasDirective(element: IRElement): boolean {
 }
 
 // Returns a list of elements to be added to the AST in top-down order
-function getPrunedPath(component: IRElement, components: IRElement[]): IRElement[] {
+function getPrunedPath(component: IRElement): IRElement[] {
     function prune(elm: IRElement, path: IRElement[]) {
         if (isUndefined(elm.parent)) {
             // Base case: root element
             return [elm, ...path];
         }
-        if (hasDirective(elm) || components.includes(elm)) {
+        if (hasDirective(elm) || elm.component) {
             path = [elm, ...path];
         }
         return prune(elm.parent, path);
@@ -237,10 +230,10 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
         children: [],
     });
 
-    const components = collectBindingASTComponents(rootIRElement);
+    const components = collectComponents(rootIRElement);
     components.forEach(component => {
         // Top-down path
-        const prunedPath = getPrunedPath(component, components);
+        const prunedPath = getPrunedPath(component);
         prunedPath.forEach((currentElement, index) => {
             // If the current element does not have a node representation in the AST.
             if (!astNodeMap.has(currentElement)) {

@@ -21,7 +21,11 @@ describe('binding ast parser', () => {
                 <foo-bar></foo-bar>
             </template>
         `);
-        expect(root.children).toHaveLength(0);
+        expect(root.children).toHaveLength(1);
+        const node = root.children[0];
+        expect(node.component).toBe(true);
+        expect(node.tag).toBe('foo-bar');
+        expect(node.attributes).toHaveLength(0);
     });
 
     it('simple with data', () => {

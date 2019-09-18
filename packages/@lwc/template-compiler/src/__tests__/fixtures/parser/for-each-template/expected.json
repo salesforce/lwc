@@ -2,40 +2,48 @@
     "type": "BindingASTNode",
     "children": [
         {
-            "type": "BindingASTNode",
-            "forEach": {
-                "expression": {
-                    "type": "BindingASTIdentifier",
-                    "name": "items"
-                },
-                "item": {
-                    "type": "BindingASTIdentifier",
-                    "name": "item"
-                }
-            },
+            "type": "BindingASTComponentNode",
+            "tag": "foo-list",
+            "component": true,
+            "attributes": [],
             "children": [
                 {
-                    "type": "BindingASTComponentNode",
-                    "tag": "foo-list-item",
-                    "component": true,
-                    "attributes": [
-                        {
-                            "type": "BindingASTAttribute",
-                            "name": "data",
-                            "expression": {
-                                "type": "BindingASTMemberExpression",
-                                "object": {
-                                    "type": "BindingASTIdentifier",
-                                    "name": "item"
-                                },
-                                "property": {
-                                    "type": "BindingASTIdentifier",
-                                    "name": "data"
-                                }
-                            }
+                    "type": "BindingASTNode",
+                    "forEach": {
+                        "expression": {
+                            "type": "BindingASTIdentifier",
+                            "name": "items"
+                        },
+                        "item": {
+                            "type": "BindingASTIdentifier",
+                            "name": "item"
                         }
-                    ],
-                    "children": []
+                    },
+                    "children": [
+                        {
+                            "type": "BindingASTComponentNode",
+                            "tag": "foo-list-item",
+                            "component": true,
+                            "attributes": [
+                                {
+                                    "type": "BindingASTAttribute",
+                                    "name": "data",
+                                    "expression": {
+                                        "type": "BindingASTMemberExpression",
+                                        "object": {
+                                            "type": "BindingASTIdentifier",
+                                            "name": "item"
+                                        },
+                                        "property": {
+                                            "type": "BindingASTIdentifier",
+                                            "name": "data"
+                                        }
+                                    }
+                                }
+                            ],
+                            "children": []
+                        }
+                    ]
                 }
             ]
         }
