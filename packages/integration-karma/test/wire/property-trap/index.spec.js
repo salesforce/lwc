@@ -4,13 +4,24 @@ import EchoAdapterConsumer from 'x/echoAdapterConsumer';
 import { EchoWireAdapter } from 'x/echoAdapter';
 
 describe('wire adapter update', () => {
-    it('should invokes listener with reactive parameter default value', () => {
+    it('should invoke listener with reactive parameter default value', () => {
         const elm = createElement('x-echo-adapter-consumer', { is: EchoAdapterConsumer });
         document.body.appendChild(elm);
 
         return Promise.resolve().then(() => {
             const actualWiredValues = elm.getWiredProp();
             expect(actualWiredValues.data.recordId).toBe('default value');
+        });
+    });
+
+    it('should invoke listener with reactive parameter is an expando and change', () => {
+        const elm = createElement('x-echo-adapter-consumer', { is: EchoAdapterConsumer });
+        document.body.appendChild(elm);
+
+        elm.setExpandoValue('expando modified value');
+        return Promise.resolve().then(() => {
+            const actualWiredValues = elm.getWiredProp();
+            expect(actualWiredValues.data.expando).toBe('expando modified value');
         });
     });
 

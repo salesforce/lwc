@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+const { freeze, defineProperty } = Object;
+
 /**
  * Registers a wire adapter factory for Lightning Platform.
  * @deprecated
@@ -14,20 +16,31 @@ export function register(
     adapterEventTargetCallback: (eventTarget: WireEventTarget) => void
 ) {
     if (adapterId == null || !(adapterId instanceof Object)) {
-        new TypeError('adapter id must be an object or a function');
+        throw new TypeError('adapter id must be an object or a function');
     }
     if (typeof adapterEventTargetCallback !== 'function') {
-        new TypeError('adapter factory must be a callable');
+        throw new TypeError('adapter factory must be a callable');
     }
     if ('adapter' in adapterId) {
-        new TypeError('adapter id is already associated to an adapter factory');
+        throw new TypeError('adapter id is already associated to an adapter factory');
     }
-    adapterId.adapter = class extends WireAdapter {
-        constructor(dataCallback: dataCallback) {
-            super(dataCallback);
-            adapterEventTargetCallback(this.eventTarget);
+
+    const adapterClass = freeze(
+        class extends WireAdapter {
+            constructor(dataCallback: dataCallback) {
+                super(dataCallback);
+                adapterEventTargetCallback(this.eventTarget);
+            }
         }
-    };
+    );
+
+    freeze(adapterClass.prototype);
+
+    defineProperty(adapterId, 'adapter', {
+        writable: false,
+        configurable: false,
+        value: adapterClass,
+    });
 }
 
 import { ValueChangedEvent } from './value-changed-event';

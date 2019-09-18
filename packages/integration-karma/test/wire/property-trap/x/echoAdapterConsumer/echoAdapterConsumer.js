@@ -7,6 +7,7 @@ export default class EchoAdapterConsumer extends LightningElement {
         recordId: '$recordId',
         keyVal: '$a.b.c.d',
         getterValue: '$getterValue',
+        expandoValue: '$expando',
     })
     wiredProp;
 
@@ -34,6 +35,11 @@ export default class EchoAdapterConsumer extends LightningElement {
     @api
     setMutatedGetterValue(newValue) {
         this.mutatedGetterValue = newValue;
+    }
+
+    @api
+    setExpandoValue(newValue) {
+        this.expando = newValue;
     }
 
     get getterValue() {
