@@ -34,18 +34,14 @@ function createPattern(location, config = {}) {
 }
 
 function getLwcConfig(config) {
-    const prod = Boolean(config.prod);
     const compat = Boolean(config.compat);
     const nativeShadow = Boolean(config.nativeShadow);
 
-    const tags = [
-        `${nativeShadow ? 'native' : 'synthetic'}-shadow`,
-        compat && 'compat',
-        prod && 'production',
-    ].filter(Boolean);
+    const tags = [`${nativeShadow ? 'native' : 'synthetic'}-shadow`, compat && 'compat'].filter(
+        Boolean
+    );
 
     return {
-        prod,
         compat,
         nativeShadow,
         tags,
