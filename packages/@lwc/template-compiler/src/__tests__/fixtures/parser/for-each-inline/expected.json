@@ -19,10 +19,6 @@
                             "name": "bar"
                         }
                     },
-                    "index": {
-                        "type": "identifier",
-                        "name": "index"
-                    },
                     "item": {
                         "type": "identifier",
                         "name": "barItem"

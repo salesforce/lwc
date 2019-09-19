@@ -1,0 +1,41 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "foo-bar",
+            "attributes": [
+                {
+                    "type": "expression",
+                    "name": "data",
+                    "value": {
+                        "type": "member-expression",
+                        "object": {
+                            "type": "member-expression",
+                            "object": {
+                                "type": "member-expression",
+                                "object": {
+                                    "type": "identifier",
+                                    "name": "foo"
+                                },
+                                "property": {
+                                    "type": "identifier",
+                                    "name": "bar"
+                                }
+                            },
+                            "property": {
+                                "type": "identifier",
+                                "name": "baz"
+                            }
+                        },
+                        "property": {
+                            "type": "identifier",
+                            "name": "bif"
+                        }
+                    }
+                }
+            ],
+            "children": []
+        }
+    ]
+}

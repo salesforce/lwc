@@ -223,7 +223,7 @@ function transformToDirectiveNode(element: IRElement): BindingDirectiveNode {
     const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
         const { expression, index, item } = forEach;
-        const node = {
+        return {
             type: BindingType.ForEach,
             expression: pruneExpression(expression),
             index: index
@@ -237,8 +237,7 @@ function transformToDirectiveNode(element: IRElement): BindingDirectiveNode {
                 name: item.name,
             },
             children: [],
-        };
-        return node as BindingForEachDirectiveNode;
+        } as BindingForEachDirectiveNode;
     }
     if (forOf) {
         const {
@@ -275,7 +274,7 @@ function transformToSlotNode(element: IRElement): BindingSlotNode {
             children: [],
         };
     }
-    throw new Error(`Expected element ${element.tag} to be a slot.`);
+    throw new Error(`Expected <slot> element but received <${element.tag}> element.`);
 }
 
 function transformToComponentNode(element: IRElement): BindingComponentNode {
