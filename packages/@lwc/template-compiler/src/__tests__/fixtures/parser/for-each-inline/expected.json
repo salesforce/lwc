@@ -3,30 +3,27 @@
     "children": [
         {
             "type": "component",
-            "tag": "bar-list",
+            "tag": "foo-list",
             "attributes": [],
             "children": [
                 {
                     "type": "for-each",
                     "expression": {
-                        "type": "member-expression",
-                        "object": {
-                            "type": "identifier",
-                            "name": "items"
-                        },
-                        "property": {
-                            "type": "identifier",
-                            "name": "bar"
-                        }
+                        "type": "identifier",
+                        "name": "items"
+                    },
+                    "index": {
+                        "type": "identifier",
+                        "name": "index"
                     },
                     "item": {
                         "type": "identifier",
-                        "name": "barItem"
+                        "name": "item"
                     },
                     "children": [
                         {
                             "type": "component",
-                            "tag": "bar-list-item",
+                            "tag": "foo-list-item",
                             "attributes": [
                                 {
                                     "type": "expression",
@@ -35,12 +32,20 @@
                                         "type": "member-expression",
                                         "object": {
                                             "type": "identifier",
-                                            "name": "barItem"
+                                            "name": "item"
                                         },
                                         "property": {
                                             "type": "identifier",
                                             "name": "data"
                                         }
+                                    }
+                                },
+                                {
+                                    "type": "expression",
+                                    "name": "ranking",
+                                    "value": {
+                                        "type": "identifier",
+                                        "name": "index"
                                     }
                                 }
                             ],

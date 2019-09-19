@@ -39,6 +39,14 @@
                                             "name": "data"
                                         }
                                     }
+                                },
+                                {
+                                    "type": "expression",
+                                    "name": "ranking",
+                                    "value": {
+                                        "type": "identifier",
+                                        "name": "index"
+                                    }
                                 }
                             ],
                             "children": []

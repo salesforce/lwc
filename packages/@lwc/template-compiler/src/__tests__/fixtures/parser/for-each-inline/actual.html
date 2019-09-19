@@ -1,7 +1,7 @@
 <template>
-    <div class="bar-list-container" tabindex={tabIndex}>
-        <bar-list>
-            <bar-list-item for:each={items.bar} for:item="barItem" data={barItem.data} key={barItem.id}></bar-list-item>
-        </bar-list>
+    <div class="foo-list-container" tabindex={tabIndex}>
+        <foo-list>
+            <foo-list-item for:each={items} for:item="item" for:index="index" data={item.data} key={item.id} ranking={index}></foo-list-item>
+        </foo-list>
     </div>
 </template>
