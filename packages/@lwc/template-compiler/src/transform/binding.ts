@@ -35,7 +35,7 @@ interface BindingASTAttribute {
 }
 
 interface BindingASTNode {
-    children: Array<BindingASTNode | BindingASTComponentNode>;
+    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
     forEach?: {
         expression: BindingASTIdentifier | BindingASTMemberExpression;
         index?: BindingASTIdentifier | undefined;
@@ -52,9 +52,15 @@ interface BindingASTNode {
     type: 'BindingASTNode';
 }
 
+interface BindingASTSlotNode {
+    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
+    name: string;
+    type: 'BindingASTSlotNode';
+}
+
 interface BindingASTComponentNode {
     attributes: BindingASTAttribute[];
-    children: Array<BindingASTNode | BindingASTComponentNode>;
+    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
     component: true;
     tag: string;
     type: 'BindingASTComponentNode';
@@ -127,13 +133,13 @@ function getExpressionAttributes(node: IRElement): BindingASTAttribute[] {
     }, attrs);
 }
 
-function collectComponents(rootElement: IRElement): IRElement[] {
+function collectComponentsAndSlots(rootElement: IRElement): IRElement[] {
     const components: IRElement[] = [];
     function depthFirstCollect(element: IRElement) {
         if (element.children) {
             element.children.forEach(depthFirstCollect);
         }
-        if (element.component) {
+        if (isComponent(element) || isSlot(element)) {
             components.push(element);
         }
     }
@@ -145,6 +151,14 @@ function hasDirective(element: IRElement): boolean {
     return Boolean(element.forEach || element.forOf || element.if);
 }
 
+function isComponent(element: IRElement): boolean {
+    return Boolean(element.component);
+}
+
+function isSlot(element: IRElement): boolean {
+    return element.tag === 'slot';
+}
+
 // Returns a list of elements to be added to the AST in top-down order
 function getPrunedPath(component: IRElement): IRElement[] {
     function prune(elm: IRElement, path: IRElement[]) {
@@ -152,7 +166,7 @@ function getPrunedPath(component: IRElement): IRElement[] {
             // Base case: root element
             return [elm, ...path];
         }
-        if (hasDirective(elm) || elm.component) {
+        if (hasDirective(elm) || isComponent(elm) || isSlot(elm)) {
             path = [elm, ...path];
         }
         return prune(elm.parent, path);
@@ -161,7 +175,7 @@ function getPrunedPath(component: IRElement): IRElement[] {
     return prune(component.parent!, [component]);
 }
 
-function transformToASTNode(element: IRElement): BindingASTNode {
+function transformToDirectiveNode(element: IRElement): BindingASTNode {
     const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
         const expression = forEach.expression as BabelTemplateExpression;
@@ -205,7 +219,18 @@ function transformToASTNode(element: IRElement): BindingASTNode {
     throw new Error('Element must have either a `for:each`, `iterator:*`, or `if` directive.');
 }
 
-function transformToASTComponentNode(element: IRElement): BindingASTComponentNode {
+function transformToSlotNode(element: IRElement): BindingASTSlotNode {
+    if (isSlot(element)) {
+        return {
+            type: 'BindingASTSlotNode',
+            name: element.slotName || '',
+            children: [],
+        };
+    }
+    throw new Error(`Expected element ${element.tag} to be a slot.`);
+}
+
+function transformToComponentNode(element: IRElement): BindingASTComponentNode {
     const { component, tag } = element;
     if (component) {
         return {
@@ -230,7 +255,7 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
         children: [],
     });
 
-    const components = collectComponents(rootIRElement);
+    const components = collectComponentsAndSlots(rootIRElement);
     components.forEach(component => {
         // Top-down path
         const prunedPath = getPrunedPath(component);
@@ -239,21 +264,26 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
             if (!astNodeMap.has(currentElement)) {
                 const parentElement = prunedPath[index - 1];
                 const parentASTNode = astNodeMap.get(parentElement)!;
-                if (currentElement.component) {
-                    const componentNode = transformToASTComponentNode(currentElement);
+                if (isComponent(currentElement) || isSlot(currentElement)) {
+                    let astNode;
+                    if (isComponent(currentElement)) {
+                        astNode = transformToComponentNode(currentElement);
+                    } else {
+                        astNode = transformToSlotNode(currentElement);
+                    }
                     if (hasDirective(currentElement)) {
                         // If the component has an inline directive, then create
                         // a "virtual" directive node and insert the directive
-                        // node between the parent and component node.
-                        const directiveNode = transformToASTNode(currentElement);
+                        // node between the parent and child node.
+                        const directiveNode = transformToDirectiveNode(currentElement);
                         parentASTNode.children.push(directiveNode);
-                        directiveNode.children.push(componentNode);
+                        directiveNode.children.push(astNode);
                     } else {
-                        parentASTNode.children.push(componentNode);
+                        parentASTNode.children.push(astNode);
                     }
-                    astNodeMap.set(currentElement, componentNode);
+                    astNodeMap.set(currentElement, astNode);
                 } else {
-                    const directiveNode = transformToASTNode(currentElement);
+                    const directiveNode = transformToDirectiveNode(currentElement);
                     parentASTNode.children.push(directiveNode);
                     astNodeMap.set(currentElement, directiveNode);
                 }
