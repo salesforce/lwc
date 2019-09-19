@@ -1,7 +1,7 @@
 <template>
     <div class="bar-list-container" tabindex={tabIndex}>
         <bar-list>
-            <bar-list-item for:each={items.bar} for:item="barItem" data={barItem.data} key={barItem.id}></bar-list-item>
+            <bar-list-item for:each={items.bar} for:item="barItem" for:index="index" data={barItem.data} key={barItem.id}></bar-list-item>
         </bar-list>
     </div>
 </template>

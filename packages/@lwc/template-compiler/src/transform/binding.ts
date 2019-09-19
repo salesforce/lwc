@@ -74,6 +74,7 @@ type BindingExpression = BindingIdentifier | BindingMemberExpression;
 
 interface BindingForEachDirectiveNode extends BindingBaseNode {
     expression: BindingExpression;
+    index: BindingIdentifier;
     item: BindingIdentifier;
     type: BindingType.ForEach;
 }
@@ -221,19 +222,23 @@ function getPrunedPath(component: IRElement): IRElement[] {
 function transformToDirectiveNode(element: IRElement): BindingDirectiveNode {
     const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
-        const {
-            expression,
-            item: { name },
-        } = forEach;
-        return {
+        const { expression, index, item } = forEach;
+        const node = {
             type: BindingType.ForEach,
             expression: pruneExpression(expression),
+            index: index
+                ? {
+                      type: BindingType.Identifier,
+                      name: index.name,
+                  }
+                : undefined,
             item: {
                 type: BindingType.Identifier,
-                name,
+                name: item.name,
             },
             children: [],
-        } as BindingForEachDirectiveNode;
+        };
+        return node as BindingForEachDirectiveNode;
     }
     if (forOf) {
         const {

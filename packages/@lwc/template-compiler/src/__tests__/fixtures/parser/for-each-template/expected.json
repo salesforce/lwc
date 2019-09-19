@@ -12,6 +12,10 @@
                         "type": "identifier",
                         "name": "items"
                     },
+                    "index": {
+                        "type": "identifier",
+                        "name": "index"
+                    },
                     "item": {
                         "type": "identifier",
                         "name": "item"
