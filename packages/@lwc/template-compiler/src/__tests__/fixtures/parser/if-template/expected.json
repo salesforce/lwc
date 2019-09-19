@@ -1,33 +1,30 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTNode",
-            "if": {
-                "expression": {
-                    "type": "BindingASTMemberExpression",
-                    "object": {
-                        "type": "BindingASTIdentifier",
-                        "name": "option"
-                    },
-                    "property": {
-                        "type": "BindingASTIdentifier",
-                        "name": "hasFavorites"
-                    }
+            "type": "if",
+            "expression": {
+                "type": "member-expression",
+                "object": {
+                    "type": "identifier",
+                    "name": "option"
                 },
-                "modifier": "true"
+                "property": {
+                    "type": "identifier",
+                    "name": "hasFavorites"
+                }
             },
+            "modifier": "true",
             "children": [
                 {
-                    "type": "BindingASTComponentNode",
+                    "type": "component",
                     "tag": "foo-favorites-view",
-                    "component": true,
                     "attributes": [
                         {
-                            "type": "BindingASTAttribute",
+                            "type": "expression",
                             "name": "favorite-artists",
-                            "expression": {
-                                "type": "BindingASTIdentifier",
+                            "value": {
+                                "type": "identifier",
                                 "name": "favoriteArtists"
                             }
                         }
@@ -37,32 +34,29 @@
             ]
         },
         {
-            "type": "BindingASTNode",
-            "if": {
-                "expression": {
-                    "type": "BindingASTMemberExpression",
-                    "object": {
-                        "type": "BindingASTIdentifier",
-                        "name": "option"
-                    },
-                    "property": {
-                        "type": "BindingASTIdentifier",
-                        "name": "hasFavorites"
-                    }
+            "type": "if",
+            "expression": {
+                "type": "member-expression",
+                "object": {
+                    "type": "identifier",
+                    "name": "option"
                 },
-                "modifier": "false"
+                "property": {
+                    "type": "identifier",
+                    "name": "hasFavorites"
+                }
             },
+            "modifier": "false",
             "children": [
                 {
-                    "type": "BindingASTComponentNode",
+                    "type": "component",
                     "tag": "foo-no-favorites-view",
-                    "component": true,
                     "attributes": [
                         {
-                            "type": "BindingASTAttribute",
+                            "type": "expression",
                             "name": "recommended-artist",
-                            "expression": {
-                                "type": "BindingASTIdentifier",
+                            "value": {
+                                "type": "identifier",
                                 "name": "recommendedArtist"
                             }
                         }

@@ -4,133 +4,176 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as babelTypes from '@babel/types';
+import {
+    Identifier,
+    isIdentifier,
+    isMemberExpression,
+    MemberExpression,
+    StringLiteral,
+} from '@babel/types';
+
 import { CompilerDiagnostic } from '@lwc/errors';
 import { isUndefined } from '@lwc/shared';
 
 import {
     IRAttributeType,
     IRElement,
-    IRExpressionAttribute,
     TemplateParseResult,
+    TemplateExpression,
 } from '../shared/types';
 
-type BabelTemplateExpression = babelTypes.Identifier | babelTypes.MemberExpression;
+type TemplateAttributeValue = StringLiteral | Identifier | MemberExpression;
 
-interface BindingASTIdentifier {
+enum BindingType {
+    Boolean = 'boolean',
+    Component = 'component',
+    Expression = 'expression',
+    ForEach = 'for-each',
+    ForOf = 'for-of',
+    Identifier = 'identifier',
+    If = 'if',
+    MemberExpression = 'member-expression',
+    Root = 'root',
+    Slot = 'slot',
+    String = 'string',
+}
+
+interface BindingBooleanAttribute {
     name: string;
-    type: 'BindingASTIdentifier';
+    type: BindingType.Boolean;
+    value: true;
 }
-
-interface BindingASTMemberExpression {
-    object: BindingASTMemberExpression | BindingASTIdentifier;
-    property: BindingASTIdentifier;
-    type: 'BindingASTMemberExpression';
-}
-
-interface BindingASTAttribute {
-    expression: BindingASTIdentifier | BindingASTMemberExpression;
+interface BindingExpressionAttribute {
     name: string;
-    type: 'BindingASTAttribute';
+    type: BindingType.Expression;
+    value: BindingExpression;
 }
-
-interface BindingASTNode {
-    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
-    forEach?: {
-        expression: BindingASTIdentifier | BindingASTMemberExpression;
-        index?: BindingASTIdentifier | undefined;
-        item: BindingASTIdentifier;
-    };
-    forOf?: {
-        expression: BindingASTIdentifier | BindingASTMemberExpression;
-        iterator: BindingASTIdentifier;
-    };
-    if?: {
-        expression: BindingASTIdentifier | BindingASTMemberExpression;
-        modifier: string;
-    };
-    type: 'BindingASTNode';
-}
-
-interface BindingASTSlotNode {
-    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
+interface BindingStringAttribute {
     name: string;
-    type: 'BindingASTSlotNode';
+    type: BindingType.String;
+    value: string;
 }
 
-interface BindingASTComponentNode {
-    attributes: BindingASTAttribute[];
-    children: Array<BindingASTNode | BindingASTSlotNode | BindingASTComponentNode>;
-    component: true;
+type BindingAttribute =
+    | BindingBooleanAttribute
+    | BindingExpressionAttribute
+    | BindingStringAttribute;
+
+interface BindingIdentifier {
+    name: string;
+    type: BindingType.Identifier;
+}
+
+interface BindingMemberExpression {
+    object: BindingIdentifier | BindingMemberExpression;
+    property: BindingIdentifier;
+    type: BindingType.MemberExpression;
+}
+
+type BindingExpression = BindingIdentifier | BindingMemberExpression;
+
+interface BindingForEachDirectiveNode extends BindingBaseNode {
+    expression: BindingExpression;
+    item: BindingIdentifier;
+    type: BindingType.ForEach;
+}
+
+interface BindingForOfDirectiveNode extends BindingBaseNode {
+    expression: BindingExpression;
+    iterator: BindingIdentifier;
+    type: BindingType.ForOf;
+}
+
+interface BindingIfDirectiveNode extends BindingBaseNode {
+    expression: BindingExpression;
+    modifier: 'true' | 'false';
+    type: BindingType.If;
+}
+
+type BindingDirectiveNode =
+    | BindingForEachDirectiveNode
+    | BindingForOfDirectiveNode
+    | BindingIfDirectiveNode;
+
+interface BindingBaseNode {
+    children: BindingNode[];
+}
+
+interface BindingComponentNode extends BindingBaseNode {
+    attributes: BindingAttribute[];
     tag: string;
-    type: 'BindingASTComponentNode';
+    type: BindingType.Component;
 }
+
+interface BindingRootNode extends BindingBaseNode {
+    type: BindingType.Root;
+}
+
+interface BindingSlotNode extends BindingBaseNode {
+    name: string;
+    type: BindingType.Slot;
+}
+
+type BindingNode = BindingComponentNode | BindingDirectiveNode | BindingSlotNode | BindingRootNode;
 
 export interface BindingParseResult {
-    root: BindingASTNode | undefined;
+    root: BindingRootNode | undefined;
     warnings: CompilerDiagnostic[];
 }
 
-function isExpressionAttribute(attr) {
-    return attr.type === IRAttributeType.Expression;
-}
-
-function pruneExpression(
-    attr: BabelTemplateExpression
-): BindingASTIdentifier | BindingASTMemberExpression {
-    if (babelTypes.isIdentifier(attr)) {
+function pruneExpression(value: TemplateExpression): BindingExpression {
+    if (isIdentifier(value)) {
         return {
-            type: 'BindingASTIdentifier',
-            name: attr.name,
-        };
+            type: BindingType.Identifier,
+            name: value.name,
+        } as BindingIdentifier;
     }
-    return pruneMemberExpression(attr);
-}
-
-function pruneMemberExpression(
-    expression: babelTypes.MemberExpression
-): BindingASTMemberExpression {
-    if (babelTypes.isIdentifier(expression.object)) {
+    if (isMemberExpression(value)) {
+        const {
+            object,
+            property: { name },
+        } = value;
         return {
-            type: 'BindingASTMemberExpression',
-            object: {
-                type: 'BindingASTIdentifier',
-                name: expression.object.name,
-            },
+            type: BindingType.MemberExpression,
+            object: pruneExpression(object as Identifier | MemberExpression),
             property: {
-                type: 'BindingASTIdentifier',
-                name: expression.property.name,
+                type: BindingType.Identifier,
+                name,
             },
-        };
-    } else {
-        const object = expression.object as babelTypes.MemberExpression;
-        return {
-            type: 'BindingASTMemberExpression',
-            object: pruneMemberExpression(object),
-            property: {
-                type: 'BindingASTIdentifier',
-                name: expression.property.name,
-            },
-        };
+        } as BindingMemberExpression;
     }
+    throw new Error('Value must be either an identifier or member expression.');
 }
 
-function getExpressionAttributes(node: IRElement): BindingASTAttribute[] {
-    const { props = {} } = node;
-    const attrs: BindingASTAttribute[] = [];
-    return Object.values(props).reduce((acc, attr) => {
-        if (isExpressionAttribute(attr)) {
-            const expressionAttribute = attr as IRExpressionAttribute;
-            acc.push({
-                type: 'BindingASTAttribute',
-                name: attr.name,
-                // Force BabelTemplateExpression because IRTemplateExpression.value
-                // can also be a literal...is that a bug?
-                expression: pruneExpression(expressionAttribute.value as BabelTemplateExpression),
-            });
-        }
-        return acc;
-    }, attrs);
+function getAttributes(node: IRElement): BindingAttribute[] {
+    const attrs = Object.assign({}, node.attrs, node.props);
+    return Object.keys(attrs)
+        .sort()
+        .map(name => {
+            const attr = attrs[name];
+            if (attr.type === IRAttributeType.Boolean) {
+                return {
+                    type: BindingType.Boolean,
+                    name: attr.name,
+                    value: true,
+                } as BindingBooleanAttribute;
+            }
+            if (attr.type === IRAttributeType.Expression) {
+                return {
+                    type: BindingType.Expression,
+                    name: attr.name,
+                    value: pruneExpression(attr.value),
+                } as BindingExpressionAttribute;
+            }
+            if (attr.type === IRAttributeType.String) {
+                return {
+                    type: BindingType.String,
+                    name: attr.name,
+                    value: attr.value,
+                } as BindingStringAttribute;
+            }
+            throw new Error('Attribute must be of type boolean, string, or expression.');
+        });
 }
 
 function collectComponentsAndSlots(rootElement: IRElement): IRElement[] {
@@ -159,7 +202,7 @@ function isSlot(element: IRElement): boolean {
     return element.tag === 'slot';
 }
 
-// Returns a list of elements to be added to the AST in top-down order
+// Returns a list of elements to be added to the AST in descending order
 function getPrunedPath(component: IRElement): IRElement[] {
     function prune(elm: IRElement, path: IRElement[]) {
         if (isUndefined(elm.parent)) {
@@ -175,54 +218,54 @@ function getPrunedPath(component: IRElement): IRElement[] {
     return prune(component.parent!, [component]);
 }
 
-function transformToDirectiveNode(element: IRElement): BindingASTNode {
+function transformToDirectiveNode(element: IRElement): BindingDirectiveNode {
     const { forEach, forOf, if: ifDirective, ifModifier } = element;
     if (forEach) {
-        const expression = forEach.expression as BabelTemplateExpression;
+        const {
+            expression,
+            item: { name },
+        } = forEach;
         return {
-            type: 'BindingASTNode',
-            forEach: {
-                expression: pruneExpression(expression),
-                item: {
-                    type: 'BindingASTIdentifier',
-                    name: forEach.item.name,
-                },
+            type: BindingType.ForEach,
+            expression: pruneExpression(expression),
+            item: {
+                type: BindingType.Identifier,
+                name,
             },
             children: [],
-        };
+        } as BindingForEachDirectiveNode;
     }
     if (forOf) {
-        const expression = forOf.expression as BabelTemplateExpression;
+        const {
+            expression,
+            iterator: { name },
+        } = forOf;
         return {
-            type: 'BindingASTNode',
-            forOf: {
-                expression: pruneExpression(expression),
-                iterator: {
-                    type: 'BindingASTIdentifier',
-                    name: forOf.iterator.name,
-                },
+            type: BindingType.ForOf,
+            expression: pruneExpression(expression),
+            iterator: {
+                type: BindingType.Identifier,
+                name,
             },
             children: [],
-        };
+        } as BindingForOfDirectiveNode;
     }
     if (ifDirective && ifModifier) {
-        const directive = element.if as BabelTemplateExpression;
+        const directive = element.if as TemplateAttributeValue;
         return {
-            type: 'BindingASTNode',
-            if: {
-                expression: pruneExpression(directive),
-                modifier: ifModifier,
-            },
+            type: BindingType.If,
+            expression: pruneExpression(directive),
+            modifier: ifModifier,
             children: [],
-        };
+        } as BindingIfDirectiveNode;
     }
     throw new Error('Element must have either a `for:each`, `iterator:*`, or `if` directive.');
 }
 
-function transformToSlotNode(element: IRElement): BindingASTSlotNode {
+function transformToSlotNode(element: IRElement): BindingSlotNode {
     if (isSlot(element)) {
         return {
-            type: 'BindingASTSlotNode',
+            type: BindingType.Slot,
             name: element.slotName || '',
             children: [],
         };
@@ -230,28 +273,27 @@ function transformToSlotNode(element: IRElement): BindingASTSlotNode {
     throw new Error(`Expected element ${element.tag} to be a slot.`);
 }
 
-function transformToComponentNode(element: IRElement): BindingASTComponentNode {
+function transformToComponentNode(element: IRElement): BindingComponentNode {
     const { component, tag } = element;
     if (component) {
         return {
-            type: 'BindingASTComponentNode',
+            type: BindingType.Component,
             tag,
-            component: true,
-            attributes: getExpressionAttributes(element),
+            attributes: getAttributes(element),
             children: [],
         };
     }
     throw new Error('Element must be associated with a component.');
 }
 
-function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefined {
+function buildAST(rootIRElement: IRElement | undefined): BindingRootNode | undefined {
     if (isUndefined(rootIRElement)) {
         return undefined;
     }
 
-    const astNodeMap = new WeakMap<IRElement, BindingASTNode | BindingASTComponentNode>();
+    const astNodeMap = new WeakMap<IRElement, BindingNode>();
     astNodeMap.set(rootIRElement, {
-        type: 'BindingASTNode',
+        type: BindingType.Root,
         children: [],
     });
 
@@ -290,7 +332,7 @@ function buildAST(rootIRElement: IRElement | undefined): BindingASTNode | undefi
             }
         });
     });
-    return astNodeMap.get(rootIRElement) as BindingASTNode;
+    return astNodeMap.get(rootIRElement) as BindingRootNode;
 }
 
 export default function transform(parsedTemplate: TemplateParseResult): BindingParseResult {

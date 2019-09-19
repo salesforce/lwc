@@ -1,48 +1,44 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTComponentNode",
+            "type": "component",
             "tag": "bar-list",
-            "component": true,
             "attributes": [],
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "forEach": {
-                        "expression": {
-                            "type": "BindingASTMemberExpression",
-                            "object": {
-                                "type": "BindingASTIdentifier",
-                                "name": "items"
-                            },
-                            "property": {
-                                "type": "BindingASTIdentifier",
-                                "name": "bar"
-                            }
+                    "type": "for-each",
+                    "expression": {
+                        "type": "member-expression",
+                        "object": {
+                            "type": "identifier",
+                            "name": "items"
                         },
-                        "item": {
-                            "type": "BindingASTIdentifier",
-                            "name": "barItem"
+                        "property": {
+                            "type": "identifier",
+                            "name": "bar"
                         }
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "barItem"
                     },
                     "children": [
                         {
-                            "type": "BindingASTComponentNode",
+                            "type": "component",
                             "tag": "bar-list-item",
-                            "component": true,
                             "attributes": [
                                 {
-                                    "type": "BindingASTAttribute",
+                                    "type": "expression",
                                     "name": "data",
-                                    "expression": {
-                                        "type": "BindingASTMemberExpression",
+                                    "value": {
+                                        "type": "member-expression",
                                         "object": {
-                                            "type": "BindingASTIdentifier",
+                                            "type": "identifier",
                                             "name": "barItem"
                                         },
                                         "property": {
-                                            "type": "BindingASTIdentifier",
+                                            "type": "identifier",
                                             "name": "data"
                                         }
                                     }

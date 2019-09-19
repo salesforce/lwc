@@ -1,41 +1,37 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTComponentNode",
+            "type": "component",
             "tag": "foo-list",
-            "component": true,
             "attributes": [],
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "forEach": {
-                        "expression": {
-                            "type": "BindingASTIdentifier",
-                            "name": "items"
-                        },
-                        "item": {
-                            "type": "BindingASTIdentifier",
-                            "name": "item"
-                        }
+                    "type": "for-each",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "items"
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "item"
                     },
                     "children": [
                         {
-                            "type": "BindingASTComponentNode",
+                            "type": "component",
                             "tag": "foo-list-item",
-                            "component": true,
                             "attributes": [
                                 {
-                                    "type": "BindingASTAttribute",
+                                    "type": "expression",
                                     "name": "data",
-                                    "expression": {
-                                        "type": "BindingASTMemberExpression",
+                                    "value": {
+                                        "type": "member-expression",
                                         "object": {
-                                            "type": "BindingASTIdentifier",
+                                            "type": "identifier",
                                             "name": "item"
                                         },
                                         "property": {
-                                            "type": "BindingASTIdentifier",
+                                            "type": "identifier",
                                             "name": "data"
                                         }
                                     }

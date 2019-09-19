@@ -23,7 +23,6 @@ describe('binding ast parser', () => {
         `);
         expect(root.children).toHaveLength(1);
         const node = root.children[0];
-        expect(node.component).toBe(true);
         expect(node.tag).toBe('foo-bar');
         expect(node.attributes).toHaveLength(0);
     });
@@ -36,7 +35,6 @@ describe('binding ast parser', () => {
         `);
         expect(root.children).toHaveLength(1);
         const node = root.children[0];
-        expect(node.component).toBe(true);
         expect(node.tag).toBe('foo-bar');
         expect(node.attributes).toHaveLength(1);
     });

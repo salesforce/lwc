@@ -1,67 +1,61 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTComponentNode",
+            "type": "component",
             "tag": "foo-carousel",
-            "component": true,
             "attributes": [
                 {
-                    "type": "BindingASTAttribute",
+                    "type": "expression",
                     "name": "flavor",
-                    "expression": {
-                        "type": "BindingASTIdentifier",
+                    "value": {
+                        "type": "identifier",
                         "name": "flavor"
                     }
                 }
             ],
             "children": [
                 {
-                    "type": "BindingASTNode",
-                    "forEach": {
-                        "expression": {
-                            "type": "BindingASTIdentifier",
-                            "name": "items"
-                        },
-                        "item": {
-                            "type": "BindingASTIdentifier",
-                            "name": "item"
-                        }
+                    "type": "for-each",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "items"
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "item"
                     },
                     "children": [
                         {
-                            "type": "BindingASTNode",
-                            "if": {
-                                "expression": {
-                                    "type": "BindingASTMemberExpression",
-                                    "object": {
-                                        "type": "BindingASTIdentifier",
-                                        "name": "item"
-                                    },
-                                    "property": {
-                                        "type": "BindingASTIdentifier",
-                                        "name": "image"
-                                    }
+                            "type": "if",
+                            "expression": {
+                                "type": "member-expression",
+                                "object": {
+                                    "type": "identifier",
+                                    "name": "item"
                                 },
-                                "modifier": "true"
+                                "property": {
+                                    "type": "identifier",
+                                    "name": "image"
+                                }
                             },
+                            "modifier": "true",
                             "children": [
                                 {
-                                    "type": "BindingASTComponentNode",
+                                    "type": "component",
                                     "tag": "foo-carousel-image",
-                                    "component": true,
                                     "attributes": [
                                         {
-                                            "type": "BindingASTAttribute",
+                                            "type": "expression",
                                             "name": "src",
-                                            "expression": {
-                                                "type": "BindingASTMemberExpression",
+                                            "value": {
+                                                "type": "member-expression",
                                                 "object": {
-                                                    "type": "BindingASTIdentifier",
+                                                    "type": "identifier",
                                                     "name": "item"
                                                 },
                                                 "property": {
-                                                    "type": "BindingASTIdentifier",
+                                                    "type": "identifier",
                                                     "name": "src"
                                                 }
                                             }
@@ -69,21 +63,25 @@
                                     ],
                                     "children": [
                                         {
-                                            "type": "BindingASTComponentNode",
+                                            "type": "component",
                                             "tag": "foo-header",
-                                            "component": true,
                                             "attributes": [
                                                 {
-                                                    "type": "BindingASTAttribute",
+                                                    "type": "string",
+                                                    "name": "slot",
+                                                    "value": "header"
+                                                },
+                                                {
+                                                    "type": "expression",
                                                     "name": "text",
-                                                    "expression": {
-                                                        "type": "BindingASTMemberExpression",
+                                                    "value": {
+                                                        "type": "member-expression",
                                                         "object": {
-                                                            "type": "BindingASTIdentifier",
+                                                            "type": "identifier",
                                                             "name": "item"
                                                         },
                                                         "property": {
-                                                            "type": "BindingASTIdentifier",
+                                                            "type": "identifier",
                                                             "name": "description"
                                                         }
                                                     }
@@ -91,21 +89,20 @@
                                             ],
                                             "children": [
                                                 {
-                                                    "type": "BindingASTComponentNode",
+                                                    "type": "component",
                                                     "tag": "foo-icon",
-                                                    "component": true,
                                                     "attributes": [
                                                         {
-                                                            "type": "BindingASTAttribute",
+                                                            "type": "expression",
                                                             "name": "icon-name",
-                                                            "expression": {
-                                                                "type": "BindingASTMemberExpression",
+                                                            "value": {
+                                                                "type": "member-expression",
                                                                 "object": {
-                                                                    "type": "BindingASTIdentifier",
+                                                                    "type": "identifier",
                                                                     "name": "item"
                                                                 },
                                                                 "property": {
-                                                                    "type": "BindingASTIdentifier",
+                                                                    "type": "identifier",
                                                                     "name": "iconName"
                                                                 }
                                                             }

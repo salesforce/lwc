@@ -1,34 +1,32 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTNode",
-            "if": {
-                "expression": {
-                    "type": "BindingASTIdentifier",
-                    "name": "fukuoka"
-                },
-                "modifier": "true"
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "fukuoka"
             },
+            "modifier": "true",
             "children": [
                 {
-                    "type": "BindingASTSlotNode",
+                    "type": "slot",
                     "name": "",
                     "children": []
                 }
             ]
         },
         {
-            "type": "BindingASTSlotNode",
+            "type": "slot",
             "name": "full-name",
             "children": [
                 {
-                    "type": "BindingASTSlotNode",
+                    "type": "slot",
                     "name": "first-name",
                     "children": []
                 },
                 {
-                    "type": "BindingASTSlotNode",
+                    "type": "slot",
                     "name": "last-name",
                     "children": []
                 }

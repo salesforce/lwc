@@ -1,26 +1,23 @@
 {
-    "type": "BindingASTNode",
+    "type": "root",
     "children": [
         {
-            "type": "BindingASTNode",
-            "if": {
-                "expression": {
-                    "type": "BindingASTIdentifier",
-                    "name": "hasFavorites"
-                },
-                "modifier": "true"
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "hasFavorites"
             },
+            "modifier": "true",
             "children": [
                 {
-                    "type": "BindingASTComponentNode",
+                    "type": "component",
                     "tag": "foo-favorites-view",
-                    "component": true,
                     "attributes": [
                         {
-                            "type": "BindingASTAttribute",
+                            "type": "expression",
                             "name": "favorite-artists",
-                            "expression": {
-                                "type": "BindingASTIdentifier",
+                            "value": {
+                                "type": "identifier",
                                 "name": "favoriteArtists"
                             }
                         }
@@ -30,25 +27,22 @@
             ]
         },
         {
-            "type": "BindingASTNode",
-            "if": {
-                "expression": {
-                    "type": "BindingASTIdentifier",
-                    "name": "hasFavorites"
-                },
-                "modifier": "false"
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "hasFavorites"
             },
+            "modifier": "false",
             "children": [
                 {
-                    "type": "BindingASTComponentNode",
+                    "type": "component",
                     "tag": "foo-no-favorites-view",
-                    "component": true,
                     "attributes": [
                         {
-                            "type": "BindingASTAttribute",
+                            "type": "expression",
                             "name": "recommended-artist",
-                            "expression": {
-                                "type": "BindingASTIdentifier",
+                            "value": {
+                                "type": "identifier",
                                 "name": "recommendedArtist"
                             }
                         }
