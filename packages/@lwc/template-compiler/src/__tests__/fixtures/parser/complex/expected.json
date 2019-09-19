@@ -1,0 +1,94 @@
+{
+    "type": "BindingASTNode",
+    "children": [
+        {
+            "type": "BindingASTComponentNode",
+            "tag": "special-container",
+            "component": true,
+            "attributes": [
+                {
+                    "type": "BindingASTAttribute",
+                    "name": "record-id",
+                    "expression": {
+                        "type": "BindingASTIdentifier",
+                        "name": "recordId"
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "type": "BindingASTNode",
+                    "if": {
+                        "expression": {
+                            "type": "BindingASTIdentifier",
+                            "name": "somethingElse"
+                        },
+                        "modifier": "true"
+                    },
+                    "children": [
+                        {
+                            "type": "BindingASTNode",
+                            "forEach": {
+                                "expression": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "likedSongs"
+                                },
+                                "item": {
+                                    "type": "BindingASTIdentifier",
+                                    "name": "song"
+                                }
+                            },
+                            "children": [
+                                {
+                                    "type": "BindingASTComponentNode",
+                                    "tag": "liked-song",
+                                    "component": true,
+                                    "attributes": [
+                                        {
+                                            "type": "BindingASTAttribute",
+                                            "name": "title",
+                                            "expression": {
+                                                "type": "BindingASTMemberExpression",
+                                                "object": {
+                                                    "type": "BindingASTIdentifier",
+                                                    "name": "song"
+                                                },
+                                                "property": {
+                                                    "type": "BindingASTIdentifier",
+                                                    "name": "title"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "BindingASTAttribute",
+                                            "name": "artist",
+                                            "expression": {
+                                                "type": "BindingASTMemberExpression",
+                                                "object": {
+                                                    "type": "BindingASTIdentifier",
+                                                    "name": "song"
+                                                },
+                                                "property": {
+                                                    "type": "BindingASTIdentifier",
+                                                    "name": "artist"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "BindingASTComponentNode",
+            "tag": "special-container",
+            "component": true,
+            "attributes": [],
+            "children": []
+        }
+    ]
+}
