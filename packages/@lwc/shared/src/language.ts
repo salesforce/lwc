@@ -33,7 +33,6 @@ const {
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
-    concat: ArrayConcat,
     forEach,
 } = Array.prototype;
 

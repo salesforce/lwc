@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayIndexOf } from '../shared/language';
+import { isUndefined, ArrayIndexOf } from '@lwc/shared';
 import { guid } from './utils';
 import { WireAdapterConstructor, ContextValue, getAdapterToken, setAdapterToken } from './wiring';
 

@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isObject, isUndefined, toString, assert } from '@lwc/shared';
+import { assert, isFalse, isFunction, toString } from '@lwc/shared';
 import { logError } from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
 import { ComponentInterface } from '../component';
 import { getComponentVM } from '../vm';
-import { getDecoratorsRegisteredMeta } from './register';
 
 /**
  * @api decorator to mark public fields and public methods in
