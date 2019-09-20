@@ -87,6 +87,25 @@ export class WireAdapter {
     private disconnecting: NoArgumentListener[] = [];
     private configuring: ConfigListener[] = [];
 
+    /**
+     * Attaching a config listener.
+     *
+     * The old behavior for attaching a config listener depended on these 3 cases:
+     * 1- The wire instance does have any arguments.
+     * 2- The wire instance have only static arguments.
+     * 3- The wire instance have at least one dynamic argument.
+     *
+     * In case 1 and 2, the listener should be called immediately.
+     * In case 3, the listener needs to wait for the value of the dynamic argument to be updated by the engine.
+     *
+     * In order to match the above logic, we need to save the last config available:
+     * if is undefined, the engine hasn't set it yet, we treat it as case 3. Note: the current logic does not make a distinction between dynamic and static config.
+     * if is defined, it means that for the component instance, and this adapter instance, the currentConfig is the proper one
+     * and the listener will be called immediately.
+     *
+     */
+    private currentConfig?: ConfigListenerArgument;
+
     constructor(callback: dataCallback) {
         this.callback = callback;
         this.eventTarget = {
@@ -102,6 +121,10 @@ export class WireAdapter {
                     }
                     case CONFIG: {
                         this.configuring.push(listener as ConfigListener);
+
+                        if (this.currentConfig !== undefined) {
+                            (listener as ConfigListener).call(undefined, this.currentConfig);
+                        }
                         break;
                     }
                     default:
@@ -141,6 +164,7 @@ export class WireAdapter {
     protected eventTarget: WireEventTarget;
 
     update(config: Record<string, any>) {
+        this.currentConfig = config;
         forEach.call(this.configuring, listener => {
             listener.call(undefined, config);
         });
