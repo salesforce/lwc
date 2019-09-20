@@ -132,6 +132,10 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
             setVMBeingRendered(vmBeingRenderedInception);
         }
     );
+    // html can be undefined when
+    // 1. There is an error during invocation of the component's render(), this case is handled by the boundary protection
+    // 2. When the component's render() returns undefined. In this case we throw an dev mode assertion and let boundary protection handle it
+    // In both cases, we degrade gracefully in production mode by returning an empty template
     return isUndefined(html) ? [] : evaluateTemplate(vm, html);
 }
 

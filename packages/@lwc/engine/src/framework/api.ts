@@ -615,8 +615,8 @@ export function ll(
     id: string,
     context?: (...args: any[]) => any
 ): EventListener {
-    const vmBeingRendered: VM | null = getVMBeingRendered();
-    if (isNull(vmBeingRendered)) {
+    const vm: VM | null = getVMBeingRendered();
+    if (isNull(vm)) {
         throw new Error();
     }
     // bind the original handler with b() so we can call it
@@ -628,7 +628,7 @@ export function ll(
         // located service for the locator metadata
         const {
             context: { locator },
-        } = vmBeingRendered;
+        } = vm;
         if (!isUndefined(locator)) {
             const { locator: locatorService } = Services;
             if (locatorService) {
@@ -641,7 +641,7 @@ export function ll(
                 // a registered `locator` service will be invoked with
                 // access to the context.locator.resolved, which will contain:
                 // outer id, outer context, inner id, and inner context
-                invokeServiceHook(vmBeingRendered, locatorService);
+                invokeServiceHook(vm, locatorService);
             }
         }
         // invoke original event listener via b()
