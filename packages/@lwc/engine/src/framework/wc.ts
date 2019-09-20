@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, getOwnPropertyNames, isNull, isObject, isUndefined } from '@lwc/shared';
+import { isNull, isObject, isUndefined, keys } from '@lwc/shared';
 import { ComponentConstructor } from './component';
 import { createVM, appendRootVM, removeRootVM, getCustomElementVM, CreateVMInit } from './vm';
 import { EmptyObject } from './utils';
-import { getComponentDef } from './def';
-import { getPropNameFromAttrName, isAttributeLocked } from './attributes';
+import { getComponentInternalDef } from './def';
+import { isAttributeLocked, getAttrNameFromPropName } from './attributes';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { patchCustomElementWithRestrictions } from './restrictions';
 
@@ -29,7 +29,13 @@ export function buildCustomElementConstructor(
     Ctor: ComponentConstructor,
     options?: ShadowRootInit
 ): HTMLElementConstructor {
-    const { props, bridge: BaseElement } = getComponentDef(Ctor);
+    const { props, bridge: BaseElement } = getComponentInternalDef(Ctor);
+    // generating the hash table for attributes to avoid duplicate fields
+    // and facilitate validation and false positives in case of inheritance.
+    const attributeToPropMap: Record<string, string> = {};
+    for (const propName in props) {
+        attributeToPropMap[getAttrNameFromPropName(propName)] = propName;
+    }
     const normalizedOptions: CreateVMInit = {
         mode: 'open',
         isRoot: true,
@@ -62,8 +68,8 @@ export function buildCustomElementConstructor(
                 // ignoring similar values for better perf
                 return;
             }
-            const propName = getPropNameFromAttrName(attrName);
-            if (isUndefined(props[propName])) {
+            const propName = attributeToPropMap[attrName];
+            if (isUndefined(propName)) {
                 // ignoring unknown attributes
                 return;
             }
@@ -81,9 +87,6 @@ export function buildCustomElementConstructor(
         }
         // collecting all attribute names from all public props to apply
         // the reflection from attributes to props via attributeChangedCallback.
-        static observedAttributes = ArrayMap.call(
-            getOwnPropertyNames(props),
-            propName => props[propName].attr
-        );
+        static observedAttributes = keys(attributeToPropMap);
     };
 }

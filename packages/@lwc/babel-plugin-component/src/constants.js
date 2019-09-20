@@ -40,6 +40,7 @@ const LWC_API_WHITELIST = new Set([
     'getComponentDef',
     'getComponentConstructor',
     'isComponentConstructor',
+    'createContextProvider',
     'readonly',
     'register',
     'setFeatureFlagForTest',

@@ -12,7 +12,7 @@ import { reactiveMembrane } from '../membrane';
  * membrane around any object value. This API is subject to change or
  * being removed.
  */
-export default function readonly(obj: any): any {
+export function readonly(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
         // TODO: #1292 - Remove the readonly decorator
         if (arguments.length !== 1) {

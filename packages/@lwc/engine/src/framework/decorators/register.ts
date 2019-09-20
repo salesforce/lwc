@@ -4,162 +4,289 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, assign, create, getOwnPropertyNames, isFunction, isUndefined } from '@lwc/shared';
+import {
+    assert,
+    create,
+    isFunction,
+    isUndefined,
+    forEach,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    toString,
+    isFalse,
+} from '@lwc/shared';
 import { ComponentConstructor } from '../component';
-import wireDecorator from './wire';
-import trackDecorator from './track';
-import apiDecorator from './api';
+import { internalWireFieldDecorator } from './wire';
+import { internalTrackDecorator } from './track';
+import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
+import {
+    WireAdapterConstructor,
+    storeWiredMethodMeta,
+    storeWiredFieldMeta,
+    ConfigCallback,
+} from '../wiring';
 import { EmptyObject } from '../utils';
-import { getAttrNameFromPropName } from '../attributes';
-import decorate, { DecoratorMap } from './decorate';
+import { createObservedFieldPropertyDescriptor } from '../observed-fields';
 
-export interface PropDef {
-    config: number;
+// data produced by compiler
+type WireCompilerMeta = Record<string, WireCompilerDef>;
+type TrackCompilerMeta = Record<string, 1>;
+type MethodCompilerMeta = string[];
+type PropCompilerMeta = Record<string, PropCompilerDef>;
+enum PropType {
+    Field = 0,
+    Set = 1,
+    Get = 2,
+    GetSet = 3,
+}
+interface PropCompilerDef {
+    config: PropType; // 0 m
     type: string; // TODO: #1301 - make this an enum
-    attr: string;
 }
-export interface WireDef {
+interface WireCompilerDef {
     method?: number;
-    [key: string]: any;
+    adapter: WireAdapterConstructor;
+    config: ConfigCallback;
 }
-export interface PropsDef {
-    [key: string]: PropDef;
-}
-export interface TrackDef {
-    [key: string]: 1;
-}
-type PublicMethod = (...args: any[]) => any;
-export interface MethodDef {
-    [key: string]: PublicMethod;
-}
-export interface WireHash {
-    [key: string]: WireDef;
-}
-
-export interface RegisterDecoratorMeta {
-    readonly publicMethods?: string[];
-    readonly publicProps?: PropsDef;
-    readonly track?: TrackDef;
-    readonly wire?: WireHash;
+interface RegisterDecoratorMeta {
+    readonly publicMethods?: MethodCompilerMeta;
+    readonly publicProps?: PropCompilerMeta;
+    readonly track?: TrackCompilerMeta;
+    readonly wire?: WireCompilerMeta;
     readonly fields?: string[];
 }
 
-export interface DecoratorMeta {
-    wire: WireHash | undefined;
-    track: TrackDef;
-    props: PropsDef;
-    methods: MethodDef;
-    fields?: string[];
+function validateObservedField(
+    Ctor: ComponentConstructor,
+    fieldName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(descriptor)) {
+            assert.fail(`Compiler Error: Invalid field ${fieldName} declaration.`);
+        }
+    }
 }
 
-const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
+function validateFieldDecoratedWithTrack(
+    Ctor: ComponentConstructor,
+    fieldName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(descriptor)) {
+            assert.fail(`Compiler Error: Invalid @track ${fieldName} declaration.`);
+        }
+    }
+}
+
+function validateFieldDecoratedWithWire(
+    Ctor: ComponentConstructor,
+    fieldName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(descriptor)) {
+            assert.fail(`Compiler Error: Invalid @wire(...) ${fieldName} field declaration.`);
+        }
+    }
+}
+
+function validateMethodDecoratedWithWire(
+    Ctor: ComponentConstructor,
+    methodName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (
+            isUndefined(descriptor) ||
+            !isFunction(descriptor.value) ||
+            isFalse(descriptor.writable)
+        ) {
+            assert.fail(`Compiler Error: Invalid @wire(...) ${methodName} method declaration.`);
+        }
+    }
+}
+
+function validateFieldDecoratedWithApi(
+    Ctor: ComponentConstructor,
+    fieldName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(descriptor)) {
+            assert.fail(`Compiler Error: Invalid @api ${fieldName} field declaration.`);
+        }
+    }
+}
+
+function validateAccessorDecoratedWithApi(
+    Ctor: ComponentConstructor,
+    fieldName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (isUndefined(descriptor)) {
+            assert.fail(`Compiler Error: Invalid @api get ${fieldName} accessor declaration.`);
+        } else if (isFunction(descriptor.set)) {
+            assert.isTrue(
+                isFunction(descriptor.get),
+                `Compiler Error: Missing getter for property ${toString(
+                    fieldName
+                )} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
+            );
+        } else if (!isFunction(descriptor.get)) {
+            assert.fail(`Compiler Error: Missing @api get ${fieldName} accessor declaration.`);
+        }
+    }
+}
+
+function validateMethodDecoratedWithApi(
+    Ctor: ComponentConstructor,
+    methodName: string,
+    descriptor: PropertyDescriptor | undefined
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        if (
+            isUndefined(descriptor) ||
+            !isFunction(descriptor.value) ||
+            isFalse(descriptor.writable)
+        ) {
+            assert.fail(`Compiler Error: Invalid @api ${methodName} method declaration.`);
+        }
+    }
+}
 
 /**
  * INTERNAL: This function can only be invoked by compiled code. The compiler
- * will prevent this function from being imported by userland code.
+ * will prevent this function from being imported by user-land code.
  */
 export function registerDecorators(
     Ctor: ComponentConstructor,
     meta: RegisterDecoratorMeta
 ): ComponentConstructor {
-    const decoratorMap: DecoratorMap = create(null);
-    const props = getPublicPropertiesHash(Ctor, meta.publicProps);
-    const methods = getPublicMethodsHash(Ctor, meta.publicMethods);
-    const wire = getWireHash(Ctor, meta.wire);
-    const track = getTrackHash(Ctor, meta.track);
-    const fields = meta.fields;
-    signedDecoratorToMetaMap.set(Ctor, {
-        props,
-        methods,
-        wire,
-        track,
-        fields,
-    });
-    for (const propName in props) {
-        decoratorMap[propName] = apiDecorator;
-    }
-    if (wire) {
-        for (const propName in wire) {
-            const wireDef: WireDef = wire[propName];
-            if (wireDef.method) {
-                // for decorated methods we need to do nothing
-                continue;
+    const proto = Ctor.prototype;
+    const { publicProps, publicMethods, wire, track, fields } = meta;
+    const apiMethods: PropertyDescriptorMap = create(null);
+    const apiFields: PropertyDescriptorMap = create(null);
+    const wiredMethods: PropertyDescriptorMap = create(null);
+    const wiredFields: PropertyDescriptorMap = create(null);
+    const observedFields: PropertyDescriptorMap = create(null);
+    let descriptor: PropertyDescriptor | undefined;
+    if (!isUndefined(publicProps)) {
+        for (const fieldName in publicProps) {
+            const propConfig = publicProps[fieldName];
+            descriptor = getOwnPropertyDescriptor(proto, fieldName);
+            if (propConfig.config > 0) {
+                // accessor declaration
+                if (process.env.NODE_ENV !== 'production') {
+                    validateAccessorDecoratedWithApi(Ctor, fieldName, descriptor);
+                }
+                if (isUndefined(descriptor)) {
+                    throw new Error();
+                }
+                descriptor = createPublicAccessorDescriptor(fieldName, descriptor);
+            } else {
+                // field declaration
+                if (process.env.NODE_ENV !== 'production') {
+                    validateFieldDecoratedWithApi(Ctor, fieldName, descriptor);
+                }
+                descriptor = createPublicPropertyDescriptor(fieldName);
             }
-            decoratorMap[propName] = wireDecorator(wireDef.adapter, wireDef.params);
+            apiFields[fieldName] = descriptor;
+            defineProperty(proto, fieldName, descriptor);
         }
     }
-    if (track) {
-        for (const propName in track) {
-            decoratorMap[propName] = trackDecorator;
+    if (!isUndefined(publicMethods)) {
+        forEach.call(publicMethods, methodName => {
+            descriptor = getOwnPropertyDescriptor(proto, methodName);
+            if (process.env.NODE_ENV !== 'production') {
+                validateMethodDecoratedWithApi(Ctor, methodName, descriptor);
+            }
+            if (isUndefined(descriptor)) {
+                throw new Error();
+            }
+            apiMethods[methodName] = descriptor;
+        });
+    }
+    if (!isUndefined(wire)) {
+        for (const fieldOrMethodName in wire) {
+            const { adapter, method } = wire[fieldOrMethodName];
+            const configCallback = wire[fieldOrMethodName].config;
+            descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
+            if (method === 1) {
+                if (process.env.NODE_ENV !== 'production') {
+                    validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
+                }
+                if (isUndefined(descriptor)) {
+                    throw new Error();
+                }
+                wiredMethods[fieldOrMethodName] = descriptor;
+                storeWiredMethodMeta(descriptor, adapter, configCallback);
+            } else {
+                if (process.env.NODE_ENV !== 'production') {
+                    validateFieldDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
+                }
+                descriptor = internalWireFieldDecorator(fieldOrMethodName);
+                wiredFields[fieldOrMethodName] = descriptor;
+                storeWiredFieldMeta(descriptor, adapter, configCallback);
+                defineProperty(proto, fieldOrMethodName, descriptor);
+            }
         }
     }
-    decorate(Ctor, decoratorMap);
+    if (!isUndefined(track)) {
+        for (const fieldName in track) {
+            descriptor = getOwnPropertyDescriptor(proto, fieldName);
+            if (process.env.NODE_ENV !== 'production') {
+                validateFieldDecoratedWithTrack(Ctor, fieldName, descriptor);
+            }
+            descriptor = internalTrackDecorator(fieldName);
+            defineProperty(proto, fieldName, descriptor);
+        }
+    }
+    if (!isUndefined(fields)) {
+        for (let i = 0, n = fields.length; i < n; i++) {
+            const fieldName = fields[i];
+            descriptor = getOwnPropertyDescriptor(proto, fieldName);
+            if (process.env.NODE_ENV !== 'production') {
+                validateObservedField(Ctor, fieldName, descriptor);
+            }
+            observedFields[fieldName] = createObservedFieldPropertyDescriptor(fieldName);
+        }
+    }
+    setDecoratorsMeta(Ctor, {
+        apiMethods,
+        apiFields,
+        wiredMethods,
+        wiredFields,
+        observedFields,
+    });
     return Ctor;
 }
 
-export function getDecoratorsRegisteredMeta(Ctor: ComponentConstructor): DecoratorMeta | undefined {
-    return signedDecoratorToMetaMap.get(Ctor);
+const signedDecoratorToMetaMap: Map<ComponentConstructor, DecoratorMeta> = new Map();
+
+interface DecoratorMeta {
+    readonly apiMethods: PropertyDescriptorMap;
+    readonly apiFields: PropertyDescriptorMap;
+    readonly wiredMethods: PropertyDescriptorMap;
+    readonly wiredFields: PropertyDescriptorMap;
+    readonly observedFields: PropertyDescriptorMap;
 }
 
-function getTrackHash(target: ComponentConstructor, track: TrackDef | undefined): TrackDef {
-    if (isUndefined(track) || getOwnPropertyNames(track).length === 0) {
-        return EmptyObject;
-    }
-
-    // TODO: #1302 - check that anything in `track` is correctly defined in the prototype
-    return assign(create(null), track);
+function setDecoratorsMeta(Ctor: ComponentConstructor, meta: DecoratorMeta) {
+    signedDecoratorToMetaMap.set(Ctor, meta);
 }
 
-function getWireHash(
-    target: ComponentConstructor,
-    wire: WireHash | undefined
-): WireHash | undefined {
-    if (isUndefined(wire) || getOwnPropertyNames(wire).length === 0) {
-        return;
-    }
+const defaultMeta: DecoratorMeta = {
+    apiMethods: EmptyObject,
+    apiFields: EmptyObject,
+    wiredMethods: EmptyObject,
+    wiredFields: EmptyObject,
+    observedFields: EmptyObject,
+};
 
-    // TODO: #1302 - check that anything in `wire` is correctly defined in the prototype
-    return assign(create(null), wire);
-}
-
-function getPublicPropertiesHash(
-    target: ComponentConstructor,
-    props: PropsDef | undefined
-): PropsDef {
-    if (isUndefined(props) || getOwnPropertyNames(props).length === 0) {
-        return EmptyObject;
-    }
-    return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
-        const attr = getAttrNameFromPropName(propName);
-        propsHash[propName] = assign(
-            {
-                config: 0,
-                type: 'any',
-                attr,
-            },
-            props[propName]
-        );
-        return propsHash;
-    }, create(null));
-}
-
-function getPublicMethodsHash(
-    target: ComponentConstructor,
-    publicMethods: string[] | undefined
-): MethodDef {
-    if (isUndefined(publicMethods) || publicMethods.length === 0) {
-        return EmptyObject;
-    }
-    return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(
-                isFunction(target.prototype[methodName]),
-                `Component "${target.name}" should have a method \`${methodName}\` instead of ${
-                    target.prototype[methodName]
-                }.`
-            );
-        }
-        methodsHash[methodName] = target.prototype[methodName];
-        return methodsHash;
-    }, create(null));
+export function getDecoratorsMeta(Ctor: ComponentConstructor): DecoratorMeta {
+    const meta = signedDecoratorToMetaMap.get(Ctor);
+    return isUndefined(meta) ? defaultMeta : meta;
 }

@@ -24,7 +24,6 @@ const { isArray } = Array;
 const {
     filter: ArrayFilter,
     find: ArrayFind,
-    forEach,
     indexOf: ArrayIndexOf,
     join: ArrayJoin,
     map: ArrayMap,
@@ -34,6 +33,8 @@ const {
     slice: ArraySlice,
     splice: ArraySplice,
     unshift: ArrayUnshift,
+    concat: ArrayConcat,
+    forEach,
 } = Array.prototype;
 
 const {

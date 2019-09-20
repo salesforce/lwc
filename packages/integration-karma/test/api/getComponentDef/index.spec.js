@@ -149,12 +149,12 @@ describe('@api', () => {
         expect(props).toEqual(
             jasmine.objectContaining({
                 getterOnly: {
-                    config: 1,
+                    config: 0,
                     type: 'any',
                     attr: 'getter-only',
                 },
                 getterAndSetter: {
-                    config: 3,
+                    config: 0,
                     type: 'any',
                     attr: 'getter-and-setter',
                 },
@@ -203,8 +203,14 @@ describe('@api', () => {
     });
 });
 
+/**
+ * Skipping the tests for the definitions of the wire when calling getComponentDef
+ * because that's implementation details of the component, and should not be exposed,
+ * ideally no one is using that information since it is not accessible from outside
+ * the component.
+ */
 describe('@wire', () => {
-    it('should return the wired properties in wire object', () => {
+    xit('should return the wired properties in wire object', () => {
         const { wire } = getComponentDef(WireProperties);
         expect(wire).toEqualWireSettings({
             foo: {
@@ -238,7 +244,7 @@ describe('@wire', () => {
         });
     });
 
-    it('should return the wired methods in the wire object with a method flag', () => {
+    xit('should return the wired methods in the wire object with a method flag', () => {
         const { wire } = getComponentDef(WireMethods);
         expect(wire).toEqualWireSettings({
             foo: {
@@ -275,7 +281,7 @@ describe('@wire', () => {
         });
     });
 
-    it('should inherit wire properties from the base class', () => {
+    xit('should inherit wire properties from the base class', () => {
         const { wire } = getComponentDef(WirePropertiesInheritance);
         expect(wire).toEqualWireSettings({
             parentProp: {
@@ -311,7 +317,7 @@ describe('@wire', () => {
         });
     });
 
-    it('should inherit the wire methods from the case class', () => {
+    xit('should inherit the wire methods from the case class', () => {
         const { wire } = getComponentDef(WireMethodsInheritance);
         expect(wire).toEqualWireSettings({
             parentMethod: {

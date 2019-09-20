@@ -85,7 +85,7 @@ describe('wire.ts', () => {
             });
         });
 
-        it('should make properties of a wired object property reactive', () => {
+        it('should make wired properties as readonly', () => {
             let counter = 0;
             class MyComponent extends LightningElement {
                 injectFooDotX(x) {
@@ -108,10 +108,11 @@ describe('wire.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            elm.injectFooDotX(2);
-
+            expect(() => {
+                elm.injectFooDotX(2);
+            }).toThrowError();
             return Promise.resolve().then(() => {
-                expect(counter).toBe(2);
+                expect(counter).toBe(1);
             });
         });
 

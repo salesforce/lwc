@@ -11,6 +11,7 @@ import '../polyfills/aria-properties/main';
 
 // TODO: #1296 - Revisit these exports and figure out a better separation
 export { createElement } from './upgrade';
+export { createContextProvider } from './context-provider';
 export { getComponentDef, isComponentConstructor, getComponentConstructor } from './def';
 export { BaseLightningElement as LightningElement } from './base-lightning-element';
 export { register } from './services';
@@ -22,9 +23,9 @@ export { isNodeFromTemplate } from './vm';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
-export { default as readonly } from './decorators/readonly';
 export { default as wire } from './decorators/wire';
-export { default as decorate } from './decorators/decorate';
+
+export { readonly } from './readonly';
 export { buildCustomElementConstructor } from './wc';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';

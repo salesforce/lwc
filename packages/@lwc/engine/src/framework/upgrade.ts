@@ -22,7 +22,8 @@ import {
     resolveCircularModuleDependency,
     ViewModelReflection,
 } from './utils';
-import { getComponentDef, setElementProto } from './def';
+import { getComponentInternalDef, setElementProto } from './def';
+import { setHiddenField, getHiddenField, createFieldName } from '@lwc/shared';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
 import { appendChild, insertBefore, replaceChild, removeChild } from '../env/node';
@@ -116,7 +117,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
         Ctor = resolveCircularModuleDependency(Ctor);
     }
 
-    const def = getComponentDef(Ctor);
+    const def = getComponentInternalDef(Ctor);
     setElementProto(element, def);
 
     if (process.env.NODE_ENV !== 'production') {

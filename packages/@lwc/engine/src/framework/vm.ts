@@ -19,11 +19,11 @@ import {
     isUndefined,
     keys,
     StringToLowerCase,
+    getOwnPropertyNames,
 } from '@lwc/shared';
-import { getComponentDef } from './def';
+import { getComponentInternalDef } from './def';
 import {
     createComponent,
-    linkComponent,
     renderComponent,
     ComponentConstructor,
     markComponentAsDirty,
@@ -56,6 +56,7 @@ import { parentElementGetter, parentNodeGetter } from '../env/node';
 import { updateDynamicChildren, updateStaticChildren } from '../3rdparty/snabbdom/snabbdom';
 import { hasDynamicChildren } from './hooks';
 import { ReactiveObserver } from '../libs/mutation-tracker';
+import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 
 export interface SlotSet {
     [key: string]: VNodes;
@@ -86,9 +87,9 @@ export interface UninitializedVM {
     /** Adopted Children List */
     aChildren: VNodes;
     velements: VCustomElement[];
-    cmpProps: any;
+    cmpProps: Record<string, any>;
     cmpSlots: SlotSet;
-    cmpTrack: any;
+    cmpFields: Record<string, any>;
     callHook: (
         cmp: ComponentInterface | undefined,
         fn: (...args: any[]) => any,
@@ -212,7 +213,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
             `VM creation requires a DOM element instead of ${elm}.`
         );
     }
-    const def = getComponentDef(Ctor);
+    const def = getComponentInternalDef(Ctor);
     const { isRoot, mode, owner } = options;
     idx += 1;
     const uninitializedVm: UninitializedVM = {
@@ -230,7 +231,7 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
-        cmpTrack: create(null),
+        cmpFields: create(null),
         cmpSlots: useSyntheticShadow ? create(null) : undefined,
         callHook,
         setHook,
@@ -256,7 +257,10 @@ export function createVM(elm: HTMLElement, Ctor: ComponentConstructor, options: 
 
     // link component to the wire service
     const initializedVm = uninitializedVm as VM;
-    linkComponent(initializedVm);
+    // initializing the wire decorator per instance only when really needed
+    if (hasWireAdapters(initializedVm)) {
+        installWireAdapters(initializedVm);
+    }
 }
 
 function rehydrate(vm: VM) {
@@ -388,6 +392,9 @@ function runConnectedCallback(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
+    if (hasWireAdapters(vm)) {
+        connectWireAdapters(vm);
+    }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -400,6 +407,10 @@ function runConnectedCallback(vm: VM) {
             endMeasure('connectedCallback', vm);
         }
     }
+}
+
+function hasWireAdapters(vm: VM): boolean {
+    return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
 function runDisconnectedCallback(vm: VM) {
@@ -419,6 +430,9 @@ function runDisconnectedCallback(vm: VM) {
     const { disconnected } = Services;
     if (disconnected) {
         invokeServiceHook(vm, disconnected);
+    }
+    if (hasWireAdapters(vm)) {
+        disconnectWireAdapters(vm);
     }
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {

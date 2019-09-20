@@ -13,18 +13,16 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 import {
-    ArrayReduce,
     assert,
     create,
     defineProperties,
     fields,
     freeze,
-    getOwnPropertyNames,
     isFalse,
     isFunction,
     isNull,
-    isObject,
     seal,
+    isObject,
 } from '@lwc/shared';
 import { logError } from '../shared/assert';
 import { HTMLElementOriginalDescriptors } from './html-properties';
@@ -563,22 +561,15 @@ BaseLightningElementConstructor.prototype = {
     },
 };
 
-// Typescript is inferring the wrong function type for this particular
-// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-// @ts-ignore type-mismatch
-const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
-    getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    (descriptors: PropertyDescriptorMap, propName: string) => {
-        descriptors[propName] = createBridgeToElementDescriptor(
-            propName,
-            HTMLElementOriginalDescriptors[propName]
-        );
-        return descriptors;
-    },
-    create(null)
-);
+export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
+for (const propName in HTMLElementOriginalDescriptors) {
+    lightningBasedDescriptors[propName] = createBridgeToElementDescriptor(
+        propName,
+        HTMLElementOriginalDescriptors[propName]
+    );
+}
 
-defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
+defineProperties(BaseLightningElementConstructor.prototype, lightningBasedDescriptors);
 
 if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(BaseLightningElementConstructor.prototype);

@@ -6,21 +6,9 @@
  * This provide is sharing the same value with every child, and the
  * identity of the consumer is not tracked.
  */
-
-// Per Context Component Instance, track the current context data
-import { register, ValueChangedEvent, LinkContextEvent } from 'wire-service';
-
-const { addEventListener } = Document.prototype;
+import { createContextProvider } from 'lwc';
 
 const ContextValueMap = new WeakMap();
-const UniqueEventName = `simple_context_event_${guid()}`;
-const Provider = Symbol('SimpleContextProvider');
-
-function guid() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-}
 
 function getDefaultContext() {
     return 'missing';
@@ -37,39 +25,39 @@ function createContextPayload(value) {
     return value;
 }
 
-register(Provider, eventTarget => {
-    let unsubscribeCallback;
-
-    function callback(value, unsubscribe) {
-        eventTarget.dispatchEvent(new ValueChangedEvent(createContextPayload(value)));
-        unsubscribeCallback = unsubscribe;
+export class WireAdapter {
+    contextValue = getDefaultContext();
+    constructor(dataCallback) {
+        this._dataCallback = dataCallback;
+        // provides the default wired value based on the default context value
+        this._dataCallback(createContextPayload(this.contextValue));
     }
-
-    eventTarget.addEventListener('connect', () => {
-        const event = new LinkContextEvent(UniqueEventName, callback);
-        eventTarget.dispatchEvent(event);
-        if (unsubscribeCallback === undefined) {
-            // no provider was found, in which case the default
-            // context should be set.
-            const defaultContext = getDefaultContext();
-            eventTarget.dispatchEvent(new ValueChangedEvent(createContextPayload(defaultContext)));
+    update(_config, context) {
+        if (context) {
+            // we only care about the context, no config is expected or used
+            if (!context.hasOwnProperty('value')) {
+                throw new Error(`Invalid context provided`);
+            }
+            this.contextValue = context.value;
+            this._dataCallback(createContextPayload(this.contextValue));
         }
-    });
-
-    eventTarget.addEventListener('disconnect', () => {
-        if (unsubscribeCallback !== undefined) {
-            unsubscribeCallback();
-            unsubscribeCallback = undefined; // resetting it to support reinsertion
-        }
-    });
-});
+    }
+    connect() {
+        // noop
+    }
+    disconnect() {
+        // noop
+    }
+    static configSchema = {};
+    static contextSchema = { value: 'required' /* could be 'optional' */ };
+}
 
 function getContextData(eventTarget) {
     let contextData = ContextValueMap.get(eventTarget);
     if (contextData === undefined) {
-        // collection of consumers' callbacks and default context value per provider instance
+        // collection of consumers and default context value per provider instance
         contextData = {
-            listeners: [],
+            consumers: [],
             value: getInitialContext(), // initial value for an installed provider
         };
         ContextValueMap.set(eventTarget, contextData);
@@ -77,48 +65,33 @@ function getContextData(eventTarget) {
     return contextData;
 }
 
-function disconnectConsumer(eventTarget, contextData, callback) {
-    const i = contextData.listeners.indexOf(callback);
-    if (i >= 0) {
-        contextData.listeners.splice(i, 1);
-    } else {
-        throw new TypeError(`Invalid context operation in ${eventTarget}.`);
-    }
-}
+const contextualizer = createContextProvider(WireAdapter);
 
-function setupNewContextProvider(eventTarget) {
-    let contextData; // lazy initialization
-    addEventListener.call(eventTarget, UniqueEventName, event => {
-        // this event must have a full stop when it is intercepted by a provider
-        event.stopImmediatePropagation();
-        // the new child provides a callback as a communication channel
-        const { detail: callback } = event;
-        // once the first consumer gets connected, then we create the contextData object
-        if (contextData === undefined) {
-            contextData = getContextData(eventTarget);
-        }
-        // registering the new callback
-        contextData.listeners.push(callback);
-        // emit the current value and provide disconnect callback
-        callback(contextData.value, () => disconnectConsumer(eventTarget, contextData, callback));
+export function installCustomContext(target) {
+    contextualizer(target, {
+        consumerConnectedCallback(consumer) {
+            // once the first consumer gets connected, then we create the contextData object
+            const contextData = getContextData(target);
+            // registering the new consumer
+            contextData.consumers.push(consumer);
+            // push the current value
+            consumer.provide({ value: contextData.value });
+        },
+        consumerDisconnectedCallback(consumer) {
+            const contextData = getContextData(target);
+            const i = contextData.consumers.indexOf(consumer);
+            if (i >= 0) {
+                contextData.consumers.splice(i, 1);
+            } else {
+                throw new TypeError(`Invalid context operation in ${target}.`);
+            }
+        },
     });
 }
 
-function emitNewContextValue(eventTarget, newValue) {
-    const contextData = getContextData(eventTarget);
+export function setCustomContext(target, newValue) {
+    const contextData = getContextData(target);
     // in this example, all consumers get the same context value
     contextData.value = newValue;
-    contextData.listeners.forEach(callback =>
-        callback(newValue, () => disconnectConsumer(eventTarget, contextData, callback))
-    );
+    contextData.consumers.forEach(consumer => consumer.provide({ value: newValue }));
 }
-
-export function installCustomContext(node) {
-    setupNewContextProvider(node);
-}
-
-export function setCustomContext(node, newValue) {
-    emitNewContextValue(node, newValue);
-}
-
-export { Provider };
