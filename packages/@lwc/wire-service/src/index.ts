@@ -25,21 +25,20 @@ export function register(
         throw new TypeError('adapter id is already associated to an adapter factory');
     }
 
-    const adapterClass = freeze(
-        class extends WireAdapter {
-            constructor(dataCallback: dataCallback) {
-                super(dataCallback);
-                adapterEventTargetCallback(this.eventTarget);
-            }
+    const AdapterClass = class extends WireAdapter {
+        constructor(dataCallback: dataCallback) {
+            super(dataCallback);
+            adapterEventTargetCallback(this.eventTarget);
         }
-    );
+    };
 
-    freeze(adapterClass.prototype);
+    freeze(AdapterClass);
+    freeze(AdapterClass.prototype);
 
     defineProperty(adapterId, 'adapter', {
         writable: false,
         configurable: false,
-        value: adapterClass,
+        value: AdapterClass,
     });
 }
 
