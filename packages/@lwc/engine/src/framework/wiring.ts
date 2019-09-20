@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isUndefined, ArrayPush, getOwnPropertyNames } from '@lwc/shared';
+import { assert, isUndefined, ArrayPush, getOwnPropertyNames, isFalse } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { valueMutated, ReactiveObserver } from '../libs/mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
@@ -17,9 +17,14 @@ function noop(): void {}
 function createFieldDataCallback(vm: VM, name: string) {
     const { component, cmpFields } = vm;
     return (value: any) => {
-        // storing the value in the underlying storage
-        cmpFields[name] = value;
-        valueMutated(component, name);
+        if (value !== vm.cmpFields[name]) {
+            // storing the value in the underlying storage
+            cmpFields[name] = value;
+            if (isFalse(vm.isDirty)) {
+                // perf optimization to skip this step if the track property is on a component that is already dirty
+                valueMutated(component, name);
+            }
+        }
     };
 }
 

@@ -216,6 +216,10 @@ export function registerDecorators(
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
+                    assert.isTrue(
+                        adapter,
+                        `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
+                    );
                     validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
                 if (isUndefined(descriptor)) {
@@ -225,6 +229,10 @@ export function registerDecorators(
                 storeWiredMethodMeta(descriptor, adapter, configCallback);
             } else {
                 if (process.env.NODE_ENV !== 'production') {
+                    assert.isTrue(
+                        adapter,
+                        `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
+                    );
                     validateFieldDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
                 descriptor = internalWireFieldDecorator(fieldOrMethodName);

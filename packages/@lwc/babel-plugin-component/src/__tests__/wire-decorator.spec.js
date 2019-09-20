@@ -587,6 +587,112 @@ describe('Transform property', () => {
     );
 
     pluginTest(
+        "config function should use bracket notation for param when it's definition has invalid identifier as segment",
+        `
+        import { api, wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1.a b", key2: "$p1.p2" })
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    import { getFoo } from "data-service";
+
+                    class Test {
+                      constructor() {
+                        this.wiredProp = void 0;
+                      }
+                    }
+
+                    _registerDecorators(Test, {
+                      wire: {
+                        wiredProp: {
+                          adapter: getFoo,
+                          params: {
+                            key1: "prop1.a b",
+                            key2: "p1.p2"
+                          },
+                          static: {},
+                          config: function($cmp) {
+                            let v1 = $cmp["prop1"];
+                            let v2 = $cmp.p1;
+                            return {
+                              key1: v1 != null ? v1["a b"] : undefined,
+                              key2: v2 != null ? v2.p2 : undefined
+                            };
+                          }
+                        }
+                      }
+                    });
+
+                    export default _registerComponent(Test, {
+                      tmpl: _tmpl
+                    });
+`,
+            },
+        }
+    );
+
+    pluginTest(
+        'config function should use bracket notation when param definition has empty segment',
+        `
+        import { api, wire } from 'lwc';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo, { key1: "$prop1..prop2", key2: ["fixed", 'array']})
+            wiredProp;
+        }
+    `,
+        {
+            output: {
+                code: `
+                    import { registerDecorators as _registerDecorators } from "lwc";
+                    import _tmpl from "./test.html";
+                    import { registerComponent as _registerComponent } from "lwc";
+                    import { getFoo } from "data-service";
+
+                    class Test {
+                      constructor() {
+                        this.wiredProp = void 0;
+                      }
+                    }
+
+                    _registerDecorators(Test, {
+                      wire: {
+                        wiredProp: {
+                          adapter: getFoo,
+                          params: {
+                            key1: "prop1..prop2"
+                          },
+                          static: {
+                            key2: ["fixed", "array"]
+                          },
+                          config: function($cmp) {
+                            let v1 = $cmp["prop1"];
+                            return {
+                              key2: ["fixed", "array"],
+                              key1: v1 != null && (v1 = v1[""]) != null ? v1["prop2"] : undefined
+                            };
+                          }
+                        }
+                      }
+                    });
+
+                    export default _registerComponent(Test, {
+                      tmpl: _tmpl
+                    });
+`,
+            },
+        }
+    );
+
+    pluginTest(
         'throws when wired property is combined with @track',
         `
         import { track, wire } from 'lwc';

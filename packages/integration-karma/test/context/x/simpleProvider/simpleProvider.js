@@ -9,6 +9,7 @@
 import { createContextProvider } from 'lwc';
 
 const ContextValueMap = new WeakMap();
+const { hasOwnProperty } = Object.prototype;
 
 function getDefaultContext() {
     return 'missing';
@@ -35,7 +36,7 @@ export class WireAdapter {
     update(_config, context) {
         if (context) {
             // we only care about the context, no config is expected or used
-            if (!context.hasOwnProperty('value')) {
+            if (!hasOwnProperty.call(context, 'value')) {
                 throw new Error(`Invalid context provided`);
             }
             this.contextValue = context.value;

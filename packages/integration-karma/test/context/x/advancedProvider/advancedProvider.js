@@ -11,6 +11,8 @@ import { createContextProvider } from 'lwc';
 const IdentityMetaMap = new WeakMap();
 const ConsumerMetaMap = new WeakMap();
 
+const { hasOwnProperty } = Object.prototype;
+
 export class WireAdapter {
     // no provider was found, in which case the default
     // context should be set.
@@ -24,7 +26,7 @@ export class WireAdapter {
     update(_config, context) {
         if (context) {
             // we only care about the context, no config is expected or used
-            if (!context.hasOwnProperty('value')) {
+            if (!hasOwnProperty.call(context, 'value')) {
                 throw new Error(`Invalid context provided`);
             }
             this.contextValue = context.value;
