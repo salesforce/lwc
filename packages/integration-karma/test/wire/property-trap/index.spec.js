@@ -14,7 +14,7 @@ describe('wire adapter update', () => {
         });
     });
 
-    it('should invoke listener with reactive parameter is an expando and change', () => {
+    xit('should invoke listener with reactive parameter is an expando and change', () => {
         const elm = createElement('x-echo-adapter-consumer', { is: EchoAdapterConsumer });
         document.body.appendChild(elm);
 
