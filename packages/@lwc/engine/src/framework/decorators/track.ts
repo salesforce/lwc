@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse } from '@lwc/shared';
+import { assert } from '@lwc/shared';
 import { isRendering, vmBeingRendered } from '../invoker';
-import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
+import { valueObserved, valueMutated } from '../mutation-tracker';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentInterface } from '../component';
@@ -53,10 +53,8 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpFields[key]) {
                 vm.cmpFields[key] = reactiveOrAnyValue;
-                if (isFalse(vm.isDirty)) {
-                    // perf optimization to skip this step if the track property is on a component that is already dirty
-                    valueMutated(this, key);
-                }
+
+                valueMutated(vm, key);
             }
         },
         enumerable: true,

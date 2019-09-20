@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, toString } from '@lwc/shared';
+import { assert, isFunction, toString } from '@lwc/shared';
 import { logError } from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
-import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
+import { valueObserved, valueMutated } from '../mutation-tracker';
 import { ComponentInterface } from '../component';
 import { getComponentVM } from '../vm';
 
@@ -59,11 +59,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             }
             vm.cmpProps[key] = newValue;
 
-            // avoid notification of observability if the instance is already dirty
-            if (isFalse(vm.isDirty)) {
-                // perf optimization to skip this step if the component is dirty already.
-                valueMutated(this, key);
-            }
+            valueMutated(vm, key);
         },
         enumerable: true,
         configurable: true,

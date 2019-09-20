@@ -79,7 +79,7 @@ describe('wire adapter update', () => {
 
             return Promise.resolve().then(() => {
                 const actualWiredValues = elm.getWiredProp();
-                expect(actualWiredValues.data.keyValue).toBe('expected');
+                expect(actualWiredValues.data.keyVal).toBe('expected');
             });
         });
 
@@ -92,7 +92,7 @@ describe('wire adapter update', () => {
 
             return Promise.resolve().then(() => {
                 const actualWiredValues = elm.getWiredProp();
-                expect(actualWiredValues.data.keyValue).toBe('a.b.c.d value');
+                expect(actualWiredValues.data.keyVal).toBe('a.b.c.d value');
             });
         });
 

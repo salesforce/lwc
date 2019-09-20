@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse } from '@lwc/shared';
+import { assert } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
-import { valueMutated, valueObserved } from '../libs/mutation-tracker';
+import { valueMutated, valueObserved } from './mutation-tracker';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
@@ -27,9 +27,8 @@ export function createObservedFieldPropertyDescriptor(key: string): PropertyDesc
 
             if (newValue !== vm.cmpFields[key]) {
                 vm.cmpFields[key] = newValue;
-                if (isFalse(vm.isDirty)) {
-                    valueMutated(this, key);
-                }
+
+                valueMutated(vm, key);
             }
         },
         enumerable: true,
