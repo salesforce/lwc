@@ -40,6 +40,7 @@ const LWC_SUPPORTED_APIS = new Set([
     'getComponentDef',
     'getComponentConstructor',
     'isComponentConstructor',
+    'createContextProvider',
     'readonly',
     'register',
     'setFeatureFlagForTest',

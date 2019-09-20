@@ -7,13 +7,6 @@ import PublicMethods from 'x/publicMethods';
 import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 
-import WireProperties from 'x/wireProperties';
-import WireMethods from 'x/wireMethods';
-import WirePropertiesInheritance from 'x/wirePropertiesInheritance';
-import WireMethodsInheritance from 'x/wireMethodsInheritance';
-
-import wireAdapter from 'x/wireAdapter';
-
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {
         expect(() => getComponentDef(ctor)).toThrowError(
@@ -149,12 +142,12 @@ describe('@api', () => {
         expect(props).toEqual(
             jasmine.objectContaining({
                 getterOnly: {
-                    config: 1,
+                    config: 0,
                     type: 'any',
                     attr: 'getter-only',
                 },
                 getterAndSetter: {
-                    config: 3,
+                    config: 0,
                     type: 'any',
                     attr: 'getter-and-setter',
                 },
@@ -199,160 +192,6 @@ describe('@api', () => {
             parentMethod: Object.getPrototypeOf(PublicMethodsInheritance.prototype).parentMethod,
             overriddenInChild: PublicMethodsInheritance.prototype.overriddenInChild,
             childMethod: PublicMethodsInheritance.prototype.childMethod,
-        });
-    });
-});
-
-describe('@wire', () => {
-    it('should return the wired properties in wire object', () => {
-        const { wire } = getComponentDef(WireProperties);
-        expect(wire).toEqualWireSettings({
-            foo: {
-                adapter: wireAdapter,
-                config: function($cmp) {
-                    return {};
-                },
-            },
-            bar: {
-                adapter: wireAdapter,
-                static: {
-                    a: true,
-                },
-                params: {},
-                config: function($cmp) {
-                    return { a: true };
-                },
-            },
-            baz: {
-                adapter: wireAdapter,
-                static: {
-                    b: true,
-                },
-                params: {
-                    c: 'foo',
-                },
-                config: function($cmp) {
-                    return { b: true, c: $cmp.foo };
-                },
-            },
-        });
-    });
-
-    it('should return the wired methods in the wire object with a method flag', () => {
-        const { wire } = getComponentDef(WireMethods);
-        expect(wire).toEqualWireSettings({
-            foo: {
-                adapter: wireAdapter,
-                method: 1,
-                config: function($cmp) {
-                    return {};
-                },
-            },
-            bar: {
-                adapter: wireAdapter,
-                static: {
-                    a: true,
-                },
-                params: {},
-                method: 1,
-                config: function($cmp) {
-                    return { a: true };
-                },
-            },
-            baz: {
-                adapter: wireAdapter,
-                static: {
-                    b: true,
-                },
-                params: {
-                    c: 'foo',
-                },
-                method: 1,
-                config: function($cmp) {
-                    return { b: true, c: $cmp.foo };
-                },
-            },
-        });
-    });
-
-    it('should inherit wire properties from the base class', () => {
-        const { wire } = getComponentDef(WirePropertiesInheritance);
-        expect(wire).toEqualWireSettings({
-            parentProp: {
-                adapter: wireAdapter,
-                static: {
-                    parent: true,
-                },
-                params: {},
-                config: function($cmp) {
-                    return { parent: true };
-                },
-            },
-            overriddenInChild: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                config: function($cmp) {
-                    return { child: true };
-                },
-            },
-            childProp: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                config: function($cmp) {
-                    return { child: true };
-                },
-            },
-        });
-    });
-
-    it('should inherit the wire methods from the case class', () => {
-        const { wire } = getComponentDef(WireMethodsInheritance);
-        expect(wire).toEqualWireSettings({
-            parentMethod: {
-                adapter: wireAdapter,
-                static: {
-                    parent: true,
-                },
-                params: {},
-                method: 1,
-                config: function($cmp) {
-                    return {
-                        parent: true,
-                    };
-                },
-            },
-            overriddenInChild: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                method: 1,
-                config: function($cmp) {
-                    return {
-                        child: true,
-                    };
-                },
-            },
-            childMethod: {
-                adapter: wireAdapter,
-                static: {
-                    child: true,
-                },
-                params: {},
-                method: 1,
-                config: function($cmp) {
-                    return {
-                        child: true,
-                    };
-                },
-            },
         });
     });
 });

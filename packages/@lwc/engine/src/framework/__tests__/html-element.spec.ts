@@ -494,10 +494,7 @@ describe('html-element', () => {
                 }
             }
             registerDecorators(MyComponent, {
-                publicProps: { foo: {} },
-            });
-
-            registerDecorators(MyComponent, {
+                publicProps: { foo: { config: 3 } },
                 track: { state: 1 },
             });
 
@@ -550,7 +547,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { role: {} },
+                    publicProps: { role: { config: 3 } },
                 });
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
@@ -588,7 +585,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { lang: {} },
+                    publicProps: { lang: { config: 3 } },
                 });
 
                 const element = createElement('prop-setter-lang', { is: MyComponent });
@@ -634,7 +631,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { lang: {} },
+                    publicProps: { lang: { config: 1 } },
                 });
 
                 const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
@@ -708,7 +705,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { hidden: {} },
+                    publicProps: { hidden: { config: 3 } },
                 });
 
                 const element = createElement('prop-setter-hidden', { is: MyComponent });
@@ -753,7 +750,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { hidden: {} },
+                    publicProps: { hidden: { config: 1 } },
                 });
 
                 const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
@@ -831,7 +828,7 @@ describe('html-element', () => {
                 }
 
                 registerDecorators(MyComponent, {
-                    publicProps: { dir: {} },
+                    publicProps: { dir: { config: 3 } },
                 });
 
                 const element = createElement('prop-setter-dir', { is: MyComponent });
@@ -877,7 +874,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { dir: {} },
+                    publicProps: { dir: { config: 1 } },
                 });
 
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
@@ -953,7 +950,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { id: {} },
+                    publicProps: { id: { config: 3 } },
                 });
 
                 const element = createElement('prop-setter-id', { is: MyComponent });
@@ -999,7 +996,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { id: {} },
+                    publicProps: { id: { config: 1 } },
                 });
 
                 const element = createElement('prop-getter-id-imperative', { is: MyComponent });
@@ -1077,7 +1074,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { accessKey: {} },
+                    publicProps: { accessKey: { config: 3 } },
                 });
 
                 const element = createElement('prop-setter-accessKey', { is: MyComponent });
@@ -1124,7 +1121,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { accessKey: {} },
+                    publicProps: { accessKey: { config: 1 } },
                 });
                 const element = createElement('prop-getter-accessKey-imperative', {
                     is: MyComponent,
@@ -1201,7 +1198,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { title: {} },
+                    publicProps: { title: { config: 3 } },
                 });
                 const element = createElement('prop-setter-title', { is: MyComponent });
                 (element.title = {}), expect(count).toBe(1);
@@ -1244,7 +1241,7 @@ describe('html-element', () => {
                     }
                 }
                 registerDecorators(MyComponent, {
-                    publicProps: { title: {} },
+                    publicProps: { title: { config: 1 } },
                 });
 
                 const element = createElement('prop-getter-title-imperative', { is: MyComponent });

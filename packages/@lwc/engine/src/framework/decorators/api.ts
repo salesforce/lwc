@@ -5,13 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import features from '@lwc/features';
-import { assert, isFalse, isFunction, isObject, isTrue, isUndefined, toString } from '@lwc/shared';
+import { assert, isFalse, isFunction, isTrue, isUndefined, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
-import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
-import { ComponentInterface, ComponentConstructor } from '../component';
+import {
+    componentValueObserved,
+    componentValueMutated,
+    ReactiveObserver,
+} from '../mutation-tracker';
+import { ComponentInterface } from '../component';
 import { getAssociatedVM, rerenderVM } from '../vm';
-import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
@@ -20,51 +23,15 @@ import { isUpdatingTemplate, getVMBeingRendered } from '../template';
  * LWC Components. This function implements the internals of this
  * decorator.
  */
-export default function api(
-    target: ComponentConstructor,
-    propName: PropertyKey,
-    descriptor: PropertyDescriptor | undefined
-): PropertyDescriptor {
+export default function api(target: any, propertyKey: string, descriptor: PropertyDescriptor);
+export default function api() {
     if (process.env.NODE_ENV !== 'production') {
-        if (arguments.length !== 3) {
-            assert.fail(`@api decorator can only be used as a decorator function.`);
-        }
+        assert.fail(`@api decorator can only be used as a decorator function.`);
     }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            !descriptor || isFunction(descriptor.get) || isFunction(descriptor.set),
-            `Invalid property ${toString(
-                propName
-            )} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`
-        );
-        if (isObject(descriptor) && isFunction(descriptor.set)) {
-            assert.isTrue(
-                isObject(descriptor) && isFunction(descriptor.get),
-                `Missing getter for property ${toString(
-                    propName
-                )} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`
-            );
-        }
-    }
-    const meta = getDecoratorsRegisteredMeta(target);
-    // initializing getters and setters for each public prop on the target prototype
-    if (isObject(descriptor) && (isFunction(descriptor.get) || isFunction(descriptor.set))) {
-        // if it is configured as an accessor it must have a descriptor
-        // @ts-ignore it must always be set before calling this method
-        meta.props[propName].config = isFunction(descriptor.set) ? 3 : 1;
-        return createPublicAccessorDescriptor(target, propName, descriptor);
-    } else {
-        // @ts-ignore it must always be set before calling this method
-        meta.props[propName].config = 0;
-        return createPublicPropertyDescriptor(target, propName, descriptor);
-    }
+    throw new Error();
 }
 
-function createPublicPropertyDescriptor(
-    proto: ComponentConstructor,
-    key: PropertyKey,
-    descriptor: PropertyDescriptor | undefined
-): PropertyDescriptor {
+export function createPublicPropertyDescriptor(key: string): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
             const vm = getAssociatedVM(this);
@@ -80,7 +47,7 @@ function createPublicPropertyDescriptor(
                 }
                 return;
             }
-            valueObserved(this, key);
+            componentValueObserved(vm, key);
             return vm.cmpProps[key];
         },
         set(this: ComponentInterface, newValue: any) {
@@ -102,13 +69,10 @@ function createPublicPropertyDescriptor(
             }
             vm.cmpProps[key] = newValue;
 
-            // avoid notification of observability if the instance is already dirty
-            if (isFalse(vm.isDirty)) {
-                // perf optimization to skip this step if the component is dirty already.
-                valueMutated(this, key);
-            }
+            componentValueMutated(vm, key);
         },
-        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
+        enumerable: true,
+        configurable: true,
     };
 }
 
@@ -148,23 +112,19 @@ class AccessorReactiveObserver extends ReactiveObserver {
     }
 }
 
-function createPublicAccessorDescriptor(
-    Ctor: ComponentConstructor,
+export function createPublicAccessorDescriptor(
     key: PropertyKey,
     descriptor: PropertyDescriptor
 ): PropertyDescriptor {
-    const { get, set, enumerable } = descriptor;
+    const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.fail(
-                `Invalid attempt to create public property descriptor ${toString(
-                    key
-                )} in ${Ctor}. It is missing the getter declaration with @api get ${toString(
-                    key
-                )}() {} syntax.`
+            assert.invariant(
+                isFunction(get),
+                `Invalid compiler output for public accessor ${toString(key)} decorated with @api`
             );
         }
-        throw new TypeError();
+        throw new Error();
     }
     return {
         get(this: ComponentInterface): any {
@@ -217,5 +177,6 @@ function createPublicAccessorDescriptor(
             }
         },
         enumerable,
+        configurable,
     };
 }

@@ -13,17 +13,14 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 import {
-    ArrayReduce,
     assert,
     create,
     defineProperties,
     freeze,
-    getOwnPropertyNames,
-    isFalse,
     isFunction,
     isNull,
-    isObject,
     seal,
+    isObject,
 } from '@lwc/shared';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { patchLightningElementPrototypeWithRestrictions } from './restrictions';
@@ -35,7 +32,7 @@ import {
 import { EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { associateVM, getAssociatedVM, VM } from './vm';
-import { valueObserved, valueMutated } from '../libs/mutation-tracker';
+import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
@@ -85,7 +82,7 @@ function createBridgeToElementDescriptor(
                 }
                 return;
             }
-            valueObserved(this, propName);
+            componentValueObserved(vm, propName);
             return get.call(vm.elm);
         },
         set(this: ComponentInterface, newValue: any) {
@@ -114,10 +111,8 @@ function createBridgeToElementDescriptor(
 
             if (newValue !== vm.cmpProps[propName]) {
                 vm.cmpProps[propName] = newValue;
-                if (isFalse(vm.isDirty)) {
-                    // perf optimization to skip this step if not in the DOM
-                    valueMutated(this, propName);
-                }
+
+                componentValueMutated(vm, propName);
             }
             return set.call(vm.elm, newValue);
         },
@@ -516,22 +511,15 @@ BaseLightningElementConstructor.prototype = {
     },
 };
 
-// Typescript is inferring the wrong function type for this particular
-// overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
-// @ts-ignore type-mismatch
-const baseDescriptors: PropertyDescriptorMap = ArrayReduce.call(
-    getOwnPropertyNames(HTMLElementOriginalDescriptors),
-    (descriptors: PropertyDescriptorMap, propName: string) => {
-        descriptors[propName] = createBridgeToElementDescriptor(
-            propName,
-            HTMLElementOriginalDescriptors[propName]
-        );
-        return descriptors;
-    },
-    create(null)
-);
+export const lightningBasedDescriptors: PropertyDescriptorMap = create(null);
+for (const propName in HTMLElementOriginalDescriptors) {
+    lightningBasedDescriptors[propName] = createBridgeToElementDescriptor(
+        propName,
+        HTMLElementOriginalDescriptors[propName]
+    );
+}
 
-defineProperties(BaseLightningElementConstructor.prototype, baseDescriptors);
+defineProperties(BaseLightningElementConstructor.prototype, lightningBasedDescriptors);
 
 if (process.env.NODE_ENV !== 'production') {
     patchLightningElementPrototypeWithRestrictions(BaseLightningElementConstructor.prototype);

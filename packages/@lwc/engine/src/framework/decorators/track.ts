@@ -4,67 +4,38 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isUndefined, toString } from '@lwc/shared';
-import { valueObserved, valueMutated } from '../../libs/mutation-tracker';
+import { assert, toString } from '@lwc/shared';
+import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';
 import { getAssociatedVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
-import { ComponentConstructor, ComponentInterface } from '../component';
+import { ComponentInterface } from '../component';
 import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
- * @track decorator to mark fields as reactive in
- * LWC Components. This function implements the internals of this
- * decorator.
+ * @track decorator function to mark field value as reactive in
+ * LWC Components. This function can also be invoked directly
+ * with any value to obtain the trackable version of the value.
  */
-export default function track(
-    target: ComponentConstructor,
-    prop: PropertyKey,
-    descriptor: PropertyDescriptor | undefined
-): PropertyDescriptor;
-export default function track(target: any, prop?, descriptor?): any {
+export default function track(target: any, propertyKey: string, descriptor: PropertyDescriptor);
+export default function track(target: any): any {
     if (arguments.length === 1) {
         return reactiveMembrane.getProxy(target);
     }
     if (process.env.NODE_ENV !== 'production') {
-        if (arguments.length !== 3) {
-            assert.fail(
-                `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
-            );
-        }
-        if (!isUndefined(descriptor)) {
-            const { get, set, configurable, writable } = descriptor;
-            assert.isTrue(
-                !get && !set,
-                `Compiler Error: A @track decorator can only be applied to a public field.`
-            );
-            assert.isTrue(
-                configurable !== false,
-                `Compiler Error: A @track decorator can only be applied to a configurable property.`
-            );
-            assert.isTrue(
-                writable !== false,
-                `Compiler Error: A @track decorator can only be applied to a writable property.`
-            );
-        }
+        assert.fail(
+            `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
+        );
     }
-    return createTrackedPropertyDescriptor(
-        target,
-        prop,
-        isUndefined(descriptor) ? true : descriptor.enumerable === true
-    );
+    throw new Error();
 }
 
-export function createTrackedPropertyDescriptor(
-    Ctor: any,
-    key: PropertyKey,
-    enumerable: boolean
-): PropertyDescriptor {
+export function internalTrackDecorator(key: string): PropertyDescriptor {
     return {
         get(this: ComponentInterface): any {
             const vm = getAssociatedVM(this);
-            valueObserved(this, key);
-            return vm.cmpTrack[key];
+            componentValueObserved(vm, key);
+            return vm.cmpFields[key];
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getAssociatedVM(this);
@@ -84,15 +55,13 @@ export function createTrackedPropertyDescriptor(
                 );
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
-            if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
-                vm.cmpTrack[key] = reactiveOrAnyValue;
-                if (isFalse(vm.isDirty)) {
-                    // perf optimization to skip this step if the track property is on a component that is already dirty
-                    valueMutated(this, key);
-                }
+            if (reactiveOrAnyValue !== vm.cmpFields[key]) {
+                vm.cmpFields[key] = reactiveOrAnyValue;
+
+                componentValueMutated(vm, key);
             }
         },
-        enumerable,
+        enumerable: true,
         configurable: true,
     };
 }
