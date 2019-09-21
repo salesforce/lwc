@@ -35,7 +35,7 @@ import {
 import { ViewModelReflection, EmptyObject } from './utils';
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
 import { getComponentVM, VM } from './vm';
-import { valueMutated, valueObserved } from './mutation-tracker';
+import { componentValueMutated, valueObserved } from './mutation-tracker';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
@@ -116,7 +116,7 @@ function createBridgeToElementDescriptor(
             if (newValue !== vm.cmpProps[propName]) {
                 vm.cmpProps[propName] = newValue;
 
-                valueMutated(vm, propName);
+                componentValueMutated(vm, propName);
             }
             return set.call(vm.elm, newValue);
         },

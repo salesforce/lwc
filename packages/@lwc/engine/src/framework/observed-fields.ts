@@ -7,7 +7,7 @@
 import { assert } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
-import { valueMutated, valueObserved } from './mutation-tracker';
+import { componentValueMutated, valueObserved } from './mutation-tracker';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
@@ -28,7 +28,7 @@ export function createObservedFieldPropertyDescriptor(key: string): PropertyDesc
             if (newValue !== vm.cmpFields[key]) {
                 vm.cmpFields[key] = newValue;
 
-                valueMutated(vm, key);
+                componentValueMutated(vm, key);
             }
         },
         enumerable: true,

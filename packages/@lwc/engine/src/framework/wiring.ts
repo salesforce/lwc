@@ -6,7 +6,7 @@
  */
 import { assert, isUndefined, ArrayPush, getOwnPropertyNames } from '@lwc/shared';
 import { ComponentInterface } from './component';
-import { valueMutated, ReactiveObserver } from './mutation-tracker';
+import { componentValueMutated, ReactiveObserver } from './mutation-tracker';
 import { VM, runWithBoundaryProtection } from './vm';
 import { invokeComponentCallback } from './invoker';
 import { dispatchEvent } from '../env/dom';
@@ -21,7 +21,7 @@ function createFieldDataCallback(vm: VM, name: string) {
             // storing the value in the underlying storage
             cmpFields[name] = value;
 
-            valueMutated(vm, name);
+            componentValueMutated(vm, name);
         }
     };
 }

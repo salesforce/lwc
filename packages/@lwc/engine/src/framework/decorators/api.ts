@@ -7,7 +7,7 @@
 import { assert, isFunction, toString } from '@lwc/shared';
 import { logError } from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
-import { valueObserved, valueMutated } from '../mutation-tracker';
+import { valueObserved, componentValueMutated } from '../mutation-tracker';
 import { ComponentInterface } from '../component';
 import { getComponentVM } from '../vm';
 
@@ -59,7 +59,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
             }
             vm.cmpProps[key] = newValue;
 
-            valueMutated(vm, key);
+            componentValueMutated(vm, key);
         },
         enumerable: true,
         configurable: true,

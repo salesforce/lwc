@@ -6,7 +6,7 @@
  */
 import { assert } from '@lwc/shared';
 import { isRendering, vmBeingRendered } from '../invoker';
-import { valueObserved, valueMutated } from '../mutation-tracker';
+import { valueObserved, componentValueMutated } from '../mutation-tracker';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentInterface } from '../component';
@@ -54,7 +54,7 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
             if (reactiveOrAnyValue !== vm.cmpFields[key]) {
                 vm.cmpFields[key] = reactiveOrAnyValue;
 
-                valueMutated(vm, key);
+                componentValueMutated(vm, key);
             }
         },
         enumerable: true,
