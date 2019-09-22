@@ -68,8 +68,15 @@ function targetGetter(this: Event): EventTarget | null {
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
         // TODO: issue #1511 - Special escape hatch to support legacy behavior. Should be fixed.
-        // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
-        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+        // If the originalTarget is not a keyed element and if any of the following conditions are true, do not retarget
+        // 1. event's target is being accessed async
+        // 2. currentTarget is document or document.body (Third party libraries that have global event listeners)
+        if (
+            (isNull(originalCurrentTarget) ||
+                originalCurrentTarget === document ||
+                originalCurrentTarget === document.body) &&
+            isUndefined(getNodeOwnerKey(originalTarget as Node))
+        ) {
             return originalTarget;
         }
         const doc = getOwnerDocument(originalTarget as Node);
