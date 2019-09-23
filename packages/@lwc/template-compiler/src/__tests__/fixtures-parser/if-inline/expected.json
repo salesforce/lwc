@@ -1,0 +1,55 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "hasFavorites"
+            },
+            "modifier": "true",
+            "children": [
+                {
+                    "type": "component",
+                    "tag": "foo-favorites-view",
+                    "attributes": [
+                        {
+                            "type": "expression",
+                            "name": "favorite-artists",
+                            "value": {
+                                "type": "identifier",
+                                "name": "favoriteArtists"
+                            }
+                        }
+                    ],
+                    "children": []
+                }
+            ]
+        },
+        {
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "hasFavorites"
+            },
+            "modifier": "false",
+            "children": [
+                {
+                    "type": "component",
+                    "tag": "foo-no-favorites-view",
+                    "attributes": [
+                        {
+                            "type": "expression",
+                            "name": "recommended-artist",
+                            "value": {
+                                "type": "identifier",
+                                "name": "recommendedArtist"
+                            }
+                        }
+                    ],
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

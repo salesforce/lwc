@@ -16,11 +16,16 @@ export interface Config {
      *    </template>
      */
     experimentalComputedMemberExpression?: boolean;
+    /**
+     * Parser option to enable data binding AST output.
+     */
+    experimentalDataBindingAST?: boolean;
     secure?: boolean;
 }
 
 export interface ResolvedConfig {
     experimentalComputedMemberExpression: boolean;
+    experimentalDataBindingAST: boolean;
     secure: boolean;
 
     /**
@@ -34,14 +39,16 @@ export interface ResolvedConfig {
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
-    secure: false,
     experimentalComputedMemberExpression: false,
+    experimentalDataBindingAST: false,
     format: 'module',
+    secure: false,
 };
 
 const AVAILABLE_OPTION_NAMES = new Set([
-    'secure',
     'experimentalComputedMemberExpression',
+    'experimentalDataBindingAST',
+    'secure',
     'stylesheetConfig',
 ]);
 
