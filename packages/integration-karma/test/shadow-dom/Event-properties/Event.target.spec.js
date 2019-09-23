@@ -63,6 +63,7 @@ describe('should not retarget event', () => {
         let elm;
         let child;
         let originalTarget;
+
         beforeAll(() => {
             spyOn(console, 'error');
             elm = createElement('x-parent-with-dynamic-child', {
@@ -86,13 +87,23 @@ describe('should not retarget event', () => {
             originalTarget.click();
         });
 
-        it('when original target node is not keyed and currentTarget is document (W-6626752)', done => {
-            document.addEventListener('click', evt => {
-                expect(evt.currentTarget).toBe(document);
-                expect(evt.target).toBe(originalTarget);
-                done();
+        describe('received at a global listener', () => {
+            let actualCurrentTarget;
+            let actualTarget;
+            const globalListener = evt => {
+                actualCurrentTarget = evt.currentTarget;
+                actualTarget = evt.target;
+            };
+            afterAll(() => {
+                document.removeEventListener(globalListener);
             });
-            originalTarget.click();
+
+            it('when original target node is not keyed and currentTarget is document (W-6626752)', () => {
+                document.addEventListener('click', globalListener);
+                originalTarget.click();
+                expect(actualCurrentTarget).toBe(document);
+                expect(actualTarget).toBe(originalTarget);
+            });
         });
     }
 });
