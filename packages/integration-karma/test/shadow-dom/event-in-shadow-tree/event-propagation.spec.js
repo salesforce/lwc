@@ -66,30 +66,33 @@ describe('event propagation in simple shadow tree', () => {
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
-        const logs = dispatchEventWithLog(
-            nodes['span-manual'],
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
+        // Fire the event in next tick to allow time for the MO to key the manually inserted nodes
+        return Promise.resolve().then(() => {
+            const logs = dispatchEventWithLog(
+                nodes['span-manual'],
+                new CustomEvent('test', { composed: true, bubbles: true })
+            );
 
-        const composedPath = [
-            nodes['span-manual'],
-            nodes['div-manual'],
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            document.body,
-            document.documentElement,
-            document,
-            window,
-        ];
-        expect(logs).toEqual([
-            [nodes['span-manual'], nodes['span-manual'], composedPath],
-            [nodes['div-manual'], nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            [document.body, nodes['x-shadow-tree'], composedPath],
-            [document.documentElement, nodes['x-shadow-tree'], composedPath],
-            [document, nodes['x-shadow-tree'], composedPath],
-        ]);
+            const composedPath = [
+                nodes['span-manual'],
+                nodes['div-manual'],
+                nodes['x-shadow-tree'].shadowRoot,
+                nodes['x-shadow-tree'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+            expect(logs).toEqual([
+                [nodes['span-manual'], nodes['span-manual'], composedPath],
+                [nodes['div-manual'], nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+                [document.body, nodes['x-shadow-tree'], composedPath],
+                [document.documentElement, nodes['x-shadow-tree'], composedPath],
+                [document, nodes['x-shadow-tree'], composedPath],
+            ]);
+        });
     });
 
     // TODO: #1141 - Event non dispatched from within a LWC shadow tree are not patched
@@ -236,34 +239,37 @@ describe('event propagation in nested shadow tree', () => {
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
-        const logs = dispatchEventWithLog(
-            nodes['span-manual'],
-            new CustomEvent('test', { composed: true, bubbles: true })
-        );
+        // Fire the event in next tick to allow time for the MO to key the manually inserted nodes
+        return Promise.resolve().then(() => {
+            const logs = dispatchEventWithLog(
+                nodes['span-manual'],
+                new CustomEvent('test', { composed: true, bubbles: true })
+            );
 
-        const composedPath = [
-            nodes['span-manual'],
-            nodes['div-manual'],
-            nodes['x-shadow-tree'].shadowRoot,
-            nodes['x-shadow-tree'],
-            nodes['x-nested-shadow-tree'].shadowRoot,
-            nodes['x-nested-shadow-tree'],
-            document.body,
-            document.documentElement,
-            document,
-            window,
-        ];
-        expect(logs).toEqual([
-            [nodes['span-manual'], nodes['span-manual'], composedPath],
-            [nodes['div-manual'], nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
-            [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
-            [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
-            [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
-            [document.body, nodes['x-nested-shadow-tree'], composedPath],
-            [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
-            [document, nodes['x-nested-shadow-tree'], composedPath],
-        ]);
+            const composedPath = [
+                nodes['span-manual'],
+                nodes['div-manual'],
+                nodes['x-shadow-tree'].shadowRoot,
+                nodes['x-shadow-tree'],
+                nodes['x-nested-shadow-tree'].shadowRoot,
+                nodes['x-nested-shadow-tree'],
+                document.body,
+                document.documentElement,
+                document,
+                window,
+            ];
+            expect(logs).toEqual([
+                [nodes['span-manual'], nodes['span-manual'], composedPath],
+                [nodes['div-manual'], nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'].shadowRoot, nodes['span-manual'], composedPath],
+                [nodes['x-shadow-tree'], nodes['x-shadow-tree'], composedPath],
+                [nodes['x-nested-shadow-tree'].shadowRoot, nodes['x-shadow-tree'], composedPath],
+                [nodes['x-nested-shadow-tree'], nodes['x-nested-shadow-tree'], composedPath],
+                [document.body, nodes['x-nested-shadow-tree'], composedPath],
+                [document.documentElement, nodes['x-nested-shadow-tree'], composedPath],
+                [document, nodes['x-nested-shadow-tree'], composedPath],
+            ]);
+        });
     });
 
     it('propagate event from a inner host', () => {

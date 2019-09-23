@@ -57,16 +57,22 @@ if (!process.env.NATIVE_SHADOW) {
     });
 }
 
-describe('When event target is accessed async', () => {
+// legacy usecases
+describe('should not retarget event', () => {
     if (!process.env.NATIVE_SHADOW) {
-        it('#W-6586380 - should return the original target, if original target node is not keyed', done => {
+        let elm;
+        let child;
+        let originalTarget;
+        beforeAll(() => {
             spyOn(console, 'error');
-            const elm = createElement('x-parent-with-dynamic-child', {
+            elm = createElement('x-parent-with-dynamic-child', {
                 is: XParentWithDynamicChild,
             });
             document.body.appendChild(elm);
-            const child = elm.shadowRoot.querySelector('x-child-with-out-lwc-dom-manual');
-            const originalTarget = child.shadowRoot.querySelector('span');
+            child = elm.shadowRoot.querySelector('x-child-with-out-lwc-dom-manual');
+            originalTarget = child.shadowRoot.querySelector('span');
+        });
+        it('when original target node is not keyed and event is accessed async (W-6586380)', done => {
             elm.eventListener = evt => {
                 expect(evt.currentTarget).toBe(elm.shadowRoot.querySelector('div'));
                 expect(evt.target).toBe(child);
@@ -77,6 +83,15 @@ describe('When event target is accessed async', () => {
                     done();
                 });
             };
+            originalTarget.click();
+        });
+
+        it('when original target node is not keyed and currentTarget is document (W-6626752)', done => {
+            document.addEventListener('click', evt => {
+                expect(evt.currentTarget).toBe(document);
+                expect(evt.target).toBe(originalTarget);
+                done();
+            });
             originalTarget.click();
         });
     }
