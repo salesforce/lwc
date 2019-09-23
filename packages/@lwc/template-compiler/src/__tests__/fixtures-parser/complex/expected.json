@@ -1,0 +1,87 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "special-container",
+            "attributes": [
+                {
+                    "type": "expression",
+                    "name": "record-id",
+                    "value": {
+                        "type": "identifier",
+                        "name": "recordId"
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "type": "if",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "somethingElse"
+                    },
+                    "modifier": "true",
+                    "children": [
+                        {
+                            "type": "for-each",
+                            "expression": {
+                                "type": "identifier",
+                                "name": "likedSongs"
+                            },
+                            "item": {
+                                "type": "identifier",
+                                "name": "song"
+                            },
+                            "children": [
+                                {
+                                    "type": "component",
+                                    "tag": "liked-song",
+                                    "attributes": [
+                                        {
+                                            "type": "expression",
+                                            "name": "artist",
+                                            "value": {
+                                                "type": "member-expression",
+                                                "object": {
+                                                    "type": "identifier",
+                                                    "name": "song"
+                                                },
+                                                "property": {
+                                                    "type": "identifier",
+                                                    "name": "artist"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "type": "expression",
+                                            "name": "title",
+                                            "value": {
+                                                "type": "member-expression",
+                                                "object": {
+                                                    "type": "identifier",
+                                                    "name": "song"
+                                                },
+                                                "property": {
+                                                    "type": "identifier",
+                                                    "name": "title"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "component",
+            "tag": "special-container",
+            "attributes": [],
+            "children": []
+        }
+    ]
+}

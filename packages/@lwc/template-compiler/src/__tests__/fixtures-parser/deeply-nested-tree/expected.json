@@ -1,0 +1,124 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "foo-carousel",
+            "attributes": [
+                {
+                    "type": "expression",
+                    "name": "flavor",
+                    "value": {
+                        "type": "identifier",
+                        "name": "flavor"
+                    }
+                }
+            ],
+            "children": [
+                {
+                    "type": "for-each",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "items"
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "item"
+                    },
+                    "children": [
+                        {
+                            "type": "if",
+                            "expression": {
+                                "type": "member-expression",
+                                "object": {
+                                    "type": "identifier",
+                                    "name": "item"
+                                },
+                                "property": {
+                                    "type": "identifier",
+                                    "name": "image"
+                                }
+                            },
+                            "modifier": "true",
+                            "children": [
+                                {
+                                    "type": "component",
+                                    "tag": "foo-carousel-image",
+                                    "attributes": [
+                                        {
+                                            "type": "expression",
+                                            "name": "src",
+                                            "value": {
+                                                "type": "member-expression",
+                                                "object": {
+                                                    "type": "identifier",
+                                                    "name": "item"
+                                                },
+                                                "property": {
+                                                    "type": "identifier",
+                                                    "name": "src"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "children": [
+                                        {
+                                            "type": "component",
+                                            "tag": "foo-header",
+                                            "attributes": [
+                                                {
+                                                    "type": "string",
+                                                    "name": "slot",
+                                                    "value": "header"
+                                                },
+                                                {
+                                                    "type": "expression",
+                                                    "name": "text",
+                                                    "value": {
+                                                        "type": "member-expression",
+                                                        "object": {
+                                                            "type": "identifier",
+                                                            "name": "item"
+                                                        },
+                                                        "property": {
+                                                            "type": "identifier",
+                                                            "name": "description"
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "children": [
+                                                {
+                                                    "type": "component",
+                                                    "tag": "foo-icon",
+                                                    "attributes": [
+                                                        {
+                                                            "type": "expression",
+                                                            "name": "icon-name",
+                                                            "value": {
+                                                                "type": "member-expression",
+                                                                "object": {
+                                                                    "type": "identifier",
+                                                                    "name": "item"
+                                                                },
+                                                                "property": {
+                                                                    "type": "identifier",
+                                                                    "name": "iconName"
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

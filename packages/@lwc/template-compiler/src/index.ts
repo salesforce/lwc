@@ -23,13 +23,19 @@ import generate from './codegen';
 import { TemplateCompileResult, TemplateParseResult } from './shared/types';
 import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 
+import bindingTransform, { BindingParseResult } from './transform/binding';
+
 export { IRElement } from './shared/types';
 export { Config } from './config';
 
-export function parse(source: string, config?: Config): TemplateParseResult {
+export function parse(source: string, config?: Config): BindingParseResult | TemplateParseResult {
     const options = mergeConfig(config || {});
     const state = new State(source, options);
-    return parseTemplate(source, state);
+    const parsed = parseTemplate(source, state);
+    if (options.experimentalDataBindingAST) {
+        return bindingTransform(parsed);
+    }
+    return parsed;
 }
 
 export default function compile(source: string, config: Config): TemplateCompileResult {

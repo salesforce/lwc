@@ -1,0 +1,62 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "foo-list",
+            "attributes": [],
+            "children": [
+                {
+                    "type": "for-of",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "likedSongs"
+                    },
+                    "iterator": {
+                        "type": "identifier",
+                        "name": "liked"
+                    },
+                    "children": [
+                        {
+                            "type": "component",
+                            "tag": "foo-list-item",
+                            "attributes": [
+                                {
+                                    "type": "expression",
+                                    "name": "description",
+                                    "value": {
+                                        "type": "member-expression",
+                                        "object": {
+                                            "type": "identifier",
+                                            "name": "liked"
+                                        },
+                                        "property": {
+                                            "type": "identifier",
+                                            "name": "description"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "expression",
+                                    "name": "name",
+                                    "value": {
+                                        "type": "member-expression",
+                                        "object": {
+                                            "type": "identifier",
+                                            "name": "liked"
+                                        },
+                                        "property": {
+                                            "type": "identifier",
+                                            "name": "name"
+                                        }
+                                    }
+                                }
+                            ],
+                            "children": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
