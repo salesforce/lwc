@@ -1,0 +1,30 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "foo-bar",
+            "attributes": [
+                {
+                    "type": "expression",
+                    "name": "city",
+                    "value": {
+                        "type": "identifier",
+                        "name": "name"
+                    }
+                },
+                {
+                    "type": "boolean",
+                    "name": "short",
+                    "value": true
+                },
+                {
+                    "type": "string",
+                    "name": "zip",
+                    "value": "90210"
+                }
+            ],
+            "children": []
+        }
+    ]
+}
