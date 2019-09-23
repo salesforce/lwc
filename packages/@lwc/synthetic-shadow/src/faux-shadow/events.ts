@@ -75,7 +75,7 @@ function targetGetter(this: Event): EventTarget | null {
         }
         return retarget(doc, composedPath);
     } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
-        // If currentTarget is document or document.body (Third party libraries that have global event listeners)
+        // TODO: issue #1530 - If currentTarget is document or document.body (Third party libraries that have global event listeners)
         // and the originalTarget is not a keyed element, do not retarget
         if (isUndefined(getNodeOwnerKey(originalTarget as Node))) {
             return originalTarget;
