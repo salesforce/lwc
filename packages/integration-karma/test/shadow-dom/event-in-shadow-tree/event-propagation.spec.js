@@ -66,8 +66,10 @@ describe('event propagation in simple shadow tree', () => {
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
-        // Fire the event in next tick to allow time for the MO to key the manually inserted nodes
-        return Promise.resolve().then(() => {
+        // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+        return new Promise(resolve => {
+            setTimeout(resolve);
+        }).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
@@ -239,8 +241,10 @@ describe('event propagation in nested shadow tree', () => {
     });
 
     it('propagate event from a child element added via lwc:dom="manual"', () => {
-        // Fire the event in next tick to allow time for the MO to key the manually inserted nodes
-        return Promise.resolve().then(() => {
+        // Fire the event in next macrotask to allow time for the MO to key the manually inserted nodes
+        return new Promise(resolve => {
+            setTimeout(resolve);
+        }).then(() => {
             const logs = dispatchEventWithLog(
                 nodes['span-manual'],
                 new CustomEvent('test', { composed: true, bubbles: true })
