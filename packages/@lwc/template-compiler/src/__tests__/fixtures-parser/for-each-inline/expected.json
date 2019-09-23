@@ -1,0 +1,59 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "component",
+            "tag": "foo-list",
+            "attributes": [],
+            "children": [
+                {
+                    "type": "for-each",
+                    "expression": {
+                        "type": "identifier",
+                        "name": "items"
+                    },
+                    "index": {
+                        "type": "identifier",
+                        "name": "index"
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "item"
+                    },
+                    "children": [
+                        {
+                            "type": "component",
+                            "tag": "foo-list-item",
+                            "attributes": [
+                                {
+                                    "type": "expression",
+                                    "name": "data",
+                                    "value": {
+                                        "type": "member-expression",
+                                        "object": {
+                                            "type": "identifier",
+                                            "name": "item"
+                                        },
+                                        "property": {
+                                            "type": "identifier",
+                                            "name": "data"
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "expression",
+                                    "name": "ranking",
+                                    "value": {
+                                        "type": "identifier",
+                                        "name": "index"
+                                    }
+                                }
+                            ],
+                            "children": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

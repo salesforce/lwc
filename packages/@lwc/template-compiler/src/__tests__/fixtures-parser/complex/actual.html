@@ -1,0 +1,19 @@
+<template>
+    <div class={something}>
+        <special-container record-id={recordId}>
+            <ul if:true={somethingElse}>
+                <template for:each={likedSongs} for:item="song">
+                    <li key={song.id}>
+                        <liked-song title={song.title} artist={song.artist}></liked-song>
+                    </li>
+                </template>
+            </ul>
+            <ul if:false={somethingElse}>
+                <p>Nothing to see here</p>
+            </ul>
+        </special-container>
+
+        <!-- uses the default content -->
+        <special-container></special-container>
+    </div>
+</template>

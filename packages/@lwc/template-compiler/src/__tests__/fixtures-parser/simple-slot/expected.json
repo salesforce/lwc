@@ -1,0 +1,36 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "if",
+            "expression": {
+                "type": "identifier",
+                "name": "fukuoka"
+            },
+            "modifier": "true",
+            "children": [
+                {
+                    "type": "slot",
+                    "name": "",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "type": "slot",
+            "name": "full-name",
+            "children": [
+                {
+                    "type": "slot",
+                    "name": "first-name",
+                    "children": []
+                },
+                {
+                    "type": "slot",
+                    "name": "last-name",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

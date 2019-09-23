@@ -1,0 +1,7 @@
+<template>
+    <foo-list>
+        <template iterator:liked={likedSongs}>
+            <foo-list-item name={liked.name} description={liked.description} key={liked.id}></foo-list-item>
+        </template>
+    </foo-list>
+</template>
