@@ -1,9 +1,10 @@
-import { createElement } from 'test-utils';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Parent from 'x/parent';
 
-// TODO: issue #858 to enable reactive setters
-xdescribe('Reactivity for setters', () => {
+describe('Reactivity for setters', () => {
+    setFeatureFlagForTest('ENABLE_REACTIVE_SETTER', true);
+
     it('should not alter rendering if they are not invoked', () => {
         const elm = createElement('x-test', { is: Parent });
         document.body.appendChild(elm);
