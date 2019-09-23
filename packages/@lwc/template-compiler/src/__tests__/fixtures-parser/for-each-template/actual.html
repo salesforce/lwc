@@ -1,0 +1,9 @@
+<template>
+    <div class="foo-list-container" tabindex={tabIndex}>
+        <foo-list>
+            <template for:each={items} for:item="item" for:index="index">
+                <foo-list-item data={item.data} key={item.id} ranking={index}></foo-list-item>
+            </template>
+        </foo-list>
+    </div>
+</template>
