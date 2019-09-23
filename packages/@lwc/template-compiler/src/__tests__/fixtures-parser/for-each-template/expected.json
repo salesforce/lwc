@@ -7,14 +7,18 @@
             "attributes": [],
             "children": [
                 {
-                    "type": "for-of",
+                    "type": "for-each",
                     "expression": {
                         "type": "identifier",
-                        "name": "likedSongs"
+                        "name": "items"
                     },
-                    "iterator": {
+                    "index": {
                         "type": "identifier",
-                        "name": "liked"
+                        "name": "index"
+                    },
+                    "item": {
+                        "type": "identifier",
+                        "name": "item"
                     },
                     "children": [
                         {
@@ -23,32 +27,25 @@
                             "attributes": [
                                 {
                                     "type": "expression",
-                                    "name": "description",
+                                    "name": "data",
                                     "value": {
                                         "type": "member-expression",
                                         "object": {
                                             "type": "identifier",
-                                            "name": "liked"
+                                            "name": "item"
                                         },
                                         "property": {
                                             "type": "identifier",
-                                            "name": "description"
+                                            "name": "data"
                                         }
                                     }
                                 },
                                 {
                                     "type": "expression",
-                                    "name": "name",
+                                    "name": "ranking",
                                     "value": {
-                                        "type": "member-expression",
-                                        "object": {
-                                            "type": "identifier",
-                                            "name": "liked"
-                                        },
-                                        "property": {
-                                            "type": "identifier",
-                                            "name": "name"
-                                        }
+                                        "type": "identifier",
+                                        "name": "index"
                                     }
                                 }
                             ],
