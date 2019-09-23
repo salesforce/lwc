@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.20...v) (2019-09-20)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.21...v) (2019-09-23)
+
+
+### Bug Fixes
+
+* relax condition to retarget event ([#1528](https://github.com/salesforce/lwc/issues/1528)) ([5e07d96](https://github.com/salesforce/lwc/commit/5e07d96))
+
+
+
+## [1.0.2-222.21](https://github.com/salesforce/lwc/compare/v1.0.2-222.20...v1.0.2-222.21) (2019-09-20)
 
 
 
