@@ -74,23 +74,23 @@ function targetGetter(this: ComposableEvent): EventTarget | null {
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const originalTarget = eventTargetGetter.call(this);
     const composedPath = pathComposer(originalTarget, this.composed);
+    const doc = getOwnerDocument(originalTarget as Node);
 
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
     if (!(originalCurrentTarget instanceof Node)) {
         // TODO: issue #1511 - Special escape hatch to support legacy behavior. Should be fixed.
-        // If the originalTarget is not a keyed element and if any of the following conditions are true, do not retarget
-        // 1. event's target is being accessed async
-        // 2. currentTarget is document or document.body (Third party libraries that have global event listeners)
-        if (
-            (isNull(originalCurrentTarget) ||
-                originalCurrentTarget === document ||
-                originalCurrentTarget === document.body) &&
-            isUndefined(getNodeOwnerKey(originalTarget as Node))
-        ) {
+        // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
+        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
             return originalTarget;
         }
-        const doc = getOwnerDocument(originalTarget as Node);
+        return retarget(doc, composedPath);
+    } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
+        // If currentTarget is document or document.body (Third party libraries that have global event listeners)
+        // and the originalTarget is not a keyed element, do not retarget
+        if (isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+            return originalTarget;
+        }
         return retarget(doc, composedPath);
     }
 
