@@ -9,6 +9,7 @@ import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
 
+// Helpful for tests running with jsdom
 export function getOwnerDocument(node: Node): Document {
     const doc = ownerDocumentGetter.call(node);
     // if doc is null, it means `this` is actually a document instance

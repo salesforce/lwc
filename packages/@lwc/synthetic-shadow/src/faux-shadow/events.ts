@@ -63,6 +63,7 @@ function targetGetter(this: Event): EventTarget | null {
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const originalTarget = eventTargetGetter.call(this);
     const composedPath = pathComposer(originalTarget, this.composed);
+    const doc = getOwnerDocument(originalTarget as Node);
 
     // Handle cases where the currentTarget is null (for async events),
     // and when an event has been added to Window
@@ -72,7 +73,13 @@ function targetGetter(this: Event): EventTarget | null {
         if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget as Node))) {
             return originalTarget;
         }
-        const doc = getOwnerDocument(originalTarget as Node);
+        return retarget(doc, composedPath);
+    } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
+        // TODO: issue #1530 - If currentTarget is document or document.body (Third party libraries that have global event listeners)
+        // and the originalTarget is not a keyed element, do not retarget
+        if (isUndefined(getNodeOwnerKey(originalTarget as Node))) {
+            return originalTarget;
+        }
         return retarget(doc, composedPath);
     }
 
