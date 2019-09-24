@@ -6,7 +6,7 @@
  */
 import { assert } from '@lwc/shared';
 import { ComponentInterface } from '../component';
-import { valueObserved } from '../../libs/mutation-tracker';
+import { componentValueObserved } from '../mutation-tracker';
 import { getComponentVM } from '../vm';
 import { WireAdapterConstructor } from '../wiring';
 
@@ -32,7 +32,7 @@ export function internalWireFieldDecorator(key: string): PropertyDescriptor {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             }
-            valueObserved(this, key);
+            componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
         set(this: ComponentInterface, value: any) {

@@ -6,7 +6,7 @@
  */
 import { assert } from '@lwc/shared';
 import { isRendering, vmBeingRendered } from '../invoker';
-import { valueObserved, componentValueMutated } from '../mutation-tracker';
+import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
 import { getComponentVM } from '../vm';
 import { reactiveMembrane } from '../membrane';
 import { ComponentInterface } from '../component';
@@ -36,7 +36,7 @@ export function internalTrackDecorator(key: string): PropertyDescriptor {
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             }
-            valueObserved(this, key);
+            componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
         set(this: ComponentInterface, newValue: any) {

@@ -7,7 +7,7 @@
 import { assert } from '@lwc/shared';
 import { ComponentInterface } from './component';
 import { getComponentVM } from './vm';
-import { componentValueMutated, valueObserved } from './mutation-tracker';
+import { componentValueMutated, componentValueObserved } from './mutation-tracker';
 
 export function createObservedFieldPropertyDescriptor(key: string): PropertyDescriptor {
     return {
@@ -16,7 +16,7 @@ export function createObservedFieldPropertyDescriptor(key: string): PropertyDesc
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a valid vm.`);
             }
-            valueObserved(this, key);
+            componentValueObserved(vm, key);
             return vm.cmpFields[key];
         },
         set(this: ComponentInterface, newValue: any) {
