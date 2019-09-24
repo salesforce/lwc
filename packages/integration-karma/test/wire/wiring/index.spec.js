@@ -147,29 +147,29 @@ describe('wiring', () => {
                 });
         });
 
-        it('should trigger component rerender when field is updated', () => {
+        it('should trigger component rerender when field is updated', done => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
-            return Promise.resolve()
-                .then(() => {
-                    const staticValue = elm.shadowRoot.querySelector('.static');
-                    const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
+            return Promise.resolve().then(() => {
+                const staticValue = elm.shadowRoot.querySelector('.static');
+                const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
 
-                    expect(staticValue.textContent).toBe('1,2,3');
-                    expect(dynamicValue.textContent).toBe('');
+                expect(staticValue.textContent).toBe('1,2,3');
+                expect(dynamicValue.textContent).toBe('');
 
-                    elm.setDynamicParamSource('modified value');
+                elm.setDynamicParamSource('modified value');
 
-                    return Promise.resolve();
-                })
-                .then(() => {
+                setTimeout(() => {
                     const staticValue = elm.shadowRoot.querySelector('.static');
                     const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
 
                     expect(staticValue.textContent).toBe('1,2,3');
                     expect(dynamicValue.textContent).toBe('modified value');
-                });
+
+                    done();
+                }, 5);
+            });
         });
     });
 });
