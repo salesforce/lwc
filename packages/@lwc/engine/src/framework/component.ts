@@ -77,12 +77,6 @@ export function createComponent(uninitializedVm: UninitializedVM, Ctor: Componen
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     return new ReactiveObserver(() => {
-        // if (process.env.NODE_ENV !== 'production') {
-        //     assert.invariant(
-        //         !isRendering,
-        //         `Mutating property is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
-        //     );
-        // }
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);

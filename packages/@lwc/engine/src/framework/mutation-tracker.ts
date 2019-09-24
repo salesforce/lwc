@@ -6,13 +6,9 @@
  */
 import { valueMutated } from '../libs/mutation-tracker';
 import { VM } from './vm';
-// import { isFalse } from "@lwc/shared";
 
 export function componentValueMutated(vm: VM, key: PropertyKey) {
-    const { component } = vm;
-    // if (isFalse(vm.isDirty)) {
-    valueMutated(component, key);
-    // }
+    valueMutated(vm.component, key);
 }
 
 export * from '../libs/mutation-tracker';
