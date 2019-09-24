@@ -194,28 +194,6 @@ describe('wired fields', () => {
                 expect(staticValue.textContent).toBe('modified value');
             });
     });
-
-    // failing: before it was track, now we only observe changes to the prop (not like with @track)
-    it('should rerender component when value is mutated from within the component (prop.y = 5)', () => {
-        BroadcastAdapter.clearInstances();
-        const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
-        document.body.appendChild(elm);
-        BroadcastAdapter.broadcastData({ data: 'expected value' });
-
-        return Promise.resolve()
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('expected value');
-
-                elm.setWiredPropData('modified value');
-
-                return Promise.resolve();
-            })
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('modified value');
-            });
-    });
 });
 
 describe('wired methods', () => {
