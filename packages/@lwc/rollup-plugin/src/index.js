@@ -24,6 +24,13 @@ function isImplicitHTMLImport(importee, importer) {
     );
 }
 
+function isMixingJsAndTs(importerExt, importeeExt) {
+    return (
+        (importerExt === '.js' && importeeExt === '.ts') ||
+        (importerExt === '.ts' && importeeExt === '.js')
+    );
+}
+
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
@@ -51,7 +58,16 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             // Normalize relative import to absolute import
             if (importee.startsWith('.') && importer) {
-                const ext = path.extname(importee) || path.extname(importer);
+                const importerExt = path.extname(importer);
+                const ext = path.extname(importee) || importerExt;
+
+                // we don't currently support mixing .js and .ts
+                if (isMixingJsAndTs(importerExt, ext)) {
+                    throw new Error(
+                        `Importing a ${ext} file into a ${importerExt} is not supported`
+                    );
+                }
+
                 const normalizedPath = path.resolve(path.dirname(importer), importee);
                 const absPath = pluginUtils.addExtension(normalizedPath, ext);
 
