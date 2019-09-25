@@ -16,23 +16,10 @@ function testInvalidTemplate(type, template) {
     });
 }
 
+testInvalidTemplate('undefined', undefined);
 testInvalidTemplate('null', null);
 testInvalidTemplate('string', '<h1>template</h1>');
 testInvalidTemplate('object', {});
-
-if (process.env.NODE_ENV !== 'production') {
-    // If render() returns undefined, we throw in dev mode and let boundary protection handle it
-    testInvalidTemplate('undefined', undefined);
-} else {
-    // In prod mode, we degrade gracefully and return an empty template
-    it(`renders a blank template when render() returns undefined`, () => {
-        const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
-        elm.template = undefined;
-
-        document.body.appendChild(elm);
-        expect(elm.shadowRoot.childNodes.length).toBe(0);
-    });
-}
 
 it(`throws an error if returns an invalid template`, () => {
     const invalidTemplate = () => {};
