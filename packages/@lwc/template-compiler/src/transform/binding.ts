@@ -13,7 +13,10 @@ import {
 } from '@babel/types';
 
 import { CompilerDiagnostic } from '@lwc/errors';
-import { isUndefined } from '@lwc/shared';
+
+function isUndefined(obj: any): obj is undefined {
+    return obj === undefined;
+}
 
 import {
     IRAttributeType,
