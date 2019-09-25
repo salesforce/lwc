@@ -81,7 +81,7 @@
         return getSubject(todo).observable;
     }
 
-    const getTodo = Symbol('getTodo');
+    const getTodo = function() {};
 
     exports.getTodo = getTodo;
     exports.getObservable = getObservable;

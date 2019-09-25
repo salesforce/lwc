@@ -13,12 +13,10 @@ exports.app = function(cmpName) {
 
 exports.todoApp = function(cmpName) {
     return `
-        import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
+        import { register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'lwc';
         import Cmp from 'integration/${cmpName}';
         import { getTodo, getObservable } from 'todo';
-
-        registerWireService(register);
 
         // Register the wire adapter for @wire(getTodo).
         registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
