@@ -8,7 +8,7 @@ import assert from '../shared/assert';
 import { currentContext, establishContext } from './context';
 
 import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
-import { isFunction, isUndefined, toString } from '../shared/language';
+import { isFunction, isUndefined } from '../shared/language';
 import { getErrorComponentStack, VM, UninitializedVM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
@@ -105,7 +105,8 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     const ctx = currentContext;
     const isRenderBeingInvokedInception = isInvokingRender;
     const vmBeingRenderedInception = getVMBeingRendered();
-    let html: Template | undefined;
+    let html: Template;
+    let renderInvocationSuccessful = false;
     runWithBoundaryProtection(
         vm,
         owner,
@@ -118,12 +119,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         () => {
             // job
             html = callHook(component, render);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.isTrue(
-                    !isUndefined(html),
-                    `${vm}.render() should return an imported template instead of ${toString(html)}`
-                );
-            }
+            renderInvocationSuccessful = true;
         },
         () => {
             // post
@@ -132,11 +128,8 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
             setVMBeingRendered(vmBeingRenderedInception);
         }
     );
-    // html can be undefined when
-    // 1. There is an error during invocation of the component's render(), this case is handled by the boundary protection
-    // 2. When the component's render() returns undefined. In this case we throw an dev mode assertion and let boundary protection handle it
-    // In both cases, we degrade gracefully in production mode by returning an empty template
-    return isUndefined(html) ? [] : evaluateTemplate(vm, html);
+    // If render() invocation failed, process errorCallback in boundary and return an empty template
+    return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
 }
 
 export function invokeEventListener(

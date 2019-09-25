@@ -87,7 +87,6 @@ export function createTrackedPropertyDescriptor(
                         key
                     )}`
                 );
-                // when updating the template of this ${currentOwnerVM}, one of the accessors used by the template has side effects on the state of the vm
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
             if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
