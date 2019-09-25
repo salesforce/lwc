@@ -102,14 +102,7 @@ function createContextWatcher(
 }
 
 function createConnector(vm: VM, name: string, wireDef: WireDef): WireAdapter {
-    const { method } = wireDef;
-    let adapter = wireDef.adapter;
-
-    // support for callable adapters
-    if ((adapter as any).adapter) {
-        adapter = (adapter as any).adapter;
-    }
-
+    const { method, adapter } = wireDef;
     const dataCallback = isUndefined(method)
         ? createFieldDataCallback(vm, name)
         : createMethodDataCallback(vm, method);
@@ -207,6 +200,10 @@ export function storeWiredMethodMeta(
     adapter: WireAdapterConstructor,
     configCallback: ConfigCallback
 ) {
+    // support for callable adapters
+    if ((adapter as any).adapter) {
+        adapter = (adapter as any).adapter;
+    }
     const method = descriptor.value;
     const def: WireMethodDef = {
         adapter,
