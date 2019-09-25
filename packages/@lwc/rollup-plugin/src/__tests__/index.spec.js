@@ -92,6 +92,7 @@ describe('typescript relative import', () => {
 describe('typescript relative import', () => {
     it(`should throw when .ts imports .js file`, () => {
         const entry = path.join(tsImportsJsDir, 'main.ts');
+        expect.assertions(1);
         return doRollup(entry, { compat: false }).catch(error => {
             expect(error).toEqual(new Error('Importing a .js file into a .ts is not supported'));
         });
@@ -101,6 +102,7 @@ describe('typescript relative import', () => {
 describe('javascript relative import', () => {
     it(`should throw when .js imports .ts file`, () => {
         const entry = path.join(jsImportsTsDir, 'main.js');
+        expect.assertions(1);
         return doRollup(entry, { compat: false }).catch(error => {
             expect(error).toEqual(new Error('Importing a .ts file into a .js is not supported'));
         });
