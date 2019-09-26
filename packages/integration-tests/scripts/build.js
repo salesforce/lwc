@@ -39,6 +39,7 @@ const wireServicePath = getModulePath(
     isProd ? 'prod' : 'dev'
 );
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
+const todoContent = fs.readFileSync(todoPath).toString();
 
 const testSufix = '.test.js';
 const testPrefix = 'test-';
@@ -86,6 +87,8 @@ function entryPointResolverPlugin() {
         resolveId(id) {
             if (id.includes(testSufix)) {
                 return id;
+            } else if (id === 'todo') {
+                return 'todo.js';
             }
         },
         load(id) {
@@ -94,6 +97,8 @@ function entryPointResolverPlugin() {
                 return testBundle.startsWith('wired-')
                     ? getTodoApp(testBundle)
                     : templates.app(testBundle);
+            } else if (id === 'todo.js') {
+                return todoContent;
             }
         },
     };
@@ -106,7 +111,6 @@ const globalModules = {
     'compat-polyfills/polyfills': 'window',
     lwc: 'LWC',
     'wire-service': 'WireService',
-    todo: 'Todo',
 };
 
 const baseInputConfig = {
