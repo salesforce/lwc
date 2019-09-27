@@ -4,14 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { FeatureFlag } from './flags';
+import { FeatureFlag, FeatureFlagLookup } from './flags';
 import { assert, create, isFalse, isTrue } from '@lwc/shared';
 
-interface FeatureFlagConfig {
-    [name: string]: FeatureFlag;
-}
-
-const runtimeFlags: FeatureFlagConfig = create(null);
+const runtimeFlags: FeatureFlagLookup = create(null);
 
 function setFeatureFlag(name: string, value: FeatureFlag) {
     assert.invariant(

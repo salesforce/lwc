@@ -5,10 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export type FeatureFlag = boolean | null;
+export type FeatureFlagLookup = { [name: string]: FeatureFlag };
 
-export const ENABLE_FOO: FeatureFlag = true;
-export const ENABLE_BAR: FeatureFlag = false;
-export const ENABLE_BAZ: FeatureFlag = null;
+const featureFlagLookup: FeatureFlagLookup = {
+    ENABLE_FOO: true,
+    ENABLE_BAR: false,
+    ENABLE_REACTIVE_SETTER: null,
+};
+export default featureFlagLookup;
+
 export const ENABLE_REACTIVE_SETTER: FeatureFlag = null;
-
 export { runtimeFlags, setFeatureFlag, setFeatureFlagForTest } from './runtime';
