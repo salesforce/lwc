@@ -9,6 +9,8 @@ import { assert, create, isFalse, isTrue } from '@lwc/shared';
 
 const runtimeFlags: FeatureFlagLookup = create(null);
 
+// This function is not whitelisted for use within components and is meant for
+// configuring runtime feature flags during app initialization.
 function setFeatureFlag(name: string, value: FeatureFlag) {
     assert.invariant(
         isTrue(value) || isFalse(value),
@@ -17,12 +19,12 @@ function setFeatureFlag(name: string, value: FeatureFlag) {
     runtimeFlags[name] = value;
 }
 
+// This function is added to the LWC API whitelist (for testing purposes) so we
+// add a check to make sure it is not invoked in production.
 function setFeatureFlagForTest(name: string, value: FeatureFlag) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method must not leak to production
-        throw new ReferenceError();
+    if (process.env.NODE_ENV !== 'production') {
+        return setFeatureFlag(name, value);
     }
-    return setFeatureFlag(name, value);
 }
 
 export { runtimeFlags, setFeatureFlag, setFeatureFlagForTest };
