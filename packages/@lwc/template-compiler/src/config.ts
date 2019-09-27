@@ -18,10 +18,6 @@ export interface Config {
      */
     experimentalComputedMemberExpression?: boolean;
     /**
-     * Parser option to enable data binding AST output.
-     */
-    experimentalDataBindingAST?: boolean;
-    /**
      * Enable <x-foo lwc:directive={expr}>
      */
     experimentalDynamicDirective?: boolean;
@@ -30,7 +26,6 @@ export interface Config {
 
 export interface ResolvedConfig {
     experimentalComputedMemberExpression: boolean;
-    experimentalDataBindingAST: boolean;
     experimentalDynamicDirective: boolean;
     secure: boolean;
 
@@ -45,18 +40,16 @@ export interface ResolvedConfig {
 }
 
 const DEFAULT_CONFIG: ResolvedConfig = {
-    experimentalComputedMemberExpression: false,
-    experimentalDataBindingAST: false,
-    experimentalDynamicDirective: false,
-    format: 'module',
     secure: false,
+    experimentalDynamicDirective: false,
+    experimentalComputedMemberExpression: false,
+    format: 'module',
 };
 
 const AVAILABLE_OPTION_NAMES = new Set([
-    'experimentalComputedMemberExpression',
-    'experimentalDataBindingAST',
-    'experimentalDynamicDirective',
     'secure',
+    'experimentalComputedMemberExpression',
+    'experimentalDynamicDirective',
     'stylesheetConfig',
 ]);
 
