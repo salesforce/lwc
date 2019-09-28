@@ -72,7 +72,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    const childNodes = collectionSlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(nativeChildNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
@@ -89,7 +89,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    const childNodes = collectionSlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(nativeChildNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

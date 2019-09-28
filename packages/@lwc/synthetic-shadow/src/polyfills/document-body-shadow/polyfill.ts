@@ -46,7 +46,7 @@ export default function apply() {
             ]);
             const ownerKey = getNodeOwnerKey(this);
             // Return the first non shadow element
-            const filtered = collectionFind.call(
+            const filtered = collectionFind(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
@@ -63,7 +63,7 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
@@ -80,7 +80,7 @@ export default function apply() {
                 arguments
             ) as [string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
@@ -97,7 +97,7 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
@@ -114,7 +114,7 @@ export default function apply() {
                 arguments
             ) as [string, string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );

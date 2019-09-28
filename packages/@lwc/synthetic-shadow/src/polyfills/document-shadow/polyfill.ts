@@ -125,7 +125,7 @@ export default function apply() {
             const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
@@ -141,7 +141,7 @@ export default function apply() {
             const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
@@ -157,7 +157,7 @@ export default function apply() {
             const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
@@ -173,7 +173,7 @@ export default function apply() {
             const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(
                 arguments
             ) as [string, string]);
-            const filtered = collectionFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
@@ -195,7 +195,7 @@ export default function apply() {
                 const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
                     string
                 ]);
-                const filtered = collectionFilter.call(
+                const filtered = collectionFilter(
                     elements,
                     elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
                 );

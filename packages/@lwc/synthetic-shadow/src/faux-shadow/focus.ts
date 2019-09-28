@@ -83,7 +83,7 @@ interface QuerySegments {
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
     const all = documentQuerySelectorAll.call(doc, TabbableElementsQuery);
-    const inner = collectionSlice.call(querySelectorAll.call(host, TabbableElementsQuery));
+    const inner = collectionSlice(querySelectorAll.call(host, TabbableElementsQuery));
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             getAttribute.call(host, 'tabindex') === '-1' || isDelegatingFocus(host),
@@ -92,17 +92,17 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
-    const hostIndex = collectionIndexOf.call(all, host);
+    const hostIndex = collectionIndexOf(all, host);
 
     // Host element can show up in our "previous" section if its tabindex is 0
     // We want to filter that out here
-    const firstChildIndex = hostIndex > -1 ? hostIndex : collectionIndexOf.call(all, firstChild);
+    const firstChildIndex = hostIndex > -1 ? hostIndex : collectionIndexOf(all, firstChild);
 
     // Account for an empty inner list
     const lastChildIndex =
-        inner.length === 0 ? firstChildIndex + 1 : collectionIndexOf.call(all, lastChild) + 1;
-    const prev = collectionSlice.call(all, 0, firstChildIndex);
-    const next = collectionSlice.call(all, lastChildIndex);
+        inner.length === 0 ? firstChildIndex + 1 : collectionIndexOf(all, lastChild) + 1;
+    const prev = collectionSlice(all, 0, firstChildIndex);
+    const next = collectionSlice(all, lastChildIndex);
     return {
         prev,
         inner,

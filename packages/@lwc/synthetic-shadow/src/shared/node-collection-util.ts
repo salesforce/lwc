@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isTrue } from './language';
+import { isUndefined, isTrue, ArrayPush } from './language';
 /**
  * Writing our own utils to handle NodeList and HTMLCollection. This is to not conflict with
  * some legacy third party libraries like prototype.js that patch Array.prototype.
@@ -16,16 +16,15 @@ import { isUndefined, isTrue } from './language';
  * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter#Polyfill
  */
 export function collectionFilter<T extends Node, K extends Element>(
-    this: NodeListOf<T> | HTMLCollectionOf<K>,
-    fn: (value: T | K, index?: number, collection?: NodeListOf<T> | HTMLCollectionOf<K>) => boolean,
-    thisArg?: any
+    collection: NodeListOf<T> | HTMLCollectionOf<K>,
+    fn: (value: T | K, index?: number, collection?: NodeListOf<T> | HTMLCollectionOf<K>) => boolean
 ): Array<T | K> {
     const res: Array<T | K> = [];
-    const length = this.length;
+    const length = collection.length;
     for (let i = 0; i < length; i++) {
-        const curr = this[i];
-        if (isTrue(fn.call(thisArg, curr, i, this))) {
-            res.push(curr);
+        const curr = collection[i];
+        if (isTrue(fn.call(undefined, curr, i, collection))) {
+            ArrayPush.call(res, curr);
         }
     }
     return res;
@@ -35,14 +34,13 @@ export function collectionFilter<T extends Node, K extends Element>(
  * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find#Polyfill
  */
 export function collectionFind<T extends Node>(
-    this: NodeListOf<T>,
-    fn: (value: T, index?: number, nodelist?: NodeListOf<T>) => boolean,
-    thisArg?: any
+    collection: NodeListOf<T>,
+    fn: (value: T, index?: number, nodelist?: NodeListOf<T>) => boolean
 ): T | undefined {
-    const length = this.length;
+    const length = collection.length;
     for (let i = 0; i < length; i++) {
-        const curr = this[i];
-        if (isTrue(fn.call(thisArg, curr, i, this))) {
+        const curr = collection[i];
+        if (isTrue(fn.call(undefined, curr, i, collection))) {
             return curr;
         }
     }
@@ -53,13 +51,13 @@ export function collectionFind<T extends Node>(
  * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice#Streamlining_cross-browser_behavior
  */
 export function collectionSlice<T extends Node>(
-    this: NodeListOf<T>,
+    collection: NodeListOf<T>,
     begin?: number,
     end?: number
 ): Array<T> {
-    end = !isUndefined(end) ? end : this.length;
+    end = !isUndefined(end) ? end : collection.length;
     const cloned: T[] = [];
-    const len = this.length;
+    const len = collection.length;
 
     // Handle negative value for "begin"
     let start = !isUndefined(begin) ? begin : 0;
@@ -76,7 +74,7 @@ export function collectionSlice<T extends Node>(
 
     if (size > 0) {
         for (let i = 0; i < size; i++) {
-            cloned.push(this[start + i]);
+            ArrayPush.call(cloned, collection[start + i]);
         }
     }
     return cloned;
@@ -86,11 +84,11 @@ export function collectionSlice<T extends Node>(
  * Reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf#Polyfill
  */
 export function collectionIndexOf<T extends Node>(
-    this: NodeListOf<T>,
+    collection: NodeListOf<T>,
     searchItem: T,
     fromIndex: number = 0
 ): number {
-    const len = this.length;
+    const len = collection.length;
     let i = Math.min(fromIndex, len);
     if (i < 0) {
         i = Math.max(0, len + i);
@@ -99,7 +97,7 @@ export function collectionIndexOf<T extends Node>(
     }
 
     for (; i !== len; ++i) {
-        if (this[i] === searchItem) {
+        if (collection[i] === searchItem) {
             return i;
         }
     }
