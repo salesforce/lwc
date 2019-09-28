@@ -10,14 +10,8 @@ import {
     getElementsByTagNameNS as elementGetElementsByTagNameNS,
     querySelectorAll as elementQuerySelectorAll,
 } from '../../env/element';
-import {
-    ArrayFilter,
-    ArrayFind,
-    ArraySlice,
-    defineProperty,
-    isTrue,
-    isUndefined,
-} from '../../shared/language';
+import { ArraySlice, defineProperty, isTrue, isUndefined } from '../../shared/language';
+import { collectionFilter, collectionFind } from '../../shared/node-collection-util';
 import { getNodeOwnerKey } from '../../faux-shadow/node';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
@@ -52,11 +46,11 @@ export default function apply() {
             ]);
             const ownerKey = getNodeOwnerKey(this);
             // Return the first non shadow element
-            const filtered = ArrayFind.call(
+            const filtered = collectionFind.call(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
-            return !isUndefined(filtered) ? filtered : null;
+            return !isUndefined(filtered) ? (filtered as Element) : null;
         },
         writable: true,
         enumerable: true,
@@ -69,11 +63,11 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter.call(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
-            return createStaticNodeList(filtered);
+            return createStaticNodeList(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -86,11 +80,11 @@ export default function apply() {
                 arguments
             ) as [string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter.call(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -103,11 +97,11 @@ export default function apply() {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter.call(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -120,11 +114,11 @@ export default function apply() {
                 arguments
             ) as [string, string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter.call(
                 elements,
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
