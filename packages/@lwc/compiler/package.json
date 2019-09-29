@@ -18,6 +18,7 @@
         "@babel/plugin-proposal-object-rest-spread": "7.0.0",
         "@lwc/babel-plugin-component": "1.0.2",
         "@lwc/errors": "1.0.2",
+        "@lwc/shared": "1.0.2",
         "@lwc/style-compiler": "1.0.2",
         "@lwc/template-compiler": "1.0.2",
         "babel-preset-compat": "0.21.7",
