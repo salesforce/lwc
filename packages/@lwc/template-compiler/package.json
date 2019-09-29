@@ -11,9 +11,7 @@
         "test": "jest"
     },
     "devDependencies": {
-        "@lwc/shared": "1.0.2",
-        "@types/he": "^1.1.0",
-        "esutils": "^2.0.2"
+        "@types/he": "^1.1.0"
     },
     "files": [
         "dist/"
@@ -24,7 +22,9 @@
         "@babel/template": "~7.1.2",
         "@babel/traverse": "~7.1.5",
         "@babel/types": "~7.1.5",
+        "@lwc/shared": "1.0.2",
         "@lwc/errors": "1.0.2",
+        "esutils": "^2.0.2",
         "camelcase": "~5.0.0",
         "he": "^1.1.1",
         "parse5-with-errors": "^4.0.1"
