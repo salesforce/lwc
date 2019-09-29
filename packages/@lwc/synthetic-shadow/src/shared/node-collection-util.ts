@@ -23,7 +23,7 @@ export function collectionFilter<T extends Node, K extends Element>(
     const length = collection.length;
     for (let i = 0; i < length; i++) {
         const curr = collection[i];
-        if (isTrue(fn.call(undefined, curr, i, collection))) {
+        if (isTrue(fn(curr, i, collection))) {
             ArrayPush.call(res, curr);
         }
     }
@@ -40,7 +40,7 @@ export function collectionFind<T extends Node>(
     const length = collection.length;
     for (let i = 0; i < length; i++) {
         const curr = collection[i];
-        if (isTrue(fn.call(undefined, curr, i, collection))) {
+        if (isTrue(fn(curr, i, collection))) {
             return curr;
         }
     }
