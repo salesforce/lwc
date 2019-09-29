@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5-with-errors';
-import { hasOwnProperty } from '@lwc/shared';
 
 import {
     treeAdapter,
@@ -89,6 +88,8 @@ import {
     normalizeToDiagnostic,
     ParserDiagnostics,
 } from '@lwc/errors';
+
+const { hasOwnProperty } = Object.prototype;
 
 function isStyleElement(irElement: IRElement) {
     const element = irElement.__original as parse5.AST.Default.Element;

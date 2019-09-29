@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { hasOwnProperty } from '@lwc/shared';
 import * as CompilerErrors from '../compiler/error-info';
 import { LWCErrorInfo } from '../shared/types';
 
@@ -14,6 +13,8 @@ const ERROR_CODE_RANGES = {
         max: 1999,
     },
 };
+
+const { hasOwnProperty } = Object.prototype;
 
 interface ExtendedMatcher extends jest.Matchers<void> {
     toBeUniqueCode: (key: string, seenErrorCodes: Set<number>) => object;

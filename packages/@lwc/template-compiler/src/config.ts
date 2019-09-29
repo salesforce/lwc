@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { hasOwnProperty } from '@lwc/shared';
 
 export type Format = 'module' | 'function';
 
@@ -52,6 +51,8 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'experimentalDynamicDirective',
     'stylesheetConfig',
 ]);
+
+const { hasOwnProperty } = Object.prototype;
 
 export function mergeConfig(config: Config): ResolvedConfig {
     invariant(

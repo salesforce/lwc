@@ -6,7 +6,6 @@
  */
 'use strict';
 
-const { hasOwnProperty } = require('@lwc/shared');
 const path = require('path');
 const glob = require('glob');
 const semver = require('semver');
@@ -16,6 +15,8 @@ const PACKAGES = glob.sync('packages/**/package.json', {
     absolute: true,
     cwd: PACKAGES_DIR,
 });
+
+const { hasOwnProperty } = Object.prototype;
 
 let areVersionsInSync = true;
 for (const location of PACKAGES) {
