@@ -11,6 +11,7 @@
         "clean": "rm -rf dist/ types/"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "types/"
     ]
 }
