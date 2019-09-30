@@ -7,7 +7,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const COMPAT_SUFFIX = '_compat';
 const DEBUG_SUFFIX = '_debug';
 const PROD_SUFFIX = '.min';
 
@@ -22,8 +21,8 @@ function getEs6ModuleEntry(pkg) {
     return path.join(pkgDir, pkgJson.module);
 }
 
-function generateTargetName({ targetName, prod, proddebug }) {
-    return [targetName, proddebug ? DEBUG_SUFFIX : '', prod ? '.min' : '', '.js'].join('');
+function generateTargetName({ targetName, prod, debug }) {
+    return [targetName, debug ? DEBUG_SUFFIX : prod ? '.min' : '', '.js'].join('');
 }
 
 function ignoreCircularDependencies({ code, message }) {
@@ -32,18 +31,18 @@ function ignoreCircularDependencies({ code, message }) {
     }
 }
 
-function buildBundleConfig(defaultConfig, { format, target, prod }) {
+function buildBundleConfig(defaultConfig, { format, target, prod, debug }) {
     return {
         ...defaultConfig,
         targetDirectory: path.join(defaultConfig.dir, format),
         format,
         target,
         prod,
+        debug,
     };
 }
 
 module.exports = {
-    COMPAT_SUFFIX,
     DEBUG_SUFFIX,
     PROD_SUFFIX,
     generateTargetName,

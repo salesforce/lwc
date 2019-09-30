@@ -13,7 +13,7 @@ const { terser: rollupTerser } = require('rollup-plugin-terser');
 const { generateTargetName } = require('./helpers');
 
 function rollupConfig(config) {
-    const { input, format, name, prod, target, targetDirectory, dir } = config;
+    const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
     const compatMode = target === 'es5';
     return {
         inputOptions: {
@@ -21,7 +21,7 @@ function rollupConfig(config) {
             plugins: [
                 prod && rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
-                prod && rollupTerser(),
+                prod && !debug && rollupTerser(),
             ],
         },
         outputOptions: {
@@ -29,7 +29,7 @@ function rollupConfig(config) {
             file: path.join(targetDirectory, target, generateTargetName(config)),
             format,
         },
-        display: { name, dir, format, target, prod },
+        display: { name, dir, format, target, prod, debug },
     };
 }
 
@@ -39,6 +39,7 @@ async function generateTarget({ inputOptions, outputOptions, display }) {
         `format: ${display.format}`.padEnd(12, ' '),
         `target: ${display.target}`.padEnd(14, ' '),
         `min: ${display.prod}`.padEnd(10, ' '),
+        `debug: ${display.debug}`.padEnd(12, ' '),
         `pid: ${process.pid}`.padEnd(10, ' '),
     ].join(' | ');
 

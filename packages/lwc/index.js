@@ -7,6 +7,9 @@
 const fs = require('fs');
 const path = require('path');
 
+const DEBUG_SUFFIX = '_debug';
+const PROD_SUFFIX = '.min';
+
 function getVersion() {
     const pkgPath = path.join(__dirname, './package.json');
     const pkgSrc = fs.readFileSync(pkgPath, 'utf8');
@@ -67,7 +70,9 @@ function getModulePath(
 
         // Otherwise is on dist of this package
     } else if (mode === 'prod') {
-        distPath = path.join(__dirname, 'dist', name, format, target, `${name}.min.js`);
+        distPath = path.join(__dirname, 'dist', name, format, target, `${name}${PROD_SUFFIX}.js`);
+    } else if (mode === 'prod_debug') {
+        distPath = path.join(__dirname, 'dist', name, format, target, `${name}${DEBUG_SUFFIX}.js`);
     } else {
         distPath = path.join(__dirname, 'dist', name, format, target, `${name}.js`);
     }
