@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.21...v) (2019-09-23)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.22...v) (2019-09-30)
+
+
+### Bug Fixes
+
+* custom collection util to handle nodelist and htmlcollection ([#1540](https://github.com/salesforce/lwc/issues/1540)) ([90d5ebc](https://github.com/salesforce/lwc/commit/90d5ebc))
+
+
+
+## [1.0.2-222.22](https://github.com/salesforce/lwc/compare/v1.0.2-222.21...v1.0.2-222.22) (2019-09-23)
 
 
 ### Bug Fixes
