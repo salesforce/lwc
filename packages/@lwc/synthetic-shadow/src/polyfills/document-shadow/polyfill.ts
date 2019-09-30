@@ -15,8 +15,6 @@ import {
     querySelectorAll as documentQuerySelectorAll,
 } from '../../env/document';
 import {
-    ArrayFilter,
-    ArrayFind,
     ArraySlice,
     defineProperty,
     isNull,
@@ -31,6 +29,7 @@ import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 import { getOwnerDocument } from '../../shared/utils';
+import { collectionFilter, collectionFind } from '../../shared/node-collection-util';
 
 let skipGlobalPatching: boolean;
 function isGlobalPatchingSkipped(node: Node) {
@@ -109,7 +108,7 @@ export default function apply() {
             const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
-            const filtered = ArrayFind.call(
+            const filtered = collectionFind(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
@@ -125,11 +124,11 @@ export default function apply() {
             const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
                 string
             ]);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
-            return createStaticNodeList(filtered);
+            return createStaticNodeList(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -141,11 +140,11 @@ export default function apply() {
             const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -157,11 +156,11 @@ export default function apply() {
             const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(
                 arguments
             ) as [string]);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -173,11 +172,11 @@ export default function apply() {
             const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(
                 arguments
             ) as [string, string]);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -195,11 +194,11 @@ export default function apply() {
                 const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [
                     string
                 ]);
-                const filtered = ArrayFilter.call(
+                const filtered = collectionFilter(
                     elements,
                     elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
                 );
-                return createStaticNodeList(filtered);
+                return createStaticNodeList(filtered as Array<Element>);
             },
             writable: true,
             enumerable: true,

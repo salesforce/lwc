@@ -15,7 +15,6 @@ import {
     isUndefined,
     isTrue,
     ArrayFilter,
-    ArraySlice,
     isNull,
     ArrayReduce,
 } from '../shared/language';
@@ -31,6 +30,7 @@ import { childNodesGetter as nativeChildNodesGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
 import { PatchedElement } from './element';
+import { collectionSlice } from '../shared/node-collection-util';
 
 interface HTMLSlotElementConstructor {
     prototype: HTMLSlotElement;
@@ -72,7 +72,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(nativeChildNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
@@ -89,7 +89,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    const childNodes = ArraySlice.call(nativeChildNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(nativeChildNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
