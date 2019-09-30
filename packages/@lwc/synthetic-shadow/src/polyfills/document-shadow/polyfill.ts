@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
-    ArrayFind,
     ArraySlice,
     defineProperty,
     getOwnPropertyDescriptor,
@@ -30,6 +28,7 @@ import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
 import { isGlobalPatchingSkipped } from '../../shared/utils';
+import { collectionFilter, collectionFind } from '../../shared/node-collection-util';
 
 function elemFromPoint(this: Document, left: number, top: number) {
     const element = elementFromPoint.call(this, left, top);
@@ -98,7 +97,7 @@ defineProperty(Document.prototype, 'querySelector', {
         const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
             string
         ]);
-        const filtered = ArrayFind.call(
+        const filtered = collectionFind(
             elements,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -115,7 +114,7 @@ defineProperty(Document.prototype, 'querySelectorAll', {
         const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
             string
         ]);
-        const filtered = ArrayFilter.call(
+        const filtered = collectionFilter(
             elements,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -132,12 +131,12 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
         const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
             string
         ]);
-        const filtered = ArrayFilter.call(
+        const filtered = collectionFilter(
             elements,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(filtered as Array<Element>);
     },
     writable: true,
     enumerable: true,
@@ -149,12 +148,12 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
         const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
             string
         ]);
-        const filtered = ArrayFilter.call(
+        const filtered = collectionFilter(
             elements,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(filtered as Array<Element>);
     },
     writable: true,
     enumerable: true,
@@ -167,12 +166,12 @@ defineProperty(Document.prototype, 'getElementsByTagNameNS', {
             string,
             string
         ]);
-        const filtered = ArrayFilter.call(
+        const filtered = collectionFilter(
             elements,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(filtered as Array<Element>);
     },
     writable: true,
     enumerable: true,
@@ -188,7 +187,7 @@ defineProperty(
     {
         value(this: Document): NodeListOf<Element> {
             const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 // TODO: issue #1222 - remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)

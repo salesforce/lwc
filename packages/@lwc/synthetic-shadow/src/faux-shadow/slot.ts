@@ -13,7 +13,6 @@ import {
     isUndefined,
     isTrue,
     ArrayFilter,
-    ArraySlice,
     isNull,
     ArrayReduce,
     defineProperties,
@@ -31,6 +30,7 @@ import {
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
+import { collectionSlice } from '../shared/node-collection-util';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
@@ -64,7 +64,7 @@ function initSlotObserver() {
 }
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
-    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(childNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

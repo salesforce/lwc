@@ -6,7 +6,6 @@
  */
 import {
     ArrayFilter,
-    ArrayFind,
     ArrayPush,
     ArraySlice,
     assert,
@@ -64,6 +63,7 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
+import { collectionFilter, collectionFind } from '../shared/node-collection-util';
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
@@ -348,11 +348,11 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        const elm = collectionFind(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         return isUndefined(elm) ? null : elm;
     } else {
         // element belonging to the document
-        const elm = ArrayFind.call(
+        const elm = collectionFind(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
@@ -379,10 +379,10 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        filtered = collectionFilter(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
     } else {
         // element belonging to the document
-        filtered = ArrayFilter.call(
+        filtered = collectionFilter(
             nodeList,
             // TODO: issue #1222 - remove global bypass
             elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
@@ -419,12 +419,12 @@ defineProperties(Element.prototype, {
                 arguments
             ) as [string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -436,12 +436,12 @@ defineProperties(Element.prototype, {
                 string
             ]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,
@@ -453,12 +453,12 @@ defineProperties(Element.prototype, {
                 arguments
             ) as [string, string]);
             const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+            const filtered = collectionFilter(
                 elements,
                 // TODO: issue #1222 - remove global bypass
                 elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
             );
-            return createStaticHTMLCollection(filtered);
+            return createStaticHTMLCollection(filtered as Array<Element>);
         },
         writable: true,
         enumerable: true,

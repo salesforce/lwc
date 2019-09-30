@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, ArraySlice, assert, isNull, isUndefined } from '@lwc/shared';
+import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
 import { getNodeKey, getNodeNearestOwnerKey } from './node';
 import {
     childNodesGetter,
@@ -20,6 +20,7 @@ import {
     getShadowRootResolver,
     getShadowRoot,
 } from './shadow-root';
+import { collectionSlice } from '../shared/node-collection-util';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -115,7 +116,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
     if (!isHostElement(node) && !isSlotElement(node)) {
         // regular element - fast path
         children = childNodesGetter.call(node);
-        return ArraySlice.call(children);
+        return collectionSlice(children);
     }
     if (isHostElement(node)) {
         // we need to get only the nodes that were slotted
@@ -159,7 +160,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
+    const childNodes = collectionSlice(childNodesGetter.call(slot)) as Node[];
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch
