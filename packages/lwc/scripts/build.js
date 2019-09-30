@@ -11,21 +11,25 @@ const { createDir, getEs6ModuleEntry, buildBundleConfig } = require('./utils/hel
 // -- globals -----------------------------------------------------------------
 const distDirectory = path.join(__dirname, '../dist');
 
-const targets = [
+const COMMON_TARGETS = [
     // ESM
     { target: 'es2017', format: 'esm', prod: false },
 
     // IIFE
     { target: 'es5', format: 'iife', prod: false },
     { target: 'es5', format: 'iife', prod: true },
+    { target: 'es5', format: 'iife', prod: true, debug: true },
     { target: 'es2017', format: 'iife', prod: false },
     { target: 'es2017', format: 'iife', prod: true },
+    { target: 'es2017', format: 'iife', prod: true, debug: true },
 
     // UMD
     { target: 'es5', format: 'umd', prod: false },
     { target: 'es5', format: 'umd', prod: true },
+    { target: 'es5', format: 'umd', prod: true, debug: true },
     { target: 'es2017', format: 'umd', prod: false },
     { target: 'es2017', format: 'umd', prod: true },
+    { target: 'es2017', format: 'umd', prod: true, debug: true },
 ];
 
 // -- Helpers -----------------------------------------------------------------
@@ -65,9 +69,9 @@ function buildWireService(targets) {
 (async () => {
     createDir(distDirectory);
     const allTargets = [
-        ...buildEngineTargets(targets),
-        ...buildSyntheticShadow(targets),
-        ...buildWireService(targets),
+        ...buildEngineTargets(COMMON_TARGETS),
+        ...buildSyntheticShadow(COMMON_TARGETS),
+        ...buildWireService(COMMON_TARGETS),
     ];
     process.stdout.write('\n# Generating LWC artifacts...\n');
     await generateTargets(allTargets);
