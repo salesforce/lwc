@@ -67,10 +67,10 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
 
 export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
-    return getAllMatches(elm, childNodesGetter.call(elm));
+    return getAllMatches(elm, arrayFromCollection(childNodesGetter.call(elm)));
 }
 
-export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Array<Element & Node> {
+export function getAllMatches(owner: Element, nodeList: Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -84,7 +84,7 @@ export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Arra
     return filteredAndPatched;
 }
 
-export function getFirstMatch(owner: Element, nodeList: NodeList | Element[]): Element | null {
+export function getFirstMatch(owner: Element, nodeList: Element[]): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
             return nodeList[i] as Element;
@@ -98,7 +98,7 @@ export function shadowRootQuerySelector(
     selector: string
 ): Element | null {
     const elm = getHost(root);
-    const nodeList = querySelectorAll.call(elm, selector);
+    const nodeList = arrayFromCollection(querySelectorAll.call(elm, selector));
     return getFirstMatch(elm, nodeList);
 }
 
@@ -108,7 +108,7 @@ export function shadowRootQuerySelectorAll(
 ): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
-    return getAllMatches(elm, nodeList);
+    return getAllMatches(elm, arrayFromCollection(nodeList));
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
