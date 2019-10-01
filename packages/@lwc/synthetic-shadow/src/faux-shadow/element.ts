@@ -64,6 +64,7 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
+import { arrayFromCollection } from '../shared/node-collection-util';
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
@@ -155,7 +156,7 @@ function getAllSlottedMatches(host: Element, nodeList: NodeList | Node[]): Array
     return filteredAndPatched;
 }
 
-function getFirstSlottedMatch(host: Element, nodeList: NodeList): Element | null {
+function getFirstSlottedMatch(host: Element, nodeList: Element[]): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i] as Element;
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
@@ -332,7 +333,9 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 // Deep-traversing patches from this point on:
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
-    const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
+    const nodeList = arrayFromCollection(
+        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+    );
     if (isHostElement(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
@@ -362,7 +365,9 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
 }
 
 function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
-    const nodeList = elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string]);
+    const nodeList = arrayFromCollection(
+        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+    );
     let filtered: Element[];
     if (isHostElement(this)) {
         // element with shadowRoot attached
@@ -415,9 +420,9 @@ defineProperties(Element.prototype, {
     },
     getElementsByClassName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = elementGetElementsByClassName.apply(this, ArraySlice.call(
-                arguments
-            ) as [string]);
+            const elements = arrayFromCollection(
+                elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+            );
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
@@ -432,9 +437,9 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
-                string
-            ]);
+            const elements = arrayFromCollection(
+                elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+            );
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,
@@ -449,9 +454,12 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagNameNS: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = elementGetElementsByTagNameNS.apply(this, ArraySlice.call(
-                arguments
-            ) as [string, string]);
+            const elements = arrayFromCollection(
+                elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+                    string,
+                    string
+                ])
+            );
             const ownerKey = getNodeOwnerKey(this);
             const filtered = ArrayFilter.call(
                 elements,

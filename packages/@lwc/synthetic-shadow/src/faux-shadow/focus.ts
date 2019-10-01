@@ -42,6 +42,7 @@ import {
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
 import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
+import { arrayFromCollection } from '../shared/node-collection-util';
 
 const { createFieldName, getHiddenField, setHiddenField } = fields;
 
@@ -82,8 +83,10 @@ interface QuerySegments {
 
 function getTabbableSegments(host: HTMLElement): QuerySegments {
     const doc = getOwnerDocument(host);
-    const all = documentQuerySelectorAll.call(doc, TabbableElementsQuery);
-    const inner = ArraySlice.call(querySelectorAll.call(host, TabbableElementsQuery));
+    const all = arrayFromCollection(documentQuerySelectorAll.call(doc, TabbableElementsQuery));
+    const inner = arrayFromCollection(
+        querySelectorAll.call(host, TabbableElementsQuery)
+    ) as HTMLElement[];
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
             getAttribute.call(host, 'tabindex') === '-1' || isDelegatingFocus(host),
