@@ -4,16 +4,28 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const defaultFeatureFlags = require('../../');
+const defaultFeatureFlags = require('../../').default;
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
 function isRuntimeFlag(path, featureFlags) {
     return (
         path.isMemberExpression() &&
-        featureFlags[path.node.property.name] !== undefined &&
-        path.get('object').isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER })
+        path.get('object').isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER }) &&
+        path.get('property').isIdentifier() &&
+        featureFlags[path.node.property.name] !== undefined
     );
+}
+
+function validate(name, value) {
+    if (!/[A-Z_]+/.test(name)) {
+        throw new Error(
+            `Invalid feature flag "${name}". Flag name must only be composed of uppercase letters and underscores.`
+        );
+    }
+    if (value === undefined) {
+        throw new Error(`Invalid feature flag "${name}". Flag is undefined.`);
+    }
 }
 
 module.exports = function({ types: t }) {
@@ -26,25 +38,24 @@ module.exports = function({ types: t }) {
                 this.featureFlagIfStatements = [];
                 this.featureFlags = this.opts.featureFlags || defaultFeatureFlags;
                 this.importDeclarationScope = [];
-                this.importedFeatureFlags = [];
             },
-            ImportDeclaration(path) {
-                if (path.node.source.value === '@lwc/features') {
-                    const specifiers = path.get('specifiers');
-
-                    this.importDeclarationScope = path.scope;
-                    this.importedFeatureFlags = specifiers
-                        .map(specifier => specifier.node.imported.name)
-                        .filter(name => name === name.toUpperCase());
-
-                    const didImportRuntimeFlags = specifiers.some(specifier => {
-                        return specifier.node.imported.name === RUNTIME_FLAGS_IDENTIFIER;
-                    });
+            ImportDefaultSpecifier(defaultSpecifierPath) {
+                const importDeclarationPath = defaultSpecifierPath.findParent(p =>
+                    p.isImportDeclaration()
+                );
+                if (importDeclarationPath.node.source.value === '@lwc/features') {
+                    this.importDeclarationScope = importDeclarationPath.scope;
+                    this.defaultSpecifierName = defaultSpecifierPath.node.local.name;
+                    const specifiers = importDeclarationPath.get('specifiers');
+                    const didImportRuntimeFlags = specifiers
+                        .filter(specifier => specifier !== defaultSpecifierPath)
+                        .some(specifier => {
+                            return specifier.node.imported.name === RUNTIME_FLAGS_IDENTIFIER;
+                        });
                     if (!didImportRuntimeFlags) {
-                        // Blindly import a binding for `runtimeFlags`. It's much
-                        // simpler to let tree-shaking remove it when unnecessary,
-                        // rather than to try and import it only when needed.
-                        path.node.specifiers.push(
+                        // Blindly import a binding for `runtimeFlags`. Tree-shaking
+                        // will simply remove it if unused.
+                        importDeclarationPath.node.specifiers.push(
                             t.importSpecifier(
                                 t.identifier(RUNTIME_FLAGS_IDENTIFIER),
                                 t.identifier(RUNTIME_FLAGS_IDENTIFIER)
@@ -56,44 +67,45 @@ module.exports = function({ types: t }) {
             IfStatement(path) {
                 const testPath = path.get('test');
 
-                // If we have imported any flags and the if-test is a plain identifier
-                if (this.importedFeatureFlags.length && testPath.isIdentifier()) {
-                    const name = testPath.node.name;
-                    const binding = this.importDeclarationScope.getBinding(name);
-
-                    // The identifier is a feature flag if it matches the name
-                    // of an imported feature flag binding and it's a reference
-                    // from the import declaration scope.
-                    const isFeatureFlag =
-                        this.importedFeatureFlags.includes(name) &&
-                        binding &&
-                        binding.referencePaths.includes(testPath);
-
-                    if (isFeatureFlag) {
-                        const value = this.featureFlags[name];
-                        if (!this.opts.prod || value === null) {
-                            testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
-                            // We replaced this identifier with a member
-                            // expression that uses the same identifier and we
-                            // don't want to process it again
-                            testPath.skip();
-                        } else if (value === true) {
-                            // Transform the IfStatement into a BlockStatement
-                            path.replaceWith(path.node.consequent);
-                        } else if (value === false) {
-                            // Remove IfStatement
-                            path.remove();
+                // If we have imported the feature flags lookup (default binding) and the if-test is a member expression.
+                if (this.defaultSpecifierName && testPath.isMemberExpression()) {
+                    const objectPath = testPath.get('object');
+                    const propertyPath = testPath.get('property');
+                    // If the member expression is a shallow feature flag lookup (i.e., the property is an identifier).
+                    if (
+                        objectPath.isIdentifier({ name: this.defaultSpecifierName }) &&
+                        propertyPath.isIdentifier()
+                    ) {
+                        const binding = this.importDeclarationScope.getBinding(
+                            objectPath.node.name
+                        );
+                        // If this thing is an actual reference to the imported feature flag lookup.
+                        if (binding && binding.referencePaths.includes(objectPath)) {
+                            const name = propertyPath.node.name;
+                            const value = this.featureFlags[name];
+                            validate(name, value);
+                            if (!this.opts.prod || value === null) {
+                                testPath.replaceWithSourceString(
+                                    `${RUNTIME_FLAGS_IDENTIFIER}.${name}`
+                                );
+                            } else if (value === true) {
+                                // Transform the IfStatement into a BlockStatement
+                                path.replaceWith(path.node.consequent);
+                            } else if (value === false) {
+                                // Remove IfStatement
+                                path.remove();
+                            }
                         }
                     }
                 }
 
-                // Transform runtime flags into compile-time flags where
-                // appropriate for production mode. This essentially undoes the
-                // non-production mode transform of forcing all flags to be
-                // runtime flags.
+                // Transform runtime flags into compile-time flags, where appropriate, for
+                // production mode. This serves to undo the non-production mode transform of
+                // forcing all flags to be runtime flags.
                 if (this.opts.prod && isRuntimeFlag(testPath, this.featureFlags)) {
                     const name = testPath.node.property.name;
                     const value = this.featureFlags[name];
+                    validate(name, value);
                     if (value === true) {
                         // Transform the IfStatement into a BlockStatement
                         path.replaceWith(path.node.consequent);
