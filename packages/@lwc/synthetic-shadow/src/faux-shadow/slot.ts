@@ -30,7 +30,7 @@ import {
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
-import { arrayFromCollection } from '../shared/node-collection-util';
+import { arrayFromCollection } from '../shared/utils';
 
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak

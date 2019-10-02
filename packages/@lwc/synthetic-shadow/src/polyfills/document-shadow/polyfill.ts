@@ -29,8 +29,7 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
-import { isGlobalPatchingSkipped } from '../../shared/utils';
-import { arrayFromCollection } from '../../shared/node-collection-util';
+import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';
 
 function elemFromPoint(this: Document, left: number, top: number) {
     const element = elementFromPoint.call(this, left, top);

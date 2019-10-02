@@ -20,7 +20,7 @@ import {
     getShadowRootResolver,
     getShadowRoot,
 } from './shadow-root';
-import { arrayFromCollection } from '../shared/node-collection-util';
+import { arrayFromCollection } from '../shared/utils';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {

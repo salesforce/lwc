@@ -61,10 +61,9 @@ import {
     querySelectorAll as elementQuerySelectorAll,
 } from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
-import { isGlobalPatchingSkipped } from '../shared/utils';
+import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
-import { arrayFromCollection } from '../shared/node-collection-util';
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.

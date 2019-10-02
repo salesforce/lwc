@@ -41,8 +41,7 @@ import {
     focusEventRelatedTargetGetter,
 } from '../env/dom';
 import { isDelegatingFocus } from './shadow-root';
-import { getOwnerDocument, getOwnerWindow } from '../shared/utils';
-import { arrayFromCollection } from '../shared/node-collection-util';
+import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
 const { createFieldName, getHiddenField, setHiddenField } = fields;
 

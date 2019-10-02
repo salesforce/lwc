@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isTrue } from '@lwc/shared';
+import { ArrayConstructor, isUndefined, isTrue } from '@lwc/shared';
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
@@ -41,4 +41,21 @@ export function isGlobalPatchingSkipped(node: Node): boolean {
                 'temporary-bypass';
     }
     return isTrue(skipGlobalPatching);
+}
+
+/**
+ * This utility should be used to convert NodeList and HTMLCollection into an array before we
+ * perform array operations on them. See issue #1545 for more details.
+ */
+export function arrayFromCollection<T extends Node, K extends Element>(
+    collection: NodeListOf<T> | HTMLCollectionOf<K>
+): Array<T | K> {
+    const size = collection.length;
+    const cloned: T[] | K[] = new ArrayConstructor(size);
+    if (size > 0) {
+        for (let i = 0; i < size; i++) {
+            cloned[i] = collection[i];
+        }
+    }
+    return cloned;
 }
