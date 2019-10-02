@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, ArraySlice, assert, isNull, isUndefined } from '@lwc/shared';
+import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
 import { getNodeKey, getNodeNearestOwnerKey } from './node';
 import {
     childNodesGetter,
@@ -20,6 +20,7 @@ import {
     getShadowRootResolver,
     getShadowRoot,
 } from './shadow-root';
+import { arrayFromCollection } from '../shared/utils';
 
 export function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -66,10 +67,10 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
 
 export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<Element & Node> {
     const elm = getHost(root);
-    return getAllMatches(elm, childNodesGetter.call(elm));
+    return getAllMatches(elm, arrayFromCollection(childNodesGetter.call(elm)));
 }
 
-export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Array<Element & Node> {
+export function getAllMatches(owner: Element, nodeList: Node[]): Array<Element & Node> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -83,7 +84,7 @@ export function getAllMatches(owner: Element, nodeList: NodeList | Node[]): Arra
     return filteredAndPatched;
 }
 
-export function getFirstMatch(owner: Element, nodeList: NodeList): Element | null {
+export function getFirstMatch(owner: Element, nodeList: Element[]): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedBy(owner, nodeList[i])) {
             return nodeList[i] as Element;
@@ -97,7 +98,7 @@ export function shadowRootQuerySelector(
     selector: string
 ): Element | null {
     const elm = getHost(root);
-    const nodeList = querySelectorAll.call(elm, selector);
+    const nodeList = arrayFromCollection(querySelectorAll.call(elm, selector));
     return getFirstMatch(elm, nodeList);
 }
 
@@ -107,7 +108,7 @@ export function shadowRootQuerySelectorAll(
 ): Element[] {
     const elm = getHost(root);
     const nodeList = querySelectorAll.call(elm, selector);
-    return getAllMatches(elm, nodeList);
+    return getAllMatches(elm, arrayFromCollection(nodeList));
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
@@ -115,11 +116,11 @@ export function getFilteredChildNodes(node: Node): Element[] {
     if (!isHostElement(node) && !isSlotElement(node)) {
         // regular element - fast path
         children = childNodesGetter.call(node);
-        return ArraySlice.call(children);
+        return arrayFromCollection(children);
     }
     if (isHostElement(node)) {
         // we need to get only the nodes that were slotted
-        const slots = querySelectorAll.call(node, 'slot');
+        const slots = arrayFromCollection(querySelectorAll.call(node, 'slot'));
         const resolver = getShadowRootResolver(getShadowRoot(node as Element));
         // Typescript is inferring the wrong function type for this particular
         // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
@@ -136,7 +137,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
         );
     } else {
         // slot element
-        children = childNodesGetter.call(node);
+        children = arrayFromCollection(childNodesGetter.call(node));
         const resolver = getShadowRootResolver(node);
         // Typescript is inferring the wrong function type for this particular
         // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
@@ -159,7 +160,7 @@ export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     if (isNull(owner)) {
         return [];
     }
-    const childNodes = ArraySlice.call(childNodesGetter.call(slot)) as Node[];
+    const childNodes = arrayFromCollection(childNodesGetter.call(slot));
     // Typescript is inferring the wrong function type for this particular
     // overloaded method: https://github.com/Microsoft/TypeScript/issues/27972
     // @ts-ignore type-mismatch

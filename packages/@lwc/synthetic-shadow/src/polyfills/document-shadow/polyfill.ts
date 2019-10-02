@@ -29,7 +29,7 @@ import { retarget } from '../../3rdparty/polymer/retarget';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { createStaticNodeList } from '../../shared/static-node-list';
 import { createStaticHTMLCollection } from '../../shared/static-html-collection';
-import { isGlobalPatchingSkipped } from '../../shared/utils';
+import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';
 
 function elemFromPoint(this: Document, left: number, top: number) {
     const element = elementFromPoint.call(this, left, top);
@@ -95,9 +95,9 @@ defineProperty(Document.prototype, 'getElementById', {
 
 defineProperty(Document.prototype, 'querySelector', {
     value(this: Document): Element | null {
-        const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
+        const elements = arrayFromCollection(
+            documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+        );
         const filtered = ArrayFind.call(
             elements,
             // TODO: issue #1222 - remove global bypass
@@ -112,9 +112,9 @@ defineProperty(Document.prototype, 'querySelector', {
 
 defineProperty(Document.prototype, 'querySelectorAll', {
     value(this: Document): NodeListOf<Element> {
-        const elements = documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
+        const elements = arrayFromCollection(
+            documentQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+        );
         const filtered = ArrayFilter.call(
             elements,
             // TODO: issue #1222 - remove global bypass
@@ -129,9 +129,9 @@ defineProperty(Document.prototype, 'querySelectorAll', {
 
 defineProperty(Document.prototype, 'getElementsByClassName', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = documentGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
+        const elements = arrayFromCollection(
+            documentGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+        );
         const filtered = ArrayFilter.call(
             elements,
             // TODO: issue #1222 - remove global bypass
@@ -146,9 +146,9 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
 
 defineProperty(Document.prototype, 'getElementsByTagName', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = documentGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [
-            string
-        ]);
+        const elements = arrayFromCollection(
+            documentGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+        );
         const filtered = ArrayFilter.call(
             elements,
             // TODO: issue #1222 - remove global bypass
@@ -163,10 +163,12 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
 
 defineProperty(Document.prototype, 'getElementsByTagNameNS', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = documentGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-            string,
-            string
-        ]);
+        const elements = arrayFromCollection(
+            documentGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+                string,
+                string
+            ])
+        );
         const filtered = ArrayFilter.call(
             elements,
             // TODO: issue #1222 - remove global bypass
@@ -187,7 +189,9 @@ defineProperty(
     'getElementsByName',
     {
         value(this: Document): NodeListOf<Element> {
-            const elements = getElementsByName.apply(this, ArraySlice.call(arguments) as [string]);
+            const elements = arrayFromCollection(
+                getElementsByName.apply(this, ArraySlice.call(arguments) as [string])
+            );
             const filtered = ArrayFilter.call(
                 elements,
                 // TODO: issue #1222 - remove global bypass
