@@ -391,89 +391,44 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     }
 }
 
-function filterNodeListQueryResult(this: Element, nodeList): Element[] {
+function getFilteredNodeListQueryResult(context: Element, nodeList): Element[] {
     let filtered: Element[];
-    if (isHostElement(this)) {
+    if (isHostElement(context)) {
         // element with shadowRoot attached
-        const owner = getNodeOwner(this);
+        const owner = getNodeOwner(context);
         if (isNull(owner)) {
             filtered = [];
-        } else if (getNodeKey(this)) {
+        } else if (getNodeKey(context)) {
             // it is a custom element, and we should then filter by slotted elements
-            filtered = getAllSlottedMatches(this, nodeList);
+            filtered = getAllSlottedMatches(context, nodeList);
         } else {
             // regular element, we should then filter by ownership
             filtered = getAllMatches(owner, nodeList);
         }
-    } else if (isNodeShadowed(this)) {
+    } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
-        const ownerKey = getNodeOwnerKey(this);
+        const ownerKey = getNodeOwnerKey(context);
         if (!isUndefined(ownerKey) || ENABLE_ELEMENT_PATCH) {
-            // The patch is enabled or `this` is an element rendered by lwc
+            // The patch is enabled or `context` is an element rendered by lwc
             filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         } else {
-            // `this` is a manually inserted element inside a shadowRoot
+            // `context` is a manually inserted element inside a shadowRoot
             filtered = ArraySlice.call(nodeList);
         }
     } else {
-        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
-            // `this` is document.body or element belonging to the document with the patch enabled
+        if (context instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
+            // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 nodeList,
                 // TODO: issue #1222 - remove global bypass
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
-            // `this` is outside the lwc boundary and patch is not enabled.
+            // `context` is outside the lwc boundary and patch is not enabled.
             filtered = ArraySlice.call(nodeList);
         }
     }
     return filtered;
-}
-
-function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
-    const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
-    );
-    const filteredResults = filterNodeListQueryResult.call(this, nodeList);
-
-    return createStaticNodeList(filteredResults);
-}
-
-function getElementsByTagNamePatched(
-    this: Element /*, tagName: string*/
-): HTMLCollectionOf<Element> {
-    const elements = arrayFromCollection(
-        elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-    );
-
-    const filteredResults = filterNodeListQueryResult.call(this, elements);
-
-    return createStaticHTMLCollection(filteredResults);
-}
-
-function getElementsByClassNamePatched(
-    this: Element /*, className: string*/
-): HTMLCollectionOf<Element> {
-    const elements = arrayFromCollection(
-        elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
-    );
-
-    const filteredResults = filterNodeListQueryResult.call(this, elements);
-
-    return createStaticHTMLCollection(filteredResults);
-}
-
-function getElementsByTagNameNSPatched(
-    this: Element /*, tagName: string, NS: string*/
-): HTMLCollectionOf<Element> {
-    const elements = arrayFromCollection(
-        elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [string, string])
-    );
-
-    const filteredResults = filterNodeListQueryResult.call(this, elements);
-
-    return createStaticHTMLCollection(filteredResults);
 }
 
 // The following patched methods hide shadowed elements from global
@@ -493,25 +448,59 @@ defineProperties(Element.prototype, {
         configurable: true,
     },
     querySelectorAll: {
-        value: querySelectorAllPatched,
+        value(this: HTMLBodyElement): NodeListOf<Element> {
+            const nodeList = arrayFromCollection(
+                elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+            );
+            const filteredResults = getFilteredNodeListQueryResult(this, nodeList);
+
+            return createStaticNodeList(filteredResults);
+        },
         writable: true,
         enumerable: true,
         configurable: true,
     },
     getElementsByClassName: {
-        value: getElementsByClassNamePatched,
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+            );
+
+            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+
+            return createStaticHTMLCollection(filteredResults);
+        },
         writable: true,
         enumerable: true,
         configurable: true,
     },
     getElementsByTagName: {
-        value: getElementsByTagNamePatched,
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+            );
+
+            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+
+            return createStaticHTMLCollection(filteredResults);
+        },
         writable: true,
         enumerable: true,
         configurable: true,
     },
     getElementsByTagNameNS: {
-        value: getElementsByTagNameNSPatched,
+        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            const elements = arrayFromCollection(
+                elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
+                    string,
+                    string
+                ])
+            );
+
+            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+
+            return createStaticHTMLCollection(filteredResults);
+        },
         writable: true,
         enumerable: true,
         configurable: true,
