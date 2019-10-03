@@ -7,14 +7,13 @@
 import { assert, isFunction, isUndefined } from '@lwc/shared';
 import { currentContext, establishContext } from './context';
 
-import { evaluateTemplate } from './template';
+import { evaluateTemplate, Template, setVMBeingRendered, getVMBeingRendered } from './template';
 import { getErrorComponentStack, VM, UninitializedVM, runWithBoundaryProtection } from './vm';
 import { ComponentConstructor, ComponentInterface } from './component';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { startMeasure, endMeasure } from './performance-timing';
 
-export let isRendering: boolean = false;
-export let vmBeingRendered: VM | null = null;
+export let isInvokingRender: boolean = false;
 
 export let vmBeingConstructed: UninitializedVM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
@@ -103,41 +102,35 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         owner,
     } = vm;
     const ctx = currentContext;
-    const isRenderingInception = isRendering;
-    const vmBeingRenderedInception = vmBeingRendered;
-    isRendering = true;
-    vmBeingRendered = vm;
-    let result;
+    const isRenderBeingInvokedInception = isInvokingRender;
+    const vmBeingRenderedInception = getVMBeingRendered();
+    let html: Template;
+    let renderInvocationSuccessful = false;
     runWithBoundaryProtection(
         vm,
         owner,
         () => {
             // pre
             establishContext(context);
-            if (process.env.NODE_ENV !== 'production') {
-                startMeasure('render', vm);
-            }
-            isRendering = true;
-            vmBeingRendered = vm;
+            isInvokingRender = true;
+            setVMBeingRendered(vm);
         },
         () => {
             // job
             vm.tro.observe(() => {
-                const html = callHook(component, render);
-                result = evaluateTemplate(vm, html);
+                html = callHook(component, render);
+                renderInvocationSuccessful = true;
             });
         },
         () => {
-            establishContext(ctx);
             // post
-            if (process.env.NODE_ENV !== 'production') {
-                endMeasure('render', vm);
-            }
-            isRendering = isRenderingInception;
-            vmBeingRendered = vmBeingRenderedInception;
+            establishContext(ctx);
+            isInvokingRender = isRenderBeingInvokedInception;
+            setVMBeingRendered(vmBeingRenderedInception);
         }
     );
-    return result || [];
+    // If render() invocation failed, process errorCallback in boundary and return an empty template
+    return renderInvocationSuccessful ? evaluateTemplate(vm, html!) : [];
 }
 
 export function invokeEventListener(
