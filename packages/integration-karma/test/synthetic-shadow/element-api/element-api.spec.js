@@ -322,6 +322,58 @@ if (!process.env.NATIVE_SHADOW) {
                 // is returning the custom element instead of the shadow root
                 expect(manualRenderedNode.parentElement).toBe(lwcElem);
             });
+
+            it('should preserve childNodes behavior', () => {
+                expect(elementOutsideLWC.childNodes.length).toBe(1);
+                expect(rootLwcElement.childNodes.length).toBe(0);
+                expect(lwcElementInsideShadow.childNodes.length).toBe(0);
+
+                expect(divManuallyApendedToShadow.childNodes.length).toBe(1);
+
+                expect(cmpShadow.childNodes.length).toBe(2);
+
+                expect(slottedComponent.childNodes.length).toBe(1);
+                expect(slottedNode.childNodes.length).toBe(1);
+            });
+
+            it('should preserve hasChildNodes behavior', () => {
+                expect(elementOutsideLWC.hasChildNodes()).toBe(true);
+                expect(rootLwcElement.hasChildNodes()).toBe(false);
+                expect(lwcElementInsideShadow.hasChildNodes()).toBe(false);
+
+                expect(divManuallyApendedToShadow.hasChildNodes()).toBe(true);
+
+                expect(cmpShadow.hasChildNodes()).toBe(true);
+
+                expect(slottedComponent.hasChildNodes()).toBe(true);
+                expect(slottedNode.hasChildNodes()).toBe(true);
+            });
+
+            it('should preserve compareDocumentPosition behavior', () => {
+                expect(
+                    elementOutsideLWC.compareDocumentPosition(lwcElementInsideShadow) &
+                        Node.DOCUMENT_POSITION_CONTAINED_BY
+                ).toBeGreaterThan(0);
+
+                expect(
+                    rootLwcElement.compareDocumentPosition(elementOutsideLWC) &
+                        Node.DOCUMENT_POSITION_CONTAINS
+                ).toBeGreaterThan(0);
+                expect(
+                    lwcElementInsideShadow.compareDocumentPosition(divManuallyApendedToShadow) &
+                        Node.DOCUMENT_POSITION_FOLLOWING
+                ).toBeGreaterThan(0);
+
+                expect(
+                    divManuallyApendedToShadow.compareDocumentPosition(elementOutsideLWC) &
+                        Node.DOCUMENT_POSITION_CONTAINS
+                ).toBeGreaterThan(0);
+
+                expect(
+                    cmpShadow.compareDocumentPosition(slottedNode) &
+                        Node.DOCUMENT_POSITION_CONTAINED_BY
+                ).toBeGreaterThan(0);
+            });
         });
     });
 }

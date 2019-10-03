@@ -407,7 +407,7 @@ defineProperties(Node.prototype, {
         value(this: Node, otherNode: Node): boolean {
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
-                contains.call(otherNode, otherNode);
+                return contains.call(this, otherNode);
             }
             return containsPatched.call(this, otherNode);
         },
