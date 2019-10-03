@@ -304,7 +304,7 @@ function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
-// do not five access to nodes beyond the immediate children.
+// do not give access to nodes beyond the immediate children.
 defineProperties(Node.prototype, {
     firstChild: {
         get(this: Node): ChildNode | null {
