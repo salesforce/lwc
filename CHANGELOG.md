@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.22...v) (2019-09-30)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2-222.23...v) (2019-10-03)
+
+
+### Bug Fixes
+
+* **engine:** refactor boundary protection for render phase ([#1507](https://github.com/salesforce/lwc/issues/1507)) ([926f8f0](https://github.com/salesforce/lwc/commit/926f8f0)), closes [issue#1506](https://github.com/issue/issues/1506)
+
+
+
+## [1.0.2-222.23](https://github.com/salesforce/lwc/compare/v1.0.2-222.22...v1.0.2-222.23) (2019-09-30)
 
 
 ### Bug Fixes

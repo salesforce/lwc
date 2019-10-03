@@ -1,7 +1,7 @@
 {
     "name": "@lwc/module-resolver",
     "description": "Resolves paths for LWC components",
-    "version": "1.0.2-222.23",
+    "version": "1.0.2-222.24",
     "main": "dist/commonjs/index.js",
     "typings": "dist/types/index.d.ts",
     "scripts": {
