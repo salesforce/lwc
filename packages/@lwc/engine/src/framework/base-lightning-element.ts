@@ -35,13 +35,13 @@ import {
 } from './component';
 import { setInternalField, setHiddenField } from '../shared/fields';
 import { ViewModelReflection, EmptyObject } from './utils';
-import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
+import { vmBeingConstructed, isBeingConstructed, isInvokingRender } from './invoker';
 import { getComponentVM, VM } from './vm';
 import { observeMutation, notifyMutation } from './watcher';
 import { dispatchEvent } from '../env/dom';
 import { patchComponentWithRestrictions, patchShadowRootWithRestrictions } from './restrictions';
 import { unlockAttribute, lockAttribute } from './attributes';
-import { Template } from './template';
+import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -97,9 +97,14 @@ function createBridgeToElementDescriptor(
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+                const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
-                    !isRendering,
+                    !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `When updating the template of ${vmBeingRendered}, one of the accessors used by the template has side effects on the state of ${vm}.${propName}`
                 );
                 assert.isFalse(
                     isBeingConstructed(vm),
@@ -242,10 +247,15 @@ BaseLightningElement.prototype = {
     ) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
+            const vmBeingRendered = getVMBeingRendered();
             assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
             assert.invariant(
-                !isRendering,
+                !isInvokingRender,
                 `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`
+            );
+            assert.invariant(
+                !isUpdatingTemplate,
+                `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
             );
             assert.invariant(
                 isFunction(listener),

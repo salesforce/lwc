@@ -24,11 +24,18 @@ const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap()
 
 export function notifyMutation(target: object, key: PropertyKey) {
     if (process.env.NODE_ENV !== 'production') {
+        const vmBeingRendered = getVMBeingRendered();
         assert.invariant(
-            !isRendering,
+            !isInvokingRender,
             `Mutating property ${toString(key)} of ${toString(
                 target
-            )} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
+            )} is not allowed when invoking the render() of ${vmBeingRendered}.`
+        );
+        assert.invariant(
+            !isUpdatingTemplate,
+            `Mutating property ${toString(key)} of ${toString(
+                target
+            )} is not allowed when updating the template of ${vmBeingRendered}.`
         );
     }
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
@@ -51,10 +58,10 @@ export function notifyMutation(target: object, key: PropertyKey) {
 }
 
 export function observeMutation(target: object, key: PropertyKey) {
-    if (isNull(vmBeingRendered)) {
+    const vm = getVMBeingRendered();
+    if (isNull(vm)) {
         return; // nothing to subscribe to
     }
-    const vm = vmBeingRendered;
     let reactiveRecord = TargetToReactiveRecordMap.get(target);
     if (isUndefined(reactiveRecord)) {
         const newRecord = create(null);
@@ -77,4 +84,5 @@ export function observeMutation(target: object, key: PropertyKey) {
 
 import { scheduleRehydration } from './vm';
 import { markComponentAsDirty } from './component';
-import { vmBeingRendered, isRendering } from './invoker';
+import { isInvokingRender } from './invoker';
+import { isUpdatingTemplate, getVMBeingRendered } from './template';
