@@ -15,6 +15,7 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
+import { ENABLE_NODE_PATCH } from '@lwc/features';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -328,14 +329,22 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
-            if (isNodeShadowed(this) || isHostElement(this)) {
+            if (ENABLE_NODE_PATCH) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
+                    return textContentGetterPatched.call(this);
+                }
+                // TODO: issue #1222 - remove global bypass
+                if (isGlobalPatchingSkipped(this)) {
+                    return textContentGetter.call(this);
+                }
                 return textContentGetterPatched.call(this);
-            }
-            // TODO: issue #1222 - remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
+            } else {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return textContentGetterPatched.call(this);
+                }
+
                 return textContentGetter.call(this);
             }
-            return textContentGetterPatched.call(this);
         },
         set: textContentSetterPatched,
         enumerable: true,
