@@ -9,6 +9,7 @@ export type FeatureFlagLookup = { [name: string]: FeatureFlagValue };
 
 const featureFlagLookup: FeatureFlagLookup = {
     ENABLE_REACTIVE_SETTER: null,
+    ENABLE_ELEMENT_PATCH: null,
 };
 export default featureFlagLookup;
 

@@ -17,6 +17,7 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
+import { ENABLE_ELEMENT_PATCH } from '@lwc/features';
 import {
     attachShadow,
     getShadowRoot,
@@ -218,14 +219,22 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (isNodeShadowed(this) || isHostElement(this)) {
+            if (ENABLE_ELEMENT_PATCH) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
+                    return innerHTMLGetterPatched.call(this);
+                }
+                // TODO: issue #1222 - remove global bypass
+                if (isGlobalPatchingSkipped(this)) {
+                    return innerHTMLGetter.call(this);
+                }
                 return innerHTMLGetterPatched.call(this);
-            }
-            // TODO: issue #1222 - remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
+            } else {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return innerHTMLGetterPatched.call(this);
+                }
+
                 return innerHTMLGetter.call(this);
             }
-            return innerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             innerHTMLSetter.call(this, v);
@@ -235,14 +244,21 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (isNodeShadowed(this) || isHostElement(this)) {
+            if (ENABLE_ELEMENT_PATCH) {
+                if (isNodeShadowed(this) || isHostElement(this)) {
+                    return outerHTMLGetterPatched.call(this);
+                }
+                // TODO: issue #1222 - remove global bypass
+                if (isGlobalPatchingSkipped(this)) {
+                    return outerHTMLGetter.call(this);
+                }
                 return outerHTMLGetterPatched.call(this);
-            }
-            // TODO: issue #1222 - remove global bypass
-            if (isGlobalPatchingSkipped(this)) {
+            } else {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return outerHTMLGetterPatched.call(this);
+                }
                 return outerHTMLGetter.call(this);
             }
-            return outerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             outerHTMLSetter.call(this, v);
@@ -350,23 +366,32 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
-        return isUndefined(elm) ? null : elm;
+        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_PATCH) {
+            const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+            return isUndefined(elm) ? null : elm;
+        } else {
+            // `this` is a manually inserted element inside a shadowRoot
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
+        }
     } else {
-        // element belonging to the document
-        const elm = ArrayFind.call(
-            nodeList,
-            // TODO: issue #1222 - remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
-        );
-        return isUndefined(elm) ? null : elm;
+        // Note: document.body is already patched!
+        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
+            // element belonging to the document
+            const elm = ArrayFind.call(
+                nodeList,
+                // TODO: issue #1222 - remove global bypass
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+            );
+            return isUndefined(elm) ? null : elm;
+        } else {
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
+        }
     }
 }
 
-function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
-    const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
-    );
+function filterNodeListQueryResult(this: Element, nodeList): Element[] {
     let filtered: Element[];
     if (isHostElement(this)) {
         // element with shadowRoot attached
@@ -383,16 +408,72 @@ function querySelectorAllPatched(this: Element /*, selector: string*/): NodeList
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_PATCH) {
+            // The patch is enabled or `this` is an element rendered by lwc
+            filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        } else {
+            // `this` is a manually inserted element inside a shadowRoot
+            filtered = ArraySlice.call(nodeList);
+        }
     } else {
-        // element belonging to the document
-        filtered = ArrayFilter.call(
-            nodeList,
-            // TODO: issue #1222 - remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
-        );
+        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
+            // `this` is document.body or element belonging to the document with the patch enabled
+            filtered = ArrayFilter.call(
+                nodeList,
+                // TODO: issue #1222 - remove global bypass
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+            );
+        } else {
+            // `this` is outside the lwc boundary and patch is not enabled.
+            filtered = ArraySlice.call(nodeList);
+        }
     }
-    return createStaticNodeList(filtered);
+    return filtered;
+}
+
+function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
+    const nodeList = arrayFromCollection(
+        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+    );
+    const filteredResults = filterNodeListQueryResult.call(this, nodeList);
+
+    return createStaticNodeList(filteredResults);
+}
+
+function getElementsByTagNamePatched(
+    this: Element /*, tagName: string*/
+): HTMLCollectionOf<Element> {
+    const elements = arrayFromCollection(
+        elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
+    );
+
+    const filteredResults = filterNodeListQueryResult.call(this, elements);
+
+    return createStaticHTMLCollection(filteredResults);
+}
+
+function getElementsByClassNamePatched(
+    this: Element /*, className: string*/
+): HTMLCollectionOf<Element> {
+    const elements = arrayFromCollection(
+        elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
+    );
+
+    const filteredResults = filterNodeListQueryResult.call(this, elements);
+
+    return createStaticHTMLCollection(filteredResults);
+}
+
+function getElementsByTagNameNSPatched(
+    this: Element /*, tagName: string, NS: string*/
+): HTMLCollectionOf<Element> {
+    const elements = arrayFromCollection(
+        elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [string, string])
+    );
+
+    const filteredResults = filterNodeListQueryResult.call(this, elements);
+
+    return createStaticHTMLCollection(filteredResults);
 }
 
 // The following patched methods hide shadowed elements from global
@@ -418,55 +499,19 @@ defineProperties(Element.prototype, {
         configurable: true,
     },
     getElementsByClassName: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
-            );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
-                elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
+        value: getElementsByClassNamePatched,
         writable: true,
         enumerable: true,
         configurable: true,
     },
     getElementsByTagName: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-            );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
-                elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
+        value: getElementsByTagNamePatched,
         writable: true,
         enumerable: true,
         configurable: true,
     },
     getElementsByTagNameNS: {
-        value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            const elements = arrayFromCollection(
-                elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
-                    string,
-                    string
-                ])
-            );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
-                elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
-            );
-            return createStaticHTMLCollection(filtered);
-        },
+        value: getElementsByTagNameNSPatched,
         writable: true,
         enumerable: true,
         configurable: true,
