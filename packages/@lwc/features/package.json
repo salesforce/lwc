@@ -1,6 +1,5 @@
 {
     "name": "@lwc/features",
-    "private": true,
     "version": "1.1.0",
     "description": "LWC Features Flags",
     "main": "dist/flags.cjs.js",
@@ -13,9 +12,13 @@
         "build": "tsc --emitDeclarationOnly && rollup --config ./scripts/rollup/rollup.config.js"
     },
     "files": [
-        "dist/"
+        "dist/",
+        "types/"
     ],
     "devDependencies": {
         "@lwc/shared": "1.1.0"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
