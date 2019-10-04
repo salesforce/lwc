@@ -375,6 +375,7 @@ defineProperties(Node.prototype, {
             if (hasMountedChildren(this)) {
                 return childNodesGetterPatched.call(this);
             }
+
             return childNodesGetter.call(this);
         },
         enumerable: true,
