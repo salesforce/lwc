@@ -326,12 +326,9 @@ if (!process.env.NATIVE_SHADOW) {
             it('should preserve childNodes behavior', () => {
                 expect(elementOutsideLWC.childNodes.length).toBe(1);
 
-                if (process.env.COMPAT === true) {
-                    // IE11 in dev mode adds a comment inside the shadow for debug purposes.
-                    expect(rootLwcElement.childNodes.length).toBe(1);
-                    expect(lwcElementInsideShadow.childNodes.length).toBe(1);
-                    expect(slottedComponent.childNodes.length).toBe(2);
-                } else {
+                if (process.env.COMPAT !== true) {
+                    // Only IE11 in dev mode adds a comment inside the shadow for debug purposes.
+
                     expect(rootLwcElement.childNodes.length).toBe(0);
                     expect(lwcElementInsideShadow.childNodes.length).toBe(0);
                     expect(slottedComponent.childNodes.length).toBe(1);

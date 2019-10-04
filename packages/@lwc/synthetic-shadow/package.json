@@ -27,7 +27,7 @@
         "access": "public"
     },
     "devDependencies": {
-        "@lwc/shared": "1.1.0",
-        "@lwc/features": "1.1.0"
+        "@lwc/features": "1.1.0",
+        "@lwc/shared": "1.1.0"
     }
 }
