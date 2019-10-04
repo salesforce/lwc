@@ -1,4 +1,62 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.1...v) (2019-06-24)
+# [](https://github.com/salesforce/lwc/compare/v1.0.2...v) (2019-10-04)
+
+
+### Bug Fixes
+
+* account for clicks on form element labels when delegating focus ([#1430](https://github.com/salesforce/lwc/issues/1430)) ([d5e4be3](https://github.com/salesforce/lwc/commit/d5e4be3))
+* add debug mode to facade ([#1544](https://github.com/salesforce/lwc/issues/1544)) ([096e8c8](https://github.com/salesforce/lwc/commit/096e8c8))
+* add wire test to ensure we support named imports ([#1468](https://github.com/salesforce/lwc/issues/1468)) ([828aaca](https://github.com/salesforce/lwc/commit/828aaca))
+* address security vulnerability CVE-2019-10744 ([#1407](https://github.com/salesforce/lwc/issues/1407)) ([1fe64d8](https://github.com/salesforce/lwc/commit/1fe64d8))
+* cloneNode() default behavior should match spec ([#1480](https://github.com/salesforce/lwc/issues/1480)) ([9a7f822](https://github.com/salesforce/lwc/commit/9a7f822))
+* containsPatched when otherNode is null or undefined ([#1493](https://github.com/salesforce/lwc/issues/1493)) ([d9aefa7](https://github.com/salesforce/lwc/commit/d9aefa7))
+* convert nodelist to array before passing to native Array methods ([#1548](https://github.com/salesforce/lwc/issues/1548)) ([c3fd522](https://github.com/salesforce/lwc/commit/c3fd522))
+* error from disconnecting an already disconnected vm ([#1413](https://github.com/salesforce/lwc/issues/1413)) ([d61988d](https://github.com/salesforce/lwc/commit/d61988d))
+* escape hatch for async event target accessor ([#1510](https://github.com/salesforce/lwc/issues/1510)) ([1e55195](https://github.com/salesforce/lwc/commit/1e55195))
+* focus method invocation inside shadow should not skip shadow ([#1442](https://github.com/salesforce/lwc/issues/1442)) ([bc7f38a](https://github.com/salesforce/lwc/commit/bc7f38a))
+* issue with Node.textContent returning text in comment nodes ([#1461](https://github.com/salesforce/lwc/issues/1461)) ([3ad12e2](https://github.com/salesforce/lwc/commit/3ad12e2))
+* lwc module not resolving prod mode ([#1472](https://github.com/salesforce/lwc/issues/1472)) ([eeb6930](https://github.com/salesforce/lwc/commit/eeb6930))
+* missing shared dependency ([#1543](https://github.com/salesforce/lwc/issues/1543)) ([3a0a2b6](https://github.com/salesforce/lwc/commit/3a0a2b6))
+* move private package deps to dev deps ([#1531](https://github.com/salesforce/lwc/issues/1531)) ([6452906](https://github.com/salesforce/lwc/commit/6452906))
+* mutationobserver memory leak - use weakmap for bookkeeping ([#1423](https://github.com/salesforce/lwc/issues/1423)) ([165ad3b](https://github.com/salesforce/lwc/commit/165ad3b))
+* nested style fix ([#1378](https://github.com/salesforce/lwc/issues/1378)) ([1cdc92e](https://github.com/salesforce/lwc/commit/1cdc92e))
+* package internal dependencies ([#1541](https://github.com/salesforce/lwc/issues/1541)) ([5ad74d3](https://github.com/salesforce/lwc/commit/5ad74d3))
+* relax condition to retarget event ([#1527](https://github.com/salesforce/lwc/issues/1527)) ([c6cde9c](https://github.com/salesforce/lwc/commit/c6cde9c))
+* remove dead code ([#1503](https://github.com/salesforce/lwc/issues/1503)) ([044077f](https://github.com/salesforce/lwc/commit/044077f))
+* remove side effects assertion in non-decorated fields ([#1491](https://github.com/salesforce/lwc/issues/1491)) ([8646642](https://github.com/salesforce/lwc/commit/8646642))
+* rollup-plugin module resolve when rootDir is a relative pa… ([#1471](https://github.com/salesforce/lwc/issues/1471)) ([c8da2ee](https://github.com/salesforce/lwc/commit/c8da2ee))
+* **compiler:** prevent underscore attr name camelcasing ([#1385](https://github.com/salesforce/lwc/issues/1385)) ([49162fc](https://github.com/salesforce/lwc/commit/49162fc))
+* **engine:** [#1295](https://github.com/salesforce/lwc/issues/1295) - removing hack to support old metadata in tests ([#1436](https://github.com/salesforce/lwc/issues/1436)) ([a40d174](https://github.com/salesforce/lwc/commit/a40d174))
+* **engine:** issue [#858](https://github.com/salesforce/lwc/issues/858) to enable the ability to have setters reactive ([#1038](https://github.com/salesforce/lwc/issues/1038)) ([c270594](https://github.com/salesforce/lwc/commit/c270594))
+* **engine:** issue 1435 disconnect bug when switching templates ([#1443](https://github.com/salesforce/lwc/issues/1443)) ([b0c4512](https://github.com/salesforce/lwc/commit/b0c4512)), closes [#1435](https://github.com/salesforce/lwc/issues/1435) [#1448](https://github.com/salesforce/lwc/issues/1448) [#1435](https://github.com/salesforce/lwc/issues/1435)
+* **engine:** reactive setters behind a flag ([#1444](https://github.com/salesforce/lwc/issues/1444)) ([bdb8d98](https://github.com/salesforce/lwc/commit/bdb8d98))
+* **engine:** template inheritance is broken ([#1400](https://github.com/salesforce/lwc/issues/1400)) ([83d9881](https://github.com/salesforce/lwc/commit/83d9881))
+* **engine:** test was incorrect ([#1393](https://github.com/salesforce/lwc/issues/1393)) ([4960afe](https://github.com/salesforce/lwc/commit/4960afe))
+* **features:** flag name must match name of imported binding ([#1463](https://github.com/salesforce/lwc/issues/1463)) ([89ee65e](https://github.com/salesforce/lwc/commit/89ee65e))
+* **features:** remove nested feature flags limitation ([#1473](https://github.com/salesforce/lwc/issues/1473)) ([b4ac97c](https://github.com/salesforce/lwc/commit/b4ac97c))
+* wrap iframe contentWindow only for iframe elements that are keyed ([#1514](https://github.com/salesforce/lwc/issues/1514)) ([12df751](https://github.com/salesforce/lwc/commit/12df751))
+* **rollup-plugin:** plugin now correctly resolves relative ts imports ([#1516](https://github.com/salesforce/lwc/issues/1516)) ([d6423f9](https://github.com/salesforce/lwc/commit/d6423f9))
+* **synthetic:** consider ancestors when determining click-focusability ([#1383](https://github.com/salesforce/lwc/issues/1383)) ([5d4dc4d](https://github.com/salesforce/lwc/commit/5d4dc4d)), closes [#1382](https://github.com/salesforce/lwc/issues/1382)
+
+
+### Features
+
+* add N paths to generate packages ([#1411](https://github.com/salesforce/lwc/issues/1411)) ([41e53e1](https://github.com/salesforce/lwc/commit/41e53e1))
+* add volta support ([#1451](https://github.com/salesforce/lwc/issues/1451)) ([5b21e3c](https://github.com/salesforce/lwc/commit/5b21e3c))
+* add wire config as function ([#1455](https://github.com/salesforce/lwc/issues/1455)) ([81a6e48](https://github.com/salesforce/lwc/commit/81a6e48))
+* allow MemberExpression on wire adapters ([#1402](https://github.com/salesforce/lwc/issues/1402)) ([7ee68f0](https://github.com/salesforce/lwc/commit/7ee68f0))
+* dynamic imports (experimental flag) ([#1397](https://github.com/salesforce/lwc/issues/1397)) ([969d124](https://github.com/salesforce/lwc/commit/969d124))
+* hide gus urls ([#1446](https://github.com/salesforce/lwc/issues/1446)) ([850bd12](https://github.com/salesforce/lwc/commit/850bd12))
+* move to best v4 ([#1432](https://github.com/salesforce/lwc/issues/1432)) ([63b28cb](https://github.com/salesforce/lwc/commit/63b28cb))
+* refactor module resolution ([#1414](https://github.com/salesforce/lwc/issues/1414)) ([ce73c8e](https://github.com/salesforce/lwc/commit/ce73c8e))
+* **engine:** feature flags ([#1425](https://github.com/salesforce/lwc/issues/1425)) ([a0a0862](https://github.com/salesforce/lwc/commit/a0a0862))
+* **engine:** testable feature flags for jest tests ([#1456](https://github.com/salesforce/lwc/issues/1456)) ([d955b51](https://github.com/salesforce/lwc/commit/d955b51))
+* track decorator reform ([#1428](https://github.com/salesforce/lwc/issues/1428)) ([2dcaa8c](https://github.com/salesforce/lwc/commit/2dcaa8c)), closes [salesforce/lwc-rfcs#4](https://github.com/salesforce/lwc-rfcs/issues/4)
+* **integration-karma:** feature flag support ([#1482](https://github.com/salesforce/lwc/issues/1482)) ([e69cee2](https://github.com/salesforce/lwc/commit/e69cee2))
+* **template-compiler:** binding ast parser ([#1498](https://github.com/salesforce/lwc/issues/1498)) ([1d77e5e](https://github.com/salesforce/lwc/commit/1d77e5e))
+
+
+
+## [1.0.2](https://github.com/salesforce/lwc/compare/v1.0.1...v1.0.2) (2019-06-24)
 
 
 ### Bug Fixes
