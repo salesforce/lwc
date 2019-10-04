@@ -17,7 +17,11 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import { ENABLE_ELEMENT_PATCH } from '@lwc/features';
+import {
+    ENABLE_ELEMENT_PATCH,
+    ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
+    ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
+} from '@lwc/features';
 import {
     attachShadow,
     getShadowRoot,
@@ -65,6 +69,8 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
+
+const DISABLE_ELEMENT_PATCH = !ENABLE_ELEMENT_PATCH;
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
@@ -219,22 +225,22 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
-                    return innerHTMLGetterPatched.call(this);
-                }
-                // TODO: issue #1222 - remove global bypass
-                if (isGlobalPatchingSkipped(this)) {
-                    return innerHTMLGetter.call(this);
-                }
-                return innerHTMLGetterPatched.call(this);
-            } else {
+            if (DISABLE_ELEMENT_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
 
                 return innerHTMLGetter.call(this);
             }
+
+            if (isNodeShadowed(this) || isHostElement(this)) {
+                return innerHTMLGetterPatched.call(this);
+            }
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return innerHTMLGetter.call(this);
+            }
+            return innerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             innerHTMLSetter.call(this, v);
@@ -244,21 +250,21 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (ENABLE_ELEMENT_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
-                    return outerHTMLGetterPatched.call(this);
-                }
-                // TODO: issue #1222 - remove global bypass
-                if (isGlobalPatchingSkipped(this)) {
-                    return outerHTMLGetter.call(this);
-                }
-                return outerHTMLGetterPatched.call(this);
-            } else {
+            if (DISABLE_ELEMENT_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
                 return outerHTMLGetter.call(this);
             }
+
+            if (isNodeShadowed(this) || isHostElement(this)) {
+                return outerHTMLGetterPatched.call(this);
+            }
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return outerHTMLGetter.call(this);
+            }
+            return outerHTMLGetterPatched.call(this);
         },
         set(v: string) {
             outerHTMLSetter.call(this, v);
@@ -366,7 +372,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_PATCH) {
+        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
             const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
@@ -376,7 +382,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         }
     } else {
         // Note: document.body is already patched!
-        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
+        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
             // element belonging to the document
             const elm = ArrayFind.call(
                 nodeList,
@@ -391,7 +397,11 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     }
 }
 
-function getFilteredNodeListQueryResult(context: Element, nodeList): Element[] {
+function getFilteredNodeListQueryResult(
+    context: Element,
+    nodeList,
+    isShadowSemanticEnforced: boolean
+): Element[] {
     let filtered: Element[];
     if (isHostElement(context)) {
         // element with shadowRoot attached
@@ -408,7 +418,7 @@ function getFilteredNodeListQueryResult(context: Element, nodeList): Element[] {
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_PATCH) {
+        if (!isUndefined(ownerKey) || isShadowSemanticEnforced) {
             // The patch is enabled or `context` is an element rendered by lwc
             filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
         } else {
@@ -416,7 +426,7 @@ function getFilteredNodeListQueryResult(context: Element, nodeList): Element[] {
             filtered = ArraySlice.call(nodeList);
         }
     } else {
-        if (context instanceof HTMLBodyElement || ENABLE_ELEMENT_PATCH) {
+        if (context instanceof HTMLBodyElement || isShadowSemanticEnforced) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 nodeList,
@@ -452,7 +462,11 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-            const filteredResults = getFilteredNodeListQueryResult(this, nodeList);
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
+                nodeList,
+                ENABLE_ELEMENT_QUERY_SELECTORS_PATCH
+            );
 
             return createStaticNodeList(filteredResults);
         },
@@ -466,7 +480,11 @@ defineProperties(Element.prototype, {
                 elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
+                elements,
+                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+            );
 
             return createStaticHTMLCollection(filteredResults);
         },
@@ -480,7 +498,11 @@ defineProperties(Element.prototype, {
                 elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
+                elements,
+                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+            );
 
             return createStaticHTMLCollection(filteredResults);
         },
@@ -497,7 +519,11 @@ defineProperties(Element.prototype, {
                 ])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(this, elements);
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
+                elements,
+                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+            );
 
             return createStaticHTMLCollection(filteredResults);
         },

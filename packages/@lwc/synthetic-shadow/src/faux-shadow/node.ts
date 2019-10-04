@@ -44,6 +44,8 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
+const DISABLE_NODE_PATCH = !ENABLE_NODE_PATCH;
+
 // DO NOT CHANGE this:
 // these two values need to be in sync with engine
 const OwnerKey = '$$OwnerKey$$';
@@ -329,22 +331,22 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
-            if (ENABLE_NODE_PATCH) {
-                if (isNodeShadowed(this) || isHostElement(this)) {
-                    return textContentGetterPatched.call(this);
-                }
-                // TODO: issue #1222 - remove global bypass
-                if (isGlobalPatchingSkipped(this)) {
-                    return textContentGetter.call(this);
-                }
-                return textContentGetterPatched.call(this);
-            } else {
+            if (DISABLE_NODE_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return textContentGetterPatched.call(this);
                 }
 
                 return textContentGetter.call(this);
             }
+
+            if (isNodeShadowed(this) || isHostElement(this)) {
+                return textContentGetterPatched.call(this);
+            }
+            // TODO: issue #1222 - remove global bypass
+            if (isGlobalPatchingSkipped(this)) {
+                return textContentGetter.call(this);
+            }
+            return textContentGetterPatched.call(this);
         },
         set: textContentSetterPatched,
         enumerable: true,
