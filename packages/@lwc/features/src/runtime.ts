@@ -21,12 +21,13 @@ function setFeatureFlag(name: string, value: FeatureFlagValue) {
             throw new TypeError(message);
         }
     }
-    if (isUndefined(features[name])) {
+    if (!isUndefined(features[name])) {
+        runtimeFlags[name] = value;
+    } else {
         console.warn(
             `LWC feature flag "${name}" is undefined. Possible reasons are that 1) it was misspelled or 2) it was removed from the @lwc/features package.`
         );
     }
-    runtimeFlags[name] = value;
 }
 
 // This function is added to the LWC API whitelist (for testing purposes) so we
