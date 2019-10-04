@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ENABLE_REACTIVE_SETTER } from '@lwc/features';
+import features from '@lwc/features';
 import { assert, isFalse, isFunction, isObject, isTrue, isUndefined, toString } from '@lwc/shared';
 import { logError } from '../../shared/assert';
 import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
@@ -182,7 +182,7 @@ function createPublicAccessorDescriptor(
                 );
             }
             if (set) {
-                if (ENABLE_REACTIVE_SETTER) {
+                if (features.ENABLE_REACTIVE_SETTER) {
                     let ro = vm.oar[key as any] as AccessorReactiveObserver;
                     if (isUndefined(ro)) {
                         ro = vm.oar[key as any] = new AccessorReactiveObserver(vm, set);
