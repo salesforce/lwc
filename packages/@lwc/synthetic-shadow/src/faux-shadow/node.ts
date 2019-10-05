@@ -15,7 +15,7 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
-import { ENABLE_NODE_PATCH } from '@lwc/features';
+import featureFlags from '@lwc/features';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -44,7 +44,7 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
-const DISABLE_NODE_PATCH = !ENABLE_NODE_PATCH;
+const { DISABLE_NODE_PATCH } = getInitializedFeatureFlags();
 
 // DO NOT CHANGE this:
 // these two values need to be in sync with engine
@@ -52,6 +52,18 @@ const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
+
+function getInitializedFeatureFlags() {
+    let DISABLE_NODE_PATCH;
+
+    if (featureFlags.ENABLE_NODE_PATCH) {
+        DISABLE_NODE_PATCH = false;
+    } else {
+        DISABLE_NODE_PATCH = true;
+    }
+
+    return { DISABLE_NODE_PATCH };
+}
 
 export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];

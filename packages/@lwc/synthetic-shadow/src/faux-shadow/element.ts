@@ -17,11 +17,7 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import {
-    ENABLE_ELEMENT_PATCH,
-    ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
-    ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
-} from '@lwc/features';
+import featureFlags from '@lwc/features';
 import {
     attachShadow,
     getShadowRoot,
@@ -70,7 +66,41 @@ import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
 
-const DISABLE_ELEMENT_PATCH = !ENABLE_ELEMENT_PATCH;
+const {
+    DISABLE_ELEMENT_PATCH,
+    ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
+    ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
+} = getInitializedFeatureFlags();
+
+function getInitializedFeatureFlags() {
+    let DISABLE_ELEMENT_PATCH;
+    let ENABLE_ELEMENT_QUERY_SELECTORS_PATCH;
+    let ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH;
+
+    if (featureFlags.ENABLE_ELEMENT_PATCH) {
+        DISABLE_ELEMENT_PATCH = false;
+    } else {
+        DISABLE_ELEMENT_PATCH = true;
+    }
+
+    if (featureFlags.ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
+        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH = true;
+    } else {
+        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH = false;
+    }
+
+    if (featureFlags.ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH) {
+        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH = true;
+    } else {
+        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH = false;
+    }
+
+    return {
+        DISABLE_ELEMENT_PATCH,
+        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
+        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
+    };
+}
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
