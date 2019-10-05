@@ -9,6 +9,8 @@ const path = require('path');
 const rollupTypescript = require('rollup-plugin-typescript');
 const rollupCleanup = require('rollup-plugin-cleanup');
 const rollupNodeResolve = require('rollup-plugin-node-resolve');
+const babel = require('@babel/core');
+const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { version } = require('../../package.json');
 
 const entry = path.resolve(__dirname, '../../src/index.ts');
@@ -21,6 +23,17 @@ function wrapModule() {
     return {
         renderChunk(code) {
             return `${banner}\nexport default function enableSyntheticShadow() {\n${code}\n}`;
+        },
+    };
+}
+
+function rollupFeaturesPlugin() {
+    return {
+        name: 'rollup-plugin-lwc-features',
+        transform(source) {
+            return babel.transform(source, {
+                plugins: [babelFeaturesPlugin],
+            }).code;
         },
     };
 }
@@ -40,6 +53,7 @@ function rollupConfig({ wrap } = {}) {
             rollupNodeResolve({ only: [/^@lwc\//] }),
             rollupTypescript({ target: 'es2017', typescript }),
             rollupCleanup({ comments: 'none', extensions: ['js', 'ts'], sourcemap: false }),
+            rollupFeaturesPlugin(),
         ].filter(Boolean),
     };
 }
