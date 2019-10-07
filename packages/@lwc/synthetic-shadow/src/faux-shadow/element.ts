@@ -68,14 +68,14 @@ import { assignedSlotGetterPatched } from './slot';
 
 const {
     DISABLE_ELEMENT_PATCH,
-    ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
-    ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
+    ENABLE_NODE_LIST_PATCH,
+    ENABLE_HTML_COLLECTIONS_PATCH,
 } = getInitializedFeatureFlags();
 
 function getInitializedFeatureFlags() {
     let DISABLE_ELEMENT_PATCH;
-    let ENABLE_ELEMENT_QUERY_SELECTORS_PATCH;
-    let ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH;
+    let ENABLE_NODE_LIST_PATCH;
+    let ENABLE_HTML_COLLECTIONS_PATCH;
 
     if (featureFlags.ENABLE_ELEMENT_PATCH) {
         DISABLE_ELEMENT_PATCH = false;
@@ -83,22 +83,22 @@ function getInitializedFeatureFlags() {
         DISABLE_ELEMENT_PATCH = true;
     }
 
-    if (featureFlags.ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
-        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH = true;
+    if (featureFlags.ENABLE_NODE_LIST_PATCH) {
+        ENABLE_NODE_LIST_PATCH = true;
     } else {
-        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH = false;
+        ENABLE_NODE_LIST_PATCH = false;
     }
 
-    if (featureFlags.ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH) {
-        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH = true;
+    if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+        ENABLE_HTML_COLLECTIONS_PATCH = true;
     } else {
-        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH = false;
+        ENABLE_HTML_COLLECTIONS_PATCH = false;
     }
 
     return {
         DISABLE_ELEMENT_PATCH,
-        ENABLE_ELEMENT_QUERY_SELECTORS_PATCH,
-        ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH,
+        ENABLE_NODE_LIST_PATCH,
+        ENABLE_HTML_COLLECTIONS_PATCH,
     };
 }
 
@@ -402,7 +402,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        if (!isUndefined(ownerKey) || ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
+        if (!isUndefined(ownerKey) || ENABLE_NODE_LIST_PATCH) {
             const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
@@ -412,7 +412,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         }
     } else {
         // Note: document.body is already patched!
-        if (this instanceof HTMLBodyElement || ENABLE_ELEMENT_QUERY_SELECTORS_PATCH) {
+        if (this instanceof HTMLBodyElement || ENABLE_NODE_LIST_PATCH) {
             // element belonging to the document
             const elm = ArrayFind.call(
                 nodeList,
@@ -495,7 +495,7 @@ defineProperties(Element.prototype, {
             const filteredResults = getFilteredNodeListQueryResult(
                 this,
                 nodeList,
-                ENABLE_ELEMENT_QUERY_SELECTORS_PATCH
+                ENABLE_NODE_LIST_PATCH
             );
 
             return createStaticNodeList(filteredResults);
@@ -513,7 +513,7 @@ defineProperties(Element.prototype, {
             const filteredResults = getFilteredNodeListQueryResult(
                 this,
                 elements,
-                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
 
             return createStaticHTMLCollection(filteredResults);
@@ -531,7 +531,7 @@ defineProperties(Element.prototype, {
             const filteredResults = getFilteredNodeListQueryResult(
                 this,
                 elements,
-                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
 
             return createStaticHTMLCollection(filteredResults);
@@ -552,7 +552,7 @@ defineProperties(Element.prototype, {
             const filteredResults = getFilteredNodeListQueryResult(
                 this,
                 elements,
-                ENABLE_ELEMENT_GET_ELEMENTS_BY_PATCH
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
 
             return createStaticHTMLCollection(filteredResults);
