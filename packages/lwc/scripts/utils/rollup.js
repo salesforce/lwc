@@ -10,7 +10,20 @@ const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const rollupReplace = require('rollup-plugin-replace');
 const { terser: rollupTerser } = require('rollup-plugin-terser');
+const babel = require('@babel/core');
+const babelFeaturesPlugin = require('@lwc/features/src/babel-plugin');
 const { generateTargetName } = require('./helpers');
+
+function rollupFeaturesPlugin(prod) {
+    return {
+        name: 'rollup-plugin-lwc-features',
+        transform(source) {
+            return babel.transform(source, {
+                plugins: [[babelFeaturesPlugin, { prod }]],
+            }).code;
+        },
+    };
+}
 
 function rollupConfig(config) {
     const { input, format, name, prod, target, targetDirectory, dir, debug = false } = config;
@@ -20,6 +33,7 @@ function rollupConfig(config) {
             input,
             plugins: [
                 prod && rollupReplace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
+                rollupFeaturesPlugin(prod),
                 compatMode && rollupTypescriptPlugin({ target, typescript, include: ['/**/*.js'] }),
                 prod && !debug && rollupTerser(),
             ],
