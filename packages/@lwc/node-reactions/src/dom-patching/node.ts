@@ -23,9 +23,6 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                // Performance optimization: Only check if the node being added is a registered node.
-                // We made this decision because appendChild is on the critical path and cannot
-                // subject every node to the expensive check that isQualifyingElement() performs
                 if (!isQualifyingHost(aChild)) {
                     // invoke with apply to preserve native behavior of missing arguments, invalid types etc
                     return appendChild.call(this, aChild);

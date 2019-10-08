@@ -12,11 +12,14 @@ describe('patches', () => {
         it('should be detected as connection', () => {
             const elm = document.createElement('div');
             let connected = false;
-            reactWhenConnected(elm, function() {
+            let actualReactionType;
+            reactWhenConnected(elm, function(reactionType) {
                 connected = true;
+                actualReactionType = reactionType;
             });
             document.body.appendChild(elm);
             expect(connected).toBe(true);
+            expect(actualReactionType).toBe(1);
         });
     });
 
@@ -24,11 +27,14 @@ describe('patches', () => {
         it('should be detected as connection', () => {
             const elm = document.createElement('div');
             let connected = false;
-            reactWhenConnected(elm, function() {
+            let actualReactionType;
+            reactWhenConnected(elm, function(reactionType) {
                 connected = true;
+                actualReactionType = reactionType;
             });
             document.body.insertBefore(elm, null);
             expect(connected).toBe(true);
+            expect(actualReactionType).toBe(1);
         });
     });
 
@@ -37,12 +43,15 @@ describe('patches', () => {
             const anchor = document.createElement('a');
             const elm = document.createElement('div');
             let connected = false;
-            reactWhenConnected(elm, function() {
+            let actualReactionType;
+            reactWhenConnected(elm, function(reactionType) {
                 connected = true;
+                actualReactionType = reactionType;
             });
             document.body.appendChild(anchor);
             document.body.replaceChild(elm, anchor);
             expect(connected).toBe(true);
+            expect(actualReactionType).toBe(1);
         });
     });
 
@@ -50,12 +59,15 @@ describe('patches', () => {
         it('should be detected as disconnection', () => {
             const elm = document.createElement('div');
             let disconnected = false;
-            reactWhenDisconnected(elm, function() {
+            let actualReactionType;
+            reactWhenDisconnected(elm, function(reactionType) {
                 disconnected = true;
+                actualReactionType = reactionType;
             });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
             expect(disconnected).toBe(true);
+            expect(actualReactionType).toBe(2);
         });
     });
 });

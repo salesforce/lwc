@@ -50,7 +50,7 @@ export function buildCustomElementConstructor(
             }
         }
         connectedCallback() {
-            const vm = getCustomElementVM(this as HTMLElement);
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
                     vm.state === VMState.created || vm.state === VMState.disconnected,
@@ -60,7 +60,7 @@ export function buildCustomElementConstructor(
             appendVM(vm);
         }
         disconnectedCallback() {
-            const vm = getCustomElementVM(this as HTMLElement);
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
             }

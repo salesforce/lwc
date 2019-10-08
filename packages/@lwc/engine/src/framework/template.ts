@@ -107,7 +107,7 @@ function resetTemplate(vm: VM) {
         if (!isNull(vnode)) {
             const { elm } = vnode;
             // the vnode must have elm defined, and must be connected
-            cmpRoot.removeChild(elm as Node);
+            cmpRoot.removeChild(elm!);
         }
     }
     vm.children = EmptyArray;

@@ -26,6 +26,27 @@ interface CreateElementOptions {
     mode?: ShadowDomMode;
 }
 
+function connectedHook(this: HTMLElement) {
+    const vm = getCustomElementVM(this);
+    startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(
+            vm.state === VMState.created || vm.state === VMState.disconnected,
+            `${vm} should be new or disconnected.`
+        );
+    }
+    appendVM(vm);
+    endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
+}
+
+function disconnectedHook(this: HTMLElement) {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+    }
+    removeVM(vm);
+}
+
 /**
  * EXPERIMENTAL: This function is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -79,24 +100,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
     // Handle insertion and removal from the DOM manually
-    reactWhenConnected(element, function(this: HTMLElement) {
-        const vm = getCustomElementVM(this);
-        startGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(
-                vm.state === VMState.created || vm.state === VMState.disconnected,
-                `${vm} should be new or disconnected.`
-            );
-        }
-        appendVM(vm);
-        endGlobalMeasure(GlobalMeasurementPhase.HYDRATE, vm);
-    });
-    reactWhenDisconnected(element, function(this: HTMLElement) {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
-        }
-        removeVM(vm);
-    });
+    reactWhenConnected(element, connectedHook);
+    reactWhenDisconnected(element, disconnectedHook);
     return element;
 }
