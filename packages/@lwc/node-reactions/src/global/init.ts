@@ -28,7 +28,7 @@ initialize();
 /**
  * Set an internal field to detect initialization
  */
-export function initialize() {
+function initialize() {
     let init = (DocumentConstructor as any)[InitializationSlot];
     if (isUndefined(init)) {
         patchDomApi();

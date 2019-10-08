@@ -61,10 +61,9 @@ export function isRegisteredNode(node: Node): boolean {
  * 2. The root, has to have children or is a registered element
  *  2a. Assumption here is that all custom elements are registered
  */
-export function isQualifyingElement(elmOrDocFrag: Node): boolean {
+export function isQualifyingElement(elmOrDocFrag: Node | undefined | null): boolean {
     return (
         elmOrDocFrag != null &&
-        // TODO: Can we substitute with an instanceof check?
         // duck-typing to detect if node is an element or a document fragment, instead of the expensive instanceOf
         'childElementCount' in elmOrDocFrag &&
         ((elmOrDocFrag as Element | DocumentFragment).childElementCount > 0 ||
@@ -72,6 +71,6 @@ export function isQualifyingElement(elmOrDocFrag: Node): boolean {
     );
 }
 
-export function isQualifyingHost(node: Node): boolean {
+export function isQualifyingHost(node: Node | undefined | null): boolean {
     return node != null && isRegisteredNode(node);
 }

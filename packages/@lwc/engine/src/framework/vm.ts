@@ -147,7 +147,7 @@ function reset(vm: VM) {
     const { state } = vm;
     if (state !== VMState.disconnected) {
         const { oar, tro } = vm;
-        // Making sure that any observing record will not trigger the rehydrated on this vm
+        // Making sure that any observing record will not trigger the rehydration on this vm
         tro.reset();
         // Making sure that any observing accessor record will not trigger the setter to be reinvoked
         for (const key in oar) {
@@ -155,8 +155,8 @@ function reset(vm: VM) {
         }
     }
     if (isFalse(vm.isDirty)) {
-        // this guarantees that if the component is reused/reinserted,
-        // it will be re-rendered because we are disconnecting the reactivity
+        // this guarantees that if the component is reused/reinserted, it will be re-rendered.
+        // it should be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
         // of disconnected components.
         vm.isDirty = true;

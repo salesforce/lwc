@@ -34,6 +34,7 @@ function compileTemplate(source, config = {}) {
 function stripNodeReactionsMarker(str) {
     return str.replace(/ data-node-reactions(="")*/gm, '');
 }
+
 module.exports = {
     compileTemplate,
     stripNodeReactionsMarker,

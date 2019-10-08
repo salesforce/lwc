@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, fields, isArray, isTrue, isUndefined } from '@lwc/shared';
+import { assert, isArray, isTrue, isUndefined } from '@lwc/shared';
 import { reactWhenConnected, reactWhenDisconnected } from '@lwc/node-reactions';
 import { EmptyArray, EmptyObject, useSyntheticShadow } from './utils';
 import {
@@ -167,6 +167,26 @@ export function allocateChildrenHook(vnode: VCustomElement) {
     }
 }
 
+function customElementConnectedHook(this: HTMLElement) {
+    const vm = getAssociatedVM(this);
+    if (process.env.NODE_ENV !== 'production') {
+        // Either the vm was just created or the node is being moved to another subtree
+        assert.isTrue(
+            vm.state === VMState.created || vm.state === VMState.disconnected,
+            `${vm} cannot be connected.`
+        );
+    }
+    appendVM(vm);
+}
+
+function customElementDisconnectedHook(this: HTMLElement) {
+    const vm = getAssociatedVM(this);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
+    }
+    removeVM(vm);
+}
+
 export function createViewModelHook(vnode: VCustomElement) {
     const elm = vnode.elm as HTMLElement;
     if (!isUndefined(getAssociatedVMIfPresent(elm))) {
@@ -188,24 +208,8 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    reactWhenConnected(elm, function(this: HTMLElement) {
-        const vm = getAssociatedVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            // Either the vm was just created or the node is being moved to another subtree
-            assert.isTrue(
-                vm.state === VMState.created || vm.state === VMState.disconnected,
-                `${vm} cannot be connected.`
-            );
-        }
-        appendVM(vm);
-    });
-    reactWhenDisconnected(elm, function(this: HTMLElement) {
-        const vm = getAssociatedVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vm.state === VMState.connected, `${vm} should be connected.`);
-        }
-        removeVM(vm);
-    });
+    reactWhenConnected(elm, customElementConnectedHook);
+    reactWhenDisconnected(elm, customElementDisconnectedHook);
     if (process.env.NODE_ENV !== 'production') {
         const vm = getAssociatedVM(elm);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);

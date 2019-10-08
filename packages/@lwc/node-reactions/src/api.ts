@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, assert } from '@lwc/shared';
+import { isFunction, isUndefined, assert } from '@lwc/shared';
 import { ReactionCallback } from './types';
 import { reactWhenConnected, reactWhenDisconnected } from './global/init';
 
@@ -16,8 +16,9 @@ import { reactWhenConnected, reactWhenDisconnected } from './global/init';
 function reactWhenConnectedRedirect(elm: Element, callback: ReactionCallback) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(elm), 'Missing required node param');
-        assert.invariant(!isUndefined(callback), 'Missing callback');
+        // Eventually when the library can handle all types of Nodes, then this assetion will go away
         assert.invariant(elm instanceof Element, 'Expected to only register Elements');
+        assert.invariant(isFunction(callback), 'Expected a callback function');
     }
 
     reactWhenConnected(elm, callback);
@@ -26,8 +27,9 @@ function reactWhenConnectedRedirect(elm: Element, callback: ReactionCallback) {
 function reactWhenDisconnectedRedirect(elm: Element, callback: ReactionCallback) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isUndefined(elm), 'Missing required node param');
-        assert.invariant(!isUndefined(callback), 'Missing callback');
+        // Eventually when the library can handle all types of Nodes, then this assetion will go away
         assert.invariant(elm instanceof Element, 'Expected to only register Elements');
+        assert.invariant(isFunction(callback), 'Expected a callback function');
     }
 
     reactWhenDisconnected(elm, callback);
