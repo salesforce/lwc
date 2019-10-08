@@ -106,7 +106,7 @@ const FeatureFlagVisitor = {
 function validate(memberExpressionPath) {
     const name = memberExpressionPath.node.property.name;
     const value = this.featureFlags[name];
-    if (!/[A-Z_]+/.test(name)) {
+    if (!/^[A-Z_]+$/.test(name)) {
         throw new Error(
             `Invalid feature flag "${name}". Flag name must only be composed of uppercase letters and underscores.`
         );

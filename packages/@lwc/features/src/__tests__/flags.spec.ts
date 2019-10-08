@@ -148,13 +148,40 @@ const nonProdTests = {
             }
         `,
     },
+    'should throw an error if the flag is undefined': {
+        error: 'Invalid feature flag "ENABLE_THE_BEER". Flag is undefined.',
+        code: `
+            import featureFlags from '@lwc/features';
+            if (featureFlags.ENABLE_THE_BEER) {
+                console.log('featureFlags.ENABLE_THE_BEER');
+            }
+        `,
+    },
+    'should throw an error if the flag name is formatted incorrectly': {
+        error:
+            'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
+        code: `
+            import featureFlags from '@lwc/features';
+            if (featureFlags.enable_the_beer) {
+                console.log('featureFlags.enable_the_beer');
+            }
+        `,
+    },
+    'should throw an error if the test is not a member expression': {
+        error: `Member expressions or unary negations of member expressions are the only supported ways to use feature flags.`,
+        code: `
+            import featureFlags from '@lwc/features';
+            if (featureFlags.ENABLE_FEATURE_TRUE === true) {
+                console.log('featureFlags.ENABLE_FEATURE_TRUE === true');
+            }
+        `,
+    },
 };
 
 const featureFlags = {
     ENABLE_FEATURE_TRUE: true,
     ENABLE_FEATURE_FALSE: false,
     ENABLE_FEATURE_NULL: null,
-    invalidFeatureFlag: true, // invalid because it's not all uppercase
 };
 
 const babelOptions = {
@@ -169,7 +196,19 @@ pluginTester({
         featureFlags,
     },
     babelOptions,
-    tests: nonProdTests,
+    tests: {
+        ...nonProdTests,
+        'should throw an error if runtime flags are manually introduced': {
+            error:
+                'Runtime flags should never be used directly and should only be added by the compiler.',
+            code: `
+                import { runtimeFlags } from '@lwc/features';
+                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+            `,
+        },
+    },
 });
 
 // These tests override corresponding tests in nonProdTests since the plugin has
@@ -283,7 +322,9 @@ pluginTester({
         prod: true,
     },
     babelOptions,
-    tests: Object.assign({}, nonProdTests, nonProdTestOverrides, {
+    tests: {
+        ...nonProdTests,
+        ...nonProdTestOverrides,
         'should transform both boolean and null feature flags': {
             code: `
                 import features from '@lwc/features';
@@ -347,5 +388,5 @@ pluginTester({
                 }
             `,
         },
-    }),
+    },
 });
