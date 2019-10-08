@@ -15,6 +15,7 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
+import featureFlags from '@lwc/features';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -43,12 +44,26 @@ import { getShadowRoot, isHostElement, getIE11FakeShadowRootPlaceholder } from '
 import { createStaticNodeList } from '../shared/static-node-list';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
+const { DISABLE_NODE_PATCH } = getInitializedFeatureFlags();
+
 // DO NOT CHANGE this:
 // these two values need to be in sync with engine
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
 export const hasNativeSymbolsSupport = Symbol('x').toString() === 'Symbol(x)';
+
+function getInitializedFeatureFlags() {
+    let DISABLE_NODE_PATCH;
+
+    if (featureFlags.ENABLE_NODE_PATCH) {
+        DISABLE_NODE_PATCH = false;
+    } else {
+        DISABLE_NODE_PATCH = true;
+    }
+
+    return { DISABLE_NODE_PATCH };
+}
 
 export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
@@ -304,7 +319,7 @@ function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
-// do not five access to nodes beyond the immediate children.
+// do not give access to nodes beyond the immediate children.
 defineProperties(Node.prototype, {
     firstChild: {
         get(this: Node): ChildNode | null {
@@ -328,6 +343,14 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
+            if (DISABLE_NODE_PATCH) {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return textContentGetterPatched.call(this);
+                }
+
+                return textContentGetter.call(this);
+            }
+
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return textContentGetterPatched.call(this);
             }
@@ -366,6 +389,7 @@ defineProperties(Node.prototype, {
             if (hasMountedChildren(this)) {
                 return childNodesGetterPatched.call(this);
             }
+
             return childNodesGetter.call(this);
         },
         enumerable: true,
@@ -398,7 +422,7 @@ defineProperties(Node.prototype, {
         value(this: Node, otherNode: Node): boolean {
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
-                contains.call(otherNode, otherNode);
+                return contains.call(this, otherNode);
             }
             return containsPatched.call(this, otherNode);
         },

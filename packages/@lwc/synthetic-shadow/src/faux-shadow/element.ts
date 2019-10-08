@@ -17,6 +17,7 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
+import featureFlags from '@lwc/features';
 import {
     attachShadow,
     getShadowRoot,
@@ -64,6 +65,42 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
+
+const {
+    DISABLE_ELEMENT_PATCH,
+    ENABLE_NODE_LIST_PATCH,
+    ENABLE_HTML_COLLECTIONS_PATCH,
+} = getInitializedFeatureFlags();
+
+function getInitializedFeatureFlags() {
+    let DISABLE_ELEMENT_PATCH;
+    let ENABLE_NODE_LIST_PATCH;
+    let ENABLE_HTML_COLLECTIONS_PATCH;
+
+    if (featureFlags.ENABLE_ELEMENT_PATCH) {
+        DISABLE_ELEMENT_PATCH = false;
+    } else {
+        DISABLE_ELEMENT_PATCH = true;
+    }
+
+    if (featureFlags.ENABLE_NODE_LIST_PATCH) {
+        ENABLE_NODE_LIST_PATCH = true;
+    } else {
+        ENABLE_NODE_LIST_PATCH = false;
+    }
+
+    if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+        ENABLE_HTML_COLLECTIONS_PATCH = true;
+    } else {
+        ENABLE_HTML_COLLECTIONS_PATCH = false;
+    }
+
+    return {
+        DISABLE_ELEMENT_PATCH,
+        ENABLE_NODE_LIST_PATCH,
+        ENABLE_HTML_COLLECTIONS_PATCH,
+    };
+}
 
 // when finding a slot in the DOM, we can fold it if it is contained
 // inside another slot.
@@ -218,6 +255,14 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
+            if (DISABLE_ELEMENT_PATCH) {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return innerHTMLGetterPatched.call(this);
+                }
+
+                return innerHTMLGetter.call(this);
+            }
+
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return innerHTMLGetterPatched.call(this);
             }
@@ -235,6 +280,13 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
+            if (DISABLE_ELEMENT_PATCH) {
+                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
+                    return outerHTMLGetterPatched.call(this);
+                }
+                return outerHTMLGetter.call(this);
+            }
+
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return outerHTMLGetterPatched.call(this);
             }
@@ -350,49 +402,73 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
-        return isUndefined(elm) ? null : elm;
+        if (!isUndefined(ownerKey) || ENABLE_NODE_LIST_PATCH) {
+            const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+            return isUndefined(elm) ? null : elm;
+        } else {
+            // `this` is a manually inserted element inside a shadowRoot
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
+        }
     } else {
-        // element belonging to the document
-        const elm = ArrayFind.call(
-            nodeList,
-            // TODO: issue #1222 - remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
-        );
-        return isUndefined(elm) ? null : elm;
+        // Note: document.body is already patched!
+        if (this instanceof HTMLBodyElement || ENABLE_NODE_LIST_PATCH) {
+            // element belonging to the document
+            const elm = ArrayFind.call(
+                nodeList,
+                // TODO: issue #1222 - remove global bypass
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+            );
+            return isUndefined(elm) ? null : elm;
+        } else {
+            const elm = nodeList[0];
+            return isUndefined(elm) ? null : elm;
+        }
     }
 }
 
-function querySelectorAllPatched(this: Element /*, selector: string*/): NodeListOf<Element> {
-    const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
-    );
+function getFilteredNodeListQueryResult(
+    context: Element,
+    nodeList,
+    isShadowSemanticEnforced: boolean
+): Element[] {
     let filtered: Element[];
-    if (isHostElement(this)) {
+    if (isHostElement(context)) {
         // element with shadowRoot attached
-        const owner = getNodeOwner(this);
+        const owner = getNodeOwner(context);
         if (isNull(owner)) {
             filtered = [];
-        } else if (getNodeKey(this)) {
+        } else if (getNodeKey(context)) {
             // it is a custom element, and we should then filter by slotted elements
-            filtered = getAllSlottedMatches(this, nodeList);
+            filtered = getAllSlottedMatches(context, nodeList);
         } else {
             // regular element, we should then filter by ownership
             filtered = getAllMatches(owner, nodeList);
         }
-    } else if (isNodeShadowed(this)) {
+    } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
-        const ownerKey = getNodeOwnerKey(this);
-        filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        const ownerKey = getNodeOwnerKey(context);
+        if (!isUndefined(ownerKey) || isShadowSemanticEnforced) {
+            // The patch is enabled or `context` is an element rendered by lwc
+            filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        } else {
+            // `context` is a manually inserted element inside a shadowRoot
+            filtered = ArraySlice.call(nodeList);
+        }
     } else {
-        // element belonging to the document
-        filtered = ArrayFilter.call(
-            nodeList,
-            // TODO: issue #1222 - remove global bypass
-            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
-        );
+        if (context instanceof HTMLBodyElement || isShadowSemanticEnforced) {
+            // `context` is document.body or element belonging to the document with the patch enabled
+            filtered = ArrayFilter.call(
+                nodeList,
+                // TODO: issue #1222 - remove global bypass
+                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+            );
+        } else {
+            // `context` is outside the lwc boundary and patch is not enabled.
+            filtered = ArraySlice.call(nodeList);
+        }
     }
-    return createStaticNodeList(filtered);
+    return filtered;
 }
 
 // The following patched methods hide shadowed elements from global
@@ -412,7 +488,18 @@ defineProperties(Element.prototype, {
         configurable: true,
     },
     querySelectorAll: {
-        value: querySelectorAllPatched,
+        value(this: HTMLBodyElement): NodeListOf<Element> {
+            const nodeList = arrayFromCollection(
+                elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
+            );
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
+                nodeList,
+                ENABLE_NODE_LIST_PATCH
+            );
+
+            return createStaticNodeList(filteredResults);
+        },
         writable: true,
         enumerable: true,
         configurable: true,
@@ -422,13 +509,14 @@ defineProperties(Element.prototype, {
             const elements = arrayFromCollection(
                 elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
             );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
                 elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
-            return createStaticHTMLCollection(filtered);
+
+            return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
         enumerable: true,
@@ -439,13 +527,14 @@ defineProperties(Element.prototype, {
             const elements = arrayFromCollection(
                 elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
             );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
                 elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
-            return createStaticHTMLCollection(filtered);
+
+            return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
         enumerable: true,
@@ -459,13 +548,14 @@ defineProperties(Element.prototype, {
                     string
                 ])
             );
-            const ownerKey = getNodeOwnerKey(this);
-            const filtered = ArrayFilter.call(
+
+            const filteredResults = getFilteredNodeListQueryResult(
+                this,
                 elements,
-                // TODO: issue #1222 - remove global bypass
-                elm => getNodeOwnerKey(elm) === ownerKey || isGlobalPatchingSkipped(this)
+                ENABLE_HTML_COLLECTIONS_PATCH
             );
-            return createStaticHTMLCollection(filtered);
+
+            return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
         enumerable: true,
