@@ -74,6 +74,28 @@ const nonProdTests = {
             }
         `,
     },
+    'should not transform tests that are not a member expression or not a negated member expression (compile time)': {
+        code: `
+            import FEATURES from '@lwc/features';
+            if (FEATURES.ENABLE_FEATURE_NULL === null) {
+                console.log('ENABLE_FEATURE_NULL === null');
+            }
+            if (isTrue(FEATURES.ENABLE_FEATURE_TRUE)) {
+                console.log('isTrue(ENABLE_FEATURE_TRUE)');
+            }
+        `,
+        output: `
+            import FEATURES, { runtimeFlags } from '@lwc/features';
+
+            if (FEATURES.ENABLE_FEATURE_NULL === null) {
+              console.log('ENABLE_FEATURE_NULL === null');
+            }
+
+            if (isTrue(FEATURES.ENABLE_FEATURE_TRUE)) {
+              console.log('isTrue(ENABLE_FEATURE_TRUE)');
+            }
+        `,
+    },
     'should not transform tests that are not an actual reference to the imported binding': {
         code: `
             import featureFlag from '@lwc/features';
@@ -164,15 +186,6 @@ const nonProdTests = {
             import featureFlags from '@lwc/features';
             if (featureFlags.enable_the_beer) {
                 console.log('featureFlags.enable_the_beer');
-            }
-        `,
-    },
-    'should throw an error if the test is not a member expression': {
-        error: `Member expressions or unary negations of member expressions are the only supported ways to use feature flags.`,
-        code: `
-            import featureFlags from '@lwc/features';
-            if (featureFlags.ENABLE_FEATURE_TRUE === true) {
-                console.log('featureFlags.ENABLE_FEATURE_TRUE === true');
             }
         `,
     },
@@ -370,6 +383,28 @@ pluginTester({
 
                 if (runtimeFlags.ENABLE_FEATURE_NULL) {
                   console.log('runtimeFlags.ENABLE_FEATURE_NULL');
+                }
+            `,
+        },
+        'should not transform tests that are not a member expression or not a negated member expression (runtime)': {
+            code: `
+                import { runtimeFlags } from '@lwc/features';
+                if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
+                }
+                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
+                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
+                }
+            `,
+            output: `
+                import { runtimeFlags } from '@lwc/features';
+
+                if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
+                  console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
+                }
+
+                if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
+                  console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
             `,
         },

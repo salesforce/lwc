@@ -8,6 +8,27 @@ const defaultFeatureFlags = require('../../').default;
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
+function validate(memberExpressionPath, { featureFlags, opts }) {
+    const name = memberExpressionPath.node.property.name;
+    const value = featureFlags[name];
+    if (!/^[A-Z_]+$/.test(name)) {
+        throw new Error(
+            `Invalid feature flag "${name}". Flag name must only be composed of uppercase letters and underscores.`
+        );
+    }
+    if (value === undefined) {
+        throw new Error(`Invalid feature flag "${name}". Flag is undefined.`);
+    }
+
+    const objectPath = memberExpressionPath.get('object');
+    const isRuntimeLookup = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
+    if (isRuntimeLookup && !opts.prod) {
+        throw new Error(
+            `Runtime flags should never be used directly and should only be added by the compiler.`
+        );
+    }
+}
+
 function isBindingReference(path, scope) {
     const binding = scope && scope.getBinding(path.node.name);
     return !!(binding && binding.referencePaths.includes(path));
@@ -52,84 +73,61 @@ module.exports = function({ types: t }) {
                 }
             },
             IfStatement(path) {
-                path.traverse(FeatureFlagVisitor, this);
+                let testPath = path.get('test');
+
+                const isUnaryNegation = testPath.isUnaryExpression({ operator: '!' });
+                if (isUnaryNegation) {
+                    testPath = testPath.get('argument');
+                }
+
+                if (!testPath.isMemberExpression()) {
+                    return;
+                }
+
+                const objectPath = testPath.get('object');
+                const propertyPath = testPath.get('property');
+                const isRuntimeFlag = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
+
+                let isCompileTimeFlag = false;
+                if (this.defaultImportPath) {
+                    isCompileTimeFlag = objectPath.isIdentifier({
+                        name: this.defaultImportPath.node.local.name,
+                    });
+                }
+
+                // If the member expression is not a feature flag lookup
+                if (!isRuntimeFlag && !isCompileTimeFlag) {
+                    return;
+                }
+                // If the member expression object is not binding reference to the feature flag object
+                if (!isBindingReference(objectPath, this.importDeclarationPath.scope)) {
+                    return;
+                }
+
+                validate(testPath, this);
+
+                const name = propertyPath.node.name;
+                let value = this.featureFlags[name];
+
+                if (!this.opts.prod || value === null) {
+                    testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
+                    return;
+                }
+
+                if (this.opts.prod) {
+                    if (isUnaryNegation) {
+                        value = !value;
+                    }
+                    if (value === true) {
+                        // Transform the IfStatement into a BlockStatement
+                        path.replaceWith(path.node.consequent);
+                    }
+                    if (value === false) {
+                        // Remove IfStatement
+                        path.remove();
+                    }
+                }
             },
         },
     };
 };
-
-const FeatureFlagVisitor = {
-    MemberExpression(path) {
-        const objectPath = path.get('object');
-        const propertyPath = path.get('property');
-        const isCompileTimeLookup =
-            this.defaultImportPath &&
-            objectPath.isIdentifier({ name: this.defaultImportPath.node.local.name });
-        const isRuntimeLookup = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
-        const importDeclarationScope =
-            this.importDeclarationPath && this.importDeclarationPath.scope;
-        if (
-            (isCompileTimeLookup || isRuntimeLookup) &&
-            propertyPath.isIdentifier() &&
-            isBindingReference(objectPath, importDeclarationScope)
-        ) {
-            validate.call(this, path);
-
-            const isUnaryNegation = path.parentPath.isUnaryExpression({ operator: '!' });
-            const ifStatementPath = isUnaryNegation ? path.parentPath.parentPath : path.parentPath;
-
-            const name = propertyPath.node.name;
-            let value = this.featureFlags[name];
-
-            if (!this.opts.prod || value === null) {
-                path.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
-                return;
-            }
-
-            if (this.opts.prod) {
-                if (isUnaryNegation) {
-                    value = !value;
-                }
-                if (value === true) {
-                    // Transform the IfStatement into a BlockStatement
-                    ifStatementPath.replaceWith(ifStatementPath.node.consequent);
-                }
-                if (value === false) {
-                    // Remove IfStatement
-                    ifStatementPath.remove();
-                }
-            }
-        }
-    },
-};
-
-function validate(memberExpressionPath) {
-    const name = memberExpressionPath.node.property.name;
-    const value = this.featureFlags[name];
-    if (!/^[A-Z_]+$/.test(name)) {
-        throw new Error(
-            `Invalid feature flag "${name}". Flag name must only be composed of uppercase letters and underscores.`
-        );
-    }
-    if (value === undefined) {
-        throw new Error(`Invalid feature flag "${name}". Flag is undefined.`);
-    }
-
-    let parentPath = memberExpressionPath.parentPath;
-    if (parentPath.isUnaryExpression({ operator: '!' })) {
-        parentPath = parentPath.parentPath;
-    }
-    if (!parentPath.isIfStatement()) {
-        throw new Error(
-            `Member expressions or unary negations of member expressions are the only supported ways to use feature flags.`
-        );
-    }
-
-    const objectPath = memberExpressionPath.get('object');
-    const isRuntimeLookup = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
-    if (isRuntimeLookup && !this.opts.prod) {
-        throw new Error(
-            `Runtime flags should never be used directly and should only be added by the compiler.`
-        );
-    }
-}
