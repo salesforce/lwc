@@ -420,6 +420,15 @@ defineProperties(Node.prototype, {
     },
     contains: {
         value(this: Node, otherNode: Node): boolean {
+            if (DISABLE_NODE_PATCH) {
+                const ownerKey = getNodeOwnerKey(this);
+                if (!isUndefined(ownerKey) || isHostElement(this)) {
+                    return containsPatched.call(this, otherNode);
+                }
+
+                return contains.call(this, otherNode);
+            }
+
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return contains.call(this, otherNode);
@@ -432,6 +441,15 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
+            if (DISABLE_NODE_PATCH) {
+                const ownerKey = getNodeOwnerKey(this);
+                if (!isUndefined(ownerKey) || isHostElement(this)) {
+                    return cloneNodePatched.call(this, deep);
+                }
+
+                return cloneNode.call(this, deep);
+            }
+
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return cloneNodePatched.call(this, deep);
             }
