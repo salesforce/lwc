@@ -53,7 +53,7 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
-import { getNonPatchedFilteredCollectionResult } from './no-patch-utils';
+import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
 const { DISABLE_ELEMENT_PATCH, ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
 
@@ -304,12 +304,12 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     }
 }
 
-function getFilteredNodeListQueryResult(
+function getFilteredArrayOfNodes<T extends Node>(
     context: Element,
-    nodeList,
+    unfilteredNodes: T[],
     isShadowSemanticEnforced: boolean
-): Element[] {
-    let filtered: Element[];
+): T[] {
+    let filtered: T[];
     if (isHostElement(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
@@ -317,32 +317,32 @@ function getFilteredNodeListQueryResult(
             filtered = [];
         } else if (getNodeKey(context)) {
             // it is a custom element, and we should then filter by slotted elements
-            filtered = getAllSlottedMatches(context, nodeList);
+            filtered = getAllSlottedMatches(context, unfilteredNodes);
         } else {
             // regular element, we should then filter by ownership
-            filtered = getAllMatches(owner, nodeList);
+            filtered = getAllMatches(owner, unfilteredNodes);
         }
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
         if (!isUndefined(ownerKey) || isShadowSemanticEnforced) {
             // The patch is enabled or `context` is an element rendered by lwc
-            filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+            filtered = ArrayFilter.call(unfilteredNodes, elm => getNodeOwnerKey(elm) === ownerKey);
         } else {
             // `context` is a manually inserted element inside a shadowRoot
-            filtered = ArraySlice.call(nodeList);
+            filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {
         if (context instanceof HTMLBodyElement || isShadowSemanticEnforced) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
-                nodeList,
+                unfilteredNodes,
                 // TODO: issue #1222 - remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.
-            filtered = ArraySlice.call(nodeList);
+            filtered = ArraySlice.call(unfilteredNodes);
         }
     }
     return filtered;
@@ -369,11 +369,13 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-            const filteredResults = getFilteredNodeListQueryResult(
-                this,
-                nodeList,
-                ENABLE_NODE_LIST_PATCH
-            );
+            let filteredResults;
+
+            if (featureFlags.ENABLE_NODE_LIST_PATCH) {
+                filteredResults = getFilteredArrayOfNodes(this, nodeList, true);
+            } else {
+                filteredResults = getFilteredArrayOfNodes(this, nodeList, false);
+            }
 
             return createStaticNodeList(filteredResults);
         },
@@ -389,9 +391,9 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredNodeListQueryResult(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(this, elements, true);
             } else {
-                filteredResults = getNonPatchedFilteredCollectionResult(this, elements);
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
             return createStaticHTMLCollection(filteredResults);
@@ -408,9 +410,9 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredNodeListQueryResult(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(this, elements, true);
             } else {
-                filteredResults = getNonPatchedFilteredCollectionResult(this, elements);
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
             return createStaticHTMLCollection(filteredResults);
@@ -430,9 +432,9 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredNodeListQueryResult(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(this, elements, true);
             } else {
-                filteredResults = getNonPatchedFilteredCollectionResult(this, elements);
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
             return createStaticHTMLCollection(filteredResults);

@@ -150,10 +150,10 @@ export function shadowRootChildNodes(root: SyntheticShadowRootInterface): Array<
     return getAllMatches(elm, arrayFromCollection(childNodesGetter.call(elm)));
 }
 
-export function getAllSlottedMatches(
+export function getAllSlottedMatches<T extends Node>(
     host: Element,
     nodeList: NodeList | Node[]
-): Array<Node & Element> {
+): Array<T> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -174,7 +174,7 @@ export function getFirstSlottedMatch(host: Element, nodeList: Element[]): Elemen
     return null;
 }
 
-export function getAllMatches(owner: Element, nodeList: Node[]): Array<Element & Node> {
+export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]): Array<T> {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
