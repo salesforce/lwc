@@ -486,10 +486,6 @@ export function isNodeFromTemplate(node: Node): boolean {
     return root instanceof ShadowRoot;
 }
 
-export function hasAttachedVM(elm: HTMLElement): boolean {
-    return !isUndefined(getHiddenField(elm, ViewModelReflection));
-}
-
 // slow path routine
 // NOTE: we should probably more this routine to the synthetic shadow folder
 // and get the allocation to be cached by in the elm instead of in the VM
