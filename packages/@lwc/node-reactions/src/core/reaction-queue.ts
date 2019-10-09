@@ -16,6 +16,6 @@ export function queueReactionRecord(
 
 export function flushQueue(reactionQueue: ReactionRecord[]) {
     forEach.call(reactionQueue, (entry: ReactionRecord) =>
-        entry.callback.call(entry.element, entry.type)
+        entry.callback.call(undefined, entry.element, entry.type)
     );
 }

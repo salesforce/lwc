@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, forEach, isUndefined } from '@lwc/shared';
+import { assert, isUndefined } from '@lwc/shared';
 import { ReactionRecord, QualifyingReactionTypes } from '../types';
 import {
     getConnectedRecordsForElement,
@@ -58,15 +58,17 @@ function queueReactionsForShadowRoot(
  * Process nodes in a NodeList of marked elements
  */
 function queueReactionsForNodeList(
-    nodeList: NodeList,
+    nodeList: NodeListOf<Element>,
     reactionTypes: QualifyingReactionTypes,
     reactionQueue: ReactionRecord[]
 ) {
-    forEach.call(nodeList, node => {
-        queueReactionsForSingleElement(node, reactionTypes, reactionQueue);
+    const length = nodeList.length;
+    for (let i = 0; i < length; i++) {
+        const element = nodeList[i];
+        queueReactionsForSingleElement(element, reactionTypes, reactionQueue);
         // If node has a shadow tree, process its shadow tree
-        queueReactionsForShadowRoot((node as Element).shadowRoot!, reactionTypes, reactionQueue);
-    });
+        queueReactionsForShadowRoot(element.shadowRoot!, reactionTypes, reactionQueue);
+    }
 }
 
 /**
@@ -74,7 +76,7 @@ function queueReactionsForNodeList(
  */
 export default function queueReactionsForSubtree(
     rootElm: Element | DocumentFragment,
-    nodeList: NodeList,
+    nodeList: NodeListOf<Element>,
     reactionTypes: QualifyingReactionTypes,
     reactionQueue: ReactionRecord[]
 ) {
