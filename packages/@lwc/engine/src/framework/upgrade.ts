@@ -17,6 +17,7 @@ import {
 import { getComponentDef, setElementProto } from './def';
 import { patchCustomElementWithRestrictions } from './restrictions';
 import { GlobalMeasurementPhase, startGlobalMeasure, endGlobalMeasure } from './performance-timing';
+import { attemptToRegisterTagName, isTagNameRegistered } from './local-registry';
 
 const { getHiddenField } = fields;
 type ShadowDomMode = 'open' | 'closed';
@@ -77,6 +78,7 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
 
     const mode = options.mode !== 'closed' ? 'open' : 'closed';
+    attemptToRegisterTagName(sel);
 
     // Create element with correct tagName
     const element = document.createElement(sel);
@@ -99,8 +101,10 @@ export function createElement(sel: string, options: CreateElementOptions): HTMLE
     }
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(element, Ctor, { mode, isRoot: true, owner: null });
-    // Handle insertion and removal from the DOM manually
-    reactWhenConnected(element, connectedHook);
-    reactWhenDisconnected(element, disconnectedHook);
+    // Handle insertion and removal from the DOM manually when needed
+    if (!isTagNameRegistered(sel)) {
+        reactWhenConnected(element, connectedHook);
+        reactWhenDisconnected(element, disconnectedHook);
+    }
     return element;
 }

@@ -34,6 +34,7 @@ import {
     lockDomMutation,
 } from './restrictions';
 import { getComponentDef, setElementProto } from './def';
+import { isTagNameRegistered } from './local-registry';
 
 const noop = () => void 0;
 const { getHiddenField } = fields;
@@ -209,8 +210,11 @@ export function createViewModelHook(vnode: VCustomElement) {
         mode,
         owner,
     });
-    reactWhenConnected(elm, customElementConnectedHook);
-    reactWhenDisconnected(elm, customElementDisconnectedHook);
+    // Handle insertion and removal from the DOM manually when needed
+    if (!isTagNameRegistered(vnode.sel)) {
+        reactWhenConnected(elm, customElementConnectedHook);
+        reactWhenDisconnected(elm, customElementDisconnectedHook);
+    }
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(elm);
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
