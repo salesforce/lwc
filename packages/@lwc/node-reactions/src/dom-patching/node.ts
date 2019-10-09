@@ -24,7 +24,6 @@ export default function() {
             configurable: true,
             value: function(this: Node, aChild: Node) {
                 if (!isQualifyingHost(aChild)) {
-                    // invoke with apply to preserve native behavior of missing arguments, invalid types etc
                     return appendChild.call(this, aChild);
                 }
 
@@ -110,7 +109,7 @@ export default function() {
 
                 // Process oldChild
                 let qualifiedReactionTypesForOldChild: QualifyingReactionTypes = 0;
-                let qualifyingOldChildren: undefined | NodeList;
+                let qualifyingOldChildren: undefined | NodeListOf<Element>;
                 // Is the parent node whose subtree is being modified, a connected node?
                 const parentIsConnected = isConnectedGetter.call(this);
                 if (oldChildIsQualified && parentIsConnected) {
@@ -123,7 +122,7 @@ export default function() {
                 // Process newChild
                 let qualifiedReactionTypesForNewChild: QualifyingReactionTypes = 0;
                 // pre fetch the new child's subtree(works for both Element and DocFrag)
-                let qualifyingNewChildren: undefined | NodeList;
+                let qualifyingNewChildren: undefined | NodeListOf<Element>;
                 if (newChildIsQualified) {
                     // If newChild was connected, call disconnectedCallback
                     if (isConnectedGetter.call(newChild)) {
@@ -147,7 +146,7 @@ export default function() {
                 if (qualifiedReactionTypesForOldChild & 2) {
                     queueReactionsForSubtree(
                         oldChild as Element,
-                        qualifyingOldChildren!,
+                        qualifyingOldChildren as NodeListOf<Element>,
                         qualifiedReactionTypesForOldChild,
                         reactionQueue
                     );
@@ -155,7 +154,7 @@ export default function() {
                 if (qualifiedReactionTypesForNewChild > 0) {
                     queueReactionsForSubtree(
                         newChild as Element | DocumentFragment,
-                        qualifyingNewChildren!,
+                        qualifyingNewChildren as NodeListOf<Element>,
                         qualifiedReactionTypesForNewChild,
                         reactionQueue
                     );

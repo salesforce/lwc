@@ -13,7 +13,7 @@ describe('patches', () => {
             const elm = document.createElement('div');
             let connected = false;
             let actualReactionType;
-            reactWhenConnected(elm, function(reactionType) {
+            reactWhenConnected(elm, function(element, reactionType) {
                 connected = true;
                 actualReactionType = reactionType;
             });
@@ -28,7 +28,7 @@ describe('patches', () => {
             const elm = document.createElement('div');
             let connected = false;
             let actualReactionType;
-            reactWhenConnected(elm, function(reactionType) {
+            reactWhenConnected(elm, function(element, reactionType) {
                 connected = true;
                 actualReactionType = reactionType;
             });
@@ -44,7 +44,7 @@ describe('patches', () => {
             const elm = document.createElement('div');
             let connected = false;
             let actualReactionType;
-            reactWhenConnected(elm, function(reactionType) {
+            reactWhenConnected(elm, function(element, reactionType) {
                 connected = true;
                 actualReactionType = reactionType;
             });
@@ -60,7 +60,7 @@ describe('patches', () => {
             const elm = document.createElement('div');
             let disconnected = false;
             let actualReactionType;
-            reactWhenDisconnected(elm, function(reactionType) {
+            reactWhenDisconnected(elm, function(element, reactionType) {
                 disconnected = true;
                 actualReactionType = reactionType;
             });
