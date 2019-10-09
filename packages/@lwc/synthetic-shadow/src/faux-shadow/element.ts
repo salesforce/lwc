@@ -57,6 +57,11 @@ import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
 const { DISABLE_ELEMENT_PATCH, ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
 
+enum ShadowDomSemantic {
+    Disabled = 0,
+    Enabled,
+}
+
 function getInitializedFeatureFlags() {
     let DISABLE_ELEMENT_PATCH;
     let ENABLE_NODE_LIST_PATCH;
@@ -307,7 +312,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
 function getFilteredArrayOfNodes<T extends Node>(
     context: Element,
     unfilteredNodes: T[],
-    isShadowSemanticEnforced: boolean
+    shadowDomSemantic: ShadowDomSemantic
 ): T[] {
     let filtered: T[];
     if (isHostElement(context)) {
@@ -325,7 +330,7 @@ function getFilteredArrayOfNodes<T extends Node>(
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey) || isShadowSemanticEnforced) {
+        if (!isUndefined(ownerKey) || shadowDomSemantic === ShadowDomSemantic.Enabled) {
             // The patch is enabled or `context` is an element rendered by lwc
             filtered = ArrayFilter.call(unfilteredNodes, elm => getNodeOwnerKey(elm) === ownerKey);
         } else {
@@ -333,7 +338,7 @@ function getFilteredArrayOfNodes<T extends Node>(
             filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {
-        if (context instanceof HTMLBodyElement || isShadowSemanticEnforced) {
+        if (context instanceof HTMLBodyElement || shadowDomSemantic === ShadowDomSemantic.Enabled) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
                 unfilteredNodes,
@@ -372,9 +377,17 @@ defineProperties(Element.prototype, {
             let filteredResults;
 
             if (featureFlags.ENABLE_NODE_LIST_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(this, nodeList, true);
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    nodeList,
+                    ShadowDomSemantic.Enabled
+                );
             } else {
-                filteredResults = getFilteredArrayOfNodes(this, nodeList, false);
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    nodeList,
+                    ShadowDomSemantic.Disabled
+                );
             }
 
             return createStaticNodeList(filteredResults);
@@ -391,7 +404,11 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
             } else {
                 filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
@@ -410,7 +427,11 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
             } else {
                 filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
@@ -432,7 +453,11 @@ defineProperties(Element.prototype, {
             );
 
             if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(this, elements, true);
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
             } else {
                 filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }

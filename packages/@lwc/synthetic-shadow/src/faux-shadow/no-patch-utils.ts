@@ -17,8 +17,9 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
     let filtered: T[];
 
     const ownerKey = getNodeOwnerKey(context);
+
+    // a node inside a shadow.
     if (!isUndefined(ownerKey)) {
-        // a node inside a shadow.
         if (isHostElement(context)) {
             // element with shadowRoot attached
             const owner = getNodeOwner(context);
