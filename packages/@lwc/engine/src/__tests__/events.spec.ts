@@ -182,8 +182,8 @@ describe('events', () => {
             divWithClickHandler.addEventListener('click', function(event) {
                 target = event.target;
             });
-            document.body.appendChild(divWithClickHandler);
             divWithClickHandler.appendChild(elm);
+            document.body.appendChild(divWithClickHandler);
 
             const div = elm.shadowRoot.querySelector('div');
             div.click();
