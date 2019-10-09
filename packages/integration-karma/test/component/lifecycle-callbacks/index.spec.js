@@ -198,7 +198,7 @@ if (process.env.NATIVE_SHADOW) {
         ]);
     });
 }
-xit('should call parent and children lifecycle hooks in correct order when parent reconnected', () => {
+it('should call parent and children lifecycle hooks in correct order when parent reconnected', () => {
     const elm = createElement('x-parent', { is: Parent });
 
     document.body.appendChild(elm);
@@ -206,13 +206,12 @@ xit('should call parent and children lifecycle hooks in correct order when paren
 
     resetTimingBuffer();
     document.body.appendChild(elm);
+    // child:renderedCallback is not invoked because the elements are reused by the diffing algo
     expect(window.timingBuffer).toEqual([
         'parent:connectedCallback',
-        'child:connectedCallback',
-        'child:renderedCallback',
-        'child:connectedCallback',
-        'child:renderedCallback',
         'parent:renderedCallback',
+        'child:connectedCallback',
+        'child:connectedCallback',
     ]);
 });
 
@@ -230,21 +229,34 @@ describe('should invoke the component lifecycle hooks in the right order for a s
             'child:disconnectedCallback',
         ]);
     });
-    // TODO: In native shadow mode, accepting-slot:renderedCallback is invoked before child:constructor
-    xit('appending parent to the DOM', () => {
+    it('appending parent to the DOM', () => {
         const elm = createElement('x-slotted-parent', { is: SlottedParent });
         resetTimingBuffer();
         document.body.appendChild(elm);
-
-        expect(window.timingBuffer).toEqual([
-            'slotted-parent:connectedCallback',
-            'accepting-slot:constructor',
-            'accepting-slot:connectedCallback',
-            'child:constructor',
-            'child:connectedCallback',
-            'child:renderedCallback',
-            'accepting-slot:renderedCallback',
-            'slotted-parent:renderedCallback',
-        ]);
+        if (process.env.NATIVE_SHADOW) {
+            expect(window.timingBuffer).toEqual([
+                // In native shadow mode, accepting-slot:renderedCallback is invoked before child:constructor
+                'slotted-parent:connectedCallback',
+                'accepting-slot:constructor',
+                'accepting-slot:connectedCallback',
+                'accepting-slot:renderedCallback',
+                'child:constructor',
+                'child:connectedCallback',
+                'child:renderedCallback',
+                'slotted-parent:renderedCallback',
+            ]);
+        } else {
+            // The difference in behavior is due to the way we handle slotted content in synthetic-shadow mode
+            expect(window.timingBuffer).toEqual([
+                'slotted-parent:connectedCallback',
+                'accepting-slot:constructor',
+                'accepting-slot:connectedCallback',
+                'child:constructor',
+                'child:connectedCallback',
+                'child:renderedCallback',
+                'accepting-slot:renderedCallback',
+                'slotted-parent:renderedCallback',
+            ]);
+        }
     });
 });
