@@ -23,7 +23,7 @@ export default function() {
             enumerable: true,
             configurable: true,
             value: function(this: Node, aChild: Node) {
-                if (!isQualifyingHost(aChild)) {
+                if (!isQualifyingElement(aChild)) {
                     return appendChild.call(this, aChild);
                 }
 
