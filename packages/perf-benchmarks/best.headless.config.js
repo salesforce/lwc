@@ -34,7 +34,7 @@ module.exports = {
                 },
                 spec: {
                     browser: 'chrome',
-                    version: '76',
+                    version: '77',
                 },
             },
         },
