@@ -16,10 +16,10 @@
         "types/"
     ],
     "dependencies": {
+        "@lwc/features": "1.1.0",
         "observable-membrane": "0.26.1"
     },
     "devDependencies": {
-        "@lwc/features": "1.1.0",
         "@lwc/shared": "1.1.0",
         "@lwc/template-compiler": "1.1.0"
     },
