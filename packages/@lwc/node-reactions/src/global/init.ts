@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, isUndefined } from '@lwc/shared';
+import { defineProperty, isUndefined, isFalse } from '@lwc/shared';
 import { ReactionCallback } from '../types';
 import patchNodePrototype from '../dom-patching/node';
 import { reactWhenConnected, reactWhenDisconnected } from '../core/reactions';
@@ -24,7 +24,10 @@ const InitializationSlot = '$$node-reactions-initialized$$';
 let reactWhenConnectedCached: (elm: Element, callback: ReactionCallback) => void;
 let reactWhenDisconnectedCached: (elm: Element, callback: ReactionCallback) => void;
 
-initialize();
+export const isCustomElementsRegistryAvailable = typeof customElements !== 'undefined';
+if (isFalse(isCustomElementsRegistryAvailable)) {
+    initialize();
+}
 /**
  * Set an internal field to detect initialization
  */
