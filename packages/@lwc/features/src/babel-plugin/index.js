@@ -8,9 +8,7 @@ const defaultFeatureFlags = require('../../').default;
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
 
-function validate(memberExpressionPath, { featureFlags, opts }) {
-    const name = memberExpressionPath.node.property.name;
-    const value = featureFlags[name];
+function validate(name, value) {
     if (!/^[A-Z_]+$/.test(name)) {
         throw new Error(
             `Invalid feature flag "${name}". Flag name must only be composed of uppercase letters and underscores.`
@@ -18,14 +16,6 @@ function validate(memberExpressionPath, { featureFlags, opts }) {
     }
     if (value === undefined) {
         throw new Error(`Invalid feature flag "${name}". Flag is undefined.`);
-    }
-
-    const objectPath = memberExpressionPath.get('object');
-    const isRuntimeLookup = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
-    if (isRuntimeLookup && !opts.prod) {
-        throw new Error(
-            `Runtime flags should never be used directly and should only be added by the compiler.`
-        );
     }
 }
 
@@ -46,30 +36,28 @@ module.exports = function({ types: t }) {
             ImportDeclaration(path) {
                 if (path.node.source.value === '@lwc/features') {
                     this.importDeclarationPath = path;
-                }
-            },
-            ImportDefaultSpecifier(path) {
-                // If this is the default specifier for the @lwc/features import declaration
-                if (path.parentPath === this.importDeclarationPath) {
-                    this.defaultImportPath = path;
-                    const specifiers = this.importDeclarationPath.node.specifiers;
-                    const didImportRuntimeFlags = specifiers
-                        // Filter out the default import specifier
-                        .filter(specifier => specifier !== path.node)
-                        // Check if we've already imported runtime flags
-                        .some(specifier => {
-                            return specifier.imported.name === RUNTIME_FLAGS_IDENTIFIER;
-                        });
+                    const specifiers = path.node.specifiers;
+
+                    // Check if we've already imported runtime flags
+                    const didImportRuntimeFlags = specifiers.some(specifier => {
+                        return specifier.local && specifier.local.name === RUNTIME_FLAGS_IDENTIFIER;
+                    });
                     if (!didImportRuntimeFlags) {
-                        // Blindly import a binding for `runtimeFlags`. Tree-shaking
-                        // will simply remove it if unused.
-                        this.importDeclarationPath.node.specifiers.push(
+                        // Blindly import a binding for `runtimeFlags` if we haven't
+                        // already. Tree-shaking will simply remove it if unused.
+                        specifiers.push(
                             t.importSpecifier(
                                 t.identifier(RUNTIME_FLAGS_IDENTIFIER),
                                 t.identifier(RUNTIME_FLAGS_IDENTIFIER)
                             )
                         );
                     }
+                }
+            },
+            ImportDefaultSpecifier(path) {
+                // If this is the default specifier for the @lwc/features import declaration
+                if (path.parentPath === this.importDeclarationPath) {
+                    this.defaultImportName = path.get('local.name').node;
                 }
             },
             IfStatement(path) {
@@ -89,9 +77,9 @@ module.exports = function({ types: t }) {
                 const isRuntimeFlag = objectPath.isIdentifier({ name: RUNTIME_FLAGS_IDENTIFIER });
 
                 let isCompileTimeFlag = false;
-                if (this.defaultImportPath) {
+                if (this.defaultImportName) {
                     isCompileTimeFlag = objectPath.isIdentifier({
-                        name: this.defaultImportPath.node.local.name,
+                        name: this.defaultImportName,
                     });
                 }
 
@@ -99,19 +87,23 @@ module.exports = function({ types: t }) {
                 if (!isRuntimeFlag && !isCompileTimeFlag) {
                     return;
                 }
-                // If the member expression object is not binding reference to the feature flag object
-                if (!isBindingReference(objectPath, this.importDeclarationPath.scope)) {
+                // If the member expression object is not a binding reference to the feature flag object
+                if (
+                    this.importDeclarationPath &&
+                    !isBindingReference(objectPath, this.importDeclarationPath.scope)
+                ) {
                     return;
                 }
 
-                validate(testPath, this);
-
                 const name = propertyPath.node.name;
                 let value = this.featureFlags[name];
+                validate(name, value);
 
                 if (!this.opts.prod || value === null) {
-                    testPath.replaceWithSourceString(`${RUNTIME_FLAGS_IDENTIFIER}.${name}`);
-                    return;
+                    if (isCompileTimeFlag) {
+                        testPath.node.object = t.identifier(RUNTIME_FLAGS_IDENTIFIER);
+                        return;
+                    }
                 }
 
                 if (this.opts.prod) {

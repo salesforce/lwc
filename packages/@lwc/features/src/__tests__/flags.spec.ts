@@ -209,19 +209,7 @@ pluginTester({
         featureFlags,
     },
     babelOptions,
-    tests: {
-        ...nonProdTests,
-        'should throw an error if runtime flags are manually introduced': {
-            error:
-                'Runtime flags should never be used directly and should only be added by the compiler.',
-            code: `
-                import { runtimeFlags } from '@lwc/features';
-                if (runtimeFlags.ENABLE_FEATURE_TRUE) {
-                    console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
-                }
-            `,
-        },
-    },
+    tests: nonProdTests,
 });
 
 // These tests override corresponding tests in nonProdTests since the plugin has
