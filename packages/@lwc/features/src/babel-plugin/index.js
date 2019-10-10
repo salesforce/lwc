@@ -7,6 +7,7 @@
 const defaultFeatureFlags = require('../../').default;
 
 const RUNTIME_FLAGS_IDENTIFIER = 'runtimeFlags';
+const FEATURES_PACKAGE_NAME = '@lwc/features';
 
 function validate(name, value) {
     if (!/^[A-Z_]+$/.test(name)) {
@@ -34,7 +35,7 @@ module.exports = function({ types: t }) {
                 this.featureFlags = this.opts.featureFlags || defaultFeatureFlags;
             },
             ImportDeclaration(path) {
-                if (path.node.source.value === '@lwc/features') {
+                if (path.node.source.value === FEATURES_PACKAGE_NAME) {
                     this.importDeclarationPath = path;
                     const specifiers = path.node.specifiers;
 
@@ -83,7 +84,7 @@ module.exports = function({ types: t }) {
                     });
                 }
 
-                // If the member expression is not a feature flag lookup
+                // If the member expression object is neither the imported default binding nor the runtimeFlags binding
                 if (!isRuntimeFlag && !isCompileTimeFlag) {
                     return;
                 }
