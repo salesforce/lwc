@@ -12,14 +12,21 @@ const nonProdTests = {
         code: `
             import featureFlags from '@lwc/features';
             if (featureFlags.ENABLE_FEATURE_TRUE) {
-                console.log('ENABLE_FEATURE_TRUE');
+                console.log('featureFlags.ENABLE_FEATURE_TRUE');
+            }
+            if (!featureFlags.ENABLE_FEATURE_TRUE) {
+                console.log('!featureFlags.ENABLE_FEATURE_TRUE');
             }
         `,
         output: `
             import featureFlags, { runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_TRUE) {
-              console.log('ENABLE_FEATURE_TRUE');
+              console.log('featureFlags.ENABLE_FEATURE_TRUE');
+            }
+
+            if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
+              console.log('!featureFlags.ENABLE_FEATURE_TRUE');
             }
         `,
     },
@@ -27,14 +34,21 @@ const nonProdTests = {
         code: `
             import features from '@lwc/features';
             if (features.ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
+                console.log('features.ENABLE_FEATURE_FALSE');
+            }
+            if (!features.ENABLE_FEATURE_FALSE) {
+                console.log('!features.ENABLE_FEATURE_FALSE');
             }
         `,
         output: `
             import features, { runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_FALSE) {
-              console.log('ENABLE_FEATURE_FALSE');
+              console.log('features.ENABLE_FEATURE_FALSE');
+            }
+
+            if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
+              console.log('!features.ENABLE_FEATURE_FALSE');
             }
         `,
     },
@@ -42,18 +56,25 @@ const nonProdTests = {
         code: `
             import features from '@lwc/features';
             if (features.ENABLE_FEATURE_NULL) {
-                console.log('ENABLE_FEATURE_NULL');
+                console.log('features.ENABLE_FEATURE_NULL');
+            }
+            if (!features.ENABLE_FEATURE_NULL) {
+                console.log('!features.ENABLE_FEATURE_NULL');
             }
         `,
         output: `
             import features, { runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_NULL) {
-              console.log('ENABLE_FEATURE_NULL');
+              console.log('features.ENABLE_FEATURE_NULL');
+            }
+
+            if (!runtimeFlags.ENABLE_FEATURE_NULL) {
+              console.log('!features.ENABLE_FEATURE_NULL');
             }
         `,
     },
-    'should not transform feature flags unless the if-test is a simple member expression': {
+    'should not transform tests that are not a member expression or not a negated member expression (compile time)': {
         code: `
             import FEATURES from '@lwc/features';
             if (FEATURES.ENABLE_FEATURE_NULL === null) {
@@ -61,9 +82,6 @@ const nonProdTests = {
             }
             if (isTrue(FEATURES.ENABLE_FEATURE_TRUE)) {
                 console.log('isTrue(ENABLE_FEATURE_TRUE)');
-            }
-            if (!FEATURES.ENABLE_FEATURE_FALSE) {
-                console.log('!ENABLE_FEATURE_FALSE');
             }
         `,
         output: `
@@ -76,22 +94,21 @@ const nonProdTests = {
             if (isTrue(FEATURES.ENABLE_FEATURE_TRUE)) {
               console.log('isTrue(ENABLE_FEATURE_TRUE)');
             }
-
-            if (!FEATURES.ENABLE_FEATURE_FALSE) {
-              console.log('!ENABLE_FEATURE_FALSE');
-            }
         `,
     },
     'should not transform tests that are not an actual reference to the imported binding': {
         code: `
             import featureFlag from '@lwc/features';
             if (featureFlag.ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
+                console.log('featureFlag.ENABLE_FEATURE_FALSE');
             }
             function awesome() {
                 const featureFlag = { ENABLE_FEATURE_FALSE: false };
                 if (featureFlag.ENABLE_FEATURE_FALSE) {
-                    console.log('ENABLE_FEATURE_FALSE');
+                    console.log('featureFlag.ENABLE_FEATURE_FALSE');
+                }
+                if (!featureFlag.ENABLE_FEATURE_FALSE) {
+                    console.log('!featureFlag.ENABLE_FEATURE_FALSE');
                 }
             }
         `,
@@ -99,7 +116,7 @@ const nonProdTests = {
             import featureFlag, { runtimeFlags } from '@lwc/features';
 
             if (runtimeFlags.ENABLE_FEATURE_FALSE) {
-              console.log('ENABLE_FEATURE_FALSE');
+              console.log('featureFlag.ENABLE_FEATURE_FALSE');
             }
 
             function awesome() {
@@ -108,7 +125,11 @@ const nonProdTests = {
               };
 
               if (featureFlag.ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
+                console.log('featureFlag.ENABLE_FEATURE_FALSE');
+              }
+
+              if (!featureFlag.ENABLE_FEATURE_FALSE) {
+                console.log('!featureFlag.ENABLE_FEATURE_FALSE');
               }
             }
         `,
@@ -130,6 +151,9 @@ const nonProdTests = {
                 if (featureFlags.ENABLE_FEATURE_TRUE) {
                     console.log('this looks like a bad idea');
                 }
+                if (!featureFlags.ENABLE_FEATURE_TRUE) {
+                    console.log('this looks like a bad idea');
+                }
             }
         `,
         output: `
@@ -139,6 +163,29 @@ const nonProdTests = {
               if (runtimeFlags.ENABLE_FEATURE_TRUE) {
                 console.log('this looks like a bad idea');
               }
+
+              if (!runtimeFlags.ENABLE_FEATURE_TRUE) {
+                console.log('this looks like a bad idea');
+              }
+            }
+        `,
+    },
+    'should throw an error if the flag is undefined': {
+        error: 'Invalid feature flag "ENABLE_THE_BEER". Flag is undefined.',
+        code: `
+            import featureFlags from '@lwc/features';
+            if (featureFlags.ENABLE_THE_BEER) {
+                console.log('featureFlags.ENABLE_THE_BEER');
+            }
+        `,
+    },
+    'should throw an error if the flag name is formatted incorrectly': {
+        error:
+            'Invalid feature flag "enable_the_beer". Flag name must only be composed of uppercase letters and underscores.',
+        code: `
+            import featureFlags from '@lwc/features';
+            if (featureFlags.enable_the_beer) {
+                console.log('featureFlags.enable_the_beer');
             }
         `,
     },
@@ -148,7 +195,6 @@ const featureFlags = {
     ENABLE_FEATURE_TRUE: true,
     ENABLE_FEATURE_FALSE: false,
     ENABLE_FEATURE_NULL: null,
-    invalidFeatureFlag: true, // invalid because it's not all uppercase
 };
 
 const babelOptions = {
@@ -173,13 +219,16 @@ const nonProdTestOverrides = {
         code: `
             import features from '@lwc/features';
             if (features.ENABLE_FEATURE_TRUE) {
-                console.log('ENABLE_FEATURE_TRUE');
+                console.log('features.ENABLE_FEATURE_TRUE');
+            }
+            if (!features.ENABLE_FEATURE_TRUE) {
+                console.log('!features.ENABLE_FEATURE_TRUE');
             }
         `,
         output: `
           import features, { runtimeFlags } from '@lwc/features';
           {
-            console.log('ENABLE_FEATURE_TRUE');
+            console.log('features.ENABLE_FEATURE_TRUE');
           }
         `,
     },
@@ -187,11 +236,17 @@ const nonProdTestOverrides = {
         code: `
             import features from '@lwc/features';
             if (features.ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
+                console.log('features.ENABLE_FEATURE_FALSE');
+            }
+            if (!features.ENABLE_FEATURE_FALSE) {
+                console.log('!features.ENABLE_FEATURE_FALSE');
             }
         `,
         output: `
           import features, { runtimeFlags } from '@lwc/features';
+          {
+            console.log('!features.ENABLE_FEATURE_FALSE');
+          }
         `,
     },
     'should transform nested feature flags': {
@@ -233,7 +288,10 @@ const nonProdTestOverrides = {
             function awesome() {
                 const featureFlag = { ENABLE_FEATURE_FALSE: false };
                 if (featureFlag.ENABLE_FEATURE_FALSE) {
-                    console.log('ENABLE_FEATURE_FALSE');
+                    console.log('featureFlag.ENABLE_FEATURE_FALSE');
+                }
+                if (!featureFlag.ENABLE_FEATURE_FALSE) {
+                    console.log('!featureFlag.ENABLE_FEATURE_FALSE');
                 }
             }
         `,
@@ -246,7 +304,11 @@ const nonProdTestOverrides = {
               };
 
               if (featureFlag.ENABLE_FEATURE_FALSE) {
-                console.log('ENABLE_FEATURE_FALSE');
+                console.log('featureFlag.ENABLE_FEATURE_FALSE');
+              }
+
+              if (!featureFlag.ENABLE_FEATURE_FALSE) {
+                console.log('!featureFlag.ENABLE_FEATURE_FALSE');
               }
             }
         `,
@@ -261,33 +323,36 @@ pluginTester({
         prod: true,
     },
     babelOptions,
-    tests: Object.assign({}, nonProdTests, nonProdTestOverrides, {
+    tests: {
+        ...nonProdTests,
+        ...nonProdTestOverrides,
         'should transform both boolean and null feature flags': {
             code: `
                 import features from '@lwc/features';
                 if (features.ENABLE_FEATURE_TRUE) {
-                    console.log('ENABLE_FEATURE_TRUE');
+                    console.log('features.ENABLE_FEATURE_TRUE');
                 }
                 if (features.ENABLE_FEATURE_FALSE) {
-                    console.log('ENABLE_FEATURE_FALSE');
+                    console.log('features.ENABLE_FEATURE_FALSE');
                 }
                 if (features.ENABLE_FEATURE_NULL) {
-                    console.log('ENABLE_FEATURE_NULL');
+                    console.log('features.ENABLE_FEATURE_NULL');
                 }
             `,
             output: `
                 import features, { runtimeFlags } from '@lwc/features';
                 {
-                  console.log('ENABLE_FEATURE_TRUE');
+                  console.log('features.ENABLE_FEATURE_TRUE');
                 }
 
                 if (runtimeFlags.ENABLE_FEATURE_NULL) {
-                  console.log('ENABLE_FEATURE_NULL');
+                  console.log('features.ENABLE_FEATURE_NULL');
                 }
             `,
         },
         'should transform runtime flag lookups into compile-time flags': {
             code: `
+                import { runtimeFlags } from '@lwc/features';
                 if (runtimeFlags.ENABLE_FEATURE_TRUE) {
                     console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
@@ -299,6 +364,7 @@ pluginTester({
                 }
             `,
             output: `
+                import { runtimeFlags } from '@lwc/features';
                 {
                   console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
@@ -308,19 +374,19 @@ pluginTester({
                 }
             `,
         },
-        'should not transform runtime flag lookups unless the if-test is a member expression': {
+        'should not transform tests that are not a member expression or not a negated member expression (runtime)': {
             code: `
+                import { runtimeFlags } from '@lwc/features';
                 if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
                     console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
                 }
                 if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
                     console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
-                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
-                    console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
             `,
             output: `
+                import { runtimeFlags } from '@lwc/features';
+
                 if (runtimeFlags.ENABLE_FEATURE_NULL === null) {
                   console.log('runtimeFlags.ENABLE_FEATURE_NULL === null');
                 }
@@ -328,31 +394,22 @@ pluginTester({
                 if (isTrue(runtimeFlags.ENABLE_FEATURE_TRUE)) {
                   console.log('runtimeFlags.ENABLE_FEATURE_TRUE');
                 }
-
-                if (!runtimeFlags.ENABLE_FEATURE_FALSE) {
-                  console.log('!runtimeFlags.ENABLE_FEATURE_FALSE');
-                }
             `,
         },
         'should not transform member expressions that are not runtime flag lookups': {
             code: `
+                import { runtimeFlags } from '@lwc/features';
                 if (churroteria.ENABLE_FEATURE_TRUE) {
                     console.log('churroteria.ENABLE_FEATURE_TRUE');
                 }
             `,
             output: `
+                import { runtimeFlags } from '@lwc/features';
+
                 if (churroteria.ENABLE_FEATURE_TRUE) {
                   console.log('churroteria.ENABLE_FEATURE_TRUE');
                 }
             `,
         },
-        'should not transform runtime flags when used with a ternary operator': {
-            code: `
-                console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-            `,
-            output: `
-                console.log(runtimeFlags.ENABLE_FEATURE_NULL ? 'foo' : 'bar');
-            `,
-        },
-    }),
+    },
 });
