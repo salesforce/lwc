@@ -21,7 +21,7 @@ import { patchCustomElementWithRestrictions } from './restrictions';
  *      import { buildCustomElementConstructor } from 'lwc';
  *      import Foo from 'ns/foo';
  *      const WC = buildCustomElementConstructor(Foo);
- *      customElements.define('x-foo', Foo);
+ *      customElements.define('x-foo', WC);
  *      const elm = document.createElement('x-foo');
  *
  */
