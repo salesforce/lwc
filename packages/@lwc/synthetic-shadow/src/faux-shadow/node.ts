@@ -421,6 +421,9 @@ defineProperties(Node.prototype, {
     contains: {
         value(this: Node, otherNode: Node): boolean {
             if (DISABLE_NODE_PATCH) {
+                if (otherNode == null) {
+                    return false;
+                }
                 const ownerKey = getNodeOwnerKey(this);
                 if (!isUndefined(ownerKey) || isHostElement(this)) {
                     return containsPatched.call(this, otherNode);
