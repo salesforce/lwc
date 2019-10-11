@@ -181,9 +181,8 @@ if (!process.env.NATIVE_SHADOW) {
 
             it('should preserve behavior for getElementsByTagName', () => {
                 expect(elementOutsideLWC.getElementsByTagName('p').length).toBe(8);
-                // f
-                // limiting this may be tricky! but pushing it forward
-                // expect(rootLwcElement.getElementsByTagName('p').length).toBe(8);
+                // This is an exception: not patching root lwc elements
+                expect(rootLwcElement.getElementsByTagName('p').length).toBe(8);
 
                 // f, same, restricting this.
                 // const elemInShadow = rootLwcElement.shadowRoot.querySelector('div');
@@ -201,8 +200,8 @@ if (!process.env.NATIVE_SHADOW) {
 
             it('should preserve behavior for getElementsByClassName', () => {
                 expect(elementOutsideLWC.getElementsByClassName('slotted').length).toBe(2);
-                // f: inside shadow.
-                // expect(rootLwcElement.getElementsByClassName('slotted').length).toBe(2);
+                // This is an exception: not patching root lwc elements
+                expect(rootLwcElement.getElementsByClassName('slotted').length).toBe(2);
 
                 // f: inside shadow
                 // const elemInShadow = rootLwcElement.shadowRoot.querySelector('div');

@@ -7,9 +7,7 @@
 import {
     ArrayFilter,
     ArrayFind,
-    ArrayPush,
     ArraySlice,
-    assert,
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
@@ -28,9 +26,9 @@ import {
     getNodeOwner,
     getAllMatches,
     getFilteredChildNodes,
-    isSlotElement,
-    isNodeOwnedBy,
     getFirstMatch,
+    getAllSlottedMatches,
+    getFirstSlottedMatch,
 } from './traverse';
 import {
     childrenGetter,
@@ -43,17 +41,7 @@ import {
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import {
-    getNodeKey,
-    getNodeNearestOwnerKey,
-    getInternalChildNodes,
-    hasMountedChildren,
-} from './node';
-import {
-    compareDocumentPosition,
-    DOCUMENT_POSITION_CONTAINS,
-    parentElementGetter,
-} from '../env/node';
+import { getNodeKey, getInternalChildNodes, hasMountedChildren } from './node';
 import {
     innerHTMLSetter,
     getElementsByClassName as elementGetElementsByClassName,
@@ -65,17 +53,18 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
+import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
-const {
-    DISABLE_ELEMENT_PATCH,
-    ENABLE_NODE_LIST_PATCH,
-    ENABLE_HTML_COLLECTIONS_PATCH,
-} = getInitializedFeatureFlags();
+const { DISABLE_ELEMENT_PATCH, ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
+
+enum ShadowDomSemantic {
+    Disabled,
+    Enabled,
+}
 
 function getInitializedFeatureFlags() {
     let DISABLE_ELEMENT_PATCH;
     let ENABLE_NODE_LIST_PATCH;
-    let ENABLE_HTML_COLLECTIONS_PATCH;
 
     if (featureFlags.ENABLE_ELEMENT_PATCH) {
         DISABLE_ELEMENT_PATCH = false;
@@ -89,117 +78,10 @@ function getInitializedFeatureFlags() {
         ENABLE_NODE_LIST_PATCH = false;
     }
 
-    if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-        ENABLE_HTML_COLLECTIONS_PATCH = true;
-    } else {
-        ENABLE_HTML_COLLECTIONS_PATCH = false;
-    }
-
     return {
         DISABLE_ELEMENT_PATCH,
         ENABLE_NODE_LIST_PATCH,
-        ENABLE_HTML_COLLECTIONS_PATCH,
     };
-}
-
-// when finding a slot in the DOM, we can fold it if it is contained
-// inside another slot.
-function foldSlotElement(slot: HTMLElement) {
-    let parent = parentElementGetter.call(slot);
-    while (!isNull(parent) && isSlotElement(parent)) {
-        slot = parent as HTMLElement;
-        parent = parentElementGetter.call(slot);
-    }
-    return slot;
-}
-
-function isNodeSlotted(host: Element, node: Node): boolean {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(
-            host instanceof HTMLElement,
-            `isNodeSlotted() should be called with a host as the first argument instead of ${host}`
-        );
-        assert.invariant(
-            node instanceof Node,
-            `isNodeSlotted() should be called with a node as the second argument instead of ${node}`
-        );
-        assert.invariant(
-            compareDocumentPosition.call(node, host) & DOCUMENT_POSITION_CONTAINS,
-            `isNodeSlotted() should never be called with a node that is not a child node of ${host}`
-        );
-    }
-    const hostKey = getNodeKey(host);
-    // this routine assumes that the node is coming from a different shadow (it is not owned by the host)
-    // just in case the provided node is not an element
-    let currentElement = node instanceof Element ? node : parentElementGetter.call(node);
-    while (!isNull(currentElement) && currentElement !== host) {
-        const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
-        const parent = parentElementGetter.call(currentElement);
-        if (elmOwnerKey === hostKey) {
-            // we have reached an element inside the host's template, and only if
-            // that element is an slot, then the node is considered slotted
-            return isSlotElement(currentElement);
-        } else if (parent === host) {
-            return false;
-        } else if (!isNull(parent) && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
-            // we are crossing a boundary of some sort since the elm and its parent
-            // have different owner key. for slotted elements, this is possible
-            // if the parent happens to be a slot.
-            if (isSlotElement(parent)) {
-                /**
-                 * the slot parent might be allocated inside another slot, think of:
-                 * <x-root> (<--- root element)
-                 *    <x-parent> (<--- own by x-root)
-                 *       <x-child> (<--- own by x-root)
-                 *           <slot> (<--- own by x-child)
-                 *               <slot> (<--- own by x-parent)
-                 *                  <div> (<--- own by x-root)
-                 *
-                 * while checking if x-parent has the div slotted, we need to traverse
-                 * up, but when finding the first slot, we skip that one in favor of the
-                 * most outer slot parent before jumping into its corresponding host.
-                 */
-                currentElement = getNodeOwner(foldSlotElement(parent as HTMLElement));
-                if (!isNull(currentElement)) {
-                    if (currentElement === host) {
-                        // the slot element is a top level element inside the shadow
-                        // of a host that was allocated into host in question
-                        return true;
-                    } else if (getNodeNearestOwnerKey(currentElement) === hostKey) {
-                        // the slot element is an element inside the shadow
-                        // of a host that was allocated into host in question
-                        return true;
-                    }
-                }
-            } else {
-                return false;
-            }
-        } else {
-            currentElement = parent;
-        }
-    }
-    return false;
-}
-
-function getAllSlottedMatches(host: Element, nodeList: NodeList | Node[]): Array<Node & Element> {
-    const filteredAndPatched = [];
-    for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        const node = nodeList[i];
-        if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
-            ArrayPush.call(filteredAndPatched, node);
-        }
-    }
-    return filteredAndPatched;
-}
-
-function getFirstSlottedMatch(host: Element, nodeList: Element[]): Element | null {
-    for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        const node = nodeList[i] as Element;
-        if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
-            return node;
-        }
-    }
-    return null;
 }
 
 function innerHTMLGetterPatched(this: Element): string {
@@ -427,12 +309,12 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     }
 }
 
-function getFilteredNodeListQueryResult(
+function getFilteredArrayOfNodes<T extends Node>(
     context: Element,
-    nodeList,
-    isShadowSemanticEnforced: boolean
-): Element[] {
-    let filtered: Element[];
+    unfilteredNodes: T[],
+    shadowDomSemantic: ShadowDomSemantic
+): T[] {
+    let filtered: T[];
     if (isHostElement(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
@@ -440,32 +322,32 @@ function getFilteredNodeListQueryResult(
             filtered = [];
         } else if (getNodeKey(context)) {
             // it is a custom element, and we should then filter by slotted elements
-            filtered = getAllSlottedMatches(context, nodeList);
+            filtered = getAllSlottedMatches(context, unfilteredNodes);
         } else {
             // regular element, we should then filter by ownership
-            filtered = getAllMatches(owner, nodeList);
+            filtered = getAllMatches(owner, unfilteredNodes);
         }
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey) || isShadowSemanticEnforced) {
+        if (!isUndefined(ownerKey) || shadowDomSemantic === ShadowDomSemantic.Enabled) {
             // The patch is enabled or `context` is an element rendered by lwc
-            filtered = ArrayFilter.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+            filtered = ArrayFilter.call(unfilteredNodes, elm => getNodeOwnerKey(elm) === ownerKey);
         } else {
             // `context` is a manually inserted element inside a shadowRoot
-            filtered = ArraySlice.call(nodeList);
+            filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {
-        if (context instanceof HTMLBodyElement || isShadowSemanticEnforced) {
+        if (context instanceof HTMLBodyElement || shadowDomSemantic === ShadowDomSemantic.Enabled) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = ArrayFilter.call(
-                nodeList,
+                unfilteredNodes,
                 // TODO: issue #1222 - remove global bypass
                 elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.
-            filtered = ArraySlice.call(nodeList);
+            filtered = ArraySlice.call(unfilteredNodes);
         }
     }
     return filtered;
@@ -492,11 +374,13 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-            const filteredResults = getFilteredNodeListQueryResult(
-                this,
-                nodeList,
-                ENABLE_NODE_LIST_PATCH
-            );
+            let shadowDomSemantic = ShadowDomSemantic.Disabled;
+
+            if (featureFlags.ENABLE_NODE_LIST_PATCH) {
+                shadowDomSemantic = ShadowDomSemantic.Enabled;
+            }
+
+            const filteredResults = getFilteredArrayOfNodes(this, nodeList, shadowDomSemantic);
 
             return createStaticNodeList(filteredResults);
         },
@@ -506,15 +390,20 @@ defineProperties(Element.prototype, {
     },
     getElementsByClassName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(
-                this,
-                elements,
-                ENABLE_HTML_COLLECTIONS_PATCH
-            );
+            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+            } else {
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
+            }
 
             return createStaticHTMLCollection(filteredResults);
         },
@@ -524,15 +413,20 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(
-                this,
-                elements,
-                ENABLE_HTML_COLLECTIONS_PATCH
-            );
+            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+            } else {
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
+            }
 
             return createStaticHTMLCollection(filteredResults);
         },
@@ -542,6 +436,7 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagNameNS: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
+            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
                     string,
@@ -549,11 +444,15 @@ defineProperties(Element.prototype, {
                 ])
             );
 
-            const filteredResults = getFilteredNodeListQueryResult(
-                this,
-                elements,
-                ENABLE_HTML_COLLECTIONS_PATCH
-            );
+            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    elements,
+                    ShadowDomSemantic.Enabled
+                );
+            } else {
+                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
+            }
 
             return createStaticHTMLCollection(filteredResults);
         },
