@@ -10,4 +10,4 @@ const element = createElement('x-app', { is: App });
 container.appendChild(element);
 
 // testing relative import works
-doNothing();
+console.log('>>', doNothing());
