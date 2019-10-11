@@ -58,7 +58,7 @@ import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 const { DISABLE_ELEMENT_PATCH, ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
 
 enum ShadowDomSemantic {
-    Disabled = 0,
+    Disabled,
     Enabled,
 }
 
@@ -374,21 +374,13 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-            let filteredResults;
+            let shadowDomSemantic = ShadowDomSemantic.Disabled;
 
             if (featureFlags.ENABLE_NODE_LIST_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    nodeList,
-                    ShadowDomSemantic.Enabled
-                );
-            } else {
-                filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    nodeList,
-                    ShadowDomSemantic.Disabled
-                );
+                shadowDomSemantic = ShadowDomSemantic.Enabled;
             }
+
+            const filteredResults = getFilteredArrayOfNodes(this, nodeList, shadowDomSemantic);
 
             return createStaticNodeList(filteredResults);
         },
