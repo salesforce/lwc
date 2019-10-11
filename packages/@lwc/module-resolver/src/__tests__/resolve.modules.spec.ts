@@ -8,7 +8,7 @@
 import path from 'path';
 import { resolveModules } from '../index';
 
-const FIXTURE_MODULE_ENTRIES = ['ns/cssEntry', 'ns/htmlEntry', 'ns/jsEntry'];
+const FIXTURE_MODULE_ENTRIES = ['ns/cssEntry', 'ns/htmlEntry', 'ns/jsEntry', 'ns/tsEntry'];
 
 describe('resolve modules', () => {
     it('from directory', () => {

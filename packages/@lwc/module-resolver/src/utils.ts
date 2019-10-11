@@ -35,11 +35,15 @@ export function getEntry(moduleDir, moduleName, ext) {
 
 export function getModuleEntry(moduleDir, moduleName) {
     const entryJS = getEntry(moduleDir, moduleName, 'js');
+    const entryTS = getEntry(moduleDir, moduleName, 'ts');
     const entryHTML = getEntry(moduleDir, moduleName, 'html');
     const entryCSS = getEntry(moduleDir, moduleName, 'css');
 
+    // Order is important
     if (fs.existsSync(entryJS)) {
         return entryJS;
+    } else if (fs.existsSync(entryTS)) {
+        return entryTS;
     } else if (fs.existsSync(entryHTML)) {
         return entryHTML;
     } else if (fs.existsSync(entryCSS)) {
