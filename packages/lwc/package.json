@@ -3,7 +3,7 @@
     "version": "1.1.0",
     "description": "Lightning Web Components (LWC)",
     "main": "index.js",
-    "module": "dist/modules/es2017/engine.js",
+    "module": "dist/engine/esm/es2017/engine.js",
     "typings": "types.d.ts",
     "license": "MIT",
     "scripts": {
