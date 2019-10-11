@@ -41,7 +41,12 @@ import {
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import { getNodeKey, getInternalChildNodes, hasMountedChildren } from './node';
+import {
+    getNodeKey,
+    getInternalChildNodes,
+    hasMountedChildren,
+    getNodeNearestOwnerKey,
+} from './node';
 import {
     innerHTMLSetter,
     getElementsByClassName as elementGetElementsByClassName,
@@ -284,13 +289,21 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        if (!isUndefined(ownerKey) || ENABLE_NODE_LIST_PATCH) {
-            const elm = ArrayFind.call(nodeList, elm => getNodeOwnerKey(elm) === ownerKey);
+        if (!isUndefined(ownerKey)) {
+            // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
+            const elm = ArrayFind.call(nodeList, elm => getNodeNearestOwnerKey(elm) === ownerKey);
+            return isUndefined(elm) ? null : elm;
+        } else if (ENABLE_NODE_LIST_PATCH) {
+            // `this` is inside a shadow, we dont know which one.
+            const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
+            const elm = ArrayFind.call(
+                nodeList,
+                elm => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
+            );
             return isUndefined(elm) ? null : elm;
         } else {
-            // `this` is a manually inserted element inside a shadowRoot
-            const elm = nodeList[0];
-            return isUndefined(elm) ? null : elm;
+            // `this` is a manually inserted element inside a shadowRoot, return the first element.
+            return nodeList.length === 0 ? null : nodeList[0];
         }
     } else {
         // Note: document.body is already patched!
@@ -303,8 +316,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             );
             return isUndefined(elm) ? null : elm;
         } else {
-            const elm = nodeList[0];
-            return isUndefined(elm) ? null : elm;
+            return nodeList.length === 0 ? null : nodeList[0];
         }
     }
 }
@@ -330,11 +342,21 @@ function getFilteredArrayOfNodes<T extends Node>(
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey) || shadowDomSemantic === ShadowDomSemantic.Enabled) {
-            // The patch is enabled or `context` is an element rendered by lwc
-            filtered = ArrayFilter.call(unfilteredNodes, elm => getNodeOwnerKey(elm) === ownerKey);
+        if (!isUndefined(ownerKey)) {
+            // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
+            filtered = ArrayFilter.call(
+                unfilteredNodes,
+                elm => getNodeNearestOwnerKey(elm) === ownerKey
+            );
+        } else if (shadowDomSemantic === ShadowDomSemantic.Enabled) {
+            // context is inside a shadow, we dont know which one.
+            const contextNearestOwnerKey = getNodeNearestOwnerKey(context);
+            filtered = ArrayFilter.call(
+                unfilteredNodes,
+                elm => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
+            );
         } else {
-            // `context` is a manually inserted element inside a shadowRoot
+            // context is manually inserted without lwc:dom-manual and ShadowDomSemantics is off, return everything
             filtered = ArraySlice.call(unfilteredNodes);
         }
     } else {

@@ -7,9 +7,13 @@
 import { isHostElement } from './shadow-root';
 import { getAllMatches, getNodeOwner, getAllSlottedMatches } from './traverse';
 import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
-import { getNodeKey, getNodeOwnerKey } from './node';
+import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from './node';
 import { isGlobalPatchingSkipped } from '../shared/utils';
 
+/**
+ * This methods filters out elements that are not in the same shadow root of context.
+ * It does not enforce shadow dom semantics if $context is not managed by LWC
+ */
 export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
     context: Element,
     unfilteredNodes: Array<T>
@@ -33,7 +37,11 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
                 filtered = getAllMatches(owner, unfilteredNodes);
             }
         } else {
-            filtered = ArrayFilter.call(unfilteredNodes, elm => getNodeOwnerKey(elm) === ownerKey);
+            // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
+            filtered = ArrayFilter.call(
+                unfilteredNodes,
+                elm => getNodeNearestOwnerKey(elm) === ownerKey
+            );
         }
     } else if (context instanceof HTMLBodyElement) {
         // `context` is document.body which is already patched.
