@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { defineProperties } from '@lwc/shared';
 import {
     windowRemoveEventListener as nativeWindowRemoveEventListener,
     windowAddEventListener as nativeWindowAddEventListener,
@@ -93,5 +94,22 @@ function removeEventListener(this: EventTarget, type, fnOrObj, optionsOrCapture)
 window.addEventListener = windowAddEventListener;
 window.removeEventListener = windowRemoveEventListener;
 
-Node.prototype.addEventListener = addEventListener;
-Node.prototype.removeEventListener = removeEventListener;
+// IE11 doesn't have EventTarget, so we have to patch it conditionally:
+
+const protoToBePatched =
+    typeof EventTarget !== 'undefined' ? EventTarget.prototype : Node.prototype;
+
+defineProperties(protoToBePatched, {
+    addEventListener: {
+        value: addEventListener,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+    removeEventListener: {
+        value: removeEventListener,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    },
+});
