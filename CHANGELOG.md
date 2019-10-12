@@ -1,4 +1,24 @@
-# [](https://github.com/salesforce/lwc/compare/v1.0.2...v) (2019-10-04)
+# [](https://github.com/salesforce/lwc/compare/v1.1.0...v) (2019-10-12)
+
+
+### Bug Fixes
+
+* missing dep ([#1553](https://github.com/salesforce/lwc/issues/1553)) ([a8f49a2](https://github.com/salesforce/lwc/commit/a8f49a2))
+* **feature-flags:** Enable feature flags in lwc distribution ([#1555](https://github.com/salesforce/lwc/issues/1555)) ([edc6fbd](https://github.com/salesforce/lwc/commit/edc6fbd))
+* **features:** make @lwc/features a public package ([#1552](https://github.com/salesforce/lwc/issues/1552)) ([f280767](https://github.com/salesforce/lwc/commit/f280767))
+* **lwc:** fix incorrect module path in package.json for lwc package ([#1566](https://github.com/salesforce/lwc/issues/1566)) ([97353d5](https://github.com/salesforce/lwc/commit/97353d5))
+* **module-resolver:** typescript module resolution bug ([#1567](https://github.com/salesforce/lwc/issues/1567)) ([6050e1e](https://github.com/salesforce/lwc/commit/6050e1e))
+* **synthetic-shadow:** do not patch lwc root elements ([#1557](https://github.com/salesforce/lwc/issues/1557)) ([fd2f57f](https://github.com/salesforce/lwc/commit/fd2f57f))
+
+
+### Features
+
+* element and nodes apis behind a runtime flag ([#1550](https://github.com/salesforce/lwc/issues/1550)) ([03231bb](https://github.com/salesforce/lwc/commit/03231bb))
+* **features:** add support for unary negation ([#1562](https://github.com/salesforce/lwc/issues/1562)) ([4671e4c](https://github.com/salesforce/lwc/commit/4671e4c))
+
+
+
+# [1.1.0](https://github.com/salesforce/lwc/compare/v1.0.2...v1.1.0) (2019-10-04)
 
 
 ### Bug Fixes
