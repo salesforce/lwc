@@ -3,6 +3,7 @@ import { createElement } from 'lwc';
 import Slotted from 'x/slotted';
 import Nested from 'x/nested';
 import NestedFallback from 'x/nestedFallback';
+import TestWithDiv from 'x/testWithDiv';
 
 describe('Element.querySelector', () => {
     it('should return null if no Element match', () => {
@@ -20,6 +21,20 @@ describe('Element.querySelector', () => {
 
         const slotted1 = elm.shadowRoot.firstChild.firstChild;
         expect(elm.shadowRoot.querySelector('.slotted')).toBe(slotted1);
+    });
+
+    it('should return matching elements when are manually inserted in same shadow', () => {
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
+        document.body.appendChild(elm);
+
+        const divInsideShadow = elm.shadowRoot.querySelector('div');
+        const manuallyInsertedElement = document.createElement('span');
+
+        divInsideShadow.appendChild(manuallyInsertedElement);
+
+        const qsResult = divInsideShadow.querySelector('span');
+
+        expect(qsResult).toBe(manuallyInsertedElement);
     });
 });
 
@@ -52,6 +67,56 @@ describe('Element.querySelectorAll', () => {
         expect(nodeList.length).toBe(2);
         expect(nodeList[0]).toBe(slotted1);
         expect(nodeList[1]).toBe(slotted2);
+    });
+
+    it('should return matching elements when are manually inserted in same shadow', () => {
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
+        document.body.appendChild(elm);
+
+        const divInsideShadow = elm.shadowRoot.querySelector('div');
+        const manuallyInsertedElement = document.createElement('span');
+
+        divInsideShadow.appendChild(manuallyInsertedElement);
+
+        const qsResult = divInsideShadow.querySelectorAll('span');
+
+        expect(qsResult.length).toBe(1);
+        expect(qsResult[0]).toBe(manuallyInsertedElement);
+    });
+});
+
+describe('Element.getElementsByTagName', () => {
+    it('should return matching elements when are manually inserted in same shadow', () => {
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
+        document.body.appendChild(elm);
+
+        const divInsideShadow = elm.shadowRoot.querySelector('div');
+        const manuallyInsertedElement = document.createElement('span');
+
+        divInsideShadow.appendChild(manuallyInsertedElement);
+
+        const qsResult = divInsideShadow.getElementsByTagName('span');
+
+        expect(qsResult.length).toBe(1);
+        expect(qsResult[0]).toBe(manuallyInsertedElement);
+    });
+});
+
+describe('Element.getElementsByClassName', () => {
+    it('should return matching elements when are manually inserted in same shadow', () => {
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
+        document.body.appendChild(elm);
+
+        const divInsideShadow = elm.shadowRoot.querySelector('div');
+        const manuallyInsertedElement = document.createElement('span');
+        manuallyInsertedElement.className = 'test-class';
+
+        divInsideShadow.appendChild(manuallyInsertedElement);
+
+        const qsResult = divInsideShadow.getElementsByClassName('test-class');
+
+        expect(qsResult.length).toBe(1);
+        expect(qsResult[0]).toBe(manuallyInsertedElement);
     });
 });
 
