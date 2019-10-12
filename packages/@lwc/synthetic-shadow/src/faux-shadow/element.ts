@@ -41,12 +41,7 @@ import {
 } from '../env/element';
 import { createStaticNodeList } from '../shared/static-node-list';
 import { createStaticHTMLCollection } from '../shared/static-html-collection';
-import {
-    getNodeKey,
-    getInternalChildNodes,
-    hasMountedChildren,
-    getNodeNearestOwnerKey,
-} from './node';
+import { getInternalChildNodes, hasMountedChildren } from './node';
 import {
     innerHTMLSetter,
     getElementsByClassName as elementGetElementsByClassName,
@@ -56,7 +51,7 @@ import {
 } from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
-import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
+import { getNodeKey, getNodeOwnerKey, isNodeShadowed, getNodeNearestOwnerKey } from '../shared/node-ownership';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 

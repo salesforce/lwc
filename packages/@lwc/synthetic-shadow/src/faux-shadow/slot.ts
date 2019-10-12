@@ -29,7 +29,7 @@ import {
 } from '../faux-shadow/traverse';
 import { childNodesGetter, parentNodeGetter } from '../env/node';
 import { createStaticNodeList } from '../shared/static-node-list';
-import { isNodeShadowed, getNodeNearestOwnerKey } from '../faux-shadow/node';
+import { isNodeShadowed, getNodeNearestOwnerKey } from '../shared/node-ownership';
 import { arrayFromCollection } from '../shared/utils';
 
 // We can use a single observer without having to worry about leaking because

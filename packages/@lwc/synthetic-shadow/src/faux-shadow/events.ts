@@ -27,7 +27,7 @@ import { pathComposer } from './../3rdparty/polymer/path-composer';
 import { retarget } from './../3rdparty/polymer/retarget';
 import { getOwnerDocument } from '../shared/utils';
 import { addEventListener, removeEventListener } from '../env/element';
-import { getNodeOwnerKey } from './node';
+import { getNodeOwnerKey } from '../shared/node-ownership';
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;

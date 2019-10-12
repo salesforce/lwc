@@ -15,7 +15,7 @@ import {
 } from '../../env/element';
 import { eventTargetGetter } from '../../env/dom';
 import { patchEvent } from '../../faux-shadow/events';
-import { isNodeShadowed } from '../../faux-shadow/node';
+import { isNodeShadowed } from '../../shared/node-ownership';
 
 function doesEventNeedsPatch(e: Event): boolean {
     const originalTarget = eventTargetGetter.call(e);

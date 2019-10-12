@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ArrayReduce, ArrayPush, assert, isNull, isUndefined } from '@lwc/shared';
-import { getNodeKey, getNodeNearestOwnerKey } from './node';
+import { getNodeKey, getNodeNearestOwnerKey } from '../shared/node-ownership';
 import {
     childNodesGetter,
     parentNodeGetter,
