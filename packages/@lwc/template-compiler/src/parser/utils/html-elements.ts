@@ -142,6 +142,7 @@ export const HTML_VOID_ELEMENTS = [
     'base',
     'br',
     'col',
+    'ellipse',
     'embed',
     'hr',
     'img',

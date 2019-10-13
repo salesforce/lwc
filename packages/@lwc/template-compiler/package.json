@@ -27,7 +27,7 @@
         "camelcase": "~5.0.0",
         "esutils": "^2.0.2",
         "he": "^1.1.1",
-        "parse5-with-errors": "^4.0.1"
+        "parse5-with-errors": "4.0.3-beta1"
     },
     "publishConfig": {
         "access": "public"
