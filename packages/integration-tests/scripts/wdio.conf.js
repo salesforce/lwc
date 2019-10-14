@@ -94,11 +94,10 @@ const config = {
             //maxInstances: 5,
             //
             browserName: 'chrome',
-            platform: 'Windows 10',
-            version: '61.0',
-            chromeOptions: {
-                //binary: CHROME_BIN_PATH,
-                args: ['headless', 'disable-gpu'],
+            platformName: 'Windows 10',
+            'goog:chromeOptions': {
+                // binary: CHROME_BIN_PATH,
+                // args: ['headless', 'disable-gpu'],
             },
         },
     ],
@@ -313,7 +312,7 @@ const config = {
 
 const headless = process.env.HEADLESS_CHROME;
 if (headless === 'false') {
-    config.capabilities[0].chromeOptions = {};
+    config.capabilities[0]['goog:chromeOptions'] = {};
 }
 
 exports.config = config;
