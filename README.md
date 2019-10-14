@@ -1,6 +1,6 @@
 <p>
   <a href="https://lwc.dev">
-    <img src="https://lwc-docs-staging.herokuapp.com/assets/images/git-hero.png">
+    <img src="https://lwc.dev/assets/images/git-hero.png">
   </a>
   <a href="https://www.npmjs.com/package/lwc">
     <img src="https://img.shields.io/npm/v/lwc" alt="npm version">
