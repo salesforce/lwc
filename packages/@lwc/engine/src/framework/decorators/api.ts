@@ -7,12 +7,13 @@
 import features from '@lwc/features';
 import { assert, isFalse, isFunction, isObject, isTrue, isUndefined, toString } from '@lwc/shared';
 import { logError } from '../../shared/assert';
-import { isRendering, vmBeingRendered, isBeingConstructed } from '../invoker';
+import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { valueObserved, valueMutated, ReactiveObserver } from '../../libs/mutation-tracker';
 import { ComponentInterface, ComponentConstructor } from '../component';
 import { getComponentVM, rerenderVM } from '../vm';
 import { getDecoratorsRegisteredMeta } from './register';
 import { addCallbackToNextTick } from '../utils';
+import { isUpdatingTemplate, getVMBeingRendered } from '../template';
 
 /**
  * @api decorator to mark public fields and public methods in
@@ -88,10 +89,17 @@ function createPublicPropertyDescriptor(
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
+                const vmBeingRendered = getVMBeingRendered();
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
                 assert.invariant(
-                    !isRendering,
+                    !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
+                        key
+                    )}`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );
@@ -174,9 +182,16 @@ function createPublicAccessorDescriptor(
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+                const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
-                    !isRendering,
+                    !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(
+                        key
+                    )}`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm}.${toString(
                         key
                     )}`
                 );
