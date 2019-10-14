@@ -1,14 +1,17 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.0...v) (2019-10-12)
+# [](https://github.com/salesforce/lwc/compare/v1.1.0...v) (2019-10-14)
 
 
 ### Bug Fixes
 
 * missing dep ([#1553](https://github.com/salesforce/lwc/issues/1553)) ([a8f49a2](https://github.com/salesforce/lwc/commit/a8f49a2))
+* **engine:** refactor boundary protection for render phase ([#1551](https://github.com/salesforce/lwc/issues/1551)) ([4942cc4](https://github.com/salesforce/lwc/commit/4942cc4)), closes [#1507](https://github.com/salesforce/lwc/issues/1507) [issue#1506](https://github.com/issue/issues/1506)
 * **feature-flags:** Enable feature flags in lwc distribution ([#1555](https://github.com/salesforce/lwc/issues/1555)) ([edc6fbd](https://github.com/salesforce/lwc/commit/edc6fbd))
 * **features:** make @lwc/features a public package ([#1552](https://github.com/salesforce/lwc/issues/1552)) ([f280767](https://github.com/salesforce/lwc/commit/f280767))
 * **lwc:** fix incorrect module path in package.json for lwc package ([#1566](https://github.com/salesforce/lwc/issues/1566)) ([97353d5](https://github.com/salesforce/lwc/commit/97353d5))
 * **module-resolver:** typescript module resolution bug ([#1567](https://github.com/salesforce/lwc/issues/1567)) ([6050e1e](https://github.com/salesforce/lwc/commit/6050e1e))
+* **synthetic-shadow:** addEventListener for custom elements ([#1572](https://github.com/salesforce/lwc/issues/1572)) ([3f8da46](https://github.com/salesforce/lwc/commit/3f8da46))
 * **synthetic-shadow:** do not patch lwc root elements ([#1557](https://github.com/salesforce/lwc/issues/1557)) ([fd2f57f](https://github.com/salesforce/lwc/commit/fd2f57f))
+* **synthetic-shadow:** querySelectors not returning ([#1568](https://github.com/salesforce/lwc/issues/1568)) ([b5a3c39](https://github.com/salesforce/lwc/commit/b5a3c39))
 
 
 ### Features
