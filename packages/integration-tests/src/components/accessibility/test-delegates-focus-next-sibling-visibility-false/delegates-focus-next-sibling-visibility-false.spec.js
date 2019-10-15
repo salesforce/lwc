@@ -16,7 +16,7 @@ describe('Tabbing into custom element proceeding an invisible button', () => {
     it('should apply focus to the document body', function() {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        const activeFromDocument = browser.execute(function() {
+        const activeFromDocument = browser.$(function() {
             return document.activeElement;
         });
         assert.equal(activeFromDocument.getTagName(), 'body');

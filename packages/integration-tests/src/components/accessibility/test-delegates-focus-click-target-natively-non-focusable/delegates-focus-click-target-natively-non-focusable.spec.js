@@ -14,7 +14,7 @@ describe('when the click target is natively non-focusable', () => {
     });
 
     it('should apply focus to natively focusable parent (button) when click target is custom element', () => {
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('.head');
@@ -22,7 +22,7 @@ describe('when the click target is natively non-focusable', () => {
         input.click();
 
         // Click on the custom element wrapped by the button
-        const child = browser.execute(function() {
+        const child = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('integration-parent')
@@ -33,14 +33,14 @@ describe('when the click target is natively non-focusable', () => {
         const className = browser.execute(function() {
             return document
                 .activeElement.shadowRoot.activeElement.shadowRoot.activeElement.className;
-        }).value;
+        });
 
         // The invalid behavior described in issue #1382 causes focus to land on input.tail
         assert.equal(className, 'integration-child-button');
     });
 
     it('should apply focus to natively focusable parent (button) when click target is span element', () => {
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('.head');
@@ -48,7 +48,7 @@ describe('when the click target is natively non-focusable', () => {
         input.click();
 
         // Click on the span wrapped by the button
-        const span = browser.execute(function() {
+        const span = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-target-natively-non-focusable')
                 .shadowRoot.querySelector('integration-parent')
@@ -59,7 +59,7 @@ describe('when the click target is natively non-focusable', () => {
         const className = browser.execute(function() {
             return document
                 .activeElement.shadowRoot.activeElement.shadowRoot.activeElement.className;
-        }).value;
+        });
 
         // The invalid behavior described in issue #1382 causes focus to land on input.tail
         assert.equal(className, 'span-button');

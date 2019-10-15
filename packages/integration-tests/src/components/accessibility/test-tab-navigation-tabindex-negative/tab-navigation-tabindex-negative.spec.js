@@ -13,7 +13,7 @@ describe('Tab navigation when tabindex -1', () => {
     });
 
     it('should skip shadow (forward)', function() {
-        const secondInput = browser.execute(function() {
+        const secondInput = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.second-outside');
@@ -25,13 +25,13 @@ describe('Tab navigation when tabindex -1', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'third-outside');
     });
 
     it('should skip shadow (backward)', function() {
-        const thirdInput = browser.execute(function() {
+        const thirdInput = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-negative')
                 .shadowRoot.querySelector('.third-outside');
@@ -43,7 +43,7 @@ describe('Tab navigation when tabindex -1', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'second-outside');
     });

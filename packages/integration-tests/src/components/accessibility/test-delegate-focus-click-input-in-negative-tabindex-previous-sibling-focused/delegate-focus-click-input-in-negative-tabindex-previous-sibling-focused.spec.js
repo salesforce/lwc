@@ -20,7 +20,7 @@ describe('Delegates focus', () => {
     it('should focus the input when clicked', function() {
         browser.keys(['Tab']); // focus first anchor
         browser.keys(['Tab']); // focus second anchor
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector(
                     'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'
@@ -28,8 +28,10 @@ describe('Delegates focus', () => {
                 .shadowRoot.querySelector('integration-child')
                 .shadowRoot.querySelector('input');
         });
-        input.click(); // click into input
-        const active = browser.execute(function() {
+
+        input.click();
+
+        const active = browser.$(function() {
             return document
                 .querySelector(
                     'integration-delegate-focus-click-input-in-negative-tabindex-previous-sibling-focused'

@@ -22,7 +22,7 @@ describe('Retarget relatedTarget', () => {
                 .focus();
         });
         browser.keys(['Shift', 'Tab', 'Shift']);
-        const indicator = browser.execute(function() {
+        const indicator = browser.$(function() {
             return document
                 .querySelector('integration-retarget-related-target')
                 .shadowRoot.querySelector('.related-target-tabname');

@@ -20,7 +20,7 @@ describe('Retarget relatedTarget', () => {
         browser.keys(['Tab']);
         browser.keys(['Tab']);
         browser.keys(['Tab']);
-        const indicator = browser.execute(function() {
+        const indicator = browser.$(function() {
             return document
                 .querySelector('integration-retarget-body-related-target')
                 .shadowRoot.querySelector('.related-target-tagname');

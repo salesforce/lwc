@@ -14,28 +14,29 @@ describe('Composed focusin event', () => {
     });
 
     it('standard event should be composed', function() {
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('input');
         });
         input.click();
-        browser.click('body');
-        const focusInComposed = browser.execute(function() {
+        $('body').click();
+        const focusInComposed = browser.$(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.focus-in-composed');
         });
         assert.deepEqual(focusInComposed.getText(), 'Focus In Composed');
     });
+
     it('custom event should not be composed', () => {
-        const button = browser.execute(function() {
+        const button = browser.$(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('button');
         });
         button.click();
-        const customFocusInNotComposed = browser.execute(function() {
+        const customFocusInNotComposed = browser.$(function() {
             return document
                 .querySelector('integration-focusin-composed-true')
                 .shadowRoot.querySelector('.custom-focus-in-not-composed');

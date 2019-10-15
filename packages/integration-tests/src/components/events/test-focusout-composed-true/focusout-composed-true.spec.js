@@ -14,14 +14,16 @@ describe('Composed focusout event', () => {
     });
 
     it('standard event should be composed', function() {
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-focusout-composed-true')
                 .shadowRoot.querySelector('input');
         });
+
         input.click();
-        browser.click('body');
-        const focusInComposed = browser.execute(function() {
+        $('body').click();
+
+        const focusInComposed = browser.$(function() {
             return document
                 .querySelector('integration-focusout-composed-true')
                 .shadowRoot.querySelector('.focus-out-composed');
@@ -29,13 +31,13 @@ describe('Composed focusout event', () => {
         assert.deepEqual(focusInComposed.getText(), 'Focus Out Composed');
     });
     it('custom event shoud not be composed', () => {
-        const button = browser.execute(function() {
+        const button = browser.$(function() {
             return document
                 .querySelector('integration-focusout-composed-true')
                 .shadowRoot.querySelector('button');
         });
         button.click();
-        const customFocusInNotComposed = browser.execute(function() {
+        const customFocusInNotComposed = browser.$(function() {
             return document
                 .querySelector('integration-focusout-composed-true')
                 .shadowRoot.querySelector('.custom-focus-out-not-composed');

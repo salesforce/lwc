@@ -18,7 +18,8 @@ describe('Retarget relatedTarget', () => {
                 return document
                     .querySelector('integration-retarget-null-related-target')
                     .shadowRoot.querySelector('.related-target-tabname').textContent;
-            }).value;
+            });
+
             return text === 'Related target is null';
         });
     });

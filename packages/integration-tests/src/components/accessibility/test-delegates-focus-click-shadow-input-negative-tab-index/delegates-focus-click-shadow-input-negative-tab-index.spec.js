@@ -12,13 +12,13 @@ describe('Tabbing into custom element with delegates focus', () => {
     });
 
     it('should apply focus to input in shadow', function() {
-        const div = browser.execute(function() {
+        const div = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-shadow-input-negative-tab-index')
                 .shadowRoot.querySelector('.selectable-div');
         });
         div.click();
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-click-shadow-input-negative-tab-index')
                 .shadowRoot.querySelector('integration-child')
@@ -29,7 +29,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         // browser.click('.negative-tab-index-input');
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document
                         .querySelector(
                             'integration-delegates-focus-click-shadow-input-negative-tab-index'

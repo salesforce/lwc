@@ -14,7 +14,7 @@ describe('focus delegation when clicking on form element label', () => {
     });
 
     it('should apply focus to element associated with label when relatedTarget is null', function() {
-        const label = browser.execute(function() {
+        const label = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('integration-input')
@@ -27,13 +27,13 @@ describe('focus delegation when clicking on form element label', () => {
             const integrationInput = container.shadowRoot.activeElement;
             const inputClassName = integrationInput.shadowRoot.activeElement.className;
             return inputClassName;
-        }).value;
+        });
 
         assert.strictEqual(inputClassName, 'internal');
     });
 
     it('should apply focus to element associated with label when relatedTarget is non-null', function() {
-        const headInput = browser.execute(function() {
+        const headInput = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('.head');
@@ -41,7 +41,7 @@ describe('focus delegation when clicking on form element label', () => {
         // Focus on input so that relatedTarget will be non-null
         headInput.click();
 
-        const label = browser.execute(function() {
+        const label = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-non-focusable-click-target')
                 .shadowRoot.querySelector('integration-input')
@@ -54,7 +54,7 @@ describe('focus delegation when clicking on form element label', () => {
             const integrationInput = container.shadowRoot.activeElement;
             const inputClassName = integrationInput.shadowRoot.activeElement.className;
             return inputClassName;
-        }).value;
+        });
 
         assert.strictEqual(inputClassName, 'internal');
     });

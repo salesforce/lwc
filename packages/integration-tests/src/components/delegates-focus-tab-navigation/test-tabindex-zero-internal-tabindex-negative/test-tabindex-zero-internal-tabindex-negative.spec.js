@@ -13,7 +13,7 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (forward)', function() {
-        const firstInput = browser.execute(function() {
+        const firstInput = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.first');
@@ -27,13 +27,13 @@ describe('Tab navigation when tabindex 0', () => {
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;
             return input.tagName;
-        }).value;
+        });
 
         assert.equal(tagName, 'INPUT');
     });
 
     it('should skip internal elements contained by a negative tabindex subtree when delegating focus (backward)', function() {
-        const lastInput = browser.execute(function() {
+        const lastInput = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero-internal-tabindex-negative')
                 .shadowRoot.querySelector('.last');
@@ -47,7 +47,7 @@ describe('Tab navigation when tabindex 0', () => {
             var parent = container.shadowRoot.activeElement;
             var input = parent.shadowRoot.activeElement;
             return input.tagName;
-        }).value;
+        });
 
         assert.equal(tagName, 'INPUT');
     });

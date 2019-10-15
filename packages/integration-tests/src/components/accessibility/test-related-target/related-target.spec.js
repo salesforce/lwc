@@ -13,7 +13,7 @@ function getRootEvents() {
     }).value;
 }
 function getRootInput() {
-    return browser.execute(function() {
+    return browser.$(function() {
         return document
             .querySelector('integration-related-target')
             .shadowRoot.querySelector('input');
@@ -30,7 +30,7 @@ function getChildEvents() {
     }).value;
 }
 function getChildInput() {
-    return browser.execute(function() {
+    return browser.$(function() {
         return document
             .querySelector('integration-related-target')
             .shadowRoot.querySelector('integration-parent')

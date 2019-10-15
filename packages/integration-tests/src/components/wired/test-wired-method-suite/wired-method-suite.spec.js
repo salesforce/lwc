@@ -19,7 +19,7 @@ describe('Component with a wired method', () => {
                 .querySelector('integration-wired-method-suite')
                 .shadowRoot.querySelector('integration-wired-method').shadowRoot.textContent;
         });
-        assert.equal(todoText.value, 'Title:task 0 Completed:true');
+        assert.equal(todoText, 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
@@ -38,7 +38,7 @@ describe('Component with a wired method', () => {
                             'integration-wired-method'
                         ).shadowRoot.textContent;
                 });
-                return todoText.value === 'Title:task 1 Completed:false';
+                return todoText === 'Title:task 1 Completed:false';
             },
             3000,
             'Should update todo id'

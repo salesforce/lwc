@@ -13,7 +13,7 @@ describe('Internal tab navigation when tabindex 0', () => {
     });
 
     it('should navigate (forward)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero-internal')
                 .shadowRoot.querySelector('integration-child')
@@ -27,13 +27,13 @@ describe('Internal tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'third-inside');
     });
 
     it('should navigate (backward)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero-internal')
                 .shadowRoot.querySelector('integration-child')
@@ -47,7 +47,7 @@ describe('Internal tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'first-inside');
     });

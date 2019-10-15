@@ -22,7 +22,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-negative .head');
@@ -37,7 +37,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -52,7 +52,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-negative .tail');
@@ -67,7 +67,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -92,7 +92,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listeners (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .head');
@@ -108,7 +108,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -123,7 +123,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listeners (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-none .tail');
@@ -139,7 +139,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -163,7 +163,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-zero .head');
@@ -179,7 +179,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -194,7 +194,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listener on host and should invoke focus event listener in shadow (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-true-tabindex-zero .tail');
@@ -210,7 +210,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -235,7 +235,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-negative .head');
@@ -250,7 +250,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -265,7 +265,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should not invoke focus event listeners (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-negative .tail');
@@ -280,7 +280,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -304,7 +304,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listener on both host and in shadow (forward)', () => {
-            const headInput = browser.execute(function() {
+            const headInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-zero .head');
@@ -321,7 +321,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,
@@ -336,7 +336,7 @@ describe('Focus event while sequential focus navigation', () => {
         });
 
         it('should invoke focus event listener on both host and in shadow (backward)', () => {
-            const tailInput = browser.execute(function() {
+            const tailInput = browser.$(function() {
                 return document
                     .querySelector('integration-focus-event-while-navigating')
                     .shadowRoot.querySelector('.delegates-false-tabindex-zero .tail');
@@ -353,7 +353,7 @@ describe('Focus event while sequential focus navigation', () => {
                     host: container.hostFocusCount(),
                     shadow: container.shadowFocusCount(),
                 };
-            }).value;
+            });
 
             assert.strictEqual(
                 count.host,

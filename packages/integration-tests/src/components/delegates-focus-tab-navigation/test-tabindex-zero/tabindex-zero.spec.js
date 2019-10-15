@@ -13,7 +13,7 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should delegate focus (forward)', function() {
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -26,13 +26,13 @@ describe('Tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'first-inside');
     });
 
     it('should delegate focus (backward)', function() {
-        const thirdOutside = browser.execute(function() {
+        const thirdOutside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-zero')
                 .shadowRoot.querySelector('.third-outside');
@@ -45,7 +45,7 @@ describe('Tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'third-inside');
     });

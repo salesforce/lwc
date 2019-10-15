@@ -14,14 +14,14 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function() {
-        const select = browser.execute(function() {
+        const select = browser.$(function() {
             return document
                 .querySelector('integration-slotted-event-target')
                 .shadowRoot.querySelector('select');
         });
         select.selectByVisibleText('Second');
 
-        const element = browser.execute(function() {
+        const element = browser.$(function() {
             return document
                 .querySelector('integration-slotted-event-target')
                 .shadowRoot.querySelector('.target-is-select');

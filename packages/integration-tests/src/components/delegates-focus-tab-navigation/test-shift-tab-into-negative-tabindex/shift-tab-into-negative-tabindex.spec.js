@@ -14,7 +14,7 @@ describe('Delegates focus', () => {
 
     it('should focus the input when clicked', function() {
         browser
-            .execute(function() {
+            .$(function() {
                 return document
                     .querySelector('integration-shift-tab-into-negative-tabindex')
                     .shadowRoot.querySelector('.bottom');
@@ -27,7 +27,7 @@ describe('Delegates focus', () => {
             const container = document.activeElement;
             const activeElement = container.shadowRoot.activeElement;
             return activeElement.className;
-        }).value;
+        });
 
         assert.equal(className, 'top');
     });
