@@ -397,21 +397,21 @@ defineProperties(Element.prototype, {
     },
     getElementsByClassName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
-            );
+            ) as Element[];
 
-            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-            } else {
-                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
+            const filteredResults = getFilteredArrayOfNodes(
+                this,
+                elements,
+                ShadowDomSemantic.Enabled
+            );
             return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
@@ -420,21 +420,21 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagName: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
-            );
+            ) as Element[];
 
-            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-            } else {
-                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
+            const filteredResults = getFilteredArrayOfNodes(
+                this,
+                elements,
+                ShadowDomSemantic.Enabled
+            );
             return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
@@ -443,24 +443,24 @@ defineProperties(Element.prototype, {
     },
     getElementsByTagNameNS: {
         value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
-            let filteredResults;
             const elements = arrayFromCollection(
                 elementGetElementsByTagNameNS.apply(this, ArraySlice.call(arguments) as [
                     string,
                     string
                 ])
-            );
+            ) as Element[];
 
-            if (featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    elements,
-                    ShadowDomSemantic.Enabled
+            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
+                return createStaticHTMLCollection(
+                    getNonPatchedFilteredArrayOfNodes(this, elements)
                 );
-            } else {
-                filteredResults = getNonPatchedFilteredArrayOfNodes(this, elements);
             }
 
+            const filteredResults = getFilteredArrayOfNodes(
+                this,
+                elements,
+                ShadowDomSemantic.Enabled
+            );
             return createStaticHTMLCollection(filteredResults);
         },
         writable: true,
