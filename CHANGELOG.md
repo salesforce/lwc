@@ -1,4 +1,18 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.0...v) (2019-10-14)
+# [](https://github.com/salesforce/lwc/compare/v1.1.3...v) (2019-10-15)
+
+
+### Bug Fixes
+
+* svg usage ([#1574](https://github.com/salesforce/lwc/issues/1574)) ([8d64bfc](https://github.com/salesforce/lwc/commit/8d64bfc))
+
+
+### Features
+
+* upgrade dependencies ([#1576](https://github.com/salesforce/lwc/issues/1576)) ([cc94f9c](https://github.com/salesforce/lwc/commit/cc94f9c))
+
+
+
+## [1.1.3](https://github.com/salesforce/lwc/compare/v1.1.0...v1.1.3) (2019-10-14)
 
 
 ### Bug Fixes
