@@ -51,7 +51,12 @@ import {
 } from '../env/element';
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
-import { getNodeKey, getNodeOwnerKey, isNodeShadowed, getNodeNearestOwnerKey } from '../shared/node-ownership';
+import {
+    getNodeKey,
+    getNodeOwnerKey,
+    isNodeShadowed,
+    getNodeNearestOwnerKey,
+} from '../shared/node-ownership';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
