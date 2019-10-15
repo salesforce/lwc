@@ -90,7 +90,7 @@ describe('Tab navigation when tabindex 0', () => {
                 activeElement = activeElement.shadowRoot.activeElement;
             }
             return activeElement.className;
-        }).value;
+        });
         assert.equal(className, 'integration-child');
     });
 });
