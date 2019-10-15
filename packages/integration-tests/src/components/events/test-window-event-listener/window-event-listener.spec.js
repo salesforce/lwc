@@ -24,7 +24,7 @@ describe('Event Target on window event listener', () => {
                 .shadowRoot.querySelector('button')
                 .click();
         });
-        const indicator = browser.execute(function() {
+        const indicator = browser.$(function() {
             return document
                 .querySelector('integration-window-event-listener')
                 .shadowRoot.querySelector('.window-event-target-tagname');

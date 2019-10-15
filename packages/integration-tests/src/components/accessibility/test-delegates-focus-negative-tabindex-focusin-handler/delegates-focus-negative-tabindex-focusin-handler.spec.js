@@ -13,7 +13,7 @@ describe('Tabbing into custom element with delegates focus', () => {
     });
 
     it('should apply focus to input in shadow', function() {
-        const input = browser.execute(function() {
+        const input = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-negative-tabindex-focusin-handler')
                 .shadowRoot.querySelector('integration-child')
@@ -22,14 +22,14 @@ describe('Tabbing into custom element with delegates focus', () => {
         input.click();
         browser.waitUntil(
             function() {
-                const div = browser.execute(function() {
+                const div = browser.$(function() {
                     return document
                         .querySelector(
                             'integration-delegates-focus-negative-tabindex-focusin-handler'
                         )
                         .shadowRoot.querySelector('.focus-in-called');
                 });
-                return div.value !== null && div.getText() === 'Focus in called';
+                return div.getText() === 'Focus in called';
             },
             500,
             'expected focusin to have been triggered'

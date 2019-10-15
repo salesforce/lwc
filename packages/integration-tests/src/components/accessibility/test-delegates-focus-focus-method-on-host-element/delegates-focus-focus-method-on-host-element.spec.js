@@ -17,7 +17,7 @@ describe('Invoking the focus method of a host element', () => {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
         browser
-            .execute(function() {
+            .$(function() {
                 return document
                     .querySelector('integration-delegates-focus-focus-method-on-host-element')
                     .shadowRoot.querySelector('input');
@@ -37,7 +37,7 @@ describe('Invoking the focus method of a host element', () => {
             );
             var activeElement = container.shadowRoot.activeElement;
             return activeElement.className;
-        }).value;
+        });
 
         assert.equal(className, 'negative');
     });
@@ -45,13 +45,12 @@ describe('Invoking the focus method of a host element', () => {
     it('should apply focus to the host element (tabindex 0)', function() {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser
-            .execute(function() {
-                return document
-                    .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                    .shadowRoot.querySelector('input');
-            })
-            .click();
+        browser.execute(function() {
+            return document
+                .querySelector('integration-delegates-focus-focus-method-on-host-element')
+                .shadowRoot.querySelector('input')
+                .click();
+        });
 
         browser.execute(function() {
             document
@@ -66,7 +65,7 @@ describe('Invoking the focus method of a host element', () => {
             );
             var activeElement = container.shadowRoot.querySelector('integration-button.zero');
             return activeElement.className;
-        }).value;
+        });
 
         assert.equal(className, 'zero');
     });
@@ -74,13 +73,12 @@ describe('Invoking the focus method of a host element', () => {
     it('should apply focus to the host element (no tabindex)', function() {
         // Click the top input to give the focus event's relatedTarget a
         // non-null value so that we enter the code path that we want to test.
-        browser
-            .execute(function() {
-                return document
-                    .querySelector('integration-delegates-focus-focus-method-on-host-element')
-                    .shadowRoot.querySelector('input');
-            })
-            .click();
+        browser.execute(function() {
+            return document
+                .querySelector('integration-delegates-focus-focus-method-on-host-element')
+                .shadowRoot.querySelector('input')
+                .click();
+        });
 
         browser.execute(function() {
             document
@@ -95,7 +93,7 @@ describe('Invoking the focus method of a host element', () => {
             );
             var activeElement = container.shadowRoot.querySelector('integration-button.none');
             return activeElement.className;
-        }).value;
+        });
 
         assert.equal(className, 'none');
     });

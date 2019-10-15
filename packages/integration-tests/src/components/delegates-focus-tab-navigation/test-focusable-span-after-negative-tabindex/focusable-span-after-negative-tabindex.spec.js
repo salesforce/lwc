@@ -14,7 +14,7 @@ describe('Delegates focus', () => {
 
     it('should focus the input when clicked', function() {
         browser
-            .execute(function() {
+            .$(function() {
                 return document
                     .querySelector('integration-focusable-span-after-negative-tabindex')
                     .shadowRoot.querySelector('.first');
@@ -27,7 +27,7 @@ describe('Delegates focus', () => {
             var container = document.activeElement;
             var activeElement = container.shadowRoot.activeElement;
             return activeElement.tagName;
-        }).value;
+        });
 
         assert.equal(tagName, 'SPAN');
     });

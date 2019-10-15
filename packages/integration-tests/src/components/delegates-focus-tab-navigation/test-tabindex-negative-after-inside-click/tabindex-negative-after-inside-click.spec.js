@@ -13,14 +13,14 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
     });
 
     it('should continue skipping elements (forward)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.second-outside');
@@ -32,13 +32,13 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'third-outside');
     });
 
     it('should continue skipping elements after navigating out (forward)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
@@ -52,20 +52,20 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'third-outside');
     });
 
     it('should continue skipping elements (backward)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
                 .shadowRoot.querySelector('.second-inside');
         });
         secondInside.click();
-        const thirdOutside = browser.execute(function() {
+        const thirdOutside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('.third-outside');
@@ -77,13 +77,13 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'second-outside');
     });
 
     it('should continue skipping elements after navigating out (backwards)', function() {
-        const secondInside = browser.execute(function() {
+        const secondInside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-negative-after-inside-click')
                 .shadowRoot.querySelector('integration-child[data-id=click-target]')
@@ -97,7 +97,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'second-outside');
     });

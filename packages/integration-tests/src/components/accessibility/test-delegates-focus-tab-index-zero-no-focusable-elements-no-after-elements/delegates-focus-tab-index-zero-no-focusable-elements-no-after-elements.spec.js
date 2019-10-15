@@ -18,7 +18,7 @@ describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable 
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement;
                 });
                 return active.getTagName().toLowerCase() === 'body';

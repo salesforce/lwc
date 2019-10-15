@@ -13,7 +13,7 @@ describe('Tab navigation when tabindex 0', () => {
     });
 
     it('should focus on custom element when tabbing forward from a sibling element', function() {
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -25,7 +25,7 @@ describe('Tab navigation when tabindex 0', () => {
             var container = document.activeElement;
             var child = container.shadowRoot.activeElement;
             return child.tagName.toLowerCase();
-        }).value;
+        });
         assert.equal(tagName, 'integration-child');
 
         var internal = browser.execute(function() {
@@ -33,12 +33,12 @@ describe('Tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input;
-        }).value;
+        });
         assert.equal(internal, null);
     });
 
     it('should focus on internal element when tabbing forward twice from a sibling element', function() {
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.second-outside');
@@ -52,12 +52,12 @@ describe('Tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
         assert.equal(className, 'first-inside');
     });
 
     it('should focus on internal element when tabbing backwards from a sibling element', function() {
-        const thirdOutside = browser.execute(function() {
+        const thirdOutside = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('.third-outside');
@@ -70,12 +70,12 @@ describe('Tab navigation when tabindex 0', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
         assert.equal(className, 'third-inside');
     });
 
     it('should focus on custom element when tabbing backwards out of the shadow', function() {
-        const firstInside = browser.execute(function() {
+        const firstInside = browser.$(function() {
             return document
                 .querySelector('integration-tab-navigation-tabindex-zero')
                 .shadowRoot.querySelector('integration-child')
@@ -90,7 +90,7 @@ describe('Tab navigation when tabindex 0', () => {
                 activeElement = activeElement.shadowRoot.activeElement;
             }
             return activeElement.className;
-        }).value;
+        });
         assert.equal(className, 'integration-child');
     });
 });

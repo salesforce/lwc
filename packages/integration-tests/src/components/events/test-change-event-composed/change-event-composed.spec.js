@@ -22,8 +22,8 @@ describe('Composed change event', () => {
                 .focus();
         });
         browser.keys('foo');
-        browser.click('body');
-        const div = browser.execute(function() {
+        $('body').click();
+        const div = browser.$(function() {
             return document
                 .querySelector('integration-change-event-composed')
                 .shadowRoot.querySelector('.verify-not-composed');

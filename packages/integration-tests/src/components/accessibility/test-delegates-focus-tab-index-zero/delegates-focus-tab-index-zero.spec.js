@@ -17,7 +17,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
@@ -33,7 +33,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 
@@ -47,7 +47,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement.shadowRoot.activeElement;
                 });
 
@@ -61,7 +61,7 @@ describe('Delegate focus with tabindex 0', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement;
                 });
                 return active.getText() === 'first button';

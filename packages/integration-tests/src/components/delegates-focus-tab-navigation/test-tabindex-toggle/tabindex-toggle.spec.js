@@ -13,7 +13,7 @@ describe('Tab navigation without tabindex', () => {
     });
 
     it('should support tabindex toggling', function() {
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.second-outside');
@@ -26,11 +26,11 @@ describe('Tab navigation without tabindex', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
         assert.equal(className, 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        const toggle = browser.execute(function() {
+        const toggle = browser.$(function() {
             return document
                 .querySelector('integration-tabindex-toggle')
                 .shadowRoot.querySelector('.toggle');
@@ -44,7 +44,7 @@ describe('Tab navigation without tabindex', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
         assert.equal(className, 'third-outside');
 
         // Toggle the tabindex <x-child>
@@ -58,7 +58,7 @@ describe('Tab navigation without tabindex', () => {
             var child = container.shadowRoot.activeElement;
             var input = child.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
         assert.equal(className, 'first-inside');
     });
 });

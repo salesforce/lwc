@@ -14,14 +14,14 @@ describe('Tabbing into custom element with delegates focus', () => {
     });
 
     it('should apply focus to input in shadow', function() {
-        const span = browser.execute(function() {
+        const span = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-nested-focusable-custom-elements')
                 .shadowRoot.querySelector('integration-parent')
                 .shadowRoot.querySelector('.focusable-span');
         });
         span.click();
-        const active = browser.execute(function() {
+        const active = browser.$(function() {
             return document
                 .querySelector('integration-delegates-focus-nested-focusable-custom-elements')
                 .shadowRoot.querySelector('integration-parent').shadowRoot.activeElement;

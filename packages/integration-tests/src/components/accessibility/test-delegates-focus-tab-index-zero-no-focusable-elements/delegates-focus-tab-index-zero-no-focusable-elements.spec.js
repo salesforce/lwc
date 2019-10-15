@@ -17,7 +17,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 
@@ -31,7 +31,7 @@ describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
 
         browser.waitUntil(
             () => {
-                const active = browser.execute(function() {
+                const active = browser.$(function() {
                     return document.activeElement.shadowRoot.activeElement;
                 });
 

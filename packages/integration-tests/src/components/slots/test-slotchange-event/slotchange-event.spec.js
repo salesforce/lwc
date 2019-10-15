@@ -20,7 +20,7 @@ describe('slotchange', () => {
             var container = document.querySelector('integration-slotchange-event');
             var child = container.shadowRoot.querySelector('integration-child');
             return child.shadowRoot.querySelector('.count').textContent;
-        }).value;
+        });
         assert.strictEqual(count, '1');
     });
 });

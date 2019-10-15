@@ -14,7 +14,7 @@ describe('when disabled button comes after a component that is delegating focus 
 
     it('should transfer focus to the body', function() {
         browser
-            .execute(function() {
+            .$(function() {
                 return document
                     .querySelector('integration-disabled-button-after-negative-tabindex')
                     .shadowRoot.querySelector('.first');
@@ -24,7 +24,7 @@ describe('when disabled button comes after a component that is delegating focus 
         browser.keys(['Tab']); // tab over integration-child
         const tagName = browser.execute(function() {
             return document.activeElement.tagName;
-        }).value;
+        });
         assert.equal(tagName, 'BODY');
     });
 });

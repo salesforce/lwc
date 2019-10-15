@@ -15,11 +15,11 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to input in shadow', function() {
         browser.keys(['Tab']);
-        const activeFromDocument = browser.execute(function() {
+        const activeFromDocument = browser.$(function() {
             return document.activeElement;
         });
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-slot');
-        const activeFromShadow = browser.execute(function() {
+        const activeFromShadow = browser.$(function() {
             return document.querySelector(
                 'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;
@@ -29,7 +29,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to body after exiting in shadow', function() {
         browser.keys(['Tab']);
-        const activeFromDocument = browser.execute(function() {
+        const activeFromDocument = browser.$(function() {
             return document.activeElement;
         });
 
@@ -37,7 +37,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         const isTopElement = tabName === 'body' || tabName === 'html';
         assert.ok(isTopElement);
 
-        const activeFromShadow = browser.execute(function() {
+        const activeFromShadow = browser.$(function() {
             return document.querySelector(
                 'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;
@@ -47,11 +47,11 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to input in shadow when tabbing backwards', function() {
         browser.keys(['Shift', 'Tab', 'Shift']);
-        const activeFromDocument = browser.execute(function() {
+        const activeFromDocument = browser.$(function() {
             return document.activeElement;
         });
         assert.equal(activeFromDocument.getTagName(), 'integration-delegates-focus-slot');
-        const activeFromShadow = browser.execute(function() {
+        const activeFromShadow = browser.$(function() {
             return document.querySelector(
                 'integration-delegates-focus-slot'
             ).shadowRoot.activeElement;

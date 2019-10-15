@@ -118,6 +118,16 @@
         },
         {
             "files": [
+                "**/integration-tests/**",
+            ],
+
+            "globals": {
+                "$": true,
+                "browser": true
+            }
+        },
+        {
+            "files": [
                 "**/scripts/**",
                 "**/jest.config.js"
             ],

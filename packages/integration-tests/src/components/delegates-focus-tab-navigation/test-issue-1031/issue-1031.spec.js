@@ -13,13 +13,13 @@ describe('issue #1031', () => {
     });
 
     it('should skip child shadow when tabbing after dynamically updating parent tabindex from 0 to -1', function() {
-        const initialize = browser.execute(function() {
+        const initialize = browser.$(function() {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.initialize');
         });
         initialize.click(); // init tabindex to 0
-        const firstOutside = browser.execute(function() {
+        const firstOutside = browser.$(function() {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.first-outside');
@@ -32,19 +32,19 @@ describe('issue #1031', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'second-outside');
     });
 
     it('should skip child shadow when shift-tabbing after dynamically updating parent tabindex from 0 to -1', function() {
-        const initialize = browser.execute(function() {
+        const initialize = browser.$(function() {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.initialize');
         });
         initialize.click(); // init tabindex to 0
-        const secondOutside = browser.execute(function() {
+        const secondOutside = browser.$(function() {
             return document
                 .querySelector('integration-issue-1031')
                 .shadowRoot.querySelector('.second-outside');
@@ -57,7 +57,7 @@ describe('issue #1031', () => {
             var container = document.activeElement;
             var input = container.shadowRoot.activeElement;
             return input.className;
-        }).value;
+        });
 
         assert.equal(className, 'first-outside');
     });

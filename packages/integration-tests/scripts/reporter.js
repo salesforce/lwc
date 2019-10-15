@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const SpecReporter = require('wdio-spec-reporter');
+const SpecReporter = require('@wdio/spec-reporter').default;
 
 function decorateCompatPreface(reporter, preface) {
     const modePreface = ` [${reporter.options.mode}]`;

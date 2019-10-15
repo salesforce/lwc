@@ -20,15 +20,12 @@ describe('shadow root element from point should return correct element', () => {
                 .click();
         });
         browser.waitUntil(() => {
-            const indicator = browser.execute(function() {
+            const indicator = browser.$(function() {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-shadow-element-indicator');
             });
-            return (
-                indicator.value !== null &&
-                indicator.getText() === 'Correct shadow element selected'
-            );
+            return indicator.getText() === 'Correct shadow element selected';
         });
     });
 
@@ -40,15 +37,12 @@ describe('shadow root element from point should return correct element', () => {
                 .click();
         });
         browser.waitUntil(() => {
-            const indicator = browser.execute(function() {
+            const indicator = browser.$(function() {
                 return document
                     .querySelector('integration-element-from-point')
                     .shadowRoot.querySelector('.correct-document-element-indicator');
             });
-            return (
-                indicator.value !== null &&
-                indicator.getText() === 'Correct document element selected'
-            );
+            return indicator.getText() === 'Correct document element selected';
         });
     });
 });

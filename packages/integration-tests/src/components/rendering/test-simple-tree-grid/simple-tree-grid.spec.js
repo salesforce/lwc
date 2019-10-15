@@ -12,7 +12,7 @@ describe('Testing component: simple-list-container', () => {
 
     before(() => {
         browser.url(URL);
-        element = browser.element('integration-simple-tree-grid');
+        element = $('integration-simple-tree-grid');
     });
 
     it('page load', () => {
@@ -36,7 +36,7 @@ describe('Testing component: simple-list-container', () => {
                 }
                 return 0;
             });
-            return count.value;
+            return count;
         }
         const preCount = getNodesCount();
         assert.equal(preCount, 3, 'expected 3 items in list');

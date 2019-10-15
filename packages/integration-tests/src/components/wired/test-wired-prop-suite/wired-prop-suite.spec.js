@@ -19,7 +19,7 @@ describe('Component with a wired property', () => {
                 .querySelector('integration-wired-prop-suite')
                 .shadowRoot.querySelector('integration-wired-prop').shadowRoot.textContent;
         });
-        assert.equal(todoText.value, 'Title:task 0 Completed:true');
+        assert.equal(todoText, 'Title:task 0 Completed:true');
     });
 
     it('should update data correctly', () => {
@@ -36,7 +36,7 @@ describe('Component with a wired property', () => {
                         .querySelector('integration-wired-prop-suite')
                         .shadowRoot.querySelector('integration-wired-prop').shadowRoot.textContent;
                 });
-                return todoText.value === 'Title:task 1 Completed:false';
+                return todoText === 'Title:task 1 Completed:false';
             },
             1000,
             'expect todo item to be updated'
