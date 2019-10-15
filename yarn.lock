@@ -10037,10 +10037,10 @@ parse-url@^5.0.0:
     parse-path "^4.0.0"
     protocols "^1.4.0"
 
-parse5-with-errors@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/parse5-with-errors/-/parse5-with-errors-4.0.1.tgz#3a99709acba0e495d3d0cf79542386c362e7e6a3"
-  integrity sha1-Oplwmsug5JXT0M95VCOGw2Ln5qM=
+parse5-with-errors@4.0.3-beta1:
+  version "4.0.3-beta1"
+  resolved "https://registry.yarnpkg.com/parse5-with-errors/-/parse5-with-errors-4.0.3-beta1.tgz#0e9107363d5c1b1db9bd0f75c296bd10cff5c8bd"
+  integrity sha512-Y6IDQO1t0ZT0FuYJhoVh1W1+FS25EG1xBeQPtnX8gyQGcT4JvT3de7hCWHAOStdKW8/9cw9iS0WoFcIxjI8Ymg==
   dependencies:
     "@types/node" "^6.0.46"
 

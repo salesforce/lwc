@@ -23,7 +23,8 @@ import {
     toString,
 } from '@lwc/shared';
 import { logError } from '../shared/assert';
-import { vmBeingRendered, invokeEventListener, invokeComponentCallback } from './invoker';
+import { invokeEventListener, invokeComponentCallback } from './invoker';
+import { getVMBeingRendered } from './template';
 import {
     EmptyArray,
     resolveCircularModuleDependency,
@@ -229,11 +230,12 @@ function addNS(vnode: VElement) {
 }
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
-    ArrayPush.call((vmBeingRendered as VM).velements, vnode);
+    ArrayPush.call((getVMBeingRendered() as VM).velements, vnode);
 }
 
 // [h]tml node
 export function h(sel: string, data: ElementCompilerData, children: VNodes): VElement {
+    const vmBeingRendered = getVMBeingRendered();
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
@@ -302,6 +304,7 @@ export function ti(value: any): number {
     // If value is less than -1, we don't care
     const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
+        const vmBeingRendered = getVMBeingRendered();
         if (shouldNormalize) {
             logError(
                 `Invalid tabindex value \`${toString(
@@ -351,7 +354,7 @@ export function c(
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
-
+    const vmBeingRendered = getVMBeingRendered();
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
         assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
@@ -420,6 +423,7 @@ export function i(
     const list: VNodes = [];
     // TODO: #1276 - compiler should give us some sort of indicator when a vnodes collection is dynamic
     sc(list);
+    const vmBeingRendered = getVMBeingRendered();
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -541,7 +545,7 @@ export function t(text: string): VText {
         key,
 
         hook: TextHook,
-        owner: vmBeingRendered as VM,
+        owner: getVMBeingRendered() as VM,
     };
 }
 
@@ -559,7 +563,7 @@ export function p(text: string): VComment {
         key,
 
         hook: CommentHook,
-        owner: vmBeingRendered as VM,
+        owner: getVMBeingRendered() as VM,
     };
 }
 
@@ -573,6 +577,7 @@ export function d(value: any): VNode | null {
 
 // [b]ind function
 export function b(fn: EventListener): EventListener {
+    const vmBeingRendered = getVMBeingRendered();
     if (isNull(vmBeingRendered)) {
         throw new Error();
     }
@@ -584,6 +589,7 @@ export function b(fn: EventListener): EventListener {
 
 // [f]unction_[b]ind
 export function fb(fn: (...args: any[]) => any): () => any {
+    const vmBeingRendered = getVMBeingRendered();
     if (isNull(vmBeingRendered)) {
         throw new Error();
     }
@@ -599,10 +605,10 @@ export function ll(
     id: string,
     context?: (...args: any[]) => any
 ): EventListener {
-    if (isNull(vmBeingRendered)) {
+    const vm: VM | null = getVMBeingRendered();
+    if (isNull(vm)) {
         throw new Error();
     }
-    const vm: VM = vmBeingRendered;
     // bind the original handler with b() so we can call it
     // after resolving the locator
     const eventListener = b(originalHandler);
@@ -642,7 +648,7 @@ export function k(compilerKey: number, obj: any): string | void {
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
                 assert.fail(
-                    `Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`
+                    `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
     }
@@ -650,6 +656,7 @@ export function k(compilerKey: number, obj: any): string | void {
 
 // [g]lobal [id] function
 export function gid(id: string | undefined | null): string | null | undefined {
+    const vmBeingRendered = getVMBeingRendered();
     if (isUndefined(id) || id === '') {
         if (process.env.NODE_ENV !== 'production') {
             logError(
@@ -668,6 +675,7 @@ export function gid(id: string | undefined | null): string | null | undefined {
 
 // [f]ragment [id] function
 export function fid(url: string | undefined | null): string | null | undefined {
+    const vmBeingRendered = getVMBeingRendered();
     if (isUndefined(url) || url === '') {
         if (process.env.NODE_ENV !== 'production') {
             if (isUndefined(url)) {

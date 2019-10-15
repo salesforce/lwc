@@ -1,14 +1,80 @@
 {
     "warnings": [
         {
+            "code": 1057,
+            "message": "LWC1057: xlink:href is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 7,
+                "column": 22,
+                "start": 157,
+                "length": 23
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: x is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 16,
+                "start": 196,
+                "length": 5
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: y is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 22,
+                "start": 202,
+                "length": 5
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: width is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 28,
+                "start": 208,
+                "length": 12
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: height is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 8,
+                "column": 41,
+                "start": 221,
+                "length": 13
+            }
+        },
+        {
+            "code": 1057,
+            "message": "LWC1057: preserveAspectRatio is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
+            "level": 2,
+            "location": {
+                "line": 9,
+                "column": 16,
+                "start": 250,
+                "length": 26
+            }
+        },
+        {
             "code": 1049,
-            "message": "LWC1049: Forbidden svg namespace tag found in template: '<animate>' tag is not allowed within <svg>",
+            "message": "LWC1049: Forbidden svg namespace tag found in template: '<feImage>' tag is not allowed within <svg>",
             "level": 1,
             "location": {
-                "line": 6,
-                "column": 9,
-                "start": 145,
-                "length": 19
+                "line": 7,
+                "column": 13,
+                "start": 148,
+                "length": 130
             }
         }
     ]

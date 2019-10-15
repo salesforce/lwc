@@ -23,8 +23,9 @@ import {
 import { logError } from '../shared/assert';
 import { ComponentInterface } from './component';
 import { globalHTMLProperties } from './attributes';
-import { isBeingConstructed, isRendering, vmBeingRendered } from './invoker';
+import { isBeingConstructed, isInvokingRender } from './invoker';
 import { getShadowRootVM, getComponentVM } from './vm';
+import { isUpdatingTemplate, getVMBeingRendered } from './template';
 
 function generateDataDescriptor(options: PropertyDescriptor): PropertyDescriptor {
     return assign(
@@ -217,9 +218,16 @@ function getShadowRootRestrictionsDescriptors(
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
+                const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
-                    !isRendering,
+                    !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
+                        sr
+                    )} by adding an event listener for "${type}".`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${toString(
                         sr
                     )} by adding an event listener for "${type}".`
                 );
@@ -327,10 +335,17 @@ function getCustomElementRestrictionsDescriptors(
                 listener: EventListener,
                 options?: boolean | AddEventListenerOptions
             ) {
+                const vmBeingRendered = getVMBeingRendered();
                 assert.invariant(
-                    !isRendering,
+                    !isInvokingRender,
                     `${vmBeingRendered}.render() method has side effects on the state of ${toString(
                         this
+                    )} by adding an event listener for "${type}".`
+                );
+                assert.invariant(
+                    !isUpdatingTemplate,
+                    `Updating the template of ${vmBeingRendered} has side effects on the state of ${toString(
+                        elm
                     )} by adding an event listener for "${type}".`
                 );
                 // TODO: #420 - this is triggered when the component author attempts to add a listener

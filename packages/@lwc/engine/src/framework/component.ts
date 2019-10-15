@@ -8,17 +8,16 @@ import { assert, isArray, isFalse, isFunction, isUndefined, StringToLowerCase } 
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
-    isRendering,
-    vmBeingRendered,
+    isInvokingRender,
     invokeEventListener,
 } from './invoker';
 import { invokeServiceHook, Services } from './services';
 import { VM, getComponentVM, UninitializedVM, scheduleRehydration } from './vm';
 import { VNodes } from '../3rdparty/snabbdom/types';
 import { tagNameGetter } from '../env/element';
-import { Template } from './template';
 import { ReactiveObserver } from '../libs/mutation-tracker';
 import { LightningElementConstructor } from './base-lightning-element';
+import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface ComponentInterface {
@@ -96,8 +95,12 @@ export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     return new ReactiveObserver(() => {
         if (process.env.NODE_ENV !== 'production') {
             assert.invariant(
-                !isRendering,
-                `Mutating property is not allowed during the rendering life-cycle of ${vmBeingRendered}.`
+                !isInvokingRender,
+                `Mutating property is not allowed during the rendering life-cycle of ${getVMBeingRendered()}.`
+            );
+            assert.invariant(
+                !isUpdatingTemplate,
+                `Mutating property is not allowed while updating template of ${getVMBeingRendered()}.`
             );
         }
         const { isDirty } = vm;
@@ -131,13 +134,18 @@ export function renderComponent(vm: VM): VNodes {
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && 'cmpRoot' in vm, `${vm} is not a vm.`);
+        const vmBeingRendered = getVMBeingRendered();
         assert.isFalse(
             vm.isDirty,
             `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`
         );
         assert.isFalse(
-            isRendering,
+            isInvokingRender,
             `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`
+        );
+        assert.isFalse(
+            isUpdatingTemplate,
+            `markComponentAsDirty() for ${vm} cannot be called while updating template of ${vmBeingRendered}.`
         );
     }
     vm.isDirty = true;
