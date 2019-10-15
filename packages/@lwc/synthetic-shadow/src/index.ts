@@ -21,8 +21,12 @@ import './polyfills/custom-event-composed/main';
 import './polyfills/focus-event-composed/main';
 import './polyfills/iframe-content-window/main';
 import './polyfills/mutation-observer/main';
-import './polyfills/event-listener/main';
 import './polyfills/document-shadow/main';
+import './polyfills/focus-event/main';
+import './polyfills/mouse-event/main';
+import './polyfills/window-event-target/main';
+import './polyfills/event-target/main';
+import './polyfills/event/main';
 import './polyfills/shadow-root/main';
 
 // Internal Patches
@@ -31,6 +35,5 @@ import './faux-shadow/text';
 import './faux-shadow/element';
 import './faux-shadow/html-element';
 import './faux-shadow/slot';
-import './faux-shadow/event-target';
 import './faux-shadow/portal';
 import './faux-shadow/shadow-token';

@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2018, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+import { defineProperty, isNull, getOwnPropertyDescriptor } from '@lwc/shared';
+import { pathComposer } from '../../3rdparty/polymer/path-composer';
+import { retarget } from '../../3rdparty/polymer/retarget';
+
+const focusEventRelatedTargetGetter = getOwnPropertyDescriptor(
+    FocusEvent.prototype,
+    'relatedTarget'
+)!.get as () => EventTarget | null;
+
+defineProperty(FocusEvent.prototype, 'relatedTarget', {
+    get(this: Event): EventTarget | null | undefined {
+        const currentTarget = this.currentTarget;
+        if (isNull(currentTarget)) {
+            // TODO: if currentTarget is null it is because relatedTarget is accessed
+            // in another turn, what should we do here? null seems safe, but probably
+            // not correct.
+            return null;
+        }
+        const relatedTarget = focusEventRelatedTargetGetter.call(this);
+        if (isNull(relatedTarget)) {
+            return null;
+        }
+        return retarget(currentTarget, pathComposer(relatedTarget, true));
+    },
+    enumerable: true,
+    configurable: true,
+});
