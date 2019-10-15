@@ -60,7 +60,7 @@ import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
-const { DISABLE_ELEMENT_PATCH, ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
+const { ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
 
 enum ShadowDomSemantic {
     Disabled,
@@ -68,14 +68,7 @@ enum ShadowDomSemantic {
 }
 
 function getInitializedFeatureFlags() {
-    let DISABLE_ELEMENT_PATCH;
     let ENABLE_NODE_LIST_PATCH;
-
-    if (featureFlags.ENABLE_ELEMENT_PATCH) {
-        DISABLE_ELEMENT_PATCH = false;
-    } else {
-        DISABLE_ELEMENT_PATCH = true;
-    }
 
     if (featureFlags.ENABLE_NODE_LIST_PATCH) {
         ENABLE_NODE_LIST_PATCH = true;
@@ -84,7 +77,6 @@ function getInitializedFeatureFlags() {
     }
 
     return {
-        DISABLE_ELEMENT_PATCH,
         ENABLE_NODE_LIST_PATCH,
     };
 }
@@ -142,7 +134,7 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (DISABLE_ELEMENT_PATCH) {
+            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return innerHTMLGetterPatched.call(this);
                 }
@@ -167,7 +159,7 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (DISABLE_ELEMENT_PATCH) {
+            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
                 if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
                     return outerHTMLGetterPatched.call(this);
                 }
