@@ -15,7 +15,6 @@ import {
     isNull,
     isUndefined,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 import {
     attachShadow,
     getShadowRoot,
@@ -58,7 +57,6 @@ import { getOuterHTML } from '../3rdparty/polymer/outer-html';
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../shared/utils';
 import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
-import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
 enum ShadowDomSemantic {
     Disabled,
@@ -118,14 +116,6 @@ function lastElementChildGetterPatched(this: ParentNode) {
 defineProperties(Element.prototype, {
     innerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
-                    return innerHTMLGetterPatched.call(this);
-                }
-
-                return innerHTMLGetter.call(this);
-            }
-
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return innerHTMLGetterPatched.call(this);
             }
@@ -143,13 +133,6 @@ defineProperties(Element.prototype, {
     },
     outerHTML: {
         get(this: Element): string {
-            if (!featureFlags.ENABLE_ELEMENT_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
-                    return outerHTMLGetterPatched.call(this);
-                }
-                return outerHTMLGetter.call(this);
-            }
-
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return outerHTMLGetterPatched.call(this);
             }
@@ -270,11 +253,6 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             const elm = ArrayFind.call(nodeList, elm => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                // `this` is a manually inserted element inside a shadowRoot, return the first element.
-                return nodeList.length === 0 ? null : nodeList[0];
-            }
-
             // Element is inside a shadow but we dont know which one. Use the
             // "nearest" owner key to filter by ownership.
             const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
@@ -285,13 +263,6 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             return isUndefined(elm) ? null : elm;
         }
     } else {
-        if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-            if (!(this instanceof HTMLBodyElement)) {
-                const elm = nodeList[0];
-                return isUndefined(elm) ? null : elm;
-            }
-        }
-
         // element belonging to the document
         const elm = ArrayFind.call(
             nodeList,
@@ -377,16 +348,6 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-
-            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
-                const filteredResults = getFilteredArrayOfNodes(
-                    this,
-                    nodeList,
-                    ShadowDomSemantic.Disabled
-                );
-                return createStaticNodeList(filteredResults);
-            }
-
             return createStaticNodeList(
                 getFilteredArrayOfNodes(this, nodeList, ShadowDomSemantic.Enabled)
             );
@@ -400,13 +361,6 @@ defineProperties(Element.prototype, {
             const elements = arrayFromCollection(
                 elementGetElementsByClassName.apply(this, ArraySlice.call(arguments) as [string])
             ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
             const filteredResults = getFilteredArrayOfNodes(
                 this,
                 elements,
@@ -423,13 +377,6 @@ defineProperties(Element.prototype, {
             const elements = arrayFromCollection(
                 elementGetElementsByTagName.apply(this, ArraySlice.call(arguments) as [string])
             ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
             const filteredResults = getFilteredArrayOfNodes(
                 this,
                 elements,
@@ -449,13 +396,6 @@ defineProperties(Element.prototype, {
                     string
                 ])
             ) as Element[];
-
-            if (!featureFlags.ENABLE_HTML_COLLECTIONS_PATCH) {
-                return createStaticHTMLCollection(
-                    getNonPatchedFilteredArrayOfNodes(this, elements)
-                );
-            }
-
             const filteredResults = getFilteredArrayOfNodes(
                 this,
                 elements,

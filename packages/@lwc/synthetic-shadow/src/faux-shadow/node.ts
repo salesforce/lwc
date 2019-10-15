@@ -15,7 +15,6 @@ import {
     isTrue,
     isUndefined,
 } from '@lwc/shared';
-import featureFlags from '@lwc/features';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -329,14 +328,6 @@ defineProperties(Node.prototype, {
     },
     textContent: {
         get(this: Node): string {
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (!isUndefined(getNodeOwnerKey(this)) || isHostElement(this)) {
-                    return textContentGetterPatched.call(this);
-                }
-
-                return textContentGetter.call(this);
-            }
-
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return textContentGetterPatched.call(this);
             }
@@ -406,18 +397,6 @@ defineProperties(Node.prototype, {
     },
     contains: {
         value(this: Node, otherNode: Node): boolean {
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                if (otherNode == null) {
-                    return false;
-                }
-                const ownerKey = getNodeOwnerKey(this);
-                if (!isUndefined(ownerKey) || isHostElement(this)) {
-                    return containsPatched.call(this, otherNode);
-                }
-
-                return contains.call(this, otherNode);
-            }
-
             // TODO: issue #1222 - remove global bypass
             if (isGlobalPatchingSkipped(this)) {
                 return contains.call(this, otherNode);
@@ -430,15 +409,6 @@ defineProperties(Node.prototype, {
     },
     cloneNode: {
         value(this: Node, deep?: boolean): Node {
-            if (!featureFlags.ENABLE_NODE_PATCH) {
-                const ownerKey = getNodeOwnerKey(this);
-                if (!isUndefined(ownerKey) || isHostElement(this)) {
-                    return cloneNodePatched.call(this, deep);
-                }
-
-                return cloneNode.call(this, deep);
-            }
-
             if (isNodeShadowed(this) || isHostElement(this)) {
                 return cloneNodePatched.call(this, deep);
             }
