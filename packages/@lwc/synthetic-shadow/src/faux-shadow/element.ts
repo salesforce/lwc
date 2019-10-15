@@ -60,25 +60,9 @@ import { getNodeOwnerKey, isNodeShadowed } from '../faux-shadow/node';
 import { assignedSlotGetterPatched } from './slot';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
 
-const { ENABLE_NODE_LIST_PATCH } = getInitializedFeatureFlags();
-
 enum ShadowDomSemantic {
     Disabled,
     Enabled,
-}
-
-function getInitializedFeatureFlags() {
-    let ENABLE_NODE_LIST_PATCH;
-
-    if (featureFlags.ENABLE_NODE_LIST_PATCH) {
-        ENABLE_NODE_LIST_PATCH = true;
-    } else {
-        ENABLE_NODE_LIST_PATCH = false;
-    }
-
-    return {
-        ENABLE_NODE_LIST_PATCH,
-    };
 }
 
 function innerHTMLGetterPatched(this: Element): string {
@@ -285,31 +269,36 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
             // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             const elm = ArrayFind.call(nodeList, elm => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
-        } else if (ENABLE_NODE_LIST_PATCH) {
-            // `this` is inside a shadow, we dont know which one.
+        } else {
+            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
+                // `this` is a manually inserted element inside a shadowRoot, return the first element.
+                return nodeList.length === 0 ? null : nodeList[0];
+            }
+
+            // Element is inside a shadow but we dont know which one. Use the
+            // "nearest" owner key to filter by ownership.
             const contextNearestOwnerKey = getNodeNearestOwnerKey(this);
             const elm = ArrayFind.call(
                 nodeList,
                 elm => getNodeNearestOwnerKey(elm) === contextNearestOwnerKey
             );
             return isUndefined(elm) ? null : elm;
-        } else {
-            // `this` is a manually inserted element inside a shadowRoot, return the first element.
-            return nodeList.length === 0 ? null : nodeList[0];
         }
     } else {
-        // Note: document.body is already patched!
-        if (this instanceof HTMLBodyElement || ENABLE_NODE_LIST_PATCH) {
-            // element belonging to the document
-            const elm = ArrayFind.call(
-                nodeList,
-                // TODO: issue #1222 - remove global bypass
-                elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
-            );
-            return isUndefined(elm) ? null : elm;
-        } else {
-            return nodeList.length === 0 ? null : nodeList[0];
+        if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
+            if (!(this instanceof HTMLBodyElement)) {
+                const elm = nodeList[0];
+                return isUndefined(elm) ? null : elm;
+            }
         }
+
+        // element belonging to the document
+        const elm = ArrayFind.call(
+            nodeList,
+            // TODO: issue #1222 - remove global bypass
+            elm => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+        );
+        return isUndefined(elm) ? null : elm;
     }
 }
 
@@ -388,15 +377,19 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(this, ArraySlice.call(arguments) as [string])
             );
-            let shadowDomSemantic = ShadowDomSemantic.Disabled;
 
-            if (featureFlags.ENABLE_NODE_LIST_PATCH) {
-                shadowDomSemantic = ShadowDomSemantic.Enabled;
+            if (!featureFlags.ENABLE_NODE_LIST_PATCH) {
+                const filteredResults = getFilteredArrayOfNodes(
+                    this,
+                    nodeList,
+                    ShadowDomSemantic.Disabled
+                );
+                return createStaticNodeList(filteredResults);
             }
 
-            const filteredResults = getFilteredArrayOfNodes(this, nodeList, shadowDomSemantic);
-
-            return createStaticNodeList(filteredResults);
+            return createStaticNodeList(
+                getFilteredArrayOfNodes(this, nodeList, ShadowDomSemantic.Enabled)
+            );
         },
         writable: true,
         enumerable: true,
