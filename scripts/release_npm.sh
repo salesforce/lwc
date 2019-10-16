@@ -24,7 +24,7 @@ if [ -z "${TAG_NAME}" ]; then
 fi
 
 if [ -n "${REGISTRY}" ]; then
-  REGISTRY = "--registry ${REGISTRY}"
+  REGISTRY="--registry ${REGISTRY}"
 fi
 
 TAG="--npm-tag $TAG_NAME"
