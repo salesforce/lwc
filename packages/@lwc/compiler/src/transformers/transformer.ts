@@ -77,6 +77,7 @@ export function transformFile(
             break;
 
         case '.ts':
+        case '.mjs':
         case '.js':
             transformer = scriptTransformer;
             break;

@@ -36,6 +36,46 @@ it('should apply transformation for valid javascript file', async () => {
     expect(pretify(code)).toBe(pretify(expected));
 });
 
+it('should apply transformation for valid .mjs file', async () => {
+    const actual = `
+        import { LightningElement } from 'lwc';
+        export default class Foo extends LightningElement {}
+    `;
+
+    const expected = `
+        import _tmpl from "./foo.html";
+        import { registerComponent as _registerComponent } from "lwc";
+        import { LightningElement } from 'lwc';
+        class Foo extends LightningElement {}
+        export default _registerComponent(Foo, {
+            tmpl: _tmpl
+        });
+    `;
+
+    const { code } = await transform(actual, 'foo.mjs', COMPILER_OPTIONS);
+    expect(pretify(code)).toBe(pretify(expected));
+});
+
+it('should apply transformation for valid .ts file', async () => {
+    const actual = `
+        import { LightningElement } from 'lwc';
+        export default class Foo extends LightningElement {}
+    `;
+
+    const expected = `
+        import _tmpl from "./foo.html";
+        import { registerComponent as _registerComponent } from "lwc";
+        import { LightningElement } from 'lwc';
+        class Foo extends LightningElement {}
+        export default _registerComponent(Foo, {
+            tmpl: _tmpl
+        });
+    `;
+
+    const { code } = await transform(actual, 'foo.ts', COMPILER_OPTIONS);
+    expect(pretify(code)).toBe(pretify(expected));
+});
+
 it('should throw when processing an invalid javascript file', async () => {
     await expect(transform(`const`, 'foo.js', COMPILER_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
