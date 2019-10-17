@@ -39,7 +39,10 @@ function getEventMap(elm: EventTarget): ListenerMap {
     return listenerInfo;
 }
 
-const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
+const shadowRootEventListenerMap: WeakMap<
+    EventListenerOrEventListenerObject,
+    WrappedListener
+> = new WeakMap();
 // Using a WeakMap instead of a WeakSet because this one works in IE11 :(
 const eventsComingFromShadowRoot: WeakMap<Event, 1> = new WeakMap();
 
@@ -53,7 +56,7 @@ export function setEventFromShadowRoot(event: Event) {
 
 function getWrappedShadowRootListener(
     sr: SyntheticShadowRootInterface,
-    listener: EventListener
+    listener: EventListenerOrEventListenerObject
 ): WrappedListener {
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
@@ -64,10 +67,14 @@ function getWrappedShadowRootListener(
             // on the host instance directly are difficult to distinguish. We mark the event on the shadowRoot's
             // dispatchEvent method, so we know it is a valid event for the shadowRoot.
             if (target !== currentTarget || isEventComingFromShadowRoot(event)) {
-                listener.call(sr, event);
+                if (typeof listener === 'function') {
+                    listener.call(sr, event);
+                } else {
+                    listener.handleEvent && listener.handleEvent(event);
+                }
             }
         } as WrappedListener;
-        shadowRootWrappedListener!.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
+        shadowRootWrappedListener.placement = EventListenerContext.SHADOW_ROOT_LISTENER;
         shadowRootEventListenerMap.set(listener, shadowRootWrappedListener);
     }
     return shadowRootWrappedListener;
@@ -178,9 +185,12 @@ export function removeCustomElementEventListener(
 export function addShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
+    if (listener == null) {
+        return; /* nullish */
+    }
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     attachDOMListener(elm, type, wrappedListener);
@@ -189,9 +199,12 @@ export function addShadowRootEventListener(
 export function removeShadowRootEventListener(
     sr: SyntheticShadowRootInterface,
     type: string,
-    listener: EventListener,
+    listener: EventListenerOrEventListenerObject,
     _options?: boolean | AddEventListenerOptions
 ) {
+    if (listener == null) {
+        return; /* nullish */
+    }
     const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);

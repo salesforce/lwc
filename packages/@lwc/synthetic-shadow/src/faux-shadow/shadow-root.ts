@@ -314,7 +314,7 @@ const NodePatchDescriptors = {
         value(
             this: SyntheticShadowRootInterface,
             type: string,
-            listener: EventListener,
+            listener: EventListenerOrEventListenerObject,
             options?: boolean | AddEventListenerOptions
         ) {
             addShadowRootEventListener(this, type, listener, options);
@@ -327,7 +327,7 @@ const NodePatchDescriptors = {
         value(
             this: SyntheticShadowRootInterface,
             type: string,
-            listener: EventListener,
+            listener: EventListenerOrEventListenerObject,
             options?: boolean | AddEventListenerOptions
         ) {
             removeShadowRootEventListener(this, type, listener, options);
