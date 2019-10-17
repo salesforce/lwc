@@ -8,6 +8,8 @@ import { defineProperty, isNull, getOwnPropertyDescriptor } from '@lwc/shared';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
 import { eventCurrentTargetGetter } from '../../env/dom';
+import { isNodeShadowed } from '../../shared/node-ownership';
+import { getOwnerDocument } from '../../shared/utils';
 
 const mouseEventRelatedTargetGetter = getOwnPropertyDescriptor(
     FocusEvent.prototype,
@@ -16,18 +18,18 @@ const mouseEventRelatedTargetGetter = getOwnPropertyDescriptor(
 
 defineProperty(MouseEvent.prototype, 'relatedTarget', {
     get(this: Event): EventTarget | null | undefined {
-        const currentTarget = eventCurrentTargetGetter.call(this);
-        if (isNull(currentTarget)) {
-            // TODO: if currentTarget is null it is because relatedTarget is accessed
-            // in another turn, what should we do here? null seems safe, but probably
-            // not correct.
-            return null;
-        }
         const relatedTarget = mouseEventRelatedTargetGetter.call(this);
         if (isNull(relatedTarget)) {
             return null;
         }
-        return retarget(currentTarget, pathComposer(relatedTarget, true));
+        if (!(relatedTarget instanceof Node) || !isNodeShadowed(relatedTarget as Node)) {
+            return relatedTarget;
+        }
+        let pointOfReference = eventCurrentTargetGetter.call(this);
+        if (isNull(pointOfReference)) {
+            pointOfReference = getOwnerDocument(relatedTarget as Node);
+        }
+        return retarget(pointOfReference, pathComposer(relatedTarget, true));
     },
     enumerable: true,
     configurable: true,
