@@ -15,6 +15,7 @@ import {
     isTrue,
     isUndefined,
     setPrototypeOf,
+    ArraySlice,
 } from '@lwc/shared';
 import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
 import {
@@ -47,6 +48,7 @@ import { getInternalChildNodes } from './node';
 import { setNodeKey, setNodeOwnerKey } from '../shared/node-ownership';
 import { innerHTMLSetter } from '../env/element';
 import { getOwnerDocument } from '../shared/utils';
+import { dispatchEvent } from '../env/dom';
 
 const { getHiddenField, setHiddenField, createFieldName } = fields;
 const ShadowRootResolverKey = '$shadowResolver$';
@@ -501,6 +503,17 @@ const NodePatchDescriptors = {
             return !isUndefined(options) && isTrue(options.composed)
                 ? getHost(this).getRootNode(options)
                 : this;
+        },
+    },
+    dispatchEvent: {
+        enumerable: true,
+        configurable: true,
+        value(this: SyntheticShadowRootInterface, _evt: Event): boolean {
+            // This patch is needed to support the case where an event is dispatched directly into the
+            // shadowRoot instance vs an event that is dispatched on the host instance directly. We need
+            // to mark the event to make sure that it is a valid observable event for the shadowRoot.
+
+            return dispatchEvent.apply(getHost(this), ArraySlice.call(arguments) as [Event]);
         },
     },
 };

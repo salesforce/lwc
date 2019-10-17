@@ -14,7 +14,6 @@ import { getEventContext, EventListenerContext } from '../../shared/event-contex
 import { getShadowRoot } from '../../faux-shadow/shadow-root';
 
 function targetGetter(this: Event): EventTarget | null {
-    // currentTarget is always defined
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
     const originalTarget = eventTargetGetter.call(this);
     const composedPath = pathComposer(originalTarget, this.composed);

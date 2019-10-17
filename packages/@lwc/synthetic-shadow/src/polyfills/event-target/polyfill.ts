@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isUndefined } from '@lwc/shared';
+import { defineProperties, isUndefined, ArraySlice } from '@lwc/shared';
 import {
     addCustomElementEventListener,
     removeCustomElementEventListener,
@@ -28,7 +28,7 @@ function isQualifyingEventTarget(currentTarget: EventTarget, evt: Event): boolea
             // bubbles true, composed false: only propagate up to the originalTarget's shadowRoot
             if (originalTarget instanceof Node) {
                 if (isNodeShadowed(originalTarget)) {
-                    // if the original target is shadowed, every hub in the path to its shadowRoot
+                    // if the original target is shadowed, every node in the path to its shadowRoot
                     // will have visibility into the event, including slots since the target might
                     // be slotted.
                     const sr = originalTarget.getRootNode() as SyntheticShadowRootInterface;
@@ -74,35 +74,53 @@ const {
 
 function addEventListenerPatched(
     this: Element,
-    type: string,
+    _type: string,
     listener: EventListenerOrEventListenerObject | null,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (listener == null) {
         return; /* nullish */
     }
-    const wrapperFn = getEventListenerWrapper(listener);
+    const args = ArraySlice.call(arguments);
+    args[1] = getEventListenerWrapper(listener);
     if (isHostElement(this)) {
-        addCustomElementEventListener(this, type, wrapperFn, options);
+        addCustomElementEventListener.apply(this, args as [
+            string,
+            EventListener,
+            (EventListenerOptions | boolean | undefined)?
+        ]);
     } else {
-        superAddEventListener.call(this, type, wrapperFn, options);
+        superAddEventListener.apply(this, args as [
+            string,
+            EventListener,
+            (EventListenerOptions | boolean | undefined)?
+        ]);
     }
 }
 
 function removeEventListenerPatched(
     this: Element,
-    type: string,
+    _type: string,
     listener: EventListenerOrEventListenerObject | null,
-    options?: EventListenerOptions | boolean
+    _options?: EventListenerOptions | boolean
 ) {
     if (listener == null) {
         return; /* nullish */
     }
-    const wrapperFn = getEventListenerWrapper(listener);
+    const args = ArraySlice.call(arguments);
+    args[1] = getEventListenerWrapper(listener);
     if (isHostElement(this)) {
-        removeCustomElementEventListener(this, type, wrapperFn, options);
+        removeCustomElementEventListener.apply(this, args as [
+            string,
+            EventListener,
+            (EventListenerOptions | boolean | undefined)?
+        ]);
     } else {
-        superRemoveEventListener.call(this, type, wrapperFn, options);
+        superRemoveEventListener.apply(this, args as [
+            string,
+            EventListener,
+            (EventListenerOptions | boolean | undefined)?
+        ]);
     }
 }
 

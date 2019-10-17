@@ -16,6 +16,7 @@ import {
     isNull,
     ArrayReduce,
     defineProperties,
+    ArraySlice,
 } from '@lwc/shared';
 import { getAttribute, setAttribute } from '../env/element';
 import { dispatchEvent } from '../env/dom';
@@ -105,11 +106,15 @@ defineProperties(HTMLSlotElement.prototype, {
         value(
             this: HTMLSlotElement,
             type: string,
-            listener: EventListener,
-            options?: boolean | AddEventListenerOptions
+            _listener: EventListener,
+            _options?: boolean | AddEventListenerOptions
         ) {
             // super.addEventListener - but that doesn't work with typescript
-            HTMLElement.prototype.addEventListener.call(this, type, listener, options);
+            HTMLElement.prototype.addEventListener.apply(this, ArraySlice.call(arguments) as [
+                string,
+                EventListenerOrEventListenerObject,
+                (EventListenerOptions | boolean | undefined)?
+            ]);
             if (
                 isNodeShadowed(this) &&
                 type === 'slotchange' &&

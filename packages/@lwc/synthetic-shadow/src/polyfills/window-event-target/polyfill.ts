@@ -6,7 +6,7 @@
  */
 import { windowRemoveEventListener, windowAddEventListener } from '../../env/window';
 
-import { defineProperties, isUndefined, isTrue } from '@lwc/shared';
+import { defineProperties, isUndefined, isTrue, ArraySlice } from '@lwc/shared';
 import { eventTargetGetter } from '../../env/dom';
 import { isNodeShadowed } from '../../shared/node-ownership';
 
@@ -42,28 +42,38 @@ function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): E
 
 function addEventListenerPatched(
     this: Window,
-    type: string,
+    _type: string,
     listener: EventListenerOrEventListenerObject | null,
-    options?: boolean | AddEventListenerOptions
+    _options?: boolean | AddEventListenerOptions
 ) {
     if (listener == null) {
         return; /* nullish */
     }
-    const wrapperFn = getEventListenerWrapper(listener);
-    windowAddEventListener.call(this, type, wrapperFn, options);
+    const args = ArraySlice.call(arguments);
+    args[1] = getEventListenerWrapper(listener);
+    windowAddEventListener.apply(this, args as [
+        string,
+        EventListener,
+        (EventListenerOptions | boolean | undefined)?
+    ]);
 }
 
 function removeEventListenerPatched(
     this: Window,
-    type: string,
+    _type: string,
     listener: EventListenerOrEventListenerObject | null,
-    options?: EventListenerOptions | boolean
+    _options?: EventListenerOptions | boolean
 ) {
     if (listener == null) {
         return; /* nullish */
     }
-    const wrapperFn = getEventListenerWrapper(listener);
-    windowRemoveEventListener.call(this, type, wrapperFn, options);
+    const args = ArraySlice.call(arguments);
+    args[1] = getEventListenerWrapper(listener);
+    windowRemoveEventListener.apply(this, args as [
+        string,
+        EventListener,
+        (EventListenerOptions | boolean | undefined)?
+    ]);
 }
 
 export default function apply() {

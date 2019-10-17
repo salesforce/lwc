@@ -7,8 +7,6 @@
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
 import { parentNodeGetter } from '../env/node';
 
-// DO NOT CHANGE this:
-// these two values need to be in sync with engine
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 

@@ -40,6 +40,16 @@ function getEventMap(elm: EventTarget): ListenerMap {
 }
 
 const shadowRootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
+// Using a WeakMap instead of a WeakSet because this one works in IE11 :(
+const eventsComingFromShadowRoot: WeakMap<Event, 1> = new WeakMap();
+
+function isEventComingFromShadowRoot(event: Event): boolean {
+    return eventsComingFromShadowRoot.has(event);
+}
+
+export function setEventFromShadowRoot(event: Event) {
+    eventsComingFromShadowRoot.set(event, 1);
+}
 
 function getWrappedShadowRootListener(
     sr: SyntheticShadowRootInterface,
@@ -48,11 +58,12 @@ function getWrappedShadowRootListener(
     let shadowRootWrappedListener = shadowRootEventListenerMap.get(listener);
     if (isUndefined(shadowRootWrappedListener)) {
         shadowRootWrappedListener = function(event: Event) {
-            // if the event is dispatched directly on the host, it is not observable from root,
-            // this is a limitation of the synthetic shadow polyfill
             const target = eventTargetGetter.call(event);
             const currentTarget = eventCurrentTargetGetter.call(event);
-            if (target !== currentTarget) {
+            // An event that is dispatched directly into the shadowRoot instance vs an event that is dispatched
+            // on the host instance directly are difficult to distinguish. We mark the event on the shadowRoot's
+            // dispatchEvent method, so we know it is a valid event for the shadowRoot.
+            if (target !== currentTarget || isEventComingFromShadowRoot(event)) {
                 listener.call(sr, event);
             }
         } as WrappedListener;
@@ -144,24 +155,24 @@ function detachDOMListener(elm: Element, type: string, wrappedListener: WrappedL
 }
 
 export function addCustomElementEventListener(
-    elm: Element,
+    this: Element,
     type: string,
     listener: EventListener,
     _options?: boolean | AddEventListenerOptions
 ) {
     const wrappedListener: WrappedListener = listener as WrappedListener;
     wrappedListener.placement = EventListenerContext.CUSTOM_ELEMENT_LISTENER;
-    attachDOMListener(elm, type, wrappedListener);
+    attachDOMListener(this, type, wrappedListener);
 }
 
 export function removeCustomElementEventListener(
-    elm: Element,
+    this: Element,
     type: string,
     listener: EventListener,
     _options?: boolean | AddEventListenerOptions
 ) {
     const wrappedListener: WrappedListener = listener as WrappedListener;
-    detachDOMListener(elm, type, wrappedListener);
+    detachDOMListener(this, type, wrappedListener);
 }
 
 export function addShadowRootEventListener(
