@@ -7,6 +7,7 @@
 import { defineProperty, isNull, getOwnPropertyDescriptor } from '@lwc/shared';
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
+import { eventCurrentTargetGetter } from '../../env/dom';
 
 const mouseEventRelatedTargetGetter = getOwnPropertyDescriptor(
     FocusEvent.prototype,
@@ -15,7 +16,7 @@ const mouseEventRelatedTargetGetter = getOwnPropertyDescriptor(
 
 defineProperty(MouseEvent.prototype, 'relatedTarget', {
     get(this: Event): EventTarget | null | undefined {
-        const currentTarget = this.currentTarget;
+        const currentTarget = eventCurrentTargetGetter.call(this);
         if (isNull(currentTarget)) {
             // TODO: if currentTarget is null it is because relatedTarget is accessed
             // in another turn, what should we do here? null seems safe, but probably

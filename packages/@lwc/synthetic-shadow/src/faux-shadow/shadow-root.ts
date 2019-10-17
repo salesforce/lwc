@@ -17,7 +17,11 @@ import {
     setPrototypeOf,
     ArraySlice,
 } from '@lwc/shared';
-import { addShadowRootEventListener, removeShadowRootEventListener } from './events';
+import {
+    addShadowRootEventListener,
+    removeShadowRootEventListener,
+    setEventFromShadowRoot,
+} from './events';
 import {
     shadowRootQuerySelector,
     shadowRootQuerySelectorAll,
@@ -508,11 +512,11 @@ const NodePatchDescriptors = {
     dispatchEvent: {
         enumerable: true,
         configurable: true,
-        value(this: SyntheticShadowRootInterface, _evt: Event): boolean {
+        value(this: SyntheticShadowRootInterface, evt: Event): boolean {
             // This patch is needed to support the case where an event is dispatched directly into the
             // shadowRoot instance vs an event that is dispatched on the host instance directly. We need
             // to mark the event to make sure that it is a valid observable event for the shadowRoot.
-
+            setEventFromShadowRoot(evt);
             return dispatchEvent.apply(getHost(this), ArraySlice.call(arguments) as [Event]);
         },
     },

@@ -7,6 +7,7 @@
 import { defineProperty, isNull, isUndefined } from '@lwc/shared';
 import { parentNodeGetter } from '../env/node';
 
+// Used as a back reference to identify the host element(owner) of a dom node
 const OwnerKey = '$$OwnerKey$$';
 const OwnKey = '$$OwnKey$$';
 
