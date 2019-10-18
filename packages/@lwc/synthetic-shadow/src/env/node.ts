@@ -27,8 +27,9 @@ const {
     removeChild,
     replaceChild,
     hasChildNodes,
-    contains,
 } = Node.prototype;
+
+const { contains } = HTMLElement.prototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
     Node.prototype,
