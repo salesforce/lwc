@@ -1,4 +1,14 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.4...v) (2019-10-15)
+# [](https://github.com/salesforce/lwc/compare/v1.1.4-alpha1...v) (2019-10-18)
+
+
+### Bug Fixes
+
+* update release_npm script ([#1581](https://github.com/salesforce/lwc/issues/1581)) ([517bbff](https://github.com/salesforce/lwc/commit/517bbff))
+* **synthetic-shadow:** fixes contains in ie11 ([#1586](https://github.com/salesforce/lwc/issues/1586)) ([1422b91](https://github.com/salesforce/lwc/commit/1422b91))
+
+
+
+## [1.1.4-alpha1](https://github.com/salesforce/lwc/compare/v1.1.4...v1.1.4-alpha1) (2019-10-15)
 
 
 
