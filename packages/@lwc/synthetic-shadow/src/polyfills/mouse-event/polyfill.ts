@@ -12,7 +12,7 @@ import { isNodeShadowed } from '../../shared/node-ownership';
 import { getOwnerDocument } from '../../shared/utils';
 
 const mouseEventRelatedTargetGetter = getOwnPropertyDescriptor(
-    FocusEvent.prototype,
+    MouseEvent.prototype,
     'relatedTarget'
 )!.get as () => EventTarget | null;
 

@@ -4,30 +4,34 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { windowRemoveEventListener, windowAddEventListener } from '../../env/window';
-
 import { defineProperties, isUndefined, isTrue, ArraySlice } from '@lwc/shared';
+import { windowRemoveEventListener, windowAddEventListener } from '../../env/window';
 import { eventTargetGetter } from '../../env/dom';
 import { isNodeShadowed } from '../../shared/node-ownership';
 
 // this method returns true if an event can be seen by a particular eventTarget,
 // otherwise it returns false, which means the listener will never be invoked.
 function isQualifyingEventTarget(currentTarget: Window, evt: Event): boolean {
-    const { composed } = evt;
     const originalTarget = eventTargetGetter.call(evt);
     if (originalTarget === currentTarget) {
         // dispatched on the window directly
         return true;
     }
-    // if the event reaches the window by propagation is because it is bubbling,
+    const { composed } = evt;
+    // if the event reaches the window by propagation, it is because it is bubbling,
     // in which the the only it really depends on the composed value
     return isTrue(composed) || !isNodeShadowed(originalTarget as Node);
 }
 
+const EventListenerToWrapperMap: WeakMap<
+    EventListenerOrEventListenerObject,
+    EventListener
+> = new WeakMap();
+
 function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): EventListener {
-    let wrapperFn: EventListener | undefined = (fnOrObj as any).$$lwcEventWrapper$$;
+    let wrapperFn: EventListener | undefined = EventListenerToWrapperMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
-        wrapperFn = (fnOrObj as any).$$lwcEventWrapper$$ = function(this: Window, e: Event) {
+        wrapperFn = function(this: Window, e: Event) {
             if (isQualifyingEventTarget(this, e)) {
                 if (typeof fnOrObj === 'function') {
                     fnOrObj.call(this, e);
@@ -36,6 +40,7 @@ function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): E
                 }
             }
         };
+        EventListenerToWrapperMap.set(fnOrObj, wrapperFn);
     }
     return wrapperFn;
 }

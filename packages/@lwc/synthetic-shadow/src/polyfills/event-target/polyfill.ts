@@ -21,9 +21,13 @@ import { contains } from '../../env/node';
 // this method returns true if an event can be seen by a particular eventTarget,
 // otherwise it returns false, which means the listener will never be invoked.
 function isQualifyingEventTarget(currentTarget: EventTarget, evt: Event): boolean {
+    const originalTarget = eventTargetGetter.call(evt);
+    if (originalTarget === currentTarget) {
+        // short-circuit when dispatched on the target directly
+        return true;
+    }
     const { composed, bubbles } = evt;
     if (!composed) {
-        const originalTarget = eventTargetGetter.call(evt);
         if (bubbles) {
             // bubbles true, composed false: only propagate up to the originalTarget's shadowRoot
             if (originalTarget instanceof Node) {
@@ -49,10 +53,15 @@ function isQualifyingEventTarget(currentTarget: EventTarget, evt: Event): boolea
     return true;
 }
 
+const EventListenerToWrapperMap: WeakMap<
+    EventListenerOrEventListenerObject,
+    EventListener
+> = new WeakMap();
+
 function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): EventListener {
-    let wrapperFn: EventListener | undefined = (fnOrObj as any).$$lwcEventWrapper$$;
+    let wrapperFn: EventListener | undefined = EventListenerToWrapperMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
-        wrapperFn = (fnOrObj as any).$$lwcEventWrapper$$ = function(this: EventTarget, e: Event) {
+        wrapperFn = function(this: EventTarget, e: Event) {
             if (isQualifyingEventTarget(this, e)) {
                 if (typeof fnOrObj === 'function') {
                     fnOrObj.call(this, e);
@@ -61,6 +70,7 @@ function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): E
                 }
             }
         };
+        EventListenerToWrapperMap.set(fnOrObj, wrapperFn);
     }
     return wrapperFn;
 }
