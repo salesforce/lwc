@@ -378,6 +378,17 @@ if (!process.env.NATIVE_SHADOW) {
                         Node.DOCUMENT_POSITION_CONTAINED_BY
                 ).toBeGreaterThan(0);
             });
+
+            it('should preserve contains behavior', () => {
+                expect(elementOutsideLWC.contains(lwcElementInsideShadow)).toBe(true);
+
+                expect(rootLwcElement.contains(elementOutsideLWC)).toBe(false);
+                expect(lwcElementInsideShadow.contains(divManuallyApendedToShadow)).toBe(true);
+
+                expect(divManuallyApendedToShadow.contains(elementOutsideLWC)).toBe(false);
+
+                expect(cmpShadow.contains(slottedNode)).toBe(true);
+            });
         });
     });
 }
