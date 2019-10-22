@@ -14,13 +14,14 @@ import {
     getHost,
     SyntheticShadowRootInterface,
 } from '../../faux-shadow/shadow-root';
-import { eventTargetGetter } from '../../env/dom';
+import { eventCurrentTargetGetter, eventTargetGetter } from '../../env/dom';
 import { isNodeShadowed } from '../../shared/node-ownership';
 import { contains } from '../../env/node';
 
 // this method returns true if an event can be seen by a particular eventTarget,
 // otherwise it returns false, which means the listener will never be invoked.
-function isQualifyingEventTarget(currentTarget: EventTarget, evt: Event): boolean {
+function isQualifyingEventTarget(evt: Event): boolean {
+    const currentTarget = eventCurrentTargetGetter.call(evt);
     const originalTarget = eventTargetGetter.call(evt);
     if (originalTarget === currentTarget) {
         // short-circuit when dispatched on the target directly
@@ -62,7 +63,7 @@ function getEventListenerWrapper(fnOrObj: EventListenerOrEventListenerObject): E
     let wrapperFn: EventListener | undefined = EventListenerToWrapperMap.get(fnOrObj);
     if (isUndefined(wrapperFn)) {
         wrapperFn = function(this: EventTarget, e: Event) {
-            if (isQualifyingEventTarget(this, e)) {
+            if (isQualifyingEventTarget(e)) {
                 if (typeof fnOrObj === 'function') {
                     fnOrObj.call(this, e);
                 } else {
