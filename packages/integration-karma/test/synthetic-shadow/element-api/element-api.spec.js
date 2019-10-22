@@ -39,20 +39,31 @@ import ParentSpecialized from 'x/parentSpecialized';
  */
 if (!process.env.NATIVE_SHADOW) {
     describe('synthetic shadow with patch flags OFF', () => {
-        const elm = createElement('x-container', { is: Container });
+        let lwcElementInsideShadow,
+            divManuallyApendedToShadow,
+            elementInShadow,
+            slottedComponent,
+            slottedNode,
+            elementOutsideLWC,
+            rootLwcElement,
+            cmpShadow;
+        beforeAll(() => {
+            spyOn(console, 'error'); // ignore warning about manipulating node without lwc:dom="manual"
+            const elm = createElement('x-container', { is: Container });
 
-        const elementOutsideLWC = document.createElement('div');
-        elementOutsideLWC.appendChild(elm);
+            elementOutsideLWC = document.createElement('div');
+            elementOutsideLWC.appendChild(elm);
 
-        document.body.appendChild(elementOutsideLWC);
+            document.body.appendChild(elementOutsideLWC);
 
-        const rootLwcElement = elm;
-        const lwcElementInsideShadow = elm;
-        const divManuallyApendedToShadow = elm.shadowRoot.querySelector('div.manual-ctx');
-        const cmpShadow = elm.shadowRoot.querySelector('x-slot-container').shadowRoot;
-        const elementInShadow = rootLwcElement.shadowRoot.querySelector('div');
-        const slottedComponent = cmpShadow.querySelector('x-with-slot');
-        const slottedNode = cmpShadow.querySelector('.slotted');
+            rootLwcElement = elm;
+            lwcElementInsideShadow = elm;
+            divManuallyApendedToShadow = elm.shadowRoot.querySelector('div.manual-ctx');
+            cmpShadow = elm.shadowRoot.querySelector('x-slot-container').shadowRoot;
+            elementInShadow = rootLwcElement.shadowRoot.querySelector('div');
+            slottedComponent = cmpShadow.querySelector('x-with-slot');
+            slottedNode = cmpShadow.querySelector('.slotted');
+        });
 
         describe('Element.prototype API', () => {
             it('should keep behavior for innerHTML', () => {
