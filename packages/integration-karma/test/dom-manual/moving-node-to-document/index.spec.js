@@ -57,4 +57,24 @@ describe('Moving elements from inside lwc:dom=manual', () => {
             });
         });
     });
+
+    it('should return correct results in querySelector when node is added/removed on the same tick', function() {
+        const elm = createElement('x-container', { is: Container });
+        document.body.appendChild(elm);
+        const span = document.createElement('span');
+        span.classList.add('qs-mm-lwc-dom-manual');
+        const div = elm.shadowRoot.querySelector('div');
+        div.appendChild(span);
+        div.removeChild(span);
+
+        return Promise.resolve().then(() => {
+            document.body.appendChild(span);
+
+            // There is a drawback: The mutation observer is async, therefore if we access it immediately,
+            // it will still have an owner key.
+            return Promise.resolve().then(() => {
+                expect(document.querySelector('.qs-mm-lwc-dom-manual')).toBe(span);
+            });
+        });
+    });
 });
