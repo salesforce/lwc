@@ -6,6 +6,7 @@
  */
 import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { getInternalChildNodes } from './node';
+import { compareDocumentPosition } from '../env/node';
 import { setShadowRootResolver, ShadowRootResolver, getShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 
@@ -53,12 +54,19 @@ function initPortalObserver() {
 
             // First lets process removals in case we are in a case of removed and reinserted elements
             for (let i = 0, len = removedNodes.length; i < len; i += 1) {
-                adoptChildNode(removedNodes[i], DocumentResolverFn, undefined);
+                const node: Node = removedNodes[i];
+                if (
+                    !(compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY)
+                ) {
+                    adoptChildNode(node, DocumentResolverFn, undefined);
+                }
             }
 
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
-                adoptChildNode(node, fn, shadowToken);
+                if (compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+                    adoptChildNode(node, fn, shadowToken);
+                }
             }
         });
     });
