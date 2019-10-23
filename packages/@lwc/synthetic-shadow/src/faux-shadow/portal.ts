@@ -62,7 +62,7 @@ function initPortalObserver() {
             const fn = getShadowRootResolver(elm) as ShadowRootResolver;
             const shadowToken = getShadowToken(elm);
 
-            // First lets process removals in case we are in a case of removed and reinserted elements
+            // Process removals first to handle the case where an element is removed and reinserted
             for (let i = 0, len = removedNodes.length; i < len; i += 1) {
                 const node: Node = removedNodes[i];
                 if (
