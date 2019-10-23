@@ -1,4 +1,13 @@
-# [](https://github.com/salesforce/lwc/compare/v1.1.6...v) (2019-10-23)
+# [](https://github.com/salesforce/lwc/compare/v1.1.7...v) (2019-10-23)
+
+
+### Bug Fixes
+
+* **synthetic-shadow:** remove ownerKeys of migrated dom:manual ([#1590](https://github.com/salesforce/lwc/issues/1590)) ([6ec5c9b](https://github.com/salesforce/lwc/commit/6ec5c9b))
+
+
+
+## [1.1.7](https://github.com/salesforce/lwc/compare/v1.1.6...v1.1.7) (2019-10-23)
 
 
 
