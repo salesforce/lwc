@@ -9,9 +9,10 @@ import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
 import { bundle } from '../bundler/bundler';
 import {
     CompilerOptions,
-    validateOptions,
+    validateCompilerOptions,
     normalizeOptions,
     NormalizedOutputConfig,
+    NormalizedCompilerOptions,
 } from './options';
 import { version } from '../index';
 
@@ -33,8 +34,8 @@ export interface BundleResult {
 export type SourceMap = any;
 
 export async function compile(options: CompilerOptions): Promise<CompilerOutput> {
-    validateOptions(options);
-    const normalizedOptions = normalizeOptions(options);
+    validateCompilerOptions(options);
+    const normalizedOptions = normalizeOptions(options) as NormalizedCompilerOptions;
 
     let result: BundleResult | undefined;
     const diagnostics: CompilerDiagnostic[] = [];

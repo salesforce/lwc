@@ -64,10 +64,10 @@ export interface NormalizedDynamicComponentConfig {
     strictSpecifier: boolean;
 }
 
-export interface CompilerOptions {
+export interface TransformationOptions {
     name: string;
     namespace: string;
-    files: BundleFiles;
+    files?: BundleFiles;
     /**
      * An optional directory prefix that contains the specified components
      * files. Only used when the component that is the compiler's entry point.
@@ -79,11 +79,19 @@ export interface CompilerOptions {
     isExplicitImport?: boolean;
 }
 
-export interface NormalizedCompilerOptions extends CompilerOptions {
+export interface CompilerOptions extends TransformationOptions {
+    files: BundleFiles;
+}
+
+export interface NormalizedTransformationOptions extends TransformationOptions {
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
+}
+
+export interface NormalizedCompilerOptions extends NormalizedTransformationOptions {
+    files: BundleFiles;
 }
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
@@ -108,7 +116,7 @@ export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
     validateStylesheetConfig(options.stylesheetConfig);
 }
 
-export function validateOptions(options: CompilerOptions) {
+export function validateOptions(options: TransformationOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
     invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
         options.name,
@@ -116,6 +124,18 @@ export function validateOptions(options: CompilerOptions) {
     invariant(isString(options.namespace), CompilerValidationErrors.INVALID_NAMESPACE_PROPERTY, [
         options.namespace,
     ]);
+
+    if (!isUndefined(options.stylesheetConfig)) {
+        validateStylesheetConfig(options.stylesheetConfig);
+    }
+
+    if (!isUndefined(options.outputConfig)) {
+        validateOutputConfig(options.outputConfig);
+    }
+}
+
+export function validateCompilerOptions(options: CompilerOptions) {
+    validateOptions(options);
 
     invariant(
         !isUndefined(options.files) && !!Object.keys(options.files).length,
@@ -130,14 +150,10 @@ export function validateOptions(options: CompilerOptions) {
             [key, value]
         );
     }
+}
 
-    if (!isUndefined(options.stylesheetConfig)) {
-        validateStylesheetConfig(options.stylesheetConfig);
-    }
-
-    if (!isUndefined(options.outputConfig)) {
-        validateOutputConfig(options.outputConfig);
-    }
+export function validateTransformationOptions(options: TransformationOptions) {
+    validateOptions(options);
 }
 
 function validateStylesheetConfig(config: StylesheetConfig) {
@@ -206,7 +222,7 @@ function validateOutputConfig(config: OutputConfig) {
     }
 }
 
-export function normalizeOptions(options: CompilerOptions): NormalizedCompilerOptions {
+export function normalizeOptions(options: TransformationOptions): NormalizedTransformationOptions {
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig,
