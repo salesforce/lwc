@@ -13,6 +13,9 @@ const MO = MutationObserver;
 const MutationObserverObserve = MO.prototype.observe;
 const DomManualPrivateKey = '$$DomManualKey$$';
 
+// Resolver function used when a node is removed from within a portal
+const DocumentResolverFn = function() {} as ShadowRootResolver;
+
 // We can use a single observer without having to worry about leaking because
 // "Registered observers in a node’s registered observer list have a weak
 // reference to the node."
@@ -40,20 +43,6 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
     }
 }
 
-function disownChildNode(node: Node) {
-    // Note: this will remove the node owner key.
-    setShadowRootResolver(node, function() {} as ShadowRootResolver);
-
-    if (node instanceof Element) {
-        setShadowToken(node, undefined);
-        const childNodes = getInternalChildNodes(node);
-        for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            const child = childNodes[i];
-            disownChildNode(child);
-        }
-    }
-}
-
 function initPortalObserver() {
     return new MO(mutations => {
         forEach.call(mutations, mutation => {
@@ -61,13 +50,15 @@ function initPortalObserver() {
             // the target of the mutation should always have a ShadowRootResolver attached to it
             const fn = getShadowRootResolver(elm) as ShadowRootResolver;
             const shadowToken = getShadowToken(elm);
+
+            // First lets process removals in case we are in a case of removed and reinserted elements
+            for (let i = 0, len = removedNodes.length; i < len; i += 1) {
+                adoptChildNode(removedNodes[i], DocumentResolverFn, undefined);
+            }
+
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
                 adoptChildNode(node, fn, shadowToken);
-            }
-
-            for (let i = 0, len = removedNodes.length; i < len; i += 1) {
-                disownChildNode(removedNodes[i]);
             }
         });
     });
