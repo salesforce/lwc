@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Moving elements from inside lwc:dom=manual', () => {
-    it('should return correct parentNode', function() {
+    it('should return correct parentNode', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         const span = document.createElement('span');
@@ -20,7 +20,7 @@ describe('Moving elements from inside lwc:dom=manual', () => {
         });
     });
 
-    it('should return correct results in querySelector', function() {
+    it('should return correct results in querySelector', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         const span = document.createElement('span');
@@ -39,7 +39,7 @@ describe('Moving elements from inside lwc:dom=manual', () => {
         });
     });
 
-    it('should return correct results in querySelectorAll', function() {
+    it('should return correct results in querySelectorAll', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         const span = document.createElement('span');
@@ -58,7 +58,7 @@ describe('Moving elements from inside lwc:dom=manual', () => {
         });
     });
 
-    it('should return correct results in querySelector when node is added/removed on the same tick', function() {
+    it('should return correct results in querySelector when node is added/removed on the same tick', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         const span = document.createElement('span');
