@@ -47,6 +47,16 @@ function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string 
 function initPortalObserver() {
     return new MO(mutations => {
         forEach.call(mutations, mutation => {
+            /**
+             * This routine will process all nodes added or removed from elm (which is marked as a portal)
+             * When adding a node to the portal element, we should add the ownership.
+             * When removing a node from the portal element, this ownership should be removed.
+             *
+             * There is some special cases in which MutationObserver may call with stacked mutations (the same node
+             * will be in addedNodes and removedNodes) or with false positives (a node that is removed and re-appended
+             * in the same tick) for those cases, we cover by checking that the node is contained
+             * (or not in the case of removal) by the element.
+             */
             const { target: elm, addedNodes, removedNodes } = mutation;
             // the target of the mutation should always have a ShadowRootResolver attached to it
             const fn = getShadowRootResolver(elm) as ShadowRootResolver;
