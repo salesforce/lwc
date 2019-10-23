@@ -55,7 +55,7 @@ export function getNodeOwnerKey(node: Node): number | undefined {
     return node[OwnerKey];
 }
 
-export function setNodeOwnerKey(node: Node, value: number) {
+export function setNodeOwnerKey(node: Node, value: number | undefined) {
     if (process.env.NODE_ENV !== 'production') {
         // in dev-mode, we are more restrictive about what you can do with the owner key
         defineProperty(node, OwnerKey, {
