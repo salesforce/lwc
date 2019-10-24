@@ -12,7 +12,7 @@ import {
     TransformerErrors,
 } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
-import { NormalizedTransformationOptions } from '../compiler/options';
+import { NormalizedTransformOptions } from '../compiler/options';
 import { FileTransformerResult } from './transformer';
 
 export interface TemplateTransformResult {
@@ -30,7 +30,7 @@ export interface TemplateTransformResult {
 export default function templateTransform(
     src: string,
     filename: string,
-    options: NormalizedTransformationOptions
+    options: NormalizedTransformOptions
 ): FileTransformerResult {
     let result;
 
@@ -58,7 +58,7 @@ export default function templateTransform(
 function serialize(
     code: string,
     filename: string,
-    { namespace, name }: NormalizedTransformationOptions
+    { namespace, name }: NormalizedTransformOptions
 ): string {
     const cssRelPath = `./${path.basename(filename, path.extname(filename))}.css`;
     const scopingAttribute = `${namespace}-${name}_${path.basename(

@@ -21,7 +21,7 @@ import rollupTransform from '../rollup-plugins/transform';
 import rollupCompat from '../rollup-plugins/compat';
 import rollupMinify from '../rollup-plugins/minify';
 
-import { NormalizedCompilerOptions, validateNormalizedOptions } from '../compiler/options';
+import { NormalizedCompileOptions, validateNormalizedOptions } from '../compiler/options';
 
 import { SourceMap } from '../compiler/compiler';
 
@@ -66,7 +66,7 @@ function handleRollupWarning(diagnostics: CompilerDiagnostic[]) {
     };
 }
 
-export async function bundle(options: NormalizedCompilerOptions): Promise<BundleReport> {
+export async function bundle(options: NormalizedCompileOptions): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
     const { outputConfig, name, namespace } = options;

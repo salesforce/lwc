@@ -64,7 +64,7 @@ export interface NormalizedDynamicComponentConfig {
     strictSpecifier: boolean;
 }
 
-export interface TransformationOptions {
+export interface TransformOptions {
     name: string;
     namespace: string;
     /**
@@ -78,18 +78,18 @@ export interface TransformationOptions {
     isExplicitImport?: boolean;
 }
 
-export interface CompilerOptions extends TransformationOptions {
+export interface CompileOptions extends TransformOptions {
     files: BundleFiles;
 }
 
-export interface NormalizedTransformationOptions extends TransformationOptions {
+export interface NormalizedTransformOptions extends TransformOptions {
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
     isExplicitImport: boolean;
 }
 
-export interface NormalizedCompilerOptions extends CompilerOptions {
+export interface NormalizedCompileOptions extends CompileOptions {
     outputConfig: NormalizedOutputConfig;
     stylesheetConfig: NormalizedStylesheetConfig;
     experimentalDynamicComponent: NormalizedDynamicComponentConfig;
@@ -112,13 +112,13 @@ export interface NormalizedOutputConfig extends OutputConfig {
     };
 }
 
-export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
+export function validateNormalizedOptions(options: NormalizedCompileOptions) {
     validateOptions(options);
     validateOutputConfig(options.outputConfig);
     validateStylesheetConfig(options.stylesheetConfig);
 }
 
-export function validateOptions(options: TransformationOptions) {
+export function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
     invariant(isString(options.name), CompilerValidationErrors.INVALID_NAME_PROPERTY, [
         options.name,
@@ -136,7 +136,7 @@ export function validateOptions(options: TransformationOptions) {
     }
 }
 
-export function validateCompilerOptions(options: CompilerOptions): NormalizedCompilerOptions {
+export function validateCompileOptions(options: CompileOptions): NormalizedCompileOptions {
     validateOptions(options);
 
     invariant(
@@ -153,12 +153,10 @@ export function validateCompilerOptions(options: CompilerOptions): NormalizedCom
         );
     }
 
-    return normalizeOptions(options) as NormalizedCompilerOptions;
+    return normalizeOptions(options) as NormalizedCompileOptions;
 }
 
-export function validateTransformationOptions(
-    options: TransformationOptions
-): NormalizedTransformationOptions {
+export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
     validateOptions(options);
     return normalizeOptions(options);
 }
@@ -229,7 +227,7 @@ function validateOutputConfig(config: OutputConfig) {
     }
 }
 
-function normalizeOptions(options: TransformationOptions): NormalizedTransformationOptions {
+function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig,
