@@ -9,7 +9,7 @@ import * as babel from '@babel/core';
 import * as presetCompat from 'babel-preset-compat';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
-import { NormalizedOutputConfig } from '../compiler/options';
+import { NormalizedOutputConfig } from '../options';
 
 const BABEL_CONFIG_CONFIG = {
     ...BABEL_CONFIG_BASE,

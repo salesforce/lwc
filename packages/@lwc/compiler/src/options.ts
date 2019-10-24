@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isBoolean, isString, isUndefined, isObject } from '../utils';
+import { isBoolean, isString, isUndefined, isObject } from './utils';
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
 
 const DEFAULT_OPTIONS = {
@@ -112,7 +112,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
     };
 }
 
-export function validateNormalizedOptions(options: NormalizedCompileOptions) {
+export function validateNormalizedCompileOptions(options: NormalizedCompileOptions) {
     validateOptions(options);
     validateOutputConfig(options.outputConfig);
     validateStylesheetConfig(options.stylesheetConfig);

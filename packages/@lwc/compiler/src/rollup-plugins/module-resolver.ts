@@ -9,7 +9,7 @@ import { Plugin } from 'rollup';
 import { ModuleResolutionErrors, generateCompilerError } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared';
 
-import { NormalizedCompileOptions, BundleFiles } from '../compiler/options';
+import { NormalizedCompileOptions, BundleFiles } from '../options';
 
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';

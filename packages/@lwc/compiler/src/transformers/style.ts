@@ -6,7 +6,7 @@
  */
 import * as styleCompiler from '@lwc/style-compiler';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
-import { NormalizedTransformOptions } from '../compiler/options';
+import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
 
 export default function styleTransform(

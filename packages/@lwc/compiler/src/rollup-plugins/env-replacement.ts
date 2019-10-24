@@ -7,7 +7,7 @@
 import { Plugin } from 'rollup';
 import rollupPluginReplace from 'rollup-plugin-replace';
 
-import { NormalizedCompileOptions } from '../compiler/options';
+import { NormalizedCompileOptions } from '../options';
 
 export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
     const { env } = options.outputConfig;

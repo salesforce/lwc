@@ -9,7 +9,7 @@ import lwcClassTransformPlugin from '@lwc/babel-plugin-component';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
-import { NormalizedTransformOptions } from '../compiler/options';
+import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
 
 export default function scriptTransform(

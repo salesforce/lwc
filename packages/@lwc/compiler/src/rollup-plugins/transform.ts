@@ -8,7 +8,7 @@ import { Plugin } from 'rollup';
 
 import { transformFile } from '../transformers/transformer';
 
-import { NormalizedCompileOptions } from '../compiler/options';
+import { NormalizedCompileOptions } from '../options';
 
 export default function({ options }: { options: NormalizedCompileOptions }): Plugin {
     return {

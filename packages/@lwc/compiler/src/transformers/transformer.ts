@@ -7,11 +7,7 @@
 import * as path from 'path';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 
-import {
-    NormalizedTransformOptions,
-    TransformOptions,
-    validateTransformOptions,
-} from '../compiler/options';
+import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';

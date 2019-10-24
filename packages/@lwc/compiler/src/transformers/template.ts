@@ -12,7 +12,7 @@ import {
     TransformerErrors,
 } from '@lwc/errors';
 import compile from '@lwc/template-compiler';
-import { NormalizedTransformOptions } from '../compiler/options';
+import { NormalizedTransformOptions } from '../options';
 import { FileTransformerResult } from './transformer';
 
 export interface TemplateTransformResult {

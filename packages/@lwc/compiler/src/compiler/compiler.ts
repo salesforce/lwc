@@ -7,7 +7,7 @@
 import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
 
 import { bundle } from '../bundler/bundler';
-import { CompileOptions, validateCompileOptions, NormalizedOutputConfig } from './options';
+import { CompileOptions, validateCompileOptions, NormalizedOutputConfig } from '../options';
 import { version } from '../index';
 
 export { default as templateCompiler } from '@lwc/template-compiler';

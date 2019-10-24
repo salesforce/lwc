@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { TransformOptions } from '../../compiler/options';
+import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 
 import { pretify } from '../../__tests__/utils';
@@ -13,7 +13,6 @@ import { pretify } from '../../__tests__/utils';
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
     name: 'foo',
-    files: {},
 };
 
 it('should apply transformation for valid javascript file', async () => {
