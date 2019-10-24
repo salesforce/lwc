@@ -9,8 +9,8 @@ import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors
 
 import {
     NormalizedTransformationOptions,
-    normalizeOptions,
     TransformationOptions,
+    validateTransformationOptions,
 } from '../compiler/options';
 import styleTransform from './style';
 import templateTransformer from './template';
@@ -56,7 +56,8 @@ export function transformSync(
     options: TransformationOptions
 ): FileTransformerResult {
     validateArguments(src, filename);
-    return transformFile(src, filename, normalizeOptions(options));
+    const normalizedOptions = validateTransformationOptions(options);
+    return transformFile(src, filename, normalizedOptions);
 }
 
 function validateArguments(src: string, filename: string) {

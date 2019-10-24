@@ -7,13 +7,7 @@
 import { CompilerDiagnostic, DiagnosticLevel } from '@lwc/errors';
 
 import { bundle } from '../bundler/bundler';
-import {
-    CompilerOptions,
-    validateCompilerOptions,
-    normalizeOptions,
-    NormalizedOutputConfig,
-    NormalizedCompilerOptions,
-} from './options';
+import { CompilerOptions, validateCompilerOptions, NormalizedOutputConfig } from './options';
 import { version } from '../index';
 
 export { default as templateCompiler } from '@lwc/template-compiler';
@@ -34,8 +28,7 @@ export interface BundleResult {
 export type SourceMap = any;
 
 export async function compile(options: CompilerOptions): Promise<CompilerOutput> {
-    validateCompilerOptions(options);
-    const normalizedOptions = normalizeOptions(options) as NormalizedCompilerOptions;
+    const normalizedOptions = validateCompilerOptions(options);
 
     let result: BundleResult | undefined;
     const diagnostics: CompilerDiagnostic[] = [];

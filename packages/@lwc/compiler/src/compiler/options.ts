@@ -67,7 +67,6 @@ export interface NormalizedDynamicComponentConfig {
 export interface TransformationOptions {
     name: string;
     namespace: string;
-    files?: BundleFiles;
     /**
      * An optional directory prefix that contains the specified components
      * files. Only used when the component that is the compiler's entry point.
@@ -90,8 +89,11 @@ export interface NormalizedTransformationOptions extends TransformationOptions {
     isExplicitImport: boolean;
 }
 
-export interface NormalizedCompilerOptions extends NormalizedTransformationOptions {
-    files: BundleFiles;
+export interface NormalizedCompilerOptions extends CompilerOptions {
+    outputConfig: NormalizedOutputConfig;
+    stylesheetConfig: NormalizedStylesheetConfig;
+    experimentalDynamicComponent: NormalizedDynamicComponentConfig;
+    isExplicitImport: boolean;
 }
 
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
@@ -134,7 +136,7 @@ export function validateOptions(options: TransformationOptions) {
     }
 }
 
-export function validateCompilerOptions(options: CompilerOptions) {
+export function validateCompilerOptions(options: CompilerOptions): NormalizedCompilerOptions {
     validateOptions(options);
 
     invariant(
@@ -150,10 +152,15 @@ export function validateCompilerOptions(options: CompilerOptions) {
             [key, value]
         );
     }
+
+    return normalizeOptions(options) as NormalizedCompilerOptions;
 }
 
-export function validateTransformationOptions(options: TransformationOptions) {
+export function validateTransformationOptions(
+    options: TransformationOptions
+): NormalizedTransformationOptions {
     validateOptions(options);
+    return normalizeOptions(options);
 }
 
 function validateStylesheetConfig(config: StylesheetConfig) {
@@ -222,7 +229,7 @@ function validateOutputConfig(config: OutputConfig) {
     }
 }
 
-export function normalizeOptions(options: TransformationOptions): NormalizedTransformationOptions {
+function normalizeOptions(options: TransformationOptions): NormalizedTransformationOptions {
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig,
